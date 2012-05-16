@@ -248,7 +248,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char item[GMT_BUFSIZ];			/* buffer */
 	char t_or_i;				/* t = time, i = dummy node time */
 	char name1[80], name2[80];		/* Name of two files to be examined */
-	char *x2sys_header = "%s %ld %s %ld %s";
+	char *x2sys_header = "%s %d %s %d %s";
 
 	COUNTER_LARGE n_rec[2];			/* Number of data records for both files */
 	COUNTER_LARGE window_width;			/* Max number of points to use in the interpolation */
@@ -347,7 +347,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->Q.mode == 2) external = FALSE;
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Files found: %ld\n", n_tracks);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Files found: %" PRIu64 "\n", n_tracks);
 
 	duplicate = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
 
@@ -365,7 +365,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld found\n", n_duplicates);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " found\n", n_duplicates);
 	
 	if (Ctrl->A.active) {	/* Read list of acceptable trk_name combinations */
 
@@ -384,7 +384,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Error decoding combinations file for pair %ld!\n", n_pairs);
+				GMT_report (GMT, GMT_MSG_FATAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
 				Return (EXIT_FAILURE);
 			}
 			pair[n_pairs].id1 = strdup (name1);
@@ -405,7 +405,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		if ((size_t)n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", n_pairs);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", n_pairs);
 	}
 
 	X2SYS_NaN = GMT->session.d_NaN;
@@ -795,7 +795,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!got_time) GMT_free (GMT, time[1]);
 				GMT_free (GMT, ylist_B);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld\n", nx);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", nx);
 		}
 
 		/* Must free up memory for A */

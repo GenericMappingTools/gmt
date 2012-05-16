@@ -191,7 +191,7 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld cruises\n", n_cruises);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Found %d cruises\n", n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);

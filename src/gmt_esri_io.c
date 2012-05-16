@@ -151,7 +151,7 @@ GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	if ( header->bits != 16 && header->bits != 32 ) {
-		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: This data type (%ld bits) is not supported\n", header->bits);
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: This data type (%d bits) is not supported\n", header->bits);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);		/* BANDROWBYTES  */ 
@@ -543,7 +543,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_free (C, tmp);
 
 	if (n_left) {
-		GMT_report (C, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", header->nm, header->nm - n_left);
+		GMT_report (C, GMT_MSG_FATAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 

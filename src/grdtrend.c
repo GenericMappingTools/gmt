@@ -588,7 +588,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
 		if (ierror) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
+			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %d\n", ierror);
 			return (EXIT_FAILURE);
 		}
 		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
@@ -605,7 +605,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
 				if (ierror) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %ld\n", ierror);
+					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %d\n", ierror);
 					return (EXIT_FAILURE);
 				}
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);

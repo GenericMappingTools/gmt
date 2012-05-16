@@ -302,10 +302,10 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	size_t start[1], edge[1];
 	int ncid, old_fill_mode, *tmp_i = NULL;
 	GMT_LONG err;
-	COUNTER_MEDIUM i, nr_oor = 0, *actual_col = NULL;
+	COUNTER_MEDIUM i, *actual_col = NULL;
 	COUNTER_MEDIUM j, width_out, height_out, width_in, inc = 1, off = 0;
 	GMT_LONG first_col, last_col, first_row, last_row;
-	COUNTER_LARGE ij; 
+	COUNTER_LARGE ij, nr_oor = 0; 
 	float *tmp_f = NULL;
 	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
 	nc_type z_type;

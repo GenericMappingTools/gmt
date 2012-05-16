@@ -153,7 +153,7 @@ void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
 			strcat (message, skip);
 		}
 	}
-	GMT_report (C, GMT_MSG_NORMAL, "%s %ld columns via binary records using format %s\n", GMT_direction[direction], C->common.b.ncol[direction], message);
+	GMT_report (C, GMT_MSG_NORMAL, "%s %d columns via binary records using format %s\n", GMT_direction[direction], C->common.b.ncol[direction], message);
 }
 
 double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, COUNTER_LARGE row, unsigned int type)
@@ -384,7 +384,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary file %s\n",
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary file %s\n",
 					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], S_obj->filename);
 			}
 			break;
@@ -400,7 +400,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream\n",
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary %s stream\n",
 					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
@@ -417,7 +417,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream via supplied file descriptor\n",
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary %s stream via supplied file descriptor\n",
 					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
@@ -853,7 +853,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* S_obj is the current data object */
 		if (!S_obj) {	/* Probably not a good sign */
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Skipped empty object (item = %ld)\n", item);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Skipped empty object (item = %d)\n", item);
 			continue;
 		}
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so skip output objects */
@@ -1194,7 +1194,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* Current object */
 		if (!S_obj) {	/* Probably not a good sign */
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Skipped empty object (item = %ld)\n", item);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Skipped empty object (item = %d)\n", item);
 			continue;
 		}
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so bugger off! */
@@ -2075,7 +2075,7 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 			current = current->next;	/* Go to next option */
 		}
 		n_reg += n_new;	/* Total registration count so far */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added %ld new sources\n", n_new);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added %d new sources\n", n_new);
 	}
 	
 	/* Note that n_reg can have changed if we added file args above */
@@ -2111,7 +2111,7 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	API->error = GMT_OK;		/* No error yet */
 	n_reg = GMTAPI_n_items (API, family, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {						/* There is a destination registered already */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Found one registered destination (object ID = %ld); skip further registrations\n", object_ID);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Found one registered destination (object ID = %d); skip further registrations\n", object_ID);
 		return (object_ID);
 	}
 	if (n_reg > 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output destination allowed at once */
@@ -2377,7 +2377,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 			i++;	continue;
 		}
 		/* Here we will try to free the memory pointed to by S_obj->resource */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%ld A=%ld ID=%ld W=%s F=%s M=%s S=%s P=%lx D=%lx N=%s\n",
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%lx D=%lx N=%s\n",
 			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (int64_t)S_obj->resource, (int64_t)S_obj->data, S_obj->filename);
 		address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
 		error = GMT_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
@@ -2393,7 +2393,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 		}
 		i++;	/* Go to next */
 	}
- 	if (n_free) GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMTAPI_Garbage_Collection freed %ld memory objects\n", n_free);
+ 	if (n_free) GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMTAPI_Garbage_Collection freed %d memory objects\n", n_free);
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o or those set to NULL above) set during this module (or session) */
 	i = 0;
@@ -3686,7 +3686,7 @@ int GMT_Destroy_Data (struct GMTAPI_CTRL *API, unsigned int mode, void *object)
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
 		COUNTER_MEDIUM j;
 		void *address = API->object[item]->data;
-		GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMT_Destroy_Data: freed memory for a %s for object %ld\n", GMT_family[API->object[item]->family], object_ID);
+		GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[API->object[item]->family], object_ID);
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, GMTAPI_NOTSET))) return_error (API, error);	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
 	}

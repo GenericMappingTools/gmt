@@ -247,7 +247,7 @@ GMT_LONG solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct G
 			else
 				d[j] /= lambda[j];
 		}
-		if (k) GMT_report (GMT, GMT_MSG_FATAL, "%ld eigenvalues < 1.0e-7 set to zero to yield a stable solution\n", k);
+		if (k) GMT_report (GMT, GMT_MSG_FATAL, "%d eigenvalues < 1.0e-7 set to zero to yield a stable solution\n", k);
 
 		/* Finally do x = v * d */
 		for (j = 0; j < n; j++) for (k = 0; k < n; k++) x[j] += v[j*n+k] * d[k];
@@ -1586,7 +1586,7 @@ void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 				lmsscl = GMT->session.d_NaN;
 
 			for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = lmsscl;
-			if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld Multiple modes found for segment %ld\n", GMT_n_multiples, s);
+			if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d Multiple modes found for segment %" PRIu64 "\n", GMT_n_multiples, s);
 		}
 		else {	/* Just accumulate the total table */
 			GMT_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
@@ -1604,7 +1604,7 @@ void table_LMSSCL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_D
 		lmsscl = GMT->session.d_NaN;
 
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = lmsscl;
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld Multiple modes found\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 	GMT_free (GMT, z);
 }
 
@@ -1912,7 +1912,7 @@ void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 				mode = GMT->session.d_NaN;
 
 			for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = mode;
-			if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld Multiple modes found for segment %ld\n", GMT_n_multiples, s);
+			if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d Multiple modes found for segment %" PRIu64 "\n", GMT_n_multiples, s);
 		}
 		else {	/* Just accumulate the total table */
 			GMT_memcpy (&z[k], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
@@ -1927,7 +1927,7 @@ void table_MODE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 		mode = GMT->session.d_NaN;
 
 	for (s = 0; s < info->T->n_segments; s++) for (i = 0; i < info->T->segment[s]->n_rows; i++) T->segment[s]->coord[col][i] = mode;
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld Multiple modes found\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 	GMT_free (GMT, z);
 }
 
@@ -2807,12 +2807,12 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 	else
 		s_arg = lrint (factor[last]);
 	if (s_arg < 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %ld. Reset to 0\n", info->n_col);
+		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %d. Reset to 0\n", info->n_col);
 		s_arg = 0;
 	}
 	info->r_col = s_arg;
 	if (info->r_col >= info->n_col) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %ld. Reset to 0\n", info->n_col);
+		GMT_report (GMT, GMT_MSG_FATAL, "Argument to operator ROOTS must be a column number 0 < col < %d. Reset to 0\n", info->n_col);
 		info->r_col = 0;
 	}
 	roots = GMT_memory (GMT, NULL, T->n_records, double);
@@ -2954,7 +2954,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 
 	n_macros = gmt_load_macros (GMT, ".gmtmath", &M);	/* Load in any macros */
-	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %ld user macros.\n", n_macros);
+	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %d user macros.\n", n_macros);
 	
 	if (Ctrl->Q.active || Ctrl->S.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers in calculator or one-record mode */
 
@@ -3301,7 +3301,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (nstack < consumed_operands[op]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Operation \"%s\" requires %ld operands\n", operator[op], consumed_operands[op]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -3416,7 +3416,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Clean-up time */
 
-	if (nstack > 1) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld more operands left on the stack!\n", nstack-1);
+	if (nstack > 1) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d more operands left on the stack!\n", nstack-1);
 
 	Return (EXIT_SUCCESS);
 }

@@ -79,9 +79,9 @@ struct MEMORY_TRACKER {
 	COUNTER_LARGE n_allocated;	/* Number of items allocated by GMT_memory */
 	COUNTER_LARGE n_reallocated;	/* Number of items reallocated by GMT_memory */
 	COUNTER_LARGE n_freed;	/* Number of items freed by GMT_free */
-	COUNTER_LARGE current;	/* Memory allocated at current time */
-	COUNTER_LARGE maximum;	/* Highest memory count during execution */
-	COUNTER_LARGE largest;	/* Highest memory allocation to a single variable */
+	size_t current;		/* Memory allocated at current time */
+	size_t maximum;		/* Highest memory count during execution */
+	size_t largest;		/* Highest memory allocation to a single variable */
 	size_t n_alloc;		/* Allocated size of memory pointer array */
 #ifdef NEW_DEBUG
 	struct MEMORY_ITEM *list_head, *list_tail;

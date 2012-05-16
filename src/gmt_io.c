@@ -236,7 +236,7 @@ GMT_LONG gmt_gap_detected (struct GMT_CTRL *C)
 GMT_LONG gmt_set_gap (struct GMT_CTRL *C) {	/* Data gaps are special since there is no multiple-segment header flagging the gap; thus next time the record is already read */
 	C->current.io.status = GMT_IO_GAP;
 	C->current.io.seg_no++;
-	GMT_report (C, GMT_MSG_VERBOSE, "Data gap detected via -g; Segment header inserted near/at line # %ld\n", C->current.io.rec_no);
+	GMT_report (C, GMT_MSG_VERBOSE, "Data gap detected via -g; Segment header inserted near/at line # %" PRIu64 "\n", C->current.io.rec_no);
 	sprintf (C->current.io.segment_header, "Data gap detected via -g; Segment header inserted");
 	return (0);
 }
@@ -272,7 +272,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, COUNTER_MEDIUM n_read) {
 	}
 	if (!C->current.io.status) {	/* Must have n_read NaNs to qualify as segment header */
 		if (n_NaN == n_read) {
-			GMT_report (C, GMT_MSG_VERBOSE, "Detected binary segment header near/at line # %ld\n", C->current.io.rec_no);
+			GMT_report (C, GMT_MSG_VERBOSE, "Detected binary segment header near/at line # %" PRIu64 "\n", C->current.io.rec_no);
 			C->current.io.status = GMT_IO_SEG_HEADER;
 			C->current.io.segment_header[0] = '\0';
 			GMT_set_segmentheader (C, GMT_OUT, TRUE);	/* Turn on "-mo" */
@@ -284,7 +284,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, COUNTER_MEDIUM n_read) {
 	if (bad_record) {
 		C->current.io.n_bad_records++;
 		if (C->current.io.give_report && C->current.io.n_bad_records == 1) {	/* Report 1st occurrence */
-			GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid binary record near/at line # %ld\n", C->current.io.rec_no);
+			GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid binary record near/at line # %" PRIu64 "\n", C->current.io.rec_no);
 			GMT_report (C, GMT_MSG_FATAL, "Likely causes:\n");
 			GMT_report (C, GMT_MSG_FATAL, "(1) Invalid x and/or y values, i.e. NaNs.\n");
 		}
@@ -301,14 +301,13 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, COUNTER_MEDIUM n_read) {
 
 void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LONG *retval)
 {
-	GMT_LONG status;
-	COUNTER_MEDIUM i, n_use;
+	GMT_LONG status, i, n_use, ns;
 
 	C->current.io.status = 0;
 	if (*n == GMT_MAX_COLUMNS)
 		*n = C->current.io.nvars;
-	else if (*n > C->current.io.nvars) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_nc_input is asking for %ld columns, but file has only %d\n", *n, C->current.io.nvars);
+	else if ((ns = *n) > C->current.io.nvars) {
+		GMT_report (C, GMT_MSG_FATAL, "gmt_nc_input is asking for %d columns, but file has only %d\n", *n, C->current.io.nvars);
 		C->current.io.status = GMT_IO_MISMATCH;
 	}
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
@@ -1205,7 +1204,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LON
 		if (!p) {	/* Ran out of records, which can happen if file ends in a comment record */
 			C->current.io.status = GMT_IO_EOF;
 			if (C->current.io.give_report && C->current.io.n_bad_records) {	/* Report summary and reset counters */
-				GMT_report (C, GMT_MSG_FATAL, "This file had %ld records with invalid x and/or y values\n", C->current.io.n_bad_records);
+				GMT_report (C, GMT_MSG_FATAL, "This file had %" PRIu64 " records with invalid x and/or y values\n", C->current.io.n_bad_records);
 				C->current.io.n_bad_records = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
 				C->current.io.rec_no = C->current.io.rec_in_tbl_no = 0;
 			}
@@ -1284,7 +1283,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LON
 		if (bad_record) {	/* This record failed our test and had NaNs */
 			C->current.io.n_bad_records++;
 			if (C->current.io.give_report && (C->current.io.n_bad_records == 1)) {	/* Report 1st occurrence of bad record */
-				GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid record near/at line # %ld\n", C->current.io.rec_no);
+				GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", C->current.io.rec_no);
 				GMT_report (C, GMT_MSG_FATAL, "Likely causes:\n");
 				GMT_report (C, GMT_MSG_FATAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
 				GMT_report (C, GMT_MSG_FATAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
@@ -1299,7 +1298,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LON
 	}
 	C->current.io.status = (n_ok == n_use || *n == GMT_MAX_COLUMNS) ? 0 : GMT_IO_MISMATCH;	/* Hopefully set status to 0 (OK) */
 	if (*n == GMT_MAX_COLUMNS) *n = n_ok;							/* Update the number of expected fields */
-	if (GMT_REC_IS_ERROR (C)) GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", col_no, *n, C->current.io.rec_no);
+	if (GMT_REC_IS_ERROR (C)) GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n", col_no, *n, C->current.io.rec_no);
 
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) d_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 as per current rule*/
@@ -1415,7 +1414,7 @@ BOOLEAN gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n) {
 	COUNTER_MEDIUM i;
 
 	if (n > GMT_MAX_COLUMNS) {
-		GMT_report (C, GMT_MSG_FATAL, "Number of data columns (%ld) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
+		GMT_report (C, GMT_MSG_FATAL, "Number of data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
 		return (TRUE);	/* Done with this file */
 	}
 	for (i = 0; i < n; i++) {
@@ -1425,7 +1424,7 @@ BOOLEAN gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n) {
 			C->current.io.status = (feof (fp)) ? GMT_IO_EOF : GMT_IO_MISMATCH;
 			if (C->current.io.give_report && C->current.io.n_bad_records) {
 				/* Report summary and reset */
-				GMT_report (C, GMT_MSG_FATAL, "This file had %ld records with invalid x and/or y values\n", C->current.io.n_bad_records);
+				GMT_report (C, GMT_MSG_FATAL, "This file had %" PRIu64 " records with invalid x and/or y values\n", C->current.io.n_bad_records);
 				C->current.io.n_bad_records = C->current.io.rec_no = C->current.io.pt_no = C->current.io.n_clean_rec = 0;
 			}
 			return (TRUE);	/* Done with this file */
@@ -1461,7 +1460,7 @@ BOOLEAN gmt_skip_output (struct GMT_CTRL *C, double *cols, COUNTER_MEDIUM n_cols
 	COUNTER_MEDIUM c, n_nan;
 	
 	if (n_cols > GMT_MAX_COLUMNS) {
-		GMT_report (C, GMT_MSG_FATAL, "Number of output data columns (%ld) exceeds limit (GMT_MAX_COLUMS = %d)\n", n_cols, GMT_MAX_COLUMNS);
+		GMT_report (C, GMT_MSG_FATAL, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n_cols, GMT_MAX_COLUMNS);
 		return (TRUE);	/* Skip record since we cannot access that many columns */
 	}
 	if (!C->current.setting.io_nan_mode) return (FALSE);				/* Normal case; output the record */
@@ -4338,7 +4337,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, CO
 			strcpy (file, "<input file descriptor>");
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_texttable\n", source_type);
+		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_read_texttable\n", source_type);
 		return (NULL);
 	}
 
@@ -5058,7 +5057,7 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_ty
 				strcpy (file, "<output file descriptor>");
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_write_table\n", dest_type);
+			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_write_table\n", dest_type);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -5161,7 +5160,7 @@ GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_
 			GMT_report (C, GMT_MSG_NORMAL, "Write Data Table to %s\n", file);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_write_table\n", dest_type);
+			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_write_table\n", dest_type);
 			return (EXIT_FAILURE);
 			break;
 	}
@@ -5243,7 +5242,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 				strcpy (file, "<output file descriptor>");
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in gmt_write_texttable\n", dest_type);
+			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in gmt_write_texttable\n", dest_type);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -5334,7 +5333,7 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_
 			GMT_report (C, GMT_MSG_NORMAL, "Write Text Table to %s\n", file);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_write_textset\n", dest_type);
+			GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_write_textset\n", dest_type);
 			return (EXIT_FAILURE);
 			break;
 	}
@@ -5689,7 +5688,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MED
 			strcpy (file, "<input file descriptor>");
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_table\n", source_type);
+		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_read_table\n", source_type);
 		if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 		return (NULL);
 	}
@@ -5766,7 +5765,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MED
 		}
 
 		if (poly && T->segment[seg]->n_columns < 2) {
-			GMT_report (C, GMT_MSG_FATAL, "File %s does not have at least 2 columns required for polygons (found %ld)\n", file, T->segment[seg]->n_columns);
+			GMT_report (C, GMT_MSG_FATAL, "File %s does not have at least 2 columns required for polygons (found %d)\n", file, T->segment[seg]->n_columns);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 			return (NULL);
 		}
@@ -5774,7 +5773,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MED
 
 		while (! (C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until FALSE or find a new segment header */
 			if (C->current.io.status & GMT_IO_MISMATCH) {
-				GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", status, n_expected_fields, n_read);
+				GMT_report (C, GMT_MSG_FATAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n", status, n_expected_fields, n_read);
 				if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
 				return (NULL);
 			}
@@ -6479,7 +6478,7 @@ double GMT_get_aspatial_value (struct GMT_CTRL *C, COUNTER_MEDIUM col, struct GM
 		V = (S && S->ogr) ? S->ogr->value[id] : C->current.io.OGR->value[id];	/* Either from table or from segment (multi) */
 		return (gmt_convert_aspatial_value (C, C->current.io.OGR->type[id], V));
 	}
-	GMT_report (C, GMT_MSG_FATAL, "Warning: No aspatial value found for column %ld [Return NaN]\n", col);
+	GMT_report (C, GMT_MSG_FATAL, "Warning: No aspatial value found for column %d [Return NaN]\n", col);
 	return (C->session.d_NaN);
 }
 

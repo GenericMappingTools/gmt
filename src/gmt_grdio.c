@@ -1105,7 +1105,7 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 		G->header->wesn[XHI] -= 360.0;
 	}
 
-	if (n_warn) GMT_report (C, GMT_MSG_FATAL, "Gridline-registered global grid has inconsistent values at repeated node for %ld rows\n", n_warn);
+	if (n_warn) GMT_report (C, GMT_MSG_FATAL, "Gridline-registered global grid has inconsistent values at repeated node for %d rows\n", n_warn);
 }
 
 BOOLEAN GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
@@ -1398,7 +1398,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 		default:
 			if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 			min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
-			GMT_report (C, GMT_MSG_FATAL, "img file %s has unusual size - grid increment defaults to %ld min\n", file, min);
+			GMT_report (C, GMT_MSG_FATAL, "img file %s has unusual size - grid increment defaults to %d min\n", file, min);
 			break;
 	}
 
@@ -1413,7 +1413,7 @@ GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid,
 
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_report (C, GMT_MSG_NORMAL, "Reading img grid from file %s (scale = %g mode = %ld lat = %g)\n", imgfile, scale, mode, lat);
+	GMT_report (C, GMT_MSG_NORMAL, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n", imgfile, scale, mode, lat);
 	GMT_grd_init (C, Grid->header, NULL, FALSE);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
 

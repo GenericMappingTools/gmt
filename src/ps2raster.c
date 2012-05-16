@@ -769,7 +769,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
@@ -797,7 +797,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
 						if (sys_retval) {
-							GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+							GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
 						}
 
@@ -1097,7 +1097,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Execute the GhostScript command */
 			sys_retval = system (cmd);
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 
@@ -1135,7 +1135,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			x_inc = (east  - west)  / pix_w;
 			y_inc = (north - south) / pix_h;
-			GMT_report (GMT, GMT_MSG_NORMAL, "width = %ld\theight = %ld\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
+			GMT_report (GMT, GMT_MSG_NORMAL, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
 
 			/* West and North of the world file contain the coordinates of the
 			 * center of the pixel
@@ -1203,7 +1203,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
 				GMT_report (GMT, GMT_MSG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
-					GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+					GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (EXIT_FAILURE);
 				}
 			}

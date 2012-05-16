@@ -399,7 +399,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][k].term, data, aux_dvalue, j) : 0.0;
 				if (Ctrl->A.active && adj_col[k]) {
 					if (GMT_intpol (GMT, A[k]->d, A[k]->c, A[k]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error interpolating adjustment for %s near row %ld - no adjustment made!\n", s->info[s->out_order[k]].name, j);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[k]].name, j);
 						adj_amount = 0.0;
 					}
 					correction -= adj_amount;

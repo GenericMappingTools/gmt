@@ -440,11 +440,11 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Chosen column exceeds column range (0-%ld)\n", ncol-1);
+  				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Chosen column exceeds column range (0-%ld)\n", ncol-1);
+				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;

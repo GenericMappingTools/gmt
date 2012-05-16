@@ -1702,7 +1702,7 @@ void gmt_dumppol (COUNTER_LARGE n, double *x, double *y, GMT_LONG *id)
 	COUNTER_LARGE i;
 	FILE *fp = NULL;
 	char line[64];
-	sprintf (line, "dump_%ld.d", *id);
+	sprintf (line, "dump_%d.d", *id);
 	fp = fopen (line, "w");
 	for (i = 0; i < n; i++) fprintf (fp, "%g\t%g\n", x[i], y[i]);
 	fclose (fp);
@@ -1921,7 +1921,7 @@ void gmt_map_setinfo (struct GMT_CTRL *C, double xmin, double xmax, double ymin,
 
 	if (C->current.proj.g_debug > 1) {
 		GMT_message (C, "xmin %7.3f xmax %7.3f ymin %7.4f ymax %7.3f scale %6.3f\n", xmin/1000, xmax/1000, ymin/1000, ymax/1000, scl);
-		GMT_message (C, "gave_map_width %ld w %9.4e h %9.4e factor %9.4e\n", C->current.proj.gave_map_width, w, h, factor);
+		GMT_message (C, "gave_map_width %d w %9.4e h %9.4e factor %9.4e\n", C->current.proj.gave_map_width, w, h, factor);
 	}
 
 	gmt_map_setxy (C, xmin, xmax, ymin, ymax);
@@ -3763,11 +3763,11 @@ BOOLEAN gmt_map_init_genper (struct GMT_CTRL *C) {
 		C->current.proj.scale[GMT_X] = C->current.proj.scale[GMT_Y] = C->current.proj.pars[2];
 
 	if (C->current.proj.g_debug > 1) {
-		GMT_message (C, "genper: units_pr_degree %ld\n", C->current.proj.units_pr_degree);
+		GMT_message (C, "genper: units_pr_degree %d\n", C->current.proj.units_pr_degree);
 		GMT_message (C, "genper: radius %f\n", radius);
 		GMT_message (C, "genper: scale %f units %f\n", scale, units);
 		GMT_message (C, "genper: x scale %f y scale %f\n", C->current.proj.scale[GMT_X], C->current.proj.scale[GMT_Y]);
-		GMT_message (C, "genper: gave_map_width %ld \n",C->current.proj.gave_map_width);
+		GMT_message (C, "genper: gave_map_width %d \n",C->current.proj.gave_map_width);
 	}
 
 	GMT_vgenper (C, C->current.proj.pars[0], C->current.proj.pars[1], alt, azimuth, tilt, twist, width, height);
@@ -6452,7 +6452,7 @@ COUNTER_MEDIUM GMT_map_clip_path (struct GMT_CTRL *C, double **x, double **y, BO
 				np = 2 * (C->current.map.n_lon_nodes + C->current.map.n_lat_nodes);
 				break;
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Bad case in GMT_map_clip_path (%ld)\n", C->current.proj.projection);
+				GMT_report (C, GMT_MSG_FATAL, "Bad case in GMT_map_clip_path (%d)\n", C->current.proj.projection);
 				np = 0;
 				break;
 		}
@@ -6810,7 +6810,7 @@ GMT_LONG GMT_set_datum (struct GMT_CTRL *C, char *text, struct GMT_DATUM *D)
 			return (-1);
 		}
 		if (i < 0 || i >= GMT_N_DATUMS) {
-			GMT_report (C, GMT_MSG_FATAL, "Datum ID (%ld) outside valid range (0-%d)!\n", i, GMT_N_DATUMS-1);
+			GMT_report (C, GMT_MSG_FATAL, "Datum ID (%d) outside valid range (0-%d)!\n", i, GMT_N_DATUMS-1);
 			return (-1);
 		}
 		if ((k = GMT_get_ellipsoid (C, C->current.setting.proj_datum[i].ellipsoid)) < 0) {	/* This should not happen... */
@@ -7578,7 +7578,7 @@ void gmt_set_distaz (struct GMT_CTRL *C, COUNTER_MEDIUM mode, COUNTER_MEDIUM typ
 			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
 			break;
 		default:	/* Cannot happen unless we make a bug */
-			GMT_report (C, GMT_MSG_FATAL, "Mode (=%ld) for distance function is unknown. Must be bug.\n", mode);
+			GMT_report (C, GMT_MSG_FATAL, "Mode (=%d) for distance function is unknown. Must be bug.\n", mode);
 			exit (EXIT_FAILURE);
 			break;
 	}

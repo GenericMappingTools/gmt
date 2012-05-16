@@ -291,7 +291,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_alloc = n;
 	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %ld points\n", n);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %" PRIu64 " points\n", n);
 
 	if (Ctrl->Z.active && w_max > w_min) {	/* Scale the data */
 		sf = 1.0 / (w_max - w_min);

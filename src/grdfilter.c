@@ -733,7 +733,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (tid == 0) {	/* First or only thread */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%ld %ld)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Filter type is %s.\n", filter_name[filter_type]);
 #ifdef _OPENMP
 		GMT_report (GMT, GMT_MSG_NORMAL, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
@@ -745,7 +745,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Ctrl->A.COL = GMT_grd_x_to_col (GMT, Ctrl->A.x, Gout->header);
 		Ctrl->A.ROW = GMT_grd_y_to_row (GMT, Ctrl->A.y, Gout->header);
 		if (Ctrl->A.mode == 'r') F.debug = TRUE;	/* In order to return radii instead of weights */
-		if (tid == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "ROW = %ld COL = %ld\n", Ctrl->A.ROW, Ctrl->A.COL);
+		if (tid == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "ROW = %d COL = %d\n", Ctrl->A.ROW, Ctrl->A.COL);
 	}
 #endif
 	/* Compute nearest xoutput i-indices and shifts once */
@@ -781,9 +781,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (row_out = 0; row_out < Gout->header->ny; row_out++) {
 
 #ifdef _OPENMP
-		GMT_report (GMT, GMT_MSG_NORMAL, " Thread %ld Processing output line %ld\r", tid, row_out);
+		GMT_report (GMT, GMT_MSG_NORMAL, " Thread %d Processing output line %d\r", tid, row_out);
 #else
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %ld\r", row_out);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %d\r", row_out);
 #endif
 #ifdef DEBUG
 		if (Ctrl->A.active && row_out != Ctrl->A.ROW) continue;	/* Not at our selected row for testing */
@@ -928,9 +928,9 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 #ifdef _OPENMP
-	GMT_report (GMT, GMT_MSG_NORMAL, " Thread %ld Processing output line %ld\n", tid, row_out);
+	GMT_report (GMT, GMT_MSG_NORMAL, " Thread %d Processing output line %d\n", tid, row_out);
 #else
-	GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %ld\n", row_out);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %d\n", row_out);
 #endif
 	GMT_free (GMT, weight);
 	GMT_free (GMT, F.x);
@@ -948,8 +948,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!fast_way) GMT_free (GMT, x_shift);
 	GMT_free_grid (GMT, &A, TRUE);	/* Explicitly free the area-weight array since only used internally */
 
-	if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %ld nodes, set to NaN\n", n_nan);
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found by the mode filter\n", GMT_n_multiples);
+	if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result */
@@ -995,7 +995,7 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	if (Ctrl->A.active) {	/* Save the debug output instead */
 		FILE *fp = fopen ("n_conv.txt", "w");
-		fprintf (fp, "%ld\n", n_conv);
+		fprintf (fp, "%d\n", n_conv);
 		fclose (fp);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_OK) {
 			Return (API->error);

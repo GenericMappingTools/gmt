@@ -98,9 +98,9 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	}
 	nn = GMT_compact_line (GMT, xx, yy, nn, FALSE, 0);
 
-	if (nn > 0) PSL_comment (PSL, "Start of clip path sub-segment %ld\n", id);
+	if (nn > 0) PSL_comment (PSL, "Start of clip path sub-segment %d\n", id);
 	PSL_beginclipping (PSL, xx, yy, nn, rgb, flag);
-	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %ld\n", id);
+	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
 GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, COUNTER_MEDIUM *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, COUNTER_LARGE *max)
@@ -680,7 +680,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points\n", n_read);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " data points\n", n_read);
 
 		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->nm; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 

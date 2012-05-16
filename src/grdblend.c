@@ -211,7 +211,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, COUNTER_MEDIUM n_fi
 
 			nr = sscanf (line, "%s %s %lf", file, r_in, &weight);
 			if (nr < 1) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %ld\n", n);
+				GMT_report (GMT, GMT_MSG_FATAL, "Read error for blending parameters near row %d\n", n);
 				return (EXIT_FAILURE);
 			}
 			if (n == n_alloc) L = GMT_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
@@ -361,7 +361,7 @@ GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, COUNTER_MEDIUM n_fi
 		/* Allocate space for one entire row */
 
 		B[n].z = GMT_memory (GMT, NULL, B[n].G.header.nx, float);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Blend file %s in %g/%g/%g/%g with %s weight %g [%ld-%ld]\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, "Blend file %s in %g/%g/%g/%g with %s weight %g [%d-%d]\n",
 			B[n].G.header.name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
 		GMT_close_grd (GMT, &B[n].G);

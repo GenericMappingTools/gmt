@@ -468,7 +468,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 
 	if (n_swap > 0)
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld triangles had ccw order\n", n_swap);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d triangles had ccw order\n", n_swap);
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
@@ -624,7 +624,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && i > j*one_100) {
-			GMT_message (GMT, "computed %.2ld%s of %ld prisms\r", j, "%", n_triang);
+			GMT_message (GMT, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
 			j++;
 		}
 		km = (int)((Ctrl->T.m_var)  ? i : 0);
@@ -756,24 +756,24 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (!Ctrl->T.m_var) {
 			if(sscanf (line, "%lg %lg %lg", &in[0], &in[1], &in[2]) !=3)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var1) { /* data file has 4 columns and the last contains magnetization */
 			if(sscanf (line, "%lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var2) { /* data file has 5 columns: x,y,z,mag,dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4]) !=5)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var3) { /* data file has 6 columns: x,y,z,mag_int,mag_dec,mag_dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4], &in[5]) !=6)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else {		/* data file has 8 columns: x,y,z,field_dec,field_dip,mag_int,mag_dec,mag_dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg",
 				   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7]) !=8)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		if (ndata_xyz == n_alloc) {
 			n_alloc <<= 1;
@@ -831,13 +831,13 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 	
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, fname);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_t+1, fname);
 		if (ndata_t == n_alloc) {
 			n_alloc <<= 1;
 			vert = GMT_memory (GMT, vert, n_alloc, struct VERT);
                	}
 		if (in[0] < 0 || in[1] < 0 || in[2] < 0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Negative indices for line %ld of %s\n", ndata_t+1, fname);
+			GMT_report (GMT, GMT_MSG_FATAL, "Negative indices for line %d of %s\n", ndata_t+1, fname);
 	
 		}
 		vert[ndata_t].a = in[0];
@@ -867,7 +867,7 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg",
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_r+1, fname);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_r+1, fname);
               	if (ndata_r == n_alloc) {
 			n_alloc <<= 1;
 			raw_mesh = GMT_memory (GMT, raw_mesh, n_alloc, struct RAW);
@@ -907,19 +907,19 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 		if (strcmp (text, "outer") == 0) {
 			fgets (line, GMT_TEXT_LEN256, fp); /* get first vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t1[0] = in[0];
 			raw_mesh[ndata_s].t1[1] = -in[1];
 			raw_mesh[ndata_s].t1[2] = in[2] * z_dir;
 			fgets (line, GMT_TEXT_LEN256, fp); /* get second vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t2[0] = in[0];
 			raw_mesh[ndata_s].t2[1] = -in[1];
 			raw_mesh[ndata_s].t2[2] = in[2] * z_dir;
 			fgets (line, GMT_TEXT_LEN256, fp); /* get third vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t3[0] = in[0];
 			raw_mesh[ndata_s].t3[1] = -in[1];
 			raw_mesh[ndata_s].t3[2] = in[2] * z_dir;
@@ -955,7 +955,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, BOOLEAN switch_xy) {
 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of polygon file\n", ndata+1);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
 		if (ndata == n_alloc) {
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data, n_alloc, struct DATA);

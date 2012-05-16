@@ -451,7 +451,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	for (row = 0; row < Ctrl->N.ny; row++) {
 		y = Ctrl->C.y + row * Ctrl->W.height;
-		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %ld times for row %ld\n", Ctrl->N.nx, row);
+		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
 		for (col = 0; col < Ctrl->N.nx; col++) {
 			x = Ctrl->C.x + col * Ctrl->W.width;
 			if (header.depth == 0)

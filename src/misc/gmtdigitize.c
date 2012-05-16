@@ -492,9 +492,9 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	n_expected_fields = 2 + Ctrl->Z.active[V_ID] + Ctrl->Z.active[K_ID];
 	if (Ctrl->Z.active[V_ID])
-		sprintf (format, "%s%s%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
+		sprintf (format, "%s%s%s%s%s%s%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	else
-		sprintf (format, "%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
+		sprintf (format, "%s%s%s%s%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
 	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;
@@ -545,7 +545,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_fclose (GMT, fp);
 						sys_retval = chown (this_file, uid, gid);
 						if (sys_retval) {
-							GMT_message (GMT, "chown error - returned %ld", sys_retval);
+							GMT_message (GMT, "chown error - returned %d", sys_retval);
 							exit (EXIT_FAILURE);
 						}
 					}
@@ -619,7 +619,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_fclose (GMT, fp);
 		sys_retval = chown (this_file, uid, gid);
 		if (sys_retval) {
-			GMT_message (GMT, "chown error - returned %ld", sys_retval);
+			GMT_message (GMT, "chown error - returned %d", sys_retval);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -629,8 +629,8 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_message (GMT, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_message (GMT, format, x_out_min, x_out_max, y_out_min, y_out_max);
-		GMT_message (GMT, "Digitized %ld points\n", n);
-		if (Ctrl->S.active && n != n_read) GMT_message (GMT, "%ld fell outside region\n", n_read - n);
+		GMT_message (GMT, "Digitized %d points\n", n);
+		if (Ctrl->S.active && n != n_read) GMT_message (GMT, "%d fell outside region\n", n_read - n);
 	}
 
 	Return (GMT_OK);

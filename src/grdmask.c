@@ -381,7 +381,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (float)ID : mask_val[side];
 					}
-					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %ld scanning row %5.5ld\r", n_pol, row);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %d scanning row %5.5d\r", n_pol, row);
 				}
 			}
 		}

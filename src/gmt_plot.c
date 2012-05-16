@@ -293,9 +293,9 @@ void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 	if (!C->current.map.frame.draw || C->current.map.frame.side[N_SIDE] == 0)
 		PSL_defunits (P, "PSL_H_y", C->current.setting.map_title_offset);	/* No ticks or annotations, offset by map_title_offset only */
 	else
-		PSL_command (P, "/PSL_H_y PSL_L_y PSL_LH add %ld add def\n", psl_iz (P, C->current.setting.map_title_offset));	/* For title adjustment */
+		PSL_command (P, "/PSL_H_y PSL_L_y PSL_LH add %d add def\n", psl_iz (P, C->current.setting.map_title_offset));	/* For title adjustment */
 
-	PSL_command (P, "%ld %ld PSL_H_y add M\n", psl_iz (P, 0.5 * x_length), psl_iz (P, y_length));
+	PSL_command (P, "%d %d PSL_H_y add M\n", psl_iz (P, 0.5 * x_length), psl_iz (P, y_length));
 	form = GMT_setfont (C, &C->current.setting.font_title);
 	PSL_plottext (P, 0.0, 0.0, -C->current.setting.font_title.size, C->current.map.frame.header, 0.0, PSL_BC, form);
 	C->current.map.frame.plotted_header = TRUE;
@@ -408,7 +408,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	PSL_command (P, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 
 	for (k = 0; k < 2; k++) {
-		PSL_command (P, "/PSL_A%ld_y %ld def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (P, C->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
+		PSL_command (P, "/PSL_A%d_y %d def\n", k, A->item[k].active || A->item[k+2].active ? psl_iz (P, C->current.setting.map_tick_length[k]) : 0);	/* Length of primary/secondary tickmark */
 	}
 
 	PSL_comment (P, "Axis tick marks and annotations\n");
@@ -470,7 +470,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 			annot_pos = (T->type == 'A' || T->type == 'I') ? 1 : 0;					/* 1 means lower annotation, 0 means upper (close to axis) */
 			font = C->current.setting.font_annot[annot_pos];			/* Set the font to use */
 			form = GMT_setfont (C, &font);
-			PSL_command (P, "/PSL_AH%ld 0\n", annot_pos);
+			PSL_command (P, "/PSL_AH%d 0\n", annot_pos);
 			for (i = 0; i < nx1; i++) {
 				if (GMT_annot_pos (C, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - C->current.proj.z_level) < GMT_CONV_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
@@ -485,10 +485,10 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 			}
 			PSL_command (P, "def\n");
 			if (annot_pos == 0)
-				PSL_command (P, "/PSL_A0_y PSL_A0_y %ld add ", psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
+				PSL_command (P, "/PSL_A0_y PSL_A0_y %d add ", psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
 			else
-				PSL_command (P, "/PSL_A1_y PSL_A0_y PSL_A1_y mx %ld add ", psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
-			if (far) PSL_command (P, "PSL_AH%ld add ", annot_pos);
+				PSL_command (P, "/PSL_A1_y PSL_A0_y PSL_A1_y mx %d add ", psl_iz (P, C->current.setting.map_annot_offset[annot_pos])); 
+			if (far) PSL_command (P, "PSL_AH%d add ", annot_pos);
 			PSL_command (P, "def\n");
 
 			for (i = 0; i < nx1; i++) {
@@ -498,14 +498,14 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				x = (*xyz_fwd) (C, t_use);	/* Convert to inches on the page */
 				/* Move to new anchor point */
-				PSL_command (P, "%ld PSL_A%ld_y MM\n", psl_iz (P, x), annot_pos);
+				PSL_command (P, "%d PSL_A%d_y MM\n", psl_iz (P, x), annot_pos);
 				if (label_c && label_c[i] && label_c[i][0])
 					strcpy (string, label_c[i]);
 				else
 					GMT_get_coordinate_label (C, string, &C->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_plottext (P, 0.0, 0.0, -font.size, string, (ortho == horizontal) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
 			}
-			if (!far) PSL_command (P, "/PSL_A%ld_y PSL_A%ld_y PSL_AH%ld add def\n", annot_pos, annot_pos, annot_pos);
+			if (!far) PSL_command (P, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
 		}
 
 		if (nx) GMT_free (C, knots);
@@ -524,9 +524,9 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 		PSL_command (P, "/PSL_LH ");
 		PSL_deftextdim (P, "-h", C->current.setting.font_label.size, "M");
 		PSL_command (P, "def\n");
-		PSL_command (P, "/PSL_L_y PSL_A0_y PSL_A1_y mx %ld add %sdef\n", psl_iz (P, C->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
+		PSL_command (P, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", psl_iz (P, C->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
 		/* Move to new anchor point */
-		PSL_command (P, "%ld PSL_L_y MM\n", psl_iz (P, 0.5 * length));
+		PSL_command (P, "%d PSL_L_y MM\n", psl_iz (P, 0.5 * length));
 		PSL_plottext (P, 0.0, 0.0, -C->current.setting.font_label.size, A->label, horizontal ? 0.0 : 90.0, PSL_BC, form);
 	}
 	else
@@ -1289,7 +1289,7 @@ GMT_LONG gmt_genper_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double
 	nr = C->current.map.n_lon_nodes + C->current.map.n_lat_nodes;
 	if (nr >= C->current.plot.n_alloc) GMT_get_plot_array (C);
 
-	if (C->current.proj.g_debug > 1) GMT_message (C, "genper_map_boundary nr = %ld\n", nr);
+	if (C->current.proj.g_debug > 1) GMT_message (C, "genper_map_boundary nr = %" PRIu64 "\n", nr);
 
 	GMT_genper_map_clip_path (C, nr, C->current.plot.x, C->current.plot.y);
 
@@ -1767,14 +1767,14 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 	if (C->current.map.frame.header[0] && !C->current.map.frame.plotted_header) {	/* Make plot header for geographic maps*/
 		if (GMT_is_geographic (C, GMT_IN) || C->current.map.frame.side[N_SIDE] == 2) {
 			PSL_setfont (P, C->current.setting.font_annot[0].id);
-			PSL_command (P, "/PSL_H_y %ld ", psl_iz (P, C->current.setting.map_tick_length[0] + C->current.setting.map_annot_offset[0] + C->current.setting.map_title_offset));
+			PSL_command (P, "/PSL_H_y %d ", psl_iz (P, C->current.setting.map_tick_length[0] + C->current.setting.map_annot_offset[0] + C->current.setting.map_title_offset));
 			PSL_deftextdim (P, "-h", C->current.setting.font_annot[0].size, "100\\312");
 			PSL_command (P, "add def\n");
 		}
 		else
 			PSL_defunits (P, "PSL_H_y", C->current.setting.map_title_offset + C->current.setting.map_tick_length[0]);
 
-		PSL_command (P, "%ld %ld PSL_H_y add M\n", psl_iz (P, C->current.proj.rect[XHI] * 0.5), psl_iz (P, C->current.proj.rect[YHI]));
+		PSL_command (P, "%d %d PSL_H_y add M\n", psl_iz (P, C->current.proj.rect[XHI] * 0.5), psl_iz (P, C->current.proj.rect[YHI]));
 		form = GMT_setfont (C, &C->current.setting.font_title);
 		PSL_plottext (P, 0.0, 0.0, -C->current.setting.font_title.size, C->current.map.frame.header, 0.0, PSL_BC, form);
 		C->current.map.frame.plotted_header = TRUE;
@@ -2882,7 +2882,7 @@ BOOLEAN gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMBO
 			result = GMT_is_dnan (size[s->var]);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol macro operator (%ld = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
 			GMT_exit (EXIT_FAILURE);
 			break;
 		
@@ -3118,7 +3118,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				break;
 
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol code (%ld = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
 				GMT_exit (EXIT_FAILURE);
 				break;
 		}
@@ -3699,7 +3699,7 @@ void GMT_plotend (struct GMT_CTRL *C) {
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
 	if (C->current.ps.nclip != P->current.nclip)
-		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %ld, but clip level changed by %ld\n", C->current.ps.nclip, P->current.nclip);
+		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %d, but clip level changed by %d\n", C->current.ps.nclip, P->current.nclip);
 
 	if (GMT_abs (C->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
 		C->current.ps.clip_level = 0;
@@ -3707,8 +3707,8 @@ void GMT_plotend (struct GMT_CTRL *C) {
 		C->current.ps.clip_level += C->current.ps.nclip;
 
 	if (!C->common.K.active) {
-		if (C->current.ps.clip_level > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld external clip operations were not terminated!\n", C->current.ps.clip_level);
-		if (C->current.ps.clip_level < 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld extra terminations of external clip operations!\n", -C->current.ps.clip_level);
+		if (C->current.ps.clip_level > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %d external clip operations were not terminated!\n", C->current.ps.clip_level);
+		if (C->current.ps.clip_level < 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %d extra terminations of external clip operations!\n", -C->current.ps.clip_level);
 		C->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in .gmtcommands */
 	}
 

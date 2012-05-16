@@ -732,7 +732,8 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
-	COUNTER_MEDIUM n_nan, ijras, jseek, jras2, iras2;
+	COUNTER_MEDIUM ijras, jseek, jras2, iras2;
+	COUNTER_LARGE n_nan;
 	GMT_LONG jrasstart, irasstart, iras, jras;
 	BOOLEAN error = FALSE, firstread;
 	
@@ -882,7 +883,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			e = lrint (floor (Grid->header->wesn[XHI]));	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
 			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = lrint (floor (Grid->header->wesn[YHI]));	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
-			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%d:%2.2d/%d:%2.2d/%d:%2.2d/%d:%2.2d\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
 		}
 		else
 			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%g/%g/%g/%g\n", r_opt->arg, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
@@ -910,9 +911,9 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = lrint (floor (Grid->header->wesn[YHI]));	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld.\n", w, wm, e, em, s, sm, n, nm);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%d:%2.2d/%d:%2.2d/%d:%2.2d/%d:%2.2d.\n", w, wm, e, em, s, sm, n, nm);
 			else
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ld/%ld:%2.2ldr\n", w, wm, s, sm, e, em, n, nm);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%d:%2.2d/%d:%2.2d/%d:%2.2d/%d:%2.2dr\n", w, wm, s, sm, e, em, n, nm);
 		}
 		else {
 			if (!GMT->common.R.oblique)

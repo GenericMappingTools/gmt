@@ -359,12 +359,12 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			default:
 				if (lat == 0.0) return (GMT_GRDIO_BAD_IMG_LAT);
 				min = (buf.st_size > GMT_IMG_NLON_2M*GMT_IMG_NLAT_2M_80*GMT_IMG_ITEMSIZE) ? 1 : 2;
-				if (!Ctrl->I.active) GMT_report (GMT, GMT_MSG_FATAL, "img file %s has unusual size - grid increment defaults to %ld min\n", infile, min);
+				if (!Ctrl->I.active) GMT_report (GMT, GMT_MSG_FATAL, "img file %s has unusual size - grid increment defaults to %d min\n", infile, min);
 				break;
 		}
 		if (!Ctrl->D.active) {imgrange.minlat = -lat;	imgrange.maxlat = +lat;}
 		if (!Ctrl->I.active) imgrange.mpixel = Ctrl->I.value = (double) min;
-		GMT_report (GMT, GMT_MSG_VERBOSE, "img file %s determined to have an increment of %ld min and a latitude bound at +/- %g\n", infile, min, lat);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "img file %s determined to have an increment of %d min and a latitude bound at +/- %g\n", infile, min, lat);
 	}
 	
 	strcpy (z_units, "meters, mGal, Eotvos, micro-radians or Myr, depending on img file and -S.");
@@ -401,7 +401,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 	}
 	else if (Ctrl->N.value && (imgcoord.nx360%Ctrl->N.value != 0 || imgcoord.nyrow%Ctrl->N.value != 0) ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Bad choice of navg in -N.  Must divide %ld and %ld\n", imgcoord.nx360, imgcoord.nyrow);
+		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Bad choice of navg in -N.  Must divide %d and %d\n", imgcoord.nx360, imgcoord.nyrow);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -437,7 +437,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	dx = 1.0 / ((double)imgcoord.nx360 / 360.0);
 	inc[GMT_X] = inc[GMT_Y] = dx * navg;
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Expects %s to be %ld by %ld pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Expects %s to be %d by %d pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
 	if (toplat < Merc->header->wesn[YHI]) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YHI], toplat);
@@ -552,7 +552,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			continue;
 		}
 		if ((fread (row, sizeof (int16_t), n_expected, fp) ) != n_expected) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Read failure at jin = %ld.\n", jin);
+			GMT_report (GMT, GMT_MSG_FATAL, "Error: Read failure at jin = %d.\n", jin);
 			exit (EXIT_FAILURE);
 		}
 

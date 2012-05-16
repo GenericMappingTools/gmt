@@ -2041,7 +2041,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, COUNTER_MED
 			strcpy (cpt_file, "<input file descriptor>");
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_read_cpt\n", source_type);
+		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_read_cpt\n", source_type);
 		return (NULL);
 	}
 
@@ -2632,7 +2632,7 @@ GMT_LONG GMT_write_cpt (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type
 			strcpy (cpt_file, "<output file descriptor>");
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %ld in GMT_write_cpt\n", dest_type);
+		GMT_report (C, GMT_MSG_FATAL, "Unrecognized source type %d in GMT_write_cpt\n", dest_type);
 		return (EXIT_FAILURE);
 	}
 	GMT_report (C, GMT_MSG_DEBUG, "Writing CPT table to %s\n", cpt_file);
@@ -3072,7 +3072,7 @@ GMT_LONG GMT_intpol (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, 
 		}
 
 		if (err_flag) {
-			GMT_report (C, GMT_MSG_VERBOSE, "Error: x-values are not monotonically increasing/decreasing (at record %ld)!\n", err_flag);
+			GMT_report (C, GMT_MSG_VERBOSE, "Error: x-values are not monotonically increasing/decreasing (at record %d)!\n", err_flag);
 			return (err_flag);
 		}
 
@@ -3139,7 +3139,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
 		GMT_report (C, GMT_MSG_FATAL, "Error: Requesting SIZE_MAX number of items (%zu) - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_FATAL, "GMT_memory called by %s from file %s on line %ld\n", C->init.progname, fname, line);
+		GMT_report (C, GMT_MSG_FATAL, "GMT_memory called by %s from file %s on line %d\n", C->init.progname, fname, line);
 #endif
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -3159,7 +3159,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not reallocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
-			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [realloc] called by %s from file %s on line %ld\n", C->init.progname, fname, line);
+			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [realloc] called by %s from file %s on line %d\n", C->init.progname, fname, line);
 #endif
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -3180,7 +3180,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
-			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [calloc] called by %s from file %s on line %ld\n", C->init.progname, fname, line);
+			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [calloc] called by %s from file %s on line %d\n", C->init.progname, fname, line);
 #endif
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -3196,7 +3196,7 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *fname, const COU
 	if (addr == NULL) {
 		/* report freeing unallocated memory */
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s from file %s on line %ld tried to free unallocated memory\n", C->init.progname, fname, line);
+		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s from file %s on line %d tried to free unallocated memory\n", C->init.progname, fname, line);
 #else
 		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s tried to free unallocated memory\n");
 #endif
@@ -3756,7 +3756,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 			if (bad_record) {
 				C->current.io.n_bad_records++;
 				if (C->current.io.give_report && (C->current.io.n_bad_records == 1)) {	/* Report 1st occurrence */
-					GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid record near/at line # %ld\n", C->current.io.rec_no);
+					GMT_report (C, GMT_MSG_FATAL, "Encountered first invalid record near/at line # %" PRIu64 "\n", C->current.io.rec_no);
 					GMT_report (C, GMT_MSG_FATAL, "Likely causes:\n");
 					GMT_report (C, GMT_MSG_FATAL, "(1) Invalid x and/or y values, i.e. NaNs or garbage in text strings.\n");
 					GMT_report (C, GMT_MSG_FATAL, "(2) Incorrect data type assumed if -J, -f are not set or set incorrectly.\n");
@@ -5848,7 +5848,7 @@ GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_L
 {
 	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_delaunay_shewchuk (C, x_in, y_in, n, link));
 	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_delaunay_watson    (C, x_in, y_in, n, link));
-	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay: GMT_TRIANGULATE outside possible range! %ld\n", C->current.setting.triangulate);
+	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay: GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
 	return (-1);
 }
 
@@ -5856,7 +5856,7 @@ GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LA
 {
 	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_voronoi_shewchuk (C, x_in, y_in, n, we, x_out, y_out));
 	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_voronoi_watson    (C, x_in, y_in, n, we, x_out, y_out));
-	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi: GMT_TRIANGULATE outside possible range! %ld\n", C->current.setting.triangulate);
+	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi: GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
 	return (-1);
 	
 }
@@ -6120,7 +6120,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[jn + i] != G->data[jn + iw]) bok++;
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld (of %d) inconsistent grid values at North pole.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d (of %d) inconsistent grid values at North pole.\n", bok, G->header->nx);
 		}
 
 		if (G->header->gs) {	/* South pole case */
@@ -6131,7 +6131,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[js + i] != G->data[js + iw]) bok++;
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld (of %d) inconsistent grid values at South pole.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d (of %d) inconsistent grid values at South pole.\n", bok, G->header->nx);
 		}
 	}
 
@@ -6153,7 +6153,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
 
 			/* periodic Y rows copied.  Now do X naturals.
 				This is easy since y's are done; no corner problems.
@@ -6278,7 +6278,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 			}
 		}
-		if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->ny);
+		if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->ny);
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
@@ -6293,7 +6293,7 @@ GMT_LONG GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO]) {
@@ -7284,7 +7284,7 @@ void GMT_str_setcase (struct GMT_CTRL *C, char *value, GMT_LONG mode)
 	else if (mode == +1)
 		GMT_str_toupper (value);
 	else
-		GMT_report (C, GMT_MSG_FATAL, "Error: Bad mode in GMT_str_setcase (%ld)\n", mode);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Bad mode in GMT_str_setcase (%d)\n", mode);
 }
 
 GMT_LONG GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *sep, COUNTER_MEDIUM *pos, char *token)
@@ -7572,7 +7572,7 @@ GMT_LONG GMT_init_track (struct GMT_CTRL *C, double y[], COUNTER_LARGE n, struct
 	struct GMT_XSEGMENT *L = NULL;
 
 	if (nl <= 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT: ERROR in GMT_init_track; nl = %ld\n", nl);
+		GMT_report (C, GMT_MSG_FATAL, "GMT: ERROR in GMT_init_track; nl = %" PRIu64 "\n", nl);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -8216,7 +8216,7 @@ COUNTER_MEDIUM GMT_coordinate_array (struct GMT_CTRL *C, double min, double max,
 			n = GMT_time_array (C, min, max, T, array);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Invalid projection type (%ld) passed to GMT_coordinate_array!\n", C->current.proj.xyz_projection[T->parent]);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Invalid projection type (%d) passed to GMT_coordinate_array!\n", C->current.proj.xyz_projection[T->parent]);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -8292,7 +8292,7 @@ GMT_LONG GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_
 			GMT_get_time_label (C, string, P, T, coord);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Wrong type (%ld) passed to GMT_get_coordinate_label!\n", C->current.map.frame.axis[T->parent].type);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Wrong type (%d) passed to GMT_get_coordinate_label!\n", C->current.map.frame.axis[T->parent].type);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -8665,7 +8665,7 @@ GMT_LONG GMT_flip_justify (struct GMT_CTRL *C, COUNTER_MEDIUM justify)
 			break;
 		default:
 			j = justify;
-			GMT_report (C, GMT_MSG_FATAL, "GMT_flip_justify called with incorrect argument (%ld)\n", j);
+			GMT_report (C, GMT_MSG_FATAL, "GMT_flip_justify called with incorrect argument (%d)\n", j);
 			break;
 	}
 
@@ -8928,7 +8928,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		else
 			s->pen = NULL;
 
-		GMT_report (C, GMT_MSG_DEBUG, "Code %c Conditional = %ld, OP = %c negate = %ld var = %ld do_pen = %ld do_fill = %ld\n", \
+		GMT_report (C, GMT_MSG_DEBUG, "Code %c Conditional = %d, OP = %c negate = %d var = %d do_pen = %d do_fill = %d\n", \
 			(int)s->action, s->conditional, (int)s->operator, s->negate, s->var, do_pen, do_fill);
 		if (previous) previous->next = s;
 		previous = s;
@@ -9068,7 +9068,7 @@ COUNTER_MEDIUM * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, 
 		for (row = 0; row < G->header->ny; row++) d_col[row] = max_d_col;
 	}
 	*d_row = lrint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Max node-search half-widths are: half_x = %ld, half_y = %ld\n", *d_row, *actual_max_d_col);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
 	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
 
@@ -9237,7 +9237,7 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 	if (!M->active) return;	/* Not activated */
 	entry = gmt_memtrack_find (C, M, ptr);
 	if (entry == -1) {	/* Error, trying to free something not allocated by GMT_memory */
-		GMT_report (C, GMT_MSG_FATAL, "Wrongly tries to free item in %s, line %ld\n", name, line);
+		GMT_report (C, GMT_MSG_FATAL, "Wrongly tries to free item in %s, line %d\n", name, line);
 		return;
 	}
 	if (M->item[entry].size > M->current) {
@@ -9263,7 +9263,8 @@ COUNTER_LARGE gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, v
 }
 
 void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Called at end of GMT_end() */
-	GMT_LONG k, u, excess;
+	COUNTER_LARGE k, excess;
+	GMT_LONG u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot;
 
@@ -9271,17 +9272,17 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 	if (!M->active) return;	/* Not activated */
 	if (M->current > 0) {
 		tot = GMT_memtrack_mem (C, M->maximum, &u);
-		GMT_report (C, GMT_MSG_FATAL, "Max total memory allocated was %.3f %s [%ld bytes]\n", tot, unit[u], M->maximum);
+		GMT_report (C, GMT_MSG_FATAL, "Max total memory allocated was %.3f %s [%zu bytes]\n", tot, unit[u], M->maximum);
 		tot = GMT_memtrack_mem (C, M->largest, &u);
-		GMT_report (C, GMT_MSG_FATAL, "Single largest allocation was %.3f %s [%ld bytes]\n", tot, unit[u], M->largest);
+		GMT_report (C, GMT_MSG_FATAL, "Single largest allocation was %.3f %s [%zu bytes]\n", tot, unit[u], M->largest);
 		tot = GMT_memtrack_mem (C, M->current, &u);
-		if (M->current) GMT_report (C, GMT_MSG_FATAL, "MEMORY NOT FREED: %.3f %s [%ld bytes]\n", tot, unit[u], M->current);
-		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %ld reallocated: %ld Freed: %ld\n", M->n_allocated, M->n_reallocated, M->n_freed);
+		if (M->current) GMT_report (C, GMT_MSG_FATAL, "MEMORY NOT FREED: %.3f %s [%zu bytes]\n", tot, unit[u], M->current);
+		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
 		excess = M->n_allocated - M->n_freed;
-		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %ld\n", excess);
+		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" COUNTER_LARGE "\n", excess);
 		for (k = 0; k < M->n_ptr; k++) {
 			tot = GMT_memtrack_mem (C, M->item[k].size, &u);
-			GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s, line %ld is %.3f %s [%ld bytes]\n", M->item[k].name, M->item[k].line, tot, unit[u], M->item[k].size);
+			GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s, line %d is %.3f %s [%zu bytes]\n", M->item[k].name, M->item[k].line, tot, unit[u], M->item[k].size);
 		}
 	}
 
@@ -9336,7 +9337,7 @@ struct MEMORY_ITEM * gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKE
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
 	size_t old;
-	GMT_LONG diff;
+	int64_t diff;
 	void *use = NULL;
 	struct MEMORY_ITEM *entry = NULL;
 
@@ -9402,7 +9403,7 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 	if (!M->active) return;	/* Not activated */
 	entry = gmt_memtrack_find (C, M, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
-		GMT_report (C, GMT_MSG_FATAL, "Wrongly tries to free item in %s, line %ld\n", name, line);
+		GMT_report (C, GMT_MSG_FATAL, "Wrongly tries to free item in %s, line %d\n", name, line);
 		return;
 	}
 	M->current -= entry->size;	/* "Free" the memory */
@@ -9416,7 +9417,7 @@ void gmt_treereport (struct GMT_CTRL *C, struct MEMORY_ITEM *x) {
 	GMT_LONG u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot = GMT_memtrack_mem (C, x->size, &u);
-	GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s, line %ld is %.3f %s [%ld bytes]\n", x->name, x->line, tot, unit[u], x->size);
+	GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s, line %d is %.3f %s [%zu bytes]\n", x->name, x->line, tot, unit[u], x->size);
 }
 
 void gmt_treeprint (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x)
@@ -9430,7 +9431,8 @@ void gmt_treeprint (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, struct MEMORY_
 }
 
 void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Called at end of GMT_end() */
-	GMT_LONG u, excess;
+	GMT_LONG u;
+	COUNTER_LARGE excess;
 	double tot;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 
@@ -9438,14 +9440,14 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 	if (!M->active) return;	/* Not activated */
 	if (M->current > 0) {
 		tot = GMT_memtrack_mem (C, M->maximum, &u);
-		GMT_report (C, GMT_MSG_FATAL, "Max total memory allocated was %.3f %s [%ld bytes]\n", tot, unit[u], M->maximum);
+		GMT_report (C, GMT_MSG_FATAL, "Max total memory allocated was %.3f %s [%zu bytes]\n", tot, unit[u], M->maximum);
 		tot = GMT_memtrack_mem (C, M->largest, &u);
-		GMT_report (C, GMT_MSG_FATAL, "Single largest allocation was %.3f %s [%ld bytes]\n", tot, unit[u], M->largest);
+		GMT_report (C, GMT_MSG_FATAL, "Single largest allocation was %.3f %s [%zu bytes]\n", tot, unit[u], M->largest);
 		tot = GMT_memtrack_mem (C, M->current, &u);
-		if (M->current) GMT_report (C, GMT_MSG_FATAL, "MEMORY NOT FREED: %.3f %s [%ld bytes]\n", tot, unit[u], M->current);
-		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %ld reallocated: %ld Freed: %ld\n", M->n_allocated, M->n_reallocated, M->n_freed);
+		if (M->current) GMT_report (C, GMT_MSG_FATAL, "MEMORY NOT FREED: %.3f %s [%zu bytes]\n", tot, unit[u], M->current);
+		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %" COUNTER_LARGE " reallocated: %" COUNTER_LARGE "Freed: %" COUNTER_LARGE "\n", M->n_allocated, M->n_reallocated, M->n_freed);
 		excess = M->n_allocated - M->n_freed;
-		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %ld\n", excess);
+		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" COUNTER_LARGE "\n", excess);
 		gmt_treeprint (C, M, M->list_head->r);
 	}
 
