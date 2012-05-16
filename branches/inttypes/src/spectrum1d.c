@@ -228,7 +228,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			C->y_pow = (C->y_given) ? C->y_variance/y_varp : 0.0;
-			GMT_message (GMT, "Window %ld from %ld to %ld\n", w, t_start, t_stop);
+			GMT_message (GMT, "Window %d from %d to %d\n", w, t_start, t_stop);
 			sprintf(format, "X var: %s  X pow: %s  ratio: %s  Y var: %s  Y pow: %s  ratio: %s\n",
 				GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			GMT_message (GMT, format, C->x_variance, x_varp, (C->x_variance/x_varp), C->y_variance, y_varp, C->y_pow);
@@ -600,7 +600,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %ld or %ld\n", (window_test/2), window_test);
+	n_errors += GMT_check_condition (GMT, window_test != Ctrl->S.size, "Syntax error -S option: Segment size not radix 2.  Try %d or %d\n", (window_test/2), window_test);
 	n_errors += GMT_check_condition (GMT, Ctrl->D.inc <= 0.0, "Syntax error -D option: Sampling interval must be positive\n");
 	n_errors += GMT_check_binary_io (GMT, Ctrl->C.active + 1);
 
@@ -679,7 +679,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points.\n", S->n_rows);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			compute_spectra (GMT, &C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
 

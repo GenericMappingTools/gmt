@@ -322,8 +322,8 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	 */
 	
 	BOOLEAN status;
-	COUNTER_MEDIUM tbl, np, n_close = 0, n_dup = 0, mode1, mode3;
-	COUNTER_LARGE k, row, seg, pt;
+	COUNTER_MEDIUM tbl, n_close = 0, n_dup = 0, mode1, mode3;
+	COUNTER_LARGE k, row, seg, pt, np;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;
@@ -394,7 +394,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	if (n_close == 0)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Closest segment (Table %ld, segment %ld) is %.3f km away; %ld segments found within dmax\n", I->table, I->segment, I->distance, n_close);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Closest segment (Table %d, segment %" PRIu64 ") is %.3f km away; %d segments found within dmax\n", I->table, I->segment, I->distance, n_close);
 	
 	/* Here we have found the shortest distance from a point on S to another segment; S' is segment number seg */
 	
@@ -455,7 +455,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			separation[0] = (np) ? separation[0] / np : DBL_MAX;		/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np) ? separation[0] / use_length : DBL_MAX;		/* Closeness as viewed from S */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %ld/%ld]\n", length[0], separation[0], close[0], np, S->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/% " PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
@@ -488,7 +488,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			separation[1] = (np) ? separation[1] / np : DBL_MAX;		/* Mean distance between S' and S */
 			use_length = (np) ? length[1] * np / Sp->n_rows : length[1];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[1] = (np) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %ld/%ld]\n", length[1], separation[1], close[1], np, Sp->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "\n", length[1], separation[1], close[1], np, Sp->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
@@ -1181,7 +1181,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S1 = D->table[tbl]->segment[seg];
 				if (S1->n_rows == 0) continue;
 				
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Check if segment %ld from Table %d has duplicates:\n", seg, tbl);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Check if segment %" PRIu64 "from Table %d has duplicates:\n", seg, tbl);
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
 					for (col = 0; col < S1->n_columns; col++) S2->coord[col] = S1->coord[col];
@@ -1291,7 +1291,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Look for points/features inside polygon segment %ld :\n", seg2);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
 					ID = lrint (GMT_get_aspatial_value (GMT, GMT_IS_Z, S2));

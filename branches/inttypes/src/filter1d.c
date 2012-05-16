@@ -841,7 +841,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	load_parameters_filter1d (&F, Ctrl, D->n_columns);	/* Pass parameters from Control structure to Filter structure */
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < F.n_cols) Return (GMT_N_COLS_VARY,
-		"Syntax error: Binary input data must have at least %ld fields\n", F.n_cols);
+		"Syntax error: Binary input data must have at least %d fields\n", F.n_cols);
 
 	if (strchr ("BCGMPF", Ctrl->F.filter)) {	/* First deal with robustness request */
 		F.robust = TRUE;
@@ -940,7 +940,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 				}
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records from table %ld, segment %ld\n", F.n_rows, tbl, seg);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records from table %d, segment %ld\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
@@ -965,7 +965,7 @@ GMT_LONG GMT_filter1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 

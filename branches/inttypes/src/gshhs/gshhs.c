@@ -305,7 +305,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
-		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %ld in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = FALSE;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -382,7 +382,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, row);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					Return (EXIT_FAILURE);
 				}
 				if (must_swab) /* Must deal with different endianness */
@@ -420,7 +420,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

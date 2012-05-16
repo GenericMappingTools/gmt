@@ -317,7 +317,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_cruises++;
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld MGD77 files\n", n_cruises);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Converted %d MGD77 files\n", n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);

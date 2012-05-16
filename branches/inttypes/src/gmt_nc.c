@@ -577,8 +577,9 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	size_t start[2] = {0,0}, edge[2] = {1,1};
 	GMT_LONG err;
-	COUNTER_MEDIUM i, j, width_in, width_out, height_out, nr_oor = 0, inc, off, *actual_col = NULL;
+	COUNTER_MEDIUM i, j, width_in, width_out, height_out, inc, off, *actual_col = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row;
+	COUNTER_LARGE nr_oor = 0;
 	size_t ij, node;	/* To allow 64-bit addressing on 64-bit systems */
 	float *tmp_f = NULL;
 	int *tmp_i = NULL;
@@ -681,7 +682,7 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 		GMT_free (C, tmp_i);
 	}
 
-	if (nr_oor > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
+	if (nr_oor > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
 
 	GMT_free (C, actual_col);
 

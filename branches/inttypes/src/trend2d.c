@@ -508,7 +508,7 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 		Ctrl->n_outputs++;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs == 0, "Syntax error -F option: Must specify at least one output column\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option: Too many output columns specified (%ld)\n", Ctrl->n_outputs);
+	n_errors += GMT_check_condition (GMT, Ctrl->n_outputs > TREND2D_N_OUTPUT_CHOICES, "Syntax error -F option: Too many output columns specified (%d)\n", Ctrl->n_outputs);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -592,10 +592,10 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	transform_x_2d (data, n_data, xmin, xmax, ymin, ymax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " data with X values from %.8g to %.8g\n", n_data, xmin, xmax);
 	GMT_report (GMT, GMT_MSG_NORMAL, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 
-	sprintf (format, "%%ld%s%%ld%s%s%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+	sprintf (format, "%%d%s%%d%s%s%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 
 	if (Ctrl->I.active) {
 		n_model = 1;

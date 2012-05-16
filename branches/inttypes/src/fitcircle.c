@@ -474,7 +474,7 @@ GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_report (GMT, GMT_MSG_FATAL, "The reported L2 positions might be garbage.\n");
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Eigenvalue routine converged in %ld rotations.\n", nrots);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Eigenvalue routine converged in %d rotations.\n", nrots);
 		imax = 0;	imin = 2;
 		if (d_acos (GMT_dot3v (GMT, v, meanv)) > M_PI_2)
 			for (i = 0; i < 3; i++) meanv[i] = -v[imax*np+i];

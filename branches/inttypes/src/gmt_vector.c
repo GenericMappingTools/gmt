@@ -266,7 +266,7 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, COUNTER_MEDIUM n, COUNTER_ME
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_jacobi failed to converge in %ld sweeps\n", nsweeps);
+		GMT_report (C, GMT_MSG_FATAL, "GMT_jacobi failed to converge in %d sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);

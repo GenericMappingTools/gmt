@@ -447,7 +447,7 @@ BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, COUNTE
 			if (truncate)		/* Allowed to truncate to max age */
 				*t_smt = upper_age;
 			else {			/* Consider this an error or just skip */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Node %ld has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Node %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
 				return (FALSE);
 			}
 		}
@@ -718,7 +718,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		cva_contribution = lat_area[row] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
 
 #ifdef DEBUG2
-		printf ("> %" PRIu64 " %ld %ld %ld %g\n", n_nodes, np, row, col, cva_contribution);
+		printf ("> %" PRIu64 " %" PRIu64 " %d %d %g\n", n_nodes, np, row, col, cva_contribution);
 #endif
 		for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
 			i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
@@ -956,9 +956,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			GMT_message (GMT, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
-			GMT_message (GMT, "%" PRIu64 " of %ld total flowlines entered CVA region\n", n_nodes, n_flow);
+			GMT_message (GMT, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region\n", n_nodes, n_flow);
 			GMT_message (GMT, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
-			GMT_message (GMT, "Estimate %ld CVA max locations using bootstrapping\n", Ctrl->W.n_try);
+			GMT_message (GMT, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
@@ -977,7 +977,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		srand ((unsigned int)time(NULL));	/* Initialize random number generator */
 		scale = (double)n_nodes / (double)RAND_MAX;
 		for (try = 1; try <= Ctrl->W.n_try; try++) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %ld\r", try);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %d\r", try);
 		
 			GMT_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
@@ -1012,7 +1012,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %ld\n", Ctrl->W.n_try);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %d\n", Ctrl->W.n_try);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}

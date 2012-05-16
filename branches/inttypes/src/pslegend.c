@@ -466,7 +466,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
 				status = GMT_psscale (API, 0, buffer);	/* Plot the colorbar */
 				if (status) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psscale returned error %ld.\n", status);
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psscale returned error %d.\n", status);
 					Return (EXIT_FAILURE);
 				}
 				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
@@ -529,7 +529,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
 				status = GMT_psimage (API, 0, buffer);	/* Plot the image */
 				if (status) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psimage returned error %ld.\n", status);
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psimage returned error %d.\n", status);
 					Return (EXIT_FAILURE);
 				}
 				y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
@@ -600,7 +600,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				status = GMT_psbasemap (API, 0, buffer);	/* Plot the scale */
 				if (status) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psbasemap returned error %ld.\n", status);
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psbasemap returned error %d.\n", status);
 					Return (EXIT_FAILURE);
 				}
 				if (gave_label && just == 'b') y0 -= d_off;
@@ -623,7 +623,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 				if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 				if (!(n == 0 || n == 9)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: The > record must have 0 or 9 arguments (only %ld found)\n", n);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
@@ -636,7 +636,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 					if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 					if (!(n == 0 || n == 8)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: The P record must have 0 or 9 arguments (only %ld found)\n", n);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: The P record must have 0 or 9 arguments (only %d found)\n", n);
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
@@ -695,7 +695,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 					status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 					if (status) {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT_psxy returned error %ld.\n", status);
+						GMT_report (GMT, GMT_MSG_FATAL, "GMT_psxy returned error %d.\n", status);
 						Return (EXIT_FAILURE);
 					}
 					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy */

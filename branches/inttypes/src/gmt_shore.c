@@ -1150,7 +1150,7 @@ GMT_LONG GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_o
 		else {
 			n_use = GMT_compact_line (C, xtmp, ytmp, n, FALSE, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
-				GMT_report (C, GMT_MSG_NORMAL, "Warning: Antipodal bin # %ld not filled!\n", anti_bin);
+				GMT_report (C, GMT_MSG_NORMAL, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
 				GMT_free (C, xtmp);
 				GMT_free (C, ytmp);
 				continue;

@@ -911,7 +911,7 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			(P->date.compact) ? sprintf (string, "%d", calendar.year) : sprintf (string, "%4.4d", calendar.year);
 			break;
 		case 'y':	/* 2-digit integer year */
-			/* (P->date.compact) ? sprintf (string, "%ld", calendar.year % 100) : sprintf (string, "%2.2ld", calendar.year % 100); */
+			/* (P->date.compact) ? sprintf (string, "%d", calendar.year % 100) : sprintf (string, "%2.2d", calendar.year % 100); */
 			sprintf (string, "%2.2d", calendar.year % 100);
 			break;
 		case 'O':	/* Plot via date format */

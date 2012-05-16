@@ -289,7 +289,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	BOOLEAN error = FALSE, previous = FALSE;
 	GMT_LONG scol, srow;
-	COUNTER_MEDIUM zcol, row, col, *flag = NULL, i;
+	COUNTER_MEDIUM zcol, row, col, i, *flag = NULL;
 	COUNTER_LARGE n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 	COUNTER_LARGE ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
 	
@@ -454,7 +454,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		GMT_fclose (GMT, fp);
 		if (n_left) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", Grid->header->nm, Grid->header->nm - n_left);
+			GMT_report (GMT, GMT_MSG_FATAL, "Expected %" PRIu64 " points, found only %" PRIu64 "\n", Grid->header->nm, Grid->header->nm - n_left);
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
@@ -480,7 +480,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) GMT_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d  nm = %ld  size = %ld\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
+	GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %zu\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
 
@@ -516,7 +516,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
 	
-	n_read = 0;
+	n_read = ij = 0;
 	if (Ctrl->Z.active) for (i = 0; i < io.skip; i++) fread (&c, sizeof (char), 1, API->object[API->current_item[GMT_IN]]->fp);
 
 	do {	/* Keep returning records until we reach EOF */
@@ -535,7 +535,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_read++;
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
-				GMT_report (GMT, GMT_MSG_FATAL, "More than %ld records, only %ld was expected (aborting)!\n", ij, io.n_expected);
+				GMT_report (GMT, GMT_MSG_FATAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
@@ -604,9 +604,8 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Z.active) {
 		GMT->current.io.input = save_i;	/* Reset pointer */
 		GMT->common.b.active[GMT_IN] = previous;	/* Reset binary */
-		ij++;
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
-			GMT_report (GMT, GMT_MSG_FATAL, "Found %ld records, but %ld was expected (aborting)!\n", ij, io.n_expected);
+			GMT_report (GMT, GMT_MSG_FATAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 			Return (EXIT_FAILURE);
 		}
 		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
@@ -678,12 +677,12 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			char line[GMT_BUFSIZ];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_NORMAL, " n_read: %ld  n_used: %ld  n_filled: %ld  n_empty: %ld set to ",
+			GMT_report (GMT, GMT_MSG_NORMAL, " n_read: %" PRIu64 "  n_used: %" PRIu64 "  n_filled: %" PRIu64 " n_empty: %" PRIu64 " set to ",
 				n_read, n_used, n_filled, n_empty);
 			(GMT_is_dnan (Ctrl->N.value)) ? GMT_report (GMT, GMT_MSG_NORMAL, "NaN\n") : GMT_report (GMT, GMT_MSG_NORMAL, line, Ctrl->N.value);
-			if (n_bad) GMT_report (GMT, GMT_MSG_NORMAL, "%ld records unreadable\n", n_bad);
-			if (n_stuffed && Amode != 'n') GMT_report (GMT, GMT_MSG_NORMAL, "Warning - %ld nodes had multiple entries that were processed\n", n_stuffed);
-			if (n_confused) GMT_report (GMT, GMT_MSG_NORMAL, "Warning - %ld values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+			if (n_bad) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " records unreadable\n", n_bad);
+			if (n_stuffed && Amode != 'n') GMT_report (GMT, GMT_MSG_NORMAL, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
+			if (n_confused) GMT_report (GMT, GMT_MSG_NORMAL, "Warning - %" PRIu64 " values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 		}
 	}
 

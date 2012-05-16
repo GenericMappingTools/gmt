@@ -517,8 +517,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char line[GMT_BUFSIZ];
 		sprintf (line, "%s)\n", GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes were assigned an average value\n", n_set);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes failed sector criteria and %ld nodes had no neighbor points (all set to ", n_almost, n_none);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes were assigned an average value\n", n_set);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes failed sector criteria and %" PRIu64 " nodes had no neighbor points (all set to ", n_almost, n_none);
 		(GMT_is_dnan (Ctrl->E.value)) ? GMT_message (GMT, "NaN)\n") : GMT_message (GMT,  line, Ctrl->E.value);
 	}
 

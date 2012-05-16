@@ -224,11 +224,11 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "%s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		if (Ctrl->S.mode & 2) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld values < ", n_below);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values < ", n_below);
 			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.low, (double)Ctrl->S.below);
 		}
 		if (Ctrl->S.mode & 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld values > ", n_above);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values > ", n_above);
 			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
 		}
 	}

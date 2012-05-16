@@ -1352,7 +1352,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, aux_tvalue[MGD77_AUX_ID]);
 	GMT_free (GMT, aux_tvalue[MGD77_AUX_DA]);
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Returned %ld output records from %ld cruises\n", n_out, n_cruises);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Returned %d output records from %d cruises\n", n_out, n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);

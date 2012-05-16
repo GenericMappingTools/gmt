@@ -446,7 +446,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %ld cannot be negative\n", k);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
 	}
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping, "Syntax error: Cannot combine -C, -G, -S while clipping\n");
@@ -506,7 +506,7 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, GMT_LONG k0, GM
 	for (k = k0 + 1; k < np; k++) {
 		if (p[k].n == 0 || p[k].level < level) continue;
 		if (add_this_polygon_to_path (GMT, k0, p, level, k)) {	/* Add this to the current path */
-			PSL_comment (PSL, "Polygon %ld\n", k);
+			PSL_comment (PSL, "Polygon %d\n", k);
 			PSL_plotline (PSL, p[k].lon, p[k].lat, p[k].n, PSL_MOVE);
 #ifdef DEBUGX
 			GMT_message (GMT, "#\n");
@@ -758,8 +758,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5ld\r", bin);
-		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %ld\n", bin);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5d\r", bin);
+		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %d\n", bin);
 
 		if (GMT->current.map.is_world && greenwich) {
 			left = c.bsize * (bin % c.bin_nx);	right = left + c.bsize;

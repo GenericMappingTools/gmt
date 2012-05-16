@@ -209,7 +209,7 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 #define GMT_grd_padloop(C,G,row,col,ij) GMT_row_padloop(C,G,row,ij) GMT_col_padloop(C,G,col,ij)
 
 /* The usage could be:
-	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %ld and col = %ld is %g\n", row, col, Grid->data[node]);
+	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
 */
 /* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
  * For GMT_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.

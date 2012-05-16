@@ -619,7 +619,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	GMT_fclose (GMT, fp);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld COE records\n", n_COE);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Found %d COE records\n", n_COE);
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_COE, double);
 	data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_COE, double);
 	
@@ -686,7 +686,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 #ifdef DEBUGX	
-	GMT_message (GMT, "Matrix equation N * a = b: (N = %ld)\n", m);
+	GMT_message (GMT, "Matrix equation N * a = b: (N = %d)\n", m);
 	for (i = 0; i < m; i++) {
 		for (j = 0; j < m; j++) GMT_message (GMT, "%8.2f\t", N[i*m+j]);
 		GMT_message (GMT, "\t%8.2f\n", b[i]);
@@ -712,7 +712,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Sx += (data[COL_WW][k] * e_k);
 		Sxx += (data[COL_WW][k] * e_k * e_k);
 #ifdef DEBUGX	
-		GMT_message (GMT, "COE # %ld: Was %g Is %g\n", k, data[COL_COE][k], e_k);
+		GMT_message (GMT, "COE # %d: Was %g Is %g\n", k, data[COL_COE][k], e_k);
 #endif
 	}
 	new_mean = Sx / Sw;

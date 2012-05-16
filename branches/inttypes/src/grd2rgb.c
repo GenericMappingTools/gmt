@@ -199,7 +199,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_
 			j = (*raw_nx) + lrint (copysign((double)l, (double)pm));
 			if (i*j == n_pix) {	/* Got a good candidate */
 				*raw_ny = i;	*raw_nx = j;
-				GMT_report (GMT, GMT_MSG_NORMAL, "... SUCCESS (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
+				GMT_report (GMT, GMT_MSG_NORMAL, "... SUCCESS (W = %d, H = %d)\n", *raw_nx, *raw_ny);
 				break;
 			}
 			even = (k%2 == 0) ? 1 : 0;
@@ -208,11 +208,11 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_
 		}
 	}
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "File %s has %ld Lines and %ld Cols\n", file, *raw_ny, *raw_nx);
+		GMT_report (GMT, GMT_MSG_NORMAL, "File %s has %d Lines and %d Cols\n", file, *raw_ny, *raw_nx);
 
 	/* If both attempts failed */
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
-		GMT_report (GMT, GMT_MSG_FATAL, "FAILURE while guessing image dimensions (W = %ld, H = %ld)\n", *raw_nx, *raw_ny);
+		GMT_report (GMT, GMT_MSG_FATAL, "FAILURE while guessing image dimensions (W = %d, H = %d)\n", *raw_nx, *raw_ny);
 		return (EXIT_FAILURE);
 	}
 
@@ -336,8 +336,8 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 		n_errors += GMT_check_condition (GMT, Ctrl->W.size != 3 && Ctrl->W.size != 4, "Syntax error: byte_per_pixel must be either 3 or 4\n");
 		if (guess) guess_width (GMT, Ctrl->In.file, Ctrl->W.size, &Ctrl->W.nx, &Ctrl->W.ny);
 
-		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.nx <= 0, "Syntax error: Witdth of raw raster file must be a positive integer. Not %ld\n", Ctrl->W.nx);
-		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.ny <= 0, "Syntax error: Height of raw raster file must be a positive integer. Not %ld\n", Ctrl->W.ny);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.nx <= 0, "Syntax error: Witdth of raw raster file must be a positive integer. Not %d\n", Ctrl->W.nx);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.ny <= 0, "Syntax error: Height of raw raster file must be a positive integer. Not %d\n", Ctrl->W.ny);
 	}
 	else {
 		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input z grid file\n");

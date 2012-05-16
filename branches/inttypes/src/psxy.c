@@ -110,12 +110,12 @@ void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 	GMT_geo_to_xy (GMT, x - delta_x, y, &x_1, &y_1);
 	GMT_geo_to_xy (GMT, x + delta_x, y, &x_2, &y_2);
 	if (GMT_is_dnan (x_1)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %ld. Set to x_min\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %d. Set to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
 		tip1 = FALSE;
 	}
 	if (GMT_is_dnan (x_2)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %ld. Set to x_max\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %d. Set to x_max\n", line);
 		x_2 = GMT->current.proj.rect[XHI];
 		tip2 = FALSE;
 	}
@@ -132,12 +132,12 @@ void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 	GMT_geo_to_xy (GMT, x, y - delta_y, &x_1, &y_1);
 	GMT_geo_to_xy (GMT, x, y + delta_y, &x_2, &y_2);
 	if (GMT_is_dnan (y_1)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %ld. Set to y_min\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %d. Set to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
 		tip1 = FALSE;
 	}
 	if (GMT_is_dnan (y_2)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %ld. Set to y_max\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %d. Set to y_max\n", line);
 		y_2 = GMT->current.proj.rect[YHI];
 		tip2 = FALSE;
 	}
@@ -154,7 +154,7 @@ void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		GMT_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
 		if (GMT_is_dnan (xx[i])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: X %ld %% hinge exceeded domain near line %ld\n", q[i], line);
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: X %d %% hinge exceeded domain near line %d\n", q[i], line);
 			xx[i] = (i <2 ) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
 		}
 	}
@@ -197,7 +197,7 @@ void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		GMT_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
 		if (GMT_is_dnan (yy[i])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y %ld %% hinge exceeded domain near line %ld\n", q[i], line);
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y %d %% hinge exceeded domain near line %d\n", q[i], line);
 			yy[i] = (i <2 ) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
 		}
 	}
@@ -760,7 +760,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
 				if (GMT_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
-					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skipped)\n", n_total_read);
+					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
 				}
 				if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC) {	/* One of the vector symbols */
@@ -795,11 +795,11 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (GMT_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with x = NaN near line %ld\n", n_total_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with x = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (GMT_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with y = NaN near line %ld\n", n_total_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
 
@@ -925,7 +925,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %ld. Skipped\n", n_total_read);
+							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
 						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */

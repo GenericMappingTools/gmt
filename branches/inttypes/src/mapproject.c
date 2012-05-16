@@ -785,7 +785,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %ld points\r", n);
+			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 		else {		/* Do forward transformation */
 
@@ -952,7 +952,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\r", n);
+			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %" PRIu64 " points\r", n);
 		}
 	} while (TRUE);
 	
@@ -964,7 +964,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\n", n);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %" PRIu64 " points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		if (!geodetic_calc) {
@@ -972,26 +972,26 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, format, x_out_min, x_out_max, y_out_min, y_out_max);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
-					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld ECEF coordinates [m] to (lon,lat,h)\n", n);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
 				else if (Ctrl->N.active)
-					GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
 				else
-					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld x-y pairs [%s] to lon-lat\n", n, unit_name);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
 			}
 			else if (Ctrl->T.active && GMT->current.proj.datum.h_given)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %ld (lon,lat,h) triplets\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
 			else if (Ctrl->T.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %ld (lon,lat) pairs\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
 			else if (Ctrl->E.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
 			else if (Ctrl->N.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
 			else if (GMT_is_geographic (GMT, GMT_IN))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld lon-lat pairs to x-y [%s]\n", n, unit_name);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld data pairs to x-y [%s]\n", n, unit_name);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
 		}
-		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_NORMAL, "%ld fell outside region\n", n_read - n);
+		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
 
 	GMT_free (GMT, out);

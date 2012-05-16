@@ -395,12 +395,12 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld values extracted\n", n_total - n_suppressed);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
 		if (GMT->current.setting.io_nan_mode == 2)
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld finite values suppressed\n", n_suppressed);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld NaN values suppressed\n", n_suppressed);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
 	Return (GMT_OK);

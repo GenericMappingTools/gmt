@@ -180,7 +180,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_report (C, GMT_MSG_NORMAL, "Restore %ld polygon clip levels\n", n);
+			GMT_report (C, GMT_MSG_NORMAL, "Restore %d polygon clip levels\n", n);
 			break;
 	}
 }

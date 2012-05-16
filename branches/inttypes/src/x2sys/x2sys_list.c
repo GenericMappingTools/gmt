@@ -327,7 +327,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT->common.R.active) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read crossover database from %s...\n", from);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld pairs and a total of %ld crossover records.\n", np, nx);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -519,7 +519,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT->current.io.multi_segments[GMT_OUT])
 			fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %d\n",
 					GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Crossovers from %s minus %s [%ld].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
 		if (Ctrl->S.active) {	/* May have to flip which is track one and two */
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
 			one = 1 - two;
@@ -638,7 +638,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], j, out);
 		}
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Output %ld pairs and a total of %ld crossover records.\n", np_use, nx_use);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
 	
 	/* Done, free up data base array */
 	

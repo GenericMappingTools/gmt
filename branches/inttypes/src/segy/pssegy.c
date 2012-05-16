@@ -555,21 +555,21 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 /* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %ld\n", Ctrl->M.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %d\n", Ctrl->M.value);
 
 	if (!Ctrl->L.value) {/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %d\n", Ctrl->L.value);
 
 	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
@@ -671,7 +671,7 @@ GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if ((!Ctrl->Z.active || scale) && (plot_it || !n_tracelist)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "pssegy: trace %ld plotting at %f \n", ix+1, x0);
+			GMT_report (GMT, GMT_MSG_NORMAL, "pssegy: trace %d plotting at %f \n", ix+1, x0);
 			segy_plot_trace (GMT, data, Ctrl->Q.value[Y_ID], x0, (int)n_samp, (int)Ctrl->F.active, (int)Ctrl->I.active, (int)Ctrl->W.active, toffset, bitmap, bm_nx, bm_ny);
 		}
 		free (data);

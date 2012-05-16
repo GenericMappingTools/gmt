@@ -372,9 +372,9 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->Q.active)
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld Voronoi edges found\n", np);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " Voronoi edges found\n", np);
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld Delaunay triangles found\n", np);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " Delaunay triangles found\n", np);
 	
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
@@ -477,7 +477,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_edge = j + 1;
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld unique triangle edges\n", n_edge);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " unique triangle edges\n", n_edge);
 
 			for (i = 0; i < n_edge; i++) {
 				fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);

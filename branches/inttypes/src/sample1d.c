@@ -287,7 +287,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		m_supplied = m;
 		t_out = GMT_memory (GMT, NULL, m_supplied, double);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld knots from file\n", m_supplied);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " knots from file\n", m_supplied);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Cin) != GMT_OK) {
 			Return (API->error);
 		}
@@ -405,7 +405,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 
 				if (result != GMT_OK) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %ld!\n", result+1);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %d!\n", result+1);
 					return (result);
 				}
 			}

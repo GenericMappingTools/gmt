@@ -357,21 +357,21 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %ld\n", Ctrl->M.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %d\n", Ctrl->M.value);
 
 	if (!Ctrl->L.value) {	/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %d\n", Ctrl->L.value);
 
 	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
@@ -537,12 +537,12 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_message (GMT, " n_read: %ld  n_used: %ld  n_filled: %ld  n_empty: %ld set to ",
+			GMT_message (GMT, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to ",
 				n_read, n_used, n_filled, n_empty);
 			(GMT_is_dnan (Ctrl->N.d_value)) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.d_value);
-			if (n_bad) GMT_message (GMT, "%ld records unreadable\n", n_bad);
-			if (n_stuffed) GMT_message (GMT, "Warning - %ld nodes had multiple entries that were averaged\n", n_stuffed);
-			if (n_confused) GMT_message (GMT, "Warning - %ld values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+			if (n_bad) GMT_message (GMT, "%d records unreadable\n", n_bad);
+			if (n_stuffed) GMT_message (GMT, "Warning - %d nodes had multiple entries that were averaged\n", n_stuffed);
+			if (n_confused) GMT_message (GMT, "Warning - %d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 		}
 	}
 

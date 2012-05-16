@@ -354,7 +354,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, matrix);
 		GMT_free (GMT, include);
 		GMT_free (GMT, ids_in_bin);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld pairs for crossover consideration\n", n_pairs);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
 		for (ii = n_tracks_found = 0; ii < n_tracks; ++ii) {
@@ -362,7 +362,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				++n_tracks_found;
 		}
 		if (n_tracks_found) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld tracks\n", n_tracks_found);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Found %d tracks\n", n_tracks_found);
 	
 			printf ("# Search command: %s", GMT->init.progname);
 			for (opt = options; opt; opt = opt->next)

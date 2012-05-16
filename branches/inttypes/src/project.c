@@ -992,7 +992,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld read, %ld used\n", n_total_read, n_total_used);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 #ifdef DEBUG
 	if (P.n_z) GMT_memtrack_off (GMT, GMT_mem_keeper);	/* Free pointers that were allocated when tracking was off */

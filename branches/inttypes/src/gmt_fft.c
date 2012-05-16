@@ -2812,7 +2812,7 @@ GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx,
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
-	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %ld\n", work_size);
+	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);

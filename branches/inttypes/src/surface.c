@@ -1268,7 +1268,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
 		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld unusable points were supplied; these will be ignored.\n", n_outside);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
 		GMT_report (GMT, GMT_MSG_NORMAL, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
 	}
 }
@@ -1450,7 +1450,7 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, COUNTER_MEDIUM factors[], 
 	if (n_sug) {
 		qsort (sug, n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
 		for (i = 0; i < n_sug && i < 10; i++) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Hint: Choosing nx = %ld, ny = %ld might cut run time by a factor of %.8g\n",
+			GMT_report (GMT, GMT_MSG_FATAL, "Hint: Choosing nx = %d, ny = %d might cut run time by a factor of %.8g\n",
 				sug[i].nx, sug[i].ny, sug[i].factor);
 		}
 		GMT_free (GMT, sug);
@@ -1879,7 +1879,7 @@ GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	C.grid = gcd_euclid (C.nx-1, C.ny-1);
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) || Ctrl->Q.active) {
-		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s nx: %%d ny: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		(GMT->common.r.active) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.nx-one, C.ny-one);
 	}

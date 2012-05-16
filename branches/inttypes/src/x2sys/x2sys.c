@@ -216,7 +216,7 @@ void x2sys_skip_header (struct GMT_CTRL *C, FILE *fp, struct X2SYS_INFO *s)
 	if (s->file_type == X2SYS_ASCII) {	/* ASCII, skip records */
 		for (i = 0; i < s->skip; i++) {
 			if (!fgets (line, GMT_BUFSIZ, fp)) {
-				GMT_report (C, GMT_MSG_FATAL, "Read error in header line %ld\n", i);
+				GMT_report (C, GMT_MSG_FATAL, "Read error in header line %d\n", i);
 				exit (EXIT_FAILURE);
 			}
 		}
@@ -701,7 +701,7 @@ GMT_LONG x2sys_read_gmtfile (struct GMT_CTRL *C, char *fname, double ***data, st
 	for (j = 0; j < p->n_rows; j++) {
 
 		if (fread (&record, 18U, 1U, fp) != 1) {
-			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read record %ld from %s\n", j, path);
+			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_gmtfile: Could not read record %" PRIu64 " from %s\n", j, path);
 			return (GMT_GRDIO_READ_FAILED);
 		}
 
@@ -943,7 +943,7 @@ GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, doubl
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		if (sscanf (line, "%s %lg", name, &this_w) != 2) {
-			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_weights : Error parsing file %s near line %ld\n", file, n);
+			GMT_report (C, GMT_MSG_FATAL, "x2sys_read_weights : Error parsing file %s near line %d\n", file, n);
 			return (GMT_GRDIO_FILE_NOT_FOUND);
 
 		}
@@ -1307,7 +1307,7 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 
 	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : lrint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
-		GMT_report (C, GMT_MSG_FATAL, "j (%ld) outside range implied by -R -I! [0-%ld>\n", *j, B->ny_bin);
+		GMT_report (C, GMT_MSG_FATAL, "j (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_J);
 	}
 	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : lrint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
@@ -1316,7 +1316,7 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
 	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
-		GMT_report (C, GMT_MSG_FATAL, "i (%ld) outside range implied by -R -I! [0-%ld>\n", *i, B->nx_bin);
+		GMT_report (C, GMT_MSG_FATAL, "i (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
 		return (X2SYS_BIX_BAD_I);
 	}
 	tmp = (*j) * B->nx_bin + (*i);
@@ -1622,11 +1622,11 @@ COUNTER_LARGE x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, ch
 				P[p].start[k] = P[p].stop[k] = C->session.d_NaN;
 			else {
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Header time specification tstart%ld (%s) in wrong format\n", (k+1), start[k]);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Header time specification tstart%d (%s) in wrong format\n", (k+1), start[k]);
 					exit (EXIT_FAILURE);
 				}
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Header time specification tstop%ld (%s) in wrong format\n", (k+1), stop[k]);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Header time specification tstop%d (%s) in wrong format\n", (k+1), stop[k]);
 					exit (EXIT_FAILURE);
 				}
 			}
@@ -1666,7 +1666,7 @@ COUNTER_LARGE x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, ch
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = C->session.d_NaN;
 				else if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Time specification t%ld (%s) in wrong format\n", (i+1), t_txt[i]);
+					GMT_report (C, GMT_MSG_FATAL, "Error: Time specification t%d (%s) in wrong format\n", (i+1), t_txt[i]);
 					exit (EXIT_FAILURE);
 				}
 			}

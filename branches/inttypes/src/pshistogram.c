@@ -266,7 +266,7 @@ GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, COUNTER_LARGE n, doubl
 	/* Get mode */
 
 	GMT_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", n_multiples);
+	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", n_multiples);
 
 	/* Get MAD for L1 */
 
@@ -553,7 +553,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld points read\n", n);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " points read\n", n);
 
 	data = GMT_memory (GMT, data, n, double);
 

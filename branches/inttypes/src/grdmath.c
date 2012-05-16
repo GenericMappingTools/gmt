@@ -1575,7 +1575,7 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
 		(void) GMT_near_lines (GMT, (double)info->grd_x[col], (double)info->grd_y[row], line, TRUE, &d, NULL, NULL);
 		stack[last]->data[node] = (float)d;
-		if (col == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Row %ld\n", row);
+		if (col == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Row %d\n", row);
 	}
 
 	/* Free memory used for line */
@@ -1681,7 +1681,7 @@ void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRI
 	GMT_grd_pad_on (GMT, stack[last], pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->data[node] = lmsscl_f;
 	
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld Multiple modes found\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 }
 
 void grd_LOWER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], BOOLEAN *constant, double *factor, COUNTER_MEDIUM last)
@@ -1882,7 +1882,7 @@ void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 
 	GMT_grd_pad_on (GMT, stack[last], pad);		/* Reinstate the original pad */
 	for (node = 0; node < info->size; node++) stack[last]->data[node] = (float)mode;
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld Multiple modes found\n", GMT_n_multiples);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d Multiple modes found\n", GMT_n_multiples);
 }
 
 void grd_MUL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], BOOLEAN *constant, double *factor, COUNTER_MEDIUM last)
@@ -2973,7 +2973,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (alloc_mode, GRDMATH_STACK_SIZE, COUNTER_MEDIUM);
 	GMT_memset (stack, GRDMATH_STACK_SIZE, struct GMT_GRID *);
 	n_macros = gmt_load_macros (GMT, ".grdmath", &M);	/* Load in any macros */
-	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %ld user macros.\n", n_macros);
+	if (n_macros) GMT_report (GMT, GMT_MSG_NORMAL, "Found and loaded %d user macros.\n", n_macros);
 	
 	/* Internally replace the = [file] sequence with an output option */
 
@@ -3239,7 +3239,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (nstack < consumed_operands[op]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Operation \"%s\" requires %ld operands\n", operator[op], consumed_operands[op]);
+			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Operation \"%s\" requires %d operands\n", operator[op], consumed_operands[op]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -3273,7 +3273,7 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\n");
 
-	if (nstack > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %ld more operands left on the stack!\n", nstack);
+	if (nstack > 0) GMT_report (GMT, GMT_MSG_FATAL, "Warning: %d more operands left on the stack!\n", nstack);
 
 	Return (EXIT_SUCCESS);
 }

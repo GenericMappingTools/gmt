@@ -153,7 +153,7 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 		GMT_free (C, zc);
 
 		if (0 < ierror) {
-			GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in CRLIST.  IERROR = %ld.\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "STRIPACK: Error in CRLIST.  IERROR = %" PRId64 ".\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
 		
@@ -207,7 +207,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
 	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
-	uint32_t row, col;
+	COUNTER_MEDIUM row, col;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
@@ -241,12 +241,12 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in INTRC0: I = %ld, J = %ld, IER = %ld\n", row, col, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in INTRC0: I = %d, J = %d, IER = %" PRId64 "\n", row, col, ierror);
 					GMT_exit (EXIT_FAILURE);
 	            		}
 			}
 		}
-		GMT_report (C, GMT_MSG_VERBOSE, "INTRC0: Number of evaluations = %ld, number of extrapolations = %ld\n", nm, nxp);
+		GMT_report (C, GMT_MSG_VERBOSE, "INTRC0: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, nxp);
 	}
 	else if (mode == 1) {	/* C-1 interpolation (INTRC1) with local gradients GRADL. */
 	   	/* Accumulate the sum of the numbers of nodes used in the least squares fits in sum. */
@@ -256,7 +256,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 			k1 = k + 1;	/* Since gradl expects Fortran indexing */
 			gradl_ (&n, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
-				GMT_report (C, GMT_MSG_FATAL, "Error in GRADL: K = %ld IER = %ld\n", k1, ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in GRADL: K = %" PRId64 " IER = %" PRId64 "\n", k1, ierror);
 				GMT_exit (EXIT_FAILURE);
             		}
 			sum += (double)ierror;
@@ -266,10 +266,10 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 	        if (vartens) {	/* compute tension factors sigma (getsig). */
 			getsig_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 			if (ierror < 0) {
-				GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG: IER = %ld\n", ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG: IER = %" PRId64 "\n", ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
-			GMT_report (C, GMT_MSG_VERBOSE, "GETSIG: %ld tension factors altered;  Max change = %g\n", ierror, dsm);
+			GMT_report (C, GMT_MSG_VERBOSE, "GETSIG: %" PRId64 " tension factors altered;  Max change = %g\n", ierror, dsm);
 	        }
 	
 		/* compute interpolated values on the uniform grid (unif). */
@@ -278,10 +278,10 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		if (vartens) iflgs = 1;
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: IER = %ld\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluation points = %ld, number of extrapolation points = %ld\n", nm, ierror);
+		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluation points = %" PRId64 ", number of extrapolation points = %" PRId64 "\n", nm, ierror);
 	}
 	else if (mode == 2) {	/* c-1 interpolation (intrc1) with global gradients gradg. */
 		int64_t maxit, nitg;
@@ -300,30 +300,30 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 			dgmx = dgmax;
 			gradg_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
 			if (ierror < 0) {
-				GMT_report (C, GMT_MSG_FATAL, "Error in GRADG (iteration %ld): IER = %ld\n", iter, ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in GRADG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
-			GMT_report (C, GMT_MSG_VERBOSE, "GRADG (iteration %ld): tolerance = %g max change = %g  maxit = %ld no. iterations = %ld ier = %ld\n",
+			GMT_report (C, GMT_MSG_VERBOSE, "GRADG (iteration %" PRId64 "): tolerance = %g max change = %g  maxit = %" PRId64 " no. iterations = %" PRId64 " ier = %" PRId64 "\n",
 				iter, dgmax, dgmx, maxit, nitg, ierror);
 			if (vartens) {
 				/* compute tension factors sigma (getsig).  iflgs > 0 if vartens = true */
 				iflgs = 1;
 				getsig_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG (iteration %ld): ier = %ld\n", iter, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG (iteration %" PRId64 "): ier = %" PRId64 "\n", iter, ierror);
 					GMT_exit (EXIT_FAILURE);
 				}
-				GMT_report (C, GMT_MSG_VERBOSE, "GETSIG (iteration %ld): %ld tension factors altered;  Max change = %g\n", iter, ierror, dsm);
+				GMT_report (C, GMT_MSG_VERBOSE, "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
 
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: IER = %ld\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluations = %ld, number of extrapolations = %ld\n", nm, ierror);
+		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
 	else if (mode == 3) {	/* c-1 smoothing method smsurf. */
 		double wtk, smtol, gstol, e, sm, *wt = GMT_memory (C, NULL, n, double);
@@ -343,28 +343,28 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		for (iter = iflgs = 0; iter < itgs; iter++) {
 			smsurf_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
-				GMT_report (C, GMT_MSG_FATAL, "Error in SMSURF (iteration %ld): IER = %ld\n", iter, ierror);
+				GMT_report (C, GMT_MSG_FATAL, "Error in SMSURF (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 				GMT_exit (EXIT_FAILURE);
 			}
-			if (ierror == 1) GMT_report (C, GMT_MSG_VERBOSE, "Error in SMSURF: inactive constraint in SMSURF (iteration %ld).  f is a constant function\n", iter);
+			if (ierror == 1) GMT_report (C, GMT_MSG_VERBOSE, "Error in SMSURF: inactive constraint in SMSURF (iteration %" PRId64 ").  f is a constant function\n", iter);
 			if (vartens) {	/* compute tension factors sigma (getsig).  iflgs > 0 if vt = true. */
 				iflgs = 1;
 				getsig_ (&n, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG (iteration %ld): IER = %ld\n", iter, ierror);
+					GMT_report (C, GMT_MSG_FATAL, "Error in GETSIG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
 					GMT_exit (EXIT_FAILURE);
 				}
-				GMT_report (C, GMT_MSG_VERBOSE, "GETSIG (iteration %ld): %ld tension factors altered;  Max change = %g\n", iter, ierror, dsm);
+				GMT_report (C, GMT_MSG_VERBOSE, "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
 		}
 		/* compute interpolated values on the uniform grid (unif). */
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
 		GMT_free (C, wt);
 		if (ierror < 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: ier = %ld\n", ierror);
+			GMT_report (C, GMT_MSG_FATAL, "Error in UNIF: ier = %" PRId64 "\n", ierror);
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluations = %ld, number of extrapolations = %ld\n", nm, ierror);
+		GMT_report (C, GMT_MSG_VERBOSE, "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
 	
 	GMT_free (C, plon);

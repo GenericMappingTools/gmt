@@ -205,7 +205,7 @@ int main (int argc, char **argv)
 	while ((n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in)) >= 0 && !(GMT->current.io.info.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		n_read++;
 		if (GMT->current.io.info.status & GMT_IO_MISMATCH) {
-			fprintf (stderr, "%s: Mismatch between actual (%ld) and expected (%ld) fields near line %ld\n", GMT->init.progname, n_fields, n_expected_fields, n_read);
+			fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %ld\n", GMT->init.progname, n_fields, n_expected_fields, n_read);
 			exit (EXIT_FAILURE);
 		}
 		/* Store coefficients somewhere */

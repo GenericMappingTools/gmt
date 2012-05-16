@@ -289,7 +289,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		Table = Qin->table[0];	/* Only one table in a file */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld segments\n", Table->n_segments);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
 	 	lat = GMT_memory (GMT, NULL, Table->n_segments, double);
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
@@ -316,7 +316,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Nin) != GMT_OK) {
 				Return (API->error);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld records\n", NTable->n_records);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " records\n", NTable->n_records);
 		}
 		else {	/* Get extract them from the segment header */
 			for (node = 0; node < Table->n_segments; node++) {
@@ -385,8 +385,8 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);
+		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
 		stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
@@ -523,7 +523,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Spherical distance calculation completed, %ld nodes visited (at least once)\n", n_set);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
 	
 	Return (GMT_OK);
 }

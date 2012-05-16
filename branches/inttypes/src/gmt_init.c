@@ -461,7 +461,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'V':	/* Verbose */
 
-			GMT_message (C, "\t-V Change the verbosity level (currently %ld).\n", C->current.setting.verbose);
+			GMT_message (C, "\t-V Change the verbosity level (currently %d).\n", C->current.setting.verbose);
 			GMT_message (C, "\t   Choose among 5 levels; each level adds more messages:\n");
 			GMT_message (C, "\t     0 - Complete silence, not even fatal error messages.\n");
 			GMT_message (C, "\t     1 - Fatal error messages [Default when no -V is used].\n");
@@ -518,7 +518,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'c':	/* -c option to set number of plot copies option */
 
-			GMT_message (C, "\t-c Specify the number of copies [%ld].\n", C->PSL->init.copies);
+			GMT_message (C, "\t-c Specify the number of copies [%d].\n", C->PSL->init.copies);
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
@@ -546,7 +546,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'h':	/* Header */
 
-			GMT_message (C, "\t-h[i][<n>] Input/output file has [%ld] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
+			GMT_message (C, "\t-h[i][<n>] Input/output file has [%" PRIu64 "] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
 			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
@@ -1752,11 +1752,11 @@ GMT_LONG GMT_check_binary_io (struct GMT_CTRL *C, COUNTER_MEDIUM n_req) {
 		n_errors++;
 	}
 	else if (n_req > C->common.b.ncol[GMT_IN]) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error: Binary input data (-bi) provides %ld but must have at least %ld columns\n", C->common.b.ncol[GMT_IN], n_req);
+		GMT_report (C, GMT_MSG_FATAL, "Syntax error: Binary input data (-bi) provides %d but must have at least %d columns\n", C->common.b.ncol[GMT_IN], n_req);
 		n_errors++;
 	}
 
-	GMT_report (C, GMT_MSG_NORMAL, "Provides %ld, expects %ld-column binary data\n", C->common.b.ncol[GMT_IN], n_req);
+	GMT_report (C, GMT_MSG_NORMAL, "Provides %d, expects %d-column binary data\n", C->common.b.ncol[GMT_IN], n_req);
 
 	return (n_errors);
 }
@@ -2274,7 +2274,7 @@ void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, GMT_LONG n_it
 GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 {
 	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
-	GMT_LONG error = 0, rec = 0;
+	COUNTER_MEDIUM error = 0, rec = 0;
 	char line[GMT_BUFSIZ], keyword[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
 
@@ -2305,14 +2305,14 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 	gmt_verify_encodings (C);
 
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
-	if (error) GMT_message (C, "Error: %ld conversion errors in file %s!\n", error, file);
+	if (error) GMT_message (C, "Error: %d conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
 }
 
 void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 {
-	GMT_LONG p, n_errors = 0;
+	COUNTER_MEDIUM p, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	char *param = CNULL;
 
@@ -2341,7 +2341,7 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	n_errors += (param != CNULL);	/* param should be NULL */
 
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
-	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %ld conversion errors\n", n_errors);
+	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %d conversion errors\n", n_errors);
 }
 
 void GMT_pickdefaults (struct GMT_CTRL *C, BOOLEAN lines, struct GMT_OPTION *options)
@@ -4444,7 +4444,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 
 GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 {
-	GMT_LONG error = 0, rec = 0;
+	COUNTER_MEDIUM error = 0, rec = 0;
 	char line[GMT_BUFSIZ], keyword[GMT_TEXT_LEN256], string[GMT_TEXT_LEN256];
 	FILE *fpi = NULL, *fpo = NULL;
 
@@ -4498,7 +4498,7 @@ GMT_LONG GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	if (fpo != C->session.std[GMT_OUT]) fclose (fpo);
 
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
-	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: %ld conversion errors while writing gmt.conf\n", error);
+	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: %d conversion errors while writing gmt.conf\n", error);
 
 	return (0);
 }
@@ -6513,10 +6513,10 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			C->current.proj.pars[4] = C->current.proj.pars[5] = C->current.proj.pars[6] = C->current.proj.pars[7] = C->current.proj.pars[8] = C->current.proj.pars[9] = 0.0;
 
 			if (C->current.proj.g_debug > 1) {
-				GMT_message (C, "genper: arg '%s' n_slashes %ld k %ld\n", args, n_slashes, j);
-				GMT_message (C, "initial error %ld\n", error);
-				GMT_message (C, "j = %ld\n", j);
-				GMT_message (C, "width_given %ld\n", width_given);
+				GMT_message (C, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
+				GMT_message (C, "initial error %d\n", error);
+				GMT_message (C, "j = %d\n", j);
+				GMT_message (C, "width_given %d\n", width_given);
 			}
 
 			n = sscanf(args+i, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s",
@@ -6526,7 +6526,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 			if (C->current.proj.g_debug > 1) {
 				for (i = 0 ; i < n ; i ++) {
-					GMT_message (C, "txt_arr[%ld] '%s'\n", i, &(txt_arr[i][0]));
+					GMT_message (C, "txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
 				}
 				fflush (NULL);
 			}
@@ -6602,7 +6602,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				}
 			}
 			error += (C->current.proj.pars[2] <= 0.0 || (k >= 0 && width_given));
-			if (error) GMT_message (C, "final error %ld\n", error);
+			if (error) GMT_message (C, "final error %d\n", error);
 			break;
 
 		case GMT_OBLIQUE_MERC:		/* Oblique mercator, specifying origin and azimuth or second point */
@@ -7931,7 +7931,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %ld\n", i);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %d\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->session.font[i++].name = strdup (fullname);
@@ -7951,7 +7951,7 @@ GMT_LONG GMT_init_fonts (struct GMT_CTRL *C)
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
-				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %ld\n", i - n_GMT_fonts);
+				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
 			}
 			C->session.font[i++].name = strdup (fullname);
