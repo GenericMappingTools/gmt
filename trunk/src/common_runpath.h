@@ -24,8 +24,8 @@
  */
 
 #pragma once
-#ifndef _GMT_RUNPATH_H
-#define _GMT_RUNPATH_H
+#ifndef _COMMON_RUNPATH_H
+#define _COMMON_RUNPATH_H
 
 #ifdef __cplusplus      /* Basic C++ support */
 extern "C" {
@@ -62,4 +62,4 @@ EXTERN_MSC int GMT_verify_sharedir_version (const char *dir);
 }
 #endif
 
-#endif  /* !_GMT_RUNPATH_H */
+#endif  /* !_COMMON_RUNPATH_H */

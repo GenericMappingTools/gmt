@@ -211,7 +211,7 @@ set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # Make GNU and Intel C compiler default to C99
 if (CMAKE_C_COMPILER_ID MATCHES "(GNU|Intel)" AND NOT CMAKE_C_FLAGS MATCHES "-std=")
-	set (CMAKE_C_FLAGS "-std=c99 ${CMAKE_C_FLAGS}")
+	set (CMAKE_C_FLAGS "-std=gnu99 ${CMAKE_C_FLAGS}")
 endif ()
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

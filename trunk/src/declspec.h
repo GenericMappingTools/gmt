@@ -40,7 +40,9 @@
 /* By default, we use the standard "extern" declarations. */
 #	define EXTERN_MSC extern LIBSPEC
 
-/* Support for inline functions */
-#	define inline __inline
+/* Use __inline specifiers with MSC */
+#	ifdef _MSC_VER
+#		define inline __inline
+#	endif
 
 #endif /* _DECLSPEC_H_ */
