@@ -9279,7 +9279,8 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 		if (M->current) GMT_report (C, GMT_MSG_FATAL, "MEMORY NOT FREED: %.3f %s [%zu bytes]\n", tot, unit[u], M->current);
 		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
 		excess = M->n_allocated - M->n_freed;
-		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" COUNTER_LARGE "\n", excess);
+		if (excess)
+			GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" PRIu64 "\n", excess);
 		for (k = 0; k < M->n_ptr; k++) {
 			tot = GMT_memtrack_mem (C, M->item[k].size, &u);
 			GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s, line %d is %.3f %s [%zu bytes]\n", M->item[k].name, M->item[k].line, tot, unit[u], M->item[k].size);
