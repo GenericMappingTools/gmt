@@ -33,7 +33,9 @@ enum grdtrack_enum_stack {STACK_MEAN = 0,	/* Compute stack as mean value for sam
 	STACK_MEDIAN,				/* Use median instead */
 	STACK_MODE,				/* Use mode (LMS) instead */
 	STACK_LOWER,				/* Use lowest value encountered instead */
-	STACK_UPPER};				/* Use highest value encountered instead */
+	STACK_LOWERP,				/* Use lowest value of all positive values encountered instead */
+	STACK_UPPER,				/* Use highest value encountered instead */
+	STACK_UPPERN};				/* Use highest value of all negative values encountered instead */
 
 enum grdtrack_enum_opt {STACK_ADD_VAL = 0,	/* +a: Append stacked value(s) at end of each output row for all profiles */
 	STACK_ADD_DEV,				/* +d: Compute deviation and add to end of each output row for all profiles */
@@ -83,7 +85,7 @@ struct GRDTRACK_CTRL {
 	struct S {	/* -S[<mode>][<modifiers>] */
 		BOOLEAN active;
 		BOOLEAN selected[STACK_N_OPT];	/* For +a +d +e +r +s */
-		COUNTER_MEDIUM mode;		/* Type of stack e|m|o|l|u */
+		COUNTER_MEDIUM mode;		/* Type of stack a|m|p|l|L|u|U */
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
@@ -118,7 +120,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
 	GMT_message (GMT, "grdtrack %s [API] - Sample grids at specified (x,y) locations\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S[<mode>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
+	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -149,8 +151,9 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
-	GMT_message (GMT, "\t   Append how stacking should be computed: e = median, m = mean, o = mode, l = lower, u = upper [e].\n");
-	GMT_message (GMT, "\t   The modifiers control the output; choose among\n");
+	GMT_message (GMT, "\t   Append which method should be used when performing the stacking:\n");
+	GMT_message (GMT, "\t   a = mean, e = median, p = mode, l = lower, L = lower of +ve values, u = upper, U = upper of -ve values [a].\n");
+	GMT_message (GMT, "\t   The modifiers control what is being written; choose one or more among\n");
 	GMT_message (GMT, "\t     +a : Add stacked values to all cross-profiles.\n");
 	GMT_message (GMT, "\t     +d : Add stack deviations to all cross-profiles.\n");
 	GMT_message (GMT, "\t     +r : Add data residuals (data - stack) to all cross-profiles.\n");
@@ -261,11 +264,13 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 #endif
 				Ctrl->S.active = TRUE;
 				switch (opt->arg[0]) {
-					case 'm': Ctrl->S.mode = STACK_MEAN;   break;
+					case 'a': Ctrl->S.mode = STACK_MEAN;   break;
 					case 'e': Ctrl->S.mode = STACK_MEDIAN; break;
-					case 'o': Ctrl->S.mode = STACK_MODE;   break;
+					case 'p': Ctrl->S.mode = STACK_MODE;   break;
 					case 'l': Ctrl->S.mode = STACK_LOWER;  break;
+					case 'L': Ctrl->S.mode = STACK_LOWERP;  break;
 					case 'u': Ctrl->S.mode = STACK_UPPER;  break;
+					case 'U': Ctrl->S.mode = STACK_UPPERN;  break;
 					default:
 						n_errors++; 
 						GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
@@ -299,6 +304,8 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	}
 	Ctrl->G.n_grids = ng;
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->C.active, "Syntax error -S: Requires -C.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !(Ctrl->S.selected[STACK_ADD_VAL] || Ctrl->S.selected[STACK_ADD_DEV] || Ctrl->S.selected[STACK_ADD_RES] || Ctrl->S.selected[STACK_ADD_TBL]), "Syntax error -S: Must specify at least one modifier.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
@@ -534,7 +541,9 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 						case STACK_MEDIAN: for (k = 0; k < Ctrl->G.n_grids; k++) GMT_median (GMT, stack[k], T->n_segments, stacked_lo[k], stacked_hi[k], 0.5*(stacked_lo[k]+stacked_hi[k]), &stacked_val[k]); break;
 						case STACK_MODE:   for (k = 0; k < Ctrl->G.n_grids; k++) GMT_mode (GMT, stack[k], T->n_segments, T->n_segments/2, 0, GMT_mode_selection, &GMT_n_multiples, &stacked_val[k]); break;
 						case STACK_LOWER:  for (k = 0; k < Ctrl->G.n_grids; k++) stacked_val[k] = GMT_extreme (GMT, stack[k], T->n_segments, 0.0, 0, -1); break;
+						case STACK_LOWERP:  for (k = 0; k < Ctrl->G.n_grids; k++) stacked_val[k] = GMT_extreme (GMT, stack[k], T->n_segments, 0.0, +1, -1); break;
 						case STACK_UPPER:  for (k = 0; k < Ctrl->G.n_grids; k++) stacked_val[k] = GMT_extreme (GMT, stack[k], T->n_segments, 0.0, 0, +1); break;
+						case STACK_UPPERN:  for (k = 0; k < Ctrl->G.n_grids; k++) stacked_val[k] = GMT_extreme (GMT, stack[k], T->n_segments, 0.0, -1, +1); break;
 					}
 					if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) {	/* Compute deviations via stack residuals */
 						for (k = 0; k < Ctrl->G.n_grids; k++) {
@@ -543,7 +552,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 							stacked_dev[k] *= 1.4826;
 						}
 					}
-					else if (Ctrl->S.mode == STACK_LOWER || Ctrl->S.mode == STACK_UPPER) {	/* Use half-range as deviation */
+					else if (Ctrl->S.mode >= STACK_LOWER) {	/* Use half-range as deviation */
 						for (k = 0; k < Ctrl->G.n_grids; k++) stacked_dev[k] = 0.5 * (stacked_lo[k] + stacked_hi[k]);
 					}
 					/* Here we have everything needed to populate output arrays */
@@ -553,7 +562,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 						M->coord[2+k*n_step][row] = stacked_dev[k];	/* The stacked deviation */
 						M->coord[3+k*n_step][row] = stacked_lo[k];	/* The stacked low value */
 						M->coord[4+k*n_step][row] = stacked_hi[k];	/* The stacked high value */
-						if (Ctrl->S.mode == STACK_LOWER || Ctrl->S.mode == STACK_UPPER) continue;
+						if (Ctrl->S.mode >= STACK_LOWER) continue;
 						M->coord[5+k*n_step][row] = stacked_val[k] - Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
 						M->coord[6+k*n_step][row] = stacked_val[k] + Ctrl->S.factor * stacked_dev[k];	/* The low envelope value */
 						if (Ctrl->S.selected[STACK_ADD_VAL]) T->segment[seg]->coord[colx++][row] = stacked_val[k];	/* Place stacked value at end of profile */
