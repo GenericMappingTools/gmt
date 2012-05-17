@@ -9192,16 +9192,16 @@ void gmt_memtrack_alloc (struct GMT_CTRL *C, struct MEMORY_TRACKER *M)
 
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
-	size_t old;
+	size_t old, diff;
+	int64_t result, entry;
 	COUNTER_LARGE entry;
-	int64_t diff;
 	void *use = NULL;
 
 	if (!M) return;		/* Not initialized */
 	if (!M->active) return;	/* Not activated */
 	use = (prev_ptr) ? prev_ptr : ptr;
-	entry = gmt_memtrack_find (C, M, use);
-	if (entry == -1) {	/* Not found, must insert new entry at end of list */
+	result = gmt_memtrack_find (C, M, use);
+	if (result == -1) {	/* Not found, must insert new entry at end of list */
 		entry = M->n_ptr;	/* Position of this new entry as last item */
 		if (entry == M->n_alloc) gmt_memtrack_alloc (C, M);	/* Must update our memory arrays */
 		M->item[entry].ptr = ptr;	/* Store the pointer */
@@ -9213,17 +9213,24 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 		M->n_allocated++;
 	}
 	else {	/* Found existing pointer, get its previous size */
+		entry = result;
 		old = M->item[entry].size;
 		M->item[entry].ptr = ptr;	/* Since realloc could have changed it */
 		M->n_reallocated++;
 	}
-	diff = size - old;	/* Addition or reduction in memory */
-	if (diff < 0 && labs (diff) > M->current) {
-		GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
-		M->current = 0;	/* Cannot have negative in size_t */
+	if (old > size) {	/* Reduction in memory */
+		diff = old - size;	/* Change in memory */
+		if (diff > M->current) {
+			GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
+			M->current = 0;	/* Cannot have negative in size_t */
+		}
+		else
+			M->current -= diff;	/* Revised memory tally */
 	}
-	else
+	else {			/* Addition in memory */
+		diff = size - old;	/* Change in memory */
 		M->current += diff;	/* Revised memory tally */
+	}
 	M->item[entry].size = size;
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
@@ -9231,15 +9238,17 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 
 void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr) {
 	/* Called from GMT_free to remove memory pointer */
-	GMT_LONG entry;
+	int64_t result;
+	COUNTER_LARGE entry;
 
 	if (!M) return;		/* Not initialized */
 	if (!M->active) return;	/* Not activated */
-	entry = gmt_memtrack_find (C, M, ptr);
-	if (entry == -1) {	/* Error, trying to free something not allocated by GMT_memory */
+	int64_t = gmt_memtrack_find (C, M, ptr);
+	if (result == -1) {	/* Error, trying to free something not allocated by GMT_memory */
 		GMT_report (C, GMT_MSG_FATAL, "Wrongly tries to free item in %s, line %d\n", name, line);
 		return;
 	}
+	entry = result;
 	if (M->item[entry].size > M->current) {
 		GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;	/* Cannot have negative in size_t */

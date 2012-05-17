@@ -98,6 +98,7 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	C = GMT_memory (GMT, NULL, 1, struct GRDTRACK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	C->S.factor = 2.0;	/* +/- 2*sigma */
 	return (C);
 }
 
@@ -278,7 +279,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 						case 'r': Ctrl->S.selected[STACK_ADD_RES] = TRUE; break;	/* Gave +r to add residual values (data - stack) to all output profiles */
 						case 'c': Ctrl->S.factor = atof (&p[1]); break;			/* Gave +c to scale deviations for use in making envelopes [2] */
 						case 's': Ctrl->S.selected[STACK_ADD_TBL] = TRUE;		/* Gave +s to write stacked profile to given table */
-							Ctrl->S.file = (&p[1]) ? strdup (&p[1]) : strdup ("stacked_profile.txt");
+							Ctrl->S.file = (p[1]) ? strdup (&p[1]) : strdup ("stacked_profile.txt");
 							break;
 						default:
 							n_errors++; 
@@ -537,7 +538,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					}
 					if (Ctrl->S.mode == STACK_MEDIAN || Ctrl->S.mode == STACK_MODE) {	/* Compute deviations via stack residuals */
 						for (k = 0; k < Ctrl->G.n_grids; k++) {
-							for (seg = 0; seg < T->n_segments; seg++) dev[seg] = stack[k][seg] - stacked_val[k];
+							for (seg = 0; seg < T->n_segments; seg++) dev[seg] = fabs (stack[k][seg] - stacked_val[k]);
 							GMT_median (GMT, dev, T->n_segments, stacked_lo[k] - stacked_val[k], stacked_hi[k] - stacked_val[k], 0.5*(stacked_lo[k]+stacked_hi[k]) - stacked_val[k], &stacked_dev[k]);
 							stacked_dev[k] *= 1.4826;
 						}
