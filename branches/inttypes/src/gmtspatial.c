@@ -455,7 +455,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			separation[0] = (np) ? separation[0] / np : DBL_MAX;		/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np) ? separation[0] / use_length : DBL_MAX;		/* Closeness as viewed from S */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/% " PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
@@ -488,7 +488,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			separation[1] = (np) ? separation[1] / np : DBL_MAX;		/* Mean distance between S' and S */
 			use_length = (np) ? length[1] * np / Sp->n_rows : length[1];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[1] = (np) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "\n", length[1], separation[1], close[1], np, Sp->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[1], separation[1], close[1], np, Sp->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
@@ -1180,7 +1180,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S1 = D->table[tbl]->segment[seg];
 				if (S1->n_rows == 0) continue;
-				
+
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Check if segment %" PRIu64 "from Table %d has duplicates:\n", seg, tbl);
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
