@@ -57,8 +57,7 @@ EXTERN_MSC GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, do
 EXTERN_MSC GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double xmin, double xmax, double m_initial, double *med);
 EXTERN_MSC GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est);
 EXTERN_MSC GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, COUNTER_LARGE n, COUNTER_LARGE j, BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est);
-EXTERN_MSC double GMT_mean (struct GMT_CTRL *C, double *x, COUNTER_LARGE n);
-EXTERN_MSC double GMT_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE n);
+EXTERN_MSC double GMT_mean_and_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double *std);
 
 EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n, double quantile);
 EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n);

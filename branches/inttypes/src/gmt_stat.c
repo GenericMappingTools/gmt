@@ -1435,7 +1435,7 @@ void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
 }
 
-double GMT_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE n)
+double GMT_mean_and_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double *std)
 {	/* Return the standard deviation of the non-NaN values in x */
 	COUNTER_LARGE k, m;
 	double dx, mean = 0.0, sum2 = 0.0;
@@ -1446,19 +1446,8 @@ double GMT_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE n)
 		mean += dx / m;
 		sum2 += dx * (x[k] - mean);
 	}
-	return ((m > 1) ? sqrt (sum2 / (m-1.0)) : C->session.d_NaN);
-}
-
-double GMT_mean (struct GMT_CTRL *C, double *x, COUNTER_LARGE n)
-{	/* Return the mean of the non-NaN values in x */
-	COUNTER_LARGE k, m;
-	double X = 0.0;
-	for (k = m = 0; k < n; k++) {
-		if (GMT_is_dnan (x[k])) continue;
-		m++;
-		X += x[k];
-	}
-	return ((m) ? X / m : C->session.d_NaN);
+	*std = (m > 1) ? sqrt (sum2 / (m-1.0)) : C->session.d_NaN;
+	return ((m) ? mean : C->session.d_NaN);
 }
 
 GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double xmin, double xmax, double m_initial, double *med)

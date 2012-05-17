@@ -9666,9 +9666,9 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	 * have 4 + n_cols columns, where the first 4 are x,y,d,az.
 	 */
 
-	int ndig, sdig;
+	int k, ndig, sdig, n_half_cross;
 
-	COUNTER_MEDIUM tbl, k, ii, np_cross, n_half_cross, n_tot_cols;
+	COUNTER_MEDIUM tbl, ii, np_cross, n_tot_cols;
 	
 	COUNTER_LARGE dim[4] = {0, 0, 0, 0};
 	
@@ -9801,9 +9801,9 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	 * Dout is the new data set with all the crossing profiles;
 	*/
 
-	int ndig, sdig;
+	int k, ndig, sdig, n_half_cross;
 
-	COUNTER_MEDIUM tbl, k, ii, np_cross, n_half_cross, n_tot_cols;
+	COUNTER_MEDIUM tbl, ii, np_cross, n_tot_cols;
 	
 	COUNTER_LARGE row, seg, seg_no;
 	
