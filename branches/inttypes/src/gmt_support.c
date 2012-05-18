@@ -9193,7 +9193,7 @@ void gmt_memtrack_alloc (struct GMT_CTRL *C, struct MEMORY_TRACKER *M)
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name, GMT_LONG line, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
 	size_t old, diff;
-	int64_t result, entry;
+	int64_t result;
 	COUNTER_LARGE entry;
 	void *use = NULL;
 
@@ -9243,7 +9243,7 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 
 	if (!M) return;		/* Not initialized */
 	if (!M->active) return;	/* Not activated */
-	int64_t = gmt_memtrack_find (C, M, ptr);
+	result = gmt_memtrack_find (C, M, ptr);
 	if (result == -1) {	/* Error, trying to free something not allocated by GMT_memory */
 		GMT_report (C, GMT_MSG_FATAL, "Wrongly tries to free item in %s, line %d\n", name, line);
 		return;
