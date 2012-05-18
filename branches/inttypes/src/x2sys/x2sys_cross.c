@@ -264,6 +264,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE n_duplicates, n_errors;
 	COUNTER_LARGE add_chunk;
 	GMT_LONG scol;
+	COUNTER_MEDIUM *ok = NULL;
 
 	BOOLEAN xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
 	BOOLEAN internal = TRUE;		/* FALSE if only external xovers are needed */
@@ -276,7 +277,6 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	BOOLEAN same = FALSE;			/* TRUE when the two cruises we compare have the same name */
 	BOOLEAN has_time[2];			/* TRUE for each cruises that actually has a time column */
 	BOOLEAN *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
-	BOOLEAN *ok = NULL;
 	BOOLEAN cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
 	
 	size_t n_alloc = 1;
@@ -430,7 +430,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		t = GMT_memory (GMT, NULL, window_width, double);
 		y = GMT_memory (GMT, NULL, window_width, double);
 		col_number = GMT_memory (GMT, NULL, n_data_col, COUNTER_LARGE);
-		ok = GMT_memory (GMT, NULL, n_data_col, GMT_LONG);
+		ok = GMT_memory (GMT, NULL, n_data_col, COUNTER_MEDIUM);
 		for (col = k = scol = 0; col < s->n_out_columns; col++, scol++) {
 			if (scol == s->x_col || scol == s->y_col || scol == s->t_col) continue;
 			col_number[k++] = col;
@@ -589,7 +589,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				for (i = 0; i < nx; i++) {	/* For each potential crossover */
 
-					GMT_memset (ok, n_data_col, GMT_LONG);
+					GMT_memset (ok, n_data_col, COUNTER_MEDIUM);
 					n_ok = 0;
 
 					for (k = 0; k < 2; k++) {	/* For each of the two data sets involved */

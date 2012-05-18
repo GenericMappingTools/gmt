@@ -154,12 +154,12 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   Append which method should be used when performing the stacking:\n");
 	GMT_message (GMT, "\t   a = mean, e = median, p = mode, l = lower, L = lower of +ve values, u = upper, U = upper of -ve values [a].\n");
 	GMT_message (GMT, "\t   The modifiers control what is being written; choose one or more among\n");
-	GMT_message (GMT, "\t     +a : Add stacked values to all cross-profiles.\n");
-	GMT_message (GMT, "\t     +d : Add stack deviations to all cross-profiles.\n");
-	GMT_message (GMT, "\t     +r : Add data residuals (data - stack) to all cross-profiles.\n");
+	GMT_message (GMT, "\t     +a : Append stacked values to all cross-profiles.\n");
+	GMT_message (GMT, "\t     +d : Append stack deviations to all cross-profiles.\n");
+	GMT_message (GMT, "\t     +r : Append data residuals (data - stack) to all cross-profiles.\n");
 	GMT_message (GMT, "\t     +s[<file>] : Save stacked profile to <file> [stacked_profile.txt].\n");
 	GMT_message (GMT, "\t     +c<fact> : Compute envelope as +/- <fact>*deviation [2].\n");
-	GMT_message (GMT, "\t   Note: Deviations depend on mode and are L1 scale (e), st.dev (m), LMS scale (o), or half-range (u-l)/2.\n");
+	GMT_message (GMT, "\t   Note: Deviations depend on mode and are L1 scale (e), st.dev (a), LMS scale (p), or half-range (u-l)/2.\n");
 	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
 	GMT_explain_options (GMT, "C2D0fghinos:.");
 	
