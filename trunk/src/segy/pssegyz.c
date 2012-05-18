@@ -130,7 +130,7 @@ GMT_LONG GMT_pssegyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "pssegyzz %s - Plot a SEGY file in PostScript\n\n", GMT_VERSION);
+	GMT_message (GMT, "pssegyz %s - Plot a SEGY file in PostScript\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: pssegyz [<segyfile>] -D<dev> -F<color> | -W %s %s \n", GMT_Jx_OPT, GMT_Rx_OPT);
 	GMT_message (GMT, "\t[-A] [-C<clip>] [-E<slop>] [-I] [-K] [-L<nsamp>] [-M<ntraces>] [-N]\n");
 	GMT_message (GMT, "\t[-O] [-P] [-Q<mode><value>] [-S<header>] [-T<tracefile>] [%s]\n", GMT_U_OPT);

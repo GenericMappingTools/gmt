@@ -115,6 +115,7 @@
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRSEP
 #cmakedefine HAVE_STRTOD
+#cmakedefine HAVE_STRTOF_
 #cmakedefine HAVE_STRTOK_R
 #cmakedefine HAVE_STRTOK_S
 #cmakedefine DECLARED_STRDUP
@@ -129,7 +130,6 @@
 /* C types; C99 exact-width integer types <inttypes.h>, <stdint.h>; etc */
 
 #cmakedefine HAVE_CTYPE_H_
-#cmakedefine HAVE_MACHINE_ENDIAN_H_
 #cmakedefine HAVE_STDDEF_H_
 #cmakedefine HAVE_SYS_TYPES_H_
 

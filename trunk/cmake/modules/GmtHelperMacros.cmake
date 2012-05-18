@@ -124,7 +124,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		string_unescape (_purpose_list "${_purpose_list}" NOESCAPE_SEMICOLON)
 		string (REPLACE ";" "\n  " _purpose_list "${_purpose_list}")
 		set (${_PURPOSES} "${_purpose_list}")
-		configure_file (gmt_progpurpose.h.in gmt_progpurpose.h)
+		configure_file (gmt_progpurpose.h.in gmt_progpurpose.h @ONLY)
 	endmacro (gen_gmt_progpurpose_h _PURPOSES _FILE)
 
 	# gen_gmt_prog_names_cases_h (GMT_PROGS)
