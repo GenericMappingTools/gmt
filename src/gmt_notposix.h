@@ -137,6 +137,55 @@
 #	include <floatingpoint.h>
 #endif
 
+/*
+ * Make sure Cygwin does not use Windows related tweaks
+ */
+
+#ifdef __CYGWIN__
+#	undef _WIN32
+#	undef WIN32
+#endif
+
+/*
+ * Windows tweaks
+ */
+
+#if defined _WIN32
+
+#	ifndef WIN32
+#		define WIN32
+#	endif
+
+	/* Reduce the size of the Win32 header files and speed up compilation. */
+#	define WIN32_LEAN_AND_MEAN
+
+#	define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
+
+	/* FLOCK is a pain. If cannot be used under Windows.
+	 * Also, users have problems with file locking because their
+	 * NFS does not support it. Only those who are really sure should
+	 * activate -DFLOCK. For these reasons, FLOCK is off by default.
+	 */
+#	undef FLOCK          /* Do not support file locking */
+#	define SET_IO_MODE   /* Need to force binary i/o upon request */
+
+#	if defined(USE_VLD) && defined(DEBUG)
+#		include <vld.h>
+#	endif
+
+#	ifdef _MSC_VER
+		/* Suppress Visual Studio deprecation warnings */
+#		pragma warning( disable : 4996 )
+		/* Visual Studio does not understand C99 restrict keyword */
+#		define restrict
+#	endif
+
+#endif /* defined _WIN32 */
+
+#ifndef PATH_SEPARATOR
+#	define PATH_SEPARATOR ':' /* Win uses ; while Unix uses : */
+#endif
+
 /* Misc. ANSI-C math functions used by grdmath and gmtmath.
  * These functions are available on many platforms and we
  * seek to use them.  If not available then we compile in
@@ -318,6 +367,18 @@
  * System specific
  */
 
+/* GMT normally gets these macros from unistd.h */
+#ifndef HAVE_UNISTD_H_
+#	define R_OK 4
+#	define W_OK 2
+#	ifdef WIN32
+#		define X_OK R_OK /* X_OK == 1 crashes on Windows */
+#	else
+#		define X_OK 1
+#	endif
+#	define F_OK 0
+#endif /* !HAVE_UNISTD_H_ */
+
 /* access is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in io.h */
@@ -389,74 +450,21 @@
 	EXTERN_MSC double strtod(const char *nptr, char **endptr);
 #endif
 
+#ifndef HAVE_STRTOF_
+	static inline float strtof(const char *nptr, char **endptr) {
+		return (float)strtod(nptr, endptr);
+	}
+#endif
+
 #if defined HAVE_STRTOK_S && !defined HAVE_STRTOK_R
 #	define strtok_r strtok_s
 #elif !defined HAVE_STRTOK_R
 /* define custom function */
 #endif
 
-/*
- * Make sure Cygwin does not use Windows related tweaks
- */
-
-#ifdef __CYGWIN__
-#	undef _WIN32
-#	undef WIN32
-#endif
-
-/*
- * Windows tweaks
- */
-
-#if defined _WIN32
-
-#	ifndef WIN32
-#		define WIN32
-#	endif
-
-	/* Reduce the size of the Win32 header files and speed up compilation. */
-#	define WIN32_LEAN_AND_MEAN
-
-#	define PATH_SEPARATOR ';' /* Win uses ; while Unix uses : */
-
-	/* FLOCK is a pain. If cannot be used under Windows.
-	 * Also, users have problems with file locking because their
-	 * NFS does not support it. Only those who are really sure should
-	 * activate -DFLOCK. For these reasons, FLOCK is off by default.
-	 */
-#	undef FLOCK          /* Do not support file locking */
-#	define SET_IO_MODE   /* Need to force binary i/o upon request */
-
-#	if defined(USE_VLD) && defined(DEBUG)
-#		include <vld.h>
-#	endif
-
-	/* Suppress Visual Studio deprecation warnings */
-#	ifdef _MSC_VER
-#		pragma warning( disable : 4996 )
-#	endif
-
-#endif /* defined _WIN32 */
-
-#ifndef PATH_SEPARATOR
-#	define PATH_SEPARATOR ':' /* Win uses ; while Unix uses : */
-#endif
-
 /* If GLIBC compatible qsort_r is not available */
 #ifndef HAVE_QSORT_R_GLIBC
 #	include "compat/qsort.h"
 #endif
-
-/* GMT normally gets these macros from unistd.h */
-#ifndef HAVE_UNISTD_H_
-#	define R_OK 4
-#	define W_OK 2
-#	ifdef WIN32
-#		define X_OK R_OK /* X_OK == 1 crashes on Windows */
-#	else
-#		define X_OK 1
-#	endif
-#	define F_OK 0
-#endif /* !HAVE_UNISTD_H_ */
 
 #endif /* _GMT_NOTPOSIX_H */

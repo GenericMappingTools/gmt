@@ -425,8 +425,8 @@ GMT_LONG GMT_pscoupe_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
-	GMT_message (GMT,"pscoupe %s - Plot cross-sections of focal mechanisms\n\n", GMT_VERSION);
-	GMT_message (GMT,"usage: pscoupe [<table>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_message (GMT, "pscoupe %s - Plot cross-sections of focal mechanisms\n\n", GMT_VERSION);
+	GMT_message (GMT, "usage: pscoupe [<table>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-E<fill>] [-G<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
