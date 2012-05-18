@@ -399,7 +399,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 		kx = ky - 1;						/* Index for the x-coordinate */
 		while (c[kx] > wesn[XHI]) c[kx] -= TWO_PI;		/* Elaborate W/E test because of 360 periodicity */
 		while (c[kx] < wesn[XLO]) c[kx] += TWO_PI;
-		if (c[kx] > wesn[XHI]) continue;				/* Longitude outside region */
+		if (c[kx] > wesn[XHI]) continue;			/* Longitude outside region */
 		first = kx;						/* We are inside, this terminates the for loop */
 	}
 
@@ -425,7 +425,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 		n_alloc = np * step;	/* Number of (x,y[,t]) to copy */
 		f = GMT_memory (GMT, NULL, n_alloc+1, double);
 		f[0] = (double)np;	/* Number of points found */
-		memcpy (&f[1], &c[first], n_alloc * sizeof (double));
+		GMT_memcpy (&f[1], &c[first], n_alloc, double);
 		GMT_free (GMT, c);	/* Free the old flowline vector */
 		*flow = f;		/* Return pointer to trimmed flowline */
 	}
@@ -486,7 +486,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double t_smt = 0.0;		/* node upper age (up to age of seafloor) */
 	double *c = NULL;		/* Array with one flowline */
 	double CVA_max, wesn[4], cva_contribution, yg;
-	double out[3], scale, area;
+	double out[3], x_scale, y_scale, area;
 	double *lat_area = NULL;	/* Area of each dx by dy note in km as function of latitude */
 	double CVA_scale;		/* Used to normalize CVAs to percent */
 	double this_wesn[4];
@@ -685,11 +685,11 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_grd_loop (GMT, Z, row, col, ij) {	/* Loop over all input nodes */
 		/* STEP 1: Determine if z exceeds threshold and if so assign age */
 		if (GMT_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
-		if (Ctrl->Q.mode && !ID_info[(GMT_LONG)ID[ij]].ok) continue;			/* Skip because of wrong ID */
-		if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;
+		if (Ctrl->Q.mode && !ID_info[ID[ij]].ok) continue;				/* Skip because of wrong ID */
+		if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;	/* Skip if age is given and we are outside range */
 		/* STEP 2: Calculate this node's flowline */
-		if (Ctrl->Q.mode && ID_info[(GMT_LONG)ID[ij]].check_region) /* Set up a box-limited flowline sampling */
-			GMT_memcpy (this_wesn, ID_info[(GMT_LONG)ID[ij]].wesn, 4, double);
+		if (Ctrl->Q.mode && ID_info[ID[ij]].check_region) /* Set up a box-limited flowline sampling */
+			GMT_memcpy (this_wesn, ID_info[ID[ij]].wesn, 4, double);
 		else
 			GMT_memcpy (this_wesn, wesn, 4, double);
 		
@@ -706,7 +706,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (processed_node, G->header->size, char);	/* Fresh start for this flowline convolution */
 		
 		if (keep_flowlines) {
-			flowline[n_nodes].node = GMT_memory (GMT, NULL, np, GMT_LONG);
+			flowline[n_nodes].node = GMT_memory (GMT, NULL, np, COUNTER_LARGE);
 			if (Ctrl->PA.active) flowline[n_nodes].PA = GMT_memory (GMT, NULL, np, unsigned short);
 		}
 		
@@ -748,7 +748,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (keep_flowlines) {
 			flowline[n_nodes].n = np;	/* Number of points in flowline */
 			flowline[n_nodes].ij = ij;	/* Originating node in topo grid */
-			mem += sizeof (struct FLOWLINE) + np * sizeof (GMT_LONG) + ((Ctrl->PA.active) ? np * sizeof (unsigned short) : 0);
+			mem += sizeof (struct FLOWLINE) + np * sizeof (COUNTER_LARGE) + ((Ctrl->PA.active) ? np * sizeof (unsigned short) : 0);
 		}
 
 		GMT_free (GMT, c);	/* Free the flowline vector */
@@ -818,7 +818,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (m = 0; m < n_nodes; m++) {				/* Loop over all active flowlines */
 				ij = flowline[m].ij;
 				if (Z->data[ij] <= z0 || Z->data[ij] > z1) continue;	/* z outside current slice */
-				cva_contribution = lat_area[ij/Z->header->nx] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
+				row = GMT_row (Z->header, ij);
+				cva_contribution = lat_area[row] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				for (k = 0; k < flowline[m].n; k++) {			/* For each point along this flowline */
 					node = flowline[m].node[k];
@@ -902,11 +903,11 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Loop over all input nodes */
 				/* STEP 1: Determine if z exceeds threshold and if so assign age */
 				if (GMT_is_fnan (Z->data[ij]) || Z->data[ij] < Ctrl->Z.min || Z->data[ij] > Ctrl->Z.max) continue;	/* Skip node since it is NaN or outside the Ctrl->Z.min < z < Ctrl->Z.max range */
-				if (Ctrl->Q.mode && !ID_info[(GMT_LONG)ID[ij]].ok) continue;			/* Skip because of wrong ID */
-				if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;
+				if (Ctrl->Q.mode && !ID_info[ID[ij]].ok) continue;				/* Skip because of wrong ID */
+				if (!set_age (GMT, &t_smt, A, ij, Ctrl->N.t_upper, Ctrl->T.active[TRUNC])) continue;	/* Skip as age is outside our range */
 				/* STEP 2: Calculate this node's flowline */
-				if (Ctrl->Q.mode && ID_info[(GMT_LONG)ID[ij]].check_region) /* Set up a box-limited flowline sampling */
-					GMT_memcpy (this_wesn, ID_info[(GMT_LONG)ID[ij]].wesn, 4, double);
+				if (Ctrl->Q.mode && ID_info[ID[ij]].check_region) /* Set up a box-limited flowline sampling */
+					GMT_memcpy (this_wesn, ID_info[ID[ij]].wesn, 4, double);
 				else
 					GMT_memcpy (this_wesn, wesn, 4, double);
 				np = get_flowline (GMT, x_smt[col], y_smt[row], t_smt, p, n_stages, sampling_int_in_km, k_step, forth_flag, this_wesn, &c);
@@ -975,13 +976,16 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 		try = 0;
 		srand ((unsigned int)time(NULL));	/* Initialize random number generator */
-		scale = (double)n_nodes / (double)RAND_MAX;
+		x_scale = (double)G->header->nx / (double)RAND_MAX;
+		y_scale = (double)G->header->ny / (double)RAND_MAX;
 		for (try = 1; try <= Ctrl->W.n_try; try++) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Bootstrap try %d\r", try);
 		
 			GMT_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
-				ij = lrint (floor (rand() * scale));		/* Get a random integer in 0 to n_nodes-1 range */
+				row = lrint (floor (rand() * y_scale));		/* Get a random integer in 0 to ny-1 range */
+				col = lrint (floor (rand() * x_scale));		/* Get a random integer in 0 to nx-1 range */
+				ij = GMT_IJP (G->header, row, col);		/* Get the node index */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				zz = Z->data[flowline[ij].ij];
 				for (k = 0; k < flowline[ij].n; k++) {		/* For each point along this flowline */
