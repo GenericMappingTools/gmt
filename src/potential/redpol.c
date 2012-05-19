@@ -35,39 +35,39 @@
 
 struct REDPOL_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		BOOLEAN use_igrf;
-		BOOLEAN const_f;
+		GMT_BOOLEAN use_igrf;
+		GMT_BOOLEAN const_f;
 		double	dec;
 		double	dip;
 	} C;
 	struct E {	/* -E */
-		BOOLEAN active;
-		BOOLEAN dip_grd_only;
-		BOOLEAN dip_dec_grd;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN dip_grd_only;
+		GMT_BOOLEAN dip_dec_grd;
 		char *decfile;
 		char *dipfile;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM	ncoef_row;
 		COUNTER_MEDIUM	ncoef_col;
 		COUNTER_MEDIUM	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
 	struct G {	/* -G<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char	*file;
 	} G;
 	struct M {	/* -M */
-		BOOLEAN pad_zero;
-		BOOLEAN mirror;
+		GMT_BOOLEAN pad_zero;
+		GMT_BOOLEAN mirror;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S, size of working grid */
 		COUNTER_MEDIUM	nx;
@@ -80,7 +80,7 @@ struct REDPOL_CTRL {
 		double	wid;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char	*file;
 	} Z;
 };
@@ -1130,7 +1130,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 
 GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	BOOLEAN error = FALSE, wrote_one = FALSE;
+	GMT_BOOLEAN error = FALSE, wrote_one = FALSE;
 	COUNTER_MEDIUM i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
         COUNTER_MEDIUM k, l, i3, n_jlon, n_jlat, n_coef;
 	COUNTER_LARGE ij, jj;

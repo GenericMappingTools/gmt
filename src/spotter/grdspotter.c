@@ -112,69 +112,69 @@
 struct GRDSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} A;
 	struct D {	/* -Di<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E[+rotfile */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		char *file;
 	} E;
 	struct G {	/* -Ggrdfile */
-		BOOLEAN active;	/* Pixel registration */
+		GMT_BOOLEAN active;	/* Pixel registration */
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -Lfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_upper;
 	} N;
 	struct PA {	/* -Dp<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} PA;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		COUNTER_MEDIUM id;
 		char *file;
 	} Q;
 	struct S2 {	/* -S2 */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dist;
 	} S2;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		double t_fix;	/* Set fixed age*/
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_try;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		double min, max, inc;
 	} Z;
 };
@@ -434,7 +434,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 	return (np);
 }
 
-BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, COUNTER_LARGE node, double upper_age, BOOLEAN truncate)
+GMT_BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, COUNTER_LARGE node, double upper_age, GMT_BOOLEAN truncate)
 {
 	/* Returns the age of this node based on either a given seafloor age grid
 	 * or the upper age, truncated if necessary */
@@ -464,8 +464,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM try;		/* Number of current bootstrap estimate */
 	COUNTER_MEDIUM row, row2, col, col2, k_step;
 	COUNTER_MEDIUM forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
-	BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
-	BOOLEAN keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
+	GMT_BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
+	GMT_BOOLEAN keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
 	GMT_LONG i, j;			/* Signed row,col variables */
 	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
 	
@@ -507,8 +507,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	struct ID {			/* Information regarding one chain ID */
 		double wesn[4];		/* Do not calculate flowlines outside this box */
-		BOOLEAN ok;		/* TRUE if we want to calculate this CVA */
-		BOOLEAN check_region;	/* TRUE if w, e, s, n is more restrictive than command line -R */
+		GMT_BOOLEAN ok;		/* TRUE if we want to calculate this CVA */
+		GMT_BOOLEAN check_region;	/* TRUE if w, e, s, n is more restrictive than command line -R */
 	} *ID_info = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct GRDSPOTTER_CTRL *Ctrl = NULL;

@@ -194,7 +194,7 @@ void reverse_rotation_order (struct GMT_CTRL *C, struct EULER *p, COUNTER_MEDIUM
 	}
 }
 
-void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], double lat[], double w[], COUNTER_MEDIUM n, COUNTER_MEDIUM stages, BOOLEAN convert)
+void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], double lat[], double w[], COUNTER_MEDIUM n, COUNTER_MEDIUM stages, GMT_BOOLEAN convert)
 {	/* Reload the EULER structure from the lon, lat, w arrays.
 	 * stages is TRUE if we are loading stage rotations (FALSE is finite poles).
 	 * convert is TRUE if we must change angles to rates or vice versa */
@@ -221,7 +221,7 @@ void set_I_matrix (struct GMT_CTRL *C, double R[3][3])
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
-BOOLEAN must_do_track (struct GMT_CTRL *C, GMT_LONG sideA[], GMT_LONG sideB[]) {
+GMT_BOOLEAN must_do_track (struct GMT_CTRL *C, GMT_LONG sideA[], GMT_LONG sideB[]) {
 	GMT_LONG dx, dy;
 	/* First check if any of the two points are inside the box */
 	if (sideA[0] == 0 && sideA[1] == 0) return (TRUE);
@@ -324,7 +324,7 @@ void spotter_cov_of_inverse (struct GMT_CTRL *C, struct EULER *e, double Ct[3][3
  * Based partly on Cox and Hart, 1986
  */
 
-void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, BOOLEAN finite_rates, BOOLEAN stage_rates)
+void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN finite_rates, GMT_BOOLEAN stage_rates)
 {
 	/* Convert finite rotations to forward stage rotations for flowlines */
 	/* p[]		: Array of structure elements with rotation parameters
@@ -383,7 +383,7 @@ GMT_LONG spotter_GPlates_pair (char *file)
 	return (TRUE);	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 }
 
-GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, BOOLEAN flowline, BOOLEAN total_out, BOOLEAN invert, double *t_max)
+GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_BOOLEAN flowline, GMT_BOOLEAN total_out, GMT_BOOLEAN invert, double *t_max)
 {
 	/* file;	Name of file with backward stage poles, always GEOCENTRIC */
 	/* p;		Pointer to stage pole array */
@@ -391,7 +391,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, BOOLEAN
 	/* total_out;	TRUE if we want to return finite (total construction poles) [alternative is stage poles] */
 	/* invert;	TRUE if we want to invert all the rotations */
 	/* t_max;	Extend earliest stage pole back to this age */
-	BOOLEAN GPlates = FALSE, total_in = FALSE;
+	GMT_BOOLEAN GPlates = FALSE, total_in = FALSE;
 	COUNTER_MEDIUM n, nf, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double lon, lat, rot, t;
@@ -566,7 +566,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, BOOLEAN
  * array of structures.  Hotspot locations are stored as geodetic coordintaes
  * but are converted to GEOCENTRIC by this function if geocentric == TRUE */
 
-GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, BOOLEAN geocentric, struct HOTSPOT **p)
+GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN geocentric, struct HOTSPOT **p)
 {
 	COUNTER_MEDIUM i = 0, n;
 	size_t n_alloc = GMT_CHUNK;
@@ -622,7 +622,7 @@ GMT_LONG spotter_stage (struct GMT_CTRL *C, double t, struct EULER p[], COUNTER_
  *	age t_zero.  For t_zero = 0 this means the hotspot
  */
 
-COUNTER_MEDIUM spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
+COUNTER_MEDIUM spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c)
 /* xp, yp;	Points, in RADIANS */
 /* tp;		Age of feature in m.y. */
 /* np;		# of points */
@@ -635,7 +635,7 @@ COUNTER_MEDIUM spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], 
 /* **c;		Pointer to return track vector */
 {
 	COUNTER_MEDIUM i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn;
-	BOOLEAN path, bend, go = FALSE, box_check;
+	GMT_BOOLEAN path, bend, go = FALSE, box_check;
 	GMT_LONG sideA[2] = {0, 0}, sideB[2] = {0, 0};
 	size_t n_alloc = 2 * GMT_CHUNK;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, next_x, next_y;
@@ -803,7 +803,7 @@ COUNTER_MEDIUM spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], 
  *	seamount of age tp.  For t_zero = 0 this means from the hotspot.
  */
 
-COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
+COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c)
 /* xp, yp;	Points, in RADIANS */
 /* tp;		Age of feature in m.y. */
 /* np;		# of points */
@@ -816,7 +816,7 @@ COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[],
 /* c;		Pointer to return track vector */
 {
 	COUNTER_MEDIUM i, j = 0, k, kk = 0, start_k = 0, nd = 1, nn;
-	BOOLEAN path, bend, go = FALSE, box_check;
+	GMT_BOOLEAN path, bend, go = FALSE, box_check;
 	GMT_LONG sideA[2] = {0, 0}, sideB[2] = {0, 0};
 	size_t n_alloc = BIG_CHUNK;
 	double t, tt = 0.0, dt, d_lon, tlon, dd = 0.0, i_km = 0.0, xnew, xx, yy, *track = NULL;
@@ -979,7 +979,7 @@ COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[],
 	return (np);
 }
 
-void spotter_total_to_stages (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, BOOLEAN finite_rates, BOOLEAN stage_rates)
+void spotter_total_to_stages (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN finite_rates, GMT_BOOLEAN stage_rates)
 {
 	/* Convert finite rotations to backwards stage rotations for backtracking */
 	/* p[]		: Array of structure elements with rotation parameters
@@ -1023,7 +1023,7 @@ void spotter_total_to_stages (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDI
 	reverse_rotation_order (C, p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
-void spotter_stages_to_total (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, BOOLEAN finite_rates, BOOLEAN stage_rates)
+void spotter_stages_to_total (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN finite_rates, GMT_BOOLEAN stage_rates)
 {
 	/* Convert stage rotations to finite rotations */
 	/* p[]		: Array of structure elements with rotation parameters
@@ -1081,7 +1081,7 @@ void spotter_add_rotations (struct GMT_CTRL *C, struct EULER a[], COUNTER_MEDIUM
 	double *t = NULL, t_min, t_max, Ra[3][3], Rb[3][3], Rab[3][3], lon, lat, w, sign_a, sign_b;
 	double tmp[3][3], RaT[3][3], Ca[3][3], Cb[3][3];
 	COUNTER_MEDIUM i, j, k, n_k = 0;
-	BOOLEAN a_ok = TRUE, b_ok = TRUE;
+	GMT_BOOLEAN a_ok = TRUE, b_ok = TRUE;
 
 	sign_a = (n_a > 0) ? +1.0 : -1.0;
 	sign_b = (n_b > 0) ? +1.0 : -1.0;
@@ -1330,7 +1330,7 @@ GMT_LONG spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, COUNTER_MEDI
 	return (0);
 }
 
-GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, double t, struct EULER *p, COUNTER_MEDIUM np, char flag, BOOLEAN forward, double out[])
+GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, double t, struct EULER *p, COUNTER_MEDIUM np, char flag, GMT_BOOLEAN forward, double out[])
 {
 	/* Given time and rotation parameters, calculate uncertainty in the
 	 * reconstructed point in the form of a confidence ellipse.  To follow
@@ -1447,7 +1447,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 	/* X, Y:	Pointers to arrays that will hold the confidence region polygon */
 		
 	COUNTER_MEDIUM i, j, ii, jj, na, try, n, matrix_dim = 3, nrots, dump = 0, fake = 0, axis[3];
-	BOOLEAN done, got_it, bail;
+	GMT_BOOLEAN done, got_it, bail;
 	size_t n_alloc;
 	char *name = "uvw";
 	double sa, ca, angle, d, V[3][3], Vt[3][3], C[9], fval = 0.0005;
@@ -1628,7 +1628,7 @@ GMT_LONG spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EU
 		
 	COUNTER_MEDIUM i;
 #ifdef DEBUG
-	BOOLEAN dump = TRUE;
+	GMT_BOOLEAN dump = TRUE;
 #endif
 	double sa, ca, angle = 0.0, R[3][3], Rt[3][3], T[3][3], C[3][3];
 	double par[3], delta, mu, dx_local, dy_local, dr_local, azimuth, dr_dist, sin_phi, cos_phi;
@@ -1687,7 +1687,7 @@ void spotter_project_ellipsoid (struct GMT_CTRL *GMT, double axis[], double D[3]
 	 * par: Returns azimuth, major, minor axes in the E-N plane.
 	 * Note: I rederived to project onto E-N rather than E-V.
 	 */
-	BOOLEAN override = FALSE;
+	GMT_BOOLEAN override = FALSE;
 	double A, B, C, F, G, H, a2, b2, c2, r, tmp[3][3];
 	
 	if (override) {
@@ -1765,7 +1765,7 @@ void spotter_tangentplane (struct GMT_CTRL *GMT, double lon, double lat, double 
 	spotter_matrix_mult (GMT, Rlat, Rlon, R);			/* R converts between (x,y,z) and( tx, ty, tz) coordinates in tangent plane */
 }
 
-BOOLEAN on_the_ellipse (double xyz[3], double L[3], double c)
+GMT_BOOLEAN on_the_ellipse (double xyz[3], double L[3], double c)
 {
 	COUNTER_MEDIUM i;
 	double sum;

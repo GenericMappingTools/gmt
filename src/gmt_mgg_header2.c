@@ -255,7 +255,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	short *tShort = NULL;
 	char *tChar = NULL;
 	float *tFloat = NULL;
-	BOOLEAN piping = FALSE, swap_all = FALSE, is_float = FALSE;
+	GMT_BOOLEAN piping = FALSE, swap_all = FALSE, is_float = FALSE;
 	GMT_LONG j, first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM width_in, height_in, i_0_out, inc, off;
 	COUNTER_MEDIUM i, width_out, *actual_col = NULL;
@@ -357,7 +357,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
-	BOOLEAN is_float = FALSE, check;
+	GMT_BOOLEAN is_float = FALSE, check;
 	GMT_LONG i, j, err;
 	COUNTER_MEDIUM i2, ju, iu, width_out, height_out, inc, off, width_in, *actual_col = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row;

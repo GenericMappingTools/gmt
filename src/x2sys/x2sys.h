@@ -135,15 +135,15 @@ struct X2SYS_INFO {
 	COUNTER_MEDIUM skip;		/* Number of header records to skip */
 	COUNTER_MEDIUM flags;		/* Various processing flags for internal use */
 	COUNTER_MEDIUM *out_order;	/* Array with column number in the order for output */
-	BOOLEAN *use_column;		/* Array of T/F for which columns to use */
+	GMT_BOOLEAN *use_column;		/* Array of T/F for which columns to use */
 	COUNTER_MEDIUM geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	COUNTER_MEDIUM dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	p_func_l read_file;		/* Pointer to function that reads this file */
 	COUNTER_MEDIUM file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
-	BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
-	BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
-	BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
-	BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
+	GMT_BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
+	GMT_BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */
+	GMT_BOOLEAN geographic;		/* TRUE if x/y data are lon/lat */
+	GMT_BOOLEAN ms_next;		/* TRUE if we just read 1st record in a new segments in this file */
 	char unit[2][2];		/* Units for distance (c = Cartesian, e = meter, k = km, m = miles, n = nautical miles)
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
@@ -160,9 +160,9 @@ struct X2SYS_DATA_INFO {
 	COUNTER_MEDIUM start_col;	/* For cardformat: starting column */
 	COUNTER_MEDIUM stop_col;	/* For cardformat: last column */
 	COUNTER_MEDIUM n_cols;	/* For cardformat: number of columns */
-	BOOLEAN has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
-	BOOLEAN has_nans;	/* TRUE if there are NaNs in this field */
-	BOOLEAN do_scale;	/* TRUE if scale != 1 or offset != 0 */
+	GMT_BOOLEAN has_nan_proxy;	/* TRUE if there is a special value that indicates NaN */
+	GMT_BOOLEAN has_nans;	/* TRUE if there are NaNs in this field */
+	GMT_BOOLEAN do_scale;	/* TRUE if scale != 1 or offset != 0 */
 	char name[32];		/* Name of this data type */
 	char format[32];	/* Output print format for ascii conversion */
 	char intype;		/* Input data type (cuhilfdaA) */
@@ -188,7 +188,7 @@ struct X2SYS_BIX {
 	GMT_LONG nx_bin;	/* Number of x bins */
 	GMT_LONG ny_bin;	/* Number of y bins */
 	COUNTER_LARGE nm_bin;	/* Total number of bins */
-	BOOLEAN periodic;	/* 1 if x is periodic */
+	GMT_BOOLEAN periodic;	/* 1 if x is periodic */
 	unsigned int *binflag;	/* The bin array */
 	struct X2SYS_BIX_DATABASE *base;
 	struct X2SYS_BIX_TRACK_INFO *head;
@@ -260,7 +260,7 @@ EXTERN_MSC GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***lis
 EXTERN_MSC GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, COUNTER_MEDIUM *nf);
 EXTERN_MSC void x2sys_free_list (struct GMT_CTRL *C, char **list, COUNTER_MEDIUM n);
 EXTERN_MSC GMT_LONG x2sys_find_track (struct GMT_CTRL *C, char *name, char **list, COUNTER_MEDIUM n);
-GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***tracklist, BOOLEAN *cmdline);
+GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***tracklist, GMT_BOOLEAN *cmdline);
 
 EXTERN_MSC double *x2sys_dummytimes (struct GMT_CTRL *C, COUNTER_LARGE n);
 
@@ -274,11 +274,11 @@ EXTERN_MSC GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname
 EXTERN_MSC void x2sys_end (struct GMT_CTRL *C, struct X2SYS_INFO *X);
 
 EXTERN_MSC GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
-EXTERN_MSC void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, BOOLEAN alloc);
+EXTERN_MSC void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, GMT_BOOLEAN alloc);
 EXTERN_MSC struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (struct GMT_CTRL *C, char *name, uint32_t id_no, uint32_t flag);
 EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (struct GMT_CTRL *C, uint32_t id, uint32_t flag);
 EXTERN_MSC GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, GMT_LONG mode, uint32_t *ID);
-EXTERN_MSC GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, BOOLEAN swap);
+EXTERN_MSC GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, GMT_BOOLEAN swap);
 EXTERN_MSC GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, COUNTER_LARGE *ID);
 
 EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *s);

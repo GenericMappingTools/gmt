@@ -67,30 +67,30 @@
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct E {	/* -E[<value>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
-		BOOLEAN mode;	/* out mode (TRUE if total reconstruction rotations) */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;	/* out mode (TRUE if total reconstruction rotations) */
 	} F;
 	struct G {	/* -G */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} G;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -241,11 +241,11 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM i, j, n, k;	/* Misc. counters */
 	COUNTER_MEDIUM n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
 	GMT_LONG last_sign;
-	BOOLEAN confusion = FALSE, online_stage = FALSE;
-	BOOLEAN error = FALSE;		/* Set to TRUE if arguments are inconsistent */
-	BOOLEAN first = TRUE;		/* TRUE for first input file */
-	BOOLEAN online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
-	BOOLEAN no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
+	GMT_BOOLEAN confusion = FALSE, online_stage = FALSE;
+	GMT_BOOLEAN error = FALSE;		/* Set to TRUE if arguments are inconsistent */
+	GMT_BOOLEAN first = TRUE;		/* TRUE for first input file */
+	GMT_BOOLEAN online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
+	GMT_BOOLEAN no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
 
 	double zero = 0.0;		/* Needed to pass to spotter_init */
 	double lon = 0.0, lat = 0.0;	/* Pole location for online rotations */

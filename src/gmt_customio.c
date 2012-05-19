@@ -307,7 +307,7 @@ GMT_LONG GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
-	BOOLEAN piping = FALSE, check;
+	GMT_BOOLEAN piping = FALSE, check;
 	GMT_LONG j, first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM i, width_in, height_in, i_0_out, *actual_row = NULL, inc, off;
 	size_t n2;
@@ -393,7 +393,7 @@ GMT_LONG GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/* 		If 64 is added we write no header */
 
-	BOOLEAN check, do_header = TRUE;
+	GMT_BOOLEAN check, do_header = TRUE;
 	COUNTER_MEDIUM inc = 1, off = 0, i, i2, j, width_out, height_out, n2, *actual_col = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_LARGE kk, ij, j2, width_in;
@@ -595,7 +595,7 @@ GMT_LONG GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG j, err, bit;
-	BOOLEAN piping = FALSE, check = FALSE;
+	GMT_BOOLEAN piping = FALSE, check = FALSE;
 	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM inc, off, i, width_in, height_in, i_0_out, mx, word;
 	COUNTER_MEDIUM *actual_col = NULL;
@@ -683,7 +683,7 @@ GMT_LONG GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	COUNTER_MEDIUM i2, iu, ju, width_out, height_out, mx, word, inc, off, *actual_col = NULL;
 	GMT_LONG first_col, last_col, first_row, last_row;
 	GMT_LONG i, j, bit, err;
-	BOOLEAN check = FALSE, do_header;
+	GMT_BOOLEAN check = FALSE, do_header;
 	COUNTER_LARGE kk, ij, j2, width_in;
 	unsigned int *tmp = NULL, ival;
 
@@ -824,8 +824,8 @@ GMT_LONG GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, flo
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG j, type;			/* Data type */
-	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
-	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
+	GMT_BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
+	GMT_BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
 	COUNTER_MEDIUM err, inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
@@ -926,8 +926,8 @@ GMT_LONG GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, fl
 
 	GMT_LONG err;			/* Offset in complex array: 0 for real part, 1 for imaginary */
 	GMT_LONG i, j, type;			/* Data type */
-	BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
-	BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
+	GMT_BOOLEAN check = FALSE;		/* TRUE if nan-proxies are used to signify NaN (for non-floating point types) */
+	GMT_BOOLEAN do_header = TRUE;	/* TRUE if we should write the header first */
 	COUNTER_MEDIUM inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */
@@ -1288,7 +1288,7 @@ GMT_LONG GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	GMT_LONG j, type, ny;			/* Data type */
-	BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
+	GMT_BOOLEAN piping = FALSE;		/* TRUE if we read input pipe instead of from file */
 	COUNTER_MEDIUM inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
 	GMT_LONG first_col, last_col;	/* First and last column to deal with */
 	GMT_LONG first_row, last_row;	/* First and last row to deal with */

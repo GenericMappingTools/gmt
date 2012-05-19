@@ -27,21 +27,21 @@
 
 struct grd2sph_CTRL {
 	struct D {	/* -D<degree> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		int max_degree;
 	} D;
 	struct N {	/* -Ng|m|s */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 };
 
 int main (int argc, char **argv)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	int i, d, o, nm, f_arg = -1, n_files = 0;
 

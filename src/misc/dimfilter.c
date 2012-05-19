@@ -38,47 +38,47 @@ struct DIMFILTER_INFO {
 
 struct DIMFILTER_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D<distflag> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct F {	/* <type><filter_width>*/
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM filter;	/* Id for the filter */
 		double width;
 	} F;
 	struct G {	/* -G<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_sectors;
 		COUNTER_MEDIUM filter;	/* Id for the filter */
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM err_cols;
 	} Q;
 	struct S {	/* -S<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -367,7 +367,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	COUNTER_MEDIUM *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
 	COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
-	BOOLEAN full_360, shift = FALSE, slow, slow2, error = FALSE, fast_way;
+	GMT_BOOLEAN full_360, shift = FALSE, slow, slow2, error = FALSE, fast_way;
 	GMT_LONG j_origin, *i_origin = NULL, ii, jj, scol, srow;
 	
 	COUNTER_LARGE n_nan = 0, ij_in, ij_out, ij_wt;
@@ -381,7 +381,7 @@ GMT_LONG GMT_dimfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 	
 #ifdef OBSOLETE
-	BOOLEAN first_time = TRUE;
+	GMT_BOOLEAN first_time = TRUE;
 	GMT_LONG n = 0;
 	int n_bad_planes = 0, S = 0;
 	double Sx = 0.0, Sy = 0.0, Sz = 0.0, Sxx = 0.0, Syy = 0.0, Sxy = 0.0, Sxz = 0.0, Syz = 0.0;

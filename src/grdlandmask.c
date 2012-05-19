@@ -33,28 +33,28 @@
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
 	/* ctive is TRUE if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct D {	/* -D<resolution> */
-		BOOLEAN active;
-		BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct G {	/* -G<maskfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<maskvalues>[o] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
@@ -205,7 +205,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 
 GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, temp_shift = FALSE, wrap, used_polygons;
+	GMT_BOOLEAN error = FALSE, temp_shift = FALSE, wrap, used_polygons;
 	COUNTER_MEDIUM base = 3, k, bin, np, side, np_new;
 	GMT_LONG row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1;
 	

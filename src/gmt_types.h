@@ -31,7 +31,7 @@
 #define COUNTER_LARGE	uint64_t
 #define COUNTER_MEDIUM	unsigned
 /* Type for TRUE [!0] or FALSE [0] only */
-#define BOOLEAN	bool
+#define GMT_BOOLEAN	bool
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
@@ -56,6 +56,6 @@ typedef unsigned (*p_func_u4) ();    /* p_func_u4 declares a pointer to a functi
 typedef size_t (*p_func_s) ();	     /* p_func_s declares a pointer to a function returning an size_t */
 typedef int (*p_func_i) ();          /* p_func_i declares a pointer to a function returning an int */
 typedef double (*p_func_d) ();       /* p_func_d declares a pointer to a function returning a double */
-typedef BOOLEAN (*p_func_b) ();	     /* p_func_b declares a pointer to a function returning a BOOLEAN */
+typedef GMT_BOOLEAN (*p_func_b) ();	     /* p_func_b declares a pointer to a function returning a GMT_BOOLEAN */
 
 #endif  /* _GMT_TYPES_H */

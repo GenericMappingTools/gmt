@@ -207,7 +207,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, COUNTER_MEDIUM emode, COU
 
 GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, mode_xy, do_extra;
+	GMT_BOOLEAN error = FALSE, mode_xy, do_extra;
 	
 	int way;
 	

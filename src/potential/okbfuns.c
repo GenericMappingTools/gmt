@@ -18,12 +18,12 @@
 
 #include "okbfuns.h"
 
-double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, BOOLEAN is_grav,
+double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, GMT_BOOLEAN is_grav,
 		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, COUNTER_MEDIUM km, COUNTER_MEDIUM pm, struct LOC_OR *loc_or) {
 
 	double okb = 0, tot = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
 	COUNTER_MEDIUM i, l, k, cnt_v = 0, n_vert;
-	BOOLEAN top = TRUE;
+	GMT_BOOLEAN top = TRUE;
 
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant
@@ -89,7 +89,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 }
 
 /* ---------------------------------------------------------------------- */
-void rot_17 (COUNTER_MEDIUM n_vert, BOOLEAN top, struct LOC_OR *loc_or,
+void rot_17 (COUNTER_MEDIUM n_vert, GMT_BOOLEAN top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */

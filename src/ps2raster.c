@@ -71,59 +71,59 @@ struct PS2RASTER_CTRL {
 		COUNTER_MEDIUM n_files;
 	} In;
 	struct A {	/* -A[u][-] [Adjust boundingbox] */
-		BOOLEAN active;
-		BOOLEAN strip;	/* Remove the -U time-stamp */
-		BOOLEAN reset;	/* The -A- turns -A off, overriding any automode in effect */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN strip;	/* Remove the -U time-stamp */
+		GMT_BOOLEAN reset;	/* The -A- turns -A off, overriding any automode in effect */
 		double margin[4];
 	} A;
 	struct C {	/* -C<option> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char arg[GMT_BUFSIZ];
 	} C;
 	struct D {	/* -D<dir> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *dir;
 	} D;
 	struct E {	/* -E<resolution> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM dpi;
 	} E;
 	struct F {	/* -F<out_name> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -G<GSpath> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<listfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct P2 {	/* -P */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} P;
 	struct Q {	/* -Q[g|t]<bits> */
-		BOOLEAN active;
-		BOOLEAN on[2];	/* [0] for graphics, [1] for text antialiasing */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN on[2];	/* [0] for graphics, [1] for text antialiasing */
 		COUNTER_MEDIUM bits[2];
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
 		GMT_LONG device;	/* May be negative */
 	} T;
 	struct W {	/* -W -- for world file production */
-		BOOLEAN active;
-		BOOLEAN folder;
-		BOOLEAN warp;
-		BOOLEAN kml;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN folder;
+		GMT_BOOLEAN warp;
+		GMT_BOOLEAN kml;
 		COUNTER_MEDIUM mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
 		GMT_LONG min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
 		GMT_LONG min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
@@ -139,7 +139,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 	
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	COUNTER_MEDIUM pos = 0;
 	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
@@ -372,7 +372,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 
 	COUNTER_MEDIUM k, n_errors = 0, mode;
 	GMT_LONG j;
-	BOOLEAN grayscale;
+	GMT_BOOLEAN grayscale;
 	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -553,8 +553,8 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM i, j, k, pix_w = 0, pix_h = 0;
 	GMT_LONG sys_retval = 0, r, pos_file, pos_ext;
 	size_t len;
-	BOOLEAN got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
-	BOOLEAN excessK, setup, error = FALSE, found_proj = FALSE, isGMT_PS = FALSE;
+	GMT_BOOLEAN got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	GMT_BOOLEAN excessK, setup, error = FALSE, found_proj = FALSE, isGMT_PS = FALSE;
 
 	double xt, yt, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -1320,7 +1320,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	unsigned long datatype;
 	long RegO, rc = 0;
 	int n = 0;
-	BOOLEAN bits64 = TRUE;
+	GMT_BOOLEAN bits64 = TRUE;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 #ifdef _WIN64

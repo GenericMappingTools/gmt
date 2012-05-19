@@ -37,26 +37,26 @@
 
 struct COLMATH_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_LARGE seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		BOOLEAN active;
-		BOOLEAN inverse;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN inverse;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -168,7 +168,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG error = 0;
 	COUNTER_MEDIUM tbl, col, n_cols_in, n_cols_out, out_col;
 	COUNTER_MEDIUM n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	BOOLEAN match = FALSE, warn = FALSE;
+	GMT_BOOLEAN match = FALSE, warn = FALSE;
 	COUNTER_LARGE row, last_row, n_rows, seg, out_seg = 0, n_out_seg = 0;
 	
 	double *val = NULL;

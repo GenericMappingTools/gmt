@@ -33,20 +33,20 @@
 
 struct X2SYS_PUT_CTRL {
 	struct In {	/* -In */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -164,7 +164,7 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SY
 	return (track_id);
 }
 
-struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, BOOLEAN *found_it, struct X2SYS_BIX *B)
+struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_BOOLEAN *found_it, struct X2SYS_BIX *B)
 {	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to TRUE.
 	 * I.e., the track is actually this_info->next_info.  If not found set found_it to FALSE and return pointer where
 	 * this track should be inserted */
@@ -190,7 +190,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
 	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 
-	BOOLEAN error = FALSE, found_it, skip;
+	GMT_BOOLEAN error = FALSE, found_it, skip;
 
 	FILE *fp = NULL, *fbin = NULL, *ftrack = NULL;
 

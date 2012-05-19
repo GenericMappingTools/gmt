@@ -31,51 +31,51 @@
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
-		BOOLEAN cpt;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cpt;
 		char *file;
 		double interval;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
-		BOOLEAN active;
-		BOOLEAN label;
-		BOOLEAN low, high;	/* TRUE to tick low and high locals */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN label;
+		GMT_BOOLEAN low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct Q {	/* -Q<indexfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Q;
 	struct W {	/* -W[+|-]<type><pen> */
-		BOOLEAN active;
-		BOOLEAN color_cont;
-		BOOLEAN color_text;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN color_cont;
+		GMT_BOOLEAN color_text;
 		struct GMT_PEN pen[2];
 	} W;
 };
@@ -89,7 +89,7 @@ struct SAVE {
 	double cval;
 	COUNTER_MEDIUM n;
 	struct GMT_PEN pen;
-	BOOLEAN do_it, high;
+	GMT_BOOLEAN do_it, high;
 };
 
 /* Returns the id of the node common to the two edges */
@@ -106,7 +106,7 @@ struct PSCONTOUR {
 	double angle;
 	size_t n_alloc;
 	COUNTER_MEDIUM nl;
-	BOOLEAN do_tick;
+	GMT_BOOLEAN do_tick;
 	struct PSCONTOUR_LINE *L;
 	char type;
 };
@@ -158,7 +158,7 @@ GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, COUN
 	 */
 	 
 	COUNTER_MEDIUM i, j, k, k2, i1, nx, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
-	BOOLEAN ok;
+	GMT_BOOLEAN ok;
 	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
 	size_t n_alloc;
 
@@ -596,7 +596,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG add;
-	BOOLEAN two_only = FALSE, make_plot, error = FALSE, skip = FALSE;
+	GMT_BOOLEAN two_only = FALSE, make_plot, error = FALSE, skip = FALSE;
 	
 	COUNTER_MEDIUM PSCONTOUR_SUM, n, nx, k2, k3, node1, node2, closed, c, cont_counts[2] = {0, 0}, last_entry, last_exit, fmt[3] = {0, 0, 0};
 	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;

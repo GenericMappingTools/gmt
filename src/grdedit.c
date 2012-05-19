@@ -36,28 +36,28 @@
 
 struct GRDEDIT_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *information;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct N {	/* N<xyzfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 

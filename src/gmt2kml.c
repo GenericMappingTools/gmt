@@ -65,67 +65,67 @@ struct EXT_COL {
 struct GMT2KML_CTRL {
 	double t_transp;
 	struct A {	/* -A */
-		BOOLEAN active;
-		BOOLEAN get_alt;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN get_alt;
 		COUNTER_MEDIUM mode;
 		double scale;
 		double altitude;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<descriptfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} F;
 	struct G {	/* -G<fill> */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<icon> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_cols;
 		struct EXT_COL *ext;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		char *fmt;
 	} N;
 	struct R2 {	/* -R */
-		BOOLEAN active;
-		BOOLEAN automatic;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN automatic;
 	} R2;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale[2];
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *title;
 		char *folder;
 	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
-		BOOLEAN invisible;
-		BOOLEAN open;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN invisible;
+		GMT_BOOLEAN open;
 		double min[3], max[3];
 	} Z;
 };
@@ -592,7 +592,7 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, 
 
 GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN first = TRUE, get_z = FALSE, error = FALSE, use_folder = FALSE, do_description;
+	GMT_BOOLEAN first = TRUE, get_z = FALSE, error = FALSE, use_folder = FALSE, do_description;
 	COUNTER_MEDIUM n_coord = 0, t1_col, t2_col, pnt_nr = 0;
 	GMT_LONG set_nr = 0, index = -4, N = 1;
 	

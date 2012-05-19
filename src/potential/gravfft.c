@@ -32,88 +32,88 @@ struct GRAVFFT_CTRL {
 	double *par;
 
 	struct GRVF_In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file[2];
 	} In;
 	struct GRVF_A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double	te, rhol, rhom, rhow;
 		double	rho_cw;		/* crust-water density contrast */
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} A;
 	struct GRVF_C {	/* -C<zlevel> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_pt;
 		double theor_inc;
 	} C;
 	struct GRVF_D {	/* -D[<scale>|g] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct GRVF_E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_terms;
 	} E;
 	struct GRVF_F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 		double lc, lp, hp, hc;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct GRVF_H {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} H;
 	struct GRVF_I {	/* -I[<scale>|g] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct GRVF_L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct GRVF_M {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct GRVF_N {	/* -N<stuff> */
-		BOOLEAN active;
-		BOOLEAN force_narray, suggest_narray, n_user_set;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force_narray, suggest_narray, n_user_set;
 		COUNTER_MEDIUM nx2, ny2;
 		double value;
 	} N;
 	struct GRVF_Q {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct GRVF_S {	/* -S<scale> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct GRVF_s {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale;
 	} s;
 	struct GRVF_T {	/* -T<te/rl/rm/rw/ri> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double te, rhol, rhom, rhow;
 		double	rho_cw;		/* crust-water density contrast */
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} T;
 	struct GRVF_t {	/* -t For saving real & imag FFT grids */
-		BOOLEAN active;
-		BOOLEAN sc_coherence, sc_admitt;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN sc_coherence, sc_admitt;
 	} t;
 	struct GRVF_Z {
 		double	zm;			/* mean Moho depth (given by user) */
 		double	zl;			/* mean depth of swell compensation (user given) */		
 	} Z;
 	struct GRVF_misc {	/* -T */
-		BOOLEAN coherence;
-		BOOLEAN give_wavelength;
-		BOOLEAN from_below;
-		BOOLEAN from_top;
-		BOOLEAN rem_nothing;
-		BOOLEAN mean_or_half_way;
+		GMT_BOOLEAN coherence;
+		GMT_BOOLEAN give_wavelength;
+		GMT_BOOLEAN from_below;
+		GMT_BOOLEAN from_top;
+		GMT_BOOLEAN rem_nothing;
+		GMT_BOOLEAN mean_or_half_way;
 		float k_or_m;
 		double	z_level;	/* mean bathymetry level computed from data */
 		double	z_offset;	/* constant that myght be added to grid data */
@@ -130,8 +130,8 @@ struct GRAVFFT_CTRL {
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude */
 #define	POISSONS_RATIO	0.25
 
-BOOLEAN rem_mean = FALSE;
-BOOLEAN sphericity = FALSE;
+GMT_BOOLEAN rem_mean = FALSE;
+GMT_BOOLEAN sphericity = FALSE;
 
 struct FFT_SUGGESTION {
 	COUNTER_MEDIUM nx;
@@ -516,7 +516,7 @@ GMT_LONG GMT_gravfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	COUNTER_MEDIUM i, j, k, n;
-	BOOLEAN error = FALSE, stop;
+	GMT_BOOLEAN error = FALSE, stop;
 	COUNTER_LARGE m;
 	char	line[256], line2[256], format[64], buffer[256];
 	float	*topo = NULL, *raised = NULL;
@@ -1114,7 +1114,7 @@ void fourt_stats__ (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, CO
 	return;
 }
 
-void suggest_fft__ (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, struct FFT_SUGGESTION *fft_sug, BOOLEAN do_print) {
+void suggest_fft__ (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, struct FFT_SUGGESTION *fft_sug, GMT_BOOLEAN do_print) {
 	COUNTER_MEDIUM f[32], xstop, ystop;
 	COUNTER_MEDIUM nx_best_t, ny_best_t;
 	COUNTER_MEDIUM nx_best_e, ny_best_e;

@@ -32,12 +32,12 @@
 
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} E;
 	struct T {	/* -T<quantile> */
-		BOOLEAN active;
-		BOOLEAN median;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN median;
 		double quantile;
 	} T;
 };
@@ -173,7 +173,7 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 
 GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;

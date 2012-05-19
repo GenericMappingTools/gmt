@@ -34,14 +34,14 @@
 
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
 	} C;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -190,7 +190,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 
 GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	double x0, y0;
 
@@ -242,7 +242,7 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
 		COUNTER_MEDIUM tbl;
-		BOOLEAN first = !Ctrl->N.active;
+		GMT_BOOLEAN first = !Ctrl->N.active;
 		COUNTER_LARGE row, seg;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;

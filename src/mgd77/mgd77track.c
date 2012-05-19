@@ -59,52 +59,52 @@ struct MGD77TRACK_MARKER {
 struct MGD77TRACK_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double size;
 		struct MGD77TRACK_ANNOT info;
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
-		BOOLEAN mode;	/* TRUE to skip recs with time == NaN */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;	/* TRUE to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} F;
 	struct G {	/* -G */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		COUNTER_MEDIUM value[2];
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct MGD77TRACK_ANNOT info;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct MGD77TRACK_MARKER marker[3];
 	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -195,7 +195,7 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 GMT_LONG get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info)
 {
 	GMT_LONG i1, i2, flag1, flag2, type;
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	double value;
 	
 	info->annot_int_dist = info->tick_int_dist = 0;
@@ -273,7 +273,7 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 	 */
 
 	GMT_LONG n_errors = 0, j, mrk = 0;
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	char ms[GMT_TEXT_LEN64], mc[GMT_TEXT_LEN64], tmp[GMT_TEXT_LEN64], mfs[GMT_TEXT_LEN64], mf[GMT_TEXT_LEN64];
 	char comment[GMT_BUFSIZ], mfc[GMT_TEXT_LEN64], *t = NULL;
 	double dist_scale;
@@ -530,7 +530,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_LARGE rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths, argno, n_cruises = 0;
 	GMT_LONG this_julian = 0, last_julian;
-	BOOLEAN error = FALSE, first, form, both = FALSE;
+	GMT_BOOLEAN error = FALSE, first, form, both = FALSE;
 	COUNTER_MEDIUM annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;

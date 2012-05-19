@@ -50,29 +50,29 @@ struct GRD_CONTAINER {	/* Keep all the grid and sample parameters together */
 
 struct GRDTRACK_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A[m|p] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		int mode;
 	} A;
 	struct C {	/* -C<length>/<ds>[/<spacing>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* May be negative */
 		char unit;
 		double ds, spacing, length;
 	} C;
 	struct D {	/* -Dresampfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G<grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_grids;
 		char *file[MAX_GRIDS];
 		double scale[MAX_GRIDS], lat[MAX_GRIDS];
@@ -80,17 +80,17 @@ struct GRDTRACK_CTRL {
 		GMT_LONG type[MAX_GRIDS];	/*HIDDEN */
 	} G;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S[<mode>][<modifiers>] */
-		BOOLEAN active;
-		BOOLEAN selected[STACK_N_OPT];	/* For +a +d +e +r +s */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN selected[STACK_N_OPT];	/* For +a +d +e +r +s */
 		COUNTER_MEDIUM mode;		/* Type of stack a|m|p|l|L|u|U */
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -315,7 +315,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, COUNTER_MEDIUM n_grids, BOOLEAN img, double x_in, double y_in, double value[])
+GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, COUNTER_MEDIUM n_grids, GMT_BOOLEAN img, double x_in, double y_in, double value[])
 {
 	COUNTER_MEDIUM g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
@@ -369,7 +369,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT_LONG status, error, ks;
 	COUNTER_LARGE n_points = 0, n_read = 0;
 	COUNTER_MEDIUM g, k;
-	BOOLEAN img_conv_needed = FALSE;
+	GMT_BOOLEAN img_conv_needed = FALSE;
 	
 	char line[GMT_BUFSIZ];
 
@@ -591,7 +591,7 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else {	/* Standard resampling point case */
-		BOOLEAN pure_ascii = FALSE;
+		GMT_BOOLEAN pure_ascii = FALSE;
 		GMT_LONG ix, iy, n_fields, rmode;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];

@@ -32,25 +32,25 @@
 
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|step] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double step;
 	} A;
 	struct G {	/* -G<maskfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<maskvalues> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* Could be negative */
 		double radius;
 		char unit;
@@ -205,7 +205,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, periodic = FALSE, periodic_grid = FALSE;
+	GMT_BOOLEAN error = FALSE, periodic = FALSE, periodic_grid = FALSE;
 	COUNTER_MEDIUM side, *d_col = NULL, d_row = 0, col_0, row_0;
 	COUNTER_MEDIUM tbl, gmode, n_pol = 0, max_d_col = 0;
 	GMT_LONG row, col, nx, ny;

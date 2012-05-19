@@ -55,69 +55,69 @@
 struct MGD77LIST_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG code[4];
-		BOOLEAN force;
+		GMT_BOOLEAN force;
 		GMT_LONG GF_version;
-		BOOLEAN fake_times;
+		GMT_BOOLEAN fake_times;
 		double sound_speed;
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
-		BOOLEAN mode;	/* TRUE to skip recs with time == NaN */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;	/* TRUE to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} F;
 	struct G {	/* -G */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_LARGE start;	/* Start rec */
 		COUNTER_LARGE stop;	/* Stop rec */
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		char unit[2][2];
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		double min[2];
 		double max[2];
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* May be -1 */
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} W;
 	struct Z {	/* -Z[-|+] */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 	} Z;
 };
 
@@ -690,10 +690,10 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	COUNTER_LARGE rec, prevrec;
 	
-	BOOLEAN negative_depth = FALSE, negative_msd = FALSE, need_distances, need_time;
-	BOOLEAN error = FALSE, string_output = FALSE, need_depth = FALSE, PDR_wrap;
-	BOOLEAN need_lonlat = FALSE, first_cruise = TRUE, need_twt = FALSE, this_limit_on_time;
-	BOOLEAN need_date, need_sound = FALSE, lonlat_not_NaN, first_warning = TRUE, has_prev_twt = FALSE;
+	GMT_BOOLEAN negative_depth = FALSE, negative_msd = FALSE, need_distances, need_time;
+	GMT_BOOLEAN error = FALSE, string_output = FALSE, need_depth = FALSE, PDR_wrap;
+	GMT_BOOLEAN need_lonlat = FALSE, first_cruise = TRUE, need_twt = FALSE, this_limit_on_time;
+	GMT_BOOLEAN need_date, need_sound = FALSE, lonlat_not_NaN, first_warning = TRUE, has_prev_twt = FALSE;
 	
 	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
@@ -1045,7 +1045,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
 		if (time_column != MGD77_NOT_SET && D->H.no_time) {	/* Cannot know if ASCII MGD77 dont have time until after reading */
-			BOOLEAN faked = FALSE;
+			GMT_BOOLEAN faked = FALSE;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
 				faked = MGD77_fake_times (GMT, &M, &(D->H), dvalue[x_col], dvalue[y_col], dvalue[t_col], D->H.n_records);
 				if (faked) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Time column for cruise %s created from distances and duration\n", list[argno]);

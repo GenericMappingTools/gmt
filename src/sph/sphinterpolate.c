@@ -38,23 +38,23 @@
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct Q {	/* -Q<interpolation> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 	struct Z {	/* -Z to scale data */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -209,7 +209,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM row, col;
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	size_t n_alloc = 0;
 	COUNTER_LARGE i, n = 0, ij, ij_f;

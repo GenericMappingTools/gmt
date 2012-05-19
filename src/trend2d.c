@@ -38,26 +38,26 @@
 
 struct TREND2D_CTRL {
 	COUNTER_MEDIUM n_outputs;
-	BOOLEAN weighted_output;
+	GMT_BOOLEAN weighted_output;
 	struct C {	/* -C<condition_#> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct F {	/* -F<xymrw> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char col[TREND2D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
 	struct I {	/* -I[<confidence>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct N {	/* -N<n_model>[r] */
-		BOOLEAN active;
-		BOOLEAN robust;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN robust;
 		COUNTER_MEDIUM value;
 	} N;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 };
 
@@ -519,7 +519,7 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM i, n_model, rank, np;
-	BOOLEAN error = FALSE, significant;
+	GMT_BOOLEAN error = FALSE, significant;
 	
 	COUNTER_LARGE n_data;
 

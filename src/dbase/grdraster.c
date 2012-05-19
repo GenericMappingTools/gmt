@@ -37,19 +37,19 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 
 struct GRDRASTER_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct T {	/* -T<output_table> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 };
@@ -59,10 +59,10 @@ struct GRDRASTER_INFO {
 	COUNTER_MEDIUM id;	/* File number  */
 	GMT_LONG nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	GMT_LONG nanflag;
-	BOOLEAN nanset;		/* True if raster uses nanflag to signal NaN  */
+	GMT_BOOLEAN nanset;		/* True if raster uses nanflag to signal NaN  */
 	off_t skip;		/* Skip this number of header bytes when opening file  */
-	BOOLEAN swap_me;	/* TRUE if data set need to be swapped */
-	BOOLEAN geo;		/* TRUE if we believe x/y is lon/lat, FALSE otherwise */
+	GMT_BOOLEAN swap_me;	/* TRUE if data set need to be swapped */
+	GMT_BOOLEAN geo;		/* TRUE if we believe x/y is lon/lat, FALSE otherwise */
 	char type;
 };
 
@@ -735,7 +735,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM ijras, jseek, jras2, iras2;
 	COUNTER_LARGE n_nan;
 	GMT_LONG jrasstart, irasstart, iras, jras;
-	BOOLEAN error = FALSE, firstread;
+	GMT_BOOLEAN error = FALSE, firstread;
 	
 	COUNTER_LARGE ij;
 	

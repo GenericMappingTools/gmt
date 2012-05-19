@@ -32,7 +32,7 @@
 
 struct GMTDEFAULTS_CTRL {
 	struct D {	/* -D[s|u] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 	} D;
 };

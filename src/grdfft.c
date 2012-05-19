@@ -33,53 +33,53 @@ struct GRDFFT_CTRL {
 	double *par;
 
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file[2];
 	} In;
 	struct A {	/* -A<azimuth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<zlevel> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D[<scale>|g] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} D;
 	struct E {	/* -E[x_or_y][w] */
-		BOOLEAN active;
-		BOOLEAN give_wavelength;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN give_wavelength;
 		GMT_LONG mode;
 	} E;
 	struct F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double lc, lp, hp, hc;
 	} F;
 	struct G {	/* -G<outfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I[<scale>|g] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N<stuff> */
-		BOOLEAN active;
-		BOOLEAN force_narray, suggest_narray, n_user_set;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force_narray, suggest_narray, n_user_set;
 		unsigned int nx2, ny2;
 		double value;
 	} N;
 	struct S {	/* -S<scale> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale;
 	} S;
 	struct T {	/* -T<te/rl/rm/rw/ri> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
 };
@@ -117,8 +117,8 @@ struct F_INFO {
 	double hlambda[3];	/* High full-wavelength where Gauss amp = 0.5  for r, x, and y	*/
 	double bw_order;	/* Order, N, of Butterworth filter	*/
 	p_func_d filter;		/* Points to the correct filter function */
-	BOOLEAN do_this[3];	/* T/F this filter wanted for r, x, and y	*/
-	BOOLEAN set_already;	/* TRUE if we already filled in the structure */
+	GMT_BOOLEAN do_this[3];	/* T/F this filter wanted for r, x, and y	*/
+	GMT_BOOLEAN set_already;	/* TRUE if we already filled in the structure */
 	GMT_LONG kind;		/* FILTER_EXP, FILTER_BW, FILTER_COS  */
 	GMT_LONG arg;		/* 0 = Gaussian, 1 = Butterworth, 2 = cosine taper,  */
 };
@@ -487,10 +487,10 @@ COUNTER_MEDIUM count_slashes (char *txt)
 	return (n);
 }
 
-BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
+GMT_BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 {
 	COUNTER_MEDIUM i, j, n_tokens, pos;
-	BOOLEAN descending;
+	GMT_BOOLEAN descending;
 	double fourvals[4];
 	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	
@@ -579,7 +579,7 @@ BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	return (FALSE);
 }
 
-GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, BOOLEAN give_wavelength, char *file, struct K_XY *K)
+GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, GMT_BOOLEAN give_wavelength, char *file, struct K_XY *K)
 {
 	/* This is modeled on the 1-D case, using the following ideas:
 	 *	In 1-D, we ensemble average over samples of length L = 
@@ -766,7 +766,7 @@ void fourt_stats (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, COUN
 	return;
 } 
 
-void suggest_fft (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, struct FFT_SUGGESTION *fft_sug, BOOLEAN do_print)
+void suggest_fft (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, struct FFT_SUGGESTION *fft_sug, GMT_BOOLEAN do_print)
 {
 	COUNTER_MEDIUM f[32], xstop, ystop;
 	COUNTER_MEDIUM nx_best_t, ny_best_t;
@@ -1136,7 +1136,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, stop;
+	GMT_BOOLEAN error = FALSE, stop;
 	GMT_LONG status;
 	COUNTER_MEDIUM op_count = 0, par_count = 0, side;
 	COUNTER_LARGE ij;
@@ -1149,7 +1149,7 @@ GMT_LONG GMT_grdfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMT_OPTION *options = NULL;
 
 #ifdef NEW
-	BOOLEAN two_grids = FALSE;
+	GMT_BOOLEAN two_grids = FALSE;
 	struct GMT_GRID *GridB = NULL;
 #endif
 

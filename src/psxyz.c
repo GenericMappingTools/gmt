@@ -31,40 +31,40 @@
 
 struct PSXYZ_CTRL {
 	struct A {	/* -A[step] {NOT IMPLEMENTED YET} */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<dx>/<dy>[/<dz>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dx, dy, dz;
 	} D;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<intensity> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *arg;
 	} S;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
@@ -348,9 +348,9 @@ int dist_compare (const void *a, const void *b)
 
 GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psxyz task */
-	BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
-	BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	BOOLEAN default_outline, outline_active, save_u = FALSE;
+	GMT_BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
+	GMT_BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
+	GMT_BOOLEAN default_outline, outline_active, save_u = FALSE;
 	COUNTER_MEDIUM k, j, geometry, tbl, pos2x, pos2y, set_type;
 	COUNTER_MEDIUM n_cols_start = 3, justify;
 	COUNTER_MEDIUM ex1, ex2, ex3, change, n_needed, read_mode;

@@ -31,46 +31,46 @@
 
 struct GRDVECTOR_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file[2];
 	} In;
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<size>[+<mods>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} Q;
 	struct S {	/* -S[l]<scale>[<unit>] */
-		BOOLEAN active;
-		BOOLEAN constant;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN constant;
 		char unit;
 		double factor;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -290,7 +290,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM row, col, col_0, row_0, d_col, d_row, k;
-	BOOLEAN justify, error = FALSE;
+	GMT_BOOLEAN justify, error = FALSE;
 	
 	COUNTER_LARGE ij;
 

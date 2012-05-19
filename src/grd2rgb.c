@@ -31,27 +31,27 @@
 
 struct GRD2RGB_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<cptfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct G {	/* -G<nametemplate> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *name;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<layer> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char layer;
 	} L;
 	struct W {	/* -W<width/height>[/<n_bytes>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		unsigned int nx, ny;	/* Dimension of image */
 		unsigned int size;	/* Number of bytes per pixels */
 	} W;
@@ -270,7 +270,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 	 */
 
 	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos, entry;
-	BOOLEAN guess = FALSE;
+	GMT_BOOLEAN guess = FALSE;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -395,7 +395,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* No command line files or std** to add via GMT_Init_IO */
 	
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
-		BOOLEAN new_grid = FALSE;
+		GMT_BOOLEAN new_grid = FALSE;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);

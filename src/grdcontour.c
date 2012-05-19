@@ -32,60 +32,60 @@
 
 struct GRDCONTOUR_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cont_int> */
-		BOOLEAN active;
-		BOOLEAN cpt;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cpt;
 		char *file;
 		double interval;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct F {	/* -F<way> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG value;
 	} F;
 	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} G;
 	struct L {	/* -L<Low/high> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double low, high;
 	} L;
 	struct Q {	/* -Q<cut> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM min;
 	} Q;
 	struct S {	/* -S<smooth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM value;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
-		BOOLEAN active;
-		BOOLEAN label;
-		BOOLEAN low, high;	/* TRUE to tick low and high locals */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN label;
+		GMT_BOOLEAN low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct W {	/* -W[+]<type><pen> */
-		BOOLEAN active;
-		BOOLEAN color_cont;
-		BOOLEAN color_text;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN color_cont;
+		GMT_BOOLEAN color_text;
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Z[<fact>[/shift>]][p] */
-		BOOLEAN active;
-		BOOLEAN periodic;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN periodic;
 		double scale, offset;
 	} Z;
 };
@@ -420,7 +420,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	*/
 	GMT_LONG np, i, j, k, inside, col, row, stop, n_ticks, way, form;
 	COUNTER_LARGE ij;
-	BOOLEAN done, match, found;
+	GMT_BOOLEAN done, match, found;
 	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
@@ -681,7 +681,7 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	GMT_LONG error, c, closed;
-	BOOLEAN need_proj, make_plot, two_only = FALSE, begin, is_closed; 
+	GMT_BOOLEAN need_proj, make_plot, two_only = FALSE, begin, is_closed; 
 	
 	COUNTER_MEDIUM id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl;
 	COUNTER_MEDIUM cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};

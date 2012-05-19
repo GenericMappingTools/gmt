@@ -48,56 +48,56 @@ EXTERN_MSC double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, do
 
 struct GREENSPLINE_CTRL {
 	struct A {	/* -A<gradientfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
 	struct C {	/* -C<cutoff> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 		char *file;
 	} C;
 	struct D {	/* -D<distflag> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* Can be negative */
 	} D;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy[/dz]] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[3];
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N<outputnode_file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Qdaz */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double az;
 		double dir[3];
 	} Q;
 	struct R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
-		BOOLEAN active;
-		BOOLEAN mode;		/* TRUE if settings came from a grid file */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;		/* TRUE if settings came from a grid file */
 		COUNTER_MEDIUM dimension;	/* 1, 2, or 3 */
 		COUNTER_MEDIUM offset;	/* 0 or 1 */
 		double range[6];	/* Min/max for each dimension */
 		double inc[2];		/* xinc/yinc when -Rgridfile was given*/
 	} R3;
 	struct S {	/* -S<mode>[/args] */
-		BOOLEAN active, fast;
+		GMT_BOOLEAN active, fast;
 		COUNTER_MEDIUM mode;
 		double value[2];
 		double rval[2];
 		char *arg;
 	} S;
 	struct T {	/* -T<mask_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 };
@@ -136,7 +136,7 @@ struct ZGRID {
 };
 
 #ifdef DEBUG
-BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
+GMT_BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
 
@@ -1061,7 +1061,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii, dimension = 0;
 	size_t old_n_alloc, n_alloc;
 	GMT_LONG error, normalize = 1, unit = 0, out_ID, way;
-	BOOLEAN new_grid = FALSE;
+	GMT_BOOLEAN new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",

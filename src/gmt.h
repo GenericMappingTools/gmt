@@ -121,13 +121,13 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	GMT_LONG prev_x_status;
 	GMT_LONG prev_y_status;
 	GMT_LONG corner;
-	BOOLEAN on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
-	BOOLEAN is_world;			/* TRUE if map has 360 degrees of longitude range */
-	BOOLEAN is_world_tm;			/* TRUE if GMT_TM map is global? */
-	BOOLEAN lon_wrap;			/* TRUE when longitude wrapping over 360 degrees is allowed */
-	BOOLEAN meridian_straight;		/* TRUE if meridians plot as straight lines */
-	BOOLEAN parallel_straight;		/* TRUE if parallels plot as straight lines */
-	BOOLEAN z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
+	GMT_BOOLEAN on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
+	GMT_BOOLEAN is_world;			/* TRUE if map has 360 degrees of longitude range */
+	GMT_BOOLEAN is_world_tm;			/* TRUE if GMT_TM map is global? */
+	GMT_BOOLEAN lon_wrap;			/* TRUE when longitude wrapping over 360 degrees is allowed */
+	GMT_BOOLEAN meridian_straight;		/* TRUE if meridians plot as straight lines */
+	GMT_BOOLEAN parallel_straight;		/* TRUE if parallels plot as straight lines */
+	GMT_BOOLEAN z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
 	COUNTER_MEDIUM n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
 	COUNTER_MEDIUM n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
 	COUNTER_MEDIUM path_mode;		/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
@@ -176,7 +176,7 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	COUNTER_LARGE n;			/* Number of such points */
 	size_t n_alloc;			/* Size of allocated plot arrays */
-	BOOLEAN r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
+	GMT_BOOLEAN r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
 	COUNTER_MEDIUM mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	GMT_LONG *pen;			/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	struct GMT_PLOT_CALCLOCK calclock;

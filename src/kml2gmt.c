@@ -32,11 +32,11 @@
 
 struct KML2GMT_CTRL {
 	struct In {	/* in file */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 	
@@ -121,7 +121,7 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, start, fmode = POINT, length;
-	BOOLEAN scan = TRUE, first = TRUE, error = FALSE;
+	GMT_BOOLEAN scan = TRUE, first = TRUE, error = FALSE;
 	
 	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
 

@@ -33,27 +33,27 @@
 
 struct GMTSTITCH_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct C {	/* -C[<file>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[<file>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *format;
 	} D;
 	struct L {	/* -L[<file>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct Q {	/* -Q[<file>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Q;
 	struct T {	/* -T<cutoff[unit][/<nn_dist]> */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		GMT_LONG mode;
 		double dist[2];
 		char unit;
@@ -81,7 +81,7 @@ struct LINK {
 	COUNTER_LARGE pos;
 	COUNTER_LARGE n;
 	COUNTER_MEDIUM group;
-	BOOLEAN used;
+	GMT_BOOLEAN used;
 	double x_end[2];
 	double y_end[2];
 	struct BUDDY buddy[2];
@@ -220,7 +220,7 @@ static COUNTER_LARGE Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_
 	COUNTER_LARGE row_in, row_out;
 	COUNTER_MEDIUM col;
 	GMT_LONG inc;
-	BOOLEAN done = FALSE;
+	GMT_BOOLEAN done = FALSE;
 
 	/* We will copy the records from the out segment from rows in_start up to and including in_end.
 	 * If in_start > in_end then we will end up reversing the order of the records.
@@ -243,7 +243,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG nearest_end[2][2], ii, end, end_order, error = 0, d_mode = 0;
 	GMT_LONG io_mode = GMT_WRITE_SET, q_mode = 0;
 	
-	BOOLEAN save_type = FALSE, first, wrap_up = FALSE, done, *skip = NULL;
+	GMT_BOOLEAN save_type = FALSE, first, wrap_up = FALSE, done, *skip = NULL;
 	
 	COUNTER_MEDIUM j, tbl, n_columns, n_qfiles = 0, G;
 	
@@ -468,7 +468,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	ns = id;
 	if (ns < n_id_alloc) segment = GMT_memory (GMT, segment, ns, struct LINK);
-	skip = GMT_memory (GMT, NULL, ns, BOOLEAN);
+	skip = GMT_memory (GMT, NULL, ns, GMT_BOOLEAN);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " closed polygons\n", n_islands);
 

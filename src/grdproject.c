@@ -30,34 +30,34 @@
 
 struct GRDPROJECT_CTRL {
 	struct In {	/* Input grid */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A[k|m|n|i|c|p] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} A;
 	struct C {	/* -C[<dx/dy>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double easting, northing;
 	} C;
 	struct D {	/* -Ddx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} D;
 	struct E {	/* -E<dpi> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG dpi;
 	} E;
 	struct G {	/* -G */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct M {	/* -Mc|i|m */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} M;
 };
@@ -203,7 +203,7 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 
 GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, set_n = FALSE, shift_xy = FALSE;
+	GMT_BOOLEAN error = FALSE, set_n = FALSE, shift_xy = FALSE;
 	COUNTER_MEDIUM use_nx = 0, use_ny = 0, offset, k, unit = 0;
 
 	char format[GMT_BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];

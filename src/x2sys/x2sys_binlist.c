@@ -34,13 +34,13 @@
 
 struct X2SYS_BINLIST_CTRL {
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -173,7 +173,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG last_bin_i;	/* Previous i node for bin */
 	GMT_LONG last_bin_j;	/* Previous j node for bin */
 	GMT_LONG nx_alloc = GMT_SMALL_CHUNK;
-	BOOLEAN error = FALSE, gap, cmdline_files;
+	GMT_BOOLEAN error = FALSE, gap, cmdline_files;
 	
 	COUNTER_LARGE j;
 

@@ -203,7 +203,7 @@ int GMT_fclose (struct GMT_CTRL *C, FILE *stream)
 	return (fclose (stream));
 }
 
-void GMT_skip_xy_duplicates (struct GMT_CTRL *C, BOOLEAN mode)
+void GMT_skip_xy_duplicates (struct GMT_CTRL *C, GMT_BOOLEAN mode)
 {	/* Changes the status of the skip_duplicates setting */
 	/* PW: This is needed as some algorithms testing if a point is
 	 * inside or outside a polygon have trouble if there are
@@ -248,7 +248,7 @@ void gmt_adjust_periodic (struct GMT_CTRL *C) {
 	/* Now it will be outside the region on the same side it started out at */
 }
 
-void GMT_set_segmentheader (struct GMT_CTRL *C, GMT_LONG direction, BOOLEAN true_false)
+void GMT_set_segmentheader (struct GMT_CTRL *C, GMT_LONG direction, GMT_BOOLEAN true_false)
 {	/* Enable/Disable multi-segment headers for either input or output */
 		
 	C->current.io.multi_segments[direction] = true_false;
@@ -259,7 +259,7 @@ GMT_LONG gmt_process_binary_input (struct GMT_CTRL *C, COUNTER_MEDIUM n_read) {
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
 	*/
 	COUNTER_MEDIUM col_no, n_NaN;
-	BOOLEAN bad_record = FALSE, set_nan_flag = FALSE;
+	GMT_BOOLEAN bad_record = FALSE, set_nan_flag = FALSE;
 	/* Here, C->current.io.curr_rec has been filled in by fread */
 
 	/* Determine if this was a segment header, and if so return */
@@ -591,7 +591,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	GMT_LONG N;
 	GMT_LONG gmt_traverse_dir (const char *file, char *path);
 #endif /* HAVE_DIRENT_H_ */
-	BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path);
+	GMT_BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path);
 
 	/* First look in the current working directory */
 
@@ -651,7 +651,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	return (NULL);	/* No file found, give up */
 }
 
-BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path)
+GMT_BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path)
 {	/* Returns TRUE if readable, otherwise give error and return FALSE */
 	if (!access (path, R_OK)) return (TRUE);	/* Readable */
 	/* Get here when found, but not readable */
@@ -665,7 +665,7 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 	DIR *D = NULL;
 	struct dirent *F = NULL;
 	int len, d_namlen;
-	BOOLEAN ok = FALSE;
+	GMT_BOOLEAN ok = FALSE;
 	char savedpath[GMT_BUFSIZ];
 
  	if ((D = opendir (path)) == NULL) return (0);	/* Unable to open directory listing */
@@ -814,7 +814,7 @@ GMT_LONG gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struc
 
 void gmt_copy_and_truncate (char *out, char *in)
 {	/* Duplicate in to out, then find the first space not inside quotes and truncate string there */
-	BOOLEAN quote = FALSE;
+	GMT_BOOLEAN quote = FALSE;
 	while (*in && (quote || *in != ' ')) {
 		*out++ = *in;	/* Copy char */
 		if (*in++ == ' ') quote = !quote;	/* Wind to next space except skip if inside double quotes */
@@ -867,12 +867,12 @@ GMT_LONG GMT_append_ogr_item (struct GMT_CTRL *C, char *name, COUNTER_MEDIUM typ
 	return (GMT_NOERROR);
 }
 
-BOOLEAN gmt_ogr_parser (struct GMT_CTRL *C, char *record)
+GMT_BOOLEAN gmt_ogr_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0). See Appendix R */
 	return (C->current.io.ogr_parser (C, record));
 }
 
-BOOLEAN gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
+GMT_BOOLEAN gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0) for data feature records.
  	 * We KNOW C->current.io.ogr == +1, i.e., current file is a GMT/OGR file.
 	 * We also KNOW that C->current.io.OGR has been allocated by gmt_ogr_header_parser.
@@ -884,7 +884,7 @@ BOOLEAN gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 	 */
 
 	COUNTER_MEDIUM n_aspatial;
-	BOOLEAN quote;
+	GMT_BOOLEAN quote;
 	char *p = NULL;
 	struct GMT_OGR *S = NULL;
 
@@ -955,7 +955,7 @@ void gmt_align_ogr_values (struct GMT_CTRL *C)
 	}
 }
 
-BOOLEAN gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
+GMT_BOOLEAN gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0).
  	 * C->current.io.ogr can have three states:
 	 *	-1 if not yet set [this is how it is initialized].
@@ -972,7 +972,7 @@ BOOLEAN gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 
 	COUNTER_MEDIUM n_aspatial, k;
 	COUNTER_MEDIUM geometry = 0;
-	BOOLEAN quote;
+	GMT_BOOLEAN quote;
 	char *p = NULL;
 	struct GMT_OGR *S = NULL;
 
@@ -1137,7 +1137,7 @@ char *GMT_trim_segheader (struct GMT_CTRL *C, char *line) {
 	return (line);
 }
 
-BOOLEAN GMT_is_a_NaN_line (struct GMT_CTRL *C, char *line)
+GMT_BOOLEAN GMT_is_a_NaN_line (struct GMT_CTRL *C, char *line)
 {	/* Returns TRUE if record is NaN NaN [NaN NaN] etc */
 	COUNTER_MEDIUM pos = 0;
 	char p[GMT_TEXT_LEN256];
@@ -1166,7 +1166,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LON
 {
 	COUNTER_MEDIUM pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	GMT_LONG in_col;
-	BOOLEAN done = FALSE, bad_record, set_nan_flag = FALSE;
+	GMT_BOOLEAN done = FALSE, bad_record, set_nan_flag = FALSE;
 	char line[GMT_BUFSIZ], *p = NULL, *token, *stringp;
 	double val;
 
@@ -1377,7 +1377,7 @@ char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT
 	return (C->current.io.current_record);
 }
 
-BOOLEAN GMT_is_a_blank_line (char *line) {
+GMT_BOOLEAN GMT_is_a_blank_line (char *line) {
 	/* Returns TRUE if we should skip this line (because it is blank) */
 	COUNTER_MEDIUM i = 0;
 	while (line[i] && (line[i] == ' ' || line[i] == '\t')) i++;	/* Wind past leading whitespace or tabs */
@@ -1409,7 +1409,7 @@ GMT_LONG gmt_x_read (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n)
 	return (1);
 }
 
-BOOLEAN gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n) {
+GMT_BOOLEAN gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n) {
 	/* Reads the n binary doubles from input and saves to C->current.io.curr_rec[] */
 	COUNTER_MEDIUM i;
 
@@ -1455,7 +1455,7 @@ void * gmt_bin_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LONG 
 	return (C->current.io.curr_rec);
 }
 
-BOOLEAN gmt_skip_output (struct GMT_CTRL *C, double *cols, COUNTER_MEDIUM n_cols)
+GMT_BOOLEAN gmt_skip_output (struct GMT_CTRL *C, double *cols, COUNTER_MEDIUM n_cols)
 {	/* Consult the -s[<cols>[r] setting and the cols values to determine if this record should be output */
 	COUNTER_MEDIUM c, n_nan;
 	
@@ -1555,7 +1555,7 @@ GMT_LONG GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n, doubl
 	return ((e < 0) ? e : wn);
 }
 
-void gmt_format_geo_output (struct GMT_CTRL *C, BOOLEAN is_lat, double geo, char *text)
+void gmt_format_geo_output (struct GMT_CTRL *C, GMT_BOOLEAN is_lat, double geo, char *text)
 {
 	GMT_LONG k, n_items, d, m, s, m_sec, minus, h_pos = 0;
 	char hemi[3], *f;
@@ -1801,10 +1801,10 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	}
 }
 
-BOOLEAN GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix)
+GMT_BOOLEAN GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix)
 {
 	/* Convert floating point degrees to dd:mm[:ss][.xxx].  Returns TRUE if d = 0 and val is negative */
-	BOOLEAN minus;
+	GMT_BOOLEAN minus;
 	GMT_LONG isec, imin;
 	double sec, fsec, min, fmin, step;
 
@@ -2962,9 +2962,9 @@ p_func_i GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, int swap, char 
 	return (p);
 }
 
-GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], BOOLEAN repeat[], int swab, off_t skip, char type, struct GMT_Z_IO *r)
+GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_BOOLEAN repeat[], int swab, off_t skip, char type, struct GMT_Z_IO *r)
 {
-	BOOLEAN first = TRUE;
+	GMT_BOOLEAN first = TRUE;
 	COUNTER_MEDIUM k;
 
 	GMT_memset (r, 1, struct GMT_Z_IO);
@@ -3177,7 +3177,7 @@ GMT_LONG gmt_get_hms_order (struct GMT_CTRL *C, char *text, struct GMT_CLOCK_IO 
 	 */
 
 	GMT_LONG i, j, order, n_delim, sequence[3], last, n_h, n_m, n_s, n_x, n_dec, error = 0;
-	BOOLEAN big_to_small;
+	GMT_BOOLEAN big_to_small;
 	char *p = NULL;
 	ptrdiff_t off;
 
@@ -3303,7 +3303,7 @@ GMT_LONG gmt_get_dms_order (struct GMT_CTRL *C, char *text, struct GMT_GEO_IO *S
 	 */
 
 	GMT_LONG i1, i, j, order, n_d, n_m, n_s, n_x, n_dec, sequence[3], n_delim, last, error = 0;
-	BOOLEAN big_to_small;
+	GMT_BOOLEAN big_to_small;
 
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
 
@@ -3470,7 +3470,7 @@ void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, C
 	 */
 
 	GMT_LONG k, ywidth;
-	BOOLEAN no_delim;
+	GMT_BOOLEAN no_delim;
 	char fmt[GMT_TEXT_LEN256];
 
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
@@ -3878,7 +3878,7 @@ GMT_LONG gmt_scanf_geo (char *s, double *val)
 	*/
 
 	int retval = GMT_IS_FLOAT, id, im;
-	BOOLEAN negate = FALSE;
+	GMT_BOOLEAN negate = FALSE;
 	COUNTER_MEDIUM k, ncolons;
 	char scopy[GMT_TEXT_LEN64], suffix, *p = NULL, *p2 = NULL;
 	double dd, dm, ds;
@@ -4075,7 +4075,7 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	*/
 
 	GMT_LONG ival[3];
-	BOOLEAN negate_year = FALSE, got_yd = FALSE;
+	GMT_BOOLEAN negate_year = FALSE, got_yd = FALSE;
 	int hh, mm;
 	COUNTER_MEDIUM j, k, i, dash;
 	double ss, x;
@@ -4296,7 +4296,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, CO
 {
 	/* Reads an entire segment text data set into memory */
 
-	BOOLEAN close_file = FALSE, header = TRUE, no_segments, first_seg = TRUE;
+	GMT_BOOLEAN close_file = FALSE, header = TRUE, no_segments, first_seg = TRUE;
 	GMT_LONG status;
 	COUNTER_MEDIUM ncol = 0;
 	size_t n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, n_head_alloc = GMT_TINY_CHUNK;
@@ -4491,7 +4491,7 @@ void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_TABLE *T)
 	}
 }
 
-GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_PALETTE *P, BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, COUNTER_MEDIUM def_outline, struct GMT_OGR_SEG *G)
+GMT_LONG GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_PALETTE *P, GMT_BOOLEAN *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill,  GMT_BOOLEAN *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, COUNTER_MEDIUM def_outline, struct GMT_OGR_SEG *G)
 {
 	/* Scan header for occurrences of valid GMT options.
 	 * The possibilities are:
@@ -4770,7 +4770,7 @@ void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 {	/* Build segment-level OGR/GMT header metadata */
 	COUNTER_MEDIUM k, col, n;
-	BOOLEAN space = FALSE;
+	GMT_BOOLEAN space = FALSE;
 	char *sflag[7] = {"-D", "-G", "-I", "-L", "-T", "-W", "-Z"};
 	char buffer[GMT_BUFSIZ];
 
@@ -4994,13 +4994,13 @@ GMT_LONG gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	return (0);
 }
 
-GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_TABLE *table, BOOLEAN use_GMT_io, COUNTER_MEDIUM io_mode)
+GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_TABLE *table, GMT_BOOLEAN use_GMT_io, COUNTER_MEDIUM io_mode)
 {
 	/* Writes an entire segment data set to file or wherever.
 	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
-	BOOLEAN ascii, close_file = FALSE, append;
+	GMT_BOOLEAN ascii, close_file = FALSE, append;
 	GMT_LONG save = 0;
 	COUNTER_MEDIUM k, col;
 	COUNTER_LARGE row = 0, seg;
@@ -5108,10 +5108,10 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_ty
 	return (0);	/* OK status */
 }
 
-GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_DATASET *D, BOOLEAN use_GMT_io, GMT_LONG table)
+GMT_LONG GMT_write_dataset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_DATASET *D, GMT_BOOLEAN use_GMT_io, GMT_LONG table)
 {	/* Writes an entire data set to file or stream */
 	COUNTER_MEDIUM tbl, u_table;
-	BOOLEAN close_file = FALSE;
+	GMT_BOOLEAN close_file = FALSE;
 	GMT_LONG error, append = 0;
 	int *fd = NULL;
 	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], open_mode[4], *out_file = tmpfile;
@@ -5198,7 +5198,7 @@ GMT_LONG gmt_write_texttable (struct GMT_CTRL *C, void *dest, GMT_LONG dest_type
 	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
-	BOOLEAN close_file = FALSE;
+	GMT_BOOLEAN close_file = FALSE;
 	GMT_LONG append;
 	COUNTER_LARGE row = 0, seg;
 	COUNTER_MEDIUM k;
@@ -5289,7 +5289,7 @@ GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_
 {	/* Writes an entire text set to file or stream */
 	GMT_LONG error;
 	COUNTER_MEDIUM tbl, u_table, append = 0;
-	BOOLEAN close_file = FALSE;
+	GMT_BOOLEAN close_file = FALSE;
 	int *fd = NULL;	/* Must be int, not GMT_LONG */
 	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	FILE *fp = NULL;
@@ -5398,7 +5398,7 @@ void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, COUNTER_MEDI
 	D->n_columns = n_columns;
 }
 
-struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_LARGE n_rows, BOOLEAN alloc_only)
+struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_LARGE n_rows, GMT_BOOLEAN alloc_only)
 {	/* Create an empty text set structure with the required number of empty tables, all set to hold n_segments with n_rows */
 	/* Allocate the new textset structure given the specified dimensions.
 	 * IF alloc_only is TRUE then we do NOT set the corresponding counters (i.e., n_segments).  */
@@ -5555,7 +5555,7 @@ struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, C
 	return (T);
 }
 
-GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, COUNTER_LARGE n_rows, COUNTER_MEDIUM n_columns, BOOLEAN first)
+GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, COUNTER_LARGE n_rows, COUNTER_MEDIUM n_columns, GMT_BOOLEAN first)
 {	/* (re)allocates memory for a segment of given dimensions.
  	 * If n_rows is 0 then we do not set S->n_rows.  */
 	COUNTER_MEDIUM col;
@@ -5575,7 +5575,7 @@ GMT_LONG GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, COUN
 	return (GMT_OK);
 }
 
-struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, BOOLEAN alloc_only)
+struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, GMT_BOOLEAN alloc_only)
 {
 	/* Allocate the new Table structure given the specified dimensions.
 	 * If n_columns == 0 it means we don't know that dimension yet.
@@ -5602,7 +5602,7 @@ struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, COUNTER_LARGE n_segment
 	return (T);
 }
 
-struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, BOOLEAN alloc_only)
+struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_tables, COUNTER_LARGE n_segments, COUNTER_MEDIUM n_columns, COUNTER_LARGE n_rows, GMT_BOOLEAN alloc_only)
 {	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	COUNTER_MEDIUM tbl;
 	struct GMT_DATASET *D = NULL;
@@ -5623,11 +5623,11 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, COUNTER_MEDIUM n_ta
 	return (D);
 }
 
-struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MEDIUM source_type, BOOLEAN greenwich, BOOLEAN poly, BOOLEAN use_GMT_io)
+struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MEDIUM source_type, GMT_BOOLEAN greenwich, GMT_BOOLEAN poly, GMT_BOOLEAN use_GMT_io)
 {
 	/* Reads an entire data set into a single table memory with any number of segments */
 
-	BOOLEAN ascii, close_file = FALSE, header = TRUE, no_segments, first_seg = TRUE;
+	GMT_BOOLEAN ascii, close_file = FALSE, header = TRUE, no_segments, first_seg = TRUE;
 	GMT_LONG status;
 	COUNTER_MEDIUM n_expected_fields, col;
 	COUNTER_LARGE n_read = 0, row = 0, seg = 0;
@@ -6098,7 +6098,7 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 	return (I);
 }
 
-void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, BOOLEAN free_image)
+void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, GMT_BOOLEAN free_image)
 {	/* Free contents of image pointer */
 	if (!I) return;	/* Nothing to deallocate */
 	if (I->data && free_image) GMT_free (C, I->data);
@@ -6106,7 +6106,7 @@ void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, BOOLEAN free_i
 	if (I->ColorMap) GMT_free (C, I->ColorMap);
 }
 
-void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, BOOLEAN free_image)
+void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, GMT_BOOLEAN free_image)
 {	/* By taking a reference to the image pointer we can set it to NULL when done */
 	GMT_free_image_ptr (C, *I, free_image);
 	GMT_free (C, *I);
@@ -6190,7 +6190,7 @@ GMT_LONG GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, COUNTER_LA
 	return (GMT_OK);
 }
 
-void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, BOOLEAN free_vector)
+void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_BOOLEAN free_vector)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
 	if (!V) return;	/* Nothing to deallocate */
@@ -6202,14 +6202,14 @@ void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, BOOLEAN free
 	GMT_free (C, V->type);
 }
 
-void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, BOOLEAN free_vector)
+void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, GMT_BOOLEAN free_vector)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = FALSE means the vectors are not to be freed but the data array itself will be */
 	GMT_free_vector_ptr (C, *V, free_vector);
 	GMT_free (C, *V);
 }
 
-struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR *V_in, BOOLEAN duplicate_data)
+struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR *V_in, GMT_BOOLEAN duplicate_data)
 {	/* Duplicates a vector contrainer - optionally duplicates data arrays */
 	struct GMT_VECTOR *V = NULL;
 	
@@ -6235,7 +6235,7 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C)
 	return (M);
 }
 
-struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M_in, BOOLEAN duplicate_data)
+struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M_in, GMT_BOOLEAN duplicate_data)
 {	/* Duplicates a matrix container - optionally duplicates the data array */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (C, NULL, 1, struct GMT_MATRIX);
@@ -6249,19 +6249,19 @@ struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *C, struct GMT_MATRIX 
 	return (M);
 }
 
-void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, BOOLEAN free_matrix)
+void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, GMT_BOOLEAN free_matrix)
 {	/* Free everything but the struct itself  */
 	if (!M) return;	/* Nothing to deallocate */
 	if (free_matrix) GMT_free_univector (C, &(M->data), M->type);
 }
 
-void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, BOOLEAN free_matrix)
+void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, GMT_BOOLEAN free_matrix)
 {	/* By taking a reference to the matrix pointer we can set it to NULL when done */
 	GMT_free_matrix_ptr (C, *M, free_matrix);
 	GMT_free (C, *M);
 }
 
-BOOLEAN GMT_not_numeric (struct GMT_CTRL *C, char *text)
+GMT_BOOLEAN GMT_not_numeric (struct GMT_CTRL *C, char *text)
 {
 	/* TRUE if text cannot represent a valid number  However,
 	 * FALSE does not therefore mean we have a valid number because

@@ -344,7 +344,7 @@ void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 
 GMT_LONG MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
 {	/* Get a single parameter: original if requested, otherwise check for revised value first */
-	BOOLEAN got_rev = FALSE;
+	GMT_BOOLEAN got_rev = FALSE;
 
 	if (!F->original) { /* Must look for revised attribute unless explicitly turned off [ e.g, mgd77convert -FC] */
 		char Att[64];

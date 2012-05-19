@@ -44,41 +44,41 @@
 
 struct FILTER1D_CTRL {
 	struct D {	/* -D<inc> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct F {	/* -F<type><width>[<mode>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char filter;	/* Character codes for the filter */
 		double width;
 		GMT_LONG mode;	/* -1/0/+1 */
 		char *file;	/* Character codes for the filter */
 	} F;
 	struct I {	/* -I<ignoreval> */
-		BOOLEAN active;	/* TRUE when input values that equal value should be discarded */
+		GMT_BOOLEAN active;	/* TRUE when input values that equal value should be discarded */
 		double value;
 	} I;
 	struct L {	/* -L<lackwidth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} L;
 	struct N {	/* -N<t_col> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG col;
 	} N;
 	struct Q {	/* -Q<factor> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} Q;
 	struct S {	/* -S<symmetry> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} S;
 	struct T {	/* -T[<tmin/tmax/t_inc>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double min, max, inc;
 	} T;
 };
@@ -97,14 +97,14 @@ struct FILTER1D_CTRL {
 #define FILTER1D_CONVOLVE	3		/* If filter_type > FILTER1D_CONVOLVE then a FILTER1D_MEDIAN, FILTER1D_MODE, or EXTREME filter is selected  */
 
 struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup */
-	BOOLEAN use_ends;		/* True to start/stop at ends of series instead of 1/2 width inside  */
-	BOOLEAN check_asym;		/* TRUE to test whether the data are asymmetric about the output time  */
-	BOOLEAN check_lack;		/* TRUE to test for lack of data (gap) in the filter window */
-	BOOLEAN check_q;		/* TRUE to test average weight or N in median */
-	BOOLEAN robust;			/* Look for outliers in data when TRUE */
-	BOOLEAN equidist;		/* Data is evenly sampled in t */
-	BOOLEAN out_at_time;		/* TRUE when output is required at evenly spaced intervals */
-	BOOLEAN f_operator;		/* TRUE if custom weights coefficients sum to zero */
+	GMT_BOOLEAN use_ends;		/* True to start/stop at ends of series instead of 1/2 width inside  */
+	GMT_BOOLEAN check_asym;		/* TRUE to test whether the data are asymmetric about the output time  */
+	GMT_BOOLEAN check_lack;		/* TRUE to test for lack of data (gap) in the filter window */
+	GMT_BOOLEAN check_q;		/* TRUE to test average weight or N in median */
+	GMT_BOOLEAN robust;			/* Look for outliers in data when TRUE */
+	GMT_BOOLEAN equidist;		/* Data is evenly sampled in t */
+	GMT_BOOLEAN out_at_time;		/* TRUE when output is required at evenly spaced intervals */
+	GMT_BOOLEAN f_operator;		/* TRUE if custom weights coefficients sum to zero */
 
 	COUNTER_MEDIUM *n_this_col;	/* Pointer to array of counters [one per column]  */
 	COUNTER_MEDIUM *n_left;		/* Pointer to array of counters [one per column]  */
@@ -376,7 +376,7 @@ void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
 	COUNTER_MEDIUM i, i1, i2;
-	BOOLEAN normalize = FALSE;
+	GMT_BOOLEAN normalize = FALSE;
 	double t_0, t_1, time, w_sum;
 	p_func_d get_weight[3];		/* Selects desired weight function.  */
 
@@ -472,7 +472,7 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 GMT_LONG lack_check (struct FILTER1D_INFO *F, COUNTER_LARGE i_col, COUNTER_LARGE left, COUNTER_LARGE right)
 {
 	COUNTER_LARGE last_row, this_row;
-	BOOLEAN lacking = FALSE;
+	GMT_BOOLEAN lacking = FALSE;
 	double last_t;
 
 	last_row = left;
@@ -497,7 +497,7 @@ GMT_LONG lack_check (struct FILTER1D_INFO *F, COUNTER_LARGE i_col, COUNTER_LARGE
 void get_robust_estimates (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F, COUNTER_LARGE j, COUNTER_LARGE n, GMT_LONG both)
 {
 	COUNTER_LARGE i, n_smooth;
-	BOOLEAN sort_me = TRUE;
+	GMT_BOOLEAN sort_me = TRUE;
 	double low, high, last, temp;
 
 	if (F->filter_type > FILTER1D_MODE)
@@ -532,14 +532,14 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	COUNTER_LARGE i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
 	COUNTER_MEDIUM iq, i_col;
 	GMT_LONG i_f_wt;
-	BOOLEAN *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
+	GMT_BOOLEAN *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
 	struct GMT_CTRL *GMT = C->GMT;
 
 	outval = GMT_memory (GMT, NULL, F->n_cols, double);
-	good_one = GMT_memory (GMT, NULL, F->n_cols, BOOLEAN);
+	good_one = GMT_memory (GMT, NULL, F->n_cols, GMT_BOOLEAN);
 	wt_sum = GMT_memory (GMT, NULL, F->n_cols, double);
 	data_sum = GMT_memory (GMT, NULL, F->n_cols, double);
 

@@ -57,4 +57,4 @@ EXTERN_MSC void stripack_lists (struct GMT_CTRL *GMT, COUNTER_LARGE n, double *x
 EXTERN_MSC double stripack_areas (double *V1, double *V2, double *V3);
 EXTERN_MSC void cart_to_geo (struct GMT_CTRL *GMT, COUNTER_LARGE n, double *x, double *y, double *z, double *lon, double *lat);
 EXTERN_MSC int compare_arc (const void *p1, const void *p2);
-EXTERN_MSC void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *par, BOOLEAN vartens, struct GRD_HEADER *h, double *f);
+EXTERN_MSC void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *par, GMT_BOOLEAN vartens, struct GRD_HEADER *h, double *f);

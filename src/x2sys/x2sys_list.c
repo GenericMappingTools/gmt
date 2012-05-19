@@ -32,47 +32,47 @@
 
 struct X2SYS_LIST_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *col;
 	} C;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} F;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM min;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} W;
 };
@@ -158,7 +158,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	 */
 
 	COUNTER_MEDIUM n_errors = 0, i, n_files = 0;
-	BOOLEAN mixed = FALSE;
+	GMT_BOOLEAN mixed = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -239,7 +239,7 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG n, BOOLEAN first)
+void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG n, GMT_BOOLEAN first)
 {	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
 	 * col is used to set the format, and first is TRUE for first item per record.
 	 */
@@ -260,9 +260,9 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
-	BOOLEAN error = FALSE, mixed = FALSE, check_for_NaN = FALSE, both, first;
-	BOOLEAN internal = TRUE;	/* FALSE if only external xovers are needed */
-	BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
+	GMT_BOOLEAN error = FALSE, mixed = FALSE, check_for_NaN = FALSE, both, first;
+	GMT_BOOLEAN internal = TRUE;	/* FALSE if only external xovers are needed */
+	GMT_BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
 	COUNTER_LARGE i, j, k, coe_kind, one, two, n_items, n_out, n_tracks;
 	COUNTER_LARGE p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
 	COUNTER_MEDIUM n_weights = 0;

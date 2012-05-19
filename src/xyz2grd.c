@@ -33,38 +33,38 @@ EXTERN_MSC void GMT_str_tolower (char *string);
 
 struct XYZ2GRD_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A[f|l|n|m|r|s|u|z] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 	} A;
 	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *information;
 	} D;
 #ifdef GMT_COMPAT
 	struct E {	/* -E[<nodata>] */
-		BOOLEAN active;
-		BOOLEAN set;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN set;
 		double nodata;
 	} E;
 #endif
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 	struct GMT_PARSE_Z_IO Z;
@@ -163,7 +163,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0;
-	BOOLEAN do_grid, b_only = FALSE;
+	GMT_BOOLEAN do_grid, b_only = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -287,7 +287,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 
 GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, previous = FALSE;
+	GMT_BOOLEAN error = FALSE, previous = FALSE;
 	GMT_LONG scol, srow;
 	COUNTER_MEDIUM zcol, row, col, i, *flag = NULL;
 	COUNTER_LARGE n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
@@ -613,7 +613,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
 			COUNTER_LARGE ij_west, ij_east;
-			BOOLEAN first_bad = TRUE;
+			GMT_BOOLEAN first_bad = TRUE;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
 				ij_west = GMT_IJ0 (Grid->header, row, 0);

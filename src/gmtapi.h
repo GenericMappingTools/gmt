@@ -48,8 +48,8 @@ struct GMTAPI_DATA_OBJECT {
 	COUNTER_MEDIUM n_columns;		/* Number of columns to process in this dataset [GMT_DATASET only] */
 	COUNTER_MEDIUM n_expected_fields;	/* Number of expected columns for this dataset [GMT_DATASET only] */
 	COUNTER_MEDIUM level;			/* Nested module level when object was allocated */
-	BOOLEAN close_file;			/* TRUE if we opened source as a file and thus need to close it when done */
-	BOOLEAN region;				/* TRUE if wesn was passed, FALSE otherwise */
+	GMT_BOOLEAN close_file;			/* TRUE if we opened source as a file and thus need to close it when done */
+	GMT_BOOLEAN region;				/* TRUE if wesn was passed, FALSE otherwise */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
 	unsigned int alloc_mode;		/* GMTAPI_REFERENCE or GMTAPI_ALLOCATED */
 	unsigned int direction;			/* GMT_IN or GMT_OUT */
@@ -75,8 +75,8 @@ struct GMTAPI_CTRL {
 	COUNTER_MEDIUM unique_ID;		/* Used to create unique IDs for duration of session */
 	COUNTER_MEDIUM session_ID;		/* ID of this session */
 	COUNTER_MEDIUM current_item[2];		/* Array number of current dataset being processed (in and out)*/
-	BOOLEAN registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
-	BOOLEAN io_enabled[2];			/* TRUE if access has been allowed (in and out) */
+	GMT_BOOLEAN registered[2];			/* TRUE if at least one source/destination has been registered (in and out) */
+	GMT_BOOLEAN io_enabled[2];			/* TRUE if access has been allowed (in and out) */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */

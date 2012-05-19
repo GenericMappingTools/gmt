@@ -75,51 +75,51 @@
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A[young/old] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
 		double t_low, t_high;
 	} A;
 	struct D {	/* -Df|b */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
 	struct E {	/* -E[+]rotfile */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double lon, lat, w;
 	} e;
 	struct F {	/* -Fdriftfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct L {	/* -L */
-		BOOLEAN active;
-		BOOLEAN mode;		/* FALSE = hotspot tracks, TRUE = flowlines */
-		BOOLEAN stage_id;	/* 1 returns stage id instead of ages */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;		/* FALSE = hotspot tracks, TRUE = flowlines */
+		GMT_BOOLEAN stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_upper;
 	} N;
 	struct Q {	/* -Q<tfix> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_fix;	/* Set fixed age*/
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T<tzero> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_zero;	/* Set zero age*/
 	} T;
 	struct W {	/* -W<flag> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 	} W;
 };
@@ -339,7 +339,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 #define SPOTTER_BACK -1
 #define SPOTTER_FWD  +1
 
-GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c)
+GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c)
 {
 	GMT_LONG n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
@@ -375,7 +375,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE i, j, k;
 	COUNTER_MEDIUM n_stages = 0;		/* Number of stage poles */
 	COUNTER_MEDIUM n_out, n_expected_fields;
-	BOOLEAN make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
+	GMT_BOOLEAN make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
 	GMT_LONG n_fields, error;		/* Misc. signed counters */
 	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	

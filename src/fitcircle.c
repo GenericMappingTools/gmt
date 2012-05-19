@@ -77,11 +77,11 @@
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct L {	/* -L[<n>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM norm;	/* 1, 2, or 3 (both) */
 	} L;
 	struct S {	/* -S[<lat] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 = find latitude, 1 = use specified latitude */
 		double lat;	/* 0 for great circle */
 	} S;
@@ -317,7 +317,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUN
 
 GMT_LONG GMT_fitcircle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, greenwich = FALSE, allocate;
+	GMT_BOOLEAN error = FALSE, greenwich = FALSE, allocate;
 	COUNTER_MEDIUM imin, imax, nrots, j, k, n, np;
 	COUNTER_LARGE i, n_data;
 	size_t n_alloc;

@@ -33,14 +33,14 @@ EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 struct GMTSET_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D[s|u] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 	} D;
 	struct G {	/* -Gfilename */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 };

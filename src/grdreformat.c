@@ -29,11 +29,11 @@ EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct G
 
 struct GRDREFORMAT_CTRL {
 	struct IO {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file[2];
 	} IO;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 };
 
@@ -134,7 +134,7 @@ GMT_LONG GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *
 
 GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	COUNTER_MEDIUM hmode, type[2];
 
 	char fname[2][GMT_BUFSIZ];
@@ -194,7 +194,7 @@ GMT_LONG GMT_grdreformat (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (GMT->common.R.active) {	/* Specified a subset */
-		BOOLEAN global = FALSE;
+		GMT_BOOLEAN global = FALSE;
 		global = GMT_grd_is_global (GMT, Grid->header);
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
 		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;

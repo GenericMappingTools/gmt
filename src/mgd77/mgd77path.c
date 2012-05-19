@@ -21,14 +21,14 @@
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 	} A;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
@@ -134,7 +134,7 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM i, n_cruises = 0, n_paths;
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	
 	char path[GMT_BUFSIZ], **list = NULL;
 	

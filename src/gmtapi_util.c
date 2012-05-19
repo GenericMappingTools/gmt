@@ -319,7 +319,7 @@ void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct 
 	h->inc[GMT_Y] = GMT_get_inc (C, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 }
 
-BOOLEAN GMTAPI_need_grdpadding (struct GRD_HEADER *h, COUNTER_MEDIUM *pad)
+GMT_BOOLEAN GMTAPI_need_grdpadding (struct GRD_HEADER *h, COUNTER_MEDIUM *pad)
 {	/* Compares current grid pad status to output pad requested.  If we need
 	 * to add a pad we return TRUE here, otherwise FALSE. */
 	COUNTER_MEDIUM side;
@@ -484,7 +484,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 int GMTAPI_Next_Data_Object (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction)
 {	/* Sets up current_item to be the next unused item of the required direction; or return EOF.
 	 * When EOF is returned, API->current_item[direction] holds the last object ID used. */
-	BOOLEAN found = FALSE;
+	GMT_BOOLEAN found = FALSE;
 	COUNTER_MEDIUM item;
 	
 	API->error = GMT_OK;		/* No error yet */
@@ -801,7 +801,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-BOOLEAN col_check (struct GMT_TABLE *T, COUNTER_MEDIUM *n_cols) {
+GMT_BOOLEAN col_check (struct GMT_TABLE *T, COUNTER_MEDIUM *n_cols) {
 	COUNTER_LARGE seg;
 	/* Checks that all segments in this table has the correct number of columns.
 	 * If *n_cols == 0 we set it to the number of columns found in the first segment. */
@@ -820,7 +820,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	 */
 	
 	int item, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
-	BOOLEAN allocate = FALSE, update = FALSE, all_D, use_GMT_io, poly;
+	GMT_BOOLEAN allocate = FALSE, update = FALSE, all_D, use_GMT_io, poly;
 	size_t n_alloc;
 	COUNTER_LARGE row, seg, ij;
 	COUNTER_MEDIUM n_cols = 0, col;
@@ -1165,7 +1165,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_
 	 */
 	
 	int item, first_item = 0, last_item;
-	BOOLEAN update = FALSE, allocate = FALSE;
+	GMT_BOOLEAN update = FALSE, allocate = FALSE;
 	size_t n_alloc;
 	COUNTER_LARGE row, seg;
 	char *t = NULL;
@@ -1400,7 +1400,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	 */
 	
 	int item, complex_mode, reset;
-	BOOLEAN done = TRUE;
+	GMT_BOOLEAN done = TRUE;
 	COUNTER_MEDIUM row, col, i0, i1, j0, j1;
 	COUNTER_LARGE ij, ij_orig;
 	size_t size;
@@ -1612,7 +1612,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	 */
 	
 	int item, complex_mode, reset;
-	BOOLEAN done = TRUE;
+	GMT_BOOLEAN done = TRUE;
  	COUNTER_MEDIUM row, col, i0, i1, j0, j1;
 	COUNTER_LARGE ij, ij_orig;
 	size_t size;
@@ -1825,7 +1825,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *G_obj)
 {	/* Writes out a single grid to destination */
 	int item, error, complex_mode;
-	BOOLEAN done = TRUE;
+	GMT_BOOLEAN done = TRUE;
 	COUNTER_MEDIUM row, col, i0, i1, j0, j1;
 	COUNTER_LARGE ij, ijp, ij_orig;
 	size_t size;
@@ -2979,7 +2979,7 @@ void * GMT_Get_Data (struct GMTAPI_CTRL *API, unsigned int object_ID, unsigned i
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
 	int item;
-	BOOLEAN was_enabled;
+	GMT_BOOLEAN was_enabled;
 	void *new = NULL;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
@@ -3109,7 +3109,7 @@ int GMT_Put_Data (struct GMTAPI_CTRL *API, unsigned int object_ID, unsigned int 
 	 * Return: FALSE if all is well, TRUE if there was an error (and set API->error).
 	 */
 	int item;
-	BOOLEAN was_enabled;
+	GMT_BOOLEAN was_enabled;
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 
@@ -3152,7 +3152,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 	 */
 
 	int status, n_fields = 0;
-	BOOLEAN get_next_record;
+	GMT_BOOLEAN get_next_record;
 	COUNTER_MEDIUM col, n_nan;
 	COUNTER_LARGE *p = NULL, ij;
 	char *t_record = NULL;

@@ -126,44 +126,44 @@ struct HOTSPOT_ORIGINATOR {
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D<factor */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;	
 	} D;
 	struct E {	/* -Erotfile */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		char *file;
 	} E;
 	struct F {	/* -Ehotspotfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
-		BOOLEAN degree;	/* Report degrees */
+		GMT_BOOLEAN degree;	/* Report degrees */
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_upper;
 	} N;
 	struct Q {	/* -Q<tfix> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_fix, r_fix;
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W<max_dist> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dist;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -345,7 +345,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM n_max_spots, n_input, n_expected_fields, n_out;
 	COUNTER_MEDIUM i, j, k, n, kk, ns, nh, np, n_read, n_skipped = 0;
 	
-	BOOLEAN error = FALSE, better;
+	GMT_BOOLEAN error = FALSE, better;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];

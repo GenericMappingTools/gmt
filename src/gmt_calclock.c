@@ -161,7 +161,7 @@ GMT_LONG GMT_gmonth_length (GMT_LONG year, GMT_LONG month) {
 
 /* Proleptic Gregorian Calendar operations  */
 
-BOOLEAN GMT_is_gleap (GMT_LONG gyear) {
+GMT_BOOLEAN GMT_is_gleap (GMT_LONG gyear) {
 	/* Given integer proleptic gregorian calendar year,
 	   return TRUE if it is a Gregorian leap year; 
 	   else return FALSE.  */
@@ -460,7 +460,7 @@ GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
 	return (retval);
 }
 
-void gmt_small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, GMT_LONG step_secs, BOOLEAN init) {
+void gmt_small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, GMT_LONG step_secs, GMT_BOOLEAN init) {
 
 	/* Called by GMT_moment_interval ().  Get here when p->stuff[0] is initialized and
 	   0 < step_secs <= GMT_DAY2SEC_I.  If init, stuff[0] may need to be truncated.  */
@@ -511,7 +511,7 @@ void gmt_small_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *
 	}
 }
 
-void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, BOOLEAN init) {
+void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, GMT_BOOLEAN init) {
 	/* Unchanged by this routine:
 	     p->step is a positive interval width;
 	     p->unit is set to a time axis unit;
@@ -819,7 +819,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 	}
 }		
 
-void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, BOOLEAN upper, COUNTER_MEDIUM kind, double dt)
+void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GMT_DATE_IO *D, struct GMT_CLOCK_IO *W, GMT_BOOLEAN upper, COUNTER_MEDIUM kind, double dt)
 {	/* Given the internal time representation dt and the formatting information
 	 * in the D and C structure, write the calendar representation to strings date and clock,
 	 * but skip either string if it is a NULL pointer */

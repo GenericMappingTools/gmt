@@ -345,7 +345,7 @@ GMT_LONG gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 GMT_LONG gmt_skip_second_annot (COUNTER_MEDIUM item, double x, double x2[], COUNTER_MEDIUM n, COUNTER_MEDIUM primary)
 {
 	COUNTER_MEDIUM i;
-	BOOLEAN found;
+	GMT_BOOLEAN found;
 	double small;
 
 	if (!n) return (FALSE);	/* Not set, no need to skip */
@@ -358,20 +358,20 @@ GMT_LONG gmt_skip_second_annot (COUNTER_MEDIUM item, double x, double x2[], COUN
 	return (found);
 }
 
-void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, BOOLEAN below, BOOLEAN annotate)
+void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, double val0, double val1, struct GMT_PLOT_AXIS *A, GMT_BOOLEAN below, GMT_BOOLEAN annotate)
 {
 	COUNTER_MEDIUM k, i, nx, nx1, np = 0;/* Misc. variables */
 	COUNTER_MEDIUM annot_pos;	/* Either 0 for upper annotation or 1 for lower annotation */
 	COUNTER_MEDIUM primary;		/* Axis item number of annotation with largest interval/unit */
 	COUNTER_MEDIUM axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
-	BOOLEAN horizontal;		/* TRUE if axis is horizontal */
-	BOOLEAN neg = below;		/* TRUE if annotations are to the left of or below the axis */
-	BOOLEAN far;			/* TRUE if the anchor point of annotations is on the far side of the axis */
-	BOOLEAN is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
-	BOOLEAN do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
-	BOOLEAN do_tick;		/* TRUE unless we are dealing with bits of weeks */
-	BOOLEAN form;			/* TRUE for outline font */
-	BOOLEAN ortho = FALSE;		/* TRUE if annotations are orthogonal to axes */
+	GMT_BOOLEAN horizontal;		/* TRUE if axis is horizontal */
+	GMT_BOOLEAN neg = below;		/* TRUE if annotations are to the left of or below the axis */
+	GMT_BOOLEAN far;			/* TRUE if the anchor point of annotations is on the far side of the axis */
+	GMT_BOOLEAN is_interval;		/* TRUE when the annotation is interval annotation and not tick annotation */
+	GMT_BOOLEAN do_annot;		/* TRUE unless we are dealing with Gregorian weeks */
+	GMT_BOOLEAN do_tick;		/* TRUE unless we are dealing with bits of weeks */
+	GMT_BOOLEAN form;			/* TRUE for outline font */
+	GMT_BOOLEAN ortho = FALSE;		/* TRUE if annotations are orthogonal to axes */
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
 	double x, t_use;			/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
@@ -588,7 +588,7 @@ void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 {
 	double *x = NULL, ys, yn, p_cap = 0.0, cap_start[2] = {0.0, 0.0}, cap_stop[2] = {0.0, 0.0};
 	COUNTER_MEDIUM idup = 0, i, nx;
-	BOOLEAN cap = FALSE;
+	GMT_BOOLEAN cap = FALSE;
 
 	/* Do we have duplicate e and w boundaries ? */
 	idup = (GMT_IS_AZIMUTHAL(C) && doubleAlmostEqual(e-w, 360.0)) ? 1 : 0;
@@ -911,7 +911,7 @@ void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 	}
 }
 
-void gmt_fancy_frame_straight_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, double lonA, double latA, double lonB, double latB, COUNTER_MEDIUM side, BOOLEAN secondary_too)
+void gmt_fancy_frame_straight_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, double lonA, double latA, double lonB, double latB, COUNTER_MEDIUM side, GMT_BOOLEAN secondary_too)
 {
 	COUNTER_MEDIUM k, kn = 1;
 	double scale = 1.0, x[2], y[2], angle, s, c, dx, dy, Ldx, Ldy;
@@ -941,7 +941,7 @@ void gmt_fancy_frame_straight_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, d
 	}
 }
 
-void gmt_fancy_frame_curved_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, double lonA, double latA, double lonB, double latB, COUNTER_MEDIUM side, BOOLEAN secondary_too)
+void gmt_fancy_frame_curved_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, double lonA, double latA, double lonB, double latB, COUNTER_MEDIUM side, GMT_BOOLEAN secondary_too)
 {
 	double scale[2] = {1.0, 1.0}, escl, x1, x2, y1, y2, radius, r_inc, az1, az2, da0, da, width, s;
 
@@ -978,7 +978,7 @@ void gmt_fancy_frame_curved_outline (struct GMT_CTRL *C, struct PSL_CTRL *P, dou
 	}
 }
 
-void gmt_rounded_framecorners (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, BOOLEAN secondary_too)
+void gmt_rounded_framecorners (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_BOOLEAN secondary_too)
 {
 	COUNTER_MEDIUM k, kn;
 	double x1, y1, x2, y2, anglew, anglee, x, y, width;
@@ -1069,7 +1069,7 @@ void gmt_wesn_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, do
 void gmt_fancy_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	double fat_pen, thin_pen;
-	BOOLEAN dual = FALSE;
+	GMT_BOOLEAN dual = FALSE;
 	COUNTER_MEDIUM cap = P->internal.line_cap;
 
 	if (!(C->current.setting.map_frame_type & GMT_IS_FANCY)) {	/* Draw plain boundary and return */
@@ -1129,7 +1129,7 @@ void gmt_rect_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, d
 
 void gmt_polar_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	BOOLEAN dual = FALSE;
+	GMT_BOOLEAN dual = FALSE;
 	COUNTER_MEDIUM cap = P->internal.line_cap;
 	double thin_pen, fat_pen;
 
@@ -1187,7 +1187,7 @@ void gmt_polar_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, d
 
 void gmt_conic_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
-	BOOLEAN dual = FALSE;
+	GMT_BOOLEAN dual = FALSE;
 	COUNTER_MEDIUM cap = P->internal.line_cap;
 	double thin_pen, fat_pen;
 
@@ -1428,13 +1428,13 @@ GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, COUNTER_
 	return (FALSE);
 }
 
-void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, COUNTER_MEDIUM nx, COUNTER_MEDIUM type, BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
+void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, COUNTER_MEDIUM nx, COUNTER_MEDIUM type, GMT_BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
 {
 	/* type = 0 for lon and 1 for lat */
 
 	double line_angle, text_angle, div, tick_length, o_len, len, ca, sa;
 	COUNTER_MEDIUM i, annot_type, justify;
-	BOOLEAN flip;	
+	GMT_BOOLEAN flip;	
 
 	len = GMT_get_annot_offset (C, &flip, level);	/* Get annotation offset, and flip justification if "inside" */
 	annot_type = 2 << type;		/* 2 = NS, 4 = EW */
@@ -1473,7 +1473,7 @@ void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double 
 	}
 }
 
-void gmt_map_symbol_ew (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, char *label, double west, double east, BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
+void gmt_map_symbol_ew (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, char *label, double west, double east, GMT_BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
 {
 	COUNTER_MEDIUM i, nc;
 	struct GMT_XINGS *xings = NULL;
@@ -1484,7 +1484,7 @@ void gmt_map_symbol_ew (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, char
 	if (nc) GMT_free (C, xings);
 }
 
-void gmt_map_symbol_ns (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, char *label, double south, double north, BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
+void gmt_map_symbol_ns (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, char *label, double south, double north, GMT_BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
 {
 	COUNTER_MEDIUM i, nc;
 	struct GMT_XINGS *xings = NULL;
@@ -1649,7 +1649,7 @@ void gmt_map_gridcross (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 void gmt_map_tickitem (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, COUNTER_MEDIUM item)
 {
 	COUNTER_MEDIUM i, nx, ny;
-	BOOLEAN do_x, do_y;
+	GMT_BOOLEAN do_x, do_y;
 	double dx, dy, *val = NULL, len;
 
 	if (! (C->current.map.frame.axis[GMT_X].item[item].active || C->current.map.frame.axis[GMT_Y].item[item].active)) return;
@@ -1753,8 +1753,8 @@ void gmt_label_trim (char *label, GMT_LONG stage)
 void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	COUNTER_MEDIUM i, k, nx, ny, form, remove[2] = {0,0}, add;
-	BOOLEAN do_minutes, do_seconds, done_Greenwich, done_Dateline;
-	BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
+	GMT_BOOLEAN do_minutes, do_seconds, done_Greenwich, done_Dateline;
+	GMT_BOOLEAN full_lat_range, proj_A, proj_B, annot_0_and_360 = FALSE, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_TEXT_LEN256];
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
@@ -2048,7 +2048,7 @@ GMT_LONG gmt_is_fancy_boundary (struct GMT_CTRL *C)
 void GMT_map_basemap (struct GMT_CTRL *C)
 {
 	COUNTER_MEDIUM i;
-	BOOLEAN clip_on = FALSE;
+	GMT_BOOLEAN clip_on = FALSE;
 	double w, e, s, n;
 	struct PSL_CTRL *P = C->PSL;
 
@@ -2176,7 +2176,7 @@ void GMT_map_clip_on (struct GMT_CTRL *C, double rgb[], COUNTER_MEDIUM flag)
 	 */
 
 	COUNTER_LARGE np;
-	BOOLEAN donut;
+	GMT_BOOLEAN donut;
 	double *work_x = NULL, *work_y = NULL;
 	struct PSL_CTRL *P = C->PSL;
 	
@@ -2356,7 +2356,7 @@ void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, COU
 {
 	COUNTER_MEDIUM i, j, i1;
 	GMT_LONG way;
-	BOOLEAN close, stop;
+	GMT_BOOLEAN close, stop;
 	double x_cross[2], y_cross[2];
 	struct PSL_CTRL *P = C->PSL;
 
@@ -2842,9 +2842,9 @@ void GMT_setpen (struct GMT_CTRL *C, struct GMT_PEN *pen)
 	PSL_setcolor (C->PSL, pen->rgb, PSL_IS_STROKE);
 }
 
-BOOLEAN gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[])
+GMT_BOOLEAN gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[])
 {
-	BOOLEAN result;
+	GMT_BOOLEAN result;
 	/* Perform the boolean comparison and return FALSE if test is TRUE */
 	
 	switch (s->operator) {
@@ -2891,9 +2891,9 @@ BOOLEAN gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMBO
 	return (!result);			/* Return the opposite of the test result */
 }
 
-void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, COUNTER_LARGE *n, struct GMT_PEN *p, struct GMT_FILL *f, COUNTER_MEDIUM outline, BOOLEAN *flush)
+void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, double *y, COUNTER_LARGE *n, struct GMT_PEN *p, struct GMT_FILL *f, COUNTER_MEDIUM outline, GMT_BOOLEAN *flush)
 {
-	BOOLEAN draw_outline;
+	GMT_BOOLEAN draw_outline;
 
 	draw_outline = (outline && p->rgb[0] != -1) ? TRUE : FALSE;
 	if (draw_outline) GMT_setpen (C, p);
@@ -2911,7 +2911,7 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, 
 void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, COUNTER_MEDIUM outline)
 {
 	COUNTER_MEDIUM na, i, level = 0;
-	BOOLEAN flush = FALSE, this_outline = FALSE, found_elseif = FALSE, skip[11];
+	GMT_BOOLEAN flush = FALSE, this_outline = FALSE, found_elseif = FALSE, skip[11];
 	COUNTER_LARGE n = 0;
 	size_t n_alloc = 0;
 	double x, y, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
@@ -3399,7 +3399,7 @@ void GMT_textpath_init (struct GMT_CTRL *C, struct GMT_PEN *LP, double Brgb[], s
 void GMT_contlabel_plot (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 {
 	COUNTER_MEDIUM i;
-	BOOLEAN no_labels;
+	GMT_BOOLEAN no_labels;
 	struct PSL_CTRL *P = C->PSL;
 
 	if (!G->n_segments) return;	/* Northing to do here */
@@ -3683,7 +3683,7 @@ void GMT_plotcanvas (struct GMT_CTRL *C)
 	if (C->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
 		double *x = NULL, *y = NULL;
 		GMT_LONG np;
-		BOOLEAN donut;
+		GMT_BOOLEAN donut;
 		np = GMT_map_clip_path (C, &x, &y, &donut);
 		GMT_setfill (C, &C->current.map.frame.fill, FALSE);
 		PSL_plotpolygon (C->PSL, x, y, (1 + donut) * np);
@@ -3747,7 +3747,7 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARG
 #define JUMP_R 1
 
 	GMT_LONG jump_dir = JUMP_L;
-	BOOLEAN jump;
+	GMT_BOOLEAN jump;
 	COUNTER_LARGE k, first, i;
 	double *xp = NULL, *yp = NULL;
 	p_func_d x_on_border[2] = {NULL, NULL};
@@ -3873,7 +3873,7 @@ void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	 * two paths are not the same.  If no fill is requested then we just draw lines.
 	 */
 	struct GMT_LINE_SEGMENT *S2 = NULL;
- 	BOOLEAN add_pole, separate;
+ 	GMT_BOOLEAN add_pole, separate;
 	GMT_LONG outline = 0;
 	char *type[2] = {"Perimeter", "Polar cap perimeter"};
 	char *use[2] = {"fill only", "fill and outline"};
@@ -4032,7 +4032,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	   arrow heads we also shorten the vector arc so that unfilled vector heads are possible. */
 
 	GMT_LONG n1, n2, n, add, heads, side, justify;
-	BOOLEAN longway = FALSE;
+	GMT_BOOLEAN longway = FALSE;
 	size_t n_alloc;
 	double lon[2], lat[2], tlon, tlat, mlon, mlat, r, r0, A[3], B[3], P[3], Ax[3], Bx[3];
 	double x, y, dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];

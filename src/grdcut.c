@@ -32,15 +32,15 @@
 
 struct GRDCUT_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct Z {	/* -Z[min/max] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 means NaN */
 		double min, max;
 	} Z;
@@ -180,7 +180,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		COUNTER_MEDIUM row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
 		COUNTER_LARGE ij;
-		BOOLEAN go;
+		GMT_BOOLEAN go;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */

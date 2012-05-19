@@ -56,50 +56,50 @@
 
 struct GRDVIEW_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct G {	/* -G<drapefile> */
-		BOOLEAN active;
-		BOOLEAN image;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN image;
 		char *file[3];
 	} G;
 	struct I {	/* -G<intensfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} I;
 	struct N {	/* -N<level>[/<color>] */
-		BOOLEAN active;
-		BOOLEAN facade;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN facade;
 		double rgb[4];
 		double level;
 	} N;
 	struct Q {	/* -Q<type>[g] */
-		BOOLEAN active, special;
-		BOOLEAN outline;
-		BOOLEAN mask;
-		BOOLEAN monochrome;
+		GMT_BOOLEAN active, special;
+		GMT_BOOLEAN outline;
+		GMT_BOOLEAN mask;
+		GMT_BOOLEAN monochrome;
 		COUNTER_MEDIUM mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
 		COUNTER_MEDIUM dpi;
 		struct GMT_FILL fill;
 	} Q;
 	struct S {	/* -S<smooth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM value;
 	} S;
 	struct T {	/* -T[s][o[<pen>]] */
-		BOOLEAN active;
-		BOOLEAN skip;
-		BOOLEAN outline;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN skip;
+		GMT_BOOLEAN outline;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W[+]<type><pen> */
-		BOOLEAN active;
-		BOOLEAN contour;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN contour;
 		struct GMT_PEN pen[3];
 	} W;
 };
@@ -269,7 +269,7 @@ void add_node (struct GMT_CTRL *GMT, double x[], double y[], double z[], double 
 	(*k)++;
 }
 
-void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, GMT_LONG n, double z, BOOLEAN intens, BOOLEAN monochrome, double intensity, BOOLEAN outline) {
+void paint_it_grdview (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double *x, double *y, GMT_LONG n, double z, GMT_BOOLEAN intens, GMT_BOOLEAN monochrome, double intensity, GMT_BOOLEAN outline) {
 	GMT_LONG index;
 	double rgb[4];
 	struct GMT_FILL *f = NULL;
@@ -548,7 +548,7 @@ GMT_LONG sval;
 
 GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN get_contours, bad, good, error = FALSE, pen_set, begin, saddle, drape_resample = FALSE;
+	GMT_BOOLEAN get_contours, bad, good, error = FALSE, pen_set, begin, saddle, drape_resample = FALSE;
 	COUNTER_MEDIUM c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
 	COUNTER_MEDIUM t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	GMT_LONG i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;

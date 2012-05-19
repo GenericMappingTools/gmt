@@ -463,7 +463,7 @@ void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H)
 	}
 }
 
-BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, int width)
+GMT_BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, int width)
 {
 	COUNTER_LARGE i = 0;
 
@@ -474,10 +474,10 @@ BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, 
 	return (TRUE);
 }
 
-BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double limits[2])
+GMT_BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double limits[2])
 {	/* Determine if the values in x[] are all the same, and sets actual range limits */
 	COUNTER_LARGE i;
-	BOOLEAN constant = TRUE;
+	GMT_BOOLEAN constant = TRUE;
 	double last;
 
 	limits[0] = limits[1] = x[0];
@@ -500,7 +500,7 @@ BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], COUNTER_LARGE n,
 static inline void MGD77_do_scale_offset_after_read (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double scale, double offset, double nan_val)
 {
 	COUNTER_LARGE k;
-	BOOLEAN check_nan;
+	GMT_BOOLEAN check_nan;
 
 	check_nan = !GMT_is_dnan (nan_val);
 	if (! (scale == 1.0 && offset == 0.0)) {
@@ -615,7 +615,7 @@ static void MGD77_Place_Text (struct GMT_CTRL *C, int dir, char *struct_member, 
 		MGD77_Fatal_Error (C, MGD77_BAD_ARG);
 }
 
-static int MGD77_Find_Cruise_ID (struct GMT_CTRL *C, char *name, char **cruises, COUNTER_MEDIUM n_cruises, BOOLEAN sorted)
+static int MGD77_Find_Cruise_ID (struct GMT_CTRL *C, char *name, char **cruises, COUNTER_MEDIUM n_cruises, GMT_BOOLEAN sorted)
 {
 	if (!cruises) return (-1);	/* Null pointer passed */
 
@@ -1590,7 +1590,7 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CO
 	COUNTER_MEDIUM k, id;
 	size_t Clength[3] = {8U, 5U, 6U};
 	GMT_LONG err, col[MGD77_N_DATA_FIELDS+1];
-	BOOLEAN make_ymdhm;
+	GMT_BOOLEAN make_ymdhm;
 	struct MGD77_DATA_RECORD MGD77Record;
 	double tz, *values[MGD77_N_DATA_FIELDS+1];
 	char *text[MGD77_N_DATA_FIELDS+1];
@@ -1651,7 +1651,7 @@ void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct 
 
 	GMT_LONG id, t_id, set, t_set = MGD77_NOT_SET, entry;
 	COUNTER_LARGE rec;
-	BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
+	GMT_BOOLEAN crossed_dateline = FALSE, crossed_greenwich = FALSE;
 	char *text;
 	double *values, dx;
 
@@ -1831,7 +1831,7 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CO
 	size_t start[2] = {0, 0}, count[2] = {0, 0};
 	double *values = NULL, *x = NULL, *xtmp = NULL, single_val, scale, offset;
 	char *text = NULL;
-	BOOLEAN transform, not_allocated = TRUE;
+	GMT_BOOLEAN transform, not_allocated = TRUE;
 
 	count[0] = S->H.n_records;
 
@@ -1923,7 +1923,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CON
 	COUNTER_MEDIUM i, k, col;
 	COUNTER_LARGE rec, rec_in;
 	GMT_LONG c, id;
-	BOOLEAN apply_bits[MGD77_N_SETS];
+	GMT_BOOLEAN apply_bits[MGD77_N_SETS];
 	unsigned int *flags = NULL;
 	char *text = NULL, *flagname[MGD77_N_SETS] = {"MGD77_flags", "CDF_flags"};
 	double scale, offset, *values = NULL;
@@ -2053,7 +2053,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CON
 		/* Now E.aux[i] points to the correct array of values for each auxillary column that is needed */
 
 		if (E.correction_requested[E77_CORR_FIELD_TWT]) {	/* Must correct twt for wraps */
-			BOOLEAN has_prev_twt = FALSE;
+			GMT_BOOLEAN has_prev_twt = FALSE;
 			double PDR_wrap_trigger, d_twt, prev_twt = 0.0, twt_pdrwrap_corr = 0.0;
 			PDR_wrap_trigger = 0.5 * S->H.PDR_wrap;	/* Must exceed 50% of wrap to activate unwrapping */
 			for (rec = 0; rec < count[0]; rec++) {	/* Correct every record */
@@ -2110,7 +2110,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CON
 
 	/* Look for optional bit flags to read and apply */
 
-	GMT_memset (apply_bits, MGD77_N_SETS, BOOLEAN);
+	GMT_memset (apply_bits, MGD77_N_SETS, GMT_BOOLEAN);
 	for (k = 0; k < MGD77_N_SETS; k++) {
 		if (F->use_flags[k] && nc_inq_varid (F->nc_id, flagname[k], &nc_id) == NC_NOERR) {	/* There are bitflags for this set and we want them */
 			flags = GMT_memory (C, NULL, count[0], unsigned int);
@@ -2655,7 +2655,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 	 */
 	int has_suffix = MGD77_NOT_SET;
 	COUNTER_MEDIUM id, fmt, f_start, f_stop;
-	BOOLEAN append = FALSE;
+	GMT_BOOLEAN append = FALSE;
 	char geo_path[GMT_BUFSIZ];
 
 	for (fmt = 0; fmt < MGD77_FORMAT_ANY; fmt++) {	/* Determine if given track name contains one of the 3 possible extensions */
@@ -4033,7 +4033,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 
 	GMT_LONG i;
 	COUNTER_MEDIUM n = 0, n_dig, j, k;
-	BOOLEAN all, NGDC_ID_likely;
+	GMT_BOOLEAN all, NGDC_ID_likely;
 	size_t n_alloc = 0, length;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
@@ -4177,7 +4177,7 @@ void MGD77_Path_Free (struct GMT_CTRL *C, COUNTER_MEDIUM n, char **list)
 #endif
 }
 
-void MGD77_Apply_Bitflags (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, COUNTER_LARGE rec, BOOLEAN apply_bits[])
+void MGD77_Apply_Bitflags (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, COUNTER_LARGE rec, GMT_BOOLEAN apply_bits[])
 {
 	COUNTER_MEDIUM set, i;
 	double *value;
@@ -4193,11 +4193,11 @@ void MGD77_Apply_Bitflags (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct M
 	}
 }
 
-BOOLEAN MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, COUNTER_LARGE rec)
+GMT_BOOLEAN MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, COUNTER_LARGE rec)
 {
 	COUNTER_MEDIUM i, col, c, id, n_passed;
 	int match;
-	BOOLEAN pass;
+	GMT_BOOLEAN pass;
 	double *value;
 	char *text;
 
@@ -5355,7 +5355,7 @@ double MGD77_Theoretical_Gravity (struct GMT_CTRL *C, double lon, double lat, in
 	return (g);
 }
 
-double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, BOOLEAN calc_date)
+double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, GMT_BOOLEAN calc_date)
 {	/* Compute the recalculated magnetic anomaly using IGRF.  Pass time either as a GMT time in secs
 	 * and set calc_date to TRUE or pass the floating point year that is needed by IGRF function. */
 	double IGRF[7];	/* The 7 components returned */
@@ -5377,7 +5377,7 @@ void MGD77_CM4_end (struct GMT_CTRL *C, struct MGD77_CM4 *CM4)
 	for (i = 0; i < 3; i++) free ( CM4->path[i]);
 }
 
-double MGD77_Calc_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+double MGD77_Calc_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, GMT_BOOLEAN calc_date, struct MGD77_CM4 *CM4)
 {
 	/* New code goes here */
 	if (GMT_is_dnan (time) || GMT_is_dnan (lon) || GMT_is_dnan (lat)) return (C->session.d_NaN);
@@ -5386,7 +5386,7 @@ double MGD77_Calc_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time,
 	return (0.0);
 }
 
-double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *C, double time, double lon, double lat, double obs, BOOLEAN calc_date, struct MGD77_CM4 *CM4)
+double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *C, double time, double lon, double lat, double obs, GMT_BOOLEAN calc_date, struct MGD77_CM4 *CM4)
 {
 	double val, cm4;
 
@@ -5411,7 +5411,7 @@ COUNTER_MEDIUM MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char *
 	 */
 
 	COUNTER_MEDIUM n_list = 0, rec = 0, pos;
-	BOOLEAN sorted;
+	GMT_BOOLEAN sorted;
 	GMT_LONG id, cruise_id;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
@@ -5512,7 +5512,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 
 	COUNTER_MEDIUM i, n_aux, rec = 0, pos;
 	GMT_LONG id, cruise_id;
-	BOOLEAN sorted, mgd77;
+	GMT_BOOLEAN sorted, mgd77;
 	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
 	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
 	struct MGD77_CORRTABLE **C_table = NULL;
@@ -5759,7 +5759,7 @@ void MGD77_gcal_from_dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, 
 	return;
 }
 
-BOOLEAN MGD77_fake_times (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, COUNTER_LARGE nrec)
+GMT_BOOLEAN MGD77_fake_times (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, COUNTER_LARGE nrec)
 {
 	/* Create fake times by using distances and constant speed during cruise */
 	double *dist, t[2], slowness;

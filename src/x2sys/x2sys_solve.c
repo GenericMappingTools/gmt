@@ -60,29 +60,29 @@
 
 struct X2SYS_SOLVE_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *col;
 	} C;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} E;
 #ifdef SAVEFORLATER
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} I;
 #endif
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 };
 
@@ -331,7 +331,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_list = NULL;
 	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
-	BOOLEAN error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
+	GMT_BOOLEAN error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL};
 	COUNTER_LARGE n_par = 0, n, m, t, n_tracks = 0, n_active;
 	COUNTER_LARGE i, p, j, k, r, s, off, row, n_COE = 0;

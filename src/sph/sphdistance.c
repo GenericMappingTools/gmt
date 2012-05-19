@@ -40,32 +40,32 @@
 
 struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct G {	/* -G<maskfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<unit>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Q;
 };
@@ -231,7 +231,7 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, first = FALSE, periodic;
+	GMT_BOOLEAN error = FALSE, first = FALSE, periodic;
 	GMT_LONG s_row, south_row, north_row, w_col, e_col;
 
 	COUNTER_MEDIUM row, col, p_col, west_col, east_col;

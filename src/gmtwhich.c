@@ -29,7 +29,7 @@
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 };
 

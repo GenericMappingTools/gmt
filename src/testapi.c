@@ -30,16 +30,16 @@
 
 struct TESTAPI_CTRL {
 	struct T {	/* -T sets data type */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} T;
 	struct I {	/* -I sets input method */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		COUNTER_MEDIUM via;
 	} I;
 	struct W {	/* -W sets output method */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		COUNTER_MEDIUM via;
 	} W;
