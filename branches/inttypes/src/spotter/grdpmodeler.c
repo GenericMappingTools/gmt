@@ -92,7 +92,7 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"grdpmodeler %s - Evaluate a plate model on a geographic grid\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdpmodeler %s - Evaluate a plate model on a geographic grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\n", GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_r_OPT);
 

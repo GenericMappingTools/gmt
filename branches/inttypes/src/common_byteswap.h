@@ -24,8 +24,8 @@
  */
 
 #pragma once
-#ifndef _BYTESWAP_H
-#define _BYTESWAP_H
+#ifndef _COMMON_BYTESWAP_H
+#define _COMMON_BYTESWAP_H
 
 #include "gmt_config.h"
 
@@ -132,4 +132,4 @@ static inline uint64_t inline_bswap64 (uint64_t x) {
 #	define bswap64 inline_bswap64
 #endif /* HAVE___BUILTIN_BSWAP64 */
 
-#endif /* !_BYTESWAP_H */
+#endif /* !_COMMON_BYTESWAP_H */
