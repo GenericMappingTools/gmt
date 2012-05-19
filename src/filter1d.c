@@ -533,7 +533,7 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	COUNTER_MEDIUM iq, i_col;
 	GMT_LONG i_f_wt;
 	BOOLEAN *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
-	double time, delta_time, *outval = NULL, wt, val, med, scl, small;
+	double time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
 	struct GMT_CTRL *GMT = C->GMT;
@@ -605,7 +605,8 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 					if (!(good_one[i_col])) continue;
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
-					if ((((double)GMT_abs (n_l - n_r))/(n_l + n_r)) > F->sym_coeff) good_one[i_col] = FALSE;
+					symmetry = ((double)GMT_abs (n_l - n_r))/(n_l + n_r);
+					if (symmetry > F->sym_coeff) good_one[i_col] = FALSE;
 				}
 			}
 			if ((F->filter_type > FILTER1D_CONVOLVE) && F->check_q) {
@@ -678,7 +679,8 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 				if (F->check_asym && !(F->robust) ) {
 					n_l = F->n_left[i_col];
 					n_r = F->n_right[i_col];
-					if ((((double)GMT_abs (n_l - n_r))/(n_l + n_r)) > F->sym_coeff) {
+					symmetry = ((double)GMT_abs (n_l - n_r))/(n_l + n_r);
+					if (symmetry > F->sym_coeff) {
 						good_one[i_col] = FALSE;
 						continue;
 					}

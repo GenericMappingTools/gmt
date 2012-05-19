@@ -160,9 +160,9 @@ GMT_LONG GMT_x2sys_get_parse (struct GMTAPI_CTRL *C, struct X2SYS_GET_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int find_leg (char *name, struct X2SYS_BIX *B, int n)
+int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
 {	/* Return track id # for this leg */
-	int i;
+	unsigned int i;
 	
 	for (i = 0; i < n; i++) if (!strcmp (name, B->head[i].trackname)) return (i);
 	return (-1);
@@ -260,8 +260,8 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
-				if ((p = strchr (line, '.'))) line[(int)(p-line)] = '\0';	/* Remove extension */
-				k = find_leg (line, &B, (int)n_tracks);	/* Return track id # for this leg */
+				if ((p = strchr (line, '.'))) line[(size_t)(p-line)] = '\0';	/* Remove extension */
+				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Leg %s not in the data base\n", line);
 					continue;

@@ -175,9 +175,9 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
       PARAMETER (NTAY_MG=1,NTAY_OR=1)
  ======================================================================= */
 
-	bkpo = calloc((size_t)(12415), sizeof(double));
-	gamf = calloc((size_t)(8840), sizeof(double));
-	f107x = calloc((size_t)(1200), sizeof(double));
+	bkpo = calloc(12415U, sizeof(double));
+	gamf = calloc(8840U, sizeof(double));
+	f107x = calloc(1200U, sizeof(double));
 
 	if ((fp = fopen(Ctrl->CM4_M.path, "r")) == NULL) {
 		fprintf (stderr, "CM4: Could not open file %s\n", Ctrl->CM4_M.path);
@@ -377,19 +377,19 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	free ( mjdy);
 
 	/* On Windows, either this or declare them as "static", otherwise ... BOOM */
-	hysq = calloc((size_t)(82080), sizeof(double));
-	epsq = calloc((size_t)(13680), sizeof(double));
-	essq = calloc((size_t)(13680), sizeof(double));
-	ecto = calloc((size_t)(16416), sizeof(double));
-	hyto = calloc((size_t)(49248), sizeof(double));
-	hq = calloc((size_t)(53040), sizeof(double));
-	ht = calloc((size_t)(17680), sizeof(double));
-	ws = calloc((size_t)(4355), sizeof(double));
-	epmg = calloc((size_t)(1356), sizeof(double));
-	esmg = calloc((size_t)(1356), sizeof(double));
-	hymg = calloc((size_t)(8136), sizeof(double));
-	pleg = calloc((size_t)(4422), sizeof(double));
-	rcur = calloc((size_t)(9104), sizeof(double));
+	hysq = calloc(82080U, sizeof(double));
+	epsq = calloc(13680U, sizeof(double));
+	essq = calloc(13680U, sizeof(double));
+	ecto = calloc(16416U, sizeof(double));
+	hyto = calloc(49248U, sizeof(double));
+	hq   = calloc(53040U, sizeof(double));
+	ht   = calloc(17680U, sizeof(double));
+	ws   = calloc(4355U, sizeof(double));
+	epmg = calloc(1356U, sizeof(double));
+	esmg = calloc(1356U, sizeof(double));
+	hymg = calloc(8136U, sizeof(double));
+	pleg = calloc(4422U, sizeof(double));
+	rcur = calloc(9104U, sizeof(double));
 
 	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
 	for (n = 0; n < Ctrl->CM4_DATA.n_pts; ++n) {

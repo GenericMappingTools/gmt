@@ -692,8 +692,8 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (EXIT_SUCCESS);
 	}
 
-	topo   = GMT_memory (GMT, NULL, (size_t) GridA->header->size, float);
-	raised = GMT_memory (GMT, NULL, (size_t) GridA->header->size, float);
+	topo   = GMT_memory (GMT, NULL, GridA->header->size, float);
+	raised = GMT_memory (GMT, NULL, GridA->header->size, float);
 
 	if (Ctrl->t.active) {	/* Write the FFTed input grid as two grids; Real and Img */
 		int plus_minus;
@@ -871,7 +871,7 @@ void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CT
 
 void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	GMT_LONG im, jm, il1, ir1, il2, ir2, jb1, jb2, jt1, jt2;
-	GMT_LONG i, j, i_data_start, j_data_start, mx, my;
+	GMT_LONG i, j, i_data_start, j_data_start, mx;
 	COUNTER_MEDIUM ju;
 	float *datac = Grid->data;
 	double scale, cos_wt;
@@ -919,7 +919,6 @@ void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 
 	/* Now, cos taper the x edges */
 	scale = M_PI / (i_data_start + 1);
-	my = h->my;
 	for (im = 1; im <= i_data_start; im++) {
 		il1 = -im;
 		ir1 = im;

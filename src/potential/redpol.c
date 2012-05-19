@@ -1249,36 +1249,36 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
-       	cosphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	sinphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	cospsi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	sinpsi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxr    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxi    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxar   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxai   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxbr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxbi   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxgr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxgi   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxr    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fix    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxar   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxbr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxgr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	ftlon  = GMT_memory (GMT, NULL, (size_t) Gin->header->nx, double);
-       	ftlat  = GMT_memory (GMT, NULL, (size_t) Gin->header->ny, double);
+       	cosphi = GMT_memory (GMT, NULL, n_coef, double);
+       	sinphi = GMT_memory (GMT, NULL, n_coef, double);
+       	cospsi = GMT_memory (GMT, NULL, n_coef, double);
+       	sinpsi = GMT_memory (GMT, NULL, n_coef, double);
+       	gxr    = GMT_memory (GMT, NULL, n_coef, double);
+       	gxi    = GMT_memory (GMT, NULL, n_coef, double);
+       	gxar   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxai   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxbr   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxbi   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxgr   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxgi   = GMT_memory (GMT, NULL, n_coef, double);
+       	fxr    = GMT_memory (GMT, NULL, n_coef, double);
+       	fix    = GMT_memory (GMT, NULL, n_coef, double);
+       	fxar   = GMT_memory (GMT, NULL, n_coef, double);
+       	fxbr   = GMT_memory (GMT, NULL, n_coef, double);
+       	fxgr   = GMT_memory (GMT, NULL, n_coef, double);
+       	ftlon  = GMT_memory (GMT, NULL, Gin->header->nx, double);
+       	ftlat  = GMT_memory (GMT, NULL, Gin->header->ny, double);
 
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
-       		gxtr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxti = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxmr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxmi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxnr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxni = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxtr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxmr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxnr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxtr = GMT_memory (GMT, NULL, n_coef, double);
+       		gxti = GMT_memory (GMT, NULL, n_coef, double);
+       		gxmr = GMT_memory (GMT, NULL, n_coef, double);
+       		gxmi = GMT_memory (GMT, NULL, n_coef, double);
+       		gxnr = GMT_memory (GMT, NULL, n_coef, double);
+       		gxni = GMT_memory (GMT, NULL, n_coef, double);
+       		fxtr = GMT_memory (GMT, NULL, n_coef, double);
+       		fxmr = GMT_memory (GMT, NULL, n_coef, double);
+       		fxnr = GMT_memory (GMT, NULL, n_coef, double);
 	}
 
 	/* Generate vectors of lon & lats */
@@ -1444,7 +1444,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 						}
 					}
 					else
-						memcpy(fix, fxr, (size_t)(n_coef * sizeof(double)));
+						GMT_memcpy (fix, fxr, n_coef, double);
 
 					if (Ctrl->Z.active && !wrote_one && l == 0 && k == 0) {
 						for (i2 = jj = 0; i2 < Ctrl->F.ncoef_row; i2++)		/* Remember, filter is columnwise */

@@ -58,7 +58,7 @@ struct MATH_MACRO {
 #endif
 
 #ifdef DEBUG
-#define MEM_TXT_LEN	128
+#define MEM_TXT_LEN	128U
 
 struct MEMORY_ITEM {
 	size_t size;	/* Size of memory allocated */

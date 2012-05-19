@@ -158,12 +158,12 @@ GMT_LONG GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
 	
 	header->registration = GMT_GRIDLINE_REG;	/* Hardwired since no info about this in the header */
-	header->wesn[XLO] = (double)recdata[2];
-	header->wesn[XHI] = (double)recdata[3];
-	header->wesn[YLO] = (double)recdata[0];
-	header->wesn[YHI] = (double)recdata[1];
-	header->inc[GMT_Y] = (double)recdata[4];
-	header->inc[GMT_X] = (double)recdata[5];
+	header->wesn[XLO]  = recdata[2];
+	header->wesn[XHI]  = recdata[3];
+	header->wesn[YLO]  = recdata[0];
+	header->wesn[YHI]  = recdata[1];
+	header->inc[GMT_Y] = recdata[4];
+	header->inc[GMT_X] = recdata[5];
 	header->nx = GMT_grd_get_nx (C, header);
 	header->ny = GMT_grd_get_ny (C, header);
 	header->z_scale_factor = 1.0;

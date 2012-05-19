@@ -152,7 +152,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
 	GMT_message (GMT, "\t   Append which method should be used when performing the stacking:\n");
-	GMT_message (GMT, "\t   a = mean, e = median, p = mode, l = lower, L = lower of +ve values, u = upper, U = upper of -ve values [a].\n");
+	GMT_message (GMT, "\t   a = mean, m = median, p = mode, l = lower, L = lower of +ve values, u = upper, U = upper of -ve values [a].\n");
 	GMT_message (GMT, "\t   The modifiers control what is being written; choose one or more among\n");
 	GMT_message (GMT, "\t     +a : Append stacked values to all cross-profiles.\n");
 	GMT_message (GMT, "\t     +d : Append stack deviations to all cross-profiles.\n");
@@ -265,7 +265,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				Ctrl->S.active = TRUE;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->S.mode = STACK_MEAN;   break;
-					case 'e': Ctrl->S.mode = STACK_MEDIAN; break;
+					case 'm': Ctrl->S.mode = STACK_MEDIAN; break;
 					case 'p': Ctrl->S.mode = STACK_MODE;   break;
 					case 'l': Ctrl->S.mode = STACK_LOWER;  break;
 					case 'L': Ctrl->S.mode = STACK_LOWERP;  break;

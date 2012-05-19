@@ -370,7 +370,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	BOOLEAN error = FALSE, bat = TRUE, switch_xy = FALSE, DO = TRUE;
 	COUNTER_MEDIUM row, col, i, j, k, kk, ndata_r = 0;
-	COUNTER_MEDIUM ndata_p = 0, ndata_xyz = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
+	COUNTER_MEDIUM ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
 	COUNTER_MEDIUM z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
 	GMT_LONG retval;
 	COUNTER_LARGE ij;
@@ -437,7 +437,6 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
 			return (EXIT_FAILURE);
 		}
-		ndata_xyz = retval;
 		/* read vertex file */
 		if ( (retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.t_file);

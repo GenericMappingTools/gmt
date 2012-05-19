@@ -202,6 +202,7 @@ static inline GMT_LONG MGD77_clt_test (char *value, char *match, int len)
 {
 	/* Test that checks for value < match for strings */
 
+	assert (len >= 0);
 	return (strncmp (value, match, (size_t)len) < 0);
 }
 
@@ -209,6 +210,7 @@ static inline GMT_LONG MGD77_cle_test (char *value, char *match, int len)
 {
 	/* Test that checks for value <= match for strings */
 
+	assert (len >= 0);
 	return (strncmp (value, match, (size_t)len) <= 0);
 }
 
@@ -216,6 +218,7 @@ static inline GMT_LONG MGD77_ceq_test (char *value, char *match, int len)
 {
 	/* Test that checks for value == match for strings */
 
+	assert (len >= 0);
 	return (strncmp (value, match, (size_t)len) == 0);
 }
 
@@ -223,6 +226,7 @@ static inline GMT_LONG MGD77_cneq_test (char *value, char *match, int len)
 {
 	/* Test that checks for value != match for strings */
 
+	assert (len >= 0);
 	return (strncmp (value, match, (size_t)len) != 0);
 }
 
@@ -230,6 +234,7 @@ static inline GMT_LONG MGD77_cge_test (char *value, char *match, int len)
 {
 	/* Test that checks for value >= match for strings */
 
+	assert (len >= 0);
 	return (strncmp (value, match, (size_t)len) >= 0);
 }
 
@@ -237,6 +242,7 @@ static inline GMT_LONG MGD77_cgt_test (char *value, char *match, int len)
 {
 	/* Test that checks for value > match for strings */
 
+	assert (len >= 0);
 	return (strncmp (value, match, (size_t)len) > 0);
 }
 
@@ -462,6 +468,7 @@ BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, 
 	COUNTER_LARGE i = 0;
 
 	if (n == 1) return (TRUE);
+	assert (width > 0);
 
 	for (i = 2; i < n; i++) if (strncmp (&txt[i*width], &txt[(i-1)*width], (size_t)width)) return (FALSE);
 	return (TRUE);
@@ -1200,7 +1207,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL 
 
 	for (i = 0; i < MGD77_N_NUMBER_FIELDS; i++) {	/* Do the numerical fields first */
 
-		strncpy (currentField, &line[mgd77defs[i].start-1], (size_t)mgd77defs[i].length);
+		strncpy (currentField, &line[mgd77defs[i].start-1], mgd77defs[i].length);
 		currentField[mgd77defs[i].length] = '\0';
 
 		may_convert = !(MGD77_this_bit[i] & MGD77_FLOAT_BITS) || strcmp (currentField, mgd77defs[i].not_given);
@@ -1215,10 +1222,10 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL 
 
 	for (i = MGD77_N_NUMBER_FIELDS, nwords = 0; i < MGD77_N_DATA_FIELDS; i++, nwords++) {	/* Do the last 3 string fields */
 
-		strncpy (currentField,&line[mgd77defs[i].start-1],(size_t)mgd77defs[i].length);
+		strncpy (currentField,&line[mgd77defs[i].start-1], mgd77defs[i].length);
 		currentField[mgd77defs[i].length] = '\0';
 
-		may_convert = (strncmp(currentField, ALL_NINES, (size_t)mgd77defs[i].length));
+		may_convert = (strncmp(currentField, ALL_NINES, mgd77defs[i].length));
 		if (may_convert) {		/* Turn on this data bit */
 			MGD77Record->bit_pattern |= MGD77_this_bit[i];
 		}
@@ -1249,9 +1256,9 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL 
 	return (MGD77_NO_ERROR);
 }
 
-static int get_integer (char *text, int start, int length)
+static int get_integer (char *text, unsigned int start, unsigned int length)
 {
-	int k;
+	unsigned int k;
 	char tmp[16];
 	GMT_memset (tmp, 16, char);
 	for (k = 0; k < length; k++) tmp[k] = text[start+k];
@@ -1307,9 +1314,9 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTROL
 		}
 	}
 	if (r_date[0] && !GMT_is_dnan (r_time)) {	/* Got all the time items */
-		yyyy = get_integer (r_date, 0, 4);	/* Extract integer year */
-		mm   = get_integer (r_date, 4, 2);	/* Extract integer month */
-		dd   = get_integer (r_date, 6, 2);	/* Extract integer day */
+		yyyy = get_integer (r_date, 0U, 4U);	/* Extract integer year */
+		mm   = get_integer (r_date, 4U, 2U);	/* Extract integer month */
+		dd   = get_integer (r_date, 6U, 2U);	/* Extract integer day */
 		MGD77Record->number[MGD77_YEAR]  = yyyy;
 		MGD77Record->number[MGD77_MONTH] = mm;
 		MGD77Record->number[MGD77_DAY]   = dd;
@@ -3606,7 +3613,8 @@ void MGD77_List_Header_Items (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 
 int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *item)
 {
-	int i, id, match, length, pick[MGD77_N_HEADER_ITEMS];
+	unsigned int i, id, match, pick[MGD77_N_HEADER_ITEMS];
+	size_t length;
 
 	GMT_memset (F->Want_Header_Item, MGD77_N_HEADER_ITEMS, GMT_LONG);
 
@@ -3630,7 +3638,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	/* Now search for matching text strings.  We only look for the first n characters where n is length of item */
 
 	for (i = match = 0; i < MGD77_N_HEADER_ITEMS; i++) {
-		if (!strncmp (MGD77_Header_Lookup[i].name, item, (size_t)length)) {
+		if (!strncmp (MGD77_Header_Lookup[i].name, item, length)) {
 			pick[match] = id = i;
 			match++;
 		}
@@ -3643,7 +3651,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
 		int n_exact;
 		for (i = n_exact = 0; i < match; i++) {
-			if (strlen (MGD77_Header_Lookup[pick[i]].name) == (size_t)length) {
+			if (strlen (MGD77_Header_Lookup[pick[i]].name) == length) {
 				id = pick[i];
 				n_exact++;
 			}
@@ -4024,9 +4032,9 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 
 	GMT_LONG i;
-	COUNTER_MEDIUM n = 0, n_dig, length, j, k;
+	COUNTER_MEDIUM n = 0, n_dig, j, k;
 	BOOLEAN all, NGDC_ID_likely;
-	size_t n_alloc = 0;
+	size_t n_alloc = 0, length;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
 #ifdef HAVE_DIRENT_H_
@@ -4115,7 +4123,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 				GMT_chop (line); /* Get rid of CR/LF issues */
 				d_name = line;
 #endif /* HAVE_DIRENT_H_ */
-				if (length && strncmp (d_name, this_arg, (size_t)length)) continue;
+				if (length && strncmp (d_name, this_arg, length)) continue;
 				k = strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */

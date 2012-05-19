@@ -6355,7 +6355,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				error += GMT_verify_expectations (C, GMT_IS_LON, GMT_scanf (C, txt_a, GMT_IS_LON, &C->current.proj.pars[0]), txt_a);
 			}
 			error += gmt_scale_or_width (C, txt_b, &C->current.proj.pars[1]);
-			error += !(n = n_slashes + 1);
+			error += !(n == n_slashes + 1);
 			break;
 
 		case GMT_CYL_EQ:	/* Cylindrical Equal Area */
@@ -6379,7 +6379,7 @@ GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			error += gmt_scale_or_width (C, txt_c, &C->current.proj.pars[2]);
 			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_TM || project == GMT_POLYCONIC)
 				&& fabs (C->current.proj.pars[1]) >= 90.0);
-			error += !(n = n_slashes + 1);
+			error += !(n == n_slashes + 1);
 			break;
 
 		case GMT_ALBERS:	/* Albers Equal-area Conic */
@@ -6969,6 +6969,7 @@ GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYM
 		n = sscanf (text, "%c", &symbol_type);
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
+		j = 0;
 		if (text[1] && (j = gmt_get_unit (text[1])) < 0) decode_error = TRUE; else { p->u = j; p->u_set = TRUE;}
 		col_off++;
 	}

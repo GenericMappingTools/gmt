@@ -208,10 +208,10 @@ typedef char* Text;	/* Used to indicate character strings */
  * MGD77_write_header will do exactly what they say.
  */
 
-#define MGD77_COL_ABBREV_LEN	16
-#define MGD77_COL_NAME_LEN	64
-#define MGD77_COL_UNIT_LEN	64
-#define MGD77_COL_COMMENT_LEN	128
+#define MGD77_COL_ABBREV_LEN	16U
+#define MGD77_COL_NAME_LEN	64U
+#define MGD77_COL_UNIT_LEN	64U
+#define MGD77_COL_COMMENT_LEN	128U
 
 #define MGD77_COL_ADJ_TWT	1	/* Undo twt PDR wraps given PDR_wrap value */
 #define MGD77_COL_ADJ_DEPTH	2	/* Compute Carter depth from twt */
@@ -369,7 +369,7 @@ struct MGD77_RECORD_DEFAULTS {
 	char *fieldID;     /* variable names for the different MGD77 data fields */
 	char *abbrev ;     /* acronyms for the 27 MGD77 data fields */
 	int start;         /* beginning character number for each data field */
-	int length;	   /* number of characters for each data field */
+	size_t length;	   /* number of characters for each data field */
 	char *fortranCode; /* data type specified in NGDC's MGD-77 Documentation */
 	double factor;	   /* implied decimal factor specified by NGDC */
 	char *readMGD77;   /* sscanf conversions for MGD-77 input */

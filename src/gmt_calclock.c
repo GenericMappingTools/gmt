@@ -48,7 +48,7 @@
 */
 
 /* Functions to assemble/disassemble a continuous
-variable (double) and a calendar day (GMT_LONG)
+variable (double) and a calendar day (int)
 and time of day (double secs) 
 */
 

@@ -8120,7 +8120,7 @@ COUNTER_MEDIUM GMT_time_array (struct GMT_CTRL *C, double min, double max, struc
 	if (!T->active) return (0);
 	val = GMT_memory (C, NULL, n_alloc, double);
 	I.unit = T->unit;
-	I.step = (GMT_LONG)T->interval;
+	I.step = lrint (T->interval);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
 	GMT_moment_interval (C, &I, min, TRUE);	/* First time we pass TRUE for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
@@ -9205,8 +9205,8 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 		entry = M->n_ptr;	/* Position of this new entry as last item */
 		if (entry == M->n_alloc) gmt_memtrack_alloc (C, M);	/* Must update our memory arrays */
 		M->item[entry].ptr = ptr;	/* Store the pointer */
-		strncpy (M->item[entry].name, name, (size_t)(MEM_TXT_LEN-1));
-		M->item[entry].name[MEM_TXT_LEN-1] = 0;
+		strncpy (M->item[entry].name, name, MEM_TXT_LEN-1U);
+		M->item[entry].name[MEM_TXT_LEN-1U] = 0;
 		M->item[entry].line = line;
 		old = 0;
 		M->n_ptr++;

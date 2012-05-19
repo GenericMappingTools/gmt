@@ -149,7 +149,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 
 BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	GMT_LONG n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	COUNTER_MEDIUM n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 	char file[GMT_BUFSIZ];
@@ -167,7 +167,7 @@ BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char
 		adj->d[n] = in[0];
 		adj->c[n] = in[1];
 		n++;
-		if ((size_t)n == n_alloc) {
+		if (n == n_alloc) {
 			n_alloc <<= 1;
 			adj->d = GMT_memory (GMT, adj->d, n_alloc, double);
 			adj->c = GMT_memory (GMT, adj->c, n_alloc, double);

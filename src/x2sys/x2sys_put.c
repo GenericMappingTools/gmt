@@ -274,7 +274,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (found_it) {	/* This track already exists in the database */
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
 				GMT_report (GMT, GMT_MSG_NORMAL, "Removing existing information for track: %s\n", track);
-				free_id = x2sys_bix_remove_track (GMT, (int)this_info->next_info->track_id, &B);
+				free_id = x2sys_bix_remove_track (GMT, this_info->next_info->track_id, &B);
 				GMT_report (GMT, GMT_MSG_NORMAL, "track %s removed\n", track);
 				this_info->next_info = this_info->next_info->next_info;
 				skip = !Ctrl->F.active;	/* If we are not replacing the info then we skip the new info */

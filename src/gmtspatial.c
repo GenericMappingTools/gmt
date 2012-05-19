@@ -322,8 +322,8 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	 */
 	
 	BOOLEAN status;
-	COUNTER_MEDIUM tbl, n_close = 0, n_dup = 0, mode1, mode3;
-	COUNTER_LARGE k, row, seg, pt, np;
+	COUNTER_MEDIUM k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
+	COUNTER_LARGE row, seg, pt, np;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;

@@ -205,7 +205,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (Ctrl->E.active) slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH);
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, COUNTER_LARGE);
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
@@ -230,14 +230,14 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Memory reporting */
-		GMT_LONG kind = 0;
-		double mem = (double)sizeof (struct BLK_PAIR);
+		COUNTER_MEDIUM kind = 0;
+		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
+		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
-		if (!Ctrl->C.active) mem += (double)sizeof (struct BLK_PAIR);
-		if (Ctrl->E.active)  mem += (double)sizeof (struct BLK_SLH);
-		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) mem += (double)sizeof (GMT_LONG);
-		mem *= (double)Grid->header->nm;
-		mem /= 1024.0;	/* Report kbytes unless it is too much */
+		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
+		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLH);
+		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (COUNTER_LARGE);
+		mem = n_bytes_per_record * Grid->header->nm / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Using a total of %.3g %cb for all arrays.\n", mem, unit[kind]);
 	}
@@ -365,9 +365,11 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as an i/o resource */
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
+	
 	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
 
 	Return (GMT_OK);

@@ -2898,11 +2898,11 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *C, struct PSL_CTRL *P, double *x, 
 	draw_outline = (outline && p->rgb[0] != -1) ? TRUE : FALSE;
 	if (draw_outline) GMT_setpen (C, p);
 	if (outline == 2) {	/* Stroke path only */
-		PSL_plotline (P, x, y, (GMT_LONG)*n, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (P, x, y, *n, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 	}
 	else {	/* Fill polygon and possibly stroke outline */
 		GMT_setfill (C, f, draw_outline);
-		PSL_plotpolygon (P, x, y, (GMT_LONG)*n);
+		PSL_plotpolygon (P, x, y, *n);
 	}
 	*flush = FALSE;
 	*n = 0;

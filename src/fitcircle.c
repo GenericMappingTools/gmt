@@ -218,7 +218,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUN
 	COUNTER_LARGE i, j;
 	double temppole[3], a[3], b[3], oldpole[3];
 	double trypos, tryneg, afit, bfit, afactor, bfactor, fit, oldfit;
-	double length_ab, length_aold, length_bold, circle_distance;
+	double length_ab, length_aold, length_bold, circle_distance, angle;
 
 	/* First find out if solution is between center and gcpole, or center and -gcpole */
 
@@ -255,7 +255,8 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, COUN
 	bfit = circle_misfit (GMT, data, ndata, b, norm, work, &circle_distance);
 	j = 1;
 	do {
-		sincosd ((double)j, &afactor, &bfactor);
+		angle = j;
+		sincosd (angle, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) temppole[i] = (afactor * a[i] + bfactor * b[i]);
 		GMT_normalize3v (GMT, temppole);
 		fit = circle_misfit (GMT, data, ndata, temppole, norm, work, &circle_distance);

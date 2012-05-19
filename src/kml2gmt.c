@@ -120,7 +120,7 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 
 GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, start, fmode = POINT;
+	GMT_LONG i, start, fmode = POINT, length;
 	BOOLEAN scan = TRUE, first = TRUE, error = FALSE;
 	
 	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
@@ -193,10 +193,11 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (strstr (line, "<Point")) fmode = POINT;
 		if (strstr (line, "<LineString")) fmode = LINE;
 		if (strstr (line, "<Polygon")) fmode = POLYGON;
+		length = strlen (line);
 		if (strstr (line, "<name>")) {
-			for (i = 0; i < (GMT_LONG)strlen (line) && line[i] != '>'; i++);	/* Find end of <name> */
+			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <name> */
 			start = i + 1;
-			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </name> */
+			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
 			strcpy (name, &line[start]);
 			GMT_chop (name);
@@ -207,9 +208,9 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			first = FALSE;
 		}
 		if (strstr (line, "<description>")) {
-			for (i = 0; i < (GMT_LONG)strlen (line) && line[i] != '>'; i++);	/* Find end of <description> */
+			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <description> */
 			start = i + 1;
-			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </description> */
+			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
 			strcpy (description, &line[start]);
 			GMT_chop (description);
@@ -229,7 +230,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
 		if (fmode == POINT) {	/* Process the single point */
-			for (i = 0; i < (GMT_LONG)strlen (line) && line[i] != '>'; i++);		/* Find end of <coordinates> */
+			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point\n");
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */

@@ -461,13 +461,13 @@ struct GMT_PLOT_CALCLOCK {
 /* Here are the GMT data types used for tables */
 
 struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
-	COUNTER_MEDIUM id;		/* The internal number of the table */
+	COUNTER_LARGE id;		/* The internal number of the segment */
+	COUNTER_LARGE n_rows;		/* Number of points in this segment */
 	COUNTER_MEDIUM n_columns;	/* Number of fields in each record (>= 2) */
 	COUNTER_MEDIUM mode;		/* 0 = output segment, 1 = output header only, 2 = skip segment */
 	COUNTER_MEDIUM pol_mode;	/* Either GMT_IS_PERIMETER  [-Pp] or GMT_IS_HOLE [-Ph] (for polygons only) */
 	GMT_LONG range;			/* 0 = use default lon adjustment, -1 = negative longs, +1 = positive lons */
 	GMT_LONG pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
-	COUNTER_LARGE n_rows;		/* Number of points in this segment */
 	size_t n_alloc;			/* The current allocation length of each coord */
 	double dist;			/* Distance from a point to this feature */
 	double *min;			/* Minimum coordinate for each column */

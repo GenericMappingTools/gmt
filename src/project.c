@@ -87,8 +87,8 @@ struct PROJECT_DATA {
 
 struct PROJECT_INFO {
 	COUNTER_LARGE n_used;
-	GMT_LONG n_outputs;
-	GMT_LONG n_z;
+	COUNTER_MEDIUM n_outputs;
+	COUNTER_MEDIUM n_z;
 	GMT_LONG output_choice[PROJECT_N_FARGS];
 	BOOLEAN find_new_point;
 	BOOLEAN want_z_output;
@@ -225,7 +225,7 @@ void matrix_2v (double *a, double *x, double *b)
 	b[1] = x[0]*a[2] + x[1]*a[3];
 }
 
-void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, GMT_LONG two_pts)
+void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, BOOLEAN two_pts)
 {
 	/* routine to initialize a pole vector, p, and a central meridian
 	   normal vector, c, for use in projecting points onto a great circle.
@@ -277,7 +277,7 @@ void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, doubl
 	GMT_normalize3v (GMT, c);
 }
 
-void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, GMT_LONG two_pts, GMT_LONG pole_set)
+void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, BOOLEAN two_pts, BOOLEAN pole_set)
 {
 	/* Sets up stuff for rotation of cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
@@ -298,7 +298,7 @@ void flat_project_setup (double alat, double alon, double blat, double blon, dou
 void copy_text_from_col3 (char *line, char *z_cols)
 {	/* returns the input line starting at the 3rd column */
 
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	/* First replace any commas with spaces */
 
@@ -310,7 +310,7 @@ void copy_text_from_col3 (char *line, char *z_cols)
 void *New_project_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PROJECT_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct PROJECT_CTRL);
+	C = GMT_memory (GMT, NULL, 1U, struct PROJECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
@@ -393,7 +393,8 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k, n_errors = 0;
+	GMT_LONG j, k;
+	COUNTER_MEDIUM n_errors = 0;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -532,7 +533,9 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 
 GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P)
 {
-	GMT_LONG n_items, j, k, error, pure_ascii;
+	GMT_LONG error;
+	BOOLEAN pure_ascii;
+	COUNTER_MEDIUM n_items, j, k;
 	COUNTER_LARGE i;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
@@ -617,7 +620,9 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_LARGE i, n_total_read, n_total_used = 0;
-	GMT_LONG j, k, rmode, error = FALSE, pure_ascii, skip, z_first = TRUE;
+	COUNTER_MEDIUM rmode;
+	BOOLEAN pure_ascii, skip, z_first = TRUE;
+	GMT_LONG j, k, error = 0;
 	
 	size_t n_alloc = GMT_CHUNK;
 
@@ -649,6 +654,12 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the project main code ----------------------------*/
 
 	GMT_memset (&P, 1, struct PROJECT_INFO);
+	GMT_memset (a, 3, double);
+	GMT_memset (b, 3, double);
+	GMT_memset (x, 3, double);
+	GMT_memset (xt, 3, double);
+	GMT_memset (center, 3, double);
+	GMT_memset (e, 9, double);
 	P.first = TRUE;
 	if (Ctrl->N.active) {	/* Must undo an optional -fg that was set before */
 		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_FLOAT;
@@ -921,11 +932,13 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Data record to process */
 
 			if (z_first) {
-				P.n_z = GMT_get_cols (GMT, GMT_IN) - 2;
-				if (P.n_z == 0 && P.want_z_output) {
+				COUNTER_MEDIUM n_cols = GMT_get_cols (GMT, GMT_IN);
+				if (n_cols == 2 && P.want_z_output) {
 					GMT_report (GMT, GMT_MSG_FATAL, "No data columns, cannot use z flag in -F\n");
 					Return (EXIT_FAILURE);
 				}
+				else
+					P.n_z = n_cols - 2;
 				z_first = FALSE;
 			}
 

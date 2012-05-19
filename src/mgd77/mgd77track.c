@@ -692,7 +692,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 						strcpy (cruise_id[n_id].text, name);
 						n_id++;
-						if ((size_t)n_id == n_alloc_c) {
+						if (n_id == n_alloc_c) {
 							size_t old_n_alloc = n_alloc_c;
 							n_alloc_c <<= 1;
 							cruise_id = GMT_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);

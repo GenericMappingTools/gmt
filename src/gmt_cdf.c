@@ -58,9 +58,8 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	GMT_report (C, GMT_MSG_DEBUG, "Enter gmt_cdf_grd_info with argument %c\n", (int)job);
 	
 	if (job == 'w') {
-		size_t nxny = (size_t)header->nx * (size_t)header->ny;
 		GMT_err_trap (nc_def_dim (ncid, "side", 2U, &side_dim));
-		GMT_err_trap (nc_def_dim (ncid, "xysize", nxny, &xysize_dim));
+		GMT_err_trap (nc_def_dim (ncid, "xysize", header->nm, &xysize_dim));
 
 		dims[0]	= side_dim;
 		GMT_err_trap (nc_def_var (ncid, "x_range", NC_DOUBLE, 1, dims, &x_range_id));

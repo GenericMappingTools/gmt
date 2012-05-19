@@ -492,7 +492,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	y_grd = GMT_memory (GMT, NULL, GridA->header->ny, double);
 	x_obs = GMT_memory (GMT, NULL, nx_p, double);
 	y_obs = GMT_memory (GMT, NULL, ny_p, double);
-	if (Ctrl->F.active) g = GMT_memory (GMT, NULL, (size_t) ndata, double);
+	if (Ctrl->F.active) g = GMT_memory (GMT, NULL, ndata, double);
 
 	d = GridA->header->xy_off;		/*  0.5 : 0.0 */
 
@@ -515,8 +515,8 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	if (two_grids) {
 		d = GridB->header->xy_off;		/*  0.5 : 0.0 */
-		x_grd2 = GMT_memory (GMT, NULL, (size_t) GridB->header->nx, double);
-		y_grd2 = GMT_memory (GMT, NULL, (size_t) GridB->header->ny, double);
+		x_grd2 = GMT_memory (GMT, NULL, GridB->header->nx, double);
+		y_grd2 = GMT_memory (GMT, NULL, GridB->header->ny, double);
 		for (i = 0; i < GridB->header->nx; i++)
 			x_grd2[i] = (i == (GridB->header->nx-1)) ? GridB->header->wesn[XHI] - d*GridB->header->inc[GMT_X] :
 				GridB->header->wesn[XLO] + (i + d) * GridB->header->inc[GMT_X];

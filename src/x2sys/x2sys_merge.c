@@ -120,8 +120,8 @@ GMT_LONG GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *
 
 GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG  i, j, k, n_base, n_merge, merge_start, error, *map_merge_end = NULL;
-	GMT_LONG *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
+	COUNTER_LARGE  i, j, k, n_base, n_merge, merge_start, error, *map_merge_end = NULL;
+	COUNTER_LARGE *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
 	size_t n_alloc;
 	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
@@ -157,12 +157,12 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_alloc = GMT_CHUNK;
-	map_base_start = GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
-	map_base_end =   GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
+	map_base_start = GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
+	map_base_end =   GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
 	pairs_base =     GMT_memory (GMT, NULL, n_alloc, char *);
 
-	map_merge_start = GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
-	map_merge_end =   GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
+	map_merge_start = GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
+	map_merge_end =   GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
 	pairs_merge =     GMT_memory (GMT, NULL, n_alloc, char *);
 
 	/* Read in the main COEs dbase and store the pair track names */
@@ -174,10 +174,10 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			pairs_base[n_base] = GMT_memory (GMT, NULL, 24, char);
 			strncpy(pairs_base[n_base], &line[2], 19);
 			n_base++;
-			if ((size_t)n_base == n_alloc) {
+			if (n_base == n_alloc) {
 				n_alloc <<= 1;
-				map_base_start = GMT_memory (GMT, map_base_start, n_alloc, GMT_LONG);
-				map_base_end =   GMT_memory (GMT, map_base_end, n_alloc, GMT_LONG);
+				map_base_start = GMT_memory (GMT, map_base_start, n_alloc, COUNTER_LARGE);
+				map_base_end =   GMT_memory (GMT, map_base_end, n_alloc, COUNTER_LARGE);
 				pairs_base =     GMT_memory (GMT, pairs_base, n_alloc, char *);
 			}
 		}
@@ -197,10 +197,10 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			pairs_merge[n_merge] = GMT_memory (GMT, NULL, 24, char);
 			strncpy(pairs_merge[n_merge], &line[2], 19);
 			n_merge++;
-			if ((size_t)n_merge == n_alloc) {
+			if (n_merge == n_alloc) {
 				n_alloc <<= 1;
-				map_merge_start = GMT_memory (GMT, map_merge_start, n_alloc, GMT_LONG);
-				map_merge_end   = GMT_memory (GMT, map_merge_end, n_alloc, GMT_LONG);
+				map_merge_start = GMT_memory (GMT, map_merge_start, n_alloc, COUNTER_LARGE);
+				map_merge_end   = GMT_memory (GMT, map_merge_end, n_alloc, COUNTER_LARGE);
 				pairs_merge     = GMT_memory (GMT, pairs_merge, n_alloc, char *);
 			}
 		}

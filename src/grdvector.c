@@ -143,6 +143,7 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 	 */
 
 	GMT_LONG n_errors = 0, n_files = 0, j;
+	size_t len;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT
 	char txt_c[GMT_TEXT_LEN256];
@@ -234,11 +235,11 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = TRUE;
-				j = (GMT_LONG)strlen (opt->arg) - 1;
-				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j]))	/* Recognized unit character */
-					Ctrl->S.unit = opt->arg[j];
-				else if (! (opt->arg[j] == '.' || isdigit ((int)opt->arg[j]))) {	/* Not decimal point or digit means trouble */
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[j]);
+				len = strlen (opt->arg) - 1;
+				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
+					Ctrl->S.unit = opt->arg[len];
+				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {

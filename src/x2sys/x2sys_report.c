@@ -49,7 +49,7 @@ struct X2SYS_REPORT_CTRL {
 	} L;
 	struct N {	/* -N */
 		BOOLEAN active;
-		GMT_LONG min;
+		COUNTER_LARGE min;
 	} N;
 	struct Q {	/* -Q */
 		BOOLEAN active;
@@ -66,7 +66,7 @@ struct X2SYS_REPORT_CTRL {
 };
 
 struct COE_REPORT {	/* Holds summary info for each track */
-	int nx;	/* Total number of COE for this track */
+	COUNTER_LARGE nx;	/* Total number of COE for this track */
 	double mean, stdev, rms;
 	double sum, sum2, W;
 	double d_max;	/* Length of track in distance units */
@@ -79,7 +79,7 @@ struct COE_ADJUST {	/* Holds adjustment spline knots */
 
 struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 	struct COE_ADJUST *K;
-	int n;
+	COUNTER_MEDIUM n;
 	size_t n_alloc;
 };
 
@@ -349,7 +349,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		R[k].mean = (R[k].nx) ? R[k].sum / R[k].nx : GMT->session.d_NaN;
 		R[k].stdev = (R[k].nx > 1) ? sqrt ((R[k].nx * R[k].sum2 - R[k].sum * R[k].sum) / (R[k].nx * (R[k].nx - 1.0))) : GMT->session.d_NaN;
 		R[k].rms = (R[k].nx) ? sqrt (R[k].sum2 / R[k].nx) : GMT->session.d_NaN;
-		printf ("%s%s%d%s%g%s%g%s%g%s%g\n", trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
+		printf ("%s%s%" PRIu64 "%s%g%s%g%s%g%s%g\n", trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
@@ -372,7 +372,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (GMT_is_dnan(z_ij)) continue;
 				for (k = 0; k < 2; k++) {
 					if (R[P[p].id[k]].nx <= Ctrl->N.min) continue;	/* This track will not have enough total COE to be used in the end */
-					if ((size_t)adj[P[p].id[k]].n >= adj[P[p].id[k]].n_alloc) {	/* So first time both are zero and we allocate first */
+					if (adj[P[p].id[k]].n >= adj[P[p].id[k]].n_alloc) {	/* So first time both are zero and we allocate first */
 						if (adj[P[p].id[k]].n_alloc) adj[P[p].id[k]].n_alloc <<= 1; else adj[P[p].id[k]].n_alloc = GMT_SMALL_CHUNK;
 						adj[P[p].id[k]].K = GMT_memory (GMT, adj[P[p].id[k]].K, adj[P[p].id[k]].n_alloc, struct COE_ADJUST);
 					}
@@ -391,7 +391,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
 			
-			qsort(adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
+			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);

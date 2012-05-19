@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psscale
+%%Title: GMT v5.0.1b_r10116 [64-bit] [C4] Document from psscale
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:59:01 2011
+%%CreationDate: Fri May 18 16:42:58 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -880,8 +885,8 @@ PSL_cliprestore
 156 16 D
 178 14 D
 174 9 D
-142 4 D
-154 2 D
+117 4 D
+179 2 D
 S
 7200 0 M
 -2 61 D
@@ -927,8 +932,8 @@ S
 -156 16 D
 -178 14 D
 -174 9 D
--142 4 D
--154 2 D
+-117 4 D
+-179 2 D
 S
 0 0 M
 7200 0 D
@@ -2336,8 +2341,8 @@ PSL_cliprestore
 156 16 D
 178 14 D
 174 9 D
-142 4 D
-154 2 D
+117 4 D
+179 2 D
 S
 7200 0 M
 -2 61 D
@@ -2383,8 +2388,8 @@ S
 -156 16 D
 -178 14 D
 -174 9 D
--142 4 D
--154 2 D
+-117 4 D
+-179 2 D
 S
 0 0 M
 7200 0 D
@@ -3669,8 +3674,8 @@ PSL_cliprestore
 156 16 D
 178 14 D
 174 9 D
-142 4 D
-154 2 D
+117 4 D
+179 2 D
 S
 7200 0 M
 -2 61 D
@@ -3716,8 +3721,8 @@ S
 -156 16 D
 -178 14 D
 -174 9 D
--142 4 D
--154 2 D
+-117 4 D
+-179 2 D
 S
 0 0 M
 7200 0 D
@@ -5145,8 +5150,8 @@ PSL_cliprestore
 156 16 D
 178 14 D
 174 9 D
-142 4 D
-154 2 D
+117 4 D
+179 2 D
 S
 7200 0 M
 -2 61 D
@@ -5192,8 +5197,8 @@ S
 -156 16 D
 -178 14 D
 -174 9 D
--142 4 D
--154 2 D
+-117 4 D
+-179 2 D
 S
 0 0 M
 7200 0 D

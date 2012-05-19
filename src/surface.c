@@ -1494,8 +1494,8 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_TABLE *xyzline) {
 
 	COUNTER_LARGE n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
-	COUNTER_LARGE k = 0, n, kmax = 0, kmin = 0, seg, row;
-	GMT_LONG i, j;
+	COUNTER_LARGE k = 0, n, kmax = 0, kmin = 0, row, seg;
+	GMT_LONG srow, scol;
 	size_t n_alloc;
 	double *x = NULL, *y = NULL, *z = NULL, dx, dy, dz, r_dx, r_dy, zmin = DBL_MAX, zmax = -DBL_MAX;
 
@@ -1508,9 +1508,9 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	r_dy = 1.0 / C->grid_yinc; 
 	for (seg = 0; seg < xyzline->n_segments; seg++) {
 		for (row = 0; row < xyzline->segment[seg]->n_rows - 1; row++) {
-			dx = xyzline->segment[seg]->coord[GMT_X][j+1] - xyzline->segment[seg]->coord[GMT_X][row];
-			dy = xyzline->segment[seg]->coord[GMT_Y][j+1] - xyzline->segment[seg]->coord[GMT_Y][row];
-			dz = xyzline->segment[seg]->coord[GMT_Z][j+1] - xyzline->segment[seg]->coord[GMT_Z][row];
+			dx = xyzline->segment[seg]->coord[GMT_X][row+1] - xyzline->segment[seg]->coord[GMT_X][row];
+			dy = xyzline->segment[seg]->coord[GMT_Y][row+1] - xyzline->segment[seg]->coord[GMT_Y][row];
+			dz = xyzline->segment[seg]->coord[GMT_Z][row+1] - xyzline->segment[seg]->coord[GMT_Z][row];
 			n_int = lrint (MAX (fabs(dx) * r_dx, fabs(dy) * r_dy ) ) + 1;
 			this_end += n_int;
 
@@ -1553,12 +1553,12 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 
 		if (GMT_is_dnan (z[n])) continue;
 
-		i = lrint (floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5));
-		if (i < 0 || i >= C->block_nx) continue;
-		j = lrint (floor (((y[n] - C->Grid->header->wesn[YLO]) * C->r_grid_yinc) + 0.5));
-		if (j < 0 || j >= C->block_ny) continue;
+		scol = lrint (floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5));
+		if (scol < 0 || scol >= C->block_nx) continue;
+		srow = lrint (floor (((y[n] - C->Grid->header->wesn[YLO]) * C->r_grid_yinc) + 0.5));
+		if (srow < 0 || srow >= C->block_ny) continue;
 
-		C->data[k].index = i * C->block_ny + j;
+		C->data[k].index = scol * C->block_ny + srow;
 		C->data[k].x = (float)x[n];
 		C->data[k].y = (float)y[n];
 		C->data[k].z = (float)z[n];
