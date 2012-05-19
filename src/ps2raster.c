@@ -1347,7 +1347,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		rc  = RegEnumKeyEx (hkey, n++, data, &datalen, 0, NULL, NULL, NULL);
 		datalen = GMT_BUFSIZ; /* reset to buffer length (including terminating \0) */
 		if (rc == ERROR_SUCCESS)
-			maxVersion = (float)MAX(maxVersion, atof(data));	/* If more than one GS, keep highest version number */
+			maxVersion = MAX(maxVersion, strtof(data, NULL));	/* If more than one GS, keep highest version number */
 	}
 
 	RegCloseKey(hkey);
@@ -1397,18 +1397,15 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	*ptr = '\0';
 	strcat(data, bits64 ? "\\gswin64c.exe" : "\\gswin32c.exe");
 
- 	/* Now finally check that the gswinXXc.exe exists */
+	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "gswinXXc.exe does not exist.\n");
 		return (EXIT_FAILURE);
 	}
 
 	/* Wrap the path in double quotes to prevent troubles raised by dumb things like "Program Files" */
-	datalen = (unsigned long)strlen (data);
-	C->G.file = (char *)malloc (datalen + 3);	/* strlen + 2 * " + \0 */
-	strcpy (C->G.file, "\"");
-	strcat (C->G.file, data);
-	strcat (C->G.file, "\"");
+	C->G.file = malloc (strlen (data) + 3);	/* strlen + 2 * " + \0 */
+	sprintf (C->G.file, "\"%s\"", data);
 
 	return (GMT_OK);
 }

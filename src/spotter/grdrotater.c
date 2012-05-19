@@ -91,7 +91,7 @@ GMT_LONG GMT_grdrotater_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT,"grdrotater %s - Finite rotation reconstruction of geographic grid\n\n", GMT_VERSION);
+	GMT_message (GMT, "grdrotater %s - Finite rotation reconstruction of geographic grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdrotater <grid> -E[+]<rottable> OR -e<plon>/<plat>/<prot> -G<outgrid> [-F<polygontable>]\n");
 	GMT_message (GMT, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] > projpol\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT);
