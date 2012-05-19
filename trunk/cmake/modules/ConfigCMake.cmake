@@ -86,27 +86,24 @@ if (NOT DEFINED GMT_INSTALL_NAME_SUFFIX)
 endif (NOT DEFINED GMT_INSTALL_NAME_SUFFIX)
 
 # Get date
-if (WIN32)
-	execute_process (COMMAND "${GMT_SOURCE_DIR}/getdate.bat" OUTPUT_VARIABLE _today)
-	#string (REGEX REPLACE "(..)/(..)/(....).*" "\3-\2-\1" _today ${_today})
-elseif (UNIX)
-	set(ENV{LANG} en_US)
-	execute_process (COMMAND "date" "+%Y %m %d %B" OUTPUT_VARIABLE _today)
-else (WIN32)
-	message (WARNING "Date not implemented")
-	set(_today "2013 13 13 Undecember")
-endif (WIN32)
-if (_today)
-	string (REPLACE "\n" "" _today ${_today})
-	string (REPLACE " " ";" _today ${_today})
-	list(GET _today 0 YEAR)
-	list(GET _today 1 MONTH)
-	list(GET _today 2 DAY)
-	list(GET _today 3 MONTHNAME)
-	list(GET _today 0 1 2 DATE)
-	string (REPLACE ";" "-" DATE "${DATE}")
-	set (_today)
-endif ()
+try_run (_exit_today _compiled_today
+	${CMAKE_BINARY_DIR}/CMakeTmp
+	${CMAKE_MODULE_PATH}/today.c
+	CMAKE_FLAGS
+	RUN_OUTPUT_VARIABLE _today)
+
+if (NOT _compiled_today OR _exit_today EQUAL -1)
+	message (WARNING "Date not implemented, please file a bug report.")
+	set(_today "1313;13;13;Undecember")
+endif (NOT _compiled_today OR _exit_today EQUAL -1)
+
+list(GET _today 0 YEAR)
+list(GET _today 1 MONTH)
+list(GET _today 2 DAY)
+list(GET _today 3 MONTHNAME)
+list(GET _today 0 1 2 DATE)
+string (REPLACE ";" "-" DATE "${DATE}")
+set (_today)
 
 # set package date
 if (NOT GMT_VERSION_YEAR)
