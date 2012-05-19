@@ -73,8 +73,8 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
-	BOOLEAN active;	/* Normally TRUE but can be changed to focus on just some allocations */
-	BOOLEAN search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
+	GMT_BOOLEAN active;	/* Normally TRUE but can be changed to focus on just some allocations */
+	GMT_BOOLEAN search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
 	COUNTER_LARGE n_ptr;		/* Number of unique pointers to allocated memory */
 	COUNTER_LARGE n_allocated;	/* Number of items allocated by GMT_memory */
 	COUNTER_LARGE n_reallocated;	/* Number of items reallocated by GMT_memory */

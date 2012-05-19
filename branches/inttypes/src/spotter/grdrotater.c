@@ -30,38 +30,38 @@
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -Drotpolfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E[+]rotfile */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double lon, lat, w;
 	} e;
 	struct F {	/* -Fpolfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} T;
 };
@@ -299,7 +299,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	return (D);
 }
 
-BOOLEAN skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
+GMT_BOOLEAN skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
 {	/* Returns TRUE if the selected point is outside the polygon */
 	COUNTER_LARGE seg;
 	COUNTER_MEDIUM inside = 0;
@@ -316,7 +316,7 @@ BOOLEAN skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG scol, srow;	/* Signed row, col */
-	BOOLEAN not_global, registered_d = FALSE, error = FALSE, global = FALSE;
+	GMT_BOOLEAN not_global, registered_d = FALSE, error = FALSE, global = FALSE;
 	COUNTER_MEDIUM col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	
 	COUNTER_LARGE ij, ij_rot, seg, rec;

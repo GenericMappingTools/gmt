@@ -36,49 +36,49 @@ EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, d
 
 struct MAKECPT_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} D;
 	struct F {	/* -F[r|R|h|c] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM model;
 	} F;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct T {	/* -T<z0/z1/dz> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double low, high, inc;
 		char *file;
 	} T;
 	struct Q {	/* -Q[i|o] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} Q;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 

@@ -28,51 +28,51 @@
 
 struct PSPOLAR_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double lon, lat, size;
 		struct GMT_PEN pen;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double lon, lat;
 	} D;
  	struct E {	/* -E<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG outline;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
 	struct F {	/* -F<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} F;
  	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double ech;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q only -h for Hypo71 */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -r<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG symbol;
 		char type;
 		double scale, size;
 		struct GMT_FILL fill;
 	} S;
 	struct S2 {	/* -r<fill> */
-		BOOLEAN active;
-		BOOLEAN scolor;
-		BOOLEAN vector;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN scolor;
+		GMT_BOOLEAN vector;
 		GMT_LONG symbol;
 		GMT_LONG outline;
 		char type;
@@ -82,13 +82,13 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 	} S2;
 	struct T {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double angle, fontsize;
 		GMT_LONG form, justify;
 		struct GMT_PEN pen;
  	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -352,7 +352,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG n;
-	BOOLEAN error = FALSE, old_is_world;
+	GMT_BOOLEAN error = FALSE, old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;

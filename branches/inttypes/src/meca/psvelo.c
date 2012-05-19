@@ -50,29 +50,29 @@ PostScript code is written to stdout.
 
 struct PSVELO_CTRL {
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} A;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale;
 	} D;
  	struct E {	/* -E<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -r<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG symbol;
 		COUNTER_MEDIUM readmode;
 		double scale, wedge_amp, conrad;
@@ -80,7 +80,7 @@ struct PSVELO_CTRL {
 		struct GMT_FILL fill;
 	} S;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -167,7 +167,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 */
 
 	GMT_LONG n_errors = 0, n;
-	BOOLEAN no_size_needed, n_set, got_A = FALSE;
+	GMT_BOOLEAN no_size_needed, n_set, got_A = FALSE;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT
 	char txt_c[GMT_TEXT_LEN256];

@@ -40,37 +40,37 @@ EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A<azimuth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<center> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct G {	/* -G[+|-|=]<fill> */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<azimuth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> */
-		BOOLEAN active;
-		BOOLEAN cartesian;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cartesian;
 		double lon, lat, length;
 		char *label;
 	} S;
 	struct T {	/* -T<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<scale> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale;
 		char unit;
 	} Z;
@@ -248,7 +248,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 
 	GMT_LONG j, k, wantx, wanty, n_errors = 0;
 #ifdef GMT_COMPAT
-	BOOLEAN N_active = FALSE;
+	GMT_BOOLEAN N_active = FALSE;
 #endif
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -380,7 +380,7 @@ void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **y
 
 GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, negative;
+	GMT_BOOLEAN error = FALSE, negative;
 	
 	COUNTER_MEDIUM tbl;
 	

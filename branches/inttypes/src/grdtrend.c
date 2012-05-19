@@ -85,24 +85,24 @@
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -D<diffgrid> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct N {	/* -N[r]<n_model> */
-		BOOLEAN active;
-		BOOLEAN robust;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN robust;
 		COUNTER_MEDIUM value;
 	} N;
 	struct T {	/* -T<trend.grd> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 	struct W {	/* -W<weight.grd> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} W;
 };
@@ -402,7 +402,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, COUNTER_MEDIUM n
 	return;
 }
 
-void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, COUNTER_MEDIUM n_model, struct GMT_GRID *W, BOOLEAN weighted)
+void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, COUNTER_MEDIUM n_model, struct GMT_GRID *W, GMT_BOOLEAN weighted)
 {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
 	for the normal equations.  Routine uses indices i,j to refer
@@ -470,7 +470,7 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
-	BOOLEAN trivial, weighted,iterations, set_ones = TRUE;
+	GMT_BOOLEAN trivial, weighted,iterations, set_ones = TRUE;
 	GMT_LONG error = 0;
 	COUNTER_MEDIUM row, col;
 	

@@ -272,7 +272,7 @@ GMT_LONG GMT_jacobi (struct GMT_CTRL *C, double *a, COUNTER_MEDIUM n, COUNTER_ME
 	return(0);
 }
 
-GMT_LONG GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, COUNTER_MEDIUM n, COUNTER_MEDIUM nstore, double test, BOOLEAN itriag)
+GMT_LONG GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, COUNTER_MEDIUM n, COUNTER_MEDIUM nstore, double test, GMT_BOOLEAN itriag)
 {
 
 /* subroutine gauss, by william menke */
@@ -850,7 +850,7 @@ void GMT_cross3v (struct GMT_CTRL *C, double *a, double *b, double *c)
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
-void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, BOOLEAN degrees)
+void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, GMT_BOOLEAN degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = TRUE,
@@ -868,7 +868,7 @@ void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, BOO
 	a[GMT_Y] = clat * slon;
 }
 
-void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, BOOLEAN degrees)
+void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, GMT_BOOLEAN degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = TRUE, the output coordinates
@@ -884,7 +884,7 @@ void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, B
 	}
 }
 
-void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, BOOLEAN degrees)
+void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, GMT_BOOLEAN degrees)
 {
 	/* Convert polar (cylindrical) coordinates r, theta
 	   to a 2-vector of unit length (a). If degrees = TRUE,
@@ -896,7 +896,7 @@ void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, B
 	a[GMT_Y] *= r;
 }
 
-void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, BOOLEAN degrees)
+void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, GMT_BOOLEAN degrees)
 {
 	/* Convert a 2-vector (a) of unit length into polar (cylindrical)
 	   coordinates (r, theta). If degrees = TRUE, the output coordinates

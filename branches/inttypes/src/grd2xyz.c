@@ -29,17 +29,17 @@
 struct GRD2XYZ_CTRL {
 #ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
-		BOOLEAN active;
-		BOOLEAN floating;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN floating;
 		double nodata;
 	} E;
 #endif
 	struct N {	/* -N<nodata> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} N;
 	struct W {	/* -W[<weight>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double weight;
 	} W;
 	struct GMT_PARSE_Z_IO Z;
@@ -186,7 +186,7 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, first = TRUE, ok;
+	GMT_BOOLEAN error = FALSE, first = TRUE, ok;
 	COUNTER_MEDIUM row, col;
 	
 	COUNTER_LARGE ij, gmt_ij, n_total = 0, n_suppressed = 0;
@@ -270,7 +270,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
 			p_func_l save = GMT->current.io.output;
-			BOOLEAN previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
+			GMT_BOOLEAN previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
 			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 

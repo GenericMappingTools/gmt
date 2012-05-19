@@ -32,43 +32,43 @@ extern void x2sys_set_home (struct GMT_CTRL *GMT);
 
 struct X2SYS_INIT_CTRL {
 	struct In {	/*  */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} In;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *string;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *string;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *string;
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 		char *string;
 	} I;
 	struct m {	/* -m */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *string;
 	} m;
 	struct N {	/* -N */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		char *string[2];
 	} N;
 	struct W {	/* -W */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		char *string[2];
 	} W;
 };
@@ -257,7 +257,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
 	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
 
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	FILE *fp = NULL, *fp_def = NULL;
 

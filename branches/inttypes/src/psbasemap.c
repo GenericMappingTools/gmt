@@ -33,11 +33,11 @@
 
 struct PSBASEMAP_CTRL {
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_MAP_SCALE item;
 	} L;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_MAP_ROSE item;
 	} T;
 };

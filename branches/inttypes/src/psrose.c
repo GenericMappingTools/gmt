@@ -36,56 +36,56 @@
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<sector_angle>[r] */
-		BOOLEAN active;
-		BOOLEAN rose;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN rose;
 		double inc;
 	} A;
 	struct C {	/* -C[<modefile>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *w, *e, *s, *n;
 	} L;
 	struct M {	/* -M[<size>][<modifiers>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -Sscale[n] */
-		BOOLEAN active;
-		BOOLEAN normalize;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN normalize;
 		double scale;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W[v]<pen> */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Zu|<scale> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double scale;
 	} Z;
@@ -335,8 +335,8 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, find_mean = FALSE, do_fill = FALSE;
-	BOOLEAN automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
+	GMT_BOOLEAN error = FALSE, find_mean = FALSE, do_fill = FALSE;
+	GMT_BOOLEAN automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
 	COUNTER_MEDIUM n_bins, n_modes, form, n_in, half_only = 0, bin;
 	GMT_LONG k, n_annot, n_alpha;
 	

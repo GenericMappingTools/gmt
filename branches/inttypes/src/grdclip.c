@@ -34,15 +34,15 @@
 
 struct GRDCLIP_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct S {	/* -Sa<high/above> or -Sb<low/below> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		float high, above;
 		float low, below;
@@ -163,7 +163,7 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	COUNTER_MEDIUM row, col;
-	BOOLEAN error, new_grid;
+	GMT_BOOLEAN error, new_grid;
 	
 	COUNTER_LARGE ij, n_above = 0, n_below = 0;
 	

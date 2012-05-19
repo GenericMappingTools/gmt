@@ -38,31 +38,31 @@
 
 struct X2SYS_CROSS_CTRL {
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} A;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} I;
 	struct S {	/* -S */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 		double limit[3];
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM width;
 	} W;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -266,18 +266,18 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG scol;
 	COUNTER_MEDIUM *ok = NULL;
 
-	BOOLEAN xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
-	BOOLEAN internal = TRUE;		/* FALSE if only external xovers are needed */
-	BOOLEAN external = TRUE;		/* FALSE if only internal xovers are needed */
-	BOOLEAN error = FALSE;			/* TRUE for invalid arguments */
-	BOOLEAN do_project = FALSE;		/* TRUE if we must mapproject first */
-	BOOLEAN got_time = FALSE;		/* TRUE if there is a time column */
-	BOOLEAN first_header = TRUE;		/* TRUE for very first crossover */
-	BOOLEAN first_crossover;		/* TRUE for first crossover between two data sets */
-	BOOLEAN same = FALSE;			/* TRUE when the two cruises we compare have the same name */
-	BOOLEAN has_time[2];			/* TRUE for each cruises that actually has a time column */
-	BOOLEAN *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
-	BOOLEAN cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
+	GMT_BOOLEAN xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
+	GMT_BOOLEAN internal = TRUE;		/* FALSE if only external xovers are needed */
+	GMT_BOOLEAN external = TRUE;		/* FALSE if only internal xovers are needed */
+	GMT_BOOLEAN error = FALSE;			/* TRUE for invalid arguments */
+	GMT_BOOLEAN do_project = FALSE;		/* TRUE if we must mapproject first */
+	GMT_BOOLEAN got_time = FALSE;		/* TRUE if there is a time column */
+	GMT_BOOLEAN first_header = TRUE;		/* TRUE for very first crossover */
+	GMT_BOOLEAN first_crossover;		/* TRUE for first crossover between two data sets */
+	GMT_BOOLEAN same = FALSE;			/* TRUE when the two cruises we compare have the same name */
+	GMT_BOOLEAN has_time[2];			/* TRUE for each cruises that actually has a time column */
+	GMT_BOOLEAN *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
+	GMT_BOOLEAN cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
 	
 	size_t n_alloc = 1;
 

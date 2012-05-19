@@ -30,42 +30,42 @@
 
 struct PSIMAGE_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<xpos>/<ypos>[/<justify>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double x, y;
 		char justify[3];
 	} C;
 	struct E {	/* -E<dpi> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dpi;
 	} E;
 	struct F {	/* -F<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N<nx>/<ny> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM nx, ny;
 	} N;
 	struct W {	/* -W[-]<width>[/<height>] */
-		BOOLEAN active;
-		BOOLEAN interpolate;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN interpolate;
 		double width, height;
 	} W;
 };
@@ -290,7 +290,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
 	COUNTER_MEDIUM row, col;
-	BOOLEAN error = FALSE, free_GMT = FALSE;
+	GMT_BOOLEAN error = FALSE, free_GMT = FALSE;
 
 	double x, y, wesn[4];
 

@@ -164,7 +164,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
 	COUNTER_MEDIUM row, col, w_col;
 	GMT_LONG error;
-	BOOLEAN use_xy, use_weight;
+	GMT_BOOLEAN use_xy, use_weight;
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
 

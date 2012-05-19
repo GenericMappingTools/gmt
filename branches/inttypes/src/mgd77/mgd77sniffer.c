@@ -212,10 +212,10 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
-	BOOLEAN error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
-	BOOLEAN bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
-	BOOLEAN custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
-	BOOLEAN decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
+	GMT_BOOLEAN error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
+	GMT_BOOLEAN bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
+	GMT_BOOLEAN custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
+	GMT_BOOLEAN decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
 	
 	COUNTER_MEDIUM argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
 	COUNTER_MEDIUM dtc_index = 0, pos = 0;
@@ -257,10 +257,10 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstats[MGD77_N_STATS][GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
 
-	BOOLEAN *prevOffsetSign, prevFlag, prevType, decimated = FALSE;
-	BOOLEAN gotTime, landcruise, *offsetSign, newScale = FALSE, mtf1, nav_error;
+	GMT_BOOLEAN *prevOffsetSign, prevFlag, prevType, decimated = FALSE;
+	GMT_BOOLEAN gotTime, landcruise, *offsetSign, newScale = FALSE, mtf1, nav_error;
 #ifdef FIX
-	BOOLEAN deleteRecord = FALSE;
+	GMT_BOOLEAN deleteRecord = FALSE;
 #endif
 
 	/* INITIALIZE MEMORY FOR MGD77 DATA STRUCTURES */
@@ -891,8 +891,8 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		offsetArea = GMT_memory (GMT, NULL, n_grids, double);
 		offsetStart = GMT_memory (GMT, NULL, n_grids, GMT_LONG);
 		offsetLength = GMT_memory (GMT, NULL, n_grids, double);
-		offsetSign = GMT_memory (GMT, NULL, n_grids, BOOLEAN);
-		prevOffsetSign = GMT_memory (GMT, NULL, n_grids, BOOLEAN);
+		offsetSign = GMT_memory (GMT, NULL, n_grids, GMT_BOOLEAN);
+		prevOffsetSign = GMT_memory (GMT, NULL, n_grids, GMT_BOOLEAN);
 		range = range2 = date = n_days = 0.0;
 		wrapsum = 0.0;
 		prevFlag = FALSE;

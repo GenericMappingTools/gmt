@@ -38,61 +38,61 @@ EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a bla
 
 struct PSTEXT_CTRL {
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C<dx>/<dy> */
-		BOOLEAN active;
-		BOOLEAN percent;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN percent;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
-		BOOLEAN active;
-		BOOLEAN line;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN line;
 		GMT_LONG justify;
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
 	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FONT font;
 		double angle;
 		GMT_LONG justify, nread;
 		char read[3];	/* Contains f, a, and/or j in order required to be read from input */
 	} F;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<case> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
 #ifdef GMT_COMPAT
 	struct S {	/* -S<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} S;
 #endif
 	struct T {	/* -To|O|c|C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 	} T;
 	struct W {	/* -W[<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<z_level> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -207,7 +207,7 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 }
 
 #ifdef GMT_COMPAT
-BOOLEAN check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
+GMT_BOOLEAN check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
@@ -524,7 +524,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pstext task */
 
 	GMT_LONG k, fmode, nscan;
-	BOOLEAN error = FALSE, master_record = FALSE, skip_text_records = FALSE, old_is_world;
+	GMT_BOOLEAN error = FALSE, master_record = FALSE, skip_text_records = FALSE, old_is_world;
 	
 	COUNTER_MEDIUM length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	COUNTER_MEDIUM n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;

@@ -44,11 +44,11 @@
 
 struct GMTDP_CTRL {
 	struct Out {	/* ->[<outfile>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* Can be negative */
 		double tolerance;
 		char unit;
@@ -264,7 +264,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM tbl, col;
 	GMT_LONG error;
-	BOOLEAN geo;
+	GMT_BOOLEAN geo;
 	COUNTER_LARGE row, seg, np_out, *index = NULL;
 	
 	double tolerance;

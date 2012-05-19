@@ -367,7 +367,7 @@ GMT_LONG gmtmex_find_option (char option, char *key[], GMT_LONG n_keys) {
 GMT_LONG gmtmex_get_arg_pos (char *arg)
 {	/* Look for a $ in the arg; if found return position, else return -1. Skips $ inside quoted texts */
 	GMT_LONG pos, k;
-	BOOLEAN mute = FALSE;
+	GMT_BOOLEAN mute = FALSE;
 	for (k = 0, pos = -1; pos == -1 && k < strlen (arg); k++) {
 		if (arg[k] == '\"' || arg[k] == '\'') mute = !mute;	/* Do not consider $ inside quotes */
 		if (!mute && arg[k] == '$') pos = k;	/* Found a $ sign */

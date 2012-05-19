@@ -30,27 +30,27 @@
 
 struct GRDVOLUME_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double low, high, inc;
 	} C;
 	struct L {	/* -L<base> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} L;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} S;
 	struct T {	/* -T[c|z] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} T;
 	struct Z {	/* Z<fact>[/<shift>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale, offset;
 	} Z;
 };
@@ -111,7 +111,7 @@ double vol_prism_frac_y (struct GMT_GRID *G, COUNTER_LARGE ij, double y0, double
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
+void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a SW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, frac;
@@ -129,7 +129,7 @@ void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
+void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a NE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
@@ -152,7 +152,7 @@ void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
+void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a SE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
@@ -174,7 +174,7 @@ void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double *dv, double *da)
+void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a NW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, y0_1, frac;
@@ -193,7 +193,7 @@ void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN triangle, double
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN right, double *dv, double *da)
+void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN right, double *dv, double *da)
 {	/* Calculates area of a NS trapezoid */
 	/* right = TRUE gets the right trapezoid, FALSE gets the left */
 	double x0, x1;
@@ -210,7 +210,7 @@ void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN right, double *
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, BOOLEAN top, double *dv, double *da)
+void EW_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN top, double *dv, double *da)
 {	/* Calculates area of a EW trapezoid */
 	/* top = TRUE gets the top trapezoid, FALSE gets the bottom */
 	double y0, y1;
@@ -396,7 +396,7 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 
 GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, bad, cut[4];
+	GMT_BOOLEAN error = FALSE, bad, cut[4];
 	GMT_LONG ij_inc[5];
 	COUNTER_MEDIUM row, col, c, k, pos, neg, nc, n_contours;
 	

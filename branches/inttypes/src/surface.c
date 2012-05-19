@@ -47,49 +47,49 @@ int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions
 
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<converge_limit> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D<line.xyz> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;	/* Name of file with breaklines */
 	} D;
 	struct G {	/* -G<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -Ll|u<limit> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *low, *high;
 		double min, max;
 		COUNTER_MEDIUM lmode, hmode;
 	} L;
 	struct N {	/* -N<max_iterations> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM value;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S<radius>[m|c] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double radius;
 		char unit;
 	} S;
 	struct T {	/* -T<tension>[i][b] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double b_tension, i_tension;
 	} T;
 	struct Z {	/* -Z<over_relaxation_parameter> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} Z;
 };
@@ -140,7 +140,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	COUNTER_MEDIUM total_iterations;
 	COUNTER_MEDIUM grid_east;
 	GMT_LONG offset[25][12];	/* Indices of 12 nearby points in 25 cases of edge conditions  */
-	BOOLEAN constrained;		/* TRUE if set_low or set_high is TRUE */
+	GMT_BOOLEAN constrained;		/* TRUE if set_low or set_high is TRUE */
 	float *lower, *upper;		/* arrays for minmax values, if set */
 	double low_limit, high_limit;	/* Constrains on range of solution */
 	double grid_xinc, grid_yinc;	/* size of each grid cell for a given grid factor */
@@ -1806,7 +1806,7 @@ GMT_LONG GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, st
 
 GMT_LONG GMT_surface (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	GMT_LONG key, one = 1;
 	
 	struct GMT_TABLE *xyzline = NULL;

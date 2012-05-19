@@ -35,19 +35,19 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 
 struct GMTMERCMAP_CTRL {
 	struct C {	/* -C<cptfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[b|c|d] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} D;
 	struct W {	/* -W<width> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double width;
 	} W;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 };
 

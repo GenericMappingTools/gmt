@@ -37,64 +37,64 @@
 
 struct GRD2CPT_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} In;
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E<nlevels> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM levels;
 	} E;
 	struct F {	/* -F[R|r|h|c] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM model;
 	} F;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<min_limit>/<max_limit> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double min, max;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q[i|o] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} Q;
 	struct S {	/* -S<z_start>/<z_stop>/<z_inc> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double low, high, inc;
 		char *file;
 	} S;
 	struct T {	/* -T<kind> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -290,7 +290,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM row, col, j, cpt_flags = 0;
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	
 	COUNTER_LARGE ij, k, ngrd = 0, nxyg, nfound, ngood;
 	size_t n_alloc = GMT_TINY_CHUNK;

@@ -42,7 +42,7 @@
 #define MAX_ERR_LENGTH 80   /* max error message length */
 #endif
 
-GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern, BOOLEAN caseless)
+GMT_LONG gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *pattern, GMT_BOOLEAN caseless)
 {
 /* Match string against the extended regular expression in pattern. Return 1 for match, 0 for no match. */
 

@@ -36,32 +36,32 @@
 
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM dir;
 	} D;
 	struct E {	/* -E<value> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -225,7 +225,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
 	COUNTER_MEDIUM n_input, n_output;
 	GMT_LONG row, col, col_min, col_max, row_min, row_max;
-	BOOLEAN triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
+	GMT_BOOLEAN triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
 	
 	size_t n_alloc;
 	

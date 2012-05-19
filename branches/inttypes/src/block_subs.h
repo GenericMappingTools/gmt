@@ -37,38 +37,38 @@
 
 struct BLOCK_CTRL {	/* All control options for this program (except common args) */
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 #if !defined(BLOCKMEAN)		/* Blockmedian ahs -Eb and blockmedian & blockmode has -Er[-] option */
 		COUNTER_MEDIUM mode;
 #endif
 	} E;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 #endif
 #if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
 	struct T {	/* -T<quantile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double quantile;
 	} T;
 #endif
 #if defined(BLOCKMEAN)		/* Only blockmean has a -S option */
 	struct S {	/* -S[m|w|z] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} S;
 #endif
 	struct W {	/* -W[i][o] */
-		BOOLEAN active;
-		BOOLEAN weighted[2];
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN weighted[2];
 	} W;
 };
 

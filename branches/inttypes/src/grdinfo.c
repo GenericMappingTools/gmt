@@ -31,26 +31,26 @@
 
 struct GRDINFO_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM status;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct L {	/* -L[1|2] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM norm;
 	} L;
 	struct T {	/* -T[s]<dz> */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		double inc;
 	} T;
 };
@@ -189,7 +189,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error;
 	COUNTER_MEDIUM n_grds = 0;
-	BOOLEAN subset;
+	GMT_BOOLEAN subset;
 	
 	COUNTER_LARGE ij, n_nan = 0, n = 0;
 

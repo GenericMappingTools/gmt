@@ -82,9 +82,9 @@ struct GRD_HEADER {
 	unsigned int bcr_n;		/* Width of the interpolation function */
 	COUNTER_MEDIUM nxp;		/* if X periodic, nxp > 0 is the period in pixels  */
 	COUNTER_MEDIUM nyp;		/* if Y periodic, nxp > 0 is the period in pixels  */
-	BOOLEAN no_BC;			/* If TRUE we skip BC stuff entirely */
-	BOOLEAN gn;			/* TRUE if top    edge will be set as N pole  */
-	BOOLEAN gs;			/* TRUE if bottom edge will be set as S pole  */
+	GMT_BOOLEAN no_BC;			/* If TRUE we skip BC stuff entirely */
+	GMT_BOOLEAN gn;			/* TRUE if top    edge will be set as N pole  */
+	GMT_BOOLEAN gs;			/* TRUE if bottom edge will be set as S pole  */
 	
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */

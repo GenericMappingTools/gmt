@@ -96,7 +96,7 @@ EXTERN_MSC GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *hea
 
 void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 {
-	BOOLEAN found;
+	GMT_BOOLEAN found;
 	COUNTER_MEDIUM i;
 	size_t f_length, length;
 
@@ -117,7 +117,7 @@ void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 		strcpy (fname, file);
 }
 
-GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, BOOLEAN magic)
+GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_BOOLEAN magic)
 {
 	/* This functions does a couple of things:
 	 * 1. It tries to determine what kind of grid file this is. If a file is openeed for
@@ -354,7 +354,7 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 }
 
-BOOLEAN GMT_grd_pad_status (struct GMT_CTRL *C, struct GRD_HEADER *header, COUNTER_MEDIUM *pad)
+GMT_BOOLEAN GMT_grd_pad_status (struct GMT_CTRL *C, struct GRD_HEADER *header, COUNTER_MEDIUM *pad)
 {	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
 	 * Return codes are:
@@ -384,7 +384,7 @@ GMT_LONG gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *we
 	 * whose full domain exceeds the region of interest we are better off using the extra
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
 	 * input grid has the extra data we need to fill the BC pad with observations. */
-	BOOLEAN wrap;
+	GMT_BOOLEAN wrap;
 	COUNTER_MEDIUM n_sides = 0;
 	double wesn2[4];
 	
@@ -502,7 +502,7 @@ GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	 *		for imaginary parts when processed by grdfft etc.
 	 */
 
-	BOOLEAN expand;		/* TRUE or FALSE */
+	GMT_BOOLEAN expand;		/* TRUE or FALSE */
 	GMT_LONG err;		/* Implied by GMT_err_trap */
 	COUNTER_MEDIUM side;
 	struct GRD_PAD P;
@@ -695,7 +695,7 @@ GMT_LONG GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double 
 	 * All integers represented positive definite items hence unsigned variables.
 	 */
 
-	BOOLEAN one_or_zero, geo = FALSE;
+	GMT_BOOLEAN one_or_zero, geo = FALSE;
 	COUNTER_MEDIUM col, *actual_col = NULL;	/* Column numbers */
 	double small = 0.1, half_or_zero, x;
 	GMT_report (C, GMT_MSG_DEBUG, "region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
@@ -840,7 +840,7 @@ GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, ch
 	 */
 
 	GMT_LONG r_w, err;
-	BOOLEAN header = TRUE, magic = TRUE;
+	GMT_BOOLEAN header = TRUE, magic = TRUE;
 	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};	/* MUST be ints */
 	char *bin_mode[3] = { "rb", "rb+", "wb"};
 
@@ -1011,7 +1011,7 @@ void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	GMT_set_grdinc (C, h);
 }
 
-void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, BOOLEAN update)
+void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, GMT_BOOLEAN update)
 {	/* GMT_grd_init initializes a grd header to default values and copies the
 	 * options to the header variable command.
 	 * update = TRUE if we only want to update command line */
@@ -1110,7 +1110,7 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 	if (n_warn) GMT_report (C, GMT_MSG_FATAL, "Gridline-registered global grid has inconsistent values at repeated node for %d rows\n", n_warn);
 }
 
-BOOLEAN GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
+GMT_BOOLEAN GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
 {	/* Determine if grid could be global */
 
 	if (GMT_x_is_lon (C, GMT_IN)) {
@@ -1273,7 +1273,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	 * intended to throw just any values at it (although one could).
 	 */
 	
-	BOOLEAN global, error = FALSE;
+	GMT_BOOLEAN global, error = FALSE;
 	double val, dx, small;
 	
 	switch (GMT_minmaxinc_verify (C, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_SMALL)) {	/* Check if range is compatible with x_inc */
@@ -1363,7 +1363,7 @@ GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HE
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, double *in_wesn, double scale, COUNTER_MEDIUM mode, double lat, BOOLEAN init)
+GMT_LONG GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, double *in_wesn, double scale, COUNTER_MEDIUM mode, double lat, GMT_BOOLEAN init)
 {
 	/* Function that reads an entire Sandwell/Smith Mercator grid and stores it like a regular
 	 * GMT grid.  If init is TRUE we also initialize the Mercator projection.  Lat should be 0.0
@@ -1595,7 +1595,7 @@ struct GRD_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEAD
 	return (hnew);
 }
 
-struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN alloc_data)
+struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_BOOLEAN alloc_data)
 {	/* Duplicates an entire grid, including data. */
 	struct GMT_GRID *Gnew = NULL;
 
@@ -1608,14 +1608,14 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, BOO
 	return (Gnew);
 }
 
-void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, BOOLEAN free_grid)
+void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_BOOLEAN free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return;	/* Nothing to deallocate */
 	if (G->data && free_grid) GMT_free (C, G->data);
 	if (G->header) GMT_free (C, G->header);
 }
 
-void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, BOOLEAN free_grid)
+void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, GMT_BOOLEAN free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	GMT_free_grid_ptr (C, *G, free_grid);
 	GMT_free (C, *G);
@@ -1705,7 +1705,7 @@ GMT_LONG GMT_init_complex (GMT_LONG complex_mode, COUNTER_MEDIUM *inc, COUNTER_M
 	 * Here, *inc is 1|2 and *off = 0-2
 	 */
 	
-	BOOLEAN do_header = TRUE;
+	GMT_BOOLEAN do_header = TRUE;
 	if (complex_mode & 64) {	/* Want no header, adjust complex_mode */
 		complex_mode %= 64;
 		do_header = FALSE;
@@ -1719,7 +1719,7 @@ GMT_LONG GMT_init_complex (GMT_LONG complex_mode, COUNTER_MEDIUM *inc, COUNTER_M
 	return (do_header);
 }
 
-BOOLEAN GMT_check_url_name (char *fname) {
+GMT_BOOLEAN GMT_check_url_name (char *fname) {
 	/* File names starting as below should not be tested for existance or reading permissions as they
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns TRUE. All cases are read via GDAL support. */
@@ -1808,7 +1808,7 @@ GMT_LONG GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, do
 	 */
 
 	GMT_LONG i;
-	BOOLEAN expand;
+	GMT_BOOLEAN expand;
 	struct GRD_PAD P;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;

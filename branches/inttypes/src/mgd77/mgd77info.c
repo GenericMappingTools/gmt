@@ -33,24 +33,24 @@
 struct MGD77INFO_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} C;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} E;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		COUNTER_MEDIUM flag;
 	} M;
@@ -246,7 +246,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	COUNTER_LARGE rec, argno, n_paths, counter[MGD77_MAX_COLS];
 	COUNTER_MEDIUM saved_range, quad_no, n_quad, use, k;
-	BOOLEAN error = FALSE, first = TRUE, read_file, quad[4] = {FALSE, FALSE, FALSE, FALSE};
+	GMT_BOOLEAN error = FALSE, first = TRUE, read_file, quad[4] = {FALSE, FALSE, FALSE, FALSE};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;
@@ -416,7 +416,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
 		ymax = -180.0;
-		GMT_memset (quad, 4, BOOLEAN);	/* Set all to FALSE */
+		GMT_memset (quad, 4, GMT_BOOLEAN);	/* Set all to FALSE */
 		GMT_memset (counter, MGD77_MAX_COLS, COUNTER_LARGE);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {

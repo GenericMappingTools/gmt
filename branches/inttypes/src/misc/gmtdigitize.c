@@ -62,32 +62,32 @@
 struct GMTDIGITIZE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* Device */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *device;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double limit;
 	} D;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG LPI;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *name;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 	} Z;
 };
 
@@ -272,7 +272,7 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 
 GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, ok, multi_files;
+	GMT_BOOLEAN error = FALSE, ok, multi_files;
 	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
 	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
 	

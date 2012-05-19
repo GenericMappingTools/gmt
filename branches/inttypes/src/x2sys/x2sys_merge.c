@@ -29,11 +29,11 @@
 
 struct X2SYS_MERGE_CTRL {
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} A;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} M;
 };

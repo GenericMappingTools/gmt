@@ -31,10 +31,10 @@
 
 struct GMTGET_CTRL {
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct G {	/* -Gfilename */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 };

@@ -39,29 +39,29 @@
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct E {	/* -E<empty> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct G {	/* -G<grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N<sectors> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM sectors, min_sectors;
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 };
 
@@ -254,7 +254,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG col_0, row_0, row, col, row_end, col_end, ii, jj;
 	COUNTER_MEDIUM k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
-	BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
+	GMT_BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
 	
 	size_t n_alloc = GMT_CHUNK;
 	

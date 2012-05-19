@@ -39,36 +39,36 @@
 
 struct GMTVECTOR_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct In {	/* infile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_args;
 		char *arg;
 	} In;
 	struct A {	/* -A[m[<conf>]|<vec>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double conf;
 		char *arg;
 	} A;
 	struct C {	/* -C[i|o] */
-		BOOLEAN active[2];
+		GMT_BOOLEAN active[2];
 	} C;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S[vec] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *arg;
 	} S;
 	struct T {	/* -T[operator] */
-		BOOLEAN active;
-		BOOLEAN degree;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN degree;
 		COUNTER_MEDIUM mode;
 		double par[3];
 	} T;
@@ -350,7 +350,7 @@ void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 	GMT_normalize3v (C, P);
 }
 
-void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, BOOLEAN cartesian, double conf, double *M, double *E)
+void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_BOOLEAN cartesian, double conf, double *M, double *E)
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
@@ -436,7 +436,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, BOOLEAN cartesian
 GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM tbl, error = 0, k, n, nv, n_out, add = 0;
-	BOOLEAN single = FALSE;
+	GMT_BOOLEAN single = FALSE;
 	
 	COUNTER_LARGE row, seg;
 

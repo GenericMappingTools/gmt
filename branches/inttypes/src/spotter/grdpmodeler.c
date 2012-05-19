@@ -39,31 +39,31 @@
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct E {	/* -Erotfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} E;
 	struct F {	/* -Fpolfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} S;
 	struct T {	/* -T<fixtime> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} T;
 };
@@ -226,7 +226,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM col, row, inside, k, n_stages, registration;
 	GMT_LONG ks;
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	
 	COUNTER_LARGE node, seg;
 	

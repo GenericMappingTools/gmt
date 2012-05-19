@@ -61,62 +61,62 @@
 
 struct PSCOAST_CTRL {
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* -C<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill[2];	/* lake and riverlake fill */
 	} C;
 	struct D {	/* -D<resolution> */
-		BOOLEAN active;
-		BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
-		BOOLEAN clip;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN clip;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM use[GSHHS_N_RLEVELS];
 		COUNTER_MEDIUM n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_MAP_SCALE item;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM use[GSHHS_N_BLEVELS];
 		COUNTER_MEDIUM n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S<fill> */
-		BOOLEAN active;
-		BOOLEAN clip;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN clip;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_MAP_ROSE item;
 	} T;
 	struct W {	/* -W[<feature>/]<pen> */
-		BOOLEAN active;
-		BOOLEAN use[GSHHS_MAX_LEVEL];
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN use[GSHHS_MAX_LEVEL];
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
 	struct DBG {	/* -+<bin> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		int bin;
 	} debug;
 #endif
@@ -479,7 +479,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	return (n_errors);
 }
 
-BOOLEAN add_this_polygon_to_path (struct GMT_CTRL *GMT, GMT_LONG k0, struct GMT_GSHHS_POL *p, GMT_LONG level, GMT_LONG k)
+GMT_BOOLEAN add_this_polygon_to_path (struct GMT_CTRL *GMT, GMT_LONG k0, struct GMT_GSHHS_POL *p, GMT_LONG level, GMT_LONG k)
 {
 	/* Determines if we should add the current polygon pol[k] to the growing path we are constructing */
 
@@ -531,10 +531,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_LONG i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
 	GMT_LONG level_to_be_painted = 0, direction, start_direction, stop_direction, last_pen_level;
-	BOOLEAN shift = FALSE, need_coast_base, recursive;
-	BOOLEAN greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;
-	BOOLEAN clobber_background, paint_polygons = FALSE, donut;
-	BOOLEAN donut_hell = FALSE, world_map_save, clipping;
+	GMT_BOOLEAN shift = FALSE, need_coast_base, recursive;
+	GMT_BOOLEAN greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;
+	GMT_BOOLEAN clobber_background, paint_polygons = FALSE, donut;
+	GMT_BOOLEAN donut_hell = FALSE, world_map_save, clipping;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border, east_border, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;

@@ -332,7 +332,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 		strcpy (G->a_mode, "ab+");
 	}
 	X->out_order  = GMT_memory (C, NULL, X->n_fields, COUNTER_MEDIUM);
-	X->use_column = GMT_memory (C, NULL, X->n_fields, BOOLEAN);
+	X->use_column = GMT_memory (C, NULL, X->n_fields, GMT_BOOLEAN);
 	for (i = is = 0; i < X->n_fields; i++, is++) {	/* Default is same order and use all columns */
 		X->out_order[i] = i;
 		X->use_column[i] = 1;
@@ -475,7 +475,7 @@ double *x2sys_dummytimes (struct GMT_CTRL *C, COUNTER_LARGE n)
 
 GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	COUNTER_MEDIUM j, k, i, n_read = 0, pos;
 	GMT_LONG is;
 	char line[GMT_BUFSIZ], buffer[GMT_TEXT_LEN64], p[GMT_BUFSIZ], c;
@@ -979,7 +979,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 	char tag_file[GMT_BUFSIZ], line[GMT_BUFSIZ], p[GMT_BUFSIZ], sfile[GMT_BUFSIZ], suffix[16], unit[2][2];
 	COUNTER_MEDIUM n, k, pos = 0, geodetic = 0;
 	GMT_LONG dist_flag = 0;
-	BOOLEAN geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
+	GMT_BOOLEAN geographic = FALSE, n_given[2] = {FALSE, FALSE}, c_given = FALSE;
 	double dist;
 	FILE *fp = NULL;
 	struct X2SYS_INFO *s = NULL;
@@ -1158,7 +1158,7 @@ GMT_LONG x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S,
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, BOOLEAN alloc)
+void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, GMT_BOOLEAN alloc)
 {
 	B->i_bin_x = 1.0 / B->inc[GMT_X];
 	B->i_bin_y = 1.0 / B->inc[GMT_Y];
@@ -1246,7 +1246,7 @@ GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SYS_BIX *B, BOOLEAN swap)
+GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SYS_BIX *B, GMT_BOOLEAN swap)
 {
 	/* Reads the binned index file which is native binary and thus swab is an issue */
 	char index_file[GMT_BUFSIZ], index_path[GMT_BUFSIZ];
@@ -1375,7 +1375,7 @@ void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *S)
 GMT_LONG x2sys_get_data_path (struct GMT_CTRL *C, char *track_path, char *track, char *suffix)
 {
 	COUNTER_MEDIUM id;
-	BOOLEAN add_suffix;
+	GMT_BOOLEAN add_suffix;
 	char geo_path[GMT_BUFSIZ];
 
 	if (track[0] == '/' || track[1] == ':') {	/* Full path given, just return it */
@@ -1484,7 +1484,7 @@ COUNTER_LARGE x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, ch
 	char stop[2][GMT_TEXT_LEN64], info[2][3*GMT_TEXT_LEN64], **trk_list = NULL, **ignore = NULL, *t = NULL;
 	GMT_LONG i, year[2], our_item = -1, n_items, s_id;
 	COUNTER_MEDIUM id[2], n_ignore = 0, n_tracks = 0;
-	BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
+	GMT_BOOLEAN more, skip, two_values = FALSE, check_box, keep = TRUE, no_time = FALSE;
 	size_t n_alloc_x, n_alloc_p, n_alloc_t;
 	COUNTER_LARGE k, p, n_pairs;
 	double x, m, lon, dist[2], d_val;
@@ -1742,7 +1742,7 @@ GMT_LONG x2sys_find_track (struct GMT_CTRL *C, char *name, char **list, COUNTER_
 	return (-1);
 }
 
-GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***filelist, BOOLEAN *cmdline)
+GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***filelist, GMT_BOOLEAN *cmdline)
 {	/* Return list of track names given on command line or via =list mechanism.
 	 * The names do not have the track extension. */
 	COUNTER_MEDIUM i, A;

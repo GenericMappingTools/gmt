@@ -42,24 +42,24 @@
 
 struct SPECTRUM1D_CTRL {
 	struct C {	/* -C[<xycnpago>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} C;
 	struct D {	/* -D<inc> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc;
 	} D;
 	struct N {	/* -N[+]<namestem> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		char *name;
 	} N;
 	struct S {	/* -S<segment_size> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM size;
 	} S;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 };
 
@@ -612,7 +612,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 
 GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, one_table;
+	GMT_BOOLEAN error = FALSE, one_table;
 	COUNTER_MEDIUM tbl, k, n_outputs;
 	
 	COUNTER_LARGE seg;

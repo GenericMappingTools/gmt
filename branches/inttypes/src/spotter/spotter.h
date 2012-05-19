@@ -49,7 +49,7 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double k_hat;			/* k_hat uncertainty scale */
 	double g;			/* g magnitude scale */
 	double df;			/* Degrees of freedom in the estimate of rotation */
-	BOOLEAN has_cov;		/* TRUE if there is a covariance matrix for this R */
+	GMT_BOOLEAN has_cov;		/* TRUE if there is a covariance matrix for this R */
 	GMT_LONG id[2];			/* The ID numbers for GPlates pairs */
 };
 
@@ -67,7 +67,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
         GMT_LONG id;			/* Hot spot id flag */
 	double radius;			/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;		/* Time interval hotspot was active */
-	BOOLEAN create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
+	GMT_BOOLEAN create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */
         char name[GMT_TEXT_LEN64];	/* Full name of hotspot */
 	/* Secondary (derived) quantities */
         double x, y, z;			/* Cartesian Current location of hot spot */
@@ -77,15 +77,15 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 
 EXTERN_MSC GMT_LONG spotter_stage (struct GMT_CTRL *C, double t, struct EULER p[], COUNTER_MEDIUM ns);
 EXTERN_MSC GMT_LONG spotter_GPlates_pair (char *file);
-EXTERN_MSC GMT_LONG spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, BOOLEAN flowline, BOOLEAN total_out, BOOLEAN invert, double *t_max);
-EXTERN_MSC GMT_LONG spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, BOOLEAN geocentric, struct HOTSPOT **p);
-EXTERN_MSC COUNTER_MEDIUM spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
-EXTERN_MSC COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, BOOLEAN do_time, double wesn[], double **c);
-EXTERN_MSC void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], COUNTER_MEDIUM n, BOOLEAN total_rates, BOOLEAN stage_rates);
-EXTERN_MSC void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], COUNTER_MEDIUM n, BOOLEAN total_rates, BOOLEAN stage_rates);
+EXTERN_MSC GMT_LONG spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, GMT_BOOLEAN flowline, GMT_BOOLEAN total_out, GMT_BOOLEAN invert, double *t_max);
+EXTERN_MSC GMT_LONG spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, GMT_BOOLEAN geocentric, struct HOTSPOT **p);
+EXTERN_MSC COUNTER_MEDIUM spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c);
+EXTERN_MSC COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c);
+EXTERN_MSC void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN total_rates, GMT_BOOLEAN stage_rates);
+EXTERN_MSC void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN total_rates, GMT_BOOLEAN stage_rates);
 EXTERN_MSC void spotter_add_rotations (struct GMT_CTRL *GMT, struct EULER a[], COUNTER_MEDIUM n_a, struct EULER b[], COUNTER_MEDIUM n_b, struct EULER *c[], COUNTER_MEDIUM *n_c);
 EXTERN_MSC double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], COUNTER_MEDIUM n, double t);
-EXTERN_MSC GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double t, struct EULER *p, COUNTER_MEDIUM np, char conf, BOOLEAN forward, double out[]);
+EXTERN_MSC GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double t, struct EULER *p, COUNTER_MEDIUM np, char conf, GMT_BOOLEAN forward, double out[]);
 EXTERN_MSC void spotter_matrix_vect_mult (struct GMT_CTRL *GMT, double a[3][3], double b[3], double c[3]);
 EXTERN_MSC void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3][3]);
 EXTERN_MSC void spotter_matrix_add (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3]);

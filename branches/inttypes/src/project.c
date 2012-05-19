@@ -33,48 +33,48 @@
 struct PROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A<azimuth> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double azimuth;
 	} A;
 	struct C {	/* -C<ox>/<oy> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double x, y;
 	} C;
 	struct E {	/* -E<bx>/<by> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double x, y;
 	} E;
 	struct F {	/* -F<flags> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
 	struct G {	/* -G<inc>[/<colat>][+] */
-		BOOLEAN active;
-		BOOLEAN header;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN header;
 		COUNTER_MEDIUM mode;
 		double inc;
 		double colat;
 	} G;
 	struct L {	/* -L[w][<l_min>/<l_max>] */
-		BOOLEAN active;
-		BOOLEAN constrain;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN constrain;
 		double min, max;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T<px>/<py> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double x, y;
 	} T;
 	struct W {	/* -W<w_min>/<w_max> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double min, max;
 	} W;
 };
@@ -90,9 +90,9 @@ struct PROJECT_INFO {
 	COUNTER_MEDIUM n_outputs;
 	COUNTER_MEDIUM n_z;
 	GMT_LONG output_choice[PROJECT_N_FARGS];
-	BOOLEAN find_new_point;
-	BOOLEAN want_z_output;
-	BOOLEAN first;
+	GMT_BOOLEAN find_new_point;
+	GMT_BOOLEAN want_z_output;
+	GMT_BOOLEAN first;
 	double pole[3];
 	double plon, plat;	/* Pole location */
 };
@@ -109,7 +109,7 @@ int compare_distances (const void *point_1, const void *point_2)
 	return (0);
 }
 
-double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, BOOLEAN c_given, BOOLEAN generate)
+double oblique_setup (struct GMT_CTRL *GMT, double plat, double plon, double *p, double *clat, double *clon, double *c, GMT_BOOLEAN c_given, GMT_BOOLEAN generate)
 {
 	/* routine sets up a unit 3-vector p, the pole of an
 	   oblique projection, given plat, plon, the position
@@ -225,7 +225,7 @@ void matrix_2v (double *a, double *x, double *b)
 	b[1] = x[0]*a[2] + x[1]*a[3];
 }
 
-void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, BOOLEAN two_pts)
+void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, double *a, double blat, double blon, double *b, double azim, double *p, double *c, GMT_BOOLEAN two_pts)
 {
 	/* routine to initialize a pole vector, p, and a central meridian
 	   normal vector, c, for use in projecting points onto a great circle.
@@ -277,7 +277,7 @@ void sphere_project_setup (struct GMT_CTRL *GMT, double alat, double alon, doubl
 	GMT_normalize3v (GMT, c);
 }
 
-void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, BOOLEAN two_pts, BOOLEAN pole_set)
+void flat_project_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, GMT_BOOLEAN two_pts, GMT_BOOLEAN pole_set)
 {
 	/* Sets up stuff for rotation of cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
@@ -534,7 +534,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double theta, struct PROJECT_DATA *p_data, struct PROJECT_INFO *P)
 {
 	GMT_LONG error;
-	BOOLEAN pure_ascii;
+	GMT_BOOLEAN pure_ascii;
 	COUNTER_MEDIUM n_items, j, k;
 	COUNTER_LARGE i;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
@@ -621,7 +621,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_LARGE i, n_total_read, n_total_used = 0;
 	COUNTER_MEDIUM rmode;
-	BOOLEAN pure_ascii, skip, z_first = TRUE;
+	GMT_BOOLEAN pure_ascii, skip, z_first = TRUE;
 	GMT_LONG j, k, error = 0;
 	
 	size_t n_alloc = GMT_CHUNK;

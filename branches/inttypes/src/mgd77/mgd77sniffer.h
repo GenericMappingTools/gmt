@@ -96,7 +96,7 @@ struct MGD77_GRID_INFO {
 	struct GMT_GRID *G;
 	COUNTER_MEDIUM one_or_zero, nx, ny, col, g_pts, format, mode, mx, n_nan;
 	GMT_LONG sign;
-	BOOLEAN interpolate;
+	GMT_BOOLEAN interpolate;
 	double scale, max_lat;
 	char abbrev[8];
 	char fname[32];

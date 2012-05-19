@@ -415,7 +415,7 @@ GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
 {
 	GMT_LONG error;
-	BOOLEAN check, is_binary = FALSE, swap = FALSE;
+	GMT_BOOLEAN check, is_binary = FALSE, swap = FALSE;
 	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx, n_left = 0;
 	GMT_LONG row, first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM row2, width_in, *actual_col = NULL;

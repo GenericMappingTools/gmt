@@ -56,27 +56,27 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
 	struct D {	/* -D<resolution> */
-		BOOLEAN active;
-		BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E<operators> , <op> = combination or f,n */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM end_mode;	/* Controls what happens beyond segment endpoints */
 		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Distance of influence for each line */
@@ -84,25 +84,25 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		char *file;	/* Name of file with lines */
 	} L;
 	struct F {	/* -F<polygon> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;	/* Name of file with polygons */
 	} F;
 	struct I {	/* -Icflrsz */
-		BOOLEAN active;
-		BOOLEAN pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct N {	/* -N<maskvalues> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
-		BOOLEAN mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
+		GMT_BOOLEAN mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
 	struct Z {	/* -Z<min>/<max> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double min;	/* Smallest z-value to pass through */
 		double max;	/* Largest z-value to pass through */
 	} Z;
 	struct dbg {	/* -+step */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double step;
 	} dbg;
 };
@@ -119,7 +119,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;		/* Default is that points on a boundary are inside */
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
-	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, BOOLEAN);		/* Default for "wet" areas = FALSE (outside) */
+	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, GMT_BOOLEAN);		/* Default for "wet" areas = FALSE (outside) */
 	C->N.mask[1] = C->N.mask[3] = TRUE;				/* Default for "dry" areas = TRUE (inside) */
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
@@ -217,7 +217,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
-	BOOLEAN fix = FALSE;
+	GMT_BOOLEAN fix = FALSE;
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -413,8 +413,8 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM base = 3, np[2] = {0, 0}, r_mode;
 	COUNTER_MEDIUM side, col, id;
 	GMT_LONG n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
-	BOOLEAN inside, error = FALSE, need_header, shuffle, just_copy_record = FALSE, pt_cartesian = FALSE;
-	BOOLEAN output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+	GMT_BOOLEAN inside, error = FALSE, need_header, shuffle, just_copy_record = FALSE, pt_cartesian = FALSE;
+	GMT_BOOLEAN output_header = FALSE, do_project = FALSE, no_resample = FALSE;
 
 	COUNTER_LARGE k, row, seg, n_read = 0, n_pass = 0;
 

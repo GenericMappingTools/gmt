@@ -41,41 +41,41 @@
 
 struct PSMASK_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 #ifdef DEBUG
-		BOOLEAN debug;
+		GMT_BOOLEAN debug;
 #endif
 	} D;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<cut> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM min;
 	} Q;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -236,7 +236,7 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	COUNTER_MEDIUM n_edges, edge_word, edge_bit, i, j, n = 0;
 	static COUNTER_MEDIUM i0, j0, side;
 	COUNTER_LARGE ij;
-	BOOLEAN go_on = TRUE;
+	GMT_BOOLEAN go_on = TRUE;
 	 
 	 
 	n_edges = h->ny * lrint (ceil (h->nx / 16.0));
@@ -498,7 +498,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
 	COUNTER_MEDIUM io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start;
 	COUNTER_MEDIUM fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
-	BOOLEAN error = FALSE, first = TRUE, node_only, make_plot, closed;
+	GMT_BOOLEAN error = FALSE, first = TRUE, node_only, make_plot, closed;
 	
 	COUNTER_LARGE ij, n_points, n_seg = 0, n_read, n;
 	

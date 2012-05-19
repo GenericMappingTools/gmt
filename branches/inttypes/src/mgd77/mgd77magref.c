@@ -20,36 +20,36 @@
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct MGD77_CM4 *CM4;
-	BOOLEAN copy_input;
-	BOOLEAN do_IGRF;
-	BOOLEAN do_CM4;
-	BOOLEAN joint_IGRF_CM4;
+	GMT_BOOLEAN copy_input;
+	GMT_BOOLEAN do_IGRF;
+	GMT_BOOLEAN do_CM4;
+	GMT_BOOLEAN joint_IGRF_CM4;
 	struct A {	/* -A */
-		BOOLEAN active;
-		BOOLEAN fixed_alt;
-		BOOLEAN fixed_time;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN fixed_alt;
+		GMT_BOOLEAN fixed_time;
 		GMT_LONG years;
 		GMT_LONG t_col;
 		double altitude;
 		double time;
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} G;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 };
 
@@ -391,7 +391,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_MEDIUM j, nval = 0, nfval = 0, error = 0;
 	COUNTER_MEDIUM lval = 0, lfval = 0, n_field_components, tbl;
 	COUNTER_MEDIUM n_out = 0, t_col = 3;
-	BOOLEAN cm4_igrf_T = FALSE;
+	GMT_BOOLEAN cm4_igrf_T = FALSE;
 	
 	size_t i, s, need = 0, n_alloc = 0;
 

@@ -48,7 +48,7 @@ struct DUP {
 	COUNTER_LARGE segment;
 	COUNTER_MEDIUM table;
 	GMT_LONG mode;
-	BOOLEAN inside;
+	GMT_BOOLEAN inside;
 	double distance;
 	double closeness;
 	double setratio;
@@ -68,50 +68,50 @@ struct DUP_INFO {
 
 struct GMTSPATIAL_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D[pol] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 		char unit;
 		char *file;
 		struct DUP I;
 	} D;
 	struct E {	/* -D[-|+] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} E;
 	struct I {	/* -I[i|e] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
 	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
-		BOOLEAN active;
-		BOOLEAN all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
 		COUNTER_MEDIUM mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
 		COUNTER_MEDIUM ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
 	struct Q {	/* -Q[+] */
-		BOOLEAN active;
-		BOOLEAN header;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN header;
 		char unit;
 	} Q;
 	struct S {	/* -S[u|i|c] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} S;
 	struct T {	/* -T[pol] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 };
@@ -321,7 +321,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	 * not detect such crossings.  For most situations this should not matter much (?).
 	 */
 	
-	BOOLEAN status;
+	GMT_BOOLEAN status;
 	COUNTER_MEDIUM k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
 	COUNTER_LARGE row, seg, pt, np;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
@@ -750,7 +750,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG error = 0;
 	COUNTER_MEDIUM geometry = GMT_IS_POLY;
-	BOOLEAN internal = FALSE, external = FALSE, mseg = FALSE;
+	GMT_BOOLEAN internal = FALSE, external = FALSE, mseg = FALSE;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -951,7 +951,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
-		BOOLEAN same_feature;
+		GMT_BOOLEAN same_feature;
 		COUNTER_MEDIUM tbl1, tbl2, col, in;
 		COUNTER_LARGE nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
@@ -1013,7 +1013,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							COUNTER_LARGE px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
 								COUNTER_LARGE row0;
-								BOOLEAN go, first;
+								GMT_BOOLEAN go, first;
 								double *xx = NULL, *yy = NULL, *kk = NULL;
 								struct PAIR *pair = NULL;
 								
@@ -1143,7 +1143,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
 		COUNTER_MEDIUM tbl, tbl2, col, n_dup, poly_D, poly_S2;
 		COUNTER_LARGE seg, seg2;
-		BOOLEAN same_feature = FALSE;
+		GMT_BOOLEAN same_feature = FALSE;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
 		char record[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
@@ -1366,7 +1366,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->S.active) {	/* Do geospatial operations */
 		COUNTER_MEDIUM tbl;
 		COUNTER_LARGE n_split = 0, seg_out, seg, n_segs, kseg;
-		BOOLEAN crossing;
+		GMT_BOOLEAN crossing;
 		COUNTER_LARGE dim[4] = {0, 1, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_TABLE *T = NULL;

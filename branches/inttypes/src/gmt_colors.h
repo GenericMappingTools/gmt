@@ -75,7 +75,7 @@ struct GMT_LUT {
 	double rgb_low[4], rgb_high[4], rgb_diff[4];
 	double hsv_low[4], hsv_high[4], hsv_diff[4];
 	COUNTER_MEDIUM annot;		/* 1 for Lower, 2 for Upper, 3 for Both */
-	BOOLEAN skip;		/* TRUE means skip this slice */
+	GMT_BOOLEAN skip;		/* TRUE means skip this slice */
 	struct GMT_FILL *fill;	/* Use by grdview */			/* Content not counted by sizeof (struct) */
 	char *label;		/* For non-number labels */		/* Content not counted by sizeof (struct) */
 };
@@ -83,7 +83,7 @@ struct GMT_LUT {
 struct GMT_BFN_COLOR {		/* For back-, fore-, and nan-colors */
 	double rgb[4];
 	double hsv[4];
-	BOOLEAN skip;		/* TRUE means skip this slice */
+	GMT_BOOLEAN skip;		/* TRUE means skip this slice */
 	struct GMT_FILL *fill;						/* Content not counted by sizeof (struct) */
 };
 
@@ -95,12 +95,12 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	COUNTER_MEDIUM cpt_flags;	/* Flags controling use of BFN colors */
 	COUNTER_MEDIUM alloc_mode;	/* Allocation info [0] */
 	COUNTER_MEDIUM model;		/* RGB, HSV, CMYK */
-	BOOLEAN is_gray;		/* TRUE if only grayshades are needed */
-	BOOLEAN is_bw;			/* TRUE if only black and white are needed */
-	BOOLEAN is_continuous;		/* TRUE if continuous color tables have been given */
-	BOOLEAN has_pattern;		/* TRUE if cpt file contains any patterns */
-	BOOLEAN skip;			/* TRUE if current z-slice is to be skipped */
-	BOOLEAN categorical;		/* TRUE if CPT applies to categorical data */
+	GMT_BOOLEAN is_gray;		/* TRUE if only grayshades are needed */
+	GMT_BOOLEAN is_bw;			/* TRUE if only black and white are needed */
+	GMT_BOOLEAN is_continuous;		/* TRUE if continuous color tables have been given */
+	GMT_BOOLEAN has_pattern;		/* TRUE if cpt file contains any patterns */
+	GMT_BOOLEAN skip;			/* TRUE if current z-slice is to be skipped */
+	GMT_BOOLEAN categorical;		/* TRUE if CPT applies to categorical data */
 	char **header;			/* Array with all CPT ile header records, if any) */		/* Content not counted by sizeof (struct) */
 };
 

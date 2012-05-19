@@ -33,48 +33,48 @@ EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
 
 struct PSXY_CTRL {
 	struct A {	/* -A[m|p|step] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<dx>/<dy> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dx, dy;
 	} D;
 	struct E {	/* -E[x|X][y|Y][cap][/[+|-]<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
 		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
 	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<intensity> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *arg;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
@@ -493,10 +493,10 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 
 GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psxy task */
-	BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
-	BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	BOOLEAN error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
-	BOOLEAN default_outline, outline_active;
+	GMT_BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
+	GMT_BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
+	GMT_BOOLEAN error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
+	GMT_BOOLEAN default_outline, outline_active;
 	COUNTER_MEDIUM set_type, n_needed, n_cols_start = 2, justify, tbl;
 	COUNTER_MEDIUM i, n_total_read = 0, j, geometry, read_mode;
 	COUNTER_MEDIUM ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;

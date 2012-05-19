@@ -128,32 +128,32 @@
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D<factor> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;	/* Resampling factor */
 	} D;
 	struct E {	/* -E[+]rotfile */
-		BOOLEAN active;
-		BOOLEAN mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		char *file;
 	} E;
 	struct G {	/* -Goutfile */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_upper;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T<tzero> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double t_zero;	/* Set zero age*/
 	} T;
 };
@@ -295,7 +295,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	GMT_LONG node_y_width;		/* Number of y-nodes covered by the seamount */
 	GMT_LONG d_col, d_row, col_0, row_0, nx, ny;
-	BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
+	GMT_BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
 	
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */

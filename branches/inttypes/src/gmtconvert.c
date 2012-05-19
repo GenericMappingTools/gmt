@@ -43,43 +43,43 @@ EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 
 struct GMTCONVERT_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct D {	/* -D[<template>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *name;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} L;
 	struct I {	/* -I[ast] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} I;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_LARGE seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		BOOLEAN active;
-		BOOLEAN inverse;
-		BOOLEAN regexp;
-		BOOLEAN caseless;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN inverse;
+		GMT_BOOLEAN regexp;
+		GMT_BOOLEAN caseless;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -264,7 +264,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 
 GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN match = FALSE, warn = FALSE, ogr_match = FALSE;
+	GMT_BOOLEAN match = FALSE, warn = FALSE, ogr_match = FALSE;
 	GMT_LONG error = 0, ogr_item = 0;
 	COUNTER_MEDIUM out_col, col, n_cols_in, n_cols_out, tbl;
 	COUNTER_MEDIUM n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;

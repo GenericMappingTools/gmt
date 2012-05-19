@@ -45,7 +45,7 @@ PostScript code is written to stdout.
 
 struct PSCOUPE_CTRL {
 	struct A {	/* -A[<params>] */
-		BOOLEAN active, frame, polygon;
+		GMT_BOOLEAN active, frame, polygon;
 		GMT_LONG fuseau;
 		char proj_type;
 		double p_width, p_length, dmin, dmax;
@@ -55,30 +55,30 @@ struct PSCOUPE_CTRL {
 		char newfile[GMT_TEXT_LEN256], extfile[GMT_TEXT_LEN256];
 	} A;
  	struct E {	/* -E<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S and -s */
-		BOOLEAN active;
-		BOOLEAN zerotrace;
-		BOOLEAN no_label;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN zerotrace;
+		GMT_BOOLEAN no_label;
 		COUNTER_MEDIUM readmode;
 		COUNTER_MEDIUM plotmode;
 		COUNTER_MEDIUM justify;
@@ -89,41 +89,41 @@ struct PSCOUPE_CTRL {
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<cptfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Z;
 	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
 	struct E2 {	/* -e<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E2;
  	struct G2 {	/* -g<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G2;
  	struct P2 {	/* -p[<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} P2;
 	struct R2 {	/* -r[<fill>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} R2;
  	struct T2 {	/* -t[<pen>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} T2;
 };

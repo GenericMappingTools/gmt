@@ -66,57 +66,57 @@
 
 struct XYZOKB_CTRL {
 	struct XYZOKB_C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double rho;
 	} C;
 	struct XYZOKB_D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dir;
 	} D;
 	struct XYZOKB_I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct XYZOKB_F {	/* -F<grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct XYZOKB_G {	/* -G<grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct XYZOKB_H {	/* -H */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
 	struct XYZOKB_L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double zobs;
 	} L;
 	struct XYZOKB_E {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double dz;
 	} E;
 	struct XYZOKB_S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double radius;
 	} S;
 	struct XYZOKB_Z {	/* -Z */
 		double z0;
 	} Z;
 	struct XYZOKB_T {	/* -T */
-		BOOLEAN active;
-		BOOLEAN triangulate;
-		BOOLEAN raw;
-		BOOLEAN stl;
-		BOOLEAN m_var, m_var1, m_var2, m_var3, m_var4;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN triangulate;
+		GMT_BOOLEAN raw;
+		GMT_BOOLEAN stl;
+		GMT_BOOLEAN m_var, m_var1, m_var2, m_var3, m_var4;
 		char *xyz_file;
 		char *t_file;
 		char *raw_file;
 		char *stl_file;
 	} T;
 	struct XYZOKB_box {	/* No option, just a container */
-		BOOLEAN is_geog;
+		GMT_BOOLEAN is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
 	} box;
 };
@@ -175,10 +175,10 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname);
 GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
 GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
-GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, BOOLEAN switch_xy);
+GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy);
 void set_center (COUNTER_MEDIUM n_triang);
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, BOOLEAN bat);
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, BOOLEAN geo);
+GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN bat);
+GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN geo);
 GMT_LONG check_triang_cw (COUNTER_MEDIUM n, COUNTER_MEDIUM type);
 
 GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
@@ -368,7 +368,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 
 GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	BOOLEAN error = FALSE, bat = TRUE, switch_xy = FALSE, DO = TRUE;
+	GMT_BOOLEAN error = FALSE, bat = TRUE, switch_xy = FALSE, DO = TRUE;
 	COUNTER_MEDIUM row, col, i, j, k, kk, ndata_r = 0;
 	COUNTER_MEDIUM ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
 	COUNTER_MEDIUM z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
@@ -936,7 +936,7 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, BOOLEAN switch_xy) {
+GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed*/
 	COUNTER_MEDIUM ndata, ix = 0, iy = 1;
 	size_t n_alloc;
@@ -968,7 +968,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, BOOLEAN switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, BOOLEAN bat) {
+GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1035,7 +1035,7 @@ GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_ve
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, BOOLEAN geo) {
+GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN geo) {
 	/* Sets coodinates for the facet in the RAW format */
 	double cos_a, cos_b, cos_c, x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 

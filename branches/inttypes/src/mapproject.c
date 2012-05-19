@@ -42,61 +42,61 @@
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
-		BOOLEAN active;
-		BOOLEAN azims;
-		BOOLEAN orient;	/* TRUE if we want orientations, not azimuths */
-		BOOLEAN reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
-		BOOLEAN geodesic;	/* TRUE if we want geodesic azimuths [Default is great circle azimuths] */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN azims;
+		GMT_BOOLEAN orient;	/* TRUE if we want orientations, not azimuths */
+		GMT_BOOLEAN reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
+		GMT_BOOLEAN geodesic;	/* TRUE if we want geodesic azimuths [Default is great circle azimuths] */
 		double lon, lat;	/* Fixed point of reference */
 	} A;
 	struct C {	/* -C[<false_easting>/<false_northing>] */
-		BOOLEAN active;
-		BOOLEAN shift;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN shift;
 		double easting, northing;	/* Shifts */
 	} C;
 	struct D {	/* -D<c|i|p> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} D;
 	struct E {	/* -E[<datum>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		struct GMT_DATUM datum;	/* Contains a, f, xyz[3] */
 	} E;
 	struct F {	/* -F[k|m|n|i|c|p] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} F;
 	struct G {	/* -G<lon0>/<lat0>[d|e|f|k|m|M|n|s|c|C] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
 		COUNTER_MEDIUM sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
 		COUNTER_MEDIUM sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} N;
 	struct Q {	/* -Q[e|d] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T[h]<from>[/<to>] */
-		BOOLEAN active;
-		BOOLEAN heights;	/* True if we have heights */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN heights;	/* True if we have heights */
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
@@ -195,7 +195,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	 */
 
 	GMT_LONG n_slash, n, k, n_errors = 0, slash, last;
-	BOOLEAN geodetic_calc = FALSE;
+	GMT_BOOLEAN geodetic_calc = FALSE;
 	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -408,8 +408,8 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_LONG k, x, y, rmode, n_fields, n_output = 0, two, way;
 	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
-	BOOLEAN error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
-	BOOLEAN geodetic_calc = FALSE, datum_conv_only = FALSE, double_whammy = FALSE;
+	GMT_BOOLEAN error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
+	GMT_BOOLEAN geodetic_calc = FALSE, datum_conv_only = FALSE, double_whammy = FALSE;
 	
 	COUNTER_MEDIUM i = 0, pos;
 	

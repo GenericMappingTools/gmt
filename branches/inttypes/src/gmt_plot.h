@@ -137,13 +137,13 @@ struct GMT_SYMBOL {
 	GMT_LONG symbol;	/* Symbol id */
 	COUNTER_MEDIUM n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	COUNTER_MEDIUM u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
-	BOOLEAN u_set;		/* TRUE if u was set */
+	GMT_BOOLEAN u_set;		/* TRUE if u was set */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
-	BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
-	BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
+	GMT_BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
+	GMT_BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	COUNTER_MEDIUM convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	COUNTER_MEDIUM n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
@@ -154,8 +154,8 @@ struct GMT_SYMBOL {
 	/* These apply to bar symbols */
 
 	double base;		/* From what level to draw the bar */
-	BOOLEAN user_unit;	/* if TRUE */
-	BOOLEAN base_set;	/* TRUE if user provided a custom base [otherwise default to bottom axis */
+	GMT_BOOLEAN user_unit;	/* if TRUE */
+	GMT_BOOLEAN base_set;	/* TRUE if user provided a custom base [otherwise default to bottom axis */
 
 	/* These apply to vectors */
 

@@ -33,35 +33,35 @@
 
 struct GRDGRADIENT_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<azim>[/<azim2>] */
-		BOOLEAN active;
-		BOOLEAN two;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN two;
 		double azimuth[2];
 	} A;
 	struct D {	/* -D[a][o][n] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
 	} E;
 	struct G {	/* -G<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
 	struct S {	/* -S<slopefile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 };
@@ -299,7 +299,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 
 GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad, new_grid = FALSE;
+	GMT_BOOLEAN error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad, new_grid = FALSE;
 	GMT_LONG p[4];
 	COUNTER_MEDIUM row, col, n;
 	COUNTER_LARGE ij, ij0, index, n_used = 0;

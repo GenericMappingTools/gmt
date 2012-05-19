@@ -58,45 +58,45 @@
 
 struct IMG2GRD_CTRL {
 	struct In {	/* Input file name */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;	/* Input file name */
 	} In;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D[<minlat>/<maxlat>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double min, max;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I<minutes> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N<ave> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		int value;
 	} N;
 	struct S {	/* -S<scale> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double value;
 	} S;
 	struct T {	/* -T<type> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		int value;
 	} T;
 	struct W {	/* -W<maxlon> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} W;
 };
@@ -271,7 +271,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 
 GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 	COUNTER_MEDIUM navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	COUNTER_MEDIUM iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
 	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET, jin, iinstart, iinstop;

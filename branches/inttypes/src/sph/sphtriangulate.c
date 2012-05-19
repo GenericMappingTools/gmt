@@ -35,39 +35,39 @@
 
 struct SPHTRIANGULATE_CTRL {
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} D;
 	struct G {	/* -G<output_grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct L {	/* -L<unit>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char unit;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 is Delaunay, 1 is Voronoi */
 	} Q;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
 void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, COUNTER_LARGE get_arcs, COUNTER_MEDIUM get_area, COUNTER_LARGE nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	COUNTER_LARGE i, ij;
-	BOOLEAN do_authalic;
+	GMT_BOOLEAN do_authalic;
 	COUNTER_LARGE dim[4] = {1, 0, 0, 0}, k;
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
@@ -173,9 +173,9 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 	}
 }
 
-void stripack_voronoi_output (struct GMT_CTRL *GMT, COUNTER_LARGE n, double *lon, double *lat, struct STRIPACK_VORONOI *V, BOOLEAN get_arcs, COUNTER_MEDIUM get_area, COUNTER_LARGE nodes, struct GMT_DATASET *Dout[])
+void stripack_voronoi_output (struct GMT_CTRL *GMT, COUNTER_LARGE n, double *lon, double *lat, struct STRIPACK_VORONOI *V, GMT_BOOLEAN get_arcs, COUNTER_MEDIUM get_area, COUNTER_LARGE nodes, struct GMT_DATASET *Dout[])
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
-	BOOLEAN do_authalic;
+	GMT_BOOLEAN do_authalic;
 	
 	COUNTER_LARGE i, j, k, node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last, n_arcs = 0;
 	COUNTER_LARGE dim[4] = {1, 0, 0, 0};
@@ -480,7 +480,7 @@ GMT_LONG GMT_sphtriangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
 
-	BOOLEAN error = FALSE, first = FALSE, steradians = FALSE, do_authalic = FALSE;
+	GMT_BOOLEAN error = FALSE, first = FALSE, steradians = FALSE, do_authalic = FALSE;
 	
 	COUNTER_LARGE n = 0, n_dup = 0;
 	size_t n_alloc;

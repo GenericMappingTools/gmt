@@ -31,29 +31,29 @@
 
 struct X2SYS_GET_CTRL {
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} F;
 	struct G {	/* -G */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} G;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} N;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -183,7 +183,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_BIX B;
 	struct X2SYS_BIX_TRACK *track = NULL;
 
-	BOOLEAN error = FALSE, no_suffix = FALSE, y_ok, n_ok, first;
+	GMT_BOOLEAN error = FALSE, no_suffix = FALSE, y_ok, n_ok, first;
 	GMT_LONG i, j, k, start_j, start_i, stop_j, stop_i;
 	COUNTER_MEDIUM combo = 0, n_tracks_found, n_tracks, ii;
 	COUNTER_MEDIUM id1, id2, item, n_flags = 0;

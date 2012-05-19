@@ -230,7 +230,7 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 
 	int  ncid;
 	size_t start[1], edge[1];
-	BOOLEAN check;
+	GMT_BOOLEAN check;
 	GMT_LONG j, err;
 	GMT_LONG first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM i, width_in, height_in, i_0_out, inc, off;

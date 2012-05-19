@@ -44,60 +44,60 @@
 
 struct PSSEGY_CTRL {
 	struct In {	/* -In */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C<cpt> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct F {	/* -F<fill> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double rgb[4];
 	} F;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		uint32_t value;
 	} L;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		uint32_t value;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Qb|u|x|y */
-		BOOLEAN active[4];
+		GMT_BOOLEAN active[4];
 		double value[4];
 	} Q;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		int value;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -444,7 +444,7 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 
 GMT_LONG GMT_pssegy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, plot_it = FALSE;
+	GMT_BOOLEAN error = FALSE, plot_it = FALSE;
 	COUNTER_MEDIUM i, nm, ix, iy;
 	uint32_t n_samp = 0, n_tracelist = 0;
 	int check, bm_nx, bm_ny;

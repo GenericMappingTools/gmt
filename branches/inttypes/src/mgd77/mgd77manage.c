@@ -65,33 +65,33 @@
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
-		BOOLEAN replace;
-		BOOLEAN interpolate;
-		BOOLEAN ignore_verify;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN replace;
+		GMT_BOOLEAN interpolate;
+		GMT_BOOLEAN ignore_verify;
 		COUNTER_MEDIUM mode;
 		COUNTER_MEDIUM kind;
-		BOOLEAN e77_skip_mode[N_E77_MODES];
+		GMT_BOOLEAN e77_skip_mode[N_E77_MODES];
 		char *file;
 		double parameters[N_PAR];
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} C;
 	struct D {	/* -D */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char value;
 	} E;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} F;
 	struct I {	/* -I */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char c_abbrev[GMT_TEXT_LEN64];
 		char c_units[GMT_TEXT_LEN64];
 		char c_name[MGD77_COL_NAME_LEN];
@@ -99,7 +99,7 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 		char c_size;
 	} I;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char code[2];
 	} N;
 };
@@ -514,8 +514,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_LONG i, k = 0, column, result, set, check;
 	GMT_LONG width, GF_version = MGD77_NOT_SET, n_fields = 0;
-	BOOLEAN error = FALSE, transform, verified, strings = FALSE, got_grid, got_table;
-	BOOLEAN two_cols = FALSE, constant, ok_to_read = TRUE, interpolate = FALSE;
+	GMT_BOOLEAN error = FALSE, transform, verified, strings = FALSE, got_grid, got_table;
+	GMT_BOOLEAN two_cols = FALSE, constant, ok_to_read = TRUE, interpolate = FALSE;
 	
 	COUNTER_MEDIUM MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;
 	COUNTER_LARGE argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
@@ -1126,7 +1126,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			COUNTER_LARGE n_recs, rec, from, to;
 			unsigned int *flags = NULL, pattern;
 			size_t length;
-			BOOLEAN has_time;
+			GMT_BOOLEAN has_time;
 			struct MGD77_HEADER_PARAMS *P = NULL;
 			double rec_time, del_t, value, *tvar = NULL;
 			

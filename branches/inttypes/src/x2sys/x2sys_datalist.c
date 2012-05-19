@@ -30,21 +30,21 @@
 
 struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} A;
 	struct F {	/* -F */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} F;
 	struct L {	/* -L */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct S {	/* -S */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -147,7 +147,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
+GMT_BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
 	COUNTER_MEDIUM n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
 	size_t n_alloc = GMT_CHUNK;
@@ -190,7 +190,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char **trk_name = NULL;
 
 	GMT_LONG is, this_col;
-	BOOLEAN error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
+	GMT_BOOLEAN error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
 	COUNTER_MEDIUM bad, trk_no, n_tracks, n_data_col_out = 0;
 	COUNTER_LARGE i, j, k;
 
@@ -350,7 +350,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) {
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
-		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, BOOLEAN);
+		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, GMT_BOOLEAN);
 	}
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {

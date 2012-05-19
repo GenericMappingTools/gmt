@@ -51,35 +51,35 @@ EXTERN_MSC GMT_LONG GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code
 
 struct GRDBLEND_CTRL {
 	struct In {	/* Input files */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char **file;
 		COUNTER_MEDIUM n;	/* If n > 1 we probably got *.grd or something */
 	} In;
 	struct G {	/* -G<grdfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} C;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double nodata;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct Z {	/* -Z<scale> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double scale;
 	} Z;
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} W;
 };
 
@@ -89,11 +89,11 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	GMT_LONG in_j0, in_j1, out_j0, out_j1;		/* Indices of outer and inner y-coordinates (in output grid coordinates) */
 	off_t offset;					/* grid offset when the grid extends beyond north */
 	off_t skip;					/* Byte offset to skip in native binary files */
-	BOOLEAN ignore;					/* TRUE if the grid is entirely outside desired region */
-	BOOLEAN outside;				/* TRUE if the current output row is outside the range of this grid */
-	BOOLEAN invert;					/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
-	BOOLEAN open;					/* TRUE if file is currently open */
-	BOOLEAN delete;					/* TRUE if file was produced by grdsample to deal with different registration/increments */
+	GMT_BOOLEAN ignore;					/* TRUE if the grid is entirely outside desired region */
+	GMT_BOOLEAN outside;				/* TRUE if the current output row is outside the range of this grid */
+	GMT_BOOLEAN invert;					/* TRUE if weight was given as negative and we want to taper to zero INSIDE the grid region */
+	GMT_BOOLEAN open;					/* TRUE if file is currently open */
+	GMT_BOOLEAN delete;					/* TRUE if file was produced by grdsample to deal with different registration/increments */
 	char file[GMT_TEXT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
@@ -134,7 +134,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 	}
 }
 
-BOOLEAN out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
+GMT_BOOLEAN out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 {	/* Look for phase shifts in w/e/s/n between the two grids */
 	GMT_LONG way, side;
 	double a;
@@ -148,7 +148,7 @@ BOOLEAN out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 	return FALSE;
 }
 
-BOOLEAN overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, GMT_LONG mode)
+GMT_BOOLEAN overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, GMT_LONG mode)
 {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};
@@ -173,7 +173,7 @@ BOOLEAN overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD
 
 GMT_LONG init_blend_job (struct GMT_CTRL *GMT, char **files, COUNTER_MEDIUM n_files, struct GRD_HEADER *h, struct GRDBLEND_INFO **blend) {
 	GMT_LONG type, status;
-	BOOLEAN do_sample, not_supported;
+	GMT_BOOLEAN do_sample, not_supported;
 	COUNTER_MEDIUM one_or_zero = !h->registration, n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ];
@@ -568,7 +568,7 @@ GMT_LONG GMT_grdblend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM col, row, nx_360 = 0, k, kk, m, n_blend, error;
 	GMT_LONG status, pcol;
-	BOOLEAN reformat, wrap_x;
+	GMT_BOOLEAN reformat, wrap_x;
 	
 	COUNTER_LARGE ij, n_fill, n_tot;
 	

@@ -32,48 +32,48 @@ EXTERN_MSC double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, do
 
 struct GRDFILTER_CTRL {
 	struct In {
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 #ifdef DEBUG
 	struct A {	/* -A<a|r|w|c>row/col */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char mode;
 		COUNTER_MEDIUM ROW, COL;
 		double x, y;
 	} A;
 #endif
 	struct D {	/* -D<distflag> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;	/* -1 to 5 */
 	} D;
 	struct F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
-		BOOLEAN active;
-		BOOLEAN highpass;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN highpass;
 		char filter;	/* Character codes for the filter */
 		double width, width2, quantile;
-		BOOLEAN rect;
+		GMT_BOOLEAN rect;
 		GMT_LONG mode;	/*-1 0 +1 */
 	} F;
 	struct G {	/* -G<file> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc[2];
 		char string[GMT_TEXT_LEN256];
 	} I;
 	struct N {	/* -Np|i|r */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
 	} N;
 	struct T {	/* -T */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} T;
 #ifdef DEBUG
 	struct W {	/* -W */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} W;
 #endif
@@ -106,8 +106,8 @@ struct FILTER_INFO {
 	GMT_LONG x_half_width;		/* Number of filter nodes to either side needed at this latitude */
 	GMT_LONG y_half_width;		/* Number of filter nodes above/below this point (ny_f/2) */
 	COUNTER_MEDIUM d_flag;
-	BOOLEAN rect;		/* For 2-D rectangular filtering */
-	BOOLEAN debug;		/* Normally unused except under DEBUG */
+	GMT_BOOLEAN rect;		/* For 2-D rectangular filtering */
+	GMT_BOOLEAN debug;		/* Normally unused except under DEBUG */
 	double dx, dy;		/* Grid spacing in original units */
 	double y_min, y_max;	/* Grid limits in y(lat) */
 	double *x, *y;		/* Distances in original units along x and y to distance nodes */
@@ -496,8 +496,8 @@ GMT_LONG GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl
 
 GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
-	BOOLEAN spherical = FALSE, full_360, visit_check = FALSE, go_on;
+	GMT_BOOLEAN error = FALSE, fast_way, slow = FALSE, slower = FALSE, same_grid = FALSE;
+	GMT_BOOLEAN spherical = FALSE, full_360, visit_check = FALSE, go_on;
 	COUNTER_MEDIUM n_in_median, n_nan = 0, col_out, row_out, effort_level;
 	COUNTER_MEDIUM filter_type, one_or_zero = 1, GMT_n_multiples = 0;
 	GMT_LONG tid = 0, col_in, row_in, ii, jj, *i_origin = NULL, j_origin, nx_wrap = 0;

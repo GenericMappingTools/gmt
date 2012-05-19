@@ -36,29 +36,29 @@ EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, d
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
 	struct C {	/* -C */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} C;
 	struct E {	/* -E<L|l|H|h><col> */
-		BOOLEAN active;
-		BOOLEAN abs;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN abs;
 		GMT_LONG mode;	/* -1, 0, +1 */
 		COUNTER_MEDIUM col;
 	} E;
 	struct I {	/* -Idx[/dy[/<dz>..]] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM ncol;
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
-		BOOLEAN active;
-		BOOLEAN xbar, ybar;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN xbar, ybar;
 	} S;
 	struct T {	/* -T<dz>[/<col>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double inc;
 		COUNTER_MEDIUM col;
 	} T;
@@ -134,7 +134,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 
 	GMT_LONG n_errors = 0, j;
 	COUNTER_MEDIUM k;
-	BOOLEAN special = FALSE;
+	GMT_BOOLEAN special = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -235,8 +235,8 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 
 GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
-	BOOLEAN brackets = FALSE, work_on_abs_value, do_report, save_range, done;
+	GMT_BOOLEAN error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
+	GMT_BOOLEAN brackets = FALSE, work_on_abs_value, do_report, save_range, done;
 	GMT_LONG i, j;
 	COUNTER_MEDIUM col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
 	COUNTER_LARGE n = 0;

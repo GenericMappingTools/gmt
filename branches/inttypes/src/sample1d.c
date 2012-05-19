@@ -35,34 +35,34 @@
 
 struct SAMPLE1D_CTRL {
 	struct Out {	/* -> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A[m|p] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} A;
 	struct F {	/* -Fl|a|c */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 	} F;
 	struct I {	/* -I<inc>[d|e|k||M|n|c|C] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double inc;
 		char unit;
 	} I;
 	struct N {	/* -N<knotfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct S {	/* -S<xstart>[/<xstop>] */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM mode;
 		double start, stop;
 	} S;
 	struct T {	/* -T<time_col> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		COUNTER_MEDIUM col;
 	} T;
 };
@@ -228,7 +228,7 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM tbl, col;
-	BOOLEAN error = FALSE, spatial = FALSE;
+	GMT_BOOLEAN error = FALSE, spatial = FALSE;
 	GMT_LONG result;
 	
 	unsigned char *nan_flag = NULL;

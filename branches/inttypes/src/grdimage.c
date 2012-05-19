@@ -32,45 +32,45 @@
 
 struct GRDIMAGE_CTRL {
 	struct In {
-		BOOLEAN active;
-		BOOLEAN do_rgb;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN do_rgb;
 		char *file[3];
 	} In;
 	struct C {	/* -C<cptfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D to read GDAL file */
-		BOOLEAN active;
-		BOOLEAN mode;	/* Use info of -R option to reference image */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;	/* Use info of -R option to reference image */
 	} D;
 	struct A {	/* -A to write a GDAL file */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 		char *driver;
 	} A;
 	struct E {	/* -Ei|<dpi> */
-		BOOLEAN active;
-		BOOLEAN device_dpi;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN device_dpi;
 		COUNTER_MEDIUM dpi;
 	} E;
 	struct G {	/* -G[f|b]<rgb> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		double f_rgb[4];
 		double b_rgb[4];
 	} G;
 	struct I {	/* -I<intensfile> */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 		char *file;
 	} I;
 	struct M {	/* -M */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		BOOLEAN active;
+		GMT_BOOLEAN active;
 	} Q;
 };
 
@@ -294,7 +294,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 	 * if GMT_project_init is called at a later stage */
 
 	COUNTER_MEDIUM i, k;
-	BOOLEAN all_lats = FALSE, all_lons = FALSE;
+	GMT_BOOLEAN all_lats = FALSE, all_lons = FALSE;
 	double x, y;
 
 	r->nx = g->nx;	r->ny = g->ny;
@@ -348,7 +348,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 
 GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	BOOLEAN error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE, gray_only = FALSE;
+	GMT_BOOLEAN error = FALSE, done, need_to_project, normal_x, normal_y, resampled = FALSE, gray_only = FALSE;
 	COUNTER_MEDIUM k, nx = 0, ny = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	COUNTER_MEDIUM colormask_offset = 0, try;
 	COUNTER_LARGE node_RGBA = 0;		/* COUNTER_LARGE for the RGB(A) image array. */
@@ -370,7 +370,7 @@ GMT_LONG GMT_grdimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GRD_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 
 #ifdef USE_GDAL
-	BOOLEAN do_indexed = FALSE;
+	GMT_BOOLEAN do_indexed = FALSE;
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
 	struct GMT_GRID *G2 = NULL;
