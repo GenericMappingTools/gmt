@@ -728,7 +728,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				colvalue[n] = in[0];
 			if (!two_cols) n++;
-			if ((size_t)n == n_alloc) {
+			if (n == n_alloc) {
 				n_alloc <<= 1;
 				if (strings)
 					tmp_string = GMT_memory (GMT, tmp_string, n_alloc, char *);
@@ -1052,6 +1052,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else if (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t) {	/* Got either (time,data) or (dist,data) */
 			GMT_LONG ix, iy, it;
 			double *x = NULL, *y = NULL, *d = NULL;
+			size_t LEN_size = LEN;
 			colvalue = GMT_memory (GMT, colvalue, D->H.n_records, double);
 			if (Ctrl->A.mode == MODE_d) {	/* Must create distances in user's units */
 				if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -1072,17 +1073,17 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %d!\n", result+1);
 					GMT_exit (EXIT_FAILURE);
 				}
-				memcpy (colvalue, y, (size_t)(D->H.n_records * sizeof (double)));
+				GMT_memcpy (colvalue, y, D->H.n_records, double);
 				GMT_free (GMT, y);
 			}
 			else if (strings && n < D->H.n_records) {	/* Only update the exact matching records */
-				text = GMT_memory (GMT, NULL, D->H.n_records * LEN, char);
+				text = GMT_memory (GMT, NULL, D->H.n_records * LEN_size, char);
 				for (rec = jrec = n_sampled = 0; rec < D->H.n_records && jrec < n; rec++) {
 					match_value = (Ctrl->A.mode == MODE_n) ? rec+1 : x[rec];
-					strncpy (&text[rec*LEN], not_given, (size_t)LEN);	/* In case we have no data at this time */
+					strncpy (&text[rec*LEN_size], not_given, LEN_size);	/* In case we have no data at this time */
 					while (coldnt[rec] < match_value && jrec < n) jrec++;
 					if (coldnt[jrec] == match_value) {
-						strncpy (&text[rec*LEN], tmp_string[jrec], (size_t)LEN);
+						strncpy (&text[rec*LEN_size], tmp_string[jrec], LEN_size);
 						n_sampled++;
 					}
 				}
@@ -1090,8 +1091,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 			}
 			else if (strings) {	/* One to one match */
-				text = GMT_memory (GMT, NULL, D->H.n_records * LEN, char);
-				for (rec = 0; rec < n; rec++) strncpy (&text[rec*LEN], tmp_string[rec], (size_t)LEN);
+				text = GMT_memory (GMT, NULL, D->H.n_records * LEN_size, char);
+				for (rec = 0; rec < n; rec++) strncpy (&text[rec*LEN_size], tmp_string[rec], LEN_size);
 				GMT_free (GMT, tmp_string);
 				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 			}
@@ -1106,7 +1107,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						n_sampled++;
 					}
 				}
-				memcpy (colvalue, y, (size_t)(D->H.n_records * sizeof (double)));
+				GMT_memcpy (colvalue, y, D->H.n_records, double);
 				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 				GMT_free (GMT, y);
 			}
@@ -1282,7 +1283,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							break;
 						default:	/* Update internal structure as well as netCDF file attributes */
 							length = (MGD77_Header_Lookup[key].length == 1) ? 1 : strlen (answer);
-							strncpy (MGD77_Header_Lookup[key].ptr[MGD77_REVISED], answer, (size_t)length);
+							strncpy (MGD77_Header_Lookup[key].ptr[MGD77_REVISED], answer, length);
 							MGD77_Put_Param (GMT, &In, MGD77_Header_Lookup[key].name, length, MGD77_Header_Lookup[key].ptr[MGD77_ORIG], length, MGD77_Header_Lookup[key].ptr[MGD77_REVISED], 2);
 							n_E77_headers++;
 							break;
@@ -1461,24 +1462,24 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			(void) time (&now);
 			sprintf (E77, "%s [%s] E77 corrections applied to header: %d scale: %d offset: %d recalc: %d flags: %d", ctime(&now), In.user, n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_E77_flags);
 			for (i = 0; E77[i]; i++) if (E77[i] == '\n') E77[i] = ' ';	/* Remove the \n returned by ctime() */
-			k = strlen (E77);
-			D->H.E77 = GMT_memory (GMT, D->H.E77, k + 1, char);
+			length = strlen (E77);
+			D->H.E77 = GMT_memory (GMT, D->H.E77, length + 1, char);
 			strcpy (D->H.E77, E77);
-			MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "E77", (size_t)k, D->H.E77));
+			MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "E77", length, D->H.E77));
 		
 			old_flags =  (nc_inq_varid (In.nc_id, "MGD77_flags", &cdf_var_id) == NC_NOERR);	/* TRUE if flag variable exists already */
 			
 			if (n_E77_flags) {	/* Add flags to netCDF file */
 				if (old_flags) {	/* Flag variable exists already - simply replace existing flags with the new ones */
 					if (D->flags[0])	/* Was allocated and read */
-						memcpy (D->flags[0], flags, (size_t)(D->H.n_records * sizeof (int)));
+						GMT_memcpy (D->flags[0], flags, D->H.n_records, int);
 					else	/* Was not allcoated */
 						D->flags[0] = flags;
 				}
 				else {	/* We need to define the flags for the first time */
 					dims[0] = In.nc_recid;
 					MGD77_nc_status (GMT, nc_def_var (In.nc_id, "MGD77_flags", NC_INT, 1, dims, &cdf_var_id));	/* Define an array variable */
-					memset (answer, 0, GMT_BUFSIZ);	/* No default answer */
+					GMT_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
 					strcpy (answer, "MGD77 flags (ON = Bad, OFF = Good) derived from E77 errata");
 					MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, cdf_var_id, "comment", strlen (answer), answer));
 					D->flags[0] = flags;
@@ -1495,7 +1496,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_message (GMT, "If possible, recreate the MGD77+ file %s from the MGD77 original, then reapply E77.\n", list[argno]);
 				start[0] = 0;
 				count[0] = D->H.n_records;
-				memset (D->flags[0], 0, (size_t)(D->H.n_records * sizeof (int)));	/* Reset all flags to 0 (GOOD) */
+				GMT_memset (D->flags[0], D->H.n_records, int);	/* Reset all flags to 0 (GOOD) */
 				MGD77_nc_status (GMT, nc_put_vara_int (In.nc_id, cdf_var_id, start, count, (int *)D->flags[0]));
 			}
 			

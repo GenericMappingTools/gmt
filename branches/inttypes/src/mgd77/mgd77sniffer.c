@@ -1179,7 +1179,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Store grid/cruise pairs in NaN-free arrays */
 					for (ju = k = 0; ju < nvalues; ju++) {
 						if (GMT_is_dnan(D[ju].number[this_grid[i].col]) || GMT_is_dnan(G[i][ju])) continue;
-						ship_val[k] = D[j].number[this_grid[i].col];
+						ship_val[k] = D[ju].number[this_grid[i].col];
 						grid_val[k] = G[i][ju];
 						k++;
 					}

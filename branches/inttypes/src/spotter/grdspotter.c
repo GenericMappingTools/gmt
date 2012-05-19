@@ -797,16 +797,17 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->Z.mode) {	/* Do CVA calculations for each z-slice using stored flowlines */
 		COUNTER_MEDIUM layer, nz;
+		size_t len;
 		char file[GMT_BUFSIZ], format[GMT_BUFSIZ];
 		double z0, z1;
 		float *CVA_inc = NULL, *old = G->data;
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Start z-slice CVA calculations\n");
-		for (i = strlen (Ctrl->G.file); i >= 0 && Ctrl->G.file[i] != '.'; i--);
-		if (Ctrl->G.file[i] == '.') {	/* Make a filename template from the CVA filename using the period as delimeter */
-			strncpy (format, Ctrl->G.file, (size_t)i);	/* Should keep the prefix from a file called prefix.ext */
-			strcat (format, "_%%ld");			/* Make filenames like prefix_#.ext */
-			strcat (format, &Ctrl->G.file[i]);		/* Should add the extension from said file */
+		for (len = strlen (Ctrl->G.file); len > 0 && Ctrl->G.file[len] != '.'; len--);
+		if (Ctrl->G.file[len] == '.') {	/* Make a filename template from the CVA filename using the period as delimeter */
+			strncpy (format, Ctrl->G.file, len);	/* Should keep the prefix from a file called prefix.ext */
+			strcat (format, "_%%ld");		/* Make filenames like prefix_#.ext */
+			strcat (format, &Ctrl->G.file[len]);	/* Should add the extension from said file */
 		}
 		CVA_inc = GMT_memory (GMT, NULL, G->header->size, float);
 		nz = lrint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);

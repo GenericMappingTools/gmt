@@ -4997,7 +4997,7 @@ BOOLEAN GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_T
 	return (C->current.map.near_lines_func (C, lon, lat, T, return_mindist, dist_min, x_near, y_near));
 }
 
-BOOLEAN GMT_near_a_line (struct GMT_CTRL *C, double lon, double lat, GMT_LONG seg, struct GMT_LINE_SEGMENT *S, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near)
+BOOLEAN GMT_near_a_line (struct GMT_CTRL *C, double lon, double lat, COUNTER_LARGE seg, struct GMT_LINE_SEGMENT *S, COUNTER_MEDIUM return_mindist, double *dist_min, double *x_near, double *y_near)
 {	/* Compute distance to the line S from (lon,lat) */
 	return (C->current.map.near_a_line_func (C, lon, lat, seg, S, return_mindist, dist_min, x_near, y_near));
 }

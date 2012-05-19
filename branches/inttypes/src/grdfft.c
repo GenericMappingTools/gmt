@@ -281,31 +281,31 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Data reflected and tapered\n");
 }
 
-double kx (GMT_LONG k, struct K_XY *K)
+double kx (COUNTER_LARGE k, struct K_XY *K)
 {
 	/* Return the value of kx given k,
 	 * where kx = 2 pi / lambda x,
 	 * and k refers to the position
 	 * in the datac array, datac[k].  */
 
-	GMT_LONG ii = (k/2)%(K->nx2);
+	int64_t ii = (k/2)%(K->nx2);
 	if (ii > (K->nx2)/2) ii -= (K->nx2);
 	return (ii * K->delta_kx);
 }
 
-double ky (GMT_LONG k, struct K_XY *K)
+double ky (COUNTER_LARGE k, struct K_XY *K)
 {
 	/* Return the value of ky given k,
 	 * where ky = 2 pi / lambda y,
 	 * and k refers to the position
 	 *in the datac array, datac[k].  */
 
-	GMT_LONG jj = (k/2)/(K->nx2);
+	int64_t jj = (k/2)/(K->nx2);
 	if (jj > (K->ny2)/2) jj -= (K->ny2);
 	return (jj * K->delta_ky);
 }
 
-double modk (GMT_LONG k, struct K_XY *K)
+double modk (COUNTER_LARGE k, struct K_XY *K)
 {
 	/* Return the value of sqrt(kx*kx + ky*ky),
 	 * given k, where k is array position.  */
@@ -444,7 +444,7 @@ double cosine_weight_grdfft (struct F_INFO *f_info, double freq, int j) {
 	return (1.0);	/* Freq is in the fully passed range, so weight is multiplied by 1.0  */
 }
 
-double get_filter_weight (GMT_LONG k, struct F_INFO *f_info, struct K_XY *K)
+double get_filter_weight (COUNTER_LARGE k, struct F_INFO *f_info, struct K_XY *K)
 {
 	COUNTER_MEDIUM j;
 	double freq, return_value = 1.0;
@@ -579,7 +579,7 @@ BOOLEAN parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	return (FALSE);
 }
 
-GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, GMT_LONG give_wavelength, char *file, struct K_XY *K)
+GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, BOOLEAN give_wavelength, char *file, struct K_XY *K)
 {
 	/* This is modeled on the 1-D case, using the following ideas:
 	 *	In 1-D, we ensemble average over samples of length L = 
@@ -1108,7 +1108,7 @@ GMT_LONG GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, stru
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
 				n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0, 
 					"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
-				add_operation (GMT, Ctrl, -1, 0, par);
+				add_operation (GMT, Ctrl, ISOSTASY, 5, par);
 				break;
 #ifdef DEBUG
 			case 'Q':	/* Do nothing */

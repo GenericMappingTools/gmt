@@ -68,7 +68,7 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 
 struct PS2RASTER_CTRL {
 	struct In {	/* Input file info */
-		GMT_LONG n_files;
+		COUNTER_MEDIUM n_files;
 	} In;
 	struct A {	/* -A[u][-] [Adjust boundingbox] */
 		BOOLEAN active;
@@ -370,7 +370,9 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k, n_errors = 0, mode, grayscale;
+	COUNTER_MEDIUM k, n_errors = 0, mode;
+	GMT_LONG j;
+	BOOLEAN grayscale;
 	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -548,7 +550,9 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 
 GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG sys_retval = 0, i, j, k, len, r, pos_file, pos_ext, pix_w = 0, pix_h = 0;
+	COUNTER_MEDIUM i, j, k, pix_w = 0, pix_h = 0;
+	GMT_LONG sys_retval = 0, r, pos_file, pos_ext;
+	size_t len;
 	BOOLEAN got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
 	BOOLEAN excessK, setup, error = FALSE, found_proj = FALSE, isGMT_PS = FALSE;
 
@@ -643,7 +647,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (!*line || *line == '#') /* Empty line or comment */
 				continue;
 			ps_names[Ctrl->In.n_files++] = strdup (line);
-			if (Ctrl->In.n_files > (GMT_LONG)n_alloc) {
+			if (Ctrl->In.n_files > n_alloc) {
 				n_alloc <<= 1;
 				ps_names = GMT_memory (GMT, ps_names, n_alloc, char *);
 			}
@@ -748,7 +752,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = setup = FALSE;
 
-		len = (GMT_LONG)strlen(ps_file);
+		len = strlen (ps_file);
 		j = len - 1;
 		pos_file = -1;
 		pos_ext = -1;	/* In case file has no extension */

@@ -939,6 +939,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 		if (G->auto_advance) G->start[0] --;
 	}
 	else {			/* Get a binary row */
+		size_t n_items;
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = GMT_abs (row_no);
 			if (fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
@@ -946,7 +947,8 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 		}
 		if (!G->auto_advance && fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
-		if (GMT_fread (G->v_row, G->size, (size_t)G->header.nx, G->fp) != (size_t)G->header.nx)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		n_items = G->header.nx;
+		if (GMT_fread (G->v_row, G->size, n_items, G->fp) != n_items)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (col = 0; col < G->header.nx; col++) {
 			row[col] = GMT_decode (C, G->v_row, col, C->session.grdformat[G->header.type][1]);	/* Convert whatever to float */
 			if (G->check && row[col] == G->header.nan_value) row[col] = C->session.f_NaN;
@@ -961,7 +963,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *ro
 {	/* Writes the entire row vector to the grdfile */
 
 	COUNTER_MEDIUM col, err;	/* Required by GMT_err_trap */
-	size_t size;
+	size_t size, n_items = G->header.nx;
 	void *tmp = NULL;
 
 	size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
@@ -981,7 +983,7 @@ GMT_LONG GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *ro
 			break;
 		default:
 			for (col = 0; col < G->header.nx; col++) GMT_encode (C, tmp, col, row[col], C->session.grdformat[G->header.type][1]);
-			if (GMT_fwrite (tmp, size, (size_t)G->header.nx, G->fp) < (size_t)G->header.nx) return (GMT_GRDIO_WRITE_FAILED);
+			if (GMT_fwrite (tmp, size, n_items, G->fp) < n_items) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
 	GMT_free (C, tmp);

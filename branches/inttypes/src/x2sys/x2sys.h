@@ -246,7 +246,7 @@ EXTERN_MSC struct MGD77_CONTROL M;
 /* Function prototypes.  These can be accessed in user programs */
 
 EXTERN_MSC FILE *x2sys_fopen (struct GMT_CTRL *C, char *fname, char *mode);
-EXTERN_MSC GMT_LONG x2sys_access (struct GMT_CTRL *C, char *fname, GMT_LONG mode);
+EXTERN_MSC GMT_LONG x2sys_access (struct GMT_CTRL *C, char *fname, int mode);
 EXTERN_MSC void x2sys_path (struct GMT_CTRL *C, char *fname, char *path);
 
 EXTERN_MSC GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);

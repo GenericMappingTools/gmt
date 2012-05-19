@@ -190,13 +190,13 @@ FILE *x2sys_fopen (struct GMT_CTRL *C, char *fname, char *mode)
 	return (fp);
 }
 
-GMT_LONG x2sys_access (struct GMT_CTRL *C, char *fname, GMT_LONG mode)
+GMT_LONG x2sys_access (struct GMT_CTRL *C, char *fname, int mode)
 {
 	GMT_LONG k;
 	char file[GMT_BUFSIZ];
 	x2sys_path (C, fname, file);
-	if ((k = access (file, (int)mode))) {	/* Not in X2SYS_HOME directory */
-		k = access (fname, (int)mode);	/* Try in current directory */
+	if ((k = access (file, mode))) {	/* Not in X2SYS_HOME directory */
+		k = access (fname, mode);	/* Try in current directory */
 	}
 	return (k);
 }
@@ -307,7 +307,7 @@ GMT_LONG x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GM
 		}
 		c = X->info[i].intype;
 		if (tolower (c) == 'a') X->file_type = X2SYS_ASCII;
-		c = (int)yes_no;
+		c = yes_no;
 		if (tolower (c) != 'Y') X->info[i].has_nan_proxy = TRUE;
 		if (!(X->info[i].scale == 1.0 && X->info[i].offset == 0.0)) X->info[i].do_scale = TRUE;
 		if (!strcmp (X->info[i].name, "x") || !strcmp (X->info[i].name, "lon"))  X->x_col = i;
@@ -499,7 +499,7 @@ GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X
 					}
 					GMT_chop (line);	/* Remove trailing CR or LF */
 				}
-				strncpy (buffer, &line[s->info[j].start_col], (size_t)s->info[j].n_cols);
+				strncpy (buffer, &line[s->info[j].start_col], s->info[j].n_cols);
 				buffer[s->info[j].n_cols] = 0;
 				if (GMT_scanf (C, buffer, G->col_type[GMT_IN][j], &data[j]) == GMT_IS_NAN) data[j] = C->session.d_NaN;
 				break;
@@ -1782,7 +1782,7 @@ GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, c
 	/* Strip off any extensions */
 
 	for (i = 0; i < A; i++) {
-		if ((p = strchr (file[i], '.'))) file[i][(int)(p-file[i])] = '\0';
+		if ((p = strchr (file[i], '.'))) file[i][(size_t)(p-file[i])] = '\0';
 	}
 
 	return (A);
@@ -1845,7 +1845,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	}
 	for (i = missing = 0; i < n_items; i++) {
 		if (MGD77_Match_List (C, item_names[i], n_cols, col_name) == MGD77_NOT_SET) {	/* Requested column not among data cols */
-			if (n_aux && (ks = MGD77_Match_List (C, item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
+			if ((ks = MGD77_Match_List (C, item_names[i], n_aux, aux_name)) == MGD77_NOT_SET) {
 				GMT_report (C, GMT_MSG_FATAL, "X2SYS Correction table (%s) requires a column (%s) not present in COE database or auxillary columns\n", ctable, item_names[i]);
 				missing++;
 			}

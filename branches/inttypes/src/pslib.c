@@ -180,7 +180,7 @@
 #define PSL_same_rgb(a,b) (PSL_eq(a[0],b[0]) && PSL_eq(a[1],b[1]) && PSL_eq(a[2],b[2]) && PSL_eq(a[3],b[3]))	/* If two colors are ~identical */
 #define PSL_rgb_copy(a,b) memcpy((void*)a,(void*)b,4*sizeof(double));			/* Copy RGB[T] triplets: a = b */
 
-#define PSL_memory(C,ptr,n,type) (type*)psl_memory(C,(void*)ptr,(PSL_LONG)(n),sizeof(type))	/* Easier macro for psl_memory */
+#define PSL_memory(C,ptr,n,type) (type*)psl_memory(C,(void*)ptr,(size_t)(n),sizeof(type))	/* Easier macro for psl_memory */
 
 #if defined(__LP64__)
 #define PSL_abs(n) labs(n)
@@ -239,7 +239,7 @@ typedef struct {
 
 /* Define support functions called inside the public PSL functions */
 
-void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, PSL_LONG nelem, size_t size);
+void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t size);
 char *psl_prepare_text (struct PSL_CTRL *PSL, char *text);
 void psl_def_font_encoding (struct PSL_CTRL *PSL);
 void psl_get_uppercase (char *new, char *old);
@@ -3537,9 +3537,9 @@ psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char *buffe
 
 	npixels = PSL_abs (nx) * ny;
 
-	colormap = psl_memory (PSL, NULL, 1, sizeof (*colormap));
+	colormap = psl_memory (PSL, NULL, 1U, sizeof (*colormap));
 	colormap->ncolors = 0;
-	image = psl_memory (PSL, NULL, 1, sizeof (*image));
+	image = psl_memory (PSL, NULL, 1U, sizeof (*image));
 	image->buffer = psl_memory (PSL, NULL, npixels, sizeof (*image->buffer));
 	image->colormap = colormap;
 
@@ -3848,7 +3848,7 @@ unsigned char *psl_lzw_encode (struct PSL_CTRL *PSL, PSL_LONG *nbytes, unsigned 
 	unsigned char *buffer = NULL;
 
 	i = MAX (512, *nbytes) + 8;	/* Maximum output length */
-	output = (psl_byte_stream_t)psl_memory (PSL, NULL, 1, sizeof (*output));
+	output = (psl_byte_stream_t)psl_memory (PSL, NULL, 1U, sizeof (*output));
 	output->buffer = PSL_memory (PSL, NULL, i, unsigned char);
 	code = PSL_memory (PSL, NULL, ncode, short int);
 
@@ -4049,7 +4049,7 @@ void psl_set_txt_array (struct PSL_CTRL *PSL, const char *param, char *array[], 
 	PSL_command (PSL, "%d array astore def\n", n);
 }
 
-void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, PSL_LONG nelem, size_t size)
+void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t size)
 {
 	/* Multi-functional memory allocation subroutine.
 	   If prev_addr is NULL, allocate new memory of nelem elements of size bytes.
@@ -4063,31 +4063,26 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, PSL_LONG nelem, size_t 
 	double mem;
 	PSL_LONG k;
 
-	if (nelem < 0) {	/* Probably 32-bit overflow */
-		PSL_message (PSL, PSL_MSG_FATAL, "Error: Requesting negative number of items (%d) - exceeding 32-bit counting?\n", nelem);
-		PSL_exit (EXIT_FAILURE);
-	}
-
 	if (prev_addr) {
-		if (nelem <= 0) { /* Take care of n == 0 */
+		if (nelem == 0) { /* Take care of n == 0 */
 			PSL_free (prev_addr);
 			return (NULL);
 		}
-		if ((tmp = realloc ( prev_addr, (size_t)(nelem * size))) == NULL) {
+		if ((tmp = realloc ( prev_addr, nelem * size)) == NULL) {
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %d items of %d bytes]\n", mem, m_unit[k], nelem, (PSL_LONG)size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
 	else {
 		if (nelem == 0) return (NULL); /* Take care of n = 0 */
-		if ((tmp = calloc ((size_t) nelem, size)) == NULL) {
+		if ((tmp = calloc (nelem, size)) == NULL) {
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %d items of %d bytes]\n", mem, m_unit[k], nelem, (PSL_LONG)size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
