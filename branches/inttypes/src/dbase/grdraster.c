@@ -72,7 +72,7 @@ static inline void convert_u_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	unsigned int i;
 	unsigned char tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
-		memcpy (&tempval, &buffer[i], sizeof(char));
+		GMT_memcpy (&tempval, &buffer[i], 1, char);
 		if (ras.nanset && tempval == ras.nanflag) {
 			row[i] = GMT->session.f_NaN;
 		}
@@ -110,7 +110,7 @@ static inline void convert_d_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	unsigned int i;
 	uint16_t tempval;
 	for (i = 0; i < ras.h.nx; ++i) {
-		memcpy (&tempval, &buffer[i * sizeof(uint16_t)], sizeof(uint16_t));
+		GMT_memcpy (&tempval, &buffer[i * sizeof(uint16_t)], 1, uint16_t);
 		if (ras.swap_me)
 			tempval = bswap16 (tempval);
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -132,7 +132,7 @@ static inline void convert_i_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	int16_t tempval;
 	uint16_t *u = (uint16_t *)&tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		memcpy (&tempval, &buffer[i * sizeof(int16_t)], sizeof(int16_t));
+		GMT_memcpy (&tempval, &buffer[i * sizeof(int16_t)], 1, int16_t);
 		if (ras.swap_me)
 			*u = bswap16 (*u);
 		if (ras.nanset && tempval == ras.nanflag) {
@@ -154,7 +154,7 @@ static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	int32_t tempval;
 	uint32_t *u = (uint32_t *)&tempval;
 	for (i = 0; i < ras.h.nx; i++) {
-		memcpy (&tempval, &buffer[i * sizeof(int32_t)], sizeof(int32_t));
+		GMT_memcpy (&tempval, &buffer[i * sizeof(int32_t)], 1, int32_t);
 		if (ras.swap_me)
 			*u = bswap32 (*u);
 		if (ras.nanset && tempval == ras.nanflag) {

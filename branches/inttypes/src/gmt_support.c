@@ -3131,7 +3131,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 	void *tmp = NULL;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	double mem;
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
 	size_t alignment = 16;
 #endif

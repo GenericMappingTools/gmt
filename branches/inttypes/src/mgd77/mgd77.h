@@ -231,7 +231,7 @@ struct MGD77_COLINFO {
 	double limit[2];	/* Lower and upper limits on this data column */
 	uint32_t pos;		/* Position in output record [0 - n_columns-1]*/
 	nc_type type;		/* Type of representation of this data in the netCDF file (NC_SHORT, NC_INT, NC_BYTE, etc) */
-	char text;		/* length if this is a text string, else 0 */
+	size_t text;		/* length if this is a text string, else 0 */
 	int var_id;		/* netCDF variable ID */
 	int adjust;		/* Column needs some sort of adjustment before data is returned [0 means as is] */
 	GMT_BOOLEAN constant;	/* TRUE if column is constant and only 1 row is/should be stored */
@@ -523,7 +523,7 @@ EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *C, char *file, st
 /* These are only for developers */
 
 EXTERN_MSC GMT_BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double limits[]);
-EXTERN_MSC GMT_BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, int width);
+EXTERN_MSC GMT_BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, size_t width);
 EXTERN_MSC int MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], COUNTER_LARGE n, double scale, double offset, int type);
 EXTERN_MSC void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H);
 EXTERN_MSC GMT_LONG MGD77_Match_List (struct GMT_CTRL *C, char *word, COUNTER_MEDIUM n_fields, char **list);

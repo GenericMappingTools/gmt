@@ -686,7 +686,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	
 	COUNTER_MEDIUM n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
-	COUNTER_MEDIUM kk, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
+	COUNTER_MEDIUM kk, ku, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
 	
 	COUNTER_LARGE rec, prevrec;
 	
@@ -1292,7 +1292,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					c  = M.order[kk].set;
 					id = M.order[kk].item;
 					if (D->H.info[c].col[id].text)
-						for (k = 0; k < D->H.info[c].col[id].text && tvalue[kk][rec*D->H.info[c].col[id].text+k]; k++) fputc ((int)tvalue[kk][rec*D->H.info[c].col[id].text+k], GMT->session.std[GMT_OUT]);
+						for (ku = 0; ku < D->H.info[c].col[id].text && tvalue[kk][rec*D->H.info[c].col[id].text+ku]; ku++) fputc ((int)tvalue[kk][rec*D->H.info[c].col[id].text+ku], GMT->session.std[GMT_OUT]);
 					else if (id == time_column) {	/* Time */
 						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
