@@ -455,7 +455,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* STEP 2: Calculate this seamount's flowline */
 
-		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, sampling_int_in_km, 0.0, FALSE, NULL, &c) <= 0) {
+		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, sampling_int_in_km, 0.0, 0, NULL, &c) <= 0) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}

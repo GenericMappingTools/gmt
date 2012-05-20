@@ -284,8 +284,8 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Ok, now we can start finding the tracks requested */
 
-	x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
-	x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &stop_i, &stop_j, &B, &ID), "");
+	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
+	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &stop_i, &stop_j, &B, &ID), "");
 	if (B.periodic && stop_i < start_i) stop_i += B.nx_bin;	/* Deal with longitude periodicity */
 
 	for (j = start_j; j <= stop_j; j++) {

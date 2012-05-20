@@ -279,7 +279,7 @@ EXTERN_MSC struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (struct GMT_CTRL *C
 EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (struct GMT_CTRL *C, uint32_t id, uint32_t flag);
 EXTERN_MSC GMT_LONG x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, GMT_LONG mode, uint32_t *ID);
 EXTERN_MSC GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, GMT_BOOLEAN swap);
-EXTERN_MSC GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, COUNTER_LARGE *ID);
+EXTERN_MSC GMT_LONG x2sys_bix_get_index (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, COUNTER_LARGE *ID);
 
 EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *s);
 EXTERN_MSC GMT_LONG x2sys_get_data_path (struct GMT_CTRL *C, char *track_path, char *track, char *suffix);
@@ -302,9 +302,9 @@ EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *s, c
 #define X2SYS_TAG_NOT_SET	-4
 #define X2SYS_BAD_ARG		-5
 #define X2SYS_CONFLICTING_ARGS	-6
-#define X2SYS_BIX_BAD_J		-7
-#define X2SYS_BIX_BAD_I		-8
-#define X2SYS_BIX_BAD_IJ	-9
+#define X2SYS_BIX_BAD_ROW	-7
+#define X2SYS_BIX_BAD_COL	-8
+#define X2SYS_BIX_BAD_INDEX	-9
 
 #define X2SYS_DIST_SELECTION	0
 #define X2SYS_SPEED_SELECTION	1

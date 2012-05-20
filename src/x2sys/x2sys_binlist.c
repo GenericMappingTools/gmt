@@ -166,17 +166,16 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG i, k, n_tracks, k1, ii, jj, nx, bi, bj, start_i, end_i, jump_180, jump_360;
-	GMT_LONG this_bin_i;	/* This i node for bin */
-	GMT_LONG this_bin_j;	/* This j node for bin */
-	COUNTER_LARGE this_bin_ij, ij, last_bin_ij;
-	GMT_LONG last_bin_i;	/* Previous i node for bin */
-	GMT_LONG last_bin_j;	/* Previous j node for bin */
-	GMT_LONG nx_alloc = GMT_SMALL_CHUNK;
-	GMT_BOOLEAN error = FALSE, gap, cmdline_files;
+	COUNTER_LARGE this_bin_index, index, last_bin_index, row;
+	COUNTER_MEDIUM trk, curr_x_pt, prev_x_pt, n_tracks;
+	GMT_LONG ii_notused, jj_notused, bcol, brow, start_col, end_col, jump_180, jump_360;
+	GMT_LONG this_bin_col;	/* This col node for bin */
+	GMT_LONG this_bin_row;	/* This row node for bin */
+	GMT_LONG last_bin_col;	/* Previous col node for bin */
+	GMT_LONG last_bin_row;	/* Previous row node for bin */
+	GMT_BOOLEAN error = FALSE, gap, cmdline_files, last_not_set;
+	size_t nx, nx_alloc = GMT_SMALL_CHUNK;
 	
-	COUNTER_LARGE j;
-
 	unsigned int nav_flag;
 
 	double **data = NULL, *dist_km = NULL, *dist_bin = NULL, dist_scale, x, y, dx, del_x, del_y, y_max = 90.0;
@@ -262,15 +261,15 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	fprintf (GMT->session.std[GMT_OUT], "# %s\n", Ctrl->T.TAG);
 
-	for (i = 0; i < n_tracks; i++) {
+	for (trk = 0; trk < n_tracks; trk++) {
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading file %s ", trk_name[i]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Reading file %s ", trk_name[trk]);
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[i], &data, s, &p, &GMT->current.io, &j), trk_name[i]);
+		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
 		GMT_report (GMT, GMT_MSG_NORMAL, "[%s]\n", s->path);
 		
 		if (Ctrl->E.active) {	/* Project coordinates */
-			for (j = 0; j < p.n_rows; j++) GMT_geo_to_xy (GMT, data[s->x_col][j], data[s->y_col][j], &data[s->x_col][j], &data[s->y_col][j]);
+			for (row = 0; row < p.n_rows; row++) GMT_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);
 		}
 		
 		/* Reset bin flags */
@@ -281,71 +280,76 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
-		last_bin_ij = last_bin_i = last_bin_j = UINT_MAX;
-		for (j = 0; j < p.n_rows; j++) {
-			if (outside (data[s->x_col][j], data[s->y_col][j], &B, s->geographic)) continue;
-			 x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, data[s->x_col][j], data[s->y_col][j], &this_bin_i, &this_bin_j, &B, &this_bin_ij), "");
+		last_bin_index = UINT_MAX;
+		last_not_set = TRUE;
+		last_bin_col = last_bin_row = -1;
+		for (row = 0; row < p.n_rows; row++) {
+			if (outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
+			 x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col, &this_bin_row, &B, &this_bin_index), "");
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep
 			 * turning the data flags on again and again. */
 			 
-			B.binflag[this_bin_ij] |= get_data_flag (data, j, s);
+			B.binflag[this_bin_index] |= get_data_flag (data, row, s);
 
 			if (!Ctrl->D.active) continue;	/* Not worried about trackline lengths */
 			
-			if (last_bin_ij == UINT_MAX) last_bin_ij = this_bin_ij;	/* Initialize last bin to this bin the first time */
+			if (last_not_set) {	/* Initialize last bin to this bin the first time */
+				last_bin_index = this_bin_index;
+				last_not_set = FALSE;
+			}
 			
-			if (j > 0) { /* Can check for gaps starting with 1st to 2nd point */
+			if (row > 0) { /* Can check for gaps starting with 1st to 2nd point */
 				gap = FALSE;
 				if (s->t_col >= 0) {	/* There is a time column in the data*/
-					if (GMT_is_dnan (data[s->t_col][j])&& (dist_km[j] - dist_km[j-1]) > B.dist_gap) /* but time = NaN, so test for gaps based on distance */
+					if (GMT_is_dnan (data[s->t_col][row])&& (dist_km[row] - dist_km[row-1]) > B.dist_gap) /* but time = NaN, so test for gaps based on distance */
 						gap = TRUE;
-			   		else if ((data[s->t_col][j] - data[s->t_col][j-1]) > B.time_gap)	/* We have a time data gap so we skip this interval */
+			   		else if ((data[s->t_col][row] - data[s->t_col][row-1]) > B.time_gap)	/* We have a time data gap so we skip this interval */
 						gap = TRUE;
 				}
-				else if ((dist_km[j] - dist_km[j-1]) > B.dist_gap) /* There is no time column, must test for gaps based on distance */
+				else if ((dist_km[row] - dist_km[row-1]) > B.dist_gap) /* There is no time column, must test for gaps based on distance */
 					gap = TRUE;
 				
 				if (gap) {
-					last_bin_ij = this_bin_ij;	/* Update the last point's index info */
-					last_bin_i = this_bin_i;
-					last_bin_j = this_bin_j;
+					last_bin_index = this_bin_index;	/* Update the last point's index info */
+					last_bin_col = this_bin_col;
+					last_bin_row = this_bin_row;
 					continue;
 				}
 			}
 
-			if (this_bin_ij == last_bin_ij) {	/* Same bin, keep adding up incremental distances (this adds 0 the very first time) */
-				dist_bin[this_bin_ij] += dist_km[j];
+			if (this_bin_index == last_bin_index) {	/* Same bin, keep adding up incremental distances (this adds 0 the very first time) */
+				dist_bin[this_bin_index] += dist_km[row];
 			}
 			else  {	/* Crossed into another bin */
-				if (s->geographic && (this_bin_i - last_bin_i) > jump_180) {		/* Jumped from east to west across Greenwich */
-					start_i = this_bin_i + 1;
-					end_i = last_bin_i + jump_360;
-					dx = (data[s->x_col][j] - 360.0) - data[s->x_col][j-1];
+				if (s->geographic && (this_bin_col - last_bin_col) > jump_180) {		/* Jumped from east to west across Greenwich */
+					start_col = this_bin_col + 1;
+					end_col = last_bin_col + jump_360;
+					dx = (data[s->x_col][row] - 360.0) - data[s->x_col][row-1];
 				}
-				else if (s->geographic && (this_bin_i - last_bin_i) < -jump_180) {	/* Jumped from west to east across Greenwich */
-					start_i = last_bin_i + 1;
-					end_i = this_bin_i + jump_360;
-					dx = data[s->x_col][j] - (data[s->x_col][j-1] - 360.0);
+				else if (s->geographic && (this_bin_col - last_bin_col) < -jump_180) {	/* Jumped from west to east across Greenwich */
+					start_col = last_bin_col + 1;
+					end_col = this_bin_col + jump_360;
+					dx = data[s->x_col][row] - (data[s->x_col][row-1] - 360.0);
 				}
 				else {								/* Did no such thing */
-					start_i = MIN (last_bin_i, this_bin_i) + 1;
-					end_i = MAX (last_bin_i, this_bin_i);
-					dx = data[s->x_col][j] - data[s->x_col][j-1];
+					start_col = MIN (last_bin_col, this_bin_col) + 1;
+					end_col = MAX (last_bin_col, this_bin_col);
+					dx = data[s->x_col][row] - data[s->x_col][row-1];
 				}
 				
 				/* Find all the bin-line intersections */
 				
 				/* Add the start and stop coordinates to the xc/yc arrays so we can get mid-points of the intervals */
 				
-				X[0].x = data[s->x_col][j-1];	X[0].y = data[s->y_col][j-1];	X[0].d = 0.0;
-				X[1].x = data[s->x_col][j];	X[1].y = data[s->y_col][j];	X[1].d = hypot (dx, data[s->y_col][j] - data[s->y_col][j-1]);
+				X[0].x = data[s->x_col][row-1];	X[0].y = data[s->y_col][row-1];	X[0].d = 0.0;
+				X[1].x = data[s->x_col][row];	X[1].y = data[s->y_col][row];	X[1].d = hypot (dx, data[s->y_col][row] - data[s->y_col][row-1]);
 				nx = 2;
-				for (bj = MIN (last_bin_j, this_bin_j) + 1; bj <= MAX (last_bin_j, this_bin_j); bj++) {	/* If we go in here we know dy is non-zero */
-					y = B.wesn[YLO] + bj * B.inc[GMT_Y];
-					del_y = y - data[s->y_col][j-1];
-					del_x = del_y * dx / (data[s->y_col][j] - data[s->y_col][j-1]);
-					x = data[s->x_col][j-1] + del_x;
+				for (brow = MIN (last_bin_row, this_bin_row) + 1; brow <= MAX (last_bin_row, this_bin_row); brow++) {	/* If we go in here we know dy is non-zero */
+					y = B.wesn[YLO] + brow * B.inc[GMT_Y];
+					del_y = y - data[s->y_col][row-1];
+					del_x = del_y * dx / (data[s->y_col][row] - data[s->y_col][row-1]);
+					x = data[s->x_col][row-1] + del_x;
 					X[nx].x = x;	X[nx].y = y;	X[nx].d = hypot (del_x , del_y);
 					nx++;
 					if (nx == nx_alloc) {
@@ -353,16 +357,16 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						X = GMT_memory (GMT, X, nx_alloc, struct BINCROSS);
 					}
 				}
-				for (bi = start_i; bi <= end_i; bi++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
-					x = B.wesn[XLO] + bi * B.inc[GMT_X];
+				for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
+					x = B.wesn[XLO] + bcol * B.inc[GMT_X];
 					if (s->geographic && x >= 360.0) x -= 360.0;
-					del_x = x - data[s->x_col][j-1];
+					del_x = x - data[s->x_col][row-1];
 					if (fabs (del_x) > 180.0) del_x = copysign (360.0 - fabs (del_x), -del_x);
-					del_y = (dx == 0.0) ? 0.5 * (data[s->y_col][j] - data[s->y_col][j-1]) : del_x * (data[s->y_col][j] - data[s->y_col][j-1]) / dx;
-					y = data[s->y_col][j-1] + del_y;
+					del_y = (dx == 0.0) ? 0.5 * (data[s->y_col][row] - data[s->y_col][row-1]) : del_x * (data[s->y_col][row] - data[s->y_col][row-1]) / dx;
+					y = data[s->y_col][row-1] + del_y;
 					if (s->geographic && fabs (y) > y_max) {
 						y = copysign (y_max, y);
-						del_y = y - data[s->y_col][j-1];
+						del_y = y - data[s->y_col][row-1];
 					}
 					X[nx].x = x;	X[nx].y = y;	X[nx].d = hypot (del_x, del_y);
 					nx++;
@@ -374,44 +378,44 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				
 				/* Here we have 1 or more intersections */
 				
-				qsort (X, (size_t)nx, sizeof (struct BINCROSS), comp_bincross);
+				qsort (X, nx, sizeof (struct BINCROSS), comp_bincross);
 				
-				for (k = 1, k1 = 0; k < nx; k++, k1++) {	/* Process the intervals, getting mid-points and using that to get bin */
-					dx = X[k].x - X[k1].x;
+				for (curr_x_pt = 1, prev_x_pt = 0; curr_x_pt < nx; curr_x_pt++, prev_x_pt++) {	/* Process the intervals, getting mid-points and using that to get bin */
+					dx = X[curr_x_pt].x - X[prev_x_pt].x;
 					if (s->geographic && dx < -180.0)
-						x = 0.5 * (X[k].x + (X[k1].x - 360.0));
+						x = 0.5 * (X[curr_x_pt].x + (X[prev_x_pt].x - 360.0));
 					else if (s->geographic && dx > +180.0)
-						x = 0.5 * (X[k].x - 360.0 + X[k1].x);
+						x = 0.5 * (X[curr_x_pt].x - 360.0 + X[prev_x_pt].x);
 					else
-						x = 0.5 * (X[k].x + X[k1].x);
-					y = 0.5 * (X[k].y + X[k1].y);
+						x = 0.5 * (X[curr_x_pt].x + X[prev_x_pt].x);
+					y = 0.5 * (X[curr_x_pt].y + X[prev_x_pt].y);
 					if (s->geographic && fabs (y) > y_max) y = copysign (y_max, y);
-					x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, x, y, &ii, &jj, &B, &ij), "");
-					dist_bin[ij] += GMT_distance (GMT, X[k].x, X[k].y, X[k1].x, X[k1].y);
-					B.binflag[ij] |= nav_flag;		/* Only update nav flags we have not been here already */
+					x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, x, y, &ii_notused, &jj_notused, &B, &index), "");
+					dist_bin[index] += GMT_distance (GMT, X[curr_x_pt].x, X[curr_x_pt].y, X[prev_x_pt].x, X[prev_x_pt].y);
+					B.binflag[index] |= nav_flag;		/* Only update nav flags we have not been here already */
 				}
 			}
-			last_bin_ij = this_bin_ij;
-			last_bin_i = this_bin_i;
-			last_bin_j = this_bin_j;
+			last_bin_index = this_bin_index;
+			last_bin_col = this_bin_col;
+			last_bin_row = this_bin_row;
 		}
 
 		x2sys_free_data (GMT, data, s->n_fields, &p);
 
 		/* Time for bin index output */
 
-		fprintf (GMT->session.std[GMT_OUT], "> %s\n", trk_name[i]);
-		for (ij = 0; ij < B.nm_bin; ij++) {
-			if (B.binflag[ij] == 0) continue;
-			x = B.wesn[XLO] + ((ij % B.nx_bin) + 0.5) * B.inc[GMT_X];
-			y = B.wesn[YLO] + ((ij / B.nx_bin) + 0.5) * B.inc[GMT_Y];
+		fprintf (GMT->session.std[GMT_OUT], "> %s\n", trk_name[trk]);
+		for (index = 0; index < B.nm_bin; index++) {
+			if (B.binflag[index] == 0) continue;
+			x = B.wesn[XLO] + ((index % B.nx_bin) + 0.5) * B.inc[GMT_X];
+			y = B.wesn[YLO] + ((index / B.nx_bin) + 0.5) * B.inc[GMT_Y];
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], x, GMT_X);
 			fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 			GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], y, GMT_Y);
-			fprintf (GMT->session.std[GMT_OUT], "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, ij, GMT->current.setting.io_col_separator, B.binflag[ij]);
+			fprintf (GMT->session.std[GMT_OUT], "%s%" PRIu64 "%s%u", GMT->current.setting.io_col_separator, index, GMT->current.setting.io_col_separator, B.binflag[index]);
 			if (Ctrl->D.active) {
 				fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dist_bin[ij], GMT_Z);
+				GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], dist_bin[index], GMT_Z);
 			}
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}

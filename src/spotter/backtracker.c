@@ -339,17 +339,17 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 #define SPOTTER_BACK -1
 #define SPOTTER_FWD  +1
 
-GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c)
+GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, COUNTER_MEDIUM time_flag, double wesn[], double **c)
 {
 	GMT_LONG n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
 	
 	switch (way) {
 		case SPOTTER_BACK:
-			n = spotter_backtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, do_time, wesn, c);
+			n = spotter_backtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, time_flag, wesn, c);
 			break;
 		case SPOTTER_FWD:
-			n = spotter_forthtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, do_time, wesn, c);
+			n = spotter_forthtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, time_flag, wesn, c);
 			break;
 		default:
 			GMT_report (GMT, GMT_MSG_FATAL, "Bad use of spotter_track\n");
@@ -558,7 +558,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
-					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
@@ -573,7 +573,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_X], H->n_rows, 1, &t_end, &lon, GMT->current.setting.interpolant);
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
-					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
@@ -585,7 +585,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else {
 				if (!Ctrl->W.active) {
-					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
@@ -610,7 +610,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			else {
-				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, TRUE + Ctrl->L.stage_id, NULL, &c) <= 0) {
+				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
 					Return (GMT_RUNTIME_ERROR);
 				}

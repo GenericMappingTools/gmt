@@ -1300,15 +1300,15 @@ GMT_LONG x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct 
 	return (X2SYS_NOERROR);
 }
 
-GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, COUNTER_LARGE *ID)
+GMT_LONG x2sys_bix_get_index (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, GMT_LONG *j, struct X2SYS_BIX *B, COUNTER_LARGE *ID)
 {
 	COUNTER_LARGE index = 0;
 	int64_t tmp;
 
 	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : lrint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
-		GMT_report (C, GMT_MSG_FATAL, "j (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
-		return (X2SYS_BIX_BAD_J);
+		GMT_report (C, GMT_MSG_FATAL, "row (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
+		return (X2SYS_BIX_BAD_ROW);
 	}
 	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : lrint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
 	if (B->periodic) {
@@ -1316,13 +1316,13 @@ GMT_LONG x2sys_bix_get_ij (struct GMT_CTRL *C, double x, double y, GMT_LONG *i, 
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
 	}
 	if ((*i) < 0 || (*i) >= B->nx_bin) {
-		GMT_report (C, GMT_MSG_FATAL, "i (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
-		return (X2SYS_BIX_BAD_I);
+		GMT_report (C, GMT_MSG_FATAL, "col (%d) outside range implied by -R -I! [0-%d>\n", *i, B->nx_bin);
+		return (X2SYS_BIX_BAD_COL);
 	}
 	tmp = (*j) * B->nx_bin + (*i);
 	if (tmp < 0 || (index = tmp) >= B->nm_bin) {
 		GMT_report (C, GMT_MSG_FATAL, "Index (%" PRIu64 ") outside range implied by -R -I! [0-%" PRIu64 ">\n", tmp, B->nm_bin);
-		return (X2SYS_BIX_BAD_IJ);
+		return (X2SYS_BIX_BAD_INDEX);
 	}
 
 	*ID  = index;
@@ -1430,12 +1430,12 @@ const char * x2sys_strerror (struct GMT_CTRL *C, GMT_LONG err)
 			return "Unrecognized argument";
 		case X2SYS_CONFLICTING_ARGS:
 			return "Conflicting arguments";
-		case X2SYS_BIX_BAD_J:
-			return "Bad j index";
-		case X2SYS_BIX_BAD_I:
-			return "Bad i index";
-		case X2SYS_BIX_BAD_IJ:
-			return "Bad ij index";
+		case X2SYS_BIX_BAD_ROW:
+			return "Bad row index";
+		case X2SYS_BIX_BAD_COL:
+			return "Bad col index";
+		case X2SYS_BIX_BAD_INDEX:
+			return "Bad bin index";
 		default:	/* default passes through to GMT error */
 			return GMT_strerror(err);
 	}
