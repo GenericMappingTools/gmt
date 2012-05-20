@@ -372,9 +372,9 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE n_skipped = 0;		/* Number of points skipped because t < 0 */
 	COUNTER_LARGE n_read = 0;		/* Number of records read */
 	COUNTER_LARGE row;
-	COUNTER_LARGE i, j, k;
+	COUNTER_LARGE i, j;
 	COUNTER_MEDIUM n_stages = 0;		/* Number of stage poles */
-	COUNTER_MEDIUM n_out, n_expected_fields;
+	COUNTER_MEDIUM n_out, n_expected_fields, col;
 	GMT_BOOLEAN make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
 	GMT_LONG n_fields, error;		/* Misc. signed counters */
 	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
@@ -616,7 +616,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				out[GMT_X] = lon * R2D;
 				out[GMT_Y] = lat * R2D;
-				for (k = 2; k < n_expected_fields; k++) out[k] = in[k];
+				for (col = 2; col < n_expected_fields; col++) out[col] = in[col];
 			}
 			out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);

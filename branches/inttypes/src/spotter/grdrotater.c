@@ -224,7 +224,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	 * Note that the path is the same for pixel or grid-registered grids.
 	 */
 
-	COUNTER_MEDIUM np = 0, add, i, j;
+	COUNTER_MEDIUM np = 0, add, col, row;
 	COUNTER_LARGE dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -245,9 +245,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 		add = h->nx - !h->registration;
 		S->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
 		S->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
-		for (i = 0; i < add; i++) {
-			S->coord[GMT_X][i] = GMT_col_to_x (GMT, i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			S->coord[GMT_Y][i] = h->wesn[YLO];
+		for (col = 0; col < add; col++) {
+			S->coord[GMT_X][col] = GMT_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_Y][col] = h->wesn[YLO];
 		}
 	}
 	np += add;
@@ -255,9 +255,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	add = h->ny - !h->registration;
 	S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
 	S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
-	for (j = 0; j < add; j++) {	/* Loop along east border from south to north */
-		S->coord[GMT_X][np+j] = h->wesn[XHI];
-		S->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, h->ny - 1 - j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+	for (row = 0; row < add; row++) {	/* Loop along east border from south to north */
+		S->coord[GMT_X][np+row] = h->wesn[XHI];
+		S->coord[GMT_Y][np+row] = GMT_row_to_y (GMT, h->ny - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	/* Add north border e->w */
@@ -272,9 +272,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 		add = h->nx - !h->registration;
 		S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
 		S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
-		for (i = 0; i < add; i++) {
-			S->coord[GMT_X][np+i] = GMT_col_to_x (GMT, h->nx - 1 - i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			S->coord[GMT_Y][np+i] = h->wesn[YHI];
+		for (col = 0; col < add; col++) {
+			S->coord[GMT_X][np+col] = GMT_col_to_x (GMT, h->nx - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_Y][np+col] = h->wesn[YHI];
 		}
 	}
 	np += add;
@@ -282,9 +282,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	add = h->ny - !h->registration;
 	S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np + 1, double);
 	S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
-	for (j = 0; j < add; j++) {	/* Loop along west border from north to south */
-		S->coord[GMT_X][np+j] = h->wesn[XLO];
-		S->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+	for (row = 0; row < add; row++) {	/* Loop along west border from north to south */
+		S->coord[GMT_X][np+row] = h->wesn[XLO];
+		S->coord[GMT_Y][np+row] = GMT_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	S->coord[GMT_X][np] = S->coord[GMT_X][0];	/* Close polygon explicitly */

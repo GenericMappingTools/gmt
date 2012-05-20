@@ -288,7 +288,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE n_smts;		/* Number of seamounts read */
 	COUNTER_LARGE n_track;		/* Number of points along a single flowline */
 	COUNTER_LARGE n_read = 0;	/* Number of records read */
-	COUNTER_LARGE node, k0;		/* Grid indices */
+	COUNTER_LARGE node, node_0;		/* Grid indices */
 	COUNTER_MEDIUM n_stages;	/* Number of stage rotations (poles) */
 	COUNTER_MEDIUM n_expected_fields;
 	COUNTER_MEDIUM row, col, kx, ky, m;
@@ -514,7 +514,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 					y_part = d_row * G_rad->header->inc[GMT_Y] - dy;
 					y_part2 = y_part * y_part;
-					k0 = GMT_IJP (G->header, row_0, 0);
+					node_0 = GMT_IJP (G->header, row_0, 0);
 
 					for (d_col = -node_x_width, col_0 = col - node_x_width; d_col <= node_x_width; d_col++, col_0++) {
 
@@ -522,7 +522,7 @@ GMT_LONG GMT_hotspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 						x_part = d_col * latfactor[row] - dx;
 						r2 = (x_part * x_part + y_part2) * norm;
-						G->data[k0+col_0] += (float)(z_smt * exp (r2));
+						G->data[node_0+col_0] += (float)(z_smt * exp (r2));
 					}
 				}
 				processed_node[node] = 1;	/* Now we have visited this node */
