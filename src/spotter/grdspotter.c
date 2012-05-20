@@ -415,7 +415,7 @@ GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, st
 		kx = ky - 1;						/* Index for the x-coordinate */
 		while (c[kx] > wesn[XHI]) c[kx] -= TWO_PI;		/* Elaborate W/E test because of 360 periodicity */
 		while (c[kx] < wesn[XLO]) c[kx] += TWO_PI;
-		if (c[kx] > wesn[XHI]) continue;				/* Longitude outside region */
+		if (c[kx] > wesn[XHI]) continue;			/* Longitude outside region */
 		last = kx;						/* We are inside, this terminates the for loop */
 	}
 
@@ -455,6 +455,28 @@ GMT_BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, CO
 	return (TRUE);	/* We are returning a useful age */
 }
 
+void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
+{	/* Determines the grid's min/max z-values and normalizes the grid
+	 * so that zmax is 100% */
+	COUNTER_MEDIUM row, col;
+	COUNTER_LARGE node;
+	double CVA_scale;	/* Used to normalize CVAs to percent */
+	
+	G->header->z_min = +DBL_MAX;
+	G->header->z_max = -DBL_MAX;
+	GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
+		if (GMT_is_fnan (data[node])) continue;
+		if (data[node] < G->header->z_min) G->header->z_min = data[node];
+		if (data[node] > G->header->z_max) G->header->z_max = data[node];
+	}
+	GMT_report (GMT, GMT_MSG_NORMAL, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
+	CVA_scale = 100.0 / G->header->z_max;
+	for (node = 0; node < G->header->size; node++) data[node] *= (float)CVA_scale;
+	G->header->z_min *= CVA_scale;
+	G->header->z_max *= CVA_scale;
+	GMT_report (GMT, GMT_MSG_NORMAL, "%g %g\n", G->header->z_min, G->header->z_max);
+}
+
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdspotter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -488,7 +510,6 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	double CVA_max, wesn[4], cva_contribution, yg;
 	double out[3], x_scale, y_scale, area;
 	double *lat_area = NULL;	/* Area of each dx by dy note in km as function of latitude */
-	double CVA_scale;		/* Used to normalize CVAs to percent */
 	double this_wesn[4];
 	double this_pa, pa_val = 0.0, n_more_than_once = 0.0;
 	double *x_cva = NULL, *y_cva = NULL;		/* Coordinates on the CVA grid */
@@ -774,19 +795,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
-		G->header->z_min = +DBL_MAX;
-		G->header->z_max = -DBL_MAX;
-		GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
-			if (GMT_is_fnan (G->data[node])) continue;
-			if (G->data[node] < G->header->z_min) G->header->z_min = G->data[node];
-			if (G->data[node] > G->header->z_max) G->header->z_max = G->data[node];
-		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
-		CVA_scale = 100.0 / G->header->z_max;
-		for (node = 0; node < G->header->size; node++) G->data[node] *= (float)CVA_scale;
-		G->header->z_min *= CVA_scale;
-		G->header->z_max *= CVA_scale;
-		GMT_report (GMT, GMT_MSG_NORMAL, "%g %g\n", G->header->z_min, G->header->z_max);
+		normalize_grid (GMT, G, G->data);
 	}
 		
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write CVA grid %s\n", Ctrl->G.file);
@@ -836,19 +845,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Time to write out this z-slice grid */
 			if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
 				GMT_report (GMT, GMT_MSG_NORMAL, "Normalize CVS grid to percentages of max CVA\n");
-				G->header->z_min = +DBL_MAX;
-				G->header->z_max = -DBL_MAX;
-				GMT_grd_loop (GMT, G, row, col, node) {	/* Loop over all output nodes */
-					if (GMT_is_fnan (CVA_inc[node])) continue;
-					if (CVA_inc[node] < G->header->z_min) G->header->z_min = CVA_inc[node];
-					if (CVA_inc[node] > G->header->z_max) G->header->z_max = CVA_inc[node];
-				}
-				GMT_report (GMT, GMT_MSG_NORMAL, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
-				CVA_scale = 100.0 / G->header->z_max;
-				for (node = 0; node < G->header->size; node++) CVA_inc[node] *= (float)CVA_scale;
-				G->header->z_min *= CVA_scale;
-				G->header->z_max *= CVA_scale;
-				GMT_report (GMT, GMT_MSG_NORMAL, "%g %g\n", G->header->z_min, G->header->z_max);
+				normalize_grid (GMT, G, CVA_inc);
 			}
 			sprintf (G->header->remark, "CVA for z-range %g - %g only", z0, z1);
 			sprintf (file, format, layer);

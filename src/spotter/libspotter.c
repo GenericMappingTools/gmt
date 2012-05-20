@@ -217,7 +217,7 @@ void xyw_to_struct_euler (struct GMT_CTRL *C, struct EULER *p, double lon[], dou
 void set_I_matrix (struct GMT_CTRL *C, double R[3][3])
 {	/* Simply sets R to I, the identity matrix */
 
-	memset (R, 0, 9 * sizeof (double));
+	GMT_memset (R, 9, double);
 	R[0][0] = R[1][1] = R[2][2] = 1.0;
 }
 
@@ -1050,7 +1050,7 @@ void spotter_stages_to_total (struct GMT_CTRL *C, struct EULER p[], COUNTER_MEDI
 		if (stage_rates) p[i].omega *= p[i].duration;				/* Convert opening rate to opening angle */
 		spotter_make_rot_matrix (C, p[i].lon, p[i].lat, p[i].omega, R_stage);		/* Make matrix from rotation parameters */
 		spotter_matrix_mult (C, R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
-		memcpy (R_old, R_young, 9 * sizeof (double));	/* Set R_old = R_young for next time around */
+		GMT_memcpy (R_old, R_young, 9, double);	/* Set R_old = R_young for next time around */
 		spotter_matrix_to_pole (C, R_young, &elon[i], &elat[i], &ew[i]);			/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;					/* Adjust lon */
 	}
@@ -1189,11 +1189,11 @@ void spotter_add_rotations (struct GMT_CTRL *C, struct EULER a[], COUNTER_MEDIUM
 			if (sign_a < 0.0)
 				spotter_cov_of_inverse (C, &a2[i], Ca);
 			else
-				memcpy (Ca, a2[i].C, 9*sizeof (double));
+				GMT_memcpy (Ca, a2[i].C, 9, double);
 			if (sign_b < 0.0)
 				spotter_cov_of_inverse (C, &b2[i], Cb);
 			else
-				memcpy (Cb, b2[i].C, 9*sizeof (double));
+				GMT_memcpy (Cb, b2[i].C, 9, double);
 			spotter_matrix_mult (C, Cb, Ra, tmp);
 			spotter_matrix_mult (C, RaT, tmp, c2[i].C);
 			for (k = 0; k < 3; k++) for (j = 0; j < 3; j++) c2[i].C[k][j] *= fb;
@@ -1366,7 +1366,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 	spotter_make_rot_matrix (G, p[k].lon, p[k].lat, w, R);
 	spotter_matrix_transpose (G, Rt, R);			/* Get the transpose of R^t */
 	if (!forward) {		/* Rotate the point into the present */
-		memcpy (cov, p[k].C, 9*sizeof (double));	/* The rotation's covarience matrix */
+		GMT_memcpy (cov, p[k].C, 9, double);	/* The rotation's covarience matrix */
 	}
 	else {	/* Use inverse rotation to rotate the point from the present to past rotations */
 		/* We change the sign of w so then R is actually R^t */

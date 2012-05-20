@@ -198,52 +198,52 @@ static inline GMT_LONG MGD77_gt_test (double value, double limit)
 	return (value > limit);
 }
 
-static inline GMT_LONG MGD77_clt_test (char *value, char *match, int len)
+static inline GMT_LONG MGD77_clt_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value < match for strings */
 
-	assert (len >= 0);
-	return (strncmp (value, match, (size_t)len) < 0);
+	assert (len > 0);
+	return (strncmp (value, match, len) < 0);
 }
 
-static inline GMT_LONG MGD77_cle_test (char *value, char *match, int len)
+static inline GMT_LONG MGD77_cle_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value <= match for strings */
 
-	assert (len >= 0);
-	return (strncmp (value, match, (size_t)len) <= 0);
+	assert (len > 0);
+	return (strncmp (value, match, len) <= 0);
 }
 
-static inline GMT_LONG MGD77_ceq_test (char *value, char *match, int len)
+static inline GMT_LONG MGD77_ceq_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value == match for strings */
 
-	assert (len >= 0);
-	return (strncmp (value, match, (size_t)len) == 0);
+	assert (len > 0);
+	return (strncmp (value, match, len) == 0);
 }
 
-static inline GMT_LONG MGD77_cneq_test (char *value, char *match, int len)
+static inline GMT_LONG MGD77_cneq_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value != match for strings */
 
-	assert (len >= 0);
-	return (strncmp (value, match, (size_t)len) != 0);
+	assert (len > 0);
+	return (strncmp (value, match, len) != 0);
 }
 
-static inline GMT_LONG MGD77_cge_test (char *value, char *match, int len)
+static inline GMT_LONG MGD77_cge_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value >= match for strings */
 
-	assert (len >= 0);
-	return (strncmp (value, match, (size_t)len) >= 0);
+	assert (len > 0);
+	return (strncmp (value, match, len) >= 0);
 }
 
-static inline GMT_LONG MGD77_cgt_test (char *value, char *match, int len)
+static inline GMT_LONG MGD77_cgt_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value > match for strings */
 
-	assert (len >= 0);
-	return (strncmp (value, match, (size_t)len) > 0);
+	assert (len > 0);
+	return (strncmp (value, match, len) > 0);
 }
 
 static inline void MGD77_Init_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
@@ -421,7 +421,7 @@ static inline void MGD77_set_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADE
 		H->info[MGD77_M77_SET].col[k].corr_factor = 1.0;
 		H->info[MGD77_M77_SET].col[k].corr_offset = 0.0;
 		H->info[MGD77_M77_SET].col[k].type = (nc_type) mgd77cdf[i].type;
-		H->info[MGD77_M77_SET].col[k].text = (char)mgd77cdf[i].len;
+		H->info[MGD77_M77_SET].col[k].text = mgd77cdf[i].len;
 		H->info[MGD77_M77_SET].col[k].pos = i;
 		H->info[MGD77_M77_SET].col[k].present = TRUE;
 	}
@@ -463,14 +463,14 @@ void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H)
 	}
 }
 
-GMT_BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, int width)
+GMT_BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, size_t width)
 {
 	COUNTER_LARGE i = 0;
 
 	if (n == 1) return (TRUE);
 	assert (width > 0);
 
-	for (i = 2; i < n; i++) if (strncmp (&txt[i*width], &txt[(i-1)*width], (size_t)width)) return (FALSE);
+	for (i = 2; i < n; i++) if (strncmp (&txt[i*width], &txt[(i-1)*width], width)) return (FALSE);
 	return (TRUE);
 }
 
@@ -996,8 +996,8 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct 
 
 	/* argument file is generally ignored since file is already open */
 
-	memset (H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
-	if (F->format == MGD77_FORMAT_M77) {			/* Can compute # records from file size because format is fixed */
+	GMT_memset (H, 1, struct MGD77_HEADER);		/* Completely wipe existing header */
+	if (F->format == MGD77_FORMAT_M77) {		/* Can compute # records from file size because format is fixed */
 		if (stat (F->path, &buf)) {	/* Inquiry about file failed somehow */
 			GMT_report (C, GMT_MSG_FATAL, "Unable to stat file %s\n", F->path);
 			GMT_exit (EXIT_FAILURE);
@@ -1052,7 +1052,7 @@ static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *C, char *file, struct
 
 	/* argument file is generally ignored since file is already open */
 
-	memset ((void *)H, '\0', sizeof (struct MGD77_HEADER));	/* Completely wipe existing header */
+	GMT_memset (H, 1, struct MGD77_HEADER);	/* Completely wipe existing header */
 	/* Since we do not know the number of records, we must quickly count lines */
 	while (fgets (line, BUFSIZ, F->fp)) H->n_records++;	/* Count every line */
 	rewind (F->fp);					/* Go back to beginning of file */
@@ -1607,7 +1607,7 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CO
 	for (k = 0, col[MGD77_TIME] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, "time")) col[MGD77_TIME] = k;
 	make_ymdhm = (col[MGD77_TIME] >= 0 && (col[MGD77_YEAR] == MGD77_NOT_SET && col[MGD77_MONTH] == MGD77_NOT_SET && col[MGD77_DAY] == MGD77_NOT_SET && col[MGD77_HOUR] == MGD77_NOT_SET && col[MGD77_MIN] == MGD77_NOT_SET));
 
-	memset (&MGD77Record, 0, sizeof (struct MGD77_DATA_RECORD));
+	GMT_memset (&MGD77Record, 1, struct MGD77_DATA_RECORD);
 	for (rec = 0; rec < S->H.n_records; rec++) {
 		MGD77Record.number[MGD77_RECTYPE] = (col[MGD77_RECTYPE] == MGD77_NOT_SET || GMT_is_dnan (values[col[MGD77_RECTYPE]][rec])) ?  5.0 : values[col[MGD77_RECTYPE]][rec];
 		for (id = 1; id < MGD77_N_NUMBER_FIELDS; id++) {
@@ -1779,7 +1779,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct
 			if (!H->info[set].col[id].present) continue;	/* No such field, move on */
 			if (H->info[set].col[id].text) {			/* This variable is a text string */
 				sprintf (string, "%s_dim", H->info[set].col[id].abbrev);
-				MGD77_nc_status (C, nc_def_dim (F->nc_id, string, (size_t)H->info[set].col[id].text, &dims[1]));	/* Define character length dimension */
+				MGD77_nc_status (C, nc_def_dim (F->nc_id, string, H->info[set].col[id].text, &dims[1]));	/* Define character length dimension */
 				if (H->info[set].col[id].constant) {	/* Simply store one value */
 					MGD77_nc_status (C, nc_def_var (F->nc_id, H->info[set].col[id].abbrev, H->info[set].col[id].type, 1, &dims[1], &var_id));	/* Define a 1-text variable */
 				}
@@ -1931,7 +1931,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CON
 
 	if (MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
 
-	memset (&E, 0, sizeof (struct MGD77_E77_APPLY));
+	GMT_memset (&E, 1, struct MGD77_E77_APPLY);
 	count[0] = S->H.n_records;
 	for (col = 0; col < F->n_out_columns; col++) {	/* Only loop over columns that are desired */
 		c  = F->order[col].set;	/* Determine set and item */
@@ -2270,7 +2270,7 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct 
 
 	MGD77_nc_status (C, nc_open (F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
 
-	memset (H, 0, sizeof (struct MGD77_HEADER));	/* Initialize header */
+	GMT_memset (H, 1, struct MGD77_HEADER);	/* Initialize header */
 
 	/* GET AUTHOR, HISTORY INFORMATION */
 
@@ -2370,14 +2370,14 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct 
 		MGD77_nc_status (C, nc_inq_vardimid (F->nc_id, id, dims));		/* Get dimension id(s) of this variable */
 		if (n_dims == 2) {	/* Variable is a 2-D text array */
 			MGD77_nc_status (C, nc_inq_dimlen (F->nc_id, dims[1], &count[1]));	/* Get length of each string */
-			H->info[c].col[c_id[c]].text = (char)count[1];
+			H->info[c].col[c_id[c]].text = count[1];
 		}
 		else {	/* Variable is a 1-d array or a single text string */
 			if (n_dims == 0 || dims[0] == F->nc_recid)	/* Scalar number or array of numbers */
 				H->info[c].col[c_id[c]].text = 0;
 			else {	/* Single text string, get its length */
 				MGD77_nc_status (C, nc_inq_dimlen (F->nc_id, dims[0], count));	/* Get dimension length of this dimension */
-				H->info[c].col[c_id[c]].text = (char)count[0];
+				H->info[c].col[c_id[c]].text = count[0];
 			}
 		}
 		H->info[c].col[c_id[c]].constant = (n_dims == 0 || (n_dims == 1 && H->info[c].col[c_id[c]].text));	/* Field is constant (or NaN) for all records */
@@ -3449,7 +3449,7 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct 
 
 	xpmin = xnmin = ymin = +DBL_MAX;
 	xpmax = xnmax = ymax = -DBL_MAX;
-	memset ( C, 0, sizeof (struct MGD77_META));
+	GMT_memset (C, 1, struct MGD77_META);
 
 	C->verified = TRUE;
 	C->G1980_1930 = 0.0;
@@ -3525,7 +3525,7 @@ void MGD77_Verify_Prep (struct GMT_CTRL *G, struct MGD77_CONTROL *F, struct MGD7
 	xpmin = xnmin = ymin = +DBL_MAX;
 	xpmax = xnmax = ymax = -DBL_MAX;
 	C = &(D->H.meta);
-	memset ( C, 0, sizeof (struct MGD77_META));
+	GMT_memset (C, 1, struct MGD77_META);
 	C->verified = TRUE;
 
 	for (rec = 0; rec < D->H.n_records; rec++ ){
@@ -3616,7 +3616,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	unsigned int i, id, match, pick[MGD77_N_HEADER_ITEMS];
 	size_t length;
 
-	GMT_memset (F->Want_Header_Item, MGD77_N_HEADER_ITEMS, GMT_LONG);
+	GMT_memset (F->Want_Header_Item, MGD77_N_HEADER_ITEMS, GMT_BOOLEAN);
 
 	if (item && item[0] == '-') return 1;	/* Just wants a listing */
 
@@ -3842,7 +3842,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
 	int j, k, i, constraint, n;
 	COUNTER_MEDIUM pos;
-	GMT_LONG exact, all_exact;
+	GMT_BOOLEAN exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
 
@@ -4384,7 +4384,7 @@ int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C)
 	char buffer [GMT_BUFSIZ];
 	int  i;
 
-	memset (C, 0, sizeof (struct MGD77_CARTER));
+	GMT_memset (C, 1, struct MGD77_CARTER);
 
 	/* Read the correction table */
 
@@ -5792,7 +5792,7 @@ void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_C
 	char file[GMT_BUFSIZ];
 	MGD77_Set_Home (C, F);
 
-	memset (CM4, 0, sizeof (struct MGD77_CM4));	/* All is set to 0/FALSE */
+	GMT_memset (CM4, 1, struct MGD77_CM4);	/* All is set to 0/FALSE */
 	GMT_getsharepath (C, "mgd77", "umdl", ".CM4", file);
 	CM4->CM4_M.path = strdup (file);
 	GMT_getsharepath (C, "mgd77", "Dst_all", ".wdc", file);
