@@ -79,8 +79,8 @@ EXTERN_MSC GMT_LONG spotter_stage (struct GMT_CTRL *C, double t, struct EULER p[
 EXTERN_MSC GMT_LONG spotter_GPlates_pair (char *file);
 EXTERN_MSC GMT_LONG spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, GMT_BOOLEAN flowline, GMT_BOOLEAN total_out, GMT_BOOLEAN invert, double *t_max);
 EXTERN_MSC GMT_LONG spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, GMT_BOOLEAN geocentric, struct HOTSPOT **p);
-EXTERN_MSC COUNTER_MEDIUM spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c);
-EXTERN_MSC COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, GMT_BOOLEAN do_time, double wesn[], double **c);
+EXTERN_MSC COUNTER_MEDIUM spotter_backtrack  (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, COUNTER_MEDIUM do_time, double wesn[], double **c);
+EXTERN_MSC COUNTER_MEDIUM spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, COUNTER_MEDIUM do_time, double wesn[], double **c);
 EXTERN_MSC void spotter_total_to_stages (struct GMT_CTRL *GMT, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN total_rates, GMT_BOOLEAN stage_rates);
 EXTERN_MSC void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[], COUNTER_MEDIUM n, GMT_BOOLEAN total_rates, GMT_BOOLEAN stage_rates);
 EXTERN_MSC void spotter_add_rotations (struct GMT_CTRL *GMT, struct EULER a[], COUNTER_MEDIUM n_a, struct EULER b[], COUNTER_MEDIUM n_b, struct EULER *c[], COUNTER_MEDIUM *n_c);

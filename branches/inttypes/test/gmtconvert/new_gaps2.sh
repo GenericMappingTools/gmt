@@ -4,7 +4,7 @@
 
 ps=new_gaps2.ps
 
-cat << EOF >> tt.d
+cat << EOF > tt.d
 1	1
 2	1
 3	2

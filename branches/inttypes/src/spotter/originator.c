@@ -475,7 +475,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (!(n % 10)) GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5d\r", n);
 
-		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, ns, Ctrl->D.value, 0.0, TRUE, NULL, &c) <= 0) {
+		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, ns, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}

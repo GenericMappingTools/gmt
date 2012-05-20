@@ -690,7 +690,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		keep_flowlines = (Ctrl->PA.active || Ctrl->D.active || Ctrl->W.active);
-		forth_flag = Ctrl->PA.active + 10;	/* The 10 is used to limit the flowline calculation to only resample track within the rectangular box of interest */
+		forth_flag = (Ctrl->PA.active) ? 11 : 10;	/* The 10 is used to limit the flowline calculation to only resample track within the rectangular box of interest */
 		k_step = (Ctrl->PA.active) ? 3 : 2;
 	}
 	if (keep_flowlines) {
@@ -896,7 +896,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		else {	/* Must recreate flowlines */
 			k_step = 3;	/* FLowlines have (x,y,t) here */
-			forth_flag = Ctrl->PA.active + 10;	/* The 10 is used to limit the flowline calculation to only resample track within the rectangular box of interest */
+			forth_flag = (Ctrl->PA.active) ? 11 : 10;	/* The 10 is used to limit the flowline calculation to only resample track within the rectangular box of interest */
 			n_flow = n_nodes = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Loop over all input nodes */
 				/* STEP 1: Determine if z exceeds threshold and if so assign age */

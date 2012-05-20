@@ -535,8 +535,8 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 {
 	GMT_LONG error;
 	GMT_BOOLEAN pure_ascii;
-	COUNTER_MEDIUM n_items, j, k;
-	COUNTER_LARGE i;
+	COUNTER_MEDIUM n_items, col, k;
+	COUNTER_LARGE rec;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
@@ -548,17 +548,17 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 
 		if (Ctrl->N.active) {
 			sincosd (theta, &sin_theta, &cos_theta);
-			for (i = 0; i < P->n_used; i++) {
-				p_data[i].a[4] = Ctrl->C.x + p_data[i].a[2] * cos_theta;
-				p_data[i].a[5] = Ctrl->C.y + p_data[i].a[2] * sin_theta;
+			for (rec = 0; rec < P->n_used; rec++) {
+				p_data[rec].a[4] = Ctrl->C.x + p_data[rec].a[2] * cos_theta;
+				p_data[rec].a[5] = Ctrl->C.y + p_data[rec].a[2] * sin_theta;
 			}
 		}
 		else {
 			GMT_geo_to_cart (GMT, Ctrl->C.y, Ctrl->C.x, x, TRUE);
-			for (i = 0; i < P->n_used; i++) {
-				make_euler_matrix (P->pole, e, p_data[i].a[2]);
+			for (rec = 0; rec < P->n_used; rec++) {
+				make_euler_matrix (P->pole, e, p_data[rec].a[2]);
 				matrix_3v (e,x,xt);
-				GMT_cart_to_geo (GMT, &(p_data[i].a[5]), &(p_data[i].a[4]), xt, TRUE);
+				GMT_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, TRUE);
 			}
 		}
 	}
@@ -566,9 +566,9 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 	/* At this stage, all values are still in degrees.  */
 
 	if (Ctrl->Q.active) {
-		for (i = 0; i < P->n_used; i++) {
-			p_data[i].a[2] *= GMT->current.proj.DIST_KM_PR_DEG;
-			p_data[i].a[3] *= GMT->current.proj.DIST_KM_PR_DEG;
+		for (rec = 0; rec < P->n_used; rec++) {
+			p_data[rec].a[2] *= GMT->current.proj.DIST_KM_PR_DEG;
+			p_data[rec].a[3] *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}
 
@@ -583,29 +583,29 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 	/* Special case for pure ascii since we may pass text */
 
 	if (P->n_z && pure_ascii) {
-		for (i = 0; i < P->n_used; i++) {
+		for (rec = 0; rec < P->n_used; rec++) {
 			record[0] = 0;
-			for (j = 0; j < P->n_outputs; j++) {
-				if (P->output_choice[j] == -1)	/* Output all z columns as one string */
-					strcat (record, p_data[i].t);
+			for (col = 0; col < P->n_outputs; col++) {
+				if (P->output_choice[col] == -1)	/* Output all z columns as one string */
+					strcat (record, p_data[rec].t);
 				else {
-					sprintf (text, GMT->current.setting.format_float_out, p_data[i].a[P->output_choice[j]]);
+					sprintf (text, GMT->current.setting.format_float_out, p_data[rec].a[P->output_choice[col]]);
 					strcat (record, text);
 				}
-				(j == (P->n_outputs - 1)) ? strcat (record, "\n") : strcat (record, GMT->current.setting.io_col_separator);
+				(col == (P->n_outputs - 1)) ? strcat (record, "\n") : strcat (record, GMT->current.setting.io_col_separator);
 			}
 			GMT_Put_Record (GMT->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 		}
 	}
 	else {	/* Any other i/o combination */
-		for (i = 0; i < P->n_used; i++) {
-			for (j = k = 0; j < P->n_outputs; j++) {
-				if (P->output_choice[j] == -1) {	/* Copy over all z columns */
-					GMT_memcpy (&out[k], p_data[i].z, P->n_z, double);
+		for (rec = 0; rec < P->n_used; rec++) {
+			for (col = k = 0; col < P->n_outputs; col++) {
+				if (P->output_choice[col] == -1) {	/* Copy over all z columns */
+					GMT_memcpy (&out[k], p_data[rec].z, P->n_z, double);
 					k += P->n_z;
 				}
 				else
-					out[k++] = p_data[i].a[P->output_choice[j]];
+					out[k++] = p_data[rec].a[P->output_choice[col]];
 			}
 			GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
@@ -619,10 +619,10 @@ GMT_LONG write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, dou
 
 GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_LARGE i, n_total_read, n_total_used = 0;
-	COUNTER_MEDIUM rmode;
+	COUNTER_LARGE rec, n_total_read, n_total_used = 0;
+	COUNTER_MEDIUM rmode, col;
 	GMT_BOOLEAN pure_ascii, skip, z_first = TRUE;
-	GMT_LONG j, k, error = 0;
+	GMT_LONG error = 0;
 	
 	size_t n_alloc = GMT_CHUNK;
 
@@ -671,30 +671,30 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Convert user's -F choices to internal parameters */
-	for (k = P.n_outputs = 0; k < PROJECT_N_FARGS && Ctrl->F.col[k]; k++) {
-		switch (Ctrl->F.col[k]) {
+	for (col = P.n_outputs = 0; col < PROJECT_N_FARGS && Ctrl->F.col[col]; col++) {
+		switch (Ctrl->F.col[col]) {
 			case 'z':	/* Special flag, can mean any number of z columns */
-				P.output_choice[k] = -1;
+				P.output_choice[col] = -1;
 				P.want_z_output = TRUE;
 				break;
 			case 'x':
-				P.output_choice[k] = 0;
+				P.output_choice[col] = 0;
 				break;
 			case 'y':
-				P.output_choice[k] = 1;
+				P.output_choice[col] = 1;
 				break;
 			case 'p':
-				P.output_choice[k] = 2;
+				P.output_choice[col] = 2;
 				break;
 			case 'q':
-				P.output_choice[k] = 3;
+				P.output_choice[col] = 3;
 				break;
 			case 'r':
-				P.output_choice[k] = 4;
+				P.output_choice[col] = 4;
 				P.find_new_point = TRUE;
 				break;
 			case 's':
-				P.output_choice[k] = 5;
+				P.output_choice[col] = 5;
 				P.find_new_point = TRUE;
 				break;
 			default:	/* Already checked in parser that this cannot happen */
@@ -707,9 +707,9 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (all) */
 		P.n_outputs = PROJECT_N_FARGS;
-		for (j = 0; j < 2; j++) P.output_choice[j] = j;
+		for (col = 0; col < 2; col++) P.output_choice[col] = col;
 		P.output_choice[2] = -1;
-		for (j = 3; j < P.n_outputs; j++) P.output_choice[j] = j - 1;
+		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = col - 1;
 		P.find_new_point = TRUE;
 	}
 	if (Ctrl->G.active) P.n_outputs = 3;
@@ -752,7 +752,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!Ctrl->L.active) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
 			}
 			else {	/* Find small circle pole so C and E are |lat| degrees from it. */
-				for (k = 0; k < 3; k++) m[k] = a[k] + b[k];	/* Mid point along A-B */
+				for (col = 0; col < 3; col++) m[col] = a[col] + b[col];	/* Mid point along A-B */
 				GMT_normalize3v (GMT, m);
 				sign = copysign (1.0, Ctrl->G.colat);
 				s_hi = 90.0;	s_lo = 0.0;
@@ -761,7 +761,7 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					n_iter++;
 					s_mid = 0.5 * (s_lo + s_hi);
 					sincosd (sign * s_mid, &s, &c);
-					for (k = 0; k < 3; k++) x[k] = P.pole[k] * s + m[k] * c;
+					for (col = 0; col < 3; col++) x[col] = P.pole[col] * s + m[col] * c;
 					GMT_normalize3v (GMT, x);
 					radius = d_acosd (GMT_dot3v (GMT, a, x)); 
 					if (fabs (radius - fabs (Ctrl->G.colat)) < GMT_CONV_LIMIT)
@@ -848,9 +848,9 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->N.active) {
 			sincosd (90.0 + theta, &sin_theta, &cos_theta);
-			for (i = 0; i < P.n_used; i++) {
-				p_data[i].a[4] = Ctrl->C.x + p_data[i].a[2] * cos_theta;
-				p_data[i].a[5] = Ctrl->C.y + p_data[i].a[2] * sin_theta;
+			for (rec = 0; rec < P.n_used; rec++) {
+				p_data[rec].a[4] = Ctrl->C.x + p_data[rec].a[2] * cos_theta;
+				p_data[rec].a[5] = Ctrl->C.y + p_data[rec].a[2] * sin_theta;
 			}
 		}
 		else {
@@ -862,19 +862,19 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_normalize3v (GMT, N);			/* Make it a unit vector */
 			make_euler_matrix (N, e, Ctrl->G.colat);	/* Rotation matrix about N */
 			matrix_3v (e, P.pole, x);			/* This is the generating vector for our circle */
-			for (i = 0; i < P.n_used; i++) {
-				make_euler_matrix (P.pole, e, sign * p_data[i].a[2]);
+			for (rec = 0; rec < P.n_used; rec++) {
+				make_euler_matrix (P.pole, e, sign * p_data[rec].a[2]);
 				matrix_3v (e,x,xt);
-				GMT_cart_to_geo (GMT, &(p_data[i].a[5]), &(p_data[i].a[4]), xt, TRUE);
+				GMT_cart_to_geo (GMT, &(p_data[rec].a[5]), &(p_data[rec].a[4]), xt, TRUE);
 			}
 		}
 
 		/* At this stage, all values are still in degrees.  */
 
 		if (Ctrl->Q.active) {
-			for (i = 0; i < P.n_used; i++) {
-				p_data[i].a[2] *= GMT->current.proj.DIST_KM_PR_DEG;
-				p_data[i].a[3] *= GMT->current.proj.DIST_KM_PR_DEG;
+			for (rec = 0; rec < P.n_used; rec++) {
+				p_data[rec].a[2] *= GMT->current.proj.DIST_KM_PR_DEG;
+				p_data[rec].a[3] *= GMT->current.proj.DIST_KM_PR_DEG;
 			}
 		}
 
@@ -887,8 +887,8 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */
 		}
-		for (i = 0; i < P.n_used; i++) {
-			for (j = 0; j < P.n_outputs; j++) out[j] = p_data[i].a[P.output_choice[j]];
+		for (rec = 0; rec < P.n_used; rec++) {
+			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 		}
 	}
@@ -1010,9 +1010,9 @@ GMT_LONG GMT_project (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	if (P.n_z) GMT_memtrack_off (GMT, GMT_mem_keeper);	/* Free pointers that were allocated when tracking was off */
 #endif
-	for (i = 0; i < P.n_used; i++) {
-		if (p_data[i].t) GMT_free (GMT, p_data[i].t);
-		if (p_data[i].z) GMT_free (GMT, p_data[i].z);
+	for (rec = 0; rec < P.n_used; rec++) {
+		if (p_data[rec].t) GMT_free (GMT, p_data[rec].t);
+		if (p_data[rec].z) GMT_free (GMT, p_data[rec].z);
 	}
 #ifdef DEBUG
 	if (P.n_z) GMT_memtrack_on (GMT, GMT_mem_keeper);	/* Continue memory tracking */
