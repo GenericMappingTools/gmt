@@ -224,8 +224,8 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 
 GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM col, row, inside, k, n_stages, registration;
-	GMT_LONG ks;
+	COUNTER_MEDIUM col, row, inside, stage, n_stages, registration;
+	GMT_LONG retval;
 	GMT_BOOLEAN error = FALSE;
 	
 	COUNTER_LARGE node, seg;
@@ -292,12 +292,12 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, FALSE, FALSE, 0, &t_max);
-	for (k = 0; k < n_stages; k++) {
-		if (p[k].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
-			p[k].omega = -p[k].omega;
-			p[k].lat = -p[k].lat;
-			p[k].lon += 180.0;
-			if (p[k].lon > 360.0) p[k].lon -= 360.0;
+	for (stage = 0; stage < n_stages; stage++) {
+		if (p[stage].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
+			p[stage].omega = -p[stage].omega;
+			p[stage].lat = -p[stage].lat;
+			p[stage].lon += 180.0;
+			if (p[stage].lon > 360.0) p[stage].lon -= 360.0;
 		}
 	}
 	if (Ctrl->T.active && Ctrl->T.value > t_max) {
@@ -340,19 +340,19 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 		age = (Ctrl->T.active) ? Ctrl->T.value : G_age->data[node];
 		if (GMT_is_dnan (age)) continue;	/* No crustal age */
-		if ((ks = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
-		k = ks;
+		if ((retval = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
+		stage = retval;
 		switch (Ctrl->S.mode) {
 			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
-				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat);
-				value = sind (d) * p[k].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
+				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
+				value = sind (d) * p[stage].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
 				break;
 			case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat, FALSE) - 90.0;
+				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, FALSE) - 90.0;
 				GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
 				break;
 			case PM_OMEGA:	/* Compute plate rotation rate omega */
-				value = p[k].omega;	/* degree/Myr  */
+				value = p[stage].omega;	/* degree/Myr  */
 				break;
 			case PM_DLAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;

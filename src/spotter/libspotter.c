@@ -373,7 +373,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], COUNTER_ME
 	reverse_rotation_order (C, p, n);	/* Flip order since stages go from oldest to youngest */
 }
 
-GMT_LONG spotter_GPlates_pair (char *file)
+GMT_BOOLEAN spotter_GPlates_pair (char *file)
 {	/* Check if given file is actually a GPlates plate pair */
 	COUNTER_MEDIUM i;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
@@ -384,7 +384,7 @@ GMT_LONG spotter_GPlates_pair (char *file)
 	return (TRUE);	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 }
 
-GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_BOOLEAN flowline, GMT_BOOLEAN total_out, GMT_BOOLEAN invert, double *t_max)
+COUNTER_MEDIUM spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_BOOLEAN flowline, GMT_BOOLEAN total_out, GMT_BOOLEAN invert, double *t_max)
 {
 	/* file;	Name of file with backward stage poles, always GEOCENTRIC */
 	/* p;		Pointer to stage pole array */
@@ -567,7 +567,7 @@ GMT_LONG spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, GMT_BOO
  * array of structures.  Hotspot locations are stored as geodetic coordintaes
  * but are converted to GEOCENTRIC by this function if geocentric == TRUE */
 
-GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN geocentric, struct HOTSPOT **p)
+COUNTER_MEDIUM spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN geocentric, struct HOTSPOT **p)
 {
 	COUNTER_MEDIUM i = 0, n;
 	size_t n_alloc = GMT_CHUNK;
@@ -611,7 +611,7 @@ GMT_LONG spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN geoce
 }
 
 GMT_LONG spotter_stage (struct GMT_CTRL *C, double t, struct EULER p[], COUNTER_MEDIUM ns)
-{	/* Return the stage ID for given t */
+{	/* Return the stage ID for given t, or -1 if not within time range */
 	COUNTER_MEDIUM j = 0;
 	while (j < ns && t < p[j].t_stop) j++;	/* Find first applicable stage pole */
 	if (j == ns) return (-1);	/* Outside in time */
@@ -1297,7 +1297,7 @@ void spotter_matrix_add (struct GMT_CTRL *G, double A[3][3], double B[3][3], dou
 	}
 }
 
-GMT_LONG spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, COUNTER_MEDIUM np, double t, double *lon, double *lat, double *w)
+void spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, COUNTER_MEDIUM np, double t, double *lon, double *lat, double *w)
 {	/* Given finite rotations and a time t, return the rotation (lon,lat,w) for that time via interpolation */
 	/* We have already checked that t is within range of p */
 	COUNTER_MEDIUM i;
@@ -1309,13 +1309,13 @@ GMT_LONG spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, COUNTER_MEDI
 		*lon = p[i].lon;
 		*lat = p[i].lat;
 		*w = p[i].omega * p[i].duration;
-		return (0);
+		return;
 	}
 	if (i == 0) {	/* Just need a partial rotation of the first full rotation */
 		*lon = p[0].lon;
 		*lat = p[0].lat;
 		*w = p[0].omega * t;
-		return (0);
+		return;
 	}
 	
 	/* Here we must add a partial rotation to the last finite rotation */
@@ -1328,10 +1328,9 @@ GMT_LONG spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, COUNTER_MEDI
 	spotter_make_rot_matrix (G, e[0].lon, e[0].lat, omega, dR);			/* Get matrix Dr for the partial rotation */
 	spotter_matrix_mult (G, R, dR, X);						/* Calculate the combined rotation ,X */
 	spotter_matrix_to_pole (G, X, lon, lat, w);						/* Convert to rotation parameters lon, lat, w */
-	return (0);
 }
 
-GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, double t, struct EULER *p, COUNTER_MEDIUM np, char flag, GMT_BOOLEAN forward, double out[])
+GMT_BOOLEAN spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, double t, struct EULER *p, COUNTER_MEDIUM np, char flag, GMT_BOOLEAN forward, double out[])
 {
 	/* Given time and rotation parameters, calculate uncertainty in the
 	 * reconstructed point in the form of a confidence ellipse.  To follow
@@ -1356,7 +1355,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 
 	for (i = 0, k = -1; k < 0 && i < np; ++i) if (doubleAlmostEqualZero (p[i].t_start, t))
 		k = i;
-	if (k == -1) return (1);	/* Did not match finite rotation time */
+	if (k == -1) return (TRUE);	/* Did not match finite rotation time */
 
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
 
@@ -1412,7 +1411,7 @@ GMT_LONG spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, doubl
 	out[++kk] = 2.0 * sqrt (EigenValue[0]) * EQ_RAD * SQRT_CHI2;	/* Report full-length major axis (not semi) */
 	out[++kk] = 2.0 * sqrt (EigenValue[1]) * EQ_RAD * SQRT_CHI2;	/* Report full-length minor axis (not semi) */
 
-	return (0);
+	return (FALSE);
 }
 
 void spotter_matrix_1Dto2D (struct GMT_CTRL *GMT, double *M, double X[3][3])
@@ -1441,7 +1440,7 @@ void spotter_inv_cov (struct GMT_CTRL *GMT, double Ci[3][3], double C[3][3])
 	Ci[2][2] = (C[0][1]*C[0][1] - C[0][0]*C[1][1]) * inv_D;	
 }
 
-GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y)
+COUNTER_MEDIUM spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y)
 {	/* RADIAL PROJECTION */
 	/* alpha:	Level of significance, e.g., 0.95 for 95% confidence region */
 	/* p:		Euler rotation structure for the current rotation */
@@ -1621,7 +1620,7 @@ GMT_LONG spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, struct E
 	return (n);
 }			
 
-GMT_LONG spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y)
+COUNTER_MEDIUM spotter_confregion_ortho (struct GMT_CTRL *GMT, double alpha, struct EULER *p, double **X, double **Y)
 {	/* ORTHOGRAPHIC PROJECTION */
 	/* alpha:	Level of significance, e.g., 0.95 for 95% confidence region */
 	/* p:		Euler rotation structure for the current rotation */
