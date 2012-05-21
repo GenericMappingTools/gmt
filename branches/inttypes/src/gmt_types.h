@@ -25,7 +25,11 @@
 
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
-#include <stdbool.h>
+#ifdef HAVE_STDBOOL_H_
+#	include <stdbool.h>
+#else
+#	include "compat/stdbool.h"
+#endif
 #include <stdint.h>
 /* Two types for counting, depending on expected range of integers we need */
 #define COUNTER_LARGE	uint64_t
