@@ -146,14 +146,14 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	p_func_l clip;				/* Pointer to functions that clip a polygon to fit inside map */
 	p_func_d left_edge, right_edge;		/* Pointers to functions that return left/right edge of map */
 	struct GMT_DIST dist[3];		/* Pointers to functions/scales returning distance between two points points */
-	p_func_d azimuth_func;			/* Pointer to function returning azimuth between two points points */
-	p_func_l near_lines_func;		/* Pointer to function returning distance to nearest line among a set of lines */
-	p_func_l near_a_line_func;		/* Pointer to function returning distance to line */
-	p_func_l near_point_func;		/* Pointer to function returning distance to nearest point */
-	p_func_l wrap_around_check;		/* Does x or y wrap checks */
+	p_func_b near_lines_func;		/* Pointer to function returning distance to nearest line among a set of lines */
+	p_func_b near_a_line_func;		/* Pointer to function returning distance to line */
+	p_func_b near_point_func;		/* Pointer to function returning distance to nearest point */
 	p_func_b this_point_wraps;		/* Used in above */
-	p_func_v get_crossings;			/* Returns map crossings in x or y */
+	p_func_l wrap_around_check;		/* Does x or y wrap checks */
 	p_func_l truncate;			/* Truncate polygons agains boundaries */
+	p_func_d azimuth_func;			/* Pointer to function returning azimuth between two points points */
+	p_func_v get_crossings;			/* Returns map crossings in x or y */
 };
 
 struct GMT_TIME_CONV {		/* Holds all time-related parameters */
