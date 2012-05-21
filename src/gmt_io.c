@@ -5512,7 +5512,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 	return (D);
 }
 
-struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, COUNTER_LARGE mode)
+struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, COUNTER_MEDIUM mode)
 {
 	COUNTER_MEDIUM tbl;
 	COUNTER_LARGE row, seg;

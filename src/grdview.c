@@ -119,7 +119,7 @@ struct GRDVIEW_POINT {
 	struct GRDVIEW_POINT *next_point;
 };
 
-struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, GMT_LONG bin, struct GRDVIEW_BIN *binij, double value)
+struct GRDVIEW_CONT *get_cont_struct (struct GMT_CTRL *GMT, COUNTER_LARGE bin, struct GRDVIEW_BIN *binij, double value)
 {
 	struct GRDVIEW_CONT *cont, *new_cont;
 
@@ -252,8 +252,8 @@ void copy_points_bw (struct GMT_CTRL *GMT, double x[], double y[], double z[], d
 	}
 }
 
-double get_z_ave (struct GMT_CTRL *GMT, double v[], double next_up, COUNTER_MEDIUM n) {
-	COUNTER_MEDIUM k;
+double get_z_ave (struct GMT_CTRL *GMT, double v[], double next_up, COUNTER_LARGE n) {
+	COUNTER_LARGE k;
 	double z_ave;
 
 	for (k = 0, z_ave = 0.0; k < n; k++) z_ave += MIN (v[k], next_up);

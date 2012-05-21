@@ -667,7 +667,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->C.active) {
-		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM this_mode;
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
 			find_mean = TRUE;
@@ -701,13 +701,13 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		dim[6] = (double)Ctrl->M.S.v.status;
 		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) GMT_setfill (GMT, &Ctrl->M.S.v.fill, TRUE);       /* Use fill structure */
-		for (mode = 0; mode < n_modes; mode++) {
-			if (Ctrl->N.active) mode_length[mode] = sqrt (mode_length[mode]);
-			if (half_only && mode_direction[mode] > 90.0 && mode_direction[mode] <= 270.0) mode_direction[mode] -= 180.0;
-			angle = start_angle - mode_direction[mode];
+		for (this_mode = 0; this_mode < n_modes; this_mode++) {
+			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);
+			if (half_only && mode_direction[this_mode] > 90.0 && mode_direction[this_mode] <= 270.0) mode_direction[this_mode] -= 180.0;
+			angle = start_angle - mode_direction[this_mode];
 			sincosd (angle, &s, &c);
-			xr = Ctrl->S.scale * mode_length[mode] * c;
-			yr = Ctrl->S.scale * mode_length[mode] * s;
+			xr = Ctrl->S.scale * mode_length[this_mode] * c;
+			yr = Ctrl->S.scale * mode_length[this_mode] * s;
 			dim[0] = xr, dim[1] = yr;
 			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}

@@ -888,10 +888,10 @@ double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
  * coeff[6]:	The normalizing scale for the detrended data
  */
 
-void do_normalization_1d (double **X, double *obs, GMT_LONG n, GMT_LONG mode, double *coeff)
+void do_normalization_1d (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *coeff)
 {	/* mode == 1 norm w; mode == 2: also remove linear trend, norm & 4: also normalize result by range */
 
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double d;
 	
 	GMT_memset (coeff, 5, double);
@@ -935,10 +935,10 @@ void do_normalization_1d (double **X, double *obs, GMT_LONG n, GMT_LONG mode, do
 
 }
 
-void do_normalization (double **X, double *obs, GMT_LONG n, GMT_LONG mode, double *coeff)
+void do_normalization (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *coeff)
 {	/* mode == 1 norm z; mode == 2: also remove plane, norm & 4: also normalize result by range */
 
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double d;
 	
 	GMT_memset (coeff, 5, double);
@@ -995,7 +995,7 @@ void do_normalization (double **X, double *obs, GMT_LONG n, GMT_LONG mode, doubl
 
 }
 
-double undo_normalization (double *X, double w_norm, GMT_LONG mode, double *coeff)
+double undo_normalization (double *X, double w_norm, COUNTER_MEDIUM mode, double *coeff)
 {
 	double w;
 	w = w_norm;
@@ -1005,7 +1005,7 @@ double undo_normalization (double *X, double w_norm, GMT_LONG mode, double *coef
 	return (w);
 }
 
-double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, GMT_LONG dim)
+double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, COUNTER_MEDIUM dim)
 {
 	double r = 0.0;
 	/* Get distance between the two points */
@@ -1024,7 +1024,7 @@ double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, GMT_LONG dim)
 	return (r);
 }
 
-double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, GMT_LONG dim, GMT_LONG baz)
+double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, COUNTER_MEDIUM dim, GMT_BOOLEAN baz)
 {
 	/* D, the directional cosines of the observed gradient:
 	 * X0: Observation point.
@@ -1058,9 +1058,10 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii, dimension = 0;
+	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii;
+	COUNTER_MEDIUM dimension = 0, normalize = 1, unit = 0;
 	size_t old_n_alloc, n_alloc;
-	GMT_LONG error, normalize = 1, unit = 0, out_ID, way;
+	GMT_LONG error, out_ID, way;
 	GMT_BOOLEAN new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",

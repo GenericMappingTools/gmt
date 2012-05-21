@@ -101,7 +101,7 @@ struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, GMT_LONG n)
 	return (new);
 }
 
-void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, GMT_LONG n_sector, GMT_LONG sector, double distance, GMT_LONG id)
+void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, COUNTER_MEDIUM n_sector, COUNTER_MEDIUM sector, double distance, COUNTER_LARGE id)
 {	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
 	if (!(*node)) *node = add_new_node (GMT, n_sector);

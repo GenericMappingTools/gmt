@@ -416,11 +416,11 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 {
 	GMT_LONG error;
 	GMT_BOOLEAN check, is_binary = FALSE, swap = FALSE;
-	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx, n_left = 0;
+	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx;
 	GMT_LONG row, first_col, last_col, first_row, last_row;
 	COUNTER_MEDIUM row2, width_in, *actual_col = NULL;
 	COUNTER_MEDIUM nBits = 32, i_0_out;
-	COUNTER_LARGE ij, kk, width_out;
+	COUNTER_LARGE ij, kk, width_out, n_left = 0;
 	size_t n_expected;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;

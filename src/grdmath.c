@@ -985,16 +985,17 @@ GMT_LONG do_derivative (float *z, COUNTER_LARGE this_node, GMT_LONG off, COUNTER
 	 * off is shift to add to get index of the next value and subtract to get previous node.
 	 * type: 0 means x-, or -y derivative, 1 means diagonal (N45E or N135E direction)  */
 
-	COUNTER_LARGE next_node, prev_node, nan;
+	COUNTER_LARGE next_node, prev_node;
+	GMT_LONG nan_flag;
 
-	nan = (type == 0) ? -2 : 0;	/* Return -2 if we find two nans except for diagonals where we return 0 */
+	nan_flag = (type == 0) ? -2 : 0;	/* Return -2 if we find two nans except for diagonals where we return 0 */
 	
 	/* Because of padding, all internal nodes have neighbors on either side (left, right, above, below) */
 	
 	prev_node = this_node - off;	/* Previous node in line */
 	next_node = this_node + off;	/* Next node in line */
 	if (GMT_is_fnan (z[prev_node])) {			/* At least one of the two neighbor points is a NaN */
-		if (GMT_is_fnan (z[next_node])) return (nan);	/* Both points are NaN, return -2 (or 0 if diagonal) */
+		if (GMT_is_fnan (z[next_node])) return (nan_flag);	/* Both points are NaN, return -2 (or 0 if diagonal) */
 		if (z[this_node] == z[next_node]) return (-2);	/* Flat line, no extrema possible */
 		if (z[this_node] < z[next_node]) return (-1);	/* A local minimum */
 		return (+1);					/* Else it must be a local maximum */
@@ -1014,8 +1015,8 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GR
 /*OPERATOR: EXTREMA 1 1 Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere.  */
 {
 	COUNTER_LARGE node;
-	COUNTER_MEDIUM row, col, mx1;
-	GMT_LONG dx, dy, diag, product;
+	COUNTER_MEDIUM row, col;
+	GMT_LONG dx, dy, diag, product, mx1;
 	float *z = NULL;
 
 	/* Find local extrema in grid */
@@ -2925,7 +2926,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], COUNTER_MEDIU
 
 GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, op = 0, new_stack = -1, rowx, colx, status;
+	GMT_LONG k, op = 0, new_stack = -1, rowx, colx, status, start;
 	COUNTER_MEDIUM row, col, kk, nstack = 0, n_items = 0, this_stack, n_macros;
 	COUNTER_MEDIUM consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	COUNTER_MEDIUM alloc_mode[GRDMATH_STACK_SIZE];
@@ -3064,8 +3065,8 @@ GMT_LONG GMT_grdmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	info.grd_y = GMT_memory (GMT, NULL, info.G->header->my, float);
 	info.grd_xn = GMT_memory (GMT, NULL, info.G->header->mx, float);
 	info.grd_yn = GMT_memory (GMT, NULL, info.G->header->my, float);
-	for (k = 0, colx = -info.G->header->pad[XLO]; k < (int)info.G->header->mx; colx++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, colx, info.G->header);
-	for (k = 0, rowx = -info.G->header->pad[YHI]; k < (int)info.G->header->my; rowx++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, rowx, info.G->header);
+	for (k = 0, start = info.G->header->pad[XLO], colx = -start; k < (int)info.G->header->mx; colx++, k++) info.grd_x[k] = (float)GMT_grd_col_to_x (GMT, colx, info.G->header);
+	for (k = 0, start = info.G->header->pad[YHI], rowx = -start; k < (int)info.G->header->my; rowx++, k++) info.grd_y[k] = (float)GMT_grd_row_to_y (GMT, rowx, info.G->header);
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Make sure latitudes remain in range; if not apply geographic BC */
 		for (kk = 0; kk < info.G->header->pad[YHI]; kk++) 
 			if (info.grd_y[kk] > 90.0) info.grd_y[kk] = (float)(2.0 * 90.0 - info.grd_y[kk]);

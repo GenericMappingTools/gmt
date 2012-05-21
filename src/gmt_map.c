@@ -1367,7 +1367,7 @@ double gmt_lat_to_corner (struct GMT_CTRL *C, double lat) {
 	return ( (fabs (lat - C->common.R.wesn[YLO]) < fabs (lat - C->common.R.wesn[YHI])) ? C->common.R.wesn[YLO] : C->common.R.wesn[YHI]);
 }
 
-GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, GMT_LONG j, GMT_LONG nx)
+GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, COUNTER_MEDIUM j, COUNTER_MEDIUM nx)
 {
 	GMT_LONG n = 0, key;
 	double xtmp, ytmp, lon_p, lat_p;
@@ -1711,7 +1711,7 @@ void gmt_dumppol (COUNTER_LARGE n, double *x, double *y, GMT_LONG *id)
 #endif
 
 
-GMT_LONG gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE np, double **x, double **y, COUNTER_LARGE *total_nx)
+COUNTER_LARGE gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE np, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	size_t n_alloc = 0;
 	COUNTER_LARGE n = 0, n_arc;
@@ -5619,7 +5619,7 @@ COUNTER_LARGE *GMT_split_line (struct GMT_CTRL *C, double **xx, double **yy, COU
 
 /*  Routines to add pieces of parallels or meridians */
 
-GMT_LONG GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG dir, double w, double e, double s, double n)
+COUNTER_LARGE GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, GMT_LONG dir, double w, double e, double s, double n)
 {	/* Returns the path of a graticule (box of meridians and parallels) */
 	size_t n_alloc = 0;
 	COUNTER_LARGE np = 0;

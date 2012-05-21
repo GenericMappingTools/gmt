@@ -113,25 +113,25 @@ GMT_LONG gmt_cal_imod (GMT_LONG x, GMT_LONG y) {
    through the fact that the related day falls on a given
    kday of the week.  */
 
-GMT_LONG gmt_kday_on_or_before (GMT_LONG date, GMT_LONG kday) {
+GMT_LONG gmt_kday_on_or_before (int64_t date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   on or before the given date. */
 	return (date - gmt_cal_imod (date-kday, 7));
 }
 
-GMT_LONG gmt_kday_after (GMT_LONG date, GMT_LONG kday) {
+GMT_LONG gmt_kday_after (int64_t date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   after the given date. */
 	return (gmt_kday_on_or_before (date+7, kday));
 }
 
-GMT_LONG gmt_kday_before (GMT_LONG date, GMT_LONG kday) {
+GMT_LONG gmt_kday_before (int64_t date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   before the given date. */
 	return (gmt_kday_on_or_before (date-1, kday));
 }
 
-GMT_LONG gmt_nth_kday (GMT_LONG n, GMT_LONG kday, GMT_LONG date) {
+GMT_LONG gmt_nth_kday (GMT_LONG n, GMT_LONG kday, int64_t date) {
 	/* Given date, kday, and n, return the date of the n'th
 	   kday before or after the given date, according to the
 	   sign of n. */

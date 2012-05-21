@@ -478,7 +478,7 @@ EXTERN_MSC void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F);						/
 EXTERN_MSC void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F);									/* Reset after finishing a file */
 EXTERN_MSC void MGD77_end (struct GMT_CTRL *C, struct MGD77_CONTROL *F);				/* Free up MGD77-related variables */
 EXTERN_MSC int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_OPTION *options, char ***list);				/* Returns the full list of IDs */
-EXTERN_MSC void MGD77_Path_Free (struct GMT_CTRL *C, COUNTER_MEDIUM n, char **list);	/* Free the list of IDs */
+EXTERN_MSC void MGD77_Path_Free (struct GMT_CTRL *C, COUNTER_LARGE n, char **list);	/* Free the list of IDs */
 EXTERN_MSC void MGD77_Cruise_Explain (struct GMT_CTRL *C);										/* Explains how to specify IDs */
 EXTERN_MSC int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MGD77_CONTROL *F);					/* Returns full path to cruise */
 EXTERN_MSC int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int rw);						/* Opens a MGD77[+] file */
@@ -524,7 +524,7 @@ EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *C, char *file, st
 
 EXTERN_MSC GMT_BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double limits[]);
 EXTERN_MSC GMT_BOOLEAN MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, COUNTER_LARGE n, size_t width);
-EXTERN_MSC int MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], COUNTER_LARGE n, double scale, double offset, int type);
+EXTERN_MSC COUNTER_LARGE MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], COUNTER_LARGE n, double scale, double offset, int type);
 EXTERN_MSC void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H);
 EXTERN_MSC GMT_LONG MGD77_Match_List (struct GMT_CTRL *C, char *word, COUNTER_MEDIUM n_fields, char **list);
 

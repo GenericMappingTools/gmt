@@ -26,7 +26,6 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
 void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 
 #define POL_IS_CW	1
@@ -324,6 +323,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	GMT_BOOLEAN status;
 	COUNTER_MEDIUM k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
 	COUNTER_LARGE row, seg, pt, np;
+	GMT_LONG k_signed;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;
@@ -515,12 +515,12 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			L[tbl][seg].setratio = (length[0] > length[1]) ? length[0] / length[1] : length[1] / length[0];	/* Ratio of length is used to detect subset (or superset) */
 	
 			if (length[0] < (length[1] / I->s_threshold))
-				k = 3;	/* S is a subset of Sp */
+				k_signed = 3;	/* S is a subset of Sp */
 			else if (length[1] < (length[0] / I->s_threshold))
-				k = 4;	/* S is a superset of Sp */
+				k_signed = 4;	/* S is a superset of Sp */
 			else
-				k = 2;	/* S and S' are practically the same feature */
-			L[tbl][seg].mode = (d1 < d2) ? k : -k;	/* Negative means Sp is reversed w.r.t. S */
+				k_signed = 2;	/* S and S' are practically the same feature */
+			L[tbl][seg].mode = (d1 < d2) ? k_signed : -k_signed;	/* Negative means Sp is reversed w.r.t. S */
 			n_dup++;
 		}
 	}
@@ -1231,9 +1231,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->C.active) {	/* Clip polygon to bounding box */
-		COUNTER_LARGE np, p;
+		COUNTER_LARGE np, p, nx;
 		COUNTER_MEDIUM tbl, seg, col;
-		GMT_LONG nx;
 		double *cp[2] = {NULL, NULL};
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj */

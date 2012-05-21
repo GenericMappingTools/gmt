@@ -191,8 +191,8 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_LONG is, this_col;
 	GMT_BOOLEAN error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
-	COUNTER_MEDIUM bad, trk_no, n_tracks, n_data_col_out = 0;
-	COUNTER_LARGE i, j, k;
+	COUNTER_MEDIUM bad, trk_no, n_tracks, n_data_col_out = 0, k;
+	COUNTER_LARGE i, j;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;

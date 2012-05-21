@@ -140,7 +140,7 @@ int outside (double x, double y, struct X2SYS_BIX *B, GMT_LONG geo)
 	return (0);	/* Inside */
 }
 
-unsigned int get_data_flag (double *data[], GMT_LONG j, struct X2SYS_INFO *s)
+unsigned int get_data_flag (double *data[], COUNTER_LARGE j, struct X2SYS_INFO *s)
 {
 	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
@@ -276,8 +276,9 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_memset (B.binflag, B.nm_bin, unsigned int);
 		if (Ctrl->D.active) {
+			GMT_LONG signed_flag = s->dist_flag;
 			GMT_memset (dist_bin, B.nm_bin, double);
-			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -s->dist_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_index = UINT_MAX;

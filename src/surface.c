@@ -138,7 +138,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	GMT_LONG block_ny;		/* Number of nodes in y-dir for a given grid factor */
 	COUNTER_MEDIUM max_iterations;	/* Max iter per call to iterate */
 	COUNTER_MEDIUM total_iterations;
-	COUNTER_MEDIUM grid_east;
+	int grid_east;
 	GMT_LONG offset[25][12];	/* Indices of 12 nearby points in 25 cases of edge conditions  */
 	GMT_BOOLEAN constrained;		/* TRUE if set_low or set_high is TRUE */
 	float *lower, *upper;		/* arrays for minmax values, if set */
@@ -785,7 +785,7 @@ GMT_LONG write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, cha
 	return (0);
 }
 
-GMT_LONG iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
+COUNTER_LARGE iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, GMT_LONG mode)
 {
 	COUNTER_LARGE ij, briggs_index, ij_v2, iteration_count = 0;
 	GMT_LONG i, j, k, kase;

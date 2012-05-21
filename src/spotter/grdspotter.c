@@ -379,7 +379,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, COUNTER_MEDIUM n_stages, double d_km, COUNTER_MEDIUM step, COUNTER_MEDIUM flag, double wesn[], double **flow)
+COUNTER_MEDIUM get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, COUNTER_MEDIUM n_stages, double d_km, COUNTER_MEDIUM step, COUNTER_MEDIUM flag, double wesn[], double **flow)
 {
 	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;

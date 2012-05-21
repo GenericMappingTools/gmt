@@ -3443,8 +3443,9 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 						if (API->GMT->common.b.ncol[GMT_OUT] == 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 						if (!T_obj->segment[p[1]]) T_obj->segment[p[1]] = GMT_memory (API->GMT, NULL, 1, struct GMT_LINE_SEGMENT);	
 						if (p[2] == T_obj->segment[p[1]]->n_alloc) {
+							int64_t n_alloc_signed = T_obj->segment[p[1]]->n_alloc;
 							T_obj->segment[p[1]]->n_alloc = (T_obj->segment[p[1]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[p[1]]->n_alloc << 1;
-							GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], -T_obj->segment[p[1]]->n_alloc, T_obj->n_columns, T_obj->segment[p[1]]->n_rows == 0);
+							GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], -n_alloc_signed, T_obj->n_columns, T_obj->segment[p[1]]->n_rows == 0);
 						}
 						for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) T_obj->segment[p[1]]->coord[col][p[2]] = ((double *)record)[col];
 						p[2]++;	T_obj->segment[p[1]]->n_rows++;

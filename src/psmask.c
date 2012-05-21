@@ -243,11 +243,12 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	 
 	 /* Reset edge-flags to zero, if necessary */
 	 if (first) {
+		GMT_LONG signed_nx = h->nx;	/* Needed to p[3] below */
 		info->offset = n_edges / 2;
 	 	i0 = 0;	/* Begin with upper left bin which is i = 0 and j = 1 */
 	 	j0 = 1;
 		side = 4;	/* Vertical interior gridlines */
-		info->p[0] = info->p[4] = 0;	info->p[1] = 1;	info->p[2] = 1 - h->nx;	info->p[3] = -h->nx;
+		info->p[0] = info->p[4] = 0;	info->p[1] = 1;	info->p[2] = 1 - signed_nx;	info->p[3] = -signed_nx;
 		info->i_off[0] = info->i_off[2] = info->i_off[3] = info->i_off[4] = 0;	info->i_off[1] =  1;
 		info->j_off[0] = info->j_off[1] = info->j_off[3] = info->j_off[4] = 0;	info->j_off[2] = -1;
 		info->k_off[0] = info->k_off[2] = info->k_off[4] = 0;	info->k_off[1] = info->k_off[3] = 1;
