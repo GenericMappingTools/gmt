@@ -939,7 +939,7 @@ double kx__ (COUNTER_LARGE k, struct K_XY *K) {
 		and k refers to the position
 		in the datac array, datac[k].  */
 
-	COUNTER_MEDIUM ii = (k/2)%(K->nx2);
+	COUNTER_LARGE ii = (k/2)%(K->nx2);
 	if (ii > (K->nx2)/2) ii -= (K->nx2);
 	return (ii * K->delta_kx);
 }
@@ -950,7 +950,7 @@ double ky__ (COUNTER_LARGE k, struct K_XY *K) {
 	 * and k refers to the position
 	 *in the datac array, datac[k].  */
 
-	COUNTER_MEDIUM jj = (k/2)/(K->nx2);
+	COUNTER_LARGE jj = (k/2)/(K->nx2);
 	if (jj > (K->ny2)/2) jj -= (K->ny2);
 	return (jj * K->delta_ky);
 }

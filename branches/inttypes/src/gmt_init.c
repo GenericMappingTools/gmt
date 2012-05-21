@@ -1343,7 +1343,8 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 {
 	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
 
-	COUNTER_MEDIUM i, col = 0, k, ncol = 0, id = GMT_IN;
+	COUNTER_MEDIUM i, col = 0, id = GMT_IN;
+	GMT_LONG k, ncol = 0;
 	GMT_BOOLEAN endian_swab = FALSE, swab = FALSE, error = FALSE, i_or_o = FALSE, set = FALSE;
 	char *p = NULL, c;
 

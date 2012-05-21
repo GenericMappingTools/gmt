@@ -258,7 +258,7 @@ EXTERN_MSC GMT_LONG x2sys_read_ncfile      (struct GMT_CTRL *C, char *fname, dou
 EXTERN_MSC COUNTER_MEDIUM x2sys_n_data_cols (struct GMT_CTRL *C, struct X2SYS_INFO *s);
 EXTERN_MSC GMT_LONG x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, COUNTER_MEDIUM *n);
 EXTERN_MSC GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, COUNTER_MEDIUM *nf);
-EXTERN_MSC void x2sys_free_list (struct GMT_CTRL *C, char **list, COUNTER_MEDIUM n);
+EXTERN_MSC void x2sys_free_list (struct GMT_CTRL *C, char **list, COUNTER_LARGE n);
 EXTERN_MSC GMT_LONG x2sys_find_track (struct GMT_CTRL *C, char *name, char **list, COUNTER_MEDIUM n);
 GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***tracklist, GMT_BOOLEAN *cmdline);
 
@@ -289,7 +289,7 @@ EXTERN_MSC const char * x2sys_strerror (struct GMT_CTRL *C, GMT_LONG err);
 
 EXTERN_MSC COUNTER_LARGE x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, GMT_LONG coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, COUNTER_LARGE *nx, COUNTER_LARGE *ntracks);
 EXTERN_MSC void x2sys_free_coe_dbase (struct GMT_CTRL *C, struct X2SYS_COE_PAIR *P, COUNTER_LARGE np);
-EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *s, char *table, COUNTER_MEDIUM ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
+EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *s, char *table, COUNTER_LARGE ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
 
 #define X2SYS_ASCII		0
 #define X2SYS_BINARY		1

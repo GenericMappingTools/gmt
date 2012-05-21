@@ -205,7 +205,7 @@ static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTR
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-static GMT_LONG connect (struct LINK *S, GMT_LONG id, GMT_LONG order, double cutoff, GMT_LONG nn_check, double nn_dist)
+static GMT_LONG connect (struct LINK *S, COUNTER_LARGE id, GMT_LONG order, double cutoff, GMT_BOOLEAN nn_check, double nn_dist)
 {	/* Checks if OK to connect this segment to its nearest neighbor and returns TRUE if OK */
 
 	if (S[S[id].buddy[order].id].used) return (FALSE);		/* Segment has been used already */

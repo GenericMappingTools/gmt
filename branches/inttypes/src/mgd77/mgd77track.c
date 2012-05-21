@@ -60,7 +60,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
 		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		GMT_LONG mode;	/* May be negative */
 		double size;
 		struct MGD77TRACK_ANNOT info;
 	} A;

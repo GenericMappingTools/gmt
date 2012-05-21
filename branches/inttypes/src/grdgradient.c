@@ -300,7 +300,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	GMT_BOOLEAN error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad, new_grid = FALSE;
-	GMT_LONG p[4];
+	GMT_LONG p[4], mx;
 	COUNTER_MEDIUM row, col, n;
 	COUNTER_LARGE ij, ij0, index, n_used = 0;
 	
@@ -404,7 +404,8 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Index offset of 4-star points relative to current node */
-	p[0] = 1;	p[1] = -1;	p[2] = Surf->header->mx;	p[3] = -Surf->header->mx;
+	mx = Surf->header->mx;	/* Need a signed mx for p[3] in line below */
+	p[0] = 1;	p[1] = -1;	p[2] = mx;	p[3] = -mx;
 
 	min_gradient = DBL_MAX;	max_gradient = -DBL_MAX;	ave_gradient = 0.0;
 	if (Ctrl->E.mode == 3) {

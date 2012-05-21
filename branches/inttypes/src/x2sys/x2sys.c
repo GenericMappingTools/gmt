@@ -967,9 +967,9 @@ GMT_LONG x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, doubl
 	return (X2SYS_NOERROR);
 }
 
-void x2sys_free_list (struct GMT_CTRL *C, char **list, COUNTER_MEDIUM n)
+void x2sys_free_list (struct GMT_CTRL *C, char **list, COUNTER_LARGE n)
 {	/* Properly free memory allocated by x2sys_read_list */
-	COUNTER_MEDIUM i;
+	COUNTER_LARGE i;
 	for (i = 0; i < n; i++) free (list[i]);
 	if (list) GMT_free (C, list);
 }
@@ -1791,7 +1791,7 @@ GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, c
 /* A very similar function (and with the same name -- but the '2') is also defined in MGD77list_func.c */
 COUNTER_MEDIUM separate_aux_columns2 (struct GMT_CTRL *C, COUNTER_MEDIUM n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
 {	/* Used in x2sys_get_corrtable */
-	COUNTER_MEDIUM i, j, k, n_aux;
+	COUNTER_LARGE i, j, k, n_aux;
 	GMT_LONG this_aux;
 	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
 	for (i = k = n_aux = 0; i < n_items; i++) {
@@ -1807,10 +1807,10 @@ COUNTER_MEDIUM separate_aux_columns2 (struct GMT_CTRL *C, COUNTER_MEDIUM n_items
 	return (n_aux);
 }
 
-void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable, COUNTER_MEDIUM ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
+void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable, COUNTER_LARGE ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
 {	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
-	COUNTER_MEDIUM i, n_items, n_aux = 0, n_cols, missing;
+	COUNTER_LARGE i, n_items, n_aux = 0, n_cols, missing;
 	GMT_LONG ks;
 	char path[GMT_BUFSIZ], **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 

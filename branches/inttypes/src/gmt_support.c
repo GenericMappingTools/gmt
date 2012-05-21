@@ -4037,7 +4037,7 @@ COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_BOO
 {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
 	COUNTER_MEDIUM side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
-	GMT_LONG p[5];
+	GMT_LONG p[5], mx;
 	GMT_BOOLEAN more;
 	size_t n_alloc;
 	COUNTER_LARGE n = 1, m, ij0, ij_in, ij;
@@ -4046,7 +4046,8 @@ COUNTER_LARGE gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_BOO
 	static GMT_LONG d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
 
 	/* Note: We need GMT_IJP to get us the index into the padded G->data whereas we use GMT_IJ0 to get the corresponding index for non-padded edge array */
-	p[0] = p[4] = 0;	p[1] = 1;	p[2] = 1 - G->header->mx;	p[3] = -G->header->mx;	/* Padded offsets for G->data array */
+	mx = G->header->mx;	/* Need signed mx below */
+	p[0] = p[4] = 0;	p[1] = 1;	p[2] = 1 - mx;	p[3] = -mx;	/* Padded offsets for G->data array */
 	*nan_flag = 0;
 
 	/* Check if this edge was already used */

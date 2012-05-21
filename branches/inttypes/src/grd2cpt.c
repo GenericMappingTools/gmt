@@ -289,11 +289,11 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM row, col, j, cpt_flags = 0;
-	GMT_BOOLEAN error = FALSE;
-	
 	COUNTER_LARGE ij, k, ngrd = 0, nxyg, nfound, ngood;
+	COUNTER_MEDIUM row, col, j, cpt_flags = 0;
+	GMT_LONG signed_levels;
 	size_t n_alloc = GMT_TINY_CHUNK;
+	GMT_BOOLEAN error = FALSE;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 
@@ -537,7 +537,8 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;
 	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
 
-	Pout = GMT_sample_cpt (GMT, Pin, z, -Ctrl->E.levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
+	signed_levels = Ctrl->E.levels;
+	Pout = GMT_sample_cpt (GMT, Pin, z, -signed_levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;

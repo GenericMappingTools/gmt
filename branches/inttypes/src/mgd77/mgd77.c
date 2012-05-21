@@ -519,7 +519,7 @@ static inline void MGD77_do_scale_offset_after_read (struct GMT_CTRL *C, double 
 
 }
 
-int MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], COUNTER_LARGE n, double scale, double offset, int type)
+COUNTER_LARGE MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], COUNTER_LARGE n, double scale, double offset, int type)
 {	/* Here we apply the various scale/offsets to fit the data in a smaller data type.
 	 * We also replace NaNs with special values that represent NaNs for the saved data
 	 * type, and finally replace transformed values that fall outside the valid range
@@ -4159,9 +4159,9 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	return (n);
 }
 
-void MGD77_Path_Free (struct GMT_CTRL *C, COUNTER_MEDIUM n, char **list)
+void MGD77_Path_Free (struct GMT_CTRL *C, COUNTER_LARGE n, char **list)
 {	/* Free list of cruise IDs */
-	COUNTER_MEDIUM i;
+	COUNTER_LARGE i;
 #ifdef DEBUG
 #endif
 	if (n == 0) return;

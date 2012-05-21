@@ -225,9 +225,9 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG combo_ok (char *name_1, char *name_2, struct PAIR *pair, GMT_LONG n_pairs)
+GMT_LONG combo_ok (char *name_1, char *name_2, struct PAIR *pair, COUNTER_LARGE n_pairs)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 
 	/* Return TRUE if this particular combination is found in the list of pairs */
 
@@ -255,7 +255,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	COUNTER_LARGE n_tracks = 0;			/* Total number of data sets to compare */
 	COUNTER_LARGE nx;				/* Number of crossovers found for this pair */
 	COUNTER_LARGE *col_number = NULL;		/* Array with the column numbers of the data fields */
-	COUNTER_LARGE n_output;			/* Number of columns on output */
+	COUNTER_MEDIUM n_output;			/* Number of columns on output */
 	COUNTER_LARGE n_pairs = 0;			/* Number of acceptable combinations */
 	COUNTER_LARGE A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
 	COUNTER_LARGE end, first, n_ok;

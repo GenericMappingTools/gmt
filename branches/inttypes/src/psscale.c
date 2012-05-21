@@ -396,7 +396,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 {
 	COUNTER_MEDIUM i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
 	COUNTER_MEDIUM cap = PSL->internal.line_cap, join = PSL->internal.line_join;
-	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, n_use_labels = 0;
+	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, n_use_labels = 0;
+	GMT_LONG this_just;
 	GMT_BOOLEAN reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot, use_labels;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
