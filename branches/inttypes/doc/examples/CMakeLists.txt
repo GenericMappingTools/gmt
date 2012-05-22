@@ -83,7 +83,7 @@ if (DO_EXAMPLES) # AND UNIX)
 		string (REPLACE "//" "/" _job ${_job})	# GLOB creates double slashes we do not want
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND gmtest ${_job})
+			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job ${_examples})
 elseif (DO_EXAMPLES_WIN_BATCH_DISABLED) # (DO_EXAMPLES AND WIN32)
 	# only supporting examples with installed GMT in %path%
