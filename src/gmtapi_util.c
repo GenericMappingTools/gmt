@@ -2525,11 +2525,12 @@ int GMT_Report_Error_ (int *error)
 }
 #endif
 
-int GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, unsigned int object_ID)
+int GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, int object_ID)
 {
 	/* Creates a filename with the embedded GMTAPI Object ID.  Space must exist */
 	
 	if (!filename) return_error (API, GMT_MEMORY_ERROR);	/* Oops, not allocated space */
+	if (object_ID == GMTAPI_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);	/* ID is nont set yet */
 	if (object_ID >= GMTAPI_MAX_ID) return_error (API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %6.6d format below */
 	
 	sprintf (filename, "@GMTAPI@-%6.6d", object_ID);	/* Place the object ID in the special GMT API format */
@@ -2537,7 +2538,7 @@ int GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, unsigned int object_
 }
 
 #ifdef FORTRAN_API
-int GMT_Encode_ID_ (char *filename, unsigned int *object_ID, int len)
+int GMT_Encode_ID_ (char *filename, int *object_ID, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
 }
@@ -2943,7 +2944,7 @@ int GMT_End_IO_ (unsigned int *direction, unsigned int *mode)
 }
 #endif
 
-void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, unsigned int object_ID)
+void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, int object_ID)
 {
 	/* Function to return pointer to the container for a registered data set.
 	 * Typically used when we wish a module to "write" its results to a memory
@@ -2971,7 +2972,15 @@ void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, unsigned int object_ID)
 	return (API->object[item]->resource);	/* Return pointer to the container */
 }
 
-void * GMT_Get_Data (struct GMTAPI_CTRL *API, unsigned int object_ID, unsigned int mode, void *data)
+#ifdef FORTRAN_API
+int GMT_Retrieve_Data_ (int *object_ID)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Retrieve_Data (GMT_FORTRAN, *object_ID));
+	
+}
+#endif
+
+void * GMT_Get_Data (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, void *data)
 {
 	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
 	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise use NULL.
@@ -3007,7 +3016,7 @@ void * GMT_Get_Data (struct GMTAPI_CTRL *API, unsigned int object_ID, unsigned i
 }
 
 #ifdef FORTRAN_API
-void * GMT_Get_Data_ (unsigned int *ID, int *mode, void *data)
+void * GMT_Get_Data_ (int *ID, int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Data (GMT_FORTRAN, *ID, *mode, data));
 	
@@ -3096,7 +3105,7 @@ int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *g
 }
 #endif
 
-int GMT_Put_Data (struct GMTAPI_CTRL *API, unsigned int object_ID, unsigned int mode, void *data)
+int GMT_Put_Data (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, void *data)
 {
 	/* Function to write data directly from program memory as a set (not record-by-record).
 	 * We can combine the <register resource - export resource > sequence in
@@ -3129,7 +3138,7 @@ int GMT_Put_Data (struct GMTAPI_CTRL *API, unsigned int object_ID, unsigned int 
 }
 
 #ifdef FORTRAN_API
-int GMT_Put_Data_ (unsigned int *object_ID, unsigned int *mode, void *data)
+int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Data (GMT_FORTRAN, *object_ID, *mode, data));
 	

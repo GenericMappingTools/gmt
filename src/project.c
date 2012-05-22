@@ -395,6 +395,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 
 	GMT_LONG j, k;
 	COUNTER_MEDIUM n_errors = 0;
+	size_t len;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -462,10 +463,10 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 				break;
 			case 'G':
 				Ctrl->G.active = TRUE;
-				k = strlen (opt->arg) - 1;
-				if (k > 0 && opt->arg[k] == '+') {
+				len = strlen (opt->arg) - 1;
+				if (len > 0 && opt->arg[len] == '+') {
 					Ctrl->G.header = TRUE;	/* Wish to place a segment header on output */
-					opt->arg[k] = 0;	/* Temporarily remove the trailing + sign */
+					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */
 					Ctrl->G.mode = 1;
@@ -474,7 +475,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 				}
 				else
 					Ctrl->G.inc = atof (opt->arg);
-				if (Ctrl->G.header) opt->arg[k] = '+';	/* Restore it */
+				if (Ctrl->G.header) opt->arg[len] = '+';	/* Restore it */
 				break;
 			case 'L':
 				Ctrl->L.active = TRUE;

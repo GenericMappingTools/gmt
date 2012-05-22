@@ -67,7 +67,7 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 
 struct NEARNEIGHBOR_NODE {	/* Structure with point id and distance pairs for all sectors */
 	float *distance;	/* Distance of nearest datapoint to this node per sector */
-	GMT_LONG *datum;	/* Point id of this data point */
+	int64_t *datum;		/* Point id of this data point */
 };
 
 struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
@@ -91,8 +91,8 @@ void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) 
 	GMT_free (GMT, C);
 }
 
-struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, GMT_LONG n)
-{	/* Allocate an initialize a new node to have -1 in all the datum sectors */
+struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, COUNTER_MEDIUM n)
+{	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new = GMT_memory (GMT, NULL, 1, struct NEARNEIGHBOR_NODE);
 	new->distance = GMT_memory (GMT, NULL, n, float);
 	new->datum = GMT_memory (GMT, NULL, n, GMT_LONG);

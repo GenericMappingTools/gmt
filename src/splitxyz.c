@@ -301,13 +301,13 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 
 GMT_LONG GMT_splitxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	COUNTER_MEDIUM n_out = 0, i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
+	COUNTER_MEDIUM i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
 	COUNTER_MEDIUM output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
 	GMT_BOOLEAN error = FALSE, ok, io_mode = 0, first = TRUE;
 	COUNTER_LARGE dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;
-	COUNTER_LARGE k, n, row, seg, seg2 = 0, begin, end, n_total = 0, nprofiles = 0, *rec = NULL;
+	COUNTER_LARGE n_out = 0, k, n, row, seg, seg2 = 0, begin, end, n_total = 0, nprofiles = 0, *rec = NULL;
 
 	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;

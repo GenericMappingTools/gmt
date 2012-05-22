@@ -98,7 +98,7 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, int64_t *rd, double *s) {
 	print a domain error and return something anyway.
 */
 
-GMT_LONG gmt_cal_imod (GMT_LONG x, GMT_LONG y) {
+GMT_LONG gmt_cal_imod (int64_t x, GMT_LONG y) {
 	assert (y != 0);
 	return (x - y * lrint (floor ((double)x / (double)y)));
 }
@@ -113,25 +113,25 @@ GMT_LONG gmt_cal_imod (GMT_LONG x, GMT_LONG y) {
    through the fact that the related day falls on a given
    kday of the week.  */
 
-GMT_LONG gmt_kday_on_or_before (int64_t date, GMT_LONG kday) {
+int64_t gmt_kday_on_or_before (int64_t date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   on or before the given date. */
 	return (date - gmt_cal_imod (date-kday, 7));
 }
 
-GMT_LONG gmt_kday_after (int64_t date, GMT_LONG kday) {
+int64_t gmt_kday_after (int64_t date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   after the given date. */
 	return (gmt_kday_on_or_before (date+7, kday));
 }
 
-GMT_LONG gmt_kday_before (int64_t date, GMT_LONG kday) {
+int64_t gmt_kday_before (int64_t date, GMT_LONG kday) {
 	/* Given date and kday, return the date of the nearest kday
 	   before the given date. */
 	return (gmt_kday_on_or_before (date-1, kday));
 }
 
-GMT_LONG gmt_nth_kday (GMT_LONG n, GMT_LONG kday, int64_t date) {
+int64_t gmt_nth_kday (GMT_LONG n, GMT_LONG kday, int64_t date) {
 	/* Given date, kday, and n, return the date of the n'th
 	   kday before or after the given date, according to the
 	   sign of n. */
@@ -182,7 +182,8 @@ int64_t GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG
 	   return the rata die integer day number.  */
 	
 	double s;
-	int64_t day_offset, yearm1, rd;
+	int64_t rd;
+	GMT_LONG day_offset, yearm1;
 	
 	if (gm <= 2)
 		day_offset = 0;
@@ -197,10 +198,11 @@ int64_t GMT_rd_from_gymd (struct GMT_CTRL *C, GMT_LONG gy, GMT_LONG gm, GMT_LONG
 	return (rd);
 }
 
-GMT_LONG gmt_gyear_from_rd (GMT_LONG date) {
+GMT_LONG gmt_gyear_from_rd (int64_t date) {
 	/* Given rata die integer day number, return proleptic Gregorian year  */
 
-	GMT_LONG d0, d1, d2, d3, n400, n100, n4, n1, year;
+	int64_t d0, d1, d2, d3;
+	GMT_LONG year, n400, n100, n4, n1;
 	
 	d0 = date - 1;
 	n400 = lrint (floor (d0 / 146097.0));
@@ -237,7 +239,8 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t date, struct GMT_gcal *gcal) 
 	/* Given rata die integer day number, load calendar structure
 	   with proleptic Gregorian and ISO calendar values.  */
 	
-	int64_t prior_days, corexn, tempdate, tempyear;
+	int64_t prior_days, tempdate;
+	GMT_LONG corexn, tempyear;
 	
 	/* Day of the week in 0 thru 6:  */
 	

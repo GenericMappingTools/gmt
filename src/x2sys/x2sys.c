@@ -1791,7 +1791,7 @@ GMT_LONG x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, c
 /* A very similar function (and with the same name -- but the '2') is also defined in MGD77list_func.c */
 COUNTER_MEDIUM separate_aux_columns2 (struct GMT_CTRL *C, COUNTER_MEDIUM n_items, char **item_name, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist)
 {	/* Used in x2sys_get_corrtable */
-	COUNTER_LARGE i, j, k, n_aux;
+	COUNTER_MEDIUM i, j, k, n_aux;
 	GMT_LONG this_aux;
 	/* Based on what item_name contains, we copy over info on the 3 aux fields (dist, azim, vel) from auxlist to aux */
 	for (i = k = n_aux = 0; i < n_items; i++) {
