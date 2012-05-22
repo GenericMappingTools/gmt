@@ -399,9 +399,9 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		F->filter_width = 2.0 * F->half_width;
 	}
 	else if (F->filter_type <= FILTER1D_CONVOLVE) {
-		get_weight[FILTER1D_BOXCAR] = (p_func_d)boxcar_weight;
-		get_weight[FILTER1D_COS_ARCH] = (p_func_d)cosine_weight_filter1d;
-		get_weight[FILTER1D_GAUSSIAN] = (p_func_d)gaussian_weight;
+		get_weight[FILTER1D_BOXCAR] = &boxcar_weight;
+		get_weight[FILTER1D_COS_ARCH] = &cosine_weight_filter1d;
+		get_weight[FILTER1D_GAUSSIAN] = &gaussian_weight;
 		F->half_width = 0.5 * F->filter_width;
 		F->half_n_f_wts = lrint (floor (F->half_width / F->dt));
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;

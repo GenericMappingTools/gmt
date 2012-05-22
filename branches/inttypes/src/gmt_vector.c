@@ -1200,7 +1200,7 @@ void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, GMT_LONG nr, GM
 
 	GMT_LONG kbad, i, j, ii, ij, ji, nrp1;
 
-	kbad = GMT_abs (nerr) - 1;
+	kbad = abs (nerr) - 1;
 	nrp1 = nr + 1;
 
 	for (i = 0, ii = 0; i <= kbad; i++, ii += nrp1) a[ii] = d[i];

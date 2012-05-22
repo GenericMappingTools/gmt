@@ -133,6 +133,7 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 	 */
 
 	GMT_LONG n_errors = 0, n, n_files = 0;
+size_t len;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -178,9 +179,9 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 			case 'I':
 				Ctrl->I.active = TRUE;
 				Ctrl->I.inc = atof (opt->arg);
-				n = strlen (opt->arg) - 1;
-				if (strchr ("defkMn", opt->arg[n])) {
-					Ctrl->I.unit = opt->arg[n];
+				len = strlen (opt->arg) - 1;
+				if (strchr ("defkMn", opt->arg[len])) {
+					Ctrl->I.unit = opt->arg[len];
 					Ctrl->I.mode = INT_2D;
 				}
 				break;

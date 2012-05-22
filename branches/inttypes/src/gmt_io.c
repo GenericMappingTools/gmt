@@ -583,13 +583,14 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 	 * Looks for file stem in current directory and $GMT_{USER,DATA}DIR
 	 * If the dir ends in / we traverse recursively [not under Windows].
 	 */
-	COUNTER_MEDIUM d, pos, L;
-	GMT_LONG found;
+	COUNTER_MEDIUM d, pos;
+	size_t L;
+	GMT_BOOLEAN found;
 	char *udir[2] = {C->session.USERDIR, C->session.DATADIR}, dir[GMT_BUFSIZ];
 	char path_separator[2] = {PATH_SEPARATOR, '\0'};
 #ifdef HAVE_DIRENT_H_
-	GMT_LONG N;
-	GMT_LONG gmt_traverse_dir (const char *file, char *path);
+	size_t N;
+	GMT_BOOLEAN gmt_traverse_dir (const char *file, char *path);
 #endif /* HAVE_DIRENT_H_ */
 	GMT_BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path);
 
@@ -623,7 +624,8 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 
 	for (d = 0; d < 2; d++) {	/* Loop over USER and DATA dirs */
 		if (!udir[d]) continue;	/* This directory was not set */
-		found = pos = 0;
+		found = FALSE;
+		pos = 0;
 		while (!found && (GMT_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 #ifdef HAVE_DIRENT_H_
@@ -660,7 +662,7 @@ GMT_BOOLEAN gmt_file_is_readable (struct GMT_CTRL *C, char *path)
 }
 
 #ifdef HAVE_DIRENT_H_
-GMT_LONG gmt_traverse_dir (const char *file, char *path) {
+GMT_BOOLEAN gmt_traverse_dir (const char *file, char *path) {
 	/* Look for file in the directory pointed to by path, recursively */
 	DIR *D = NULL;
 	struct dirent *F = NULL;
@@ -668,7 +670,7 @@ GMT_LONG gmt_traverse_dir (const char *file, char *path) {
 	GMT_BOOLEAN ok = FALSE;
 	char savedpath[GMT_BUFSIZ];
 
- 	if ((D = opendir (path)) == NULL) return (0);	/* Unable to open directory listing */
+ 	if ((D = opendir (path)) == NULL) return (FALSE);	/* Unable to open directory listing */
 	len = strlen (file);
 	strcpy (savedpath, path);	/* Make copy of current directory path */
 
@@ -1733,6 +1735,7 @@ struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *C, COUNTER_MEDIUM n_items)
 void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x)
 {	/* Update quad array for this longitude x */
 	COUNTER_MEDIUM way, quad_no;
+	if (GMT_is_dnan (x)) return;	/* Cannot handle a NaN */
 	for (way = 0; way < 2; way++) {
 		GMT_lon_range_adjust (Q->range[way], &x);	/* Set -180/180, then 0-360 range */
 		Q->min[way] = MIN (x, Q->min[way]);
@@ -1740,13 +1743,14 @@ void GMT_quad_add (struct GMT_CTRL *C, struct GMT_QUAD *Q, double x)
 	}
 	quad_no = lrint (floor (x / 90.0));	/* Now x is 0-360; this yields quadrants 0-3 */
 	if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
-	Q->quad[quad_no] = TRUE;		/* OUr x fell in this quadrant */
+	Q->quad[quad_no] = TRUE;		/* Our x fell in this quadrant */
 }
 
 COUNTER_MEDIUM GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q)
 {
 	/* Finalize longitude range settings */
-	COUNTER_MEDIUM way, n_quad;
+	COUNTER_LARGE n_quad;
+	COUNTER_MEDIUM way;
 	
 	n_quad = Q->quad[0] + Q->quad[1] + Q->quad[2] + Q->quad[3];		/* How many quadrants had data */
 	if (Q->quad[0] && Q->quad[3])		/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
@@ -3302,7 +3306,9 @@ GMT_LONG gmt_get_dms_order (struct GMT_CTRL *C, char *text, struct GMT_GEO_IO *S
 	 * Items not encountered are left as -1.
 	 */
 
-	GMT_LONG i1, i, j, order, n_d, n_m, n_s, n_x, n_dec, sequence[3], n_delim, last, error = 0;
+	COUNTER_MEDIUM j, n_d, n_m, n_s, n_x, n_dec, n_delim, order, error = 0;
+	GMT_LONG sequence[3], last, i_signed;
+	size_t i1, i;
 	GMT_BOOLEAN big_to_small;
 
 	for (i = 0; i < 3; i++) S->order[i] = -1;	/* Meaning not encountered yet */
@@ -3391,7 +3397,7 @@ GMT_LONG gmt_get_dms_order (struct GMT_CTRL *C, char *text, struct GMT_GEO_IO *S
 
 	/* Then get the actual order by inverting table */
 
-	for (i = 0; i < 3; i++) for (j = 0; j < 3; j++) if (S->order[j] == i) sequence[i] = j;
+	for (i_signed = 0; i_signed < 3; i_signed++) for (j = 0; j < 3; j++) if (S->order[j] == i_signed) sequence[i_signed] = j;
 	for (i = 0; i < 3; i++) S->order[i] = sequence[i];
 	big_to_small = TRUE;		/* May change in the next loop */
 	for (i = 1, last = S->order[0]; big_to_small && i < 3; i++) {
@@ -3879,7 +3885,8 @@ GMT_LONG gmt_scanf_geo (char *s, double *val)
 
 	int retval = GMT_IS_FLOAT, id, im;
 	GMT_BOOLEAN negate = FALSE;
-	COUNTER_MEDIUM k, ncolons;
+	COUNTER_MEDIUM ncolons;
+	size_t k;
 	char scopy[GMT_TEXT_LEN64], suffix, *p = NULL, *p2 = NULL;
 	double dd, dm, ds;
 
@@ -4077,7 +4084,8 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 	GMT_LONG ival[3];
 	GMT_BOOLEAN negate_year = FALSE, got_yd = FALSE;
 	int hh, mm;
-	COUNTER_MEDIUM j, k, i, dash;
+	COUNTER_MEDIUM j, k, dash;
+	size_t i;
 	double ss, x;
 	char *pw = NULL, *pt = NULL;
 
@@ -4125,7 +4133,7 @@ GMT_LONG gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 		return (GMT_IS_ABSTIME);
 	}
 
-	for (i = negate_year; s[k+i] && s[k+i] != '-'; ++i); /* Goes to first - between yyyy and jjj or yyyy and mm */
+	for (i = (negate_year) ? 1 : 0; s[k+i] && s[k+i] != '-'; ++i); /* Goes to first - between yyyy and jjj or yyyy and mm */
 	dash = ++i;				/* Position of first character after the first dash (could be end of string if no dash) */
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
 	got_yd = ((i - dash) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
@@ -4657,7 +4665,7 @@ GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *patt
 	 * return TRUE if the pattern was found and FALSE otherwise.
 	 * out_string must be allocated and have space for the copying */
 	char *t = NULL;
-	GMT_LONG k;
+	uint64_t k;
 	if (!in_string || !pattern) return (FALSE);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (FALSE);	/* Option not present */
 	if (!out_string) return (TRUE);	/* If NULL is passed as out_string then we just return TRUE if we find the option */
@@ -4750,11 +4758,11 @@ void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 				case GMT_IS_T:	/* Pick up from -T<text> */
 				case GMT_IS_W:	/* Pick up from -W<pen> */
 				case GMT_IS_Z:	/* Pick up from -Z<value> */
-					col = GMT_abs (C->common.a.col[k]) - 1;	/* So -3 becomes 2 etc */
+					col = abs (C->common.a.col[k]) - 1;	/* So -3 becomes 2 etc */
 					if (GMT_parse_segment_item (C, C->current.io.segment_header, sflag[col], buffer)) fprintf (fp, "%s%s%s", quote[col], buffer, quote[col]);
 					break;
 				case GMT_IS_L:	/* Pick up from -L<value> */
-					col = GMT_abs (C->common.a.col[k]) - 1;	/* So -3 becomes 2 etc */
+					col = abs (C->common.a.col[k]) - 1;	/* So -3 becomes 2 etc */
 					if (S->label) fprintf (fp, "%s%s%s", quote[col], S->label, quote[col]);
 					else if (GMT_parse_segment_item (C, C->current.io.segment_header, sflag[col], buffer)) fprintf (fp, "%s%s%s", quote[col], buffer, quote[col]);
 					break;
@@ -4786,7 +4794,7 @@ void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *
 			case GMT_IS_T:	/* Format -T<text> */
 			case GMT_IS_W:	/* Format -W<pen> */
 			case GMT_IS_Z:	/* Format -Z<value> */
-				col = GMT_abs (C->common.a.col[k]) - 1;	/* So -3 becomes 2 etc */
+				col = abs (C->common.a.col[k]) - 1;	/* So -3 becomes 2 etc */
 				if (space) strcat (buffer, " ");
 				strcat (buffer, sflag[col]);
 				strcat (buffer, S->ogr->value[C->common.a.ogr[k]]);
@@ -5469,9 +5477,9 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 	
 	if (mode) {	/* Pack everything into a single table */
 		D->n_tables = D->n_alloc = 1;
-		if (mode == 1)
+		if (mode == GMT_ALLOC_VERTICAL)
 			for (tbl = n_seg = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
-		else
+		else /* mode == GMT_ALLOC_HORIZONTAL */
 			n_seg = Din->table[0]->n_segments;
 		D->table = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE *);
 		D->table[0] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
@@ -5498,7 +5506,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 			D->table[0]->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
 			D->table[0]->segment[seg]->n_rows = Din->table[tbl]->segment[seg_in_tbl]->n_rows;
 			D->table[0]->segment[seg]->record = GMT_memory (C, NULL, D->table[0]->segment[seg]->n_rows, char *);
-			if (mode == 1 && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
+			if (mode == GMT_ALLOC_VERTICAL && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
 			seg_in_tbl++;
 		}
 	}
@@ -5910,9 +5918,9 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	D->max = GMT_memory (C, NULL, D->n_columns, double);
 	if (mode) {	/* Pack everything into a single table */
 		D->n_tables = D->n_alloc = 1;
-		if (mode == 1)
+		if (mode == GMT_ALLOC_VERTICAL)
 			for (tbl = n_seg = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
-		else
+		else	/* mode == GMT_ALLOC_HORIZONTAL */
 			n_seg = Din->table[0]->n_segments;
 		D->table = GMT_memory (C, NULL, 1, struct GMT_TABLE *);
 		D->table[0] = GMT_memory (C, NULL, 1, struct GMT_TABLE);
@@ -5942,7 +5950,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 			D->table[0]->segment[seg]->n_rows = nr;
 			GMT_alloc_segment (C, D->table[0]->segment[seg], nr, D->n_columns, TRUE);
 			D->table[0]->segment[seg]->n_columns = D->n_columns;
-			if (mode == 1 && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
+			if (mode == GMT_ALLOC_VERTICAL && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
 			D->n_records += nr;
 			seg_in_tbl++;
 		}
@@ -6486,7 +6494,8 @@ GMT_LONG GMT_load_aspatial_string (struct GMT_CTRL *C, struct GMT_OGR *G, COUNTE
 {
 	/* Uses the info in -a and OGR to retrieve the requested aspatial string */
 
-	COUNTER_MEDIUM k, len;
+	COUNTER_MEDIUM k;
+	size_t len;
 	GMT_LONG id = GMTAPI_NOTSET, scol = col;
 	if (C->current.io.ogr != 1) return (0);		/* No point checking further since file is not GMT/OGR */
 	for (k = 0; k < C->common.a.n_aspatial; k++) {	/* For each item specified in -a */

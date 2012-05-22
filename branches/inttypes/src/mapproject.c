@@ -194,7 +194,8 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_slash, n, k, n_errors = 0, slash, last;
+	GMT_LONG n_slash, n, k, n_errors = 0, slash;
+	size_t last;
 	GMT_BOOLEAN geodetic_calc = FALSE;
 	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;

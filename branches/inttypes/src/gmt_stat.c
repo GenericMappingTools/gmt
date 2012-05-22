@@ -55,7 +55,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-GMT_LONG gmt_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
+GMT_LONG gmt_f_test_new (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob, GMT_LONG iside)
 {
 	/* Given chisq1 and chisq2, random variables distributed as chi-square
 		with nu1 and nu2 degrees of freedom, respectively, except that
@@ -256,7 +256,7 @@ GMT_LONG gmt_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double 
 }
 
 
-GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
+GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob)
 {
 	/* Routine to compute the probability that
 		two variances are the same.
@@ -308,7 +308,7 @@ GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chi
 	return (0);
 }
 
-GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level, double *prob)
+GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, COUNTER_LARGE n1, double chi2, COUNTER_LARGE n2, double level, double *prob)
 {
 	/* Returns TRUE if chi1/n1 significantly less than chi2/n2
 		at the level level.  Returns FALSE if:
@@ -970,7 +970,7 @@ double GMT_erfinv (struct GMT_CTRL *C, double y)
 	return (x);
 }
 
-GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
+GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob)
 {
 	/* Routine to compute Q(F, nu1, nu2) = 1 - P(F, nu1, nu2), where nu1
 		and nu2 are positive integers, chisq1 and chisq2 are random
@@ -1026,7 +1026,7 @@ GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2
 	return (0);
 }
 
-GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob)
+GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, COUNTER_LARGE n, double *prob)
 {
 	/* Probability integral called A(t,n) by Abramowitz &
 	Stegun for the student's t distribution with n degrees
@@ -1060,9 +1060,9 @@ GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob
 */
 
 	double	theta, s, c, csq, term, sum;
-	GMT_LONG	k, kstop, kt, kb;
+	int64_t	k, kstop, kt, kb;
 
-	if (t < 0.0 || n <= 0) {
+	if (t < 0.0 || n == 0) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_student_t_a:  Bad argument(s).\n");
 		*prob = C->session.d_NaN;
 		return (-1);

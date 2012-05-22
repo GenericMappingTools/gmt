@@ -922,7 +922,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 
 	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
 		if (row_no < 0) {	/* Special seek instruction */
-			G->row = GMT_abs (row_no);
+			G->row = abs (row_no);
 			G->start[0] = G->row * G->edge[0];
 			return (GMT_NOERROR);
 		}
@@ -931,7 +931,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 	}
 	else if (C->session.grdformat[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
 		if (row_no < 0) {	/* Special seek instruction */
-			G->row = GMT_abs (row_no);
+			G->row = abs (row_no);
 			G->start[0] = G->header.ny - 1 - G->row;
 			return (GMT_NOERROR);
 		}
@@ -941,7 +941,7 @@ GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG r
 	else {			/* Get a binary row */
 		size_t n_items;
 		if (row_no < 0) {	/* Special seek instruction */
-			G->row = GMT_abs (row_no);
+			G->row = abs (row_no);
 			if (fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 			return (GMT_NOERROR);
 		}
@@ -1739,6 +1739,7 @@ GMT_BOOLEAN GMT_check_url_name (char *fname) {
 #ifdef USE_GDAL
 GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
 	GMT_LONG i;
+	size_t k;
 	double dumb;
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
@@ -1749,12 +1750,12 @@ GMT_LONG GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *
 
 	to_gdalread->M.active = TRUE;	/* Get metadata only */
 
-	i = strlen (file) - 1;
-	while (i && file[i] && file[i] != '+') i--;	/* See if we have a band request */
-	if (i && file[i+1] == 'b') {
+	k = strlen (file) - 1;
+	while (k && file[k] && file[k] != '+') k--;	/* See if we have a band request */
+	if (k && file[k+1] == 'b') {
 		/* Yes we do. Put the band string into the 'pocket' where GMT_read_image will look and finish the request */
-		I->header->pocket = strdup (&file[i+2]);
-		file[i] = '\0';
+		I->header->pocket = strdup (&file[k+2]);
+		file[k] = '\0';
 	}
 
 	if (GMT_gdalread (C, file, to_gdalread, from_gdalread)) {

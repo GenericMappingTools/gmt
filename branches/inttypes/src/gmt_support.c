@@ -3791,9 +3791,10 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 	return (error);
 }
 
-void gmt_contlabel_angle (double x[], double y[], GMT_LONG start, GMT_LONG stop, double cangle, GMT_LONG n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
+void gmt_contlabel_angle (double x[], double y[], COUNTER_LARGE start, COUNTER_LARGE stop, double cangle, COUNTER_LARGE n, struct GMT_LABEL *L, struct GMT_CONTOUR *G)
 {
-	GMT_LONG j, this_angle_type, half = G->half_width;
+	int64_t j, sstart, sstop, nn;
+	GMT_LONG this_angle_type, half = G->half_width;
 	double sum_x2 = 0.0, sum_xy = 0.0, sum_y2 = 0.0, dx, dy;
 
 	if (start == stop) {	/* Can happen if we want no smoothing but landed exactly on a knot point */
@@ -3802,8 +3803,9 @@ void gmt_contlabel_angle (double x[], double y[], GMT_LONG start, GMT_LONG stop,
 		else if (stop < (n-1))
 			stop++;
 	}
-	for (j = start - half; j <= stop + half; j++) {	/* L2 fit for slope over this range of points */
-		if (j < 0 || j >= n) continue;
+	sstart = start - half;	sstop = stop + half;	nn = n;
+	for (j = sstart; j <= sstop; j++) {	/* L2 fit for slope over this range of points */
+		if (j < 0 || j >= nn) continue;
 		dx = x[j] - L->x;
 		dy = y[j] - L->y;
 		sum_x2 += dx * dx;
@@ -5533,7 +5535,7 @@ COUNTER_MEDIUM GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct
 #include "triangle.h"
 
 /* Leave link as int**, not GMT_LONG** */
-GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
+COUNTER_LARGE gmt_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
@@ -5574,7 +5576,7 @@ GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, 
 	return (Out.numberoftriangles);
 }
 
-GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
+COUNTER_LARGE gmt_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
 {
 	/* GMT interface to the triangle package; see above for references.
 	 * All that is done is reformatting of parameters and calling the
@@ -5654,14 +5656,14 @@ GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, C
 }
 #else
 /* Dummy functions since not installed */
-GMT_LONG GMT_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
+COUNTER_LARGE gmt_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 {
-	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_report (C, GMT_MSG_FATAL, "GMT: gmt_delaunay_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
 	return (0);
 	
 }
-GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out) {
-	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
+COUNTER_LARGE gmt_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out) {
+	GMT_report (C, GMT_MSG_FATAL, "GMT: gmt_voronoi_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
 	return (0);
 }
 #endif
@@ -5675,7 +5677,7 @@ GMT_LONG GMT_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, C
  */
 
 /* Leave link as int**, not GMT_LONG** */
-GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
+COUNTER_LARGE gmt_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 	/* Input point x coordinates */
 	/* Input point y coordinates */
 	/* Number of input points */
@@ -5839,7 +5841,7 @@ GMT_LONG GMT_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, CO
 	return (i/3);
 }
 
-GMT_LONG GMT_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
+COUNTER_LARGE gmt_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
 {
 	GMT_report (C, GMT_MSG_FATAL, "GMT: No Voronoi unless you select Shewchuk's triangle option during GMT installation");
 	return (0);
@@ -5847,16 +5849,16 @@ GMT_LONG GMT_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, COU
 
 GMT_LONG GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, int **link)
 {
-	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_delaunay_shewchuk (C, x_in, y_in, n, link));
-	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_delaunay_watson    (C, x_in, y_in, n, link));
+	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (gmt_delaunay_shewchuk (C, x_in, y_in, n, link));
+	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (gmt_delaunay_watson    (C, x_in, y_in, n, link));
 	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay: GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
 	return (-1);
 }
 
 GMT_LONG GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, COUNTER_LARGE n, double *we, double **x_out, double **y_out)
 {
-	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (GMT_voronoi_shewchuk (C, x_in, y_in, n, we, x_out, y_out));
-	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (GMT_voronoi_watson    (C, x_in, y_in, n, we, x_out, y_out));
+	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (gmt_voronoi_shewchuk (C, x_in, y_in, n, we, x_out, y_out));
+	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (gmt_voronoi_watson    (C, x_in, y_in, n, we, x_out, y_out));
 	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi: GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
 	return (-1);
 	
@@ -7613,7 +7615,7 @@ void gmt_x_alloc (struct GMT_CTRL *C, struct GMT_XOVER *X, size_t nx_alloc, GMT_
 	}
 }
 
-GMT_LONG GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], COUNTER_LARGE *sa0, struct GMT_XSEGMENT A[], COUNTER_LARGE na, double xb[], double yb[], COUNTER_LARGE *sb0, struct GMT_XSEGMENT B[], COUNTER_LARGE nb, GMT_BOOLEAN internal, struct GMT_XOVER *X)
+COUNTER_LARGE GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], COUNTER_LARGE *sa0, struct GMT_XSEGMENT A[], COUNTER_LARGE na, double xb[], double yb[], COUNTER_LARGE *sb0, struct GMT_XSEGMENT B[], COUNTER_LARGE nb, GMT_BOOLEAN internal, struct GMT_XOVER *X)
 {
 	size_t nx_alloc;
 	COUNTER_LARGE nx, this_a, this_b, xa_start = 0, xa_stop = 0, xb_start = 0, xb_stop = 0, ta_start = 0, ta_stop = 0, tb_start, tb_stop, n_seg_a, n_seg_b;

@@ -53,7 +53,7 @@ EXTERN_MSC double GMT_extreme (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, d
 EXTERN_MSC double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu);
 EXTERN_MSC double GMT_zcrit (struct GMT_CTRL *C, double alpha);
 EXTERN_MSC double GMT_zdist (struct GMT_CTRL *C, double x);
-EXTERN_MSC GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob);
+EXTERN_MSC GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob);
 EXTERN_MSC GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double xmin, double xmax, double m_initial, double *med);
 EXTERN_MSC GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE j, GMT_BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est);
 EXTERN_MSC GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, COUNTER_LARGE n, COUNTER_LARGE j, GMT_BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est);
@@ -62,8 +62,8 @@ EXTERN_MSC double GMT_mean_and_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE
 EXTERN_MSC double GMT_median_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n, double quantile);
 EXTERN_MSC double GMT_mode_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n);
 
-EXTERN_MSC GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level, double *prob);
-EXTERN_MSC GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob);
+EXTERN_MSC GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, COUNTER_LARGE n1, double chi2, COUNTER_LARGE n2, double level, double *prob);
+EXTERN_MSC GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, COUNTER_LARGE n, double *prob);
 EXTERN_MSC void GMT_chi2 (struct GMT_CTRL *C, double chi2, double nu, double *prob);
 EXTERN_MSC void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob);
 EXTERN_MSC void GMT_getmad (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double location, double *scale);

@@ -263,9 +263,9 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_BOOLEAN error = FALSE, mixed = FALSE, check_for_NaN = FALSE, both, first;
 	GMT_BOOLEAN internal = TRUE;	/* FALSE if only external xovers are needed */
 	GMT_BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
-	COUNTER_LARGE i, j, k, coe_kind, one, two, n_items, n_out, n_tracks;
+	COUNTER_LARGE i, j, k, one, two, n_items, n_out, n_tracks;
 	COUNTER_LARGE p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	COUNTER_MEDIUM n_weights = 0;
+	COUNTER_MEDIUM n_weights = 0, coe_kind;
 	GMT_LONG id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;

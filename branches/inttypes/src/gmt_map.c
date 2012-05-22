@@ -1367,7 +1367,7 @@ double gmt_lat_to_corner (struct GMT_CTRL *C, double lat) {
 	return ( (fabs (lat - C->common.R.wesn[YLO]) < fabs (lat - C->common.R.wesn[YHI])) ? C->common.R.wesn[YLO] : C->common.R.wesn[YHI]);
 }
 
-GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, COUNTER_MEDIUM j, COUNTER_MEDIUM nx)
+GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, double lon, double lat, double lon_old, double lat_old, COUNTER_LARGE j, COUNTER_LARGE nx)
 {
 	GMT_LONG n = 0, key;
 	double xtmp, ytmp, lon_p, lat_p;
@@ -7538,44 +7538,44 @@ void gmt_set_distaz (struct GMT_CTRL *C, COUNTER_MEDIUM mode, COUNTER_MEDIUM typ
 
 	switch (mode) {	/* Set pointers to distance functions */
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
-			C->current.map.dist[type].func = GMT_cartesian_dist;
-			C->current.map.azimuth_func = gmt_az_backaz_cartesian;
+			C->current.map.dist[type].func = &GMT_cartesian_dist;
+			C->current.map.azimuth_func = &gmt_az_backaz_cartesian;
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
-			C->current.map.dist[type].func = GMT_cartesian_dist_proj;
-			C->current.map.azimuth_func = gmt_az_backaz_cartesian_proj;
+			C->current.map.dist[type].func = &GMT_cartesian_dist_proj;
+			C->current.map.azimuth_func = &gmt_az_backaz_cartesian_proj;
 			break;
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
-			C->current.map.dist[type].func = gmt_flatearth_dist_meter;
-			C->current.map.azimuth_func  = gmt_az_backaz_flatearth;
+			C->current.map.dist[type].func = &gmt_flatearth_dist_meter;
+			C->current.map.azimuth_func  = &gmt_az_backaz_flatearth;
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
-			C->current.map.dist[type].func = GMT_great_circle_dist_meter;
-			C->current.map.azimuth_func = gmt_az_backaz_sphere;
+			C->current.map.dist[type].func = &GMT_great_circle_dist_meter;
+			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
-			C->current.map.dist[type].func = gmt_geodesic_dist_meter;
-			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
+			C->current.map.dist[type].func = &gmt_geodesic_dist_meter;
+			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			C->current.map.dist[type].func = gmt_flatearth_dist_degree;
-			C->current.map.azimuth_func = gmt_az_backaz_flatearth;
+			C->current.map.azimuth_func = &gmt_az_backaz_flatearth;
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
-			C->current.map.dist[type].func = GMT_great_circle_dist_degree;
-			C->current.map.azimuth_func = gmt_az_backaz_sphere;
+			C->current.map.dist[type].func = &GMT_great_circle_dist_degree;
+			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
-			C->current.map.dist[type].func = gmt_geodesic_dist_degree;
-			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
+			C->current.map.dist[type].func = &gmt_geodesic_dist_degree;
+			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
-			C->current.map.dist[type].func = GMT_great_circle_dist_cos;
-			C->current.map.azimuth_func = gmt_az_backaz_sphere;
+			C->current.map.dist[type].func = &GMT_great_circle_dist_cos;
+			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
-			C->current.map.dist[type].func = GMT_geodesic_dist_cos;
-			C->current.map.azimuth_func = gmt_az_backaz_geodesic;
+			C->current.map.dist[type].func = &GMT_geodesic_dist_cos;
+			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_report (C, GMT_MSG_FATAL, "Mode (=%d) for distance function is unknown. Must be bug.\n", mode);
@@ -7586,14 +7586,14 @@ void gmt_set_distaz (struct GMT_CTRL *C, COUNTER_MEDIUM mode, COUNTER_MEDIUM typ
 
 	/* Mapping only */
 	if (mode == GMT_CARTESIAN_DIST)	{	/* Cartesian data */
-		C->current.map.near_lines_func  = gmt_near_lines_cartesian;
-		C->current.map.near_a_line_func  = gmt_near_a_line_cartesian;
-		C->current.map.near_point_func = gmt_near_a_point_cartesian;
+		C->current.map.near_lines_func   = &gmt_near_lines_cartesian;
+		C->current.map.near_a_line_func  = &gmt_near_a_line_cartesian;
+		C->current.map.near_point_func   = &gmt_near_a_point_cartesian;
 	}
 	else {	/* Geographic data */
-		C->current.map.near_lines_func  = gmt_near_lines_spherical;
-		C->current.map.near_a_line_func  = gmt_near_a_line_spherical;
-		C->current.map.near_point_func = gmt_near_a_point_spherical;
+		C->current.map.near_lines_func   = &gmt_near_lines_spherical;
+		C->current.map.near_a_line_func  = &gmt_near_a_line_spherical;
+		C->current.map.near_point_func   = &gmt_near_a_point_spherical;
 	}
 }
 
