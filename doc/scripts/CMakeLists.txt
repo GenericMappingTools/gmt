@@ -126,7 +126,7 @@ if (DO_TESTS)
 	foreach (_job ${_scripts_tests})
 		add_test (NAME ${_job}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			COMMAND gmtest ${_job})
+			COMMAND ${BASH} gmtest ${_job})
 	endforeach (_job)
 endif (DO_TESTS)
 
