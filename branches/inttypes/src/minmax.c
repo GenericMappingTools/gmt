@@ -132,8 +132,8 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j;
-	COUNTER_MEDIUM k;
+	GMT_LONG j;
+	COUNTER_MEDIUM n_errors = 0, k;
 	GMT_BOOLEAN special = FALSE;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

@@ -146,7 +146,7 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files[2] = {0, 0};
+	COUNTER_MEDIUM n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

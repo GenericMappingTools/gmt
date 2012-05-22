@@ -80,7 +80,7 @@ struct PSCONTOUR_CTRL {
 	} W;
 };
 
-#define GRDCONTOUR_MIN_LENGTH 0.01	/* Contours shorter than this are skipped */
+#define PSCONTOUR_MIN_LENGTH 0.01	/* Contours shorter than this are skipped */
 #define TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
 #define TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
 
@@ -93,8 +93,8 @@ struct SAVE {
 };
 
 /* Returns the id of the node common to the two edges */
-#define get_node_index(edge_1, edge_2) (((PSCONTOUR_SUM = (edge_1) + (edge_2)) == 1) ? 1 : ((PSCONTOUR_SUM == 2) ? 0 : 2))
-#define get_other_node(node1, node2) (((PSCONTOUR_SUM = (node1 + node2)) == 3) ? 0 : ((PSCONTOUR_SUM == 2) ? 1 : 2))	/* The other node needed */
+#define get_node_index(edge_1, edge_2) (((pscontour_sum = (edge_1) + (edge_2)) == 1) ? 1 : ((pscontour_sum == 2) ? 0 : 2))
+#define get_other_node(node1, node2) (((pscontour_sum = (node1 + node2)) == 3) ? 0 : ((pscontour_sum == 2) ? 1 : 2))	/* The other node needed */
 
 struct PSCONTOUR_LINE {	/* Beginning and end of straight contour segment */
 	double x0, y0;
@@ -266,20 +266,21 @@ void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, GMT_LONG n, double *x, double *y, double *z, GMT_LONG nn, double tick_gap, double tick_length, GMT_LONG tick_low, GMT_LONG tick_high, GMT_LONG tick_label, char *lbl[])
+void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, COUNTER_MEDIUM nn, double tick_gap, double tick_length, GMT_BOOLEAN tick_low, GMT_BOOLEAN tick_high, GMT_BOOLEAN tick_label, char *lbl[])
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones. */
-	GMT_LONG np, i, j, k, inside, n_ticks, way, form;
+	COUNTER_MEDIUM np, pol, pol2, j, kk, inside, n_ticks, form;
+	GMT_LONG way, k;
 	double add, dx, dy, x_back, y_back, x_end, y_end, sa, ca, s;
 	double x_mean, y_mean, a, xmin, xmax, ymin, ymax, length;
 
 	/* The x/y coordinates in SAVE are now all projected to map inches */
 
-	for (i = 0; i < n; i++) {	/* Mark polygons that have other polygons inside them */
-		np = save[i].n;
-		for (j = 0; save[i].do_it && j < n; j++) {
-			inside = GMT_non_zero_winding (GMT, save[j].x[0], save[j].y[0], save[i].x, save[i].y, np);
-			if (inside == 2) save[i].do_it = FALSE;
+	for (pol = 0; pol < n; pol++) {	/* Mark polygons that have other polygons inside them */
+		np = save[pol].n;
+		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
+			inside = GMT_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
+			if (inside == 2) save[pol].do_it = FALSE;
 		}
 	}
 
@@ -287,19 +288,19 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = TRUE */
 
-	for (i = 0; i < n; i++) {
-		if (!save[i].do_it) continue;
-		np = save[i].n;
+	for (pol = 0; pol < n; pol++) {
+		if (!save[pol].do_it) continue;
+		np = save[pol].n;
 
 		/* Here we need to figure out if this is a local high or low. */
 
 		/* First determine the bounding box for this contour */
-		xmin = xmax = save[i].x[0];	ymin = ymax = save[i].y[0];
+		xmin = xmax = save[pol].x[0];	ymin = ymax = save[pol].y[0];
 		for (j = 1; j < np; j++) {
-			xmin = MIN (xmin, save[i].x[j]);
-			xmax = MAX (xmax, save[i].x[j]);
-			ymin = MIN (ymin, save[i].y[j]);
-			ymax = MAX (ymax, save[i].y[j]);
+			xmin = MIN (xmin, save[pol].x[j]);
+			xmax = MAX (xmax, save[pol].x[j]);
+			ymin = MIN (ymin, save[pol].y[j]);
+			ymax = MAX (ymax, save[pol].y[j]);
 		}
 		
 		/* Now try to find a data point inside this contour */
@@ -308,38 +309,38 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 			if (GMT_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
 			if (GMT_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use GMT_y_is_outside since projected x-coordinates)*/
 			
-			inside = GMT_non_zero_winding (GMT, x[j], y[j], save[i].x, save[i].y, np);
+			inside = GMT_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
 		}
 		if (k < 0) continue;	/* Unable to determine */
-		save[i].high = (z[k] > save[i].cval);
+		save[pol].high = (z[k] > save[pol].cval);
 
-		if (save[i].high && !tick_high) continue;	/* Do not tick highs */
-		if (!save[i].high && !tick_low) continue;	/* Do not tick lows */
+		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
+		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
 		for (j = 1, s = 0.0; j < np; j++) {	/* Compute distance along the contour */
-			s += hypot (save[i].x[j]-save[i].x[j-1], save[i].y[j]-save[i].y[j-1]);
+			s += hypot (save[pol].x[j]-save[pol].x[j-1], save[pol].y[j]-save[pol].y[j-1]);
 		}
-		if (s < GRDCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
+		if (s < PSCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
 
 		n_ticks = lrint (floor (s / tick_gap));
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
-		GMT_setpen (GMT, &save[i].pen);
-		way = GMT_polygon_centroid (GMT, save[i].x, save[i].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
+		GMT_setpen (GMT, &save[pol].pen);
+		way = GMT_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label)	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
-			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
-		add = M_PI_2 * ((save[i].high) ? -way : +way);	/* So that tick points in the right direction */
+			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+		add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
 		for (j = 1; j < np; j++) {	/* Consider each segment from point j-1 to j */
-			dx = save[i].x[j] - save[i].x[j-1];
-			dy = save[i].y[j] - save[i].y[j-1];
+			dx = save[pol].x[j] - save[pol].x[j-1];
+			dy = save[pol].y[j] - save[pol].y[j-1];
 			length = hypot (dx, dy);
 			n_ticks = lrint (ceil (length / tick_gap));	/* At least one per side */
 			a = atan2 (dy, dx) + add;
 			sincos (a, &sa, &ca);
-			for (k = 0; k <= n_ticks; k++) {
-				x_back = save[i].x[j-1] + k * dx / (n_ticks + 1);
-				y_back = save[i].y[j-1] + k * dy / (n_ticks + 1);
+			for (kk = 0; kk <= n_ticks; kk++) {
+				x_back = save[pol].x[j-1] + kk * dx / (n_ticks + 1);
+				y_back = save[pol].y[j-1] + kk * dy / (n_ticks + 1);
 				x_end = x_back + tick_length * ca;
 				y_end = y_back + tick_length * sa;
 				PSL_plotsegment (PSL, x_back, y_back, x_end, y_end);
@@ -422,7 +423,8 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, j, n, id;
+	COUNTER_MEDIUM n_errors = 0, id;
+	GMT_LONG k, j, n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -598,7 +600,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_LONG add;
 	GMT_BOOLEAN two_only = FALSE, make_plot, error = FALSE, skip = FALSE;
 	
-	COUNTER_MEDIUM PSCONTOUR_SUM, n, nx, k2, k3, node1, node2, closed, c, cont_counts[2] = {0, 0}, last_entry, last_exit, fmt[3] = {0, 0, 0};
+	COUNTER_MEDIUM pscontour_sum, n, nx, k2, k3, node1, node2, closed, c, cont_counts[2] = {0, 0}, last_entry, last_exit, fmt[3] = {0, 0, 0};
 	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;

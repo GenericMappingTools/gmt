@@ -166,7 +166,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_LONG n;
 	GMT_BOOLEAN no_size_needed, n_set, got_A = FALSE;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT

@@ -71,7 +71,7 @@ struct GMTSTITCH_CTRL {
 struct BUDDY {
 	COUNTER_LARGE id;
 	COUNTER_LARGE orig_id;
-	GMT_LONG end_order;
+	COUNTER_MEDIUM end_order;
 	double dist, next_dist;
 };
 
@@ -146,7 +146,8 @@ static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTR
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG n = 0;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

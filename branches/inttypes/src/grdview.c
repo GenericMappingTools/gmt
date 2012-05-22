@@ -378,7 +378,7 @@ GMT_LONG GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, st
 	 */
 
 	COUNTER_MEDIUM n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
-GMT_LONG sval;
+	GMT_LONG sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

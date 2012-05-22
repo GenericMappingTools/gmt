@@ -149,7 +149,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, n_tags = 0;
+	COUNTER_MEDIUM n_errors = 0, k, n_tags = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	/* We are just checking the options for syntax here, not parsing is actually needed */

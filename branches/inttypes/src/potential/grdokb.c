@@ -167,10 +167,9 @@ GMT_LONG GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
-	int n_files = 0;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {

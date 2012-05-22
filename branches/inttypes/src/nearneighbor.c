@@ -77,7 +77,7 @@ struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
 void *New_nearneighbor_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct NEARNEIGHBOR_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct NEARNEIGHBOR_CTRL);
+	C = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->N.sectors = NN_DEF_SECTORS;
@@ -93,9 +93,9 @@ void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) 
 
 struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, COUNTER_MEDIUM n)
 {	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
-	struct NEARNEIGHBOR_NODE *new = GMT_memory (GMT, NULL, 1, struct NEARNEIGHBOR_NODE);
+	struct NEARNEIGHBOR_NODE *new = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new->distance = GMT_memory (GMT, NULL, n, float);
-	new->datum = GMT_memory (GMT, NULL, n, GMT_LONG);
+	new->datum = GMT_memory (GMT, NULL, n, int64_t);
 	while (n > 0) new->datum[--n] = -1;
 
 	return (new);
@@ -164,7 +164,8 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG n;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

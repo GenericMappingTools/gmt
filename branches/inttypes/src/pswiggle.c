@@ -246,7 +246,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k, wantx, wanty, n_errors = 0;
+	COUNTER_MEDIUM j, k, wantx, wanty, n_errors = 0;
 #ifdef GMT_COMPAT
 	GMT_BOOLEAN N_active = FALSE;
 #endif

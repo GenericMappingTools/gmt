@@ -129,7 +129,7 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -144,8 +144,8 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 			/* Supplemental parameters */
 			
 			case 'E':	/* File with stage poles */
-				Ctrl->E.active = TRUE;	n = 0;
-				Ctrl->E.file  = strdup (&opt->arg[n]);
+				Ctrl->E.active = TRUE;
+				Ctrl->E.file  = strdup (opt->arg);
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;

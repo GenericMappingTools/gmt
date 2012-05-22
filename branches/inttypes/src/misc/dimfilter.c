@@ -158,7 +158,8 @@ GMT_LONG GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, k;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef OBSOLETE					

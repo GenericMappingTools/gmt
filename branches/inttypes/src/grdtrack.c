@@ -174,8 +174,8 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n_errors = 0, ng = 0, n_files = 0;
-	COUNTER_MEDIUM pos;
+	GMT_LONG j;
+	COUNTER_MEDIUM pos, n_errors = 0, ng = 0, n_files = 0;
 	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

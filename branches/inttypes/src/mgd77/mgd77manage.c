@@ -338,7 +338,8 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, n_cruises = 0, got_table, got_grid, strings;
+	COUNTER_MEDIUM n_errors = 0, k, n_cruises = 0;
+	GMT_BOOLEAN got_table, got_grid, strings;
 	nc_type c_nc_type;
 	char file[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;

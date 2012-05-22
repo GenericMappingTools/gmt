@@ -192,7 +192,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n;
+	COUNTER_MEDIUM n_errors = 0, n;
 	char txt[GMT_TEXT_LEN64],txt_b[GMT_TEXT_LEN64],txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

@@ -242,8 +242,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_items, k, j;
-	COUNTER_MEDIUM dimension;
+	GMT_LONG n_items;
+	COUNTER_MEDIUM n_errors = 0, dimension, k;
 	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -308,12 +308,12 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 			case 'A':	/* Gradient data */
 				Ctrl->A.active = TRUE;
-				j = 0;
+				k = 0;
 				if (strchr (opt->arg, ',')) {	/* Specified a particular format with -A<mode>,<file> */
 					Ctrl->A.mode = (GMT_LONG)(opt->arg[0] - '0');
-					j = 2;
+					k = 2;
 				}
-				Ctrl->A.file = strdup (&opt->arg[j]);
+				Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = TRUE;
@@ -353,8 +353,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 			case 'Q':	/* Directional derivative */
 				Ctrl->Q.active = TRUE;
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
-					k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
-					if (k != 3) {
+					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
+					if (n_items != 3) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
 						n_errors++;
 					}
@@ -394,8 +394,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 						Ctrl->S.mode = WESSEL_BECKER_2008;
 						Ctrl->S.fast = TRUE; 
 						if (strchr (opt->arg, '/')) {
-							k = sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1], &Ctrl->S.rval[0], &Ctrl->S.rval[1]);
-							if (k == 2) {
+							n_items = sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1], &Ctrl->S.rval[0], &Ctrl->S.rval[1]);
+							if (n_items == 2) {
 								Ctrl->S.rval[0] = -1.0;
 								Ctrl->S.rval[1] = +1.0;
 							}

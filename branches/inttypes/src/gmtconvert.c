@@ -155,7 +155,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 	 */
 
 	size_t arg_length;
-	GMT_LONG n_errors = 0, k, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

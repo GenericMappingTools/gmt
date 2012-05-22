@@ -252,7 +252,8 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG m, n_errors = 0, k, n_files = 0, sval;
+	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
+	GMT_LONG m, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
