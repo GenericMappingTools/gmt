@@ -197,7 +197,7 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *pos, c
  */
 void DOS_path_fix (char *dir)
 {
-	size_t k, n;
+	int n, k;
 
 	if (!dir)
 		return; /* Given NULL */
@@ -222,7 +222,7 @@ void DOS_path_fix (char *dir)
 	 */
 
 	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
-	n = strlen (dir);
+	n = (int)strlen (dir);
 	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
 		dir[0] = dir[1];
 		dir[1] = ':';
