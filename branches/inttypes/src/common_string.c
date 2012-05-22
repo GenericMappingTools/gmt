@@ -199,8 +199,7 @@ void DOS_path_fix (char *dir)
 {
 	size_t n, k;
 
-	n = strlen (dir);
-	if (!dir || n < 3U)
+	if (!dir || (n = strlen (dir)) < 3U)
 		return; /* Given NULL or too short dir to work */
 
 	if (!strncmp (dir, "/cygdrive/", 10U))
