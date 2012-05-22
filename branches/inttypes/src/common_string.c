@@ -199,17 +199,18 @@ void DOS_path_fix (char *dir)
 {
 	size_t n, k;
 
-	if (!dir || (n = strlen (dir)) < 2U)
+	n = strlen (dir);
+	if (!dir || n < 3U)
 		return; /* Given NULL or too short dir to work */
 
-	if (!strncmp (dir, "/cygdrive/", 10))
+	if (!strncmp (dir, "/cygdrive/", 10U))
 		/* May happen for example when Cygwin sets GMT_SHAREDIR */
 		GMT_strlshift (dir, 9); /* Chop "/cygdrive" */
 
 	/* Replace dumb backslashes with slashes */
 	GMT_strrepc (dir, '\\', '/');
 
-	if (dir[0] == '/' && dir[2] == '\0') {
+	if (n == 2U && dir[0] == '/') {
 		dir[0] = dir[1];
 		dir[1] = ':';
 		return;
