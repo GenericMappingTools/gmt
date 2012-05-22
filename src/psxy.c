@@ -104,7 +104,7 @@ void Free_psxy_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocate 
 
 void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x, double error_width2, GMT_LONG line) {
 	double x_1, x_2, y_1, y_2;
-	GMT_LONG tip1, tip2;
+	GMT_BOOLEAN tip1, tip2;
 
 	tip1 = tip2 = (error_width2 > 0.0);
 	GMT_geo_to_xy (GMT, x - delta_x, y, &x_1, &y_1);
@@ -126,7 +126,7 @@ void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 
 void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_y, double error_width2, GMT_LONG line) {
 	double x_1, x_2, y_1, y_2;
-	GMT_LONG tip1, tip2;
+	GMT_BOOLEAN tip1, tip2;
 
 	tip1 = tip2 = (error_width2 > 0.0);
 	GMT_geo_to_xy (GMT, x, y - delta_y, &x_1, &y_1);
@@ -147,15 +147,15 @@ void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 }
 
 void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], GMT_LONG line, GMT_LONG kind) {
-	GMT_LONG i;
-	static GMT_LONG q[4] = {0, 25, 75, 100};
+	COUNTER_MEDIUM i;
+	static COUNTER_MEDIUM q[4] = {0, 25, 75, 100};
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		GMT_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
 		if (GMT_is_dnan (xx[i])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: X %d %% hinge exceeded domain near line %d\n", q[i], line);
-			xx[i] = (i <2 ) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
+			xx[i] = (i < 2) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
 		}
 	}
 	yy[1] -= error_width2;
@@ -190,15 +190,15 @@ void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 }
 
 void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], GMT_LONG line, GMT_LONG kind) {
-	GMT_LONG i;
-	static GMT_LONG q[4] = {0, 25, 75, 100};
+	COUNTER_MEDIUM i;
+	static COUNTER_MEDIUM q[4] = {0, 25, 75, 100};
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		GMT_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
 		if (GMT_is_dnan (yy[i])) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y %d %% hinge exceeded domain near line %d\n", q[i], line);
-			yy[i] = (i <2 ) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
+			yy[i] = (i < 2) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
 		}
 	}
 	xx[1] -= error_width2;
@@ -357,7 +357,8 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, j0, n_errors = 0;
+	COUNTER_MEDIUM j0, n_errors = 0;
+	GMT_LONG j;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

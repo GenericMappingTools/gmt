@@ -1020,8 +1020,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 	 */
 
 
-	GMT_LONG j, n_errors = 0, n_files = 0;
-	COUNTER_MEDIUM pos = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos = 0;
+	GMT_LONG j;
 	char	p[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;

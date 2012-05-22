@@ -190,8 +190,7 @@ void write_script(void);
 
 GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	GMT_LONG n_errors = 0;
-	COUNTER_MEDIUM pos;
+	COUNTER_MEDIUM n_errors = 0, pos, n_files = 0;
 	/* first 2 cols from table III of Singleton's paper on fft.... */
 	int nlist[117] = {64,72,75,80,81,90,96,100,108,120,125,128,135,144,150,160,162,180,192,200,
 			216,225,240,243,250,256,270,288,300,320,324,360,375,384,400,405,432,450,480,
@@ -201,7 +200,7 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 			2400,2430,2500,2560,2592,2700,2880,2916,3000,3072,3125,3200,3240,3375,3456,
 			3600,3645,3750,3840,3888,4000,4096,4320,4374,4500,4608,4800,4860,5000};
 
-	int j, k, n, n_files = 0;
+	int j, k, n;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	char   ptr[GMT_BUFSIZ], t_or_b[4];

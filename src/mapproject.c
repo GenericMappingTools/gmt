@@ -194,7 +194,8 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_slash, n, k, n_errors = 0, slash;
+	COUNTER_MEDIUM n_slash,k, n_errors = 0, slash;
+	GMT_LONG n;
 	size_t last;
 	GMT_BOOLEAN geodetic_calc = FALSE;
 	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
@@ -304,7 +305,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 			case 'L':	/* [-L<line.xy>[/[+|-]<unit>]][+] */
 				Ctrl->L.active = TRUE;
 				Ctrl->L.file = strdup (opt->arg);
-				k = (GMT_LONG)strlen (Ctrl->L.file) - 1;	/* Index of last character */
+				k = (int)strlen (Ctrl->L.file) - 1;	/* Index of last character */
 				if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
 					Ctrl->L.mode = 3;
 					Ctrl->L.file[k] = '\0';	/* Chop off the trailing plus sign */

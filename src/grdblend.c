@@ -136,7 +136,7 @@ void decode_R (struct GMT_CTRL *GMT, char *string, double wesn[]) {
 
 GMT_BOOLEAN out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 {	/* Look for phase shifts in w/e/s/n between the two grids */
-	GMT_LONG way, side;
+	COUNTER_MEDIUM way, side;
 	double a;
 	for (side = 0; side < 4; side++) {
 		way = side / 2;
@@ -148,7 +148,7 @@ GMT_BOOLEAN out_of_phase (struct GRD_HEADER *g, struct GRD_HEADER *h)
 	return FALSE;
 }
 
-GMT_BOOLEAN overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, GMT_LONG mode)
+GMT_BOOLEAN overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INFO *B, struct GRD_HEADER *h, COUNTER_MEDIUM mode)
 {
 	double w, e, shift = 720.0;
 	char *type[2] = {"grid", "inner grid"};

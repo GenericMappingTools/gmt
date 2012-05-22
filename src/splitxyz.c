@@ -194,7 +194,7 @@ GMT_LONG GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n_errors = 0, n_outputs = 0, n_files = 0;
+	COUNTER_MEDIUM j, n_errors = 0, n_outputs = 0, n_files = 0;
 	GMT_BOOLEAN z_selected = FALSE;
 #ifdef GMT_COMPAT
 	char txt_a[GMT_TEXT_LEN256];

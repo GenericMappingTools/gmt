@@ -393,8 +393,7 @@ GMT_LONG GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k;
-	COUNTER_MEDIUM n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0, j, k;
 	size_t len;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;

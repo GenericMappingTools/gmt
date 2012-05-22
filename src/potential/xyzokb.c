@@ -224,8 +224,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n_errors = 0, n_files = 0;
-	COUNTER_MEDIUM pos = 0;
+	COUNTER_MEDIUM j, pos = 0, n_errors = 0, n_files = 0;
 	char	ptr[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;

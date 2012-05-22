@@ -169,7 +169,7 @@ static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-GMT_LONG get_byte_size (struct GMT_CTRL *GMT, char type) {
+COUNTER_MEDIUM get_byte_size (struct GMT_CTRL *GMT, char type) {
 	/* Return byte size of each item, or 0 if bits */
 	int ksize;
 	switch (type) {
@@ -677,7 +677,7 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

@@ -140,7 +140,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM  n_in, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_in, n_errors = 0, n_files = 0;
 	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;

@@ -123,7 +123,7 @@ struct PSCOAST_CTRL {
 };
 
 void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	struct PSCOAST_CTRL *C = GMT_memory (GMT, NULL, 1, struct PSCOAST_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
@@ -247,7 +247,9 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, clipping;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_LONG k;
+	GMT_BOOLEAN clipping;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	struct GMT_PEN pen;

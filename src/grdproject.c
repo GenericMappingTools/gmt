@@ -119,7 +119,8 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, sval;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG sval;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];

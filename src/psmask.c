@@ -85,9 +85,9 @@ struct PSMASK_INFO {
 	unsigned int bit[32];
 };
 
-void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, GMT_LONG nn, double rgb[], GMT_LONG id, GMT_LONG flag)
+void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, COUNTER_LARGE nn, double rgb[], GMT_LONG id, GMT_LONG flag)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double x, y;
 
 	if (nn < 2 && flag < 2) return;
@@ -304,10 +304,10 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	return (n);
 }
 
-void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG n, double w, double e)
+void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, COUNTER_MEDIUM n, double w, double e)
 {
 	/* Moves outside points to boundary */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	for (i = 0; i < n; i++) {
 		if (x[i] < w)
@@ -392,7 +392,7 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 #ifdef GMT_COMPAT
 	GMT_LONG n_plus, k;
 #endif
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

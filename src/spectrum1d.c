@@ -538,8 +538,8 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, sval;
-	COUNTER_MEDIUM window_test = 2;
+	GMT_LONG sval;
+	COUNTER_MEDIUM n_errors = 0, j, window_test = 2;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
