@@ -55,7 +55,7 @@ if (DO_TESTS)
 		foreach (_test ${_test_scripts})
 			add_test (NAME ${_test}
 				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				COMMAND gmtest ${_test})
+				COMMAND ${BASH} gmtest ${_test})
 		endforeach (_test ${_test_scripts})
 	endforeach (_test_dir ${GMT_TEST_DIRS})
 endif (DO_TESTS)
