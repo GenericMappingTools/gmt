@@ -5862,7 +5862,7 @@ GMT_LONG gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	 *	-Bs must be in addition to -B[p].
 	 */
 
-	char out1[GMT_BUFSIZ], out2[GMT_BUFSIZ], out3[GMT_BUFSIZ], info[3][GMT_BUFSIZ];
+	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
 	GMT_LONG i, j, k, ignore, g = 0, error = 0;
 
