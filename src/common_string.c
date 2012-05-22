@@ -199,10 +199,10 @@ void DOS_path_fix (char *dir)
 {
 	size_t n, k;
 
-	if (!dir)
-		return; /* Given NULL */
+	if (!dir || (n = strlen (dir)) < 2U)
+		return; /* Given NULL or too short dir to work */
 
-	if (!strncmp(dir, "/cygdrive/", 10))
+	if (!strncmp (dir, "/cygdrive/", 10))
 		/* May happen for example when Cygwin sets GMT_SHAREDIR */
 		GMT_strlshift (dir, 9); /* Chop "/cygdrive" */
 
@@ -222,7 +222,6 @@ void DOS_path_fix (char *dir)
 	 */
 
 	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
-	n = strlen (dir);
 	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
 		dir[0] = dir[1];
 		dir[1] = ':';
