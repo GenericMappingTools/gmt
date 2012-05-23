@@ -26,13 +26,28 @@ LANG=C
 # Define variables that are needed *within* test scripts
 GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
+GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
+GSHHG_DIR="@GSHHG_PATH@"
 HAVE_GMT_DEBUG_SYMBOLS="@HAVE_GMT_DEBUG_SYMBOLS@"
 HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/test/${script_dir}"
 
+# When running tests with MinGW we need to change 'c:/' to '/c/'
+function fix_mingw_path()
+{
+  if uname | grep -q MINGW ; then
+    # MinGW shell
+    sed -E 's/([a-zA-Z]):\//\/\1\//g' <<< "$1"
+  else
+    # not MinGW
+    echo "$1"
+  fi
+}
+
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export PATH=$(fix_mingw_path "@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@"):"${PATH}"
+unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 export GMT_DATADIR="$src"
@@ -59,7 +74,7 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
 fi
 for ps in *.ps ; do
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
+  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "$src/${psref:-$ps}") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"

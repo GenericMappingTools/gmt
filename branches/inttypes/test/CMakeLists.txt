@@ -19,13 +19,14 @@
 # run tests
 if (DO_TESTS)
 	# list of test dirs
-	set (GMT_TEST_DIRS api byteswap blockmean filter1d fitcircle genper gmtconvert
-		gmtdp gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb grd2xyz
-		grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter grdhisteq grdimage
-		grdlandmask grdmask grdpaste grdproject grdreformat grdsample grdtrend
-		grdview grdvolume greenspline kml mapproject meca mgd77 ogr potential
-		project psbasemap pscoast pscontour psimage pslegend pslib psrose psscale
-		pstext psxy psxyz sph splitxyz spotter time trend2d triangulate x2sys)
+	set (GMT_TEST_DIRS api byteswap blockmean filter1d fitcircle genper gmt_core
+		gmtconvert gmtdp gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb
+		grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter
+		grdhisteq grdimage grdlandmask grdmask grdpaste grdproject grdreformat
+		grdsample grdtrend grdview grdvolume greenspline kml mapproject meca
+		mgd77 ogr potential project psbasemap pscoast pscontour psimage pslegend
+		pslib psrose psscale pstext psxy psxyz sph splitxyz spotter time trend2d
+		triangulate x2sys)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
