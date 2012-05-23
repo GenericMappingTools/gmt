@@ -49,6 +49,13 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		file = strdup (header->name);
 		GMT_chop_ext (file);
 		name_len = strlen (header->name);
+		if (name_len < strlen(file) + 4) {
+			/* The file extension had less than 3 chars, which means that 1) it's not an esri file. 
+			   2) would corrupt the heap with the later strcat (file, ".hdr");
+			      On Win this would later cause a crash upon freeing 'file' */
+			free (file);
+			return (-1);
+		}
 		if (isupper ((unsigned char) header->name[name_len - 1]))
 			strcat (file, ".HDR");
 		else
