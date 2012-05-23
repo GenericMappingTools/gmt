@@ -40,8 +40,21 @@ EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/doc/examples/${script_dir}"
 
+# When running tests with MinGW we need to change 'c:/' to '/c/'
+function fix_mingw_path()
+{
+  if uname | grep -q MINGW ; then
+    # MinGW shell
+    sed -E 's/([a-zA-Z]):\//\/\1\//g' <<< "$1"
+  else
+    # not MinGW
+    echo "$1"
+  fi
+}
+
 # Use executables from GMT_BINARY_DIR, fallback to CMAKE_INSTALL_PREFIX/GMT_BINDIR
-export PATH="@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@:${PATH}"
+export PATH=$(fix_mingw_path "@GMT_BINARY_DIR_PATH@:@GMT_SOURCE_DIR@/src:@CMAKE_INSTALL_PREFIX@/@GMT_BINDIR@"):"${PATH}"
+unset GMT5_SHAREDIR
 export GMT_SHAREDIR="@GMT_SOURCE_DIR@/share"
 export GMT_USERDIR="@GMT_BINARY_DIR@/share"
 
@@ -66,7 +79,7 @@ if ! [ -x "$GRAPHICSMAGICK" ]; then
 fi
 for ps in *.ps ; do
   # syntax: gm compare [ options ... ] reference-image [ options ... ] compare-image [ options ... ]
-  rms=$(${GRAPHICSMAGICK} compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
+  rms=$("${GRAPHICSMAGICK}" compare -density 200 -maximum-error 0.001 -highlight-color magenta -highlight-style assign -metric rmse -file "${ps%.ps}.png" "$ps" "${src}/${ps}") || pscmpfailed="yes"
   rms=$(sed -nE '/Total:/s/ +Total: ([0-9.]+) .+/\1/p' <<< "$rms")
   if [ -z "$rms" ]; then
     rms="NA"
