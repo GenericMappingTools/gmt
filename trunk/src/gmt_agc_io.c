@@ -318,7 +318,7 @@ GMT_LONG GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 #endif
 		fp = C->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (C, header->name, "rb+")) == NULL && (fp = GMT_fopen (C, header->name, "wb")) == NULL)
+	else if ((fp = GMT_fopen (C, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
