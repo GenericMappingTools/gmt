@@ -705,7 +705,8 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (x_scale == 0.0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
 		F.nx = Gin->header->nx;
 		F.x_half_width = (F.nx - 1) / 2;
-		if ((F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
+		if ((F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;		/* When nx is even we may come up short by 1 */
+		F.nx = 2 * F.x_half_width + 1;
 		visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */
 	}
 	if (F.ny > Gin->header->ny) {	/* Safety valve when y_scale -> 0.0 */
