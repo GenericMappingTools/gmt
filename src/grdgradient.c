@@ -112,7 +112,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 	GMT_message (GMT, "grdgradient %s [API] - Compute directional gradients from a grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
-	GMT_message (GMT, "\t[-E[s|p]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
+	GMT_message (GMT, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
 	GMT_message (GMT, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -134,6 +134,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t   Append s to use a simpler Lambertian algorithm (note that with this form\n");
 	GMT_message (GMT, "\t   you only have to provide the azimuth and elevation parameters).\n");
 	GMT_message (GMT, "\t   Append p to use the Peucker piecewise linear approximation (simpler but faster algorithm).\n");
+	GMT_message (GMT, "\t   Append m to use another algorithm that gives results close to ESRI's 'hillshade' but faster\n");
 	GMT_message (GMT, "\t   Note that in this case the azimuth and elevation are hardwired to 315 and 45 degrees.\n");
 	GMT_message (GMT, "\t   This means that even if you provide other values they will be ignored.\n");
 	GMT_message (GMT, "\t-G Output file for results from -A or -D.\n");
@@ -201,8 +202,18 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 						Ctrl->E.mode = 1;
 						break;
 					case 's':	/* "simple" Lambertian case */
-						Ctrl->E.mode = 2;
+						Ctrl->E.mode = 2;						
 						n_errors += GMT_check_condition (GMT, sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation) != 2, "Syntax error -Es option: Must append azimuth/elevation\n");
+						break;
+					case 'm':	/* Nice algorithm from an old program called manipRaster by Tierry Souriot */
+						Ctrl->E.mode = 4;
+						j = sscanf(&opt->arg[1], "%lf/%lf", &Ctrl->E.azimuth, &Ctrl->E.elevation);
+						if (j == 0) {				/* Use default values */
+							Ctrl->E.azimuth = 360 - 45;
+							Ctrl->E.elevation = 45;
+						}
+						else if (j == 1)
+							Ctrl->E.elevation = 45;
 						break;
 					default:
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
@@ -352,14 +363,16 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		q0 = sind (90.0 - Ctrl->E.azimuth) * tand (90.0 - Ctrl->E.elevation);
 		p0q0_cte = sqrt (1.0 + p0*p0 + q0*q0);
 	}
-	if (Ctrl->E.mode == 3) {	/* Precalculate constants */
-		Ctrl->E.elevation = 90 - Ctrl->E.elevation;
+	else if (Ctrl->E.mode == 3 || Ctrl->E.mode == 4) {	/* Precalculate constants */
+		if (Ctrl->E.mode == 3) {
+			Ctrl->E.elevation = 90 - Ctrl->E.elevation;
+			k_ads = Ctrl->E.ambient + Ctrl->E.diffuse + Ctrl->E.specular;
+		}
 		s[0] = sind (Ctrl->E.azimuth) * cosd (Ctrl->E.elevation);
 		s[1] = cosd (Ctrl->E.azimuth) * cosd (Ctrl->E.elevation);
 		s[2] = sind (Ctrl->E.elevation);
-		k_ads = Ctrl->E.ambient + Ctrl->E.diffuse + Ctrl->E.specular;
 	}
-	
+
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
@@ -379,7 +392,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* TRUE if input is a read-only array */
 	
-	if (GMT_is_geographic (GMT, GMT_IN)) {
+	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
 		dy_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_Y];
 	}
@@ -414,7 +427,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		x_factor = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
 	}
 	for (row = ij0 = 0; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
-		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Evaluate latitude-dependent factors */
+		if (GMT_is_geographic (GMT, GMT_IN) && Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = -1.0 / (2.0 * dx_grid);	/* Use previous value at the poles */
@@ -465,7 +478,9 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->S.active) Slope->data[ij] = (float)hypot (dzdx, dzdy);
 			}
 			else {	/* Ctrl->E.active */
-				if (Ctrl->E.mode == 3) {
+				if (Ctrl->E.mode == 2)
+					output = (1.0 + p0 * dzdx + q0 * dzdy) / (sqrt (1.0 + dzdx * dzdx + dzdy * dzdy) * p0q0_cte);
+				else if (Ctrl->E.mode == 3) {
 					norm_z = dx_grid * dy_grid;
 					mag = d_sqrt (dzdx * dzdx + dzdy * dzdy + norm_z * norm_z);
 					dzdx /= mag;	dzdy /= mag;	norm_z /= mag;
@@ -474,8 +489,8 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					spec = pow (spec, Ctrl->E.shine);
 					output = (Ctrl->E.ambient + Ctrl->E.diffuse * diffuse + Ctrl->E.specular * spec) / k_ads;
 				}
-				else if (Ctrl->E.mode == 2)
-					output = (1.0 + p0 * dzdx + q0 * dzdy) / (sqrt (1.0 + dzdx * dzdx + dzdy * dzdy) * p0q0_cte);
+				else if (Ctrl->E.mode == 4)
+					output = (dzdy*s[0] + dzdx*s[1] + 2*s[2]) / (sqrt(dzdy * dzdy + dzdx * dzdx + 4));
 				else	/* Peucker method */
 					output = -0.4285 * (dzdx - dzdy) - 0.0844 * fabs (dzdx  + dzdy) + 0.6599;
 				r_min = MIN (r_min, output);
