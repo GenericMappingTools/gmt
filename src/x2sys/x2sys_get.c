@@ -274,7 +274,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (ii = 0; ii < n_tracks; ii++) include[ii] = TRUE;
 		}
 		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags, unsigned int);
-		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
+		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, COUNTER_LARGE);
 	}
 	else {
 		y_match = GMT_memory (GMT, NULL, n_tracks, char);

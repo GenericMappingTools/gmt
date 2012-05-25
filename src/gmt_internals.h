@@ -29,7 +29,7 @@
 enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
 
 EXTERN_MSC COUNTER_MEDIUM GMT_unit_lookup (struct GMT_CTRL *C, GMT_LONG c, COUNTER_MEDIUM unit);
-EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_BOOLEAN do_minutes, GMT_BOOLEAN do_seconds, GMT_BOOLEAN lonlat, GMT_BOOLEAN worldmap);
+EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_BOOLEAN do_minutes, GMT_BOOLEAN do_seconds, COUNTER_MEDIUM lonlat, GMT_BOOLEAN worldmap);
 EXTERN_MSC COUNTER_MEDIUM GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels);
 EXTERN_MSC COUNTER_MEDIUM GMT_linear_array (struct GMT_CTRL *C, double min, double max, double delta, double phase, double **array);
 EXTERN_MSC COUNTER_MEDIUM GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, COUNTER_MEDIUM x_or_y, double **array);

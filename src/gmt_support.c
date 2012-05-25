@@ -5697,8 +5697,8 @@ COUNTER_LARGE gmt_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_i
 
 	index = GMT_memory (C, NULL, 3 * size, int);
 	istack = GMT_memory (C, NULL, size, int64_t);
-	x_tmp = GMT_memory (C, NULL, size, GMT_LONG);
-	y_tmp = GMT_memory (C, NULL, size, GMT_LONG);
+	x_tmp = GMT_memory (C, NULL, size, int64_t);
+	y_tmp = GMT_memory (C, NULL, size, int64_t);
 	x_circum = GMT_memory (C, NULL, size, double);
 	y_circum = GMT_memory (C, NULL, size, double);
 	r2_circum = GMT_memory (C, NULL, size, double);
@@ -8482,7 +8482,7 @@ GMT_LONG GMT_prepare_label (struct GMT_CTRL *C, double angle, COUNTER_MEDIUM sid
 	return 0;
 }
 
-void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_BOOLEAN do_minutes, GMT_BOOLEAN do_seconds, GMT_BOOLEAN lonlat, GMT_BOOLEAN worldmap)
+void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_BOOLEAN do_minutes, GMT_BOOLEAN do_seconds, COUNTER_MEDIUM lonlat, GMT_BOOLEAN worldmap)
 /* val:		Degree value of annotation */
 /* label:	String to hold the final annotation */
 /* do_minutes:	TRUE if degree and minutes are desired, FALSE for just integer degrees */
@@ -8490,7 +8490,8 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, GMT_BOOLE
 /* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
 /* worldmap:	T/F, whatever C->current.map.is_world is */
 {
-	GMT_LONG k, n_items, sign, d, m, s, m_sec, level, type, h_pos = 0;
+	GMT_LONG sign, d, m, s, m_sec;
+	COUNTER_MEDIUM k, n_items, h_pos = 0, level, type;
 	GMT_BOOLEAN zero_fix = FALSE;
 	char hemi[3], format[GMT_TEXT_LEN64];
 
@@ -8717,7 +8718,7 @@ GMT_LONG GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUST
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_TEXT_LEN64];
 			nc = sscanf (&buffer[2], "%d %s", &head->n_required, flags);
-			head->type = GMT_memory (C, NULL, head->n_required, GMT_LONG);
+			head->type = GMT_memory (C, NULL, head->n_required, COUNTER_MEDIUM);
 			if (nc == 2) {	/* Got optional types argument */
 				if (strlen (flags) != head->n_required) {
 					GMT_report (C, GMT_MSG_FATAL, "Error: Custom symbol %s has inconsistent N: <npar> [<types>] declaration\n", name);

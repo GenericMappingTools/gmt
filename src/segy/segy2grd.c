@@ -321,7 +321,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
-	flag = GMT_memory (GMT, NULL, Grid->header->size, GMT_LONG);
+	flag = GMT_memory (GMT, NULL, Grid->header->size, COUNTER_MEDIUM);
 
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 

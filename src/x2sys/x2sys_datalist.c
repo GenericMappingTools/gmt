@@ -203,9 +203,9 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct MGD77_CORRTABLE **CORR = NULL;
 	struct MGD77_AUX_INFO aux[N_MGD77_AUX];
 	struct MGD77_AUXLIST auxlist[N_GENERIC_AUX] = {
-		{ "dist",    MGD77_AUX_DS, 0, 0, "d(km)"},
-		{ "azim",    MGD77_AUX_AZ, 0, 0, "azimuth"},
-		{ "vel",     MGD77_AUX_SP, 0, 0, "v(m/s)"}
+		{ "dist",    MGD77_AUX_DS, FALSE, FALSE, "d(km)"},
+		{ "azim",    MGD77_AUX_AZ, FALSE, FALSE, "azimuth"},
+		{ "vel",     MGD77_AUX_SP, FALSE, FALSE, "v(m/s)"}
 	};
 	struct X2SYS_ADJUST **A = NULL;
 	struct X2SYS_DATALIST_CTRL *Ctrl = NULL;
@@ -280,8 +280,9 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
+	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION],  &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale,  -1);	/* Sets output scale for distances using in velocities */
+	
 	switch (s->unit[X2SYS_SPEED_SELECTION][0]) {
 		case 'c':
 			vel_scale = 1.0;
@@ -291,7 +292,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(m/s)");
 			break;
 		case 'f':
-			vel_scale /= (METERS_IN_A_FOOT * dist_scale);		/* Must counteract any distance scaling to get feet. dt is in sec so we get ft/s */
+			vel_scale /= (METERS_IN_A_FOOT * dist_scale);	/* Must counteract any distance scaling to get feet. dt is in sec so we get ft/s */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(ft/s)");
 			break;
 		case 'k':
@@ -313,26 +314,26 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	switch (s->unit[X2SYS_DIST_SELECTION][0]) {
 		case 'c':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(user)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(user)");
 			break;
 		case 'e':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(m)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(m)");
 			break;
 		case 'f':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(feet)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(feet)");
 			break;
 		case 'k':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(km)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(km)");
 			break;
 #ifdef GMT_COMPAT
 		case 'm':
 			GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 #endif
 		case 'M':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(miles)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(miles)");
 			break;
 		case 'n':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(nm)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(nm)");
 			break;
 	}
 

@@ -729,7 +729,7 @@ GMT_LONG GMT_mgd77list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		{ "ngrav",   MGD77_AUX_GR, FALSE, FALSE, "IGF"},
 		{ "ngdcid",  MGD77_AUX_ID, TRUE,  FALSE, "NGDC-ID"}
 #ifdef USE_CM4
-	, { "cm4",  MGD77_AUX_CM, 0, 0, "CM4"}
+	      , { "cm4",  MGD77_AUX_CM, FALSE, FALSE, "CM4"}
 #endif
 	};
 #ifdef USE_CM4

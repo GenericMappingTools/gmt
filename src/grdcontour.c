@@ -936,7 +936,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	G_orig = GMT_duplicate_grid (GMT, G, TRUE);	/* Original copy of grid used for contouring */
 	n_edges = G->header->ny * lrint (ceil (G->header->nx / 16.0));
-	edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);	/* Bit flags used to keep track of contours */
+	edge = GMT_memory (GMT, NULL, n_edges, COUNTER_MEDIUM);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
 		COUNTER_LARGE dim[4] = {0, 0, 3, 0};

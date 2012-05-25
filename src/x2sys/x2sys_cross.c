@@ -349,7 +349,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Files found: %" PRIu64 "\n", n_tracks);
 
-	duplicate = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
+	duplicate = GMT_memory (GMT, NULL, n_tracks, GMT_BOOLEAN);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Checking for duplicates : ");
 	/* Make sure there are no duplicates */
