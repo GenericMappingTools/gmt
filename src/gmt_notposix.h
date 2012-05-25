@@ -172,7 +172,15 @@
 #		pragma warning( disable : 4996 )
 		/* Visual Studio does not understand C99 restrict keyword */
 #		define restrict
-#	endif
+
+		/* isspace, isalpha, ...: avoid assert (only happens with debug CRT) 
+		   if passed a parameter that isn't EOF or in the range of 0 through 0xFF. */
+#		ifdef _DEBUG
+#			define isspace(c) (c > 0 && c < 0xFF && isspace(c))
+#			define isalpha(c) (c > 0 && c < 0xFF && isalpha(c))
+#		endif /* _DEBUG */
+
+#	endif /* defined _MSC_VER */
 
 #endif /* defined _WIN32 */
 
