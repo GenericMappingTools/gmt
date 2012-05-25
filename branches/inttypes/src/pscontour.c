@@ -185,9 +185,9 @@ GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, COUN
 	yout = GMT_memory (GMT, NULL, n_alloc, double);
 	ztmp = GMT_memory (GMT, NULL, n_alloc, double);
 	zout = GMT_memory (GMT, NULL, n_alloc, double);
-	vout = GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
-	ctmp = GMT_memory (GMT, NULL, nx, GMT_LONG);
-	cind = GMT_memory (GMT, NULL, nx, GMT_LONG);
+	vout = GMT_memory (GMT, NULL, n_alloc, COUNTER_MEDIUM);
+	ctmp = GMT_memory (GMT, NULL, nx, COUNTER_MEDIUM);
+	cind = GMT_memory (GMT, NULL, nx, COUNTER_MEDIUM);
 
 	/* Fill out array zout which holds the nx contour levels */
 

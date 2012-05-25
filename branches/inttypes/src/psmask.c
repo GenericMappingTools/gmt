@@ -704,7 +704,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 
 			n_edges = Grid->header->ny * lrint (ceil (Grid->header->nx / 16.0));
-			edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
+			edge = GMT_memory (GMT, NULL, n_edges, COUNTER_MEDIUM);
 
 			if (make_plot) GMT_map_basemap (GMT);
 

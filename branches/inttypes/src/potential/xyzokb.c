@@ -508,12 +508,12 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
 		body_desc.n_f = 5;		/* Number of prism facets */
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, GMT_LONG);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, COUNTER_MEDIUM);
 		body_desc.n_v[0] = 3;	body_desc.n_v[1] = 3;
 		body_desc.n_v[2] = 4;	body_desc.n_v[3] = 4;
 		body_desc.n_v[4] = 4;
 		body_desc.ind = GMT_memory (GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
-			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), GMT_LONG);
+			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), COUNTER_MEDIUM);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;	/* top triang */
 		body_desc.ind[3] = 3;	body_desc.ind[4] = 5; 	body_desc.ind[5] = 4;	/* bot triang */
 		body_desc.ind[6] = 1;	body_desc.ind[7] = 4; 	body_desc.ind[8] = 5;	body_desc.ind[9] = 2;
@@ -528,9 +528,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	else if (Ctrl->T.raw || Ctrl->T.stl) {
 		n_triang = (Ctrl->T.raw) ? ndata_r : ndata_s;
 		body_desc.n_f = 1;
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, GMT_LONG);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, COUNTER_MEDIUM);
 		body_desc.n_v[0] = 3;
-		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], GMT_LONG);
+		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], COUNTER_MEDIUM);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
 	else {

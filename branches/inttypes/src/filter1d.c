@@ -725,11 +725,11 @@ GMT_LONG do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 
 GMT_LONG allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	F->n_this_col = GMT_memory (GMT, NULL, F->n_cols, GMT_LONG);
+	F->n_this_col = GMT_memory (GMT, NULL, F->n_cols, COUNTER_MEDIUM);
 	F->data = GMT_memory (GMT, NULL, F->n_cols, double *);
 
-	if (F->check_asym) F->n_left = GMT_memory (GMT, NULL, F->n_cols, GMT_LONG);
-	if (F->check_asym) F->n_right = GMT_memory (GMT, NULL, F->n_cols, GMT_LONG);
+	if (F->check_asym) F->n_left = GMT_memory (GMT, NULL, F->n_cols, COUNTER_MEDIUM);
+	if (F->check_asym) F->n_right = GMT_memory (GMT, NULL, F->n_cols, COUNTER_MEDIUM);
 
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {	/* Then we need workspace  */
 		COUNTER_MEDIUM i;

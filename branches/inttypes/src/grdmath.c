@@ -2292,7 +2292,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	nx = info->G->header->nx;
 	/* Set up permutation vector */
 
-	new_col = GMT_memory (GMT, NULL, nx, GMT_LONG);
+	new_col = GMT_memory (GMT, NULL, nx, COUNTER_MEDIUM);
 	z = GMT_memory (GMT, NULL, nx, float);
 	for (col = colx = 0; col < info->G->header->nx; col++, colx++) new_col[colx] = (colx + shift) % info->G->header->nx;	/* Move by shift but rotate around */
 	GMT_row_loop (GMT, info->G, row) {	/* For each row */
@@ -2323,7 +2323,7 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 	if (shift < 0) shift += info->G->header->ny;	/* Same thing */
 	/* Set up permutation vector */
 
-	new_row = GMT_memory (GMT, NULL, info->G->header->ny, GMT_LONG);
+	new_row = GMT_memory (GMT, NULL, info->G->header->ny, COUNTER_MEDIUM);
 	z = GMT_memory (GMT, NULL, info->G->header->ny, float);
 	for (row = rowx = 0; row < info->G->header->ny; row++, rowx++) new_row[rowx] = (rowx + info->G->header->ny - shift) % info->G->header->ny;	/* Move by shift but rotate around */
 	for (col = 0; col < info->G->header->nx; col++) {	/* For each column */

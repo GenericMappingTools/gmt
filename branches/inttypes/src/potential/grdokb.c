@@ -757,10 +757,10 @@ int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY
 	if (face == 0) {			/* Decompose the TOP square surface in 2 triangles using CW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, GMT_LONG);
+			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, COUNTER_MEDIUM);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], GMT_LONG);
+			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], COUNTER_MEDIUM);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 1; 	body_desc->ind[2] = 2;	/* 1st top triang (0 1 3)*/
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 2; 	body_desc->ind[5] = 3;	/* 2nd top triang (1 2 3) */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
@@ -769,10 +769,10 @@ int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY
 	else if (face == 5) {			/* Decompose the BOT square surface in 2 triangles using CCW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, GMT_LONG);
+			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, COUNTER_MEDIUM);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], GMT_LONG);
+			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], COUNTER_MEDIUM);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 2; 	body_desc->ind[2] = 1;	/* 1st bot triang */
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 3; 	body_desc->ind[5] = 2;	/* 2nd bot triang */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);

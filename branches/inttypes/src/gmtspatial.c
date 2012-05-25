@@ -1305,7 +1305,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else	/* Increment running polygon ID */
 				ID++;
 
-			count = GMT_memory (GMT, NULL, D->n_segments, GMT_LONG);
+			count = GMT_memory (GMT, NULL, D->n_segments, COUNTER_MEDIUM);
 			for (tbl = p = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++, p++) {
 					S = D->table[tbl]->segment[seg];
