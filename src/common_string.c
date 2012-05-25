@@ -100,7 +100,9 @@ void GMT_strstrip(char *string, int strip_leading) {
 		++end;
 
 	/* Step backward until first non-whitespace */
-	while ((--end != start) && isspace(*end));
+	/* On Win, in debug mode, some characters of ex31 are negative and cause isspace to raise an assertion */
+	while ((--end != start) && (*end > 0) && isspace(*end));
+
 
 	/* Chop off trailing whitespace */
 	*(end + 1) = '\0';
