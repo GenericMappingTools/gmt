@@ -414,14 +414,14 @@ GMT_LONG x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO 
 
 	strncpy (s->fflags, string, GMT_BUFSIZ);
 	strncpy (line, string, GMT_BUFSIZ);	/* Make copy for later use */
-	GMT_memset (s->use_column, s->n_fields, GMT_LONG);
+	GMT_memset (s->use_column, s->n_fields, GMT_BOOLEAN);
 
 	while ((GMT_strtok (line, ",", &pos, p))) {
 		j = 0;
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
 		if (j < s->n_fields) {
 			s->out_order[i] = j;
-			s->use_column[j] = 1;
+			s->use_column[j] = TRUE;
 		}
 		else {
 			GMT_report (C, GMT_MSG_FATAL, "X2SYS: Error: Unknown column name %s\n", p);
