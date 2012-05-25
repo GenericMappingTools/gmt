@@ -470,6 +470,12 @@ configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)
 
+# gshhg_version
+add_executable (gshhg_version gshhg_version.h gshhg_version.c)
+set_source_files_properties (gshhg_version
+	PROPERTIES COMPILE_DEFINITIONS "STANDALONE")
+target_link_libraries (gshhg_version ${NETCDF_LIBRARIES})
+
 # rman for converting html manpages
 if (HAVE_GETOPT)
 	add_executable (rman EXCLUDE_FROM_ALL rman.c)
