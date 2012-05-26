@@ -905,7 +905,7 @@ GMT_BOOLEAN gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 		++p;	/* Move to first char after @ */
 		switch (p[0]) {	/* These are the feature tags only: @D, @P, @H */
 			case 'D':	/* Aspatial data values, store in segment header  */
-				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @D given but no geometry set\n"); return (0);}
+				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @D given but no geometry set\n"); return (FALSE);}
 				n_aspatial = gmt_ogr_decode_aspatial_values (C, &p[1], S);
 				if (S->n_aspatial != n_aspatial) {
 					GMT_report (C, GMT_MSG_VERBOSE, "OGR/GMT: Some @D items not specified (set to NULL)\n");
@@ -925,7 +925,7 @@ GMT_BOOLEAN gmt_ogr_data_parser (struct GMT_CTRL *C, char *record)
 				if (!(S->geometry == GMT_IS_POLYGON || S->geometry == GMT_IS_MULTIPOLYGON)) {
 					GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @H only valid for polygons\n");
 					C->current.io.ogr = 0;
-					return (0);
+					return (FALSE);
 				}
 				S->pol_mode = GMT_IS_HOLE;
 				break;
@@ -1044,7 +1044,7 @@ GMT_BOOLEAN gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 				break;
 
 			case 'N':	/* Aspatial name fields, store in table header */
-				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @N given but no geometry set\n"); return (0);}
+				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @N given but no geometry set\n"); return (FALSE);}
 				if (S->name) {	/* Already set */
 					GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @N Cannot have more than one per segment\n");
 					C->current.io.ogr = 0;
@@ -1083,7 +1083,7 @@ GMT_BOOLEAN gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 				break;
 
 			case 'T':	/* Aspatial field types, store in table header  */
-				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @T given but no geometry set\n"); return (0);}
+				if (!S->geometry) { GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @T given but no geometry set\n"); return (FALSE);}
 				if (S->type) {	/* Already set */
 					GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @T Cannot have more than one per segment\n");
 					C->current.io.ogr = 0;
@@ -2621,7 +2621,7 @@ static inline void swap_uint64 (char *buffer, const size_t len) {
 
 /* End private functions used by gmt_byteswap_file() */
 
-int gmt_byteswap_file (struct GMT_CTRL *C,
+GMT_BOOLEAN gmt_byteswap_file (struct GMT_CTRL *C,
 		FILE *outfp, FILE *infp, const SwapWidth swapwidth,
 		const COUNTER_LARGE offset, const COUNTER_LARGE length) {
 	/* read from *infp and write byteswapped data to *ofp
@@ -2897,7 +2897,7 @@ p_func_i GMT_get_io_ptr (struct GMT_CTRL *C, COUNTER_MEDIUM direction, int swap,
 
 	switch (type) {	/* Set read pointer depending on data format */
 		case 'A':	/* ASCII with more than one per record */
-			p = (direction == GMT_IN) ? (p_func_i)gmt_A_read : (p_func_i)gmt_a_write;
+			p = (direction == GMT_IN) ? &gmt_A_read : &gmt_a_write;
 			break;
 		case 'a':	/* ASCII */
 			p = (direction == GMT_IN) ? (p_func_i)gmt_a_read : (p_func_i)gmt_a_write;
@@ -2968,7 +2968,7 @@ p_func_i GMT_get_io_ptr (struct GMT_CTRL *C, COUNTER_MEDIUM direction, int swap,
 	return (p);
 }
 
-GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_BOOLEAN repeat[], int swab, off_t skip, char type, struct GMT_Z_IO *r)
+void GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_BOOLEAN repeat[], int swab, off_t skip, char type, struct GMT_Z_IO *r)
 {
 	GMT_BOOLEAN first = TRUE;
 	COUNTER_MEDIUM k;
@@ -3014,8 +3014,6 @@ GMT_LONG GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_BOOLEAN repeat[],
 		strcpy (C->current.io.w_mode, "wb");
 		strcpy (C->current.io.a_mode, "ab+");
 	}
-
-	return (GMT_NOERROR);
 }
 
 /* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
@@ -4660,7 +4658,7 @@ void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
 	if (!done) sscanf (&line[i], "%s", label);
 }
 
-GMT_LONG GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string)
+GMT_BOOLEAN GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string)
 {
 	/* Scans the in_string for the occurrence of an option switch (e.g, -L) and
 	 * if found, extracts the argument and returns it via out_string.  Function
@@ -6408,7 +6406,6 @@ void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, COUNTER_MEDIUM mode)
 	if ((*G)->region) free ((*G)->region);
 	for (k = 0; k < 4; k++) free ((*G)->proj[k]);
 	GMT_free (C, (*G));
-	return;
 }
 
 struct GMT_OGR * GMT_duplicate_ogr (struct GMT_CTRL *C, struct GMT_OGR *G)
@@ -6430,7 +6427,7 @@ struct GMT_OGR * GMT_duplicate_ogr (struct GMT_CTRL *C, struct GMT_OGR *G)
 	return (G_dup);
 }
 
-/* NOT USED ??? */
+#if 0 /* NOT USED ??? */
 GMT_LONG GMT_validate_aspatial (struct GMT_CTRL *C, struct GMT_OGR *G)
 {
 	COUNTER_MEDIUM k;
@@ -6474,6 +6471,7 @@ GMT_LONG GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR *G)
 	}
 	return (n);
 }
+#endif
 
 double GMT_get_aspatial_value (struct GMT_CTRL *C, COUNTER_MEDIUM col, struct GMT_LINE_SEGMENT *S)
 {

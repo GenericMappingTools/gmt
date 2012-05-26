@@ -305,7 +305,7 @@ GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, COUNTER_MEDIUM y2) {
 	return (y2 + ((y2 >= C->current.time.Y2K_fix.y2_cutoff) ? C->current.time.Y2K_fix.y100 : C->current.time.Y2K_fix.y200));
 }
 
-GMT_LONG GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
+GMT_BOOLEAN GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 
 	/* Check year, month, day values to see if they
 	   are an appropriate date in the proleptic
@@ -325,7 +325,7 @@ GMT_LONG GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d) {
 	return (FALSE);
 }
 
-GMT_LONG GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d) {
+GMT_BOOLEAN GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d) {
 
 	/* Check ISO_year, ISO_week_of_year, ISO_day_of_week
 	   values to see if they form a probably
@@ -361,7 +361,6 @@ void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal) {
 	i = GMT_splitinteger (x, 60, &cal->sec);
 	cal->hour = i / GMT_MIN2SEC_I;
 	cal->min  = i % GMT_MIN2SEC_I;
-	return;
 }
 
 GMT_LONG GMT_verify_time_step (struct GMT_CTRL *C, GMT_LONG step, char unit) {
@@ -900,7 +899,6 @@ void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GM
 	}
 	else					/* 24-hour clock formatting */
 		sprintf (clock, W->format, calendar.hour, calendar.min, i_sec, m_sec);
-	return;
 }
 
 void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t)

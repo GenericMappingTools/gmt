@@ -1171,7 +1171,7 @@ GMT_LONG gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 	return (error);
 }
 
-GMT_LONG GMT_check_region (struct GMT_CTRL *C, double wesn[])
+GMT_BOOLEAN GMT_check_region (struct GMT_CTRL *C, double wesn[])
 {	/* If region is given then we must have w < e and s < n */
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]) && !C->common.R.oblique);
 }
@@ -2442,7 +2442,7 @@ GMT_LONG gmt_get_time_language (struct GMT_CTRL *C)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_key_lookup (char *name, char **list, COUNTER_MEDIUM n)
+COUNTER_MEDIUM gmt_key_lookup (char *name, char **list, COUNTER_MEDIUM n)
 {
 	COUNTER_MEDIUM i;
 
@@ -2461,7 +2461,7 @@ void gmt_free_user_media (struct GMT_CTRL *C) {	/* Free any user-specified media
 	C->session.n_user_media = 0;
 }
 
-GMT_LONG gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified media formats */
+COUNTER_MEDIUM gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specified media formats */
 	size_t n_alloc = 0;
 	COUNTER_MEDIUM n = 0;
 	double w, h;
@@ -2619,7 +2619,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 	}
 }
 
-GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
+GMT_BOOLEAN GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	COUNTER_MEDIUM pos, len;
 	GMT_LONG i, ival, case_val, manual;
@@ -3212,7 +3212,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 #endif
 		case GMTCASE_PS_IMAGE_COMPRESS:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (FALSE);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "none"))
 				C->PSL->internal.compress = PSL_NONE;
 			else if (!strcmp (lower_value, "rle"))
@@ -3223,7 +3223,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_PS_LINE_CAP:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (FALSE);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "butt"))
 				C->PSL->internal.line_cap = PSL_BUTT_CAP;
 			else if (!strcmp (lower_value, "round"))
@@ -3234,7 +3234,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_PS_LINE_JOIN:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (FALSE);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "miter"))
 				C->PSL->internal.line_join = PSL_MITER_JOIN;
 			else if (!strcmp (lower_value, "round"))
@@ -3245,7 +3245,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = TRUE;
 			break;
 		case GMTCASE_PS_MITER_LIMIT:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (FALSE);	/* Not using PSL in this session */
 			ival = atoi (value);
 			if (ival >= 0 && ival <= 180)
 				C->PSL->internal.miter_limit = ival;
@@ -3347,7 +3347,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_PS_VERBOSE: GMT_COMPAT_CHANGE ("PS_VERBOSE");
 #endif
 		case GMTCASE_PS_COMMENTS:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (FALSE);	/* Not using PSL in this session */
 			error = gmt_true_false_or_error (lower_value, &tf_answer);
 			C->PSL->internal.comments = (tf_answer) ? 1 : 0;
 			break;
@@ -4128,7 +4128,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			break;
 #endif
 		case GMTCASE_PS_IMAGE_COMPRESS:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (NULL);	/* Not using PSL in this session */
 			if (C->PSL->internal.compress == PSL_NONE)
 				strcpy (value, "none");
 			else if (C->PSL->internal.compress == PSL_RLE)
@@ -4139,7 +4139,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "undefined");
 			break;
 		case GMTCASE_PS_LINE_CAP:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (NULL);	/* Not using PSL in this session */
 			if (C->PSL->internal.line_cap == PSL_BUTT_CAP)
 				strcpy (value, "butt");
 			else if (C->PSL->internal.line_cap == PSL_ROUND_CAP)
@@ -4150,7 +4150,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "undefined");
 			break;
 		case GMTCASE_PS_LINE_JOIN:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (NULL);	/* Not using PSL in this session */
 			if (C->PSL->internal.line_join == PSL_MITER_JOIN)
 				strcpy (value, "miter");
 			else if (C->PSL->internal.line_join == PSL_ROUND_JOIN)
@@ -4161,7 +4161,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "undefined");
 			break;
 		case GMTCASE_PS_MITER_LIMIT:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (NULL);	/* Not using PSL in this session */
 			sprintf (value, "%d", C->PSL->internal.miter_limit);
 			break;
 #ifdef GMT_COMPAT
@@ -4220,7 +4220,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_PS_VERBOSE: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_PS_COMMENTS:
-			if (!C->PSL) return (GMT_NOERROR);	/* Not using PSL in this session */
+			if (!C->PSL) return (NULL);	/* Not using PSL in this session */
 			sprintf (value, "%s", ft[C->PSL->internal.comments]);
 			break;
 
@@ -4833,7 +4833,7 @@ GMT_LONG GMT_get_datum (struct GMT_CTRL *C, char *name)
 	return (i);
 }
 
-GMT_LONG GMT_get_time_system (struct GMT_CTRL *C, char *name, struct GMT_TIME_SYSTEM *time_system)
+GMT_BOOLEAN GMT_get_time_system (struct GMT_CTRL *C, char *name, struct GMT_TIME_SYSTEM *time_system)
 {
 	/* Convert TIME_SYSTEM into TIME_EPOCH and TIME_UNIT.
 	   TIME_SYSTEM can be one of the following: j2000, jd, mjd, s1985, unix, dr0001, rata
@@ -5531,23 +5531,23 @@ GMT_LONG gmt_strip_colonitem (struct GMT_CTRL *C, GMT_LONG axis, const char *in,
 
 	if (error) {	/* Problems with decoding */
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: Missing terminating colon in -B string %c-component %s\n", str[axis], in);
-		return (TRUE);
+		return (1);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":.")) {	/* Problems with decoding title */
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one title in -B string %c-component %s\n", str[axis], in);
-		return (TRUE);
+		return (1);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":,")) {	/* Problems with decoding unit */
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one unit string in -B %c-component %s\n", str[axis], in);
-		return (TRUE);
+		return (1);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":=")) {	/* Problems with decoding prefix */
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one prefix string in  -B component %s\n", in);
-		return (TRUE);
+		return (1);
 	}
 	if (strstr (out, pattern)) {	/* Problems with decoding label */
 		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one label string in  -B component %s\n", in);
-		return (TRUE);
+		return (1);
 	}
 #ifdef _WIN32
 	gmt_handle_dosfile (C, item, 1);	/* Undo any DOS files like X;/ back to X:/ */
@@ -6091,7 +6091,7 @@ GMT_LONG gmt_scale_or_width (struct GMT_CTRL *C, char *scale_or_width, double *v
 	return (GMT_NOERROR);
 }
 
-GMT_LONG gmt_parse_J_option (struct GMT_CTRL *C, char *args)
+GMT_BOOLEAN gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 {
 	/* gmt_parse_J_option scans the arguments given and extracts the parameters needed
 	 * for the specified map projection. These parameters are passed through the
@@ -7564,7 +7564,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 	GMT_LONG error = 0, i;
 
-	if (!list || !strchr (list, option)) return (FALSE);	/* Not a common option we accept */
+	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
 #ifdef GMT_COMPAT
 	/* Translate some options */
@@ -7788,7 +7788,7 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 
 		default:	/* Here we end up if an unrecognized option is passed (should not happen, though) */
 			GMT_report (C, GMT_MSG_FATAL, "Option -%c is not a recognized common option\n", option);
-			return (TRUE);
+			return (1);
 			break;
 	}
 
