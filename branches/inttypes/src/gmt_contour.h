@@ -53,8 +53,8 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 
 struct GMT_CONTOUR_LINE {
 	COUNTER_LARGE n;			/* Length of the contour */
-	COUNTER_MEDIUM annot;			/* TRUE if we want labels */
 	COUNTER_MEDIUM n_labels;		/* Number of labels; if 0 we just have a line segment */
+	GMT_BOOLEAN annot;			/* TRUE if we want labels */
 	double z;			/* Datum of this contour (z-value) */
 	double rgb[4];			/* Box rgb */
 	double *x, *y;			/* Coordinates of the contour */

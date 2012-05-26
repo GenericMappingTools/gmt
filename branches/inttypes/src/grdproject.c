@@ -178,7 +178,10 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
 				sprintf (format, "%d+/%d+", ii, jj);
-				GMT_getinc (GMT, format, Ctrl->D.inc);
+				if (GMT_getinc (GMT, format, Ctrl->D.inc)) {
+					GMT_inc_syntax (GMT, 'D', 1);
+					n_errors++;
+				}
 				break;
 #endif
 			default:	/* Report bad options */

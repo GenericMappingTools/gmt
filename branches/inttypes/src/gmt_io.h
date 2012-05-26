@@ -440,7 +440,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	COUNTER_MEDIUM gmt_j;		/* Current row number in the GMT registered grid */
 	COUNTER_LARGE n_expected;	/* Number of data element expected to be read */
 	off_t skip;		/* Number of bytes to skip before reading data */
-	p_func_l get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
+	p_func_u8 get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
 };
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
@@ -561,7 +561,7 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 
 struct GMT_IMAGE {	/* Single container for a user image of data */
 	COUNTER_MEDIUM id;		/* The internal number of the data set */
-	COUNTER_MEDIUM type;		/* Data type, e.g. GMTAPI_FLOAT */
+	enum GMT_enum_type type;	/* Data type, e.g. GMTAPI_FLOAT */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	int		*ColorMap;
 	const char	*ProjRefPROJ4;

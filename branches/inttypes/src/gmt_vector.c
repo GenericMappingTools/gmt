@@ -713,18 +713,18 @@ GMT_LONG GMT_svdcmp (struct GMT_CTRL *GMT, double *a, COUNTER_MEDIUM m_in, COUNT
 	return (GMT_NOERROR);
 }
 
-void gmt_mat_trans (double a[], GMT_LONG mrow, GMT_LONG ncol, double at[])
+void gmt_mat_trans (double a[], COUNTER_MEDIUM mrow, COUNTER_MEDIUM ncol, double at[])
 {
 	/* Return the transpose of a */
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 	for (i = 0; i < ncol; i++) for (j = 0; j < mrow; j++) at[mrow*i+j] = a[ncol*j+i];
 }
 
-void gmt_mat_mult (double a[], GMT_LONG mrow, GMT_LONG ncol, double b[], GMT_LONG kcol, double c[])
+void gmt_mat_mult (double a[], COUNTER_MEDIUM mrow, COUNTER_MEDIUM ncol, double b[], COUNTER_MEDIUM kcol, double c[])
 {
 	/* Matrix multiplication a * b = c */
 	
-	GMT_LONG i, j, k, ij;
+	COUNTER_MEDIUM i, j, k, ij;
 	
 	for (i = 0; i < kcol; i++) {
 		for (j = 0; j < mrow; j++) {
@@ -918,7 +918,8 @@ COUNTER_LARGE GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_la
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	GMT_LONG k = 1, meridian;
+	COUNTER_MEDIUM k = 1;
+	GMT_BOOLEAN meridian;
 	size_t n_alloc = 0;
 	COUNTER_LARGE i, j, n_tmp, n_step = 0;
 	double *lon_tmp = NULL, *lat_tmp = NULL;
@@ -1034,7 +1035,7 @@ COUNTER_LARGE GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, doubl
 	 * Returns the new number of points (original plus auxiliary).
 	 */
 
-	GMT_LONG k = 1;
+	COUNTER_MEDIUM k = 1;
 	size_t n_alloc = 0;
 	COUNTER_LARGE i, j, n_tmp, n_step = 0;
 	double *x_tmp = NULL, *y_tmp = NULL, *x = NULL, *y = NULL, c;
@@ -1163,7 +1164,7 @@ GMT_LONG GMT_chol_dcmp (struct GMT_CTRL *C, double *a, double *d, double *cond, 
 	return (0);
 }
 
-void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_LONG donly) {
+void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, GMT_LONG nr, GMT_LONG n, GMT_LONG nerr, GMT_BOOLEAN donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find

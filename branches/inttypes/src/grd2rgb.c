@@ -293,7 +293,10 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 				Ctrl->G.name = strdup (opt->arg);
 				break;
 			case 'I':	/* Get grid spacings */
-				GMT_getinc (GMT, opt->arg, Ctrl->I.inc);
+				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+					GMT_inc_syntax (GMT, 'I', 1);
+					n_errors++;
+				}
 				Ctrl->I.active = TRUE;
 				break;
 			case 'L':	/* Select one layer */

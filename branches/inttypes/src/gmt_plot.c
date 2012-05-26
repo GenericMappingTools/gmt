@@ -301,7 +301,7 @@ void gmt_linear_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, 
 	C->current.map.frame.plotted_header = TRUE;
 }
 
-GMT_LONG gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
+COUNTER_MEDIUM gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 {	/* Return the primary annotation item number [== GMT_ANNOT_UPPER if there are no unit set]*/
 
 	COUNTER_MEDIUM i, no[2] = {GMT_ANNOT_UPPER, GMT_ANNOT_LOWER};
@@ -342,7 +342,7 @@ GMT_LONG gmt_get_primary_annot (struct GMT_PLOT_AXIS *A)
 	return ((val[0] > val[1]) ? GMT_ANNOT_UPPER : GMT_ANNOT_LOWER);
 }
 
-GMT_LONG gmt_skip_second_annot (COUNTER_MEDIUM item, double x, double x2[], COUNTER_MEDIUM n, COUNTER_MEDIUM primary)
+GMT_BOOLEAN gmt_skip_second_annot (COUNTER_MEDIUM item, double x, double x2[], COUNTER_MEDIUM n, COUNTER_MEDIUM primary)
 {
 	COUNTER_MEDIUM i;
 	GMT_BOOLEAN found;
@@ -753,7 +753,7 @@ void gmt_fancy_frame_offset (struct GMT_CTRL *C, double angle, double shift[2])
 	shift[1] = -C->current.setting.map_frame_width * c;
 }
 
-void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_LONG secondary_too)
+void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_BOOLEAN secondary_too)
 {	/* Plot checkers along straight longitude boundaries */
 	GMT_LONG i, k, nx;
 	COUNTER_MEDIUM shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
@@ -800,7 +800,7 @@ void gmt_fancy_frame_straightlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *
 	}
 }
 
-void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_LONG secondary_too)
+void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_BOOLEAN secondary_too)
 {	/* Plot checkers along curved longitude boundaries */
 	GMT_LONG i, k, nx;
 	COUNTER_MEDIUM shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
@@ -862,7 +862,7 @@ void gmt_fancy_frame_curvedlon_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P,
 	}
 }
 
-void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_LONG secondary_too)
+void gmt_fancy_frame_straightlat_checkers (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, GMT_BOOLEAN secondary_too)
 {	/* Plot checkers along straight latitude boundaries */
 	GMT_LONG i, k, ny;
 	COUNTER_MEDIUM shade, item[2] = {GMT_TICK_UPPER, GMT_TICK_LOWER};
@@ -1409,7 +1409,7 @@ void gmt_map_lattick (struct GMT_CTRL *C, struct PSL_CTRL *P, double lat, double
 	if (nc) GMT_free (C, xings);
 }
 
-GMT_LONG gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, COUNTER_MEDIUM side) {
+GMT_BOOLEAN gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, COUNTER_MEDIUM side) {
 	/* Checks if the proposed annotation is too close to a previously plotted annotation */
 	COUNTER_MEDIUM i;
 	double d_min;
@@ -1721,7 +1721,7 @@ void gmt_map_tickmarks (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 	PSL_setdash (P, CNULL, 0);
 }
 
-GMT_LONG gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
+GMT_BOOLEAN gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
 {	/* Determines if seconds are to be labelled based on size of increment */
 	if (C->current.plot.calclock.geo.order[2] == -1) return (FALSE);			/* Seconds not requested by format */
 	if (C->current.plot.calclock.geo.n_sec_decimals > 0) return (TRUE);			/* If asked for ss.xxx annotations */
@@ -1998,7 +1998,7 @@ void gmt_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
  *
  */
 
-GMT_LONG gmt_is_fancy_boundary (struct GMT_CTRL *C)
+GMT_BOOLEAN gmt_is_fancy_boundary (struct GMT_CTRL *C)
 {
 	switch (C->current.proj.projection) {
 		case GMT_LINEAR:
@@ -3217,7 +3217,7 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	}
 }
 
-void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
+void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, COUNTER_MEDIUM mode)
 {
 	COUNTER_LARGE seg, k;
 	GMT_LONG *pen = NULL;
@@ -3234,7 +3234,7 @@ void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 	}
 }
 
-void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
+void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, COUNTER_MEDIUM mode)
 {	/* mode = 1 when clipping is in effect */
 	GMT_LONG just, form, *node = NULL;
 	COUNTER_LARGE first_i, last_i, k, m, seg;
@@ -3328,7 +3328,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 	}
 }
 
-void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, GMT_LONG mode)
+void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, COUNTER_MEDIUM mode)
 {
 	COUNTER_LARGE seg, k, m, nseg;
 	GMT_LONG just, form;
@@ -3682,7 +3682,7 @@ void GMT_plotcanvas (struct GMT_CTRL *C)
 {
 	if (C->current.map.frame.paint) {	/* Paint the inside of the map with specified fill */
 		double *x = NULL, *y = NULL;
-		GMT_LONG np;
+		COUNTER_MEDIUM np;
 		GMT_BOOLEAN donut;
 		np = GMT_map_clip_path (C, &x, &y, &donut);
 		GMT_setfill (C, &C->current.map.frame.fill, FALSE);
@@ -3836,7 +3836,7 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARG
 	}
 }
 
-void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_SEGMENT *S, GMT_LONG add_pole)
+void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_SEGMENT *S, GMT_BOOLEAN add_pole)
 {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
@@ -3893,7 +3893,7 @@ void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 		
 	/* CASE 2: FILL REQUESTED -- WITH OR WITHOUT OUTLINE */
 	
-	add_pole = GMT_abs (S->pole);		/* 1 (TRUE) if a polar cap */
+	add_pole = (abs (S->pole) == 1);	/* TRUE if a polar cap */
 	separate = ((add_pole || S->next) && P->current.outline);	/* Multi-polygon (or polar cap) fill with outline handled by doing fill and outline separately */
 	if (separate) {				/* Do fill and outline separately */
 		outline = P->current.outline;	/* Keep a copy of what we wanted */
@@ -3981,7 +3981,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, 
 	GMT_free_segment (C, S);
 }
 
-GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, GMT_LONG longway, double **xp, double **yp)
+COUNTER_LARGE gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, GMT_BOOLEAN longway, double **xp, double **yp)
 { /* Given vectors A and B, return great circle path sampled every step.  Shorest path is selected unless longway is TRUE */
 	/* Determine unit vector pole of great circle */
 	size_t n_alloc = 0;
@@ -3996,7 +3996,7 @@ GMT_LONG GMT_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, G
 		P[0] = -P[0], P[1] = -P[1], P[2] = -P[2];
 	}
 	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
-	n = (COUNTER_LARGE)ceil (c / step) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	n = lrint (ceil (c / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	GMT_malloc2 (C, xx, yy, n, &n_alloc, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
@@ -4125,7 +4125,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 
 	/* Get array of lon,lat points that defines the arc */
 	
-	n1 = GMT_get_gcarc (C, Ax, Bx, 0.0, longway, &xp, &yp);	/* Draw the (possibly shortened) arc */
+	n1 = gmt_get_gcarc (C, Ax, Bx, 0.0, longway, &xp, &yp);	/* Draw the (possibly shortened) arc */
 
 	/* Plotting starts here, under gsave/grestore protection */
 	
@@ -4160,14 +4160,14 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		}
 		else
 			GMT_geo_to_cart (C, mlat, mlon, P, TRUE);	/* Start from (adjusted) mid point instead */
-		n1 = GMT_get_gcarc (C, P, A, 0.0, FALSE, &xp, &yp);	/* Compute great circle arc from P to A */
+		n1 = gmt_get_gcarc (C, P, A, 0.0, FALSE, &xp, &yp);	/* Compute great circle arc from P to A */
 		if (side != -1) {	/* Want to draw right side of arrow */
 			GMT_get_point_from_r_az (C, olon[0], olat[0], dr[0]+off[0], oaz[0]-da, &tlon, &tlat);	/* End point of arrow on right side */
 			GMT_geo_to_cart (C, tlat, tlon, P, TRUE);
 		}
 		else
 			GMT_geo_to_cart (C, mlat, mlon, P, TRUE);	/* End at (adjusted) mid point instead */
-		n2 = GMT_get_gcarc (C, A, P, 0.0, FALSE, &xp2, &yp2);	/* Compute great circle arc from A to P */
+		n2 = gmt_get_gcarc (C, A, P, 0.0, FALSE, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (C, xp, yp, 0, &n_alloc, double);	/* Allocate space for total path */
@@ -4203,14 +4203,14 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		}
 		else
 			GMT_geo_to_cart (C, mlat, mlon, P, TRUE);	/* Start from (adjusted)mid point instead */
-		n1 = GMT_get_gcarc (C, P, B, 0.0, FALSE, &xp, &yp);	/* Compute great circle arc from P to B */
+		n1 = gmt_get_gcarc (C, P, B, 0.0, FALSE, &xp, &yp);	/* Compute great circle arc from P to B */
 		if (side != -1) {	/* Want to draw right side of arrow */
 			GMT_get_point_from_r_az (C, olon[1], olat[1], dr[1]+off[1], oaz[1]-da, &tlon, &tlat);	/* Start point of arrow on other side */
 			GMT_geo_to_cart (C, tlat, tlon, P, TRUE);
 		}
 		else
 			GMT_geo_to_cart (C, mlat, mlon, P, TRUE);	/* End at (adjusted) mid point instead */
-		n2 = GMT_get_gcarc (C, B, P, 0.0, FALSE, &xp2, &yp2);	/* Compute great circle arc from B to P */
+		n2 = gmt_get_gcarc (C, B, P, 0.0, FALSE, &xp2, &yp2);	/* Compute great circle arc from B to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (C, xp, yp, 0, &n_alloc, double);	/* Allocate space for total path */
@@ -4298,7 +4298,8 @@ void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width
 
 void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], COUNTER_MEDIUM n, struct GMT_FRONTLINE *f)
 {
-	GMT_LONG ngap, skip, tmp_join = 0, tmp_limit = 0;
+	GMT_LONG ngap, tmp_join = 0, tmp_limit = 0;
+	GMT_BOOLEAN skip;
 	COUNTER_MEDIUM i;
 	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
 	double gap, x0, y0, xp, yp, len2, len3, cosa, sina, sa, ca, offx, offy, dim[3];

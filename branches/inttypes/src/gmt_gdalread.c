@@ -48,19 +48,18 @@ GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	metadata_only;
-	int	do_BIP;		/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
 	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
-	int	pixel_reg = FALSE;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
-	int n, m, incStep = 1;
-	GMT_LONG	fliplr;
-	GMT_LONG	off, got_R = FALSE, got_r = FALSE, error = FALSE;
+	int	n, m, incStep = 1;
+	GMT_BOOLEAN	do_BIP;		/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
+	GMT_BOOLEAN	metadata_only;
+	GMT_BOOLEAN	pixel_reg = FALSE;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
+	GMT_BOOLEAN	fliplr, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
-	GMT_LONG	pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	GMT_LONG	off, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
 	COUNTER_MEDIUM nn;
 	size_t n_alloc;
 	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */

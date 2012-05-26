@@ -58,7 +58,7 @@ EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *C,
 EXTERN_MSC void GMT_free_custom_symbols (struct GMT_CTRL *C);
 EXTERN_MSC GMT_BOOLEAN GMT_geo_to_dms (double val, GMT_LONG n_items, double fact, GMT_LONG *d, GMT_LONG *m,  GMT_LONG *s,  GMT_LONG *ix);
 EXTERN_MSC double GMT_get_annot_offset (struct GMT_CTRL *C, GMT_BOOLEAN *flip, COUNTER_MEDIUM level);
-EXTERN_MSC GMT_LONG GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
+EXTERN_MSC void GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC GMT_LONG GMT_getrgb_index (struct GMT_CTRL *C, double *rgb);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */
@@ -275,7 +275,7 @@ EXTERN_MSC void gmt_set_double_ptr (double **ptr, double *array);
 EXTERN_MSC void gmt_set_char_ptr (char **ptr, char *array);
 EXTERN_MSC void GMT_free_dataset_ptr (struct GMT_CTRL *C, struct GMT_DATASET *data);
 EXTERN_MSC void GMT_free_textset_ptr (struct GMT_CTRL *C, struct GMT_TEXTSET *data);
-EXTERN_MSC GMT_LONG GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P);
+EXTERN_MSC void GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P);
 EXTERN_MSC void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, GMT_BOOLEAN free_grid);
 EXTERN_MSC void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, GMT_BOOLEAN free_matrix);
 EXTERN_MSC void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, GMT_BOOLEAN free_vector);

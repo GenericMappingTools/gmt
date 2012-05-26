@@ -51,7 +51,7 @@ struct GRDFFT_CTRL {
 	struct E {	/* -E[x_or_y][w] */
 		GMT_BOOLEAN active;
 		GMT_BOOLEAN give_wavelength;
-		GMT_LONG mode;
+		GMT_LONG mode;	/*-1/0/+1 */
 	} E;
 	struct F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
 		GMT_BOOLEAN active;
@@ -119,8 +119,8 @@ struct F_INFO {
 	p_func_d filter;		/* Points to the correct filter function */
 	GMT_BOOLEAN do_this[3];	/* T/F this filter wanted for r, x, and y	*/
 	GMT_BOOLEAN set_already;	/* TRUE if we already filled in the structure */
-	GMT_LONG kind;		/* FILTER_EXP, FILTER_BW, FILTER_COS  */
-	GMT_LONG arg;		/* 0 = Gaussian, 1 = Butterworth, 2 = cosine taper,  */
+	COUNTER_MEDIUM kind;	/* FILTER_EXP, FILTER_BW, FILTER_COS  */
+	COUNTER_MEDIUM arg;	/* 0 = Gaussian, 1 = Butterworth, 2 = cosine taper,  */
 };
 
 struct FFT_SUGGESTION {
@@ -976,7 +976,7 @@ GMT_LONG GMT_grdfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-void add_operation (struct GMT_CTRL *C, struct GRDFFT_CTRL *Ctrl, GMT_LONG operation, GMT_LONG n_par, double *par)
+void add_operation (struct GMT_CTRL *C, struct GRDFFT_CTRL *Ctrl, GMT_LONG operation, COUNTER_MEDIUM n_par, double *par)
 {
 	Ctrl->n_op_count++;
 	Ctrl->operation = GMT_memory (C, Ctrl->operation, Ctrl->n_op_count, GMT_LONG);

@@ -1491,9 +1491,10 @@ int gmt_x_write (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n)
 	return (GMT_NOERROR);
 }
 
-COUNTER_MEDIUM gmt_bin_output (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n, double *ptr)
+GMT_LONG gmt_bin_output (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n, double *ptr)
 {
-	COUNTER_MEDIUM i, k, n_out, col_pos;
+	GMT_LONG k;
+	COUNTER_MEDIUM i, n_out, col_pos;
 	
 	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
 	if (C->current.setting.io_lonlat_toggle[GMT_OUT]) d_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
@@ -3307,8 +3308,8 @@ GMT_LONG gmt_get_dms_order (struct GMT_CTRL *C, char *text, struct GMT_GEO_IO *S
 	 * Items not encountered are left as -1.
 	 */
 
-	COUNTER_MEDIUM j, n_d, n_m, n_s, n_x, n_dec, n_delim, order, error = 0;
-	GMT_LONG sequence[3], last, i_signed;
+	COUNTER_MEDIUM j, n_d, n_m, n_s, n_x, n_dec, order, error = 0;
+	GMT_LONG sequence[3], last, i_signed, n_delim;
 	size_t i1, i;
 	GMT_BOOLEAN big_to_small;
 
