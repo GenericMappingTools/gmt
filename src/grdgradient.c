@@ -431,7 +431,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		x_factor = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
 	}
 	for (row = ij0 = 0; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
-		if (GMT_is_geographic (GMT, GMT_IN) && Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
+		if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = -1.0 / (2.0 * dx_grid);	/* Use previous value at the poles */

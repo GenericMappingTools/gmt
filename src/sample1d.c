@@ -132,7 +132,8 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG col;
 	size_t len;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
@@ -202,9 +203,9 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
-				n = atoi (opt->arg);
-				n_errors += GMT_check_condition (GMT, n < 0, "Syntax error -T option: Column number cannot be negative\n");
-				Ctrl->T.col = n;
+				col = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
+				Ctrl->T.col = col;
 				break;
 
 			default:	/* Report bad options */

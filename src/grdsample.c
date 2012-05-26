@@ -142,7 +142,10 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
 				sprintf (format, "%d+/%d+", ii, jj);
-				GMT_getinc (GMT, format, Ctrl->I.inc);
+				if (GMT_getinc (GMT, format, Ctrl->I.inc)) {
+					GMT_inc_syntax (GMT, 'I', 1);
+					n_errors++;
+				}
 				break;
 #endif
 			case 'T':	/* Convert from pixel file <-> gridfile */
