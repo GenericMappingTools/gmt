@@ -80,11 +80,11 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-GMT_LONG gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
+COUNTER_MEDIUM gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
 
-	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (1);
+	if (GMT_is_dnan (xx) || GMT_is_dnan (yy)) return (2);
 
 	/* First check if the xx and yy are within the grid.
 	   16-Sep-2007: Added some slack (GMT_SMALL) here to avoid setting to NaN points

@@ -80,8 +80,8 @@ EXTERN_MSC double GMT_xx_to_x (struct GMT_CTRL *C, double xx);
 EXTERN_MSC double GMT_yy_to_y (struct GMT_CTRL *C, double yy);
 EXTERN_MSC double GMT_zz_to_z (struct GMT_CTRL *C, double zz);
 EXTERN_MSC GMT_LONG GMT_y2_to_y4_yearfix (struct GMT_CTRL *C, COUNTER_MEDIUM y2);	/* Convert a 2-digit year to a 4-digit year */
-EXTERN_MSC GMT_LONG GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d);	/* Check range of month and day for Gregorian YMD calendar values  */
-EXTERN_MSC GMT_LONG GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d);	/* Check range of week and day for ISO W calendar.  */
+EXTERN_MSC GMT_BOOLEAN GMT_g_ymd_is_bad (GMT_LONG y, GMT_LONG m, GMT_LONG d);	/* Check range of month and day for Gregorian YMD calendar values  */
+EXTERN_MSC GMT_BOOLEAN GMT_iso_ywd_is_bad (GMT_LONG y, GMT_LONG w, GMT_LONG d);	/* Check range of week and day for ISO W calendar.  */
 EXTERN_MSC GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, COUNTER_LARGE np, double *work_x, double *work_y);
 EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *C, double y);
 EXTERN_MSC void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, GMT_BOOLEAN init); /* step a time axis by time units */

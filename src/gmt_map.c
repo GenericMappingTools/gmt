@@ -378,8 +378,6 @@ void GMT_lat_swap_init (struct GMT_CTRL *C)
 		C->current.proj.GMT_lat_swap_vals.c[i][2] *= 4.0;
 		C->current.proj.GMT_lat_swap_vals.c[i][3] *= 8.0;
 	}
-
-	return;
 }
 
 /* The *_outside routines return the status of the current point.
@@ -856,7 +854,7 @@ GMT_LONG gmt_map_jump_x (struct GMT_CTRL *C, double x0, double y0, double x1, do
 
 	if (!(GMT_IS_CYLINDRICAL (C) || GMT_IS_MISC (C))) return (0);	/* Only projections with peroidic boundaries may apply */
 
-	if (!GMT_is_geographic (C, GMT_IN) || fabs (C->common.R.wesn[XLO] - C->common.R.wesn[XHI]) < 90.0) return (FALSE);
+	if (!GMT_is_geographic (C, GMT_IN) || fabs (C->common.R.wesn[XLO] - C->common.R.wesn[XHI]) < 90.0) return (0);
 
 	map_half_size = MAX (GMT_half_map_width (C, y0), GMT_half_map_width (C, y1));
 	if (fabs (map_half_size) < GMT_SMALL) return (0);
@@ -4728,7 +4726,7 @@ GMT_LONG gmt_horizon_search (struct GMT_CTRL *C, double w, double e, double s, d
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_map_outside (struct GMT_CTRL *C, double lon, double lat)
+GMT_BOOLEAN GMT_map_outside (struct GMT_CTRL *C, double lon, double lat)
 {	/* Save current status in previous status and update current in/out status */
 	C->current.map.prev_x_status = C->current.map.this_x_status;
 	C->current.map.prev_y_status = C->current.map.this_y_status;
