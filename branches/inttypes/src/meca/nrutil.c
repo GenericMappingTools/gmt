@@ -5,12 +5,11 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
 #define NR_END 1
 #define FREE_ARG char*
-#ifndef _WIN64
-typedef long GMT_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
-#else
-typedef __int64 GMT_LONG;
+#ifndef GMT_LONG
+typedef int GMT_LONG;
 #endif
 
 void nrerror (char error_text[])
