@@ -5567,7 +5567,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 			/* Each word p will be of the form factor*[cos|sin|exp]([<scale>](<name>[-<origin>]))[^<power>] */
 			if ((f = strchr (word, '*')) == NULL) {	/* No basis function, just a constant, the intercept term */
 				c->factor = atof (word);
-				c->modifier = (p_func_d) MGD77_Copy;
+				c->modifier = &MGD77_Copy;
 				c->origin = 0.0;
 				c->power = c->scale = 1.0;
 				c->id = -1;	/* Means it is jus a constant factor - no fancy calculations needed */
@@ -5577,19 +5577,19 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 				p = basis;
 				c->factor = atof (factor);
 				if (p[0] == 'C' || p[0] == 'c') {	/* Need cosine transformation */
-					c->modifier = (p_func_d) MGD77_Cosd;
+					c->modifier = &MGD77_Cosd;
 					p += 3;
 				}
 				else if (p[0] == 'S' || p[0] == 's') {	/* Need sine transformation */
-					c->modifier = (p_func_d) MGD77_Sind;
+					c->modifier = &MGD77_Sind;
 					p += 3;
 				}
 				else if (p[0] == 'E' || p[0] == 'e') {	/* Need exponential transformation */
-					c->modifier = (p_func_d) exp;
+					c->modifier = &exp;
 					p += 3;
 				}
 				else					/* Nothing, just copy value */
-					c->modifier = (p_func_d) MGD77_Copy;
+					c->modifier = &MGD77_Copy;
 				if (p[0] != '(') {
 					GMT_report (C, GMT_MSG_FATAL, "Correction table format error line %d, term = %s: Expected 1st opening parenthesis!\n", rec, arguments);
 					GMT_exit (EXIT_FAILURE);

@@ -258,13 +258,13 @@ size_t GMTAPI_2D_to_index_F_cplx_imag (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 	return (2*((size_t)col * (size_t)dim) + (size_t)row + 1);	/* Complex grid, imag(2) component */
 }
 
-p_func_s GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
+p_func_z GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
 {
 	/* Return pointer to the required 2D-index function above.  Here
 	 * shape is either GMTAPI_ORDER_ROW (C) or GMTAPI_ORDER_COL (FORTRAN);
 	 * mode is either 0 (regular grid), 1 (complex real) or 2 (complex imag)
 	 */
-	p_func_s p = NULL;
+	p_func_z p = NULL;
 	
 	switch (mode) {
 		case GMT_IS_NORMAL:
@@ -363,7 +363,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 	
 	API->error = GMT_OK;		/* No error yet */
 	S_obj = API->object[API->current_item[direction]];		/* For shorthand purposes only */
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Next_IO_Source: Selected object %" GMT_LL "d\n", S_obj->ID);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Next_IO_Source: Selected object %d\n", S_obj->ID);
 	mode = (direction == GMT_IN) ? API->GMT->current.io.r_mode : API->GMT->current.io.w_mode;	/* Reading or writing */
 	S_obj->close_file = FALSE;		/* Do not want to close file pointers passed to us unless WE open them below */
 	/* Either use binary n_columns settings or initialize to unknown, i.e., GMT_MAX_COLUMNS */
@@ -476,7 +476,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 
 	/* A few things pertaining only to data/text tables */
 	API->GMT->current.io.rec_in_tbl_no = 0;	/* Start on new table */
-	S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? (p_func_vp)GMT_ascii_textinput : API->GMT->current.io.input;	/* The latter may point to ascii or binary input functions */
+	S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? &GMT_ascii_textinput : API->GMT->current.io.input;	/* The latter may point to ascii or binary input functions */
 
 	return (GMT_OK);		
 }
@@ -683,7 +683,7 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, int object_ID, 
 	struct GMT_PALETTE *P_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_CPT: Passed ID = %d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_CPT: Passed ID = %d and mode = %d\n", object_ID, mode);
 	
 	if (object_ID == GMTAPI_NOTSET) return_null (API, GMT_NO_INPUT);
 	API->error = GMT_OK;		/* No error yet */
@@ -824,7 +824,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	size_t n_alloc;
 	COUNTER_LARGE row, seg, ij;
 	COUNTER_MEDIUM n_cols = 0, col;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -1037,7 +1037,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	GMT_LONG item, error, default_method;
 	COUNTER_MEDIUM tbl, col, offset;
 	COUNTER_LARGE row, seg, ij;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_DATASET *D_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -1405,7 +1405,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	COUNTER_LARGE ij, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -1617,7 +1617,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	COUNTER_LARGE ij, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -1830,7 +1830,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	COUNTER_LARGE ij, ijp, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -3166,7 +3166,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 	COUNTER_LARGE *p = NULL, ij;
 	char *t_record = NULL;
 	void *record = NULL;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_TEXTSET *DT_obj = NULL;
 	struct GMT_DATASET *DS_obj = NULL;
@@ -3383,7 +3383,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 	COUNTER_LARGE *p = NULL, ij;
 	char *s = NULL;
 	double *d = NULL;
-	p_func_s GMT_2D_to_index;
+	p_func_z GMT_2D_to_index;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;

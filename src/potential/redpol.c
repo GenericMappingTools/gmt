@@ -1067,7 +1067,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				Ctrl->C.use_igrf = FALSE;
 				break;
 			case 'F':
-				j = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
+				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = TRUE;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: number of filter coefficients must be odd\n");

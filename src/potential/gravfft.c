@@ -335,7 +335,7 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 					return (GMT_OK);
 				}
 				else {
-					if ((sscanf(opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.nx2, &Ctrl->N.ny2)) != 2) n_errors++;
+					if ((sscanf(opt->arg, "%d/%d", &Ctrl->N.nx2, &Ctrl->N.ny2)) != 2) n_errors++;
 					if (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0) n_errors++;
 					Ctrl->N.n_user_set = TRUE;
 				}

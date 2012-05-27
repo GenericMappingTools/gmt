@@ -62,7 +62,7 @@ struct GMTAPI_DATA_OBJECT {
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
-	p_func_vp import;			/* Pointer to input function (for DATASET/TEXTSET only) */
+	p_func_p import;			/* Pointer to input function (for DATASET/TEXTSET only) */
 };
 
 struct GMTAPI_CTRL {
