@@ -3647,7 +3647,7 @@ GMT_LONG GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double x
 	if (G->angle_type == 0)
 		G->no_gap = (G->just < 5 || G->just > 7);	/* Don't clip contour if label is not in the way */
 	else if (G->angle_type == 1)
-		G->no_gap = ((G->just + 2)%4);	/* Don't clip contour if label is not in the way */
+		G->no_gap = ((G->just + 2)%4 != 0);	/* Don't clip contour if label is not in the way */
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
 		G->xp = GMT_memory (C, NULL, 1, struct GMT_TABLE);
@@ -5052,7 +5052,7 @@ void GMT_get_plot_array (struct GMT_CTRL *C) {	/* Allocate more space for plot a
 	C->current.plot.n_alloc = (C->current.plot.n_alloc == 0) ? GMT_CHUNK : (C->current.plot.n_alloc << 1);
 	C->current.plot.x = GMT_memory (C, C->current.plot.x, C->current.plot.n_alloc, double);
 	C->current.plot.y = GMT_memory (C, C->current.plot.y, C->current.plot.n_alloc, double);
-	C->current.plot.pen = GMT_memory (C, C->current.plot.pen, C->current.plot.n_alloc, GMT_LONG);
+	C->current.plot.pen = GMT_memory (C, C->current.plot.pen, C->current.plot.n_alloc, COUNTER_MEDIUM);
 }
 
 GMT_LONG GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefix, char *format)

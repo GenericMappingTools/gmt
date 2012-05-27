@@ -1357,7 +1357,7 @@ void gmt_theta_r_map_boundary (struct GMT_CTRL *C, struct PSL_CTRL *P, double w,
 	}
 }
 
-void gmt_map_tick (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double *yy, GMT_LONG *sides, double *angles, COUNTER_MEDIUM nx, COUNTER_MEDIUM type, double len)
+void gmt_map_tick (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double *yy, COUNTER_MEDIUM *sides, double *angles, COUNTER_MEDIUM nx, COUNTER_MEDIUM type, double len)
 {
 	double angle, xl, yl, c, s, tick_length;
 	COUNTER_MEDIUM i;
@@ -1428,7 +1428,7 @@ GMT_BOOLEAN gmt_annot_too_crowded (struct GMT_CTRL *C, double x, double y, COUNT
 	return (FALSE);
 }
 
-void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double *yy, GMT_LONG *sides, double *line_angles, char *label, COUNTER_MEDIUM nx, COUNTER_MEDIUM type, GMT_BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
+void gmt_map_symbol (struct GMT_CTRL *C, struct PSL_CTRL *P, double *xx, double *yy, COUNTER_MEDIUM *sides, double *line_angles, char *label, COUNTER_MEDIUM nx, COUNTER_MEDIUM type, GMT_BOOLEAN annot, COUNTER_MEDIUM level, COUNTER_MEDIUM form)
 {
 	/* type = 0 for lon and 1 for lat */
 
@@ -2338,7 +2338,7 @@ void gmt_echo_command (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_OPTION
 	PSL_command (P, "%s\n", outstring);
 }
 
-void gmt_NaN_pen_up (double x[], double y[], GMT_LONG pen[], COUNTER_MEDIUM n)
+void gmt_NaN_pen_up (double x[], double y[], COUNTER_MEDIUM pen[], COUNTER_MEDIUM n)
 {
 	/* Ensure that if there are NaNs we set pen = PSL_MOVE */
 
@@ -2352,7 +2352,7 @@ void gmt_NaN_pen_up (double x[], double y[], GMT_LONG pen[], COUNTER_MEDIUM n)
 	}
 }
 
-void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, COUNTER_MEDIUM n)
+void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, COUNTER_MEDIUM *pen, COUNTER_MEDIUM n)
 {
 	COUNTER_MEDIUM i, j, i1;
 	GMT_LONG way;
@@ -3207,9 +3207,9 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 	}
 	else if (G->crossing) {	/* Draw a thin line */
 		COUNTER_LARGE seg;
-		GMT_LONG *pen = NULL;
+		COUNTER_MEDIUM *pen = NULL;
 		for (seg = 0; seg < G->xp->n_segments; seg++) {
-			pen = GMT_memory (C, NULL, G->xp->segment[seg]->n_rows, GMT_LONG);
+			pen = GMT_memory (C, NULL, G->xp->segment[seg]->n_rows, COUNTER_MEDIUM);
 			for (row = 1, pen[0] = PSL_MOVE; row < G->xp->segment[seg]->n_rows; row++) pen[row] = PSL_DRAW;
 			GMT_plot_line (C, G->xp->segment[seg]->coord[GMT_X], G->xp->segment[seg]->coord[GMT_Y], pen, G->xp->segment[seg]->n_rows);
 			GMT_free (C, pen);
@@ -3220,13 +3220,13 @@ void gmt_contlabel_debug (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CON
 void gmt_contlabel_drawlines (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_CONTOUR *G, COUNTER_MEDIUM mode)
 {
 	COUNTER_LARGE seg, k;
-	GMT_LONG *pen = NULL;
+	COUNTER_MEDIUM *pen = NULL;
 	struct GMT_CONTOUR_LINE *L = NULL;
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (L->annot && mode == 1) continue; /* Annotated lines done with curved text routine */
 		GMT_setpen (C, &L->pen);
-		pen = GMT_memory (C, NULL, L->n, GMT_LONG);
+		pen = GMT_memory (C, NULL, L->n, COUNTER_MEDIUM);
 		for (k = 1, pen[0] = PSL_MOVE; k < L->n; k++) pen[k] = PSL_DRAW;
 		PSL_comment (P, "%s: %s\n", G->line_name, L->name);
 		GMT_plot_line (C, L->x, L->y, pen, L->n);

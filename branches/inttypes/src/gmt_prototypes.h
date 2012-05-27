@@ -65,7 +65,7 @@ EXTERN_MSC GMT_LONG GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct G
 EXTERN_MSC GMT_LONG GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, COUNTER_MEDIUM *pad, GMT_LONG complex);
 EXTERN_MSC GMT_LONG GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, COUNTER_MEDIUM *pad, GMT_LONG complex);
 EXTERN_MSC GMT_LONG GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HEADER *header);
-EXTERN_MSC GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, GMT_LONG interpolant);
+EXTERN_MSC GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, COUNTER_MEDIUM interpolant);
 EXTERN_MSC GMT_LONG GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, COUNTER_MEDIUM mode);
 EXTERN_MSC GMT_LONG GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, char mode);
 EXTERN_MSC GMT_LONG GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, GMT_LONG row_no, float *row);
@@ -101,7 +101,7 @@ EXTERN_MSC void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], COUN
 EXTERN_MSC void GMT_map_basemap (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_map_clip_off (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_map_clip_on (struct GMT_CTRL *C, double rgb[], COUNTER_MEDIUM flag);
-EXTERN_MSC void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, GMT_LONG *pen, COUNTER_MEDIUM n);
+EXTERN_MSC void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, COUNTER_MEDIUM *pen, COUNTER_MEDIUM n);
 EXTERN_MSC void GMT_setpen (struct GMT_CTRL *C, struct GMT_PEN *pen);
 EXTERN_MSC void GMT_setfill (struct GMT_CTRL *C, struct GMT_FILL *fill, GMT_LONG outline);
 EXTERN_MSC void GMT_vertical_axis (struct GMT_CTRL *C, COUNTER_MEDIUM mode);

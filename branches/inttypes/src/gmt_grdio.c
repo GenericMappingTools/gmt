@@ -1143,7 +1143,7 @@ GMT_BOOLEAN GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	return (FALSE);
 }
 
-GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, GMT_LONG interpolant)
+GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, COUNTER_MEDIUM interpolant)
 {
 	/* GMT_grd_setregion determines what w,e,s,n should be passed to GMT_read_grd.
 	 * It does so by using C->common.R.wesn which have been set correctly by map_setup.
@@ -1163,7 +1163,7 @@ GMT_LONG GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *we
 	 * 2 = All other
 	 */
 
-	GMT_LONG grid_global;
+	GMT_BOOLEAN grid_global;
 	double shift_x, x_range, off;
 
 	/* First make an educated guess whether the grid and region are geographical and global */

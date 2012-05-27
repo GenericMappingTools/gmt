@@ -225,7 +225,7 @@ struct GMT_PROJ {
 
 	/* Common projection parameters */
 
-	GMT_LONG projection;		/* Gives the id number for the projection used */
+	GMT_LONG projection;		/* Gives the id number for the projection used (-1 if not set) */
 
 	GMT_BOOLEAN units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
 	GMT_BOOLEAN north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
