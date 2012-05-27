@@ -142,15 +142,15 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	p_func_b overlap;			/* Pointer to function checking for overlap between 2 regions */
 	p_func_b will_it_wrap;			/* TRUE if consecutive points indicate wrap */
 	p_func_l jump;				/* TRUE if we jump in x or y */
-	p_func_l crossing;			/* Pointer to functions returning crossover point at boundary */
-	p_func_l clip;				/* Pointer to functions that clip a polygon to fit inside map */
+	p_func_u4 crossing;			/* Pointer to functions returning crossover point at boundary */
+	p_func_u8 clip;				/* Pointer to functions that clip a polygon to fit inside map */
 	p_func_d left_edge, right_edge;		/* Pointers to functions that return left/right edge of map */
 	struct GMT_DIST dist[3];		/* Pointers to functions/scales returning distance between two points points */
 	p_func_b near_lines_func;		/* Pointer to function returning distance to nearest line among a set of lines */
 	p_func_b near_a_line_func;		/* Pointer to function returning distance to line */
 	p_func_b near_point_func;		/* Pointer to function returning distance to nearest point */
 	p_func_b this_point_wraps;		/* Used in above */
-	p_func_l wrap_around_check;		/* Does x or y wrap checks */
+	p_func_u4 wrap_around_check;		/* Does x or y wrap checks */
 	p_func_l truncate;			/* Truncate polygons agains boundaries */
 	p_func_d azimuth_func;			/* Pointer to function returning azimuth between two points points */
 	p_func_v get_crossings;			/* Returns map crossings in x or y */
@@ -215,7 +215,7 @@ struct GMT_SESSION {
 	/* These are parameters that is set once at the start of a GMT session and
 	 * are essentially read-only constants for the duration of the session */
 	FILE *std[3];			/* Pointers for standard input, output, and error */
-	p_func_vp input_ascii;		/* Pointer to function reading ascii tables only */
+	p_func_p input_ascii;		/* Pointer to function reading ascii tables only */
 	p_func_l output_ascii;		/* Pointer to function writing ascii tables only */
 	COUNTER_MEDIUM n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
 	COUNTER_MEDIUM n_user_media;	/* Total number of user media returned by gmt_load_user_media */

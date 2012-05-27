@@ -43,7 +43,7 @@ EXTERN_MSC GMT_LONG gmt_ogr_get_type (char *item);
 EXTERN_MSC void gmt_plot_C_format (struct GMT_CTRL *C);
 EXTERN_MSC void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S, COUNTER_MEDIUM mode);
 EXTERN_MSC void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, COUNTER_MEDIUM mode);
-EXTERN_MSC char * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *ncol, GMT_LONG *status);
+EXTERN_MSC void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *ncol, GMT_LONG *status);
 EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC COUNTER_MEDIUM GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 EXTERN_MSC GMT_LONG GMT_nc_get_att_text (struct GMT_CTRL *C, int ncid, int varid, char *name, char *text, size_t textlen);

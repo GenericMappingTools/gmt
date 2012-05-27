@@ -354,14 +354,14 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	COUNTER_MEDIUM type;	/* Data type e.g., GMTAPI_FLOAT */
 	int skip;		/* Rather than read/write an item, jump skip bytes */
-	p_func_i io;		/* Pointer to the correct read or write function given type/swab */
+	p_func_l io;		/* Pointer to the correct read or write function given type/swab */
 };
 
 struct GMT_IO {				/* Used to process input data records */
-	p_func_vp input;		/* Pointer to function reading ascii or binary tables */
+	p_func_p input;			/* Pointer to function reading ascii or binary tables */
 	p_func_l output;		/* Pointer to function writing ascii or binary tables */
-	p_func_i read_item;		/* Pointer to function reading 1-col z tables in grd2xyz */
-	p_func_i write_item;		/* Pointer to function writing 1-col z tables in xyz2grd */
+	p_func_l read_item;		/* Pointer to function reading 1-col z tables in grd2xyz */
+	p_func_l write_item;		/* Pointer to function writing 1-col z tables in xyz2grd */
 	p_func_b ogr_parser;		/* Set to handle either header or data OGR records */
 
 	COUNTER_MEDIUM pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */

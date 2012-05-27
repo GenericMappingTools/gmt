@@ -386,7 +386,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	/* Initialize parameters for this axis */
 
 	horizontal = (axis == GMT_X);	/* This is a horizontal axis */
-	xyz_fwd = (p_func_d) ((axis == GMT_X) ? GMT_x_to_xx : (axis == GMT_Y) ? GMT_y_to_yy : GMT_z_to_zz);
+	xyz_fwd = ((axis == GMT_X) ? &GMT_x_to_xx : (axis == GMT_Y) ? &GMT_y_to_yy : &GMT_z_to_zz);
 	primary = gmt_get_primary_annot (A);			/* Find primary axis items */
 	np = GMT_coordinate_array (C, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 	if (strchr (C->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = TRUE;	/* Annotations are orthogonal */
