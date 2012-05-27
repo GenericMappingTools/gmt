@@ -78,9 +78,11 @@ enum GMT_enum_blks {BLK_Z	= 0,
 	BLK_S		= 0,
 	BLK_L		= 1,
 	BLK_H		= 2};
+
 struct BLK_PAIR {	/* Used for weighted mean location */
 	double a[2];	/* a[0] = x, a[1] = y */
 };
+
 struct BLK_SLH {	/* Holds std, low, and high values */
 	double a[3];	/* a[0] = w.std, a[1] = min, a[2] = max */
 };
@@ -90,10 +92,10 @@ struct BLK_SLH {	/* Holds std, low, and high values */
 #define BLK_DO_INDEX_LO	4
 #define BLK_DO_INDEX_HI	8
 enum GMT_enum_blks {BLK_Z	= 2,
-	BLK_W		= 3};
+		BLK_W		= 3};
 struct BLK_DATA {
 	double a[4];		/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	COUNTER_LARGE i;	/* Index to data value */
+	COUNTER_LARGE ij;	/* Grid index for data value */
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
 	COUNTER_LARGE rec_no;	/* Data record on input */
 #endif

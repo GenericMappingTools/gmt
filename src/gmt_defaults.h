@@ -141,7 +141,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	COUNTER_MEDIUM ps_copies;		/* How man copies of each plot [>=1] */
 #endif
 	GMT_BOOLEAN ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
-	GMT_LONG ps_media;			/* Default paper media [25(Letter)] */
+	GMT_LONG ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
 	GMT_BOOLEAN ps_comments;			/* TRUE if we write comments in the PS file */
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
 	struct gmt_encoding ps_encoding;

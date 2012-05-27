@@ -287,7 +287,7 @@ struct GMT_QUAD {	/* Counting parameters needed to determine proper longitude mi
 
 struct GMT_CLOCK_IO {
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
-	GMT_LONG order[3];		/* The relative order of hour, mn, sec in input clock string */
+	GMT_LONG order[3];		/* The relative order of hour, mn, sec in input clock string (-ve if unused) */
 	COUNTER_MEDIUM n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
 	GMT_BOOLEAN compact;		/* TRUE if we do not want leading zeros in items (e.g., 03) */
 	GMT_BOOLEAN twelve_hr_clock;	/* TRUE if we are doing am/pm on output */
@@ -297,8 +297,8 @@ struct GMT_CLOCK_IO {
 };
 
 struct GMT_DATE_IO {
-	GMT_LONG item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string */
-	GMT_LONG item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string */
+	GMT_LONG item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string (-ve if unused) */
+	GMT_LONG item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string (-ve if unused) */
 	GMT_BOOLEAN Y2K_year;		/* TRUE if we have 2-digit years */
 	GMT_BOOLEAN truncated_cal_is_ok;	/* TRUE if we have YMD or YJ order so smallest unit is to the right */
 	GMT_BOOLEAN iso_calendar;		/* TRUE if we do ISO week calendar */
@@ -311,7 +311,7 @@ struct GMT_DATE_IO {
 
 struct GMT_GEO_IO {			/* For geographic output and plotting */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
-	GMT_LONG order[3];		/* The relative order of degree, minute, seconds in form */
+	GMT_LONG order[3];		/* The relative order of degree, minute, seconds in form (-ve if unused) */
 	COUNTER_MEDIUM range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	GMT_BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
 	GMT_BOOLEAN wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */

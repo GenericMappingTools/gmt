@@ -107,7 +107,7 @@ struct GMT_CONTOUR {
 	COUNTER_MEDIUM end_just[2];	/* Justification for end of lines */
 	COUNTER_MEDIUM angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
 	GMT_LONG hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
-	GMT_LONG no_gap;		/* Clip contour or not depends on label placement */
+	GMT_BOOLEAN no_gap;		/* Clip contour or not depends on label placement */
 	COUNTER_MEDIUM label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	GMT_BOOLEAN save_labels;		/* TRUE if we wish to save label locations to a text file */
 	GMT_BOOLEAN data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */

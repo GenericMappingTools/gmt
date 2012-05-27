@@ -199,8 +199,8 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE fi
 
 	if (go_quickly == 2) {	/* Return center of block instead of computing a representative location */
 		COUNTER_MEDIUM row, col;
-		row = GMT_row (h, data[node].i);
-		col = GMT_col (h, data[node].i);
+		row = GMT_row (h, data[node].ij);
+		col = GMT_col (h, data[node].ij);
 		out[GMT_X] = GMT_grd_col_to_x (GMT, col, h);
 		out[GMT_Y] = GMT_grd_row_to_y (GMT, row, h);
 		return;
@@ -356,7 +356,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		node = GMT_IJP (Grid->header, row, col);	/* Bin node */
 
 		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
-		data[n_pitched].i = node;
+		data[n_pitched].ij = node;
 		data[n_pitched].rec_no = n_read;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
 		if (!Ctrl->C.active) {	/* Need to store (x,y) so we can compute median location later */
@@ -414,7 +414,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			nz = 1;
 		}
 		first_in_new_cell = first_in_cell + 1;
-		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].i == data[first_in_cell].i)) {
+		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].ij == data[first_in_cell].ij)) {
 			weight += data[first_in_new_cell].a[BLK_W];
 			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
 				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);

@@ -328,7 +328,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		node = GMT_IJP (Grid->header, row, col);		/* Bin node */
 
 		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
-		data[n_pitched].i = node;
+		data[n_pitched].ij = node;
 		data[n_pitched].rec_no = n_read;
 		if (mode_xy) {	/* Need to store (x,y) so we can compute modal location later */
 			data[n_pitched].a[GMT_X] = in[GMT_X];
@@ -386,8 +386,8 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			nz = 1;
 		}
 		if (Ctrl->C.active) {	/* Use block center */
-			row = GMT_row (Grid->header, data[first_in_cell].i);
-			col = GMT_col (Grid->header, data[first_in_cell].i);
+			row = GMT_row (Grid->header, data[first_in_cell].ij);
+			col = GMT_col (Grid->header, data[first_in_cell].ij);
 			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
 			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}
@@ -396,7 +396,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			out[GMT_Y] = data[first_in_cell].a[GMT_Y];
 		}
 		first_in_new_cell = first_in_cell + 1;
-		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].i == data[first_in_cell].i)) {
+		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].ij == data[first_in_cell].ij)) {
 			weight += data[first_in_new_cell].a[BLK_W];	/* Summing up weights */
 			if (mode_xy) {
 				out[GMT_X] += data[first_in_new_cell].a[GMT_X];

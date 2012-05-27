@@ -570,7 +570,7 @@ GMT_BOOLEAN gmt_lon_inside (struct GMT_CTRL *C, double lon, double w, double e)
 	return (TRUE);
 }
 
-COUNTER_MEDIUM gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, GMT_LONG *sides)
+COUNTER_MEDIUM gmt_wesn_crossing (struct GMT_CTRL *C, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, COUNTER_MEDIUM *sides)
 {
 	/* Compute all crossover points of a line segment with the rectangular lat/lon boundaries
 	 * Since it may not be obvious which side the line may cross, and since in some cases the two points may be
@@ -716,7 +716,7 @@ GMT_BOOLEAN gmt_is_rect_corner (struct GMT_CTRL *C, double x, double y)
 	return (C->current.map.corner > 0);
 }
 
-COUNTER_MEDIUM gmt_rect_crossing (struct GMT_CTRL *C, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, GMT_LONG *sides)
+COUNTER_MEDIUM gmt_rect_crossing (struct GMT_CTRL *C, double lon0, double lat0, double lon1, double lat1, double *clon, double *clat, double *xx, double *yy, COUNTER_MEDIUM *sides)
 {
 	/* Compute all crossover points of a line segment with the boundaries in a rectangular projection */
 
@@ -777,11 +777,11 @@ COUNTER_MEDIUM gmt_rect_crossing (struct GMT_CTRL *C, double lon0, double lat0, 
 	for (i = 0; i < n; ++i) {
 		for (j = i + 1; j < n; ++j) {
 			if (doubleAlmostEqualZero (xx[i], xx[j]) && doubleAlmostEqualZero (yy[i], yy[j]))	/* Duplicate */
-				sides[j] = -9;	/* Mark as duplicate */
+				sides[j] = 99;	/* Mark as duplicate */
 		}
 	}
 	for (i = 1; i < n; i++) {
-		if (sides[i] == -9) {	/* This is a duplicate, overwrite */
+		if (sides[i] == 99) {	/* This is a duplicate, overwrite */
 			for (j = i + 1; j < n; j++) {
 				xx[j-1] = xx[j];
 				yy[j-1] = yy[j];
@@ -824,7 +824,7 @@ COUNTER_MEDIUM gmt_rect_crossing (struct GMT_CTRL *C, double lon0, double lat0, 
 	return (2);
 }
 
-COUNTER_MEDIUM gmt_radial_crossing (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, GMT_LONG *sides)
+COUNTER_MEDIUM gmt_radial_crossing (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double *clon, double *clat, double *xx, double *yy, COUNTER_MEDIUM *sides)
 {
 	/* Computes the lon/lat of a point that is f_horizon spherical degrees from
 	 * the origin and lies on the great circle between points 1 and 2 */
@@ -951,7 +951,7 @@ GMT_LONG GMT_eqdist_crossing (struct GMT_CTRL *C, double lon1, double lat1, doub
 
 /*  Routines to do with clipping */
 
-COUNTER_MEDIUM gmt_map_crossing (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, GMT_LONG *sides)
+COUNTER_MEDIUM gmt_map_crossing (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2, double *xlon, double *xlat, double *xx, double *yy, COUNTER_MEDIUM *sides)
 {
 	if (C->current.map.prev_x_status == C->current.map.this_x_status && C->current.map.prev_y_status == C->current.map.this_y_status) {
 		/* This is naive. We could have two points outside with a line drawn between crossing the plotting area. */
@@ -1093,7 +1093,7 @@ COUNTER_LARGE gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, C
 {
 	COUNTER_LARGE i, j = 0;
 	COUNTER_MEDIUM nx, k;
-	GMT_LONG sides[4];
+	COUNTER_MEDIUM sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1404,7 +1404,7 @@ GMT_LONG gmt_move_to_wesn (struct GMT_CTRL *C, double *x_edge, double *y_edge, d
 COUNTER_LARGE gmt_wesn_clip_old (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARGE n, double **x, double **y, COUNTER_LARGE *total_nx)
 {
 	COUNTER_LARGE i, j = 0, nx, k;
-	GMT_LONG sides[4];
+	COUNTER_MEDIUM sides[4];
 	size_t n_alloc = GMT_CHUNK;
 	double xlon[4], xlat[4], xc[4], yc[4], *xx = NULL, *yy = NULL;
 
@@ -1714,7 +1714,7 @@ COUNTER_LARGE gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, COU
 	size_t n_alloc = 0;
 	COUNTER_LARGE n = 0, n_arc;
 	COUNTER_MEDIUM i, nx;
-	GMT_LONG sides[4];
+	COUNTER_MEDIUM sides[4];
 	GMT_BOOLEAN this = FALSE, add_boundary = FALSE;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
@@ -5882,7 +5882,7 @@ COUNTER_LARGE GMT_geo_to_xy_line (struct GMT_CTRL *C, double *lon, double *lat, 
 	 * a point has lon = NaN or lat = NaN (this means "pick up pen") */
 	COUNTER_LARGE j, np;
  	GMT_BOOLEAN inside;
-	GMT_LONG sides[4];
+	COUNTER_MEDIUM sides[4];
 	COUNTER_MEDIUM nx;
 	double xlon[4], xlat[4], xx[4], yy[4];
 	double this_x, this_y, last_x, last_y, dummy[4];
