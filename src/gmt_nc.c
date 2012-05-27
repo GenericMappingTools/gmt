@@ -352,12 +352,14 @@ GMT_LONG gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char jo
 		if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
 		if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
 		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
-		if (nc_get_att_double (ncid, z_id, "actual_range", dummy) && nc_get_att_double (ncid, z_id, "valid_range", dummy))
-			{ /* Leave values to their defaults (NaN) */ }
-		else {
+		if (!nc_get_att_double (ncid, z_id, "actual_range", dummy)) {
 			/* z-limits need to be converted from actual to internal grid units. */
 			header->z_min = (dummy[0] - header->z_add_offset) / header->z_scale_factor;
 			header->z_max = (dummy[1] - header->z_add_offset) / header->z_scale_factor;
+		}
+		else if (!nc_get_att_double (ncid, z_id, "valid_range", dummy)) {
+			/* Valid range is already in packed units, so do not convert */
+			header->z_min = dummy[0], header->z_max = dummy[1];
 		}
 
 		/* Get grid buffer */
@@ -487,7 +489,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
 	 
-	size_t start[5] = {0,0,0,0,0}, edge[5] = {1,1,1,1,1};
+	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
 	int ncid, ndims;
 	GMT_LONG first_col, last_col, first_row, last_row, check, *k = NULL;
 	GMT_LONG i, j, width_in, width_out, height_in, i_0_out, inc, off, err;
@@ -526,7 +528,9 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 
 	for (i = 0; i < ndims-2; i++) start[i] = header->t_index[i];
 
-	edge[header->xy_dim[0]] = header->nx;
+#if 1
+	count[header->xy_dim[0]] = header->nx;
+
 	if (header->y_order < 0)
 		ij = (size_t)pad[YHI] * (size_t)width_out + (size_t)i_0_out;
 	else {		/* Flip around the meaning of first and last row */
@@ -535,11 +539,11 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 		first_row = header->ny - 1 - last_row;
 		last_row = header->ny - 1 - j;
 	}
-	header->z_min =  DBL_MAX;	header->z_max = -DBL_MAX;
+	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 
 	for (j = first_row; j <= last_row; j++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
 		start[header->xy_dim[1]] = j;
-		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
+		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, tmp));	/* Get one row */
 		for (i = 0, kk = ij; i < width_in; i++, kk+=inc) {	/* Check for and handle NaN proxies */
 			grid[kk] = tmp[k[i]];
 			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
@@ -548,6 +552,16 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
 		}
 	}
+#else
+	count[header->xy_dim[0]] = width_in;
+	count[header->xy_dim[1]] = height_in;
+	imap[header->xy_dim[0]] = inc;
+	imap[header->xy_dim[1]] = width_out;
+	ij = (size_t)pad[YHI] * (size_t)width_out + (size_t)i_0_out;
+	fprintf (stderr, "Start nc_get_vara_float\n");
+	GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, &grid[ij]));
+	fprintf (stderr, "End nc_get_vara_float\n");
+#endif
 
 	header->nx = (int)width_in;
 	header->ny = (int)height_in;
@@ -570,11 +584,11 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 *		for real and imaginary parts when processed by grdfft etc.
 	 */
 
-	size_t start[2] = {0,0}, edge[2] = {1,1};
-	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out, node;
+	size_t start[2] = {0,0}, count[2] = {1,1};
+	GMT_LONG i, j, inc, off, nr_oor = 0, err, width_in, width_out, height_out, node, nan_i, check;
 	GMT_LONG first_col, last_col, first_row, last_row, *k = NULL;
 	size_t ij;	/* To allow 64-bit addressing on 64-bit systems */
-	float *tmp_f = NULL;
+	float *tmp_f = NULL, nan_f;
 	int *tmp_i = NULL;
 	double limit[2] = {FLT_MIN, FLT_MAX}, value;
 	nc_type z_type;
@@ -619,14 +633,16 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 
 	/* Set start position for writing grid */
 
-	edge[1] = width_out;
+	count[1] = width_out;
 	ij = (size_t)first_col + (size_t)pad[XLO] + ((size_t)last_row + (size_t)pad[YHI]) * (size_t)width_in;
-	header->z_min =  DBL_MAX;	header->z_max = -DBL_MAX;
+	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
+	check = !GMT_is_dnan (header->nan_value);
 
 	/* Store z-variable. Distinguish between floats and integers */
 
 	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
 		tmp_f = GMT_memory (C, NULL, width_in, float);
+		nan_f = (float)header->nan_value;
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
@@ -636,41 +652,46 @@ GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 				}
 				value = grid[node];
 				if (GMT_is_dnan (value))
-					tmp_f[i] = (float)header->nan_value;
+					tmp_f[i] = nan_f;
 				else if (fabs(value) > FLT_MAX) {
-					tmp_f[i] = (float)header->nan_value;
+					tmp_f[i] = nan_f;
 					nr_oor++;
 				}
 				else {
 					tmp_f[i] = (float)value;
-					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
-					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
+					if (!check || tmp_f[i] != nan_f) {
+						header->z_min = MIN (header->z_min, (double)tmp_f[i]);
+						header->z_max = MAX (header->z_max, (double)tmp_f[i]);
+					}
 				}
 			}
-			GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, edge, tmp_f));
+			GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, tmp_f));
 		}
 		GMT_free (C, tmp_f);
 	}
 
 	else { /* z_type != NC_FLOAT && z_type != NC_DOUBLE */
 		tmp_i = GMT_memory (C, NULL, width_in, int);
+		nan_i = lrint (header->nan_value);
 		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
 			start[0] = j;
 			for (i = 0; i < width_out; i++) {
 				value = grid[inc*(ij+k[i])+off];
 				if (GMT_is_dnan (value))
-					tmp_i[i] = lrint (header->nan_value);
+					tmp_i[i] = nan_i;
 				else if (value <= limit[0] || value >= limit[1]) {
-					tmp_i[i] = lrint (header->nan_value);
+					tmp_i[i] = nan_i;
 					nr_oor++;
 				}
 				else {
 					tmp_i[i] = lrint (value);
-					header->z_min = MIN (header->z_min, (double)tmp_i[i]);
-					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
+					if (!check || tmp_i[i] != nan_i) {
+						header->z_min = MIN (header->z_min, (double)tmp_i[i]);
+						header->z_max = MAX (header->z_max, (double)tmp_i[i]);
+					}
 				}
 			}
-			GMT_err_trap (nc_put_vara_int (header->ncid, header->z_id, start, edge, tmp_i));
+			GMT_err_trap (nc_put_vara_int (header->ncid, header->z_id, start, count, tmp_i));
 		}
 		GMT_free (C, tmp_i);
 	}
