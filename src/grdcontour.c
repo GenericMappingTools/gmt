@@ -1059,7 +1059,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (need_proj && (nn = GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
-						GMT_get_format (GMT, cval, Ctrl->contour.unit, CNULL, format);
+						GMT_get_format (GMT, cval, Ctrl->contour.unit, NULL, format);
 						sprintf (cont_label, format, cval);
 					}
 					else
@@ -1095,7 +1095,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (make_plot) {
-		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, CNULL, 0.0);
+		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, NULL, 0.0);
 
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
 			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);

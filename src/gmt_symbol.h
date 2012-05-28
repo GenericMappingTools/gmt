@@ -37,7 +37,9 @@
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3], const_val[2];
-	GMT_LONG action, conditional, operator, negate, var;
+	GMT_LONG action, operator, var;
+	COUNTER_MEDIUM conditional;
+	GMT_BOOLEAN negate;
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;

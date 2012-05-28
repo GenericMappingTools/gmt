@@ -156,7 +156,7 @@ size_t GMT_strlcmp (char *str1, char *str2)
 	return i;
 }
 
-GMT_LONG GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *pos, char *token)
+COUNTER_MEDIUM GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *pos, char *token)
 {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator

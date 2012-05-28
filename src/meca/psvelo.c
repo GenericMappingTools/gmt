@@ -523,7 +523,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 

@@ -4651,7 +4651,7 @@ GMT_BOOLEAN gmt_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this
 
 		case 3:
 			if (G->spacing) {	/* Distances are even so use special contour format */
-				GMT_get_format (C, this_dist * C->session.u2u[GMT_INCH][G->dist_unit], G->unit, CNULL, format);
+				GMT_get_format (C, this_dist * C->session.u2u[GMT_INCH][G->dist_unit], G->unit, NULL, format);
 				sprintf (this_label, format, this_dist * C->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			else {
@@ -9181,7 +9181,7 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	P = calloc (1, sizeof (struct MEMORY_TRACKER));
 	P->n_alloc = GMT_CHUNK;
 	P->item = calloc (P->n_alloc, sizeof (struct MEMORY_ITEM));
-	P->active = ((c = getenv ("GMT_MEM")) == CNULL);
+	P->active = ((c = getenv ("GMT_MEM")) == NULL);
 	*M = P;
 }
 
@@ -9308,7 +9308,7 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	struct MEMORY_TRACKER *P = NULL;
 	char *c = NULL;
 	P = calloc (1, sizeof (struct MEMORY_TRACKER));
-	P->active = ((c = getenv ("GMT_MEM")) == CNULL);
+	P->active = ((c = getenv ("GMT_MEM")) == NULL);
 	P->search = TRUE;
 	P->list_tail = calloc (1, sizeof *P->list_tail);
 	P->list_tail->l = P->list_tail;	P->list_tail->r = P->list_tail;

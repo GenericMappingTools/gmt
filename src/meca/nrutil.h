@@ -10,7 +10,7 @@ void nrerror(char error_text[]);
 float *vector(GMT_LONG nl, GMT_LONG nh);
 GMT_LONG *ivector(GMT_LONG nl, GMT_LONG nh);
 unsigned char *cvector(GMT_LONG nl, GMT_LONG nh);
-size_t *lvector(GMT_LONG nl, GMT_LONG nh);
+int64_t *lvector(GMT_LONG nl, GMT_LONG nh);
 double *dvector(GMT_LONG nl, GMT_LONG nh);
 float **matrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);
 double **dmatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch);

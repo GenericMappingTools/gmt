@@ -154,7 +154,7 @@ void x2sys_set_home (struct GMT_CTRL *C)
 
 	if (X2SYS_HOME) return;	/* Already set elsewhere */
 
-	if ((this = getenv ("X2SYS_HOME")) != CNULL) {	/* Set user's default path */
+	if ((this = getenv ("X2SYS_HOME")) != NULL) {	/* Set user's default path */
 		X2SYS_HOME = GMT_memory (C, NULL, strlen (this) + 1, char);
 		strcpy (X2SYS_HOME, this);
 	}

@@ -120,7 +120,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	GMT_LONG this_y_status;
 	GMT_LONG prev_x_status;
 	GMT_LONG prev_y_status;
-	GMT_LONG corner;
+	GMT_LONG corner;			/* Tells us which corner 1-4 or -1 if not a corner */
 	GMT_BOOLEAN on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
 	GMT_BOOLEAN is_world;			/* TRUE if map has 360 degrees of longitude range */
 	GMT_BOOLEAN is_world_tm;			/* TRUE if GMT_TM map is global? */

@@ -115,11 +115,6 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
 	COUNTER_MEDIUM status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
-	//GMT_LONG side;		/* 0 for normal head, -1 for left-half only, +1 for right-half only */
-	//GMT_LONG just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
-	//GMT_LONG heads;		/* 1 for head at beginning, 2 for head at end, 3 for both */
-	//GMT_LONG outline;	/* 1 to draw head outline with -W pen, 2 to draw with v_pen */
-	//GMT_LONG paint;		/* 1 to fill head with -G fill, 2 to fill with v_fill */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_width;		/* Width of vector stem in inches */

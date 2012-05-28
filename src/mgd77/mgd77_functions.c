@@ -15,7 +15,7 @@ void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, stru
 	 * look for revised parameters and fall back on the original if no revision is found. */
 
 	struct MGD77_HEADER_LOOKUP *L;
-	int i;
+	unsigned int i;
 
 	L = MGD77_Header_Lookup;
 
@@ -342,14 +342,14 @@ void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	(void) nc_del_att (F->nc_id, NC_GLOBAL, "E77");
 }
 
-GMT_LONG MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
+unsigned int MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_rev)
 {	/* Get a single parameter: original if requested, otherwise check for revised value first */
-	GMT_BOOLEAN got_rev = FALSE;
+	unsigned int got_rev = 0;
 
 	if (!F->original) { /* Must look for revised attribute unless explicitly turned off [ e.g, mgd77convert -FC] */
 		char Att[64];
 		sprintf (Att, "%s_REVISED", name); /* Revised attributes have _REVISED at the end of their names */
-		if (nc_get_att_text (F->nc_id, NC_GLOBAL, Att, value_rev) == NC_NOERR) got_rev = TRUE;	/* Found a revised attribute */
+		if (nc_get_att_text (F->nc_id, NC_GLOBAL, Att, value_rev) == NC_NOERR) got_rev = 1;	/* Found a revised attribute */
 	}
 
 	/* Next, we get the original value */
@@ -358,7 +358,7 @@ GMT_LONG MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *nam
 	return (got_rev);
 }
 
-void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, GMT_LONG revised)
+void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, unsigned int revised)
 {	/* Function assumes we are in define mode.
 	 * Place a single parameter in one of several ways:
 	 * revised == 2: Only write the revised attribute [This only happens in mgd77manage where we update a value via -Ae]
@@ -376,78 +376,78 @@ void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, s
 }
 
 struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[MGD77_N_HEADER_PARAMS] = {
-	{ "Survey_Identifier"                           ,   9,  1,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Format_Acronym"                              ,   6,  1,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Data_Center_File_Number"                     ,   9,  1,  4,  TRUE, FALSE, { NULL, NULL } },
-	{ "Parameters_Surveyed_Code"                    ,   6,  1,  5,  TRUE, FALSE, { NULL, NULL } },
-	{ "File_Creation_Year"                          ,   5,  1, 10,  TRUE, FALSE, { NULL, NULL } },
-	{ "File_Creation_Month"                         ,   3,  1, 11,  TRUE, FALSE, { NULL, NULL } },
-	{ "File_Creation_Day"                           ,   3,  1, 12,  TRUE, FALSE, { NULL, NULL } },
-	{ "Source_Institution"                          ,  40,  1, 13, FALSE, FALSE, { NULL, NULL } },
-	{ "Country"                                     ,  19,  2,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Platform_Name"                               ,  22,  2,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Platform_Type_Code"                          ,   1,  2,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Platform_Type"                               ,   7,  2,  4, FALSE, FALSE, { NULL, NULL } },
-	{ "Chief_Scientist"                             ,  33,  2,  5, FALSE, FALSE, { NULL, NULL } },
-	{ "Project_Cruise_Leg"                          ,  59,  3,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Funding"                                     ,  21,  3,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Survey_Departure_Year"                       ,   5,  4,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Survey_Departure_Month"                      ,   3,  4,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Survey_Departure_Day"                        ,   3,  4,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Port_of_Departure"                           ,  33,  4,  4, FALSE, FALSE, { NULL, NULL } },
-	{ "Survey_Arrival_Year"                         ,   5,  4,  5,  TRUE, FALSE, { NULL, NULL } },
-	{ "Survey_Arrival_Month"                        ,   3,  4,  6,  TRUE, FALSE, { NULL, NULL } },
-	{ "Survey_Arrival_Day"                          ,   3,  4,  7,  TRUE, FALSE, { NULL, NULL } },
-	{ "Port_of_Arrival"                             ,  31,  4,  8, FALSE, FALSE, { NULL, NULL } },
-	{ "Navigation_Instrumentation"                  ,  41,  5,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Geodetic_Datum_Position_Determination_Method",  39,  5,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Instrumentation"                  ,  41,  6,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Add_Forms_of_Data"                ,  39,  6,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Instrumentation"                   ,  41,  7,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Add_Forms_of_Data"                 ,  39,  7,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Instrumentation"                     ,  41,  8,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Add_Forms_of_Data"                   ,  39,  8,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Seismic_Instrumentation"                     ,  41,  9,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Seismic_Data_Formats"                        ,  39,  9,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Format_Type"                                 ,   1, 10,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Format_Description"                          ,  95, 10,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Topmost_Latitude"                            ,   4, 11,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Bottommost_Latitude"                         ,   4, 11,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Leftmost_Longitude"                          ,   5, 11,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Rightmost_Longitude"                         ,   5, 11,  4,  TRUE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Digitizing_Rate"                  ,   4, 12,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Sampling_Rate"                    ,  13, 12,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Assumed_Sound_Velocity"           ,   6, 12,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Datum_Code"                       ,   3, 12,  4,  TRUE, FALSE, { NULL, NULL } },
-	{ "Bathymetry_Interpolation_Scheme"             ,  57, 12,  5, FALSE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Digitizing_Rate"                   ,   4, 13,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Sampling_Rate"                     ,   3, 13,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Sensor_Tow_Distance"               ,   5, 13,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Sensor_Depth"                      ,   6, 13,  4,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Sensor_Separation"                 ,   4, 13,  5,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Ref_Field_Code"                    ,   3, 13,  6,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Ref_Field"                         ,  13, 13,  7,  TRUE, FALSE, { NULL, NULL } },
-	{ "Magnetics_Method_Applying_Res_Field"         ,  48, 13,  8, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Digitizing_Rate"                     ,   4, 14,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Gravity_Sampling_Rate"                       ,   3, 14,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Gravity_Theoretical_Formula_Code"            ,   1, 14,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Gravity_Theoretical_Formula"                 ,  18, 14,  4, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Reference_System_Code"               ,   1, 14,  5,  TRUE, FALSE, { NULL, NULL } },
-	{ "Gravity_Reference_System"                    ,  17, 14,  6, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Corrections_Applied"                 ,  39, 14,  7, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Departure_Base_Station"              ,   8, 15,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Gravity_Departure_Base_Station_Name"         ,  34, 15,  2, FALSE, FALSE, { NULL, NULL } },
-	{ "Gravity_Arrival_Base_Station"                ,   8, 15,  3,  TRUE, FALSE, { NULL, NULL } },
-	{ "Gravity_Arrival_Base_Station_Name"           ,  32, 15,  4, FALSE, FALSE, { NULL, NULL } },
-	{ "Number_of_Ten_Degree_Identifiers"            ,   3, 16,  1,  TRUE, FALSE, { NULL, NULL } },
-	{ "Ten_Degree_Identifier"                       , 151, 16,  2,  TRUE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_1"                  ,  79, 18,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_2"                  ,  79, 19,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_3"                  ,  79, 20,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_4"                  ,  79, 21,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_5"                  ,  79, 22,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_6"                  ,  79, 23,  1, FALSE, FALSE, { NULL, NULL } },
-	{ "Additional_Documentation_7"                  ,  79, 24,  1, FALSE, FALSE, { NULL, NULL } },
+	{ "Survey_Identifier"                           ,   9U,  1,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Format_Acronym"                              ,   6U,  1,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Data_Center_File_Number"                     ,   9U,  1,  4,  TRUE, 0, { NULL, NULL } },
+	{ "Parameters_Surveyed_Code"                    ,   6U,  1,  5,  TRUE, 0, { NULL, NULL } },
+	{ "File_Creation_Year"                          ,   5U,  1, 10,  TRUE, 0, { NULL, NULL } },
+	{ "File_Creation_Month"                         ,   3U,  1, 11,  TRUE, 0, { NULL, NULL } },
+	{ "File_Creation_Day"                           ,   3U,  1, 12,  TRUE, 0, { NULL, NULL } },
+	{ "Source_Institution"                          ,  40U,  1, 13, FALSE, 0, { NULL, NULL } },
+	{ "Country"                                     ,  19U,  2,  1, FALSE, 0, { NULL, NULL } },
+	{ "Platform_Name"                               ,  22U,  2,  2, FALSE, 0, { NULL, NULL } },
+	{ "Platform_Type_Code"                          ,   1U,  2,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Platform_Type"                               ,   7U,  2,  4, FALSE, 0, { NULL, NULL } },
+	{ "Chief_Scientist"                             ,  33U,  2,  5, FALSE, 0, { NULL, NULL } },
+	{ "Project_Cruise_Leg"                          ,  59U,  3,  1, FALSE, 0, { NULL, NULL } },
+	{ "Funding"                                     ,  21U,  3,  2, FALSE, 0, { NULL, NULL } },
+	{ "Survey_Departure_Year"                       ,   5U,  4,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Survey_Departure_Month"                      ,   3U,  4,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Survey_Departure_Day"                        ,   3U,  4,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Port_of_Departure"                           ,  33U,  4,  4, FALSE, 0, { NULL, NULL } },
+	{ "Survey_Arrival_Year"                         ,   5U,  4,  5,  TRUE, 0, { NULL, NULL } },
+	{ "Survey_Arrival_Month"                        ,   3U,  4,  6,  TRUE, 0, { NULL, NULL } },
+	{ "Survey_Arrival_Day"                          ,   3U,  4,  7,  TRUE, 0, { NULL, NULL } },
+	{ "Port_of_Arrival"                             ,  31U,  4,  8, FALSE, 0, { NULL, NULL } },
+	{ "Navigation_Instrumentation"                  ,  41U,  5,  1, FALSE, 0, { NULL, NULL } },
+	{ "Geodetic_Datum_Position_Determination_Method",  39U,  5,  2, FALSE, 0, { NULL, NULL } },
+	{ "Bathymetry_Instrumentation"                  ,  41U,  6,  1, FALSE, 0, { NULL, NULL } },
+	{ "Bathymetry_Add_Forms_of_Data"                ,  39U,  6,  2, FALSE, 0, { NULL, NULL } },
+	{ "Magnetics_Instrumentation"                   ,  41U,  7,  1, FALSE, 0, { NULL, NULL } },
+	{ "Magnetics_Add_Forms_of_Data"                 ,  39U,  7,  2, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Instrumentation"                     ,  41U,  8,  1, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Add_Forms_of_Data"                   ,  39U,  8,  2, FALSE, 0, { NULL, NULL } },
+	{ "Seismic_Instrumentation"                     ,  41U,  9,  1, FALSE, 0, { NULL, NULL } },
+	{ "Seismic_Data_Formats"                        ,  39U,  9,  2, FALSE, 0, { NULL, NULL } },
+	{ "Format_Type"                                 ,   1U, 10,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Format_Description"                          ,  95U, 10,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Topmost_Latitude"                            ,   4U, 11,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Bottommost_Latitude"                         ,   4U, 11,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Leftmost_Longitude"                          ,   5U, 11,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Rightmost_Longitude"                         ,   5U, 11,  4,  TRUE, 0, { NULL, NULL } },
+	{ "Bathymetry_Digitizing_Rate"                  ,   4U, 12,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Bathymetry_Sampling_Rate"                    ,  13U, 12,  2, FALSE, 0, { NULL, NULL } },
+	{ "Bathymetry_Assumed_Sound_Velocity"           ,   6U, 12,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Bathymetry_Datum_Code"                       ,   3U, 12,  4,  TRUE, 0, { NULL, NULL } },
+	{ "Bathymetry_Interpolation_Scheme"             ,  57U, 12,  5, FALSE, 0, { NULL, NULL } },
+	{ "Magnetics_Digitizing_Rate"                   ,   4U, 13,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Sampling_Rate"                     ,   3U, 13,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Sensor_Tow_Distance"               ,   5U, 13,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Sensor_Depth"                      ,   6U, 13,  4,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Sensor_Separation"                 ,   4U, 13,  5,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Ref_Field_Code"                    ,   3U, 13,  6,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Ref_Field"                         ,  13U, 13,  7,  TRUE, 0, { NULL, NULL } },
+	{ "Magnetics_Method_Applying_Res_Field"         ,  48U, 13,  8, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Digitizing_Rate"                     ,   4U, 14,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Gravity_Sampling_Rate"                       ,   3U, 14,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Gravity_Theoretical_Formula_Code"            ,   1U, 14,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Gravity_Theoretical_Formula"                 ,  18U, 14,  4, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Reference_System_Code"               ,   1U, 14,  5,  TRUE, 0, { NULL, NULL } },
+	{ "Gravity_Reference_System"                    ,  17U, 14,  6, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Corrections_Applied"                 ,  39U, 14,  7, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Departure_Base_Station"              ,   8U, 15,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Gravity_Departure_Base_Station_Name"         ,  34U, 15,  2, FALSE, 0, { NULL, NULL } },
+	{ "Gravity_Arrival_Base_Station"                ,   8U, 15,  3,  TRUE, 0, { NULL, NULL } },
+	{ "Gravity_Arrival_Base_Station_Name"           ,  32U, 15,  4, FALSE, 0, { NULL, NULL } },
+	{ "Number_of_Ten_Degree_Identifiers"            ,   3U, 16,  1,  TRUE, 0, { NULL, NULL } },
+	{ "Ten_Degree_Identifier"                       , 151U, 16,  2,  TRUE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_1"                  ,  79U, 18,  1, FALSE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_2"                  ,  79U, 19,  1, FALSE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_3"                  ,  79U, 20,  1, FALSE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_4"                  ,  79U, 21,  1, FALSE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_5"                  ,  79U, 22,  1, FALSE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_6"                  ,  79U, 23,  1, FALSE, 0, { NULL, NULL } },
+	{ "Additional_Documentation_7"                  ,  79U, 24,  1, FALSE, 0, { NULL, NULL } },
 };
 
 void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P)

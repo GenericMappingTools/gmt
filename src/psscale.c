@@ -427,13 +427,13 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->range[i].label) n_use_labels++;
 			if (P->range[i].annot & 1) {
-				if ((dec = GMT_get_format (GMT, P->range[i].z_low, CNULL, CNULL, text)) > ndec) {
+				if ((dec = GMT_get_format (GMT, P->range[i].z_low, NULL, NULL, text)) > ndec) {
 					strcpy (format, text);
 					ndec = dec;
 				}
 			}
 			if (P->range[i].annot & 2) {
-				if ((dec = GMT_get_format (GMT, P->range[i].z_high, CNULL, CNULL, text)) > ndec) {
+				if ((dec = GMT_get_format (GMT, P->range[i].z_high, NULL, NULL, text)) > ndec) {
 					strcpy (format, text);
 					ndec = dec;
 				}

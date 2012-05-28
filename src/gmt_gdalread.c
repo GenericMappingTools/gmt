@@ -164,7 +164,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			Ctrl->ProjectionRefWKT = pszPrettyWkt;
 		}
 		else {
-			Ctrl->ProjectionRefWKT = CNULL;
+			Ctrl->ProjectionRefWKT = NULL;
 			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
 					Ctrl->ProjectionRefPROJ4);
 		}
@@ -599,7 +599,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->ProjectionRefPROJ4 = pszResult;
 		}
 		else
-			Ctrl->ProjectionRefPROJ4 = CNULL;
+			Ctrl->ProjectionRefPROJ4 = NULL;
 
 		/* Now in WKT format */
 		if( OSRImportFromWkt( hSRS, &pszProjection ) == CE_None ) {
@@ -609,7 +609,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			CPLFree( pszPrettyWkt );
 		}
 		else
-			Ctrl->ProjectionRefWKT = CNULL;
+			Ctrl->ProjectionRefWKT = NULL;
 
 		OSRDestroySpatialReference( hSRS );
 	}

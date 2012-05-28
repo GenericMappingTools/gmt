@@ -84,6 +84,7 @@ struct GMTMGG_REC {	/* Format of old *.gmt file records */
 
 /* Make sure structure sizes are multiples of 8 */
 
+#if 0
 struct X2SYS_TRK_INFO {			/* Structure with info about one track */
 	char name[32];			/* Name of track */
 	GMT_LONG year;			/* Year the track was collected */
@@ -109,6 +110,7 @@ struct X2SYS_TRK {			/* Structure for each track */
 	struct X2SYS_SET *set;		/* Array of structures; one for each data set */
 	struct X2SYS_TRK *next_track;	/* Pointer to next track */
 };
+#endif
 
 struct X2SYS_XOVER_SET {		/* Structure with info on one data type cross-over values */
 	double x_val;			/* Data cross-over mismatch */

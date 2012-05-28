@@ -45,7 +45,7 @@ extern "C" {
 
 #include "gmt_types.h"
 
-EXTERN_MSC GMT_LONG GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *start, char *token);
+EXTERN_MSC COUNTER_MEDIUM GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *start, char *token);
 EXTERN_MSC void GMT_chop (char *string);
 EXTERN_MSC char *GMT_chop_ext (char *string);
 EXTERN_MSC void GMT_strstrip(char *string, int strip_leading);

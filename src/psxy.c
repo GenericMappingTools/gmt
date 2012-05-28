@@ -1104,7 +1104,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (clip_set) GMT_map_clip_off (GMT);
 
-	if (current_pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 
 	GMT_map_basemap (GMT);

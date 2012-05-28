@@ -290,7 +290,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	n_expected = header->nx;
-	tLong  = GMT_memory (C, CNULL, n_expected, int);
+	tLong  = GMT_memory (C, NULL, n_expected, int);
 	tShort = (short *)tLong;	tChar  = (char *)tLong;	tFloat  = (float *)tLong;
 	size = abs (mggHeader.numType);
 	
@@ -407,7 +407,7 @@ GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 
-	tLong = GMT_memory (C, CNULL, width_in, int);
+	tLong = GMT_memory (C, NULL, width_in, int);
 	tShort = (short *) tLong;	tChar = (char *)tLong;	tFloat = (float *) tLong;
 	
 	i2 = first_col + pad[XLO];

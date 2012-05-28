@@ -1560,7 +1560,7 @@ GMT_LONG GMT_grdview (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, vcont);
 	}
 
-	if (Ctrl->W.pen[1].style || Ctrl->W.pen[0].style) PSL_setdash (PSL, CNULL, 0);
+	if (Ctrl->W.pen[1].style || Ctrl->W.pen[0].style) PSL_setdash (PSL, NULL, 0);
 
 	if (GMT->current.proj.z_pars[0] == 0.0) GMT_map_clip_off (GMT);
 

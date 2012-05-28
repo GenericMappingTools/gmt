@@ -1540,7 +1540,7 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 		else	/* Draw grid lines that go E to W */
 			gmt_lineary_grid (C, P, w, e, s, n, dy);
 
-		if (C->current.setting.map_grid_pen[k].style) PSL_setdash (P, CNULL, 0);
+		if (C->current.setting.map_grid_pen[k].style) PSL_setdash (P, NULL, 0);
 	}
 }
 
@@ -1640,7 +1640,7 @@ void gmt_map_gridcross (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 		if (nx) GMT_free (C, x);
 		if (ny) GMT_free (C, y);
 
-		if (C->current.setting.map_grid_pen[k].style) PSL_setdash (P, CNULL, 0);
+		if (C->current.setting.map_grid_pen[k].style) PSL_setdash (P, NULL, 0);
 
 	}
 	GMT_map_clip_off (C);
@@ -1718,7 +1718,7 @@ void gmt_map_tickmarks (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 		gmt_map_tickitem (C, P, w, e, s, n, GMT_TICK_LOWER);
 	}
 
-	PSL_setdash (P, CNULL, 0);
+	PSL_setdash (P, NULL, 0);
 }
 
 GMT_BOOLEAN gmt_set_do_seconds (struct GMT_CTRL *C, double inc)
@@ -2065,7 +2065,7 @@ void GMT_map_basemap (struct GMT_CTRL *C)
 
 	PSL_comment (P, "Start of basemap\n");
 
-	PSL_setdash (P, CNULL, 0);	/* To ensure no dashed pens are set prior */
+	PSL_setdash (P, NULL, 0);	/* To ensure no dashed pens are set prior */
 
 	GMT_vertical_axis (C, C->current.plot.mode_3D);
 
@@ -2088,7 +2088,7 @@ void GMT_map_basemap (struct GMT_CTRL *C)
 	gmt_map_boundary (C, P, w, e, s, n);
 	if (clip_on) GMT_map_clip_off (C);
 
-	if (C->current.setting.map_frame_pen.style) PSL_setdash (P, CNULL, 0);
+	if (C->current.setting.map_frame_pen.style) PSL_setdash (P, NULL, 0);
 
 	PSL_comment (P, "End of basemap\n");
 

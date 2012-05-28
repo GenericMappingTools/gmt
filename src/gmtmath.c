@@ -2920,7 +2920,7 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	double factor[GMTMATH_STACK_SIZE], t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
-	char *outfile = CNULL;
+	char *outfile = NULL;
 #include "gmtmath_op.h"
 
 	p_func_v call_operator[GMTMATH_N_OPERATORS];
