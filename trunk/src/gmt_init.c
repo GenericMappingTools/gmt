@@ -462,12 +462,13 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 		case 'V':	/* Verbose */
 
 			GMT_message (C, "\t-V Change the verbosity level (currently %ld).\n", C->current.setting.verbose);
-			GMT_message (C, "\t   Choose among 5 levels; each level adds more messages:\n");
-			GMT_message (C, "\t     0 - Complete silence, not even fatal error messages.\n");
-			GMT_message (C, "\t     1 - Fatal error messages [Default when no -V is used].\n");
-			GMT_message (C, "\t     2 - Warnings and progress messages [Default when -V is used].\n");
-			GMT_message (C, "\t     3 - Detailed progress messages.\n");
-			GMT_message (C, "\t     4 - Debugging messages.\n");
+			GMT_message (C, "\t   Choose among 6 levels; each level adds more messages:\n");
+			GMT_message (C, "\t     q - Quiet, not even fatal error messages.\n");
+			GMT_message (C, "\t     f - Fatal error messages.\n");
+			GMT_message (C, "\t     c - Compatibility warnings [Default when no -V is used].\n");
+			GMT_message (C, "\t     n - Normal progress messages [Default when -V is used].\n");
+			GMT_message (C, "\t     v - Verbose progress messages.\n");
+			GMT_message (C, "\t     d - Debugging messages.\n");
 			break;
 
 		case 'X':
@@ -2223,6 +2224,19 @@ GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	return (FALSE);
 }
 
+GMT_LONG gmt_parse_V_option (struct GMT_CTRL *C, char arg) {
+	switch (arg) {
+		case '0': case 'q': C->current.setting.verbose = GMT_MSG_QUIET; break;
+		case '1': case 'f': C->current.setting.verbose = GMT_MSG_FATAL; break;
+		case '2': case 'c': C->current.setting.verbose = GMT_MSG_COMPAT; break;
+		case '3': case 'n': C->current.setting.verbose = GMT_MSG_NORMAL; break;
+		case '4': case 'v': C->current.setting.verbose = GMT_MSG_VERBOSE; break;
+		case '5': case 'd': C->current.setting.verbose = GMT_MSG_DEBUG; break;
+		default: return TRUE;
+	}
+	return FALSE;
+}
+
 void gmt_verify_encodings (struct GMT_CTRL *C) {
 	/* Check that special map-related codes are present - if not give warning */
 
@@ -3475,14 +3489,12 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_MEASURE_UNIT: GMT_COMPAT_CHANGE ("PROJ_LENGTH_UNIT");
 #endif
 		case GMTCASE_PROJ_LENGTH_UNIT:
-			if (lower_value[0] == 'c')
-				C->current.setting.proj_length_unit = GMT_CM;
-			else if (lower_value[0] == 'i')
-				C->current.setting.proj_length_unit = GMT_INCH;
-			else if (lower_value[0] == 'p')
-				C->current.setting.proj_length_unit = GMT_PT;
-			else
-				error = TRUE;
+			switch (lower_value[0]) {
+				case 'c': C->current.setting.proj_length_unit = GMT_CM; break;
+				case 'i': C->current.setting.proj_length_unit = GMT_INCH; break;
+				case 'p': C->current.setting.proj_length_unit = GMT_PT; break;
+				default: error = TRUE;
+			}
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_MAP_SCALE_FACTOR: GMT_COMPAT_CHANGE ("PROJ_SCALE_FACTOR");
@@ -3548,19 +3560,15 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_VERBOSE: GMT_COMPAT_CHANGE ("GMT_VERBOSE");
-			ival = atoi (value) + 1;
-			if (ival >= GMT_MSG_SILENCE && ival <= GMT_MSG_DEBUG)
+			ival = atoi (value) + 2;
+			if (ival >= GMT_MSG_QUIET && ival <= GMT_MSG_DEBUG)
 				C->current.setting.verbose = ival;
 			else
 				error = TRUE;
 			break;
 #endif
 		case GMTCASE_GMT_VERBOSE:
-			ival = atoi (value);
-			if (ival >= GMT_MSG_SILENCE && ival <= GMT_MSG_DEBUG)
-				C->current.setting.verbose = ival;
-			else
-				error = TRUE;
+			error = gmt_parse_V_option (C, lower_value[0]);
 			break;
 
 		/* DIR GROUP */
@@ -3601,12 +3609,7 @@ GMT_LONG GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			if (value[0] == '+' || value[0] == '-') {	/* OK, gave +<n>u or -<n>u, check for unit */
 				sscanf (&lower_value[1], "%" GMT_LL "d%c", &C->current.time.truncate.T.step, &C->current.time.truncate.T.unit);
 				switch (C->current.time.truncate.T.unit) {
-					case 'y':
-					case 'o':
-					case 'd':
-					case 'h':
-					case 'm':
-					case 'c':
+					case 'y': case 'o': case 'd': case 'h': case 'm': case 'c':
 						C->current.time.truncate.direction = (lower_value[0] == '+') ? 0 : 1;
 						break;
 					default:
@@ -3869,16 +3872,13 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_DEGREE_SYMBOL: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_MAP_DEGREE_SYMBOL:
-			if (C->current.setting.map_degree_symbol == gmt_ring)	/* Default */
-				strcpy (value, "ring");
-			else if (C->current.setting.map_degree_symbol == gmt_degree)
-				strcpy (value, "degree");
-			else if (C->current.setting.map_degree_symbol == gmt_colon)
-				strcpy (value, "colon");
-			else if (C->current.setting.map_degree_symbol == gmt_none)
-				strcpy (value, "none");
-			else
-				strcpy (value, "undefined");
+			switch (C->current.setting.map_degree_symbol) {
+				case gmt_ring:		strcpy (value, "ring");		break;
+				case gmt_degree:	strcpy (value, "degree");	break;
+				case gmt_colon:		strcpy (value, "colon");	break;
+				case gmt_none:		strcpy (value, "none");		break;
+				default: strcpy (value, "undefined");
+			}
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_BASEMAP_AXES: GMT_COMPAT_WARN;
@@ -4373,7 +4373,14 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_VERBOSE: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_GMT_VERBOSE:
-			sprintf (value, "%ld", C->current.setting.verbose);
+			switch (C->current.setting.verbose) {
+				case GMT_MSG_QUIET:		strcpy (value, "quiet");	break;
+				case GMT_MSG_FATAL:		strcpy (value, "fatal");	break;
+				case GMT_MSG_NORMAL:	strcpy (value, "normal");	break;
+				case GMT_MSG_VERBOSE:	strcpy (value, "verbose");	break;
+				case GMT_MSG_DEBUG:		strcpy (value, "debug");	break;
+				default:				strcpy (value, "compat");	break;
+			}
 			break;
 
 		/* DIR GROUP */
@@ -7600,13 +7607,10 @@ GMT_LONG GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, 
 			GMT_more_than_once (C, C->common.V.active);
 			C->common.V.active = TRUE;
 			if (item && item[0]) {	/* Specified a verbosity level */
-				i = atoi (item);
-				if (i < GMT_MSG_SILENCE || i > GMT_MSG_DEBUG) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Option -V verbosity levels are %d-%d\n", GMT_MSG_SILENCE, GMT_MSG_DEBUG);
+				if (gmt_parse_V_option (C, item[0])) {
+					GMT_report (C, GMT_MSG_FATAL, "Error: Unknown argument to -V option, -V%c\n", item[0]);
 					error++;
 				}
-				else
-					C->current.setting.verbose = i;
 			}
 			else
 				C->current.setting.verbose = GMT_MSG_NORMAL;
@@ -7988,7 +7992,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	C->session.std[GMT_ERR] = stderr;
 	
 	/* Set default verbosity level */
-	C->current.setting.verbose = GMT_MSG_FATAL;
+	C->current.setting.verbose = GMT_MSG_COMPAT;
 
 #ifdef DEBUG
 	GMT_memtrack_init (C, &GMT_mem_keeper);	/* Helps us determine memory leaks */
