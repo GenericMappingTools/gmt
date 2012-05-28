@@ -36,7 +36,7 @@
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *  strsep                  Reentrant string tokenizer that handles empty fields
  *  strsepz                 Like strsep but ignores empty fields
- *  strsep                  Like strsep but takes an additional argument esc in order
+ *  stresep                 Like strsep but takes an additional argument esc in order
  *                          to ignore escaped chars (from NetBSD)
  *  match_string_in_file    Return true if a string is found in file
  */
