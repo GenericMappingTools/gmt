@@ -50,7 +50,7 @@ struct EULER {	/* Structure with info on each Euler (stage) pole */
 	double g;			/* g magnitude scale */
 	double df;			/* Degrees of freedom in the estimate of rotation */
 	GMT_BOOLEAN has_cov;		/* TRUE if there is a covariance matrix for this R */
-	GMT_LONG id[2];			/* The ID numbers for GPlates pairs */
+	COUNTER_MEDIUM id[2];		/* The ID numbers for GPlates pairs */
 };
 
 struct FLOWLINE {			/* Structure with the nearest nodes for a single flowline */
@@ -64,7 +64,7 @@ struct HOTSPOT {	/* Structure holding all the information about a hotspot */
 	/* Record is lon lat abbrev id [radius toff t_on create fit plot name] */
         double lon, lat;		/* Current location of hot spot (degrees)*/
 	char abbrev[4];			/* Max 3-char abbreviation of hotspot name */
-        GMT_LONG id;			/* Hot spot id flag */
+        COUNTER_MEDIUM id;		/* Hot spot id flag */
 	double radius;			/* Uncertainty radius (in km) for hotspot location */
 	double t_off, t_on;		/* Time interval hotspot was active */
 	GMT_BOOLEAN create, fit, plot;	/* TRUE if we want to create, fit, or plot hotspot */

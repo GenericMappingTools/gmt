@@ -2315,7 +2315,7 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 {
 	COUNTER_MEDIUM p, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	char *param = CNULL;
+	char *param = NULL;
 
 	/* Set up hash table */
 
@@ -2335,11 +2335,11 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 			param = opt->arg;
 		else {					/* This must be value */
 			n_errors += GMT_setparameter (C, param, opt->arg);
-			param = CNULL;
+			param = NULL;
 		}
 	}
 
-	n_errors += (param != CNULL);	/* param should be NULL */
+	n_errors += (param != NULL);	/* param should be NULL */
 
 	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %d conversion errors\n", n_errors);
@@ -4509,7 +4509,7 @@ void GMT_putdefaults (struct GMT_CTRL *C, char *this_file)	/* Dumps the GMT para
 	if (this_file)	/* File name is defined: use it */
 		GMT_savedefaults (C, this_file);
 	else if (C->session.TMPDIR) {	/* Write C->session.TMPDIR/gmt.conf */
-		char *path = CNULL;
+		char *path = NULL;
 		path = GMT_memory (C, NULL, strlen (C->session.TMPDIR) + 10, char);
 		sprintf (path, "%s/gmt.conf", C->session.TMPDIR);
 		GMT_savedefaults (C, path);
@@ -4791,7 +4791,7 @@ GMT_LONG GMT_get_ellipsoid (struct GMT_CTRL *C, char *name)
 	/* Try to open as file first in (1) current dir, then in (2) $C->session.SHAREDIR */
 
 	GMT_report (C, GMT_MSG_COMPAT, "Warning: Assigning PROJ_ELLIPSOID a file name is deprecated, use <a>,<inv_f> instead");
-	GMT_getsharepath (C, CNULL, name, "", path);
+	GMT_getsharepath (C, NULL, name, "", path);
 
 	if ((fp = fopen (name, "r")) != NULL || (fp = fopen (path, "r")) != NULL) {
 		/* Found file, now get parameters */
@@ -8190,7 +8190,7 @@ struct GMT_CTRL *GMT_begin (char *session, COUNTER_MEDIUM mode)
 		}
 	}
 	GMT_loaddefaults (C, path);	/* Load GMT system default settings [and PSL settings if selected] */
-	GMT_getdefaults (C, CNULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
+	GMT_getdefaults (C, NULL);	/* Override using local GMT default settings (if any) [and PSL if selected] */
 
 	/* There is no longer a -m option in GMT 5 so multi segments are now always TRUE.
 	   However, in GMT_COMPAT mode the -mi and -mo options WILL turn off multi in the other direction. */

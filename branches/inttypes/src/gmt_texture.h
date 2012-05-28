@@ -41,7 +41,7 @@ struct GMT_FILL {	/* Holds fill attributes */
 	double rgb[4];			/* Chosen color if no pattern + Transparency 0-1 [0 = opaque] */
 	double f_rgb[4], b_rgb[4];	/* Colors applied to unset and set bits in 1-bit image */
 	GMT_BOOLEAN use_pattern;		/* TRUE if pattern rather than rgb is set */
-	GMT_LONG pattern_no;		/* Number of predefined pattern, if set */
+	GMT_LONG pattern_no;		/* Number of predefined pattern, or -1 if not set */
 	COUNTER_MEDIUM dpi;		/* Desired dpi of image building-block */
 	char pattern[GMT_BUFSIZ];		/* Full filename of user-define raster */
 };

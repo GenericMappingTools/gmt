@@ -97,8 +97,8 @@ struct GMT_COMMON {
 		COUNTER_MEDIUM n_aspatial;
 		GMT_BOOLEAN clip;		/* TRUE if we wish to clip lines/polygons at Dateline [FALSE] */
 		GMT_BOOLEAN output;		/* TRUE when we wish to build OGR output */
-		GMT_LONG col[MAX_ASPATIAL];
-		GMT_LONG ogr[MAX_ASPATIAL];
+		GMT_LONG col[MAX_ASPATIAL];	/* Col id, include negative items such as GMT_IS_T (-5) */
+		GMT_LONG ogr[MAX_ASPATIAL];	/* Column order, or -1 if not set */
 		COUNTER_MEDIUM type[MAX_ASPATIAL];
 		char *name[MAX_ASPATIAL];
 	} a;

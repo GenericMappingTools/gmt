@@ -916,13 +916,13 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			sprintf (string, "%2.2d", calendar.year % 100);
 			break;
 		case 'O':	/* Plot via date format */
-			GMT_format_calendar (C, string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			GMT_format_calendar (C, string, NULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'o':	/* 2-digit month */
 			(P->date.compact) ? sprintf (string, "%d", calendar.month) : sprintf (string, "%2.2d", calendar.month);
 			break;
 		case 'U':	/* ISO year, week, day via date format */
-			GMT_format_calendar (C, string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			GMT_format_calendar (C, string, NULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'u':	/* 2-digit ISO week */		
 			(P->date.compact) ? sprintf (string, "%d", calendar.iso_w) : sprintf (string, "%2.2d", calendar.iso_w);
@@ -935,7 +935,7 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			sprintf (string, "%d", (calendar.day_w - C->current.setting.time_week_start + 7) % 7 + 1);
 			break;
 		case 'D':	/* Day, via date format */
-			GMT_format_calendar (C, string, CNULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			GMT_format_calendar (C, string, NULL, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'd':	/* 2-digit day or 3-digit day of year */
 		case 'R':	/* Gregorian month-days are the same thing - only they start at beginning of weeks and not months */
@@ -945,13 +945,13 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 				(P->date.compact) ? sprintf (string, "%d", calendar.day_m) : sprintf (string, "%2.2d", calendar.day_m);
 			break;
 		case 'H':	/* Hours via clock format */
-			GMT_format_calendar (C, CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			GMT_format_calendar (C, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'h':	/* 2-digit hour */
 			(P->date.compact) ? sprintf (string, "%d", calendar.hour) : sprintf (string, "%2.2d", calendar.hour);
 			break;
 		case 'M':	/* Minutes via clock format */
-			GMT_format_calendar (C, CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			GMT_format_calendar (C, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 		case 'm':	/* 2-digit minutes */
 			(P->date.compact) ? sprintf (string, "%d", calendar.min) : sprintf (string, "%2.2d", calendar.min);
@@ -961,7 +961,7 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: Unit C for seconds is deprecated; use S.\n");
 #endif
 		case 'S':	/* Seconds via clock format */
-			GMT_format_calendar (C, CNULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			GMT_format_calendar (C, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
 #ifdef GMT_COMPAT
 		case 'c':

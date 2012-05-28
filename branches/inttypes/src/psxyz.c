@@ -1031,7 +1031,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */
 
-	if (current_pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 

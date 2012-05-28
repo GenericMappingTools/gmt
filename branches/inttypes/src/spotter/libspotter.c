@@ -404,7 +404,7 @@ COUNTER_MEDIUM spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, G
 
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
-		strcpy (Plates, ((this = getenv ("GPLATES_PLATES")) != CNULL) ? this : GPLATES_PLATES);
+		strcpy (Plates, ((this = getenv ("GPLATES_PLATES")) != NULL) ? this : GPLATES_PLATES);
 #ifdef WIN32
 		DOS_path_fix (Plates);
 #endif
@@ -430,7 +430,7 @@ COUNTER_MEDIUM spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, G
 			GMT_exit (EXIT_FAILURE);
 		}
 		/* OK, here we have the two IDs */
-		strcpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != CNULL) ? this : GPLATES_ROTATIONS);
+		strcpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != NULL) ? this : GPLATES_ROTATIONS);
 #ifdef WIN32
 		DOS_path_fix (Rotations);
 #endif
@@ -570,6 +570,7 @@ COUNTER_MEDIUM spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, G
 COUNTER_MEDIUM spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN geocentric, struct HOTSPOT **p)
 {
 	COUNTER_MEDIUM i = 0, n;
+	GMT_LONG ival;
 	size_t n_alloc = GMT_CHUNK;
 	FILE *fp = NULL;
 	struct HOTSPOT *e = NULL;
@@ -585,8 +586,13 @@ COUNTER_MEDIUM spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN
 
 	while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
-		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &e[i].id, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
-		if (n == 3) e[i].id = i;	/* Minimal lon, lat, abbrev */
+		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &ival, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
+		if (n == 3) ival = i;	/* Minimal lon, lat, abbrev */
+		if (ival <= 0) {
+			GMT_report (C, GMT_MSG_FATAL, "Hotspot ID numbers mut be > 0\n");
+			exit (EXIT_FAILURE);
+		}
+		e[i].id = ival;
 		if (n >= 10) {		/* Long-form hotspot table used for rotator suite */
 			e[i].create = (create == 'Y');
 			e[i].fit = (fit == 'Y');

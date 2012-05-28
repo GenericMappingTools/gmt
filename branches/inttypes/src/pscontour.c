@@ -1222,7 +1222,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 
 				if (make_plot && (cont[c].type == 'A' || cont[c].type == 'a')) {	/* Annotated contours */
-					GMT_get_format (GMT, cont[c].val, Ctrl->contour.unit, CNULL, format);
+					GMT_get_format (GMT, cont[c].val, Ctrl->contour.unit, NULL, format);
 					sprintf (cont_label, format, cont[c].val);
 				}
 				if (Ctrl->D.active) {

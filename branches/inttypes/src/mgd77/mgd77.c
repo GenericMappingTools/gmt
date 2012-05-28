@@ -121,7 +121,7 @@ static inline void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
-	if ((this = getenv ("MGD77_HOME")) != CNULL) {	/* MGD77_HOME was set */
+	if ((this = getenv ("MGD77_HOME")) != NULL) {	/* MGD77_HOME was set */
 		F->MGD77_HOME = GMT_memory (C, NULL, strlen (this) + 1, char);
 		strcpy (F->MGD77_HOME, this);
 	}
@@ -2550,16 +2550,18 @@ int MGD77_Info_from_Abbrev (struct GMT_CTRL *C, char *name, struct MGD77_HEADER 
 }
 
 int MGD77_Param_Key (struct GMT_CTRL *C, GMT_LONG record, int item) {
-	GMT_LONG i, status = MGD77_BAD_HEADER_RECNO;
+	COUNTER_MEDIUM i, u_rec, u_item;
+	GMT_LONG status = MGD77_BAD_HEADER_RECNO;
 	/* Given record and item, return the structure array key that matches these two values.
 	 * If not found return BAD_HEADER if record is outside range, or BAD_ITEM if no such item */
 
 	if (record < 0 || record > 24) return (MGD77_BAD_HEADER_RECNO);	/* Outside range */
-
+	if (item < 0) return (MGD77_BAD_HEADER_ITEM);	/* Outside range */
+	u_rec = record;	u_item = item;
 	for (i = 0; status < 0 && i < MGD77_N_HEADER_PARAMS; i++) {
-		if (MGD77_Header_Lookup[i].record != record) continue;
+		if (MGD77_Header_Lookup[i].record != u_rec) continue;
 		status = MGD77_BAD_HEADER_ITEM;
-		if (MGD77_Header_Lookup[i].item != item) continue;
+		if (MGD77_Header_Lookup[i].item != u_item) continue;
 		status = i;
 	}
 	return (status);
