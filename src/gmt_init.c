@@ -2226,12 +2226,12 @@ GMT_LONG gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 
 GMT_LONG gmt_parse_V_option (struct GMT_CTRL *C, char arg) {
 	switch (arg) {
-		case '0': case 'q': C->current.setting.verbose = GMT_MSG_QUIET; break;
-		case '1': case 'f': C->current.setting.verbose = GMT_MSG_FATAL; break;
-		case '2': case 'c': C->current.setting.verbose = GMT_MSG_COMPAT; break;
-		case '3': case 'n': C->current.setting.verbose = GMT_MSG_NORMAL; break;
-		case '4': case 'v': C->current.setting.verbose = GMT_MSG_VERBOSE; break;
-		case '5': case 'd': C->current.setting.verbose = GMT_MSG_DEBUG; break;
+		case 'q': case '0': C->current.setting.verbose = GMT_MSG_QUIET; break;
+		case 'f':			C->current.setting.verbose = GMT_MSG_FATAL; break;
+		case 'c': case '1': C->current.setting.verbose = GMT_MSG_COMPAT; break;
+		case 'n': case '2': C->current.setting.verbose = GMT_MSG_NORMAL; break;
+		case 'v': case '3': C->current.setting.verbose = GMT_MSG_VERBOSE; break;
+		case 'd': case '4': C->current.setting.verbose = GMT_MSG_DEBUG; break;
 		default: return TRUE;
 	}
 	return FALSE;
