@@ -2299,11 +2299,11 @@ GMT_LONG GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (line); /* Get rid of [\r]\n */
-		if (rec == 2 && (strlen (line) < 7
-			|| strtol (&line[6], NULL, 10) != gmt_version_major )) {
-			GMT_message (C, "Warning: Your gmt.conf file (%s) may not be GMT %d "
-				"compatible\n", file, gmt_version_major);
-		}
+		if (rec != 2) { /* Nothing */ }
+		else if (strlen (line) < 7 || strtol (&line[6], NULL, 10) != gmt_version_major )
+			GMT_message (C, "Warning: Your gmt.conf file (%s) may not be GMT %d compatible\n", file, gmt_version_major);
+		else if (!strncmp (&line[6], "5.0.0", 5))
+			GMT_message (C, "Warning: Your gmt.conf file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", file, file);
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
 
