@@ -799,6 +799,10 @@ GMT_LONG gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, struc
 	strcpy (buffer, record); /* working copy */
 	stringp = buffer;
 	while ( (token = strsep (&stringp, "|")) != NULL ) {
+		if (col >= S->n_aspatial) {
+			GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @D record has more items than declared by @N\n");
+			continue;
+		}
 		if (S->value[col]) free (S->value[col]);	/* Free previous item */
 		S->value[col]  = strdup (token);
 		S->dvalue[col] = gmt_convert_aspatial_value (C, S->type[col], token);
@@ -821,13 +825,17 @@ void gmt_copy_and_truncate (char *out, char *in)
 }
 
 GMT_LONG gmt_ogr_decode_aspatial_types (struct GMT_CTRL *C, char *record, struct GMT_OGR *S)
-{	/* Parse aspatial types; this is done once per dataset */
+{	/* Parse aspatial types; this is done once per dataset and follows @N */
 	GMT_LONG pos = 0, col = 0, n_alloc;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmt_copy_and_truncate (buffer, record);
 	while ((GMT_strtok (buffer, "|", &pos, p))) {
+		if (col >= S->n_aspatial) {
+			GMT_report (C, GMT_MSG_FATAL, "Bad OGR/GMT: @T record has more items than declared by @N\n");
+			continue;
+		}
 		if (col == n_alloc) S->type = GMT_memory (C, S->type, n_alloc += GMT_TINY_CHUNK, GMT_LONG);
 		S->type[col++] = gmt_ogr_get_type (p);
 	}
