@@ -1,8 +1,0 @@
-#	$Id$
-#
-#	Definition file a horizontal very narrow diamond-like symbol.
-#
-0	0.1	M
-0.5	0	D
-0	-0.1	D
--0.5	0	D

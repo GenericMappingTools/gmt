@@ -1,7 +1,0 @@
-.TP
-GMT_Rgeoz_OPT
-IT(west), IT(east), IT(south), and IT(north) specify the region of interest, and you may specify them
-in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  Append BD(r) if lower left and upper right
-map coordinates are given instead of w/e/s/n.  The two shorthands OPT(Rg) and OPT(Rd) stand for global domain
-(0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude). Alternatively, specify the name
-of an existing grid file and the OPT(R) settings (and grid spacing, if applicable) are copied from the grid.

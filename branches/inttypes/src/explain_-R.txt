@@ -1,3 +1,0 @@
-.TP
-GMT_Rx_OPT (*)
-Specify the region of interest.
