@@ -24,7 +24,7 @@
 #include "gmt_mgd77.h"
 #include "mgd77.h"
 
-EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *C);
+void MGD77_select_high_resolution (struct GMT_CTRL *C);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */

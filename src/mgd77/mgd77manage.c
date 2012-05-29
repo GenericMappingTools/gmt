@@ -17,13 +17,13 @@
  * Version:	1.0
  *
  */
- 
+
 #include "gmt_mgd77.h"
 #include "mgd77.h"
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 
 #ifdef GMT_COMPAT
-	EXTERN_MSC GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+	GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
 #endif
 
 #define N_PAR		7
