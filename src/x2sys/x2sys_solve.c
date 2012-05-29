@@ -345,7 +345,8 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_INFO *S = NULL;
 	struct X2SYS_BIX B;
 	FILE *fp = NULL;
-	p_func_d basis[N_BASIS];
+	double (*basis[N_BASIS]) (double **, int, int);	/* Pointers to selected basis functions */
+	
 	struct X2SYS_SOLVE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -390,39 +391,39 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 		case F_IS_CONSTANT:
 			n_par = 1;
-			basis[0] = basis_constant;
+			basis[0] = &basis_constant;
 			break;
 		case F_IS_DRIFT_T:
 			active_col[COL_T1] = active_col[COL_T2] = TRUE;
 			n_par = 2;
-			basis[0] = basis_constant;
-			basis[1] = basis_tdrift;
+			basis[0] = &basis_constant;
+			basis[1] = &basis_tdrift;
 			break;
 		case F_IS_DRIFT_D:
 			active_col[COL_D1] = active_col[COL_D2] = TRUE;
 			n_par = 2;
-			basis[0] = basis_constant;
-			basis[1] = basis_ddrift;
+			basis[0] = &basis_constant;
+			basis[1] = &basis_ddrift;
 			break;
 		case F_IS_GRAV1930:
 			active_col[COL_YY] = TRUE;
 			n_par = 2;
-			basis[0] = basis_constant;
-			basis[1] = basis_siny2;
+			basis[0] = &basis_constant;
+			basis[1] = &basis_siny2;
 			break;
 		case F_IS_HEADING:
 			active_col[COL_H1] = active_col[COL_H2] = TRUE;
 			n_par = 5;
-			basis[0] = basis_constant;
-			basis[1] = basis_cosh;
-			basis[2] = basis_cos2h;
-			basis[3] = basis_sinh;
-			basis[4] = basis_sin2h;
+			basis[0] = &basis_constant;
+			basis[1] = &basis_cosh;
+			basis[2] = &basis_cos2h;
+			basis[3] = &basis_sinh;
+			basis[4] = &basis_sin2h;
 			break;
 		case F_IS_SCALE:
 			active_col[COL_Z1] = active_col[COL_Z2] = TRUE;
 			n_par = 1;
-			basis[0] = basis_z;
+			basis[0] = &basis_z;
 			break;
 	}
 	

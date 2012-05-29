@@ -97,7 +97,7 @@ EXTERN_MSC struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, COUNTER_
 EXTERN_MSC struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, COUNTER_MEDIUM source_type);
 EXTERN_MSC GMT_LONG GMT_write_textset (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_type, struct GMT_TEXTSET *D, GMT_LONG table);
 EXTERN_MSC struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, COUNTER_MEDIUM mode);
-EXTERN_MSC GMT_LONG GMT_init_complex (GMT_LONG complex, COUNTER_MEDIUM *inc, COUNTER_MEDIUM *off);
+EXTERN_MSC GMT_LONG GMT_init_complex (COUNTER_MEDIUM complex, COUNTER_MEDIUM *inc, COUNTER_MEDIUM *off);
 EXTERN_MSC struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M_in, GMT_BOOLEAN duplicate_data);
 EXTERN_MSC struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR *V_in, GMT_BOOLEAN duplicate_data);
 EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);

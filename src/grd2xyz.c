@@ -269,8 +269,10 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
-			p_func_l save = GMT->current.io.output;
 			GMT_BOOLEAN previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
+			GMT_LONG (*save) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);
+			save = GMT->current.io.output;
+			
 			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 

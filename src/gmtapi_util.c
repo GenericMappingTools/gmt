@@ -129,6 +129,9 @@ void *return_address (void *data, int type) {
 	return (p);
 }
 
+/* p_func_size_t is used as a pointer to functions that returns a size_t dimension */
+typedef size_t (*p_func_size_t) (GMT_LONG row, GMT_LONG col, GMT_LONG dim);
+
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
@@ -258,13 +261,13 @@ size_t GMTAPI_2D_to_index_F_cplx_imag (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 	return (2*((size_t)col * (size_t)dim) + (size_t)row + 1);	/* Complex grid, imag(2) component */
 }
 
-p_func_z GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
+p_func_size_t GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
 {
 	/* Return pointer to the required 2D-index function above.  Here
 	 * shape is either GMTAPI_ORDER_ROW (C) or GMTAPI_ORDER_COL (FORTRAN);
 	 * mode is either 0 (regular grid), 1 (complex real) or 2 (complex imag)
 	 */
-	p_func_z p = NULL;
+	p_func_size_t p = NULL;
 	
 	switch (mode) {
 		case GMT_IS_NORMAL:
@@ -824,7 +827,8 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	size_t n_alloc;
 	COUNTER_LARGE row, seg, ij;
 	COUNTER_MEDIUM n_cols = 0, col;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
+	
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -1037,7 +1041,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	GMT_LONG item, error, default_method;
 	COUNTER_MEDIUM tbl, col, offset;
 	COUNTER_LARGE row, seg, ij;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_DATASET *D_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -1405,7 +1409,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	COUNTER_LARGE ij, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -1617,7 +1621,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	COUNTER_LARGE ij, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -1830,7 +1834,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	COUNTER_LARGE ij, ijp, ij_orig;
 	size_t size;
 	double dx, dy;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -3166,7 +3170,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 	COUNTER_LARGE *p = NULL, ij;
 	char *t_record = NULL;
 	void *record = NULL;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_TEXTSET *DT_obj = NULL;
 	struct GMT_DATASET *DS_obj = NULL;
@@ -3196,8 +3200,8 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 			case GMT_IS_FILE:	/* File, stream, and fd are all the same for us, regardless of data or text input */
 		 	case GMT_IS_STREAM:
 		 	case GMT_IS_FDESC:
-			 	record = S_obj->import (API->GMT, S_obj->fp, &(S_obj->n_expected_fields), &(S_obj->n_columns));	/* Get that next record */
-				n_fields = S_obj->n_columns;	/* Get that next record */
+		 		record = S_obj->import (API->GMT, S_obj->fp, &(S_obj->n_expected_fields), &status);	/* Get that next record */
+				n_fields = S_obj->n_columns = status;	/* Get that next record */
 				if (API->GMT->current.io.status & GMT_IO_EOF) {			/* End-of-file in current file (but there may be many files) */
 					S_obj->status = GMT_IS_USED;	/* Mark as read */
 					if (S_obj->close_file) {	/* Close if it was a file that we opened earlier */
@@ -3383,7 +3387,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 	COUNTER_LARGE *p = NULL, ij;
 	char *s = NULL;
 	double *d = NULL;
-	p_func_z GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;

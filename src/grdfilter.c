@@ -114,7 +114,8 @@ struct FILTER_INFO {
 	double par[5];		/* [0] is filter width, [1] is 0.5*filter_width, [2] is xscale, [3] is yscale, [4] is 1/r_half for filter */
 	double x_off, y_off;	/* Offsets relative to original grid */
 	char *visit;		/* TRUE/FALSE array to keep track of which longitude nodes we have already visited once */
-	p_func_d weight_func, radius_func;
+	double (*weight_func) (double, double *);
+	double (*radius_func) (struct GMT_CTRL *, double, double, double, double, double *);
 };
 
 void *New_grdfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -636,33 +637,33 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	switch (Ctrl->D.mode) {
 		case 0:	/* Plain, unscaled isotropic Cartesian distances */
 			x_scale = y_scale = 1.0;
-			F.radius_func = CartRadius;
+			F.radius_func = &CartRadius;
 			break;
 		case 1:	/* Plain, scaled (degree to km) isotropic Cartesian distances */
 			x_scale = y_scale = GMT->current.proj.DIST_KM_PR_DEG;
-			F.radius_func = CartScaledRadius;
+			F.radius_func = &CartScaledRadius;
 			break;
 		case 2:	/* Flat Earth Cartesian distances, xscale fixed at mid latitude */
 			x_scale = GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (Gout->header->wesn[YHI] + Gout->header->wesn[YLO]));
 			y_scale = GMT->current.proj.DIST_KM_PR_DEG;
-			F.radius_func = FlatEarthRadius;
+			F.radius_func = &FlatEarthRadius;
 			break;
 		case 3:	/* Flat Earth Cartesian distances, xscale reset for each latitude (xscale here is max scale for max |lat|) */
 			x_scale = GMT->current.proj.DIST_KM_PR_DEG * ((fabs (Gout->header->wesn[YLO]) > Gout->header->wesn[YHI]) ? cosd (Gout->header->wesn[YLO]) : cosd (Gout->header->wesn[YHI]));
 			y_scale = GMT->current.proj.DIST_KM_PR_DEG;
-			F.radius_func = FlatEarthRadius;
+			F.radius_func = &FlatEarthRadius;
 			break;
 		case 4:	/* Great circle distances */
 			x_scale = 0.0;
 			y_scale = GMT->current.proj.DIST_KM_PR_DEG;
-			F.radius_func = SphericalRadius;
+			F.radius_func = &SphericalRadius;
 			break;
 		case 5:	/* Great circle distances with Mercator coordinates */
 			/* Get the max |lat| extent of the grid */
 			max_lat = IMG2LAT (MAX (fabs (Gin->header->wesn[YLO]), fabs (Gin->header->wesn[YHI])));
 			merc_range = LAT2IMG (max_lat + (0.5 * Ctrl->F.width / GMT->current.proj.DIST_KM_PR_DEG)) - LAT2IMG (max_lat);
 			x_scale = y_scale = 0.5 * Ctrl->F.width / merc_range;
-			F.radius_func = SphericalRadius;
+			F.radius_func = &SphericalRadius;
 			break;
 	}
 			
@@ -673,14 +674,14 @@ GMT_LONG GMT_grdfilter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	switch (filter_type) {
 		case 1:	/*  Cosine-bell filter weights */
 			par[GRDFILTER_INV_R_SCALE] = (Ctrl->F.rect) ? 1.0 : 2.0 / Ctrl->F.width;
-			F.weight_func = CosBellWeight;
+			F.weight_func = &CosBellWeight;
 			break;
 		case 2:	/*  Gaussian filter weights */
 			par[GRDFILTER_INV_R_SCALE] = (Ctrl->F.rect) ? -4.5 : -18.0 / (Ctrl->F.width * Ctrl->F.width);
-			F.weight_func = GaussianWeight;
+			F.weight_func = &GaussianWeight;
 			break;
 		default:	/* Everything else uses unit weights */
-			F.weight_func = UnitWeight;
+			F.weight_func = &UnitWeight;
 			break;
 	}
 	

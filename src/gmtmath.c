@@ -2923,8 +2923,8 @@ GMT_LONG GMT_gmtmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char *outfile = NULL;
 #include "gmtmath_op.h"
 
-	p_func_v call_operator[GMTMATH_N_OPERATORS];
-
+	void (*call_operator[GMTMATH_N_OPERATORS]) (struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMT_DATASET **S, GMT_BOOLEAN *, double *, COUNTER_MEDIUM, COUNTER_MEDIUM);
+	
 	struct GMT_DATASET *stack[GMTMATH_STACK_SIZE], *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
 	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;
 	struct GMT_TABLE *rhs = NULL, *D = NULL, *I = NULL;

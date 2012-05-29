@@ -41,15 +41,11 @@
  *			GMT TYPEDEF DEFINITIONS
  *--------------------------------------------------------------------*/
 
-typedef int GMT_LONG;			/* plain signed integer */
+typedef int GMT_LONG;		/* plain signed integer */
+struct GMT_CTRL;		 /* forward declaration of GMT_CTRL */
 
-typedef void (*p_func_v) ();		/* p_func_v declares a pointer to a function returning void */
-typedef void* (*p_func_p) ();		/* p_func_p declares a pointer to a function returning void pointer */
-typedef GMT_LONG (*p_func_l) ();	/* p_func_l declares a pointer to a function returning an GMT_LONG */
-typedef uint64_t (*p_func_u8) ();	/* p_func_u8 declares a pointer to a function returning an COUNTER_LARGE */
-typedef unsigned (*p_func_u4) ();	/* p_func_u4 declares a pointer to a function returning an unsigned int */
-typedef size_t (*p_func_z) ();		/* p_func_z declares a pointer to a function returning a size_t */
-typedef double (*p_func_d) ();		/* p_func_d declares a pointer to a function returning a double */
-typedef GMT_BOOLEAN (*p_func_b) ();	/* p_func_b declares a pointer to a function returning a GMT_BOOLEAN */
+/* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
+ * and is used to declare GMT_get_io_ptr in gmt_io.c and gmt_prototypes.h */
+typedef GMT_LONG (*p_to_io_func) (struct GMT_CTRL *, FILE *, unsigned, double *);
 
 #endif  /* _GMT_TYPES_H */

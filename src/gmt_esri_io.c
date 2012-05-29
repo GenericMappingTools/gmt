@@ -419,7 +419,7 @@ GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
+GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {
 	GMT_LONG error;
 	GMT_BOOLEAN check, is_binary = FALSE, swap = FALSE;
@@ -561,7 +561,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode, GMT_LONG floating)
+GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode, GMT_LONG floating)
 {
 	COUNTER_MEDIUM inc, off, i2, j, j2, width_out, height_out, last;
 	GMT_LONG first_col, last_col, first_row, last_row;
@@ -616,12 +616,12 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_writei_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_esri_writei_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* Standard integer values on output only */
 	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, FALSE));
 }
 
-GMT_LONG GMT_esri_writef_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_esri_writef_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* Write floating point on output */
 	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, TRUE));
 }

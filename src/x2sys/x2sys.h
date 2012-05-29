@@ -125,6 +125,8 @@ struct X2SYS_CORR {		/* Structure with the corrections for each leg */
 	double drift_rate;		/* Best fitting drift rate for data set [units/sec] */
 };
 
+struct X2SYS_FILE_INFO;	/* Forward reference */
+
 struct X2SYS_INFO {
 	/* Information of this datasets particular organization */
 
@@ -140,7 +142,8 @@ struct X2SYS_INFO {
 	GMT_BOOLEAN *use_column;		/* Array of T/F for which columns to use */
 	COUNTER_MEDIUM geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	COUNTER_MEDIUM dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
-	p_func_l read_file;		/* Pointer to function that reads this file */
+	/* read_file is a pointer to function that reads this file */
+	GMT_LONG (*read_file) (struct GMT_CTRL *, char *, double ***, struct X2SYS_INFO *, struct X2SYS_FILE_INFO *, struct GMT_IO *, COUNTER_LARGE *);
 	COUNTER_MEDIUM file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
 	GMT_BOOLEAN ascii_out;		/* TRUE if output should be in ascii */
 	GMT_BOOLEAN multi_segment;		/* TRUE if there are multiple segments in this file */

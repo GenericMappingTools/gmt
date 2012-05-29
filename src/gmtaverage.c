@@ -179,7 +179,7 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *t_ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	p_func_l func = NULL;
+	GMT_LONG (*func) (struct GMTAPI_CTRL *, GMT_LONG, void *) = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -220,6 +220,6 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 	
-	error = func (API, options);	/* If errors then we return that next */
+	error = func (API, mode, options);	/* If errors then we return that next */
 	Return (error);
 }

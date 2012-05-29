@@ -72,8 +72,8 @@
 
 struct GRD_PAD {
 	double wesn[4];
-	GMT_LONG pad[4];
-	GMT_LONG expand;
+	COUNTER_MEDIUM pad[4];
+	// GMT_LONG expand;
 };
 
 /* These functions live in other files and are extern'ed in here */
@@ -1695,7 +1695,7 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 	if (n == 0) h->z_min = h->z_max = C->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
 
-GMT_LONG GMT_init_complex (GMT_LONG complex_mode, COUNTER_MEDIUM *inc, COUNTER_MEDIUM *off)
+GMT_LONG GMT_init_complex (COUNTER_MEDIUM complex_mode, COUNTER_MEDIUM *inc, COUNTER_MEDIUM *off)
 {	/* Sets complex-related parameters based on the input complex_mode variable:
 	 * If complex_mode & 64 then we do not want to write a header [output only; only some formats]
 	 * complex_mode = 0 means real data

@@ -380,7 +380,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 	char format[GMT_TEXT_LEN256];		/* format used for non-time annotations */
 	char *axis_chr[3] = {"ns", "ew", "zz"};	/* Characters corresponding to axes */
 	char **label_c = NULL;
-	p_func_d xyz_fwd = NULL;
+	double (*xyz_fwd) (struct GMT_CTRL *, double) = NULL;
 	struct PSL_CTRL *P = C->PSL;
 
 	/* Initialize parameters for this axis */
@@ -3750,7 +3750,7 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, COUNTER_LARG
 	GMT_BOOLEAN jump;
 	COUNTER_LARGE k, first, i;
 	double *xp = NULL, *yp = NULL;
-	p_func_d x_on_border[2] = {NULL, NULL};
+	double (*x_on_border[2]) (struct GMT_CTRL *, double) = {NULL, NULL};
 	struct PSL_CTRL *P = C->PSL;
 
 	if (GMT_eq (P->current.rgb[PSL_IS_FILL][0], -1.0)) {

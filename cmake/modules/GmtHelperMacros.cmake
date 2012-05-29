@@ -143,7 +143,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		# gmt_progcases.h
 		list_regex_replace (
 			"^([^# \t:]+):([^ \t]+)"
-			"\t\t\tfunc = (p_func_l)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
+			"\t\t\tfunc = (ptr_to_gmt_module)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
 			_raw_progcases ${GMT_PROGS} ${ARGN}
 			MATCHES_ONLY)
 		list (REMOVE_DUPLICATES _raw_progcases)
