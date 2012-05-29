@@ -30,34 +30,34 @@
 
 struct GRDPROJECT_CTRL {
 	struct In {	/* Input grid */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A[k|m|n|i|c|p] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char unit;
 	} A;
 	struct C {	/* -C[<dx/dy>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double easting, northing;
 	} C;
 	struct D {	/* -Ddx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} D;
 	struct E {	/* -E<dpi> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG dpi;
 	} E;
 	struct G {	/* -G */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct M {	/* -Mc|i|m */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char unit;
 	} M;
 };
@@ -119,7 +119,8 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG sval;
 #ifdef GMT_COMPAT
 	GMT_LONG ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
@@ -156,7 +157,9 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 				break;
 			case 'E':	/* Set dpi of grid */
 				Ctrl->E.active = TRUE;
-				Ctrl->E.dpi = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -E option: Must specify positive dpi\n");
+				Ctrl->E.dpi = sval;
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.file = strdup (opt->arg);
@@ -172,10 +175,13 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -D */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
 				Ctrl->D.active = TRUE;
-				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
+				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
-				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
-				GMT_getinc (GMT, format, Ctrl->D.inc);
+				sprintf (format, "%d+/%d+", ii, jj);
+				if (GMT_getinc (GMT, format, Ctrl->D.inc)) {
+					GMT_inc_syntax (GMT, 'D', 1);
+					n_errors++;
+				}
 				break;
 #endif
 			default:	/* Report bad options */
@@ -192,7 +198,6 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, (Ctrl->M.active + Ctrl->A.active) == 2, "Syntax error: Can specify only one of -A and -M\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->D.active + Ctrl->E.active) > 1, "Syntax error: Must specify only one of -D or -E\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] < 0.0), "Syntax error -D option: Must specify positive increment(s)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.dpi <= 0, "Syntax error -E option: Must specify positive dpi\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -202,8 +207,8 @@ GMT_LONG GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ct
 
 GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, set_n = FALSE, shift_xy = FALSE, offset, k, unit = 0;
-	GMT_LONG use_nx = 0, use_ny = 0;
+	GMT_BOOLEAN error = FALSE, set_n = FALSE, shift_xy = FALSE;
+	COUNTER_MEDIUM use_nx = 0, use_ny = 0, offset, k, unit = 0;
 
 	char format[GMT_BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];
 
@@ -249,7 +254,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {	/* If -R was not given we infer the option via the input grid */
 		char opt_R[GMT_BUFSIZ];
 		struct GMT_GRID *G = NULL;
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		GMT_memcpy (wesn, G->header->wesn, 4, double);
@@ -329,7 +334,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 	ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 	if (Ctrl->A.active) {	/* Convert to chosen units */
-		strncpy (unit_name, scale_unit_name, (size_t)GRD_UNIT_LEN80);
+		strncpy (unit_name, scale_unit_name, GRD_UNIT_LEN80);
 		xmin /= GMT->current.proj.scale[GMT_X];
 		xmax /= GMT->current.proj.scale[GMT_X];
 		ymin /= GMT->current.proj.scale[GMT_Y];
@@ -363,7 +368,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((Geo = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
 
-		if ((Rect = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+		if ((Rect = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -418,13 +423,13 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_grd_project (GMT, Rect, Geo, TRUE);
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Geo) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Geo) != GMT_OK) {
 			Return (API->error);
 		}
 	}
 	else {	/* Forward projection from geographical to rectangular grid */
 
-		if ((Geo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+		if ((Geo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -495,7 +500,7 @@ GMT_LONG GMT_grdproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Rect) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Rect) != GMT_OK) {
 			Return (API->error);
 		}
 	}

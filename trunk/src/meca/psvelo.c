@@ -50,37 +50,37 @@ PostScript code is written to stdout.
 
 struct PSVELO_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} A;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double scale;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -r<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG symbol;
-		GMT_LONG readmode;
+		COUNTER_MEDIUM readmode;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;
 	} S;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -166,7 +166,9 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, no_size_needed, n_set, got_A = FALSE;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_LONG n;
+	GMT_BOOLEAN no_size_needed, n_set, got_A = FALSE;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT
 	char txt_c[GMT_TEXT_LEN256];
@@ -302,8 +304,8 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ix = 0, iy = 1, n_rec = 0, error = FALSE,justify;
-	GMT_LONG des_ellipse = TRUE, des_arrow = TRUE;
+	GMT_LONG ix = 0, iy = 1, n_rec = 0, justify;
+	GMT_LONG des_ellipse = TRUE, des_arrow = TRUE, error = FALSE;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;
@@ -352,7 +354,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -386,7 +388,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, must exit)\n", n_rec);
+			GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -521,7 +523,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 

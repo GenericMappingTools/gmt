@@ -61,67 +61,69 @@
 
 struct PSCOAST_CTRL {
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* -C<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill[2];	/* lake and riverlake fill */
 	} C;
 	struct D {	/* -D<resolution> */
-		GMT_LONG active;
-		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
-		GMT_LONG clip;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN clip;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<feature>[/<pen>] */
-		GMT_LONG active;
-		GMT_LONG use[GSHHS_N_RLEVELS], n_rlevels;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM use[GSHHS_N_RLEVELS];
+		COUNTER_MEDIUM n_rlevels;
 		struct GMT_PEN pen[GSHHS_N_RLEVELS];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_MAP_SCALE item;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N<feature>[/<pen>] */
-		GMT_LONG active;
-		GMT_LONG use[GSHHS_N_BLEVELS], n_blevels;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM use[GSHHS_N_BLEVELS];
+		COUNTER_MEDIUM n_blevels;
 		struct GMT_PEN pen[GSHHS_N_BLEVELS];
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S<fill> */
-		GMT_LONG active;
-		GMT_LONG clip;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN clip;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_MAP_ROSE item;
 	} T;
 	struct W {	/* -W[<feature>/]<pen> */
-		GMT_LONG active;
-		GMT_LONG use[GSHHS_MAX_LEVEL];
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN use[GSHHS_MAX_LEVEL];
 		struct GMT_PEN pen[GSHHS_MAX_LEVEL];
 	} W;
 #ifdef DEBUG
 	struct DBG {	/* -+<bin> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		int bin;
 	} debug;
 #endif
 };
 
 void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	struct PSCOAST_CTRL *C = GMT_memory (GMT, NULL, 1, struct PSCOAST_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
@@ -245,7 +247,9 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, clipping;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_LONG k;
+	GMT_BOOLEAN clipping;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	struct GMT_PEN pen;
@@ -308,22 +312,22 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 				}
 				switch (opt->arg[0]) {
 					case 'a':
-						for (k = 0; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 0; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'A':
-						for (k = 1; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 1; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'r':
-						for (k = 0; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 0; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'R':
-						for (k = 1; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = 1; k < GSHHS_RIVER_INTERMITTENT; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'i':
-						for (k = GSHHS_RIVER_INTERMITTENT; k < GSHHS_RIVER_CANALS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = GSHHS_RIVER_INTERMITTENT; k < GSHHS_RIVER_CANALS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					case 'c':
-						for (k = GSHHS_RIVER_CANALS; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+						for (k = GSHHS_RIVER_CANALS; k < GSHHS_N_RLEVELS; k++) Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 					default:
 						k = atoi (opt->arg);
@@ -332,7 +336,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 							n_errors++;
 						}
 						else
-							Ctrl->I.use[k] = TRUE, Ctrl->I.pen[k] = pen;
+							Ctrl->I.use[k] = 1, Ctrl->I.pen[k] = pen;
 						break;
 				}
 				break;
@@ -363,7 +367,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 				}
 				switch (opt->arg[0]) {
 					case 'a':
-						for (k = 0; k < GSHHS_N_BLEVELS; k++) Ctrl->N.use[k] = TRUE, Ctrl->N.pen[k] = pen;
+						for (k = 0; k < GSHHS_N_BLEVELS; k++) Ctrl->N.use[k] = 1, Ctrl->N.pen[k] = pen;
 						break;
 					default:
 						k = opt->arg[0] - '1';
@@ -372,7 +376,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 							n_errors++;
 						}
 						else
-							Ctrl->N.use[k] = TRUE, Ctrl->N.pen[k] = pen;
+							Ctrl->N.use[k] = 1, Ctrl->N.pen[k] = pen;
 						break;
 				}
 				break;
@@ -444,7 +448,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %ld cannot be negative\n", k);
+		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
 	}
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping, "Syntax error: Cannot combine -C, -G, -S while clipping\n");
@@ -477,7 +481,7 @@ GMT_LONG GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, st
 	return (n_errors);
 }
 
-GMT_LONG add_this_polygon_to_path (struct GMT_CTRL *GMT, GMT_LONG k0, struct GMT_GSHHS_POL *p, GMT_LONG level, GMT_LONG k)
+GMT_BOOLEAN add_this_polygon_to_path (struct GMT_CTRL *GMT, GMT_LONG k0, struct GMT_GSHHS_POL *p, GMT_LONG level, GMT_LONG k)
 {
 	/* Determines if we should add the current polygon pol[k] to the growing path we are constructing */
 
@@ -504,7 +508,7 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, GMT_LONG k0, GM
 	for (k = k0 + 1; k < np; k++) {
 		if (p[k].n == 0 || p[k].level < level) continue;
 		if (add_this_polygon_to_path (GMT, k0, p, level, k)) {	/* Add this to the current path */
-			PSL_comment (PSL, "Polygon %ld\n", k);
+			PSL_comment (PSL, "Polygon %d\n", k);
 			PSL_plotline (PSL, p[k].lon, p[k].lat, p[k].n, PSL_MOVE);
 #ifdef DEBUGX
 			GMT_message (GMT, "#\n");
@@ -529,10 +533,10 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_LONG i, np, ind, bin = 0, base, anti_bin = -1, np_new, k, last_k, err, bin_trouble, error, n;
 	GMT_LONG level_to_be_painted = 0, direction, start_direction, stop_direction, last_pen_level;
-	GMT_LONG shift = FALSE, need_coast_base, recursive;
-	GMT_LONG greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;
-	GMT_LONG clobber_background, paint_polygons = FALSE, donut;
-	GMT_LONG donut_hell = FALSE, world_map_save, clipping;
+	GMT_BOOLEAN shift = FALSE, need_coast_base, recursive;
+	GMT_BOOLEAN greenwich = FALSE, possibly_donut_hell = FALSE, fill_in_use = FALSE;
+	GMT_BOOLEAN clobber_background, paint_polygons = FALSE, donut;
+	GMT_BOOLEAN donut_hell = FALSE, world_map_save, clipping;
 
 	double bin_x[5], bin_y[5], out[2], *xtmp = NULL, *ytmp = NULL;
 	double west_border, east_border, anti_lon = 0.0, anti_lat = -90.0, edge = 720.0;
@@ -628,7 +632,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -681,7 +685,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
 		anti_lat = -GMT->current.proj.pole;
-		anti_bin = (GMT_LONG)floor ((90.0 - anti_lat) / c.bsize) * c.bin_nx + (GMT_LONG)floor (anti_lon / c.bsize);
+		anti_bin = lrint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + lrint (floor (anti_lon / c.bsize));
 		GMT_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
@@ -756,8 +760,8 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5ld\r", bin);
-		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %ld\n", bin);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5d\r", bin);
+		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %d\n", bin);
 
 		if (GMT->current.map.is_world && greenwich) {
 			left = c.bsize * (bin % c.bin_nx);	right = left + c.bsize;
@@ -835,7 +839,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Shore Bin # %ld, Level %ld", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
@@ -896,7 +900,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "River Bin # %ld, Level %ld", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "River Bin # %d, Level %d", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
@@ -957,7 +961,7 @@ GMT_LONG GMT_pscoast (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
-					sprintf (GMT->current.io.segment_header, "Border Bin # %ld, Level %ld", bin, p[i].level);
+					sprintf (GMT->current.io.segment_header, "Border Bin # %d, Level %d", bin, p[i].level);
 					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];

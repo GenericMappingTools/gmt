@@ -52,7 +52,7 @@ enum GMT_enum_type {
 	GMTAPI_INT,       /* int32_t, 4-byte signed integer type */
 	GMTAPI_UINT,      /* uint32_t, 4-byte unsigned integer type */
 	GMTAPI_LONG,      /* int64_t, 8-byte signed integer type */
-	GMTAPI_ULONG,     /* uint64_t, 8-byte unsigned integer type */
+	GMTAPI_ULONG,     /* COUNTER_LARGE, 8-byte unsigned integer type */
 	GMTAPI_FLOAT,     /* 4-byte data float type */
 	GMTAPI_DOUBLE,    /* 8-byte data float type */
 	GMTAPI_TEXT,      /* Arbitrarily long text string [OGR/GMT use only] */

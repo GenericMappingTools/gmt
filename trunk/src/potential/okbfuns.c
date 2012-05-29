@@ -18,12 +18,12 @@
 
 #include "okbfuns.h"
 
-double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, int is_grav,
-		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, int km, int pm, struct LOC_OR *loc_or) {
+double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double rho, GMT_BOOLEAN is_grav,
+		struct BODY_DESC bd_desc, struct BODY_VERTS *body_verts, COUNTER_MEDIUM km, COUNTER_MEDIUM pm, struct LOC_OR *loc_or) {
 
 	double okb = 0, tot = 0, c_tet = 0, s_tet = 0, c_phi = 0, s_phi = 0;
-	GMT_LONG i, l, k, cnt_v = 0;
-	int n_vert, top = TRUE;
+	COUNTER_MEDIUM i, l, k, cnt_v = 0, n_vert;
+	GMT_BOOLEAN top = TRUE;
 
 /* x_o, y_o, z_o are the coordinates of the observation point
  * rho is the body density times G constant
@@ -70,7 +70,7 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
     |___________________________________________________________________| */
 
 	for (i = 0; i < bd_desc.n_f; i++) {	/* Loop over facets */
-		n_vert = (int)bd_desc.n_v[i];	/* Number of vertices of each face */
+		n_vert = bd_desc.n_v[i];	/* Number of vertices of each face */
 		if (n_vert < 3)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: facet with less than 3 vertex\n");
 		for (l = 0; l < n_vert; l++) {
@@ -89,13 +89,13 @@ double okabe (struct GMT_CTRL *GMT, double x_o, double y_o, double z_o, double r
 }
 
 /* ---------------------------------------------------------------------- */
-void rot_17 (int n_vert, int top, struct LOC_OR *loc_or,
+void rot_17 (COUNTER_MEDIUM n_vert, GMT_BOOLEAN top, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 	/* Rotates coordinates by teta and phi acording to equation (17) of Okabe */
 	/* store the result in external structure loc_or and angles c_tet s_tet c_phi s_phi */
 	double xi, xj, xk, yi, yj, yk, zi, zj, zk, v, x, y, z;
 	double r, r2, r_3d, Sxy, Szx, Syz;
-	GMT_LONG i = 0, j, k, l;
+	COUNTER_MEDIUM i = 0, j, k, l;
 
 	loc_or[n_vert].x = loc_or[0].x;		loc_or[n_vert].y = loc_or[0].y;
 	loc_or[n_vert].z = loc_or[0].z;		/* Last point = first point */
@@ -131,10 +131,10 @@ void rot_17 (int n_vert, int top, struct LOC_OR *loc_or,
 }
 
 /* ---------------------------------------------------------------------- */
-double okb_grv (int n_vert, struct LOC_OR *loc_or, double *c_phi) {
+double okb_grv (COUNTER_MEDIUM n_vert, struct LOC_OR *loc_or, double *c_phi) {
 /*  Computes the gravity anomaly due to a facet. */
 
-	int l;
+	COUNTER_MEDIUM l;
 	double x1, x2, y1, y2, dx, dy, r, c_psi, s_psi, grv = 0, grv_p;
 
 	if (fabs(*c_phi) < FLT_EPSILON) return 0.0;
@@ -169,11 +169,11 @@ double eq_30 (double c, double s, double x, double y, double z) {
 }
 
 /* ---------------------------------------------------------------------- */
-double okb_mag (int n_vert, GMT_LONG km, GMT_LONG pm, struct LOC_OR *loc_or,
+double okb_mag (COUNTER_MEDIUM n_vert, COUNTER_MEDIUM km, COUNTER_MEDIUM pm, struct LOC_OR *loc_or,
 			double *c_tet, double *s_tet, double *c_phi, double *s_phi) {
 /*  Computes the total magnetic anomaly due to a facet. */
 
-	int i;
+	COUNTER_MEDIUM i;
 	double qsi1, qsi2, eta1, eta2, z2, z1, dx, dy, kx, ky, kz, v, r, c_psi, s_psi;
 	double ano = 0, ano_p, mag_fac, xi, xi1, yi, yi1, mx, my, mz, r_1, tg_psi, auxil;
 

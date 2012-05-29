@@ -30,42 +30,42 @@
 
 struct PSIMAGE_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<xpos>/<ypos>[/<justify>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double x, y;
 		char justify[3];
 	} C;
 	struct E {	/* -E<dpi> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double dpi;
 	} E;
 	struct F {	/* -F<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 for f|b, 1 for t */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N<nx>/<ny> */
-		GMT_LONG active;
-		GMT_LONG nx, ny;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM nx, ny;
 	} N;
 	struct W {	/* -W[-]<width>[/<height>] */
-		GMT_LONG active;
-		GMT_LONG interpolate;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN interpolate;
 		double width, height;
 	} W;
 };
@@ -136,7 +136,8 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, n;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], letter;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -218,7 +219,7 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 				break;
 			case 'N':	/* Replicate image */
 				Ctrl->N.active = TRUE;
-				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.nx, &Ctrl->N.ny);
+				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.nx, &Ctrl->N.ny);
 				if (n == 1) Ctrl->N.ny = Ctrl->N.nx;
 				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option: Must values for replication\n");
 				break;
@@ -272,7 +273,7 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
-	if (GMT_fread (c, (size_t)1, (size_t)4, fp) != (size_t)4) {
+	if (GMT_fread (c, 1U, 4U, fp) != 4U) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
 		return (-1);
 	}
@@ -288,8 +289,9 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 
 GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1;
-	GMT_LONG error = FALSE, free_GMT = FALSE, known = 0;
+	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
+	COUNTER_MEDIUM row, col;
+	GMT_BOOLEAN error = FALSE, free_GMT = FALSE;
 
 	double x, y, wesn[4];
 
@@ -343,7 +345,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef USE_GDAL
 	else  {	/* Read a raster image */
 		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
@@ -448,14 +450,14 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
-	for (j = 0; j < Ctrl->N.ny; j++) {
-		y = Ctrl->C.y + j * Ctrl->W.height;
-		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %ld times for row %ld\n", Ctrl->N.nx, j);
-		for (i = 0; i < Ctrl->N.nx; i++) {
-			x = Ctrl->C.x + i * Ctrl->W.width;
+	for (row = 0; row < Ctrl->N.ny; row++) {
+		y = Ctrl->C.y + row * Ctrl->W.height;
+		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
+		for (col = 0; col < Ctrl->N.nx; col++) {
+			x = Ctrl->C.x + col * Ctrl->W.width;
 			if (header.depth == 0)
-				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, (GMT_LONG)header.length, 
-						header.width, header.height, (GMT_LONG)header.xorigin, (GMT_LONG)header.yorigin);
+				PSL_plotepsimage (PSL, x, y, Ctrl->W.width, Ctrl->W.height, PSL_BL, picture, header.length, 
+						header.width, header.height, header.xorigin, header.yorigin);
 			else if (header.depth == 1) {
 				/* Invert is opposite from what is expected. This is to match the behaviour of -Gp */
 				if (Ctrl->I.active)

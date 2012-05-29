@@ -35,7 +35,7 @@ enum GMT_enum_color {GMT_RGB	= 0,
 enum GMT_enum_bfn {GMT_BGD, GMT_FGD, GMT_NAN};
 
 /* Copy two RGB[T] arrays (a = b) */
-#define GMT_rgb_copy(a,b) memcpy (a, b, (size_t)(4 * sizeof(double)))
+#define GMT_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 
 /* To compare is two colors are ~ the same */
 #define GMT_eq(a,b) (fabs((a)-(b)) < GMT_SMALL)
@@ -74,8 +74,8 @@ struct GMT_LUT {
 	double z_low, z_high, i_dz;
 	double rgb_low[4], rgb_high[4], rgb_diff[4];
 	double hsv_low[4], hsv_high[4], hsv_diff[4];
-	GMT_LONG annot;
-	GMT_LONG skip;
+	COUNTER_MEDIUM annot;		/* 1 for Lower, 2 for Upper, 3 for Both */
+	GMT_BOOLEAN skip;		/* TRUE means skip this slice */
 	struct GMT_FILL *fill;	/* Use by grdview */			/* Content not counted by sizeof (struct) */
 	char *label;		/* For non-number labels */		/* Content not counted by sizeof (struct) */
 };
@@ -83,24 +83,24 @@ struct GMT_LUT {
 struct GMT_BFN_COLOR {		/* For back-, fore-, and nan-colors */
 	double rgb[4];
 	double hsv[4];
-	GMT_LONG skip;
+	GMT_BOOLEAN skip;		/* TRUE means skip this slice */
 	struct GMT_FILL *fill;						/* Content not counted by sizeof (struct) */
 };
 
 struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
-	GMT_LONG n_headers;		/* Number of CPT file header records (0 if no header) */
+	COUNTER_MEDIUM n_headers;	/* Number of CPT file header records (0 if no header) */
 	struct GMT_LUT *range;		/* CPT lookup table read by GMT_read_cpt */
 	struct GMT_BFN_COLOR patch[3];	/* Structures with back/fore/nan colors */
-	GMT_LONG n_colors;		/* Number of colors in CPT lookup table */
-	GMT_LONG cpt_flags;		/* Flags controling use of BFN colors */
-	GMT_LONG alloc_mode;		/* Allocation info [0] */
-	GMT_LONG model;			/* RGB, HSV, CMYK */
-	GMT_LONG is_gray;		/* TRUE if only grayshades are needed */
-	GMT_LONG is_bw;			/* TRUE if only black and white are needed */
-	GMT_LONG is_continuous;		/* TRUE if continuous color tables have been given */
-	GMT_LONG has_pattern;		/* TRUE if cpt file contains any patterns */
-	GMT_LONG skip;			/* TRUE if current z-slice is to be skipped */
-	GMT_LONG categorical;		/* TRUE if CPT applies to categorical data */
+	COUNTER_MEDIUM n_colors;	/* Number of colors in CPT lookup table */
+	COUNTER_MEDIUM cpt_flags;	/* Flags controling use of BFN colors */
+	COUNTER_MEDIUM alloc_mode;	/* Allocation info [0] */
+	COUNTER_MEDIUM model;		/* RGB, HSV, CMYK */
+	GMT_BOOLEAN is_gray;		/* TRUE if only grayshades are needed */
+	GMT_BOOLEAN is_bw;			/* TRUE if only black and white are needed */
+	GMT_BOOLEAN is_continuous;		/* TRUE if continuous color tables have been given */
+	GMT_BOOLEAN has_pattern;		/* TRUE if cpt file contains any patterns */
+	GMT_BOOLEAN skip;			/* TRUE if current z-slice is to be skipped */
+	GMT_BOOLEAN categorical;		/* TRUE if CPT applies to categorical data */
 	char **header;			/* Array with all CPT ile header records, if any) */		/* Content not counted by sizeof (struct) */
 };
 

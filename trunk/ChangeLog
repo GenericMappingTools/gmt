@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-05-17	pwessel
+	* grdtrack.c:		Added option -S to stack cross-profiles generated with -C.
+
 2012-05-13	pwessel
 	* blockmedian.c:	Added -Er[-] to return as last column the record number that
 				gave the median value.  For ties, we return the record number

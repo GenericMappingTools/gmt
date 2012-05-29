@@ -27,47 +27,45 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
-
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
 	struct A {	/* -A[step] {NOT IMPLEMENTED YET} */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<dx>/<dy>[/<dz>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double dx, dy, dz;
 	} D;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<intensity> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *arg;
 	} S;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
 };
@@ -218,7 +216,8 @@ GMT_LONG GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n, n_errors = 0;
+	COUNTER_MEDIUM j, n_errors = 0;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -350,12 +349,16 @@ int dist_compare (const void *a, const void *b)
 
 GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psxyz task */
-	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
-	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	GMT_LONG default_outline, outline_active, pos2x, pos2y, set_type;
-	GMT_LONG i, n, n_alloc = 0, n_total_read = 0, j, geometry, tbl, seg;
-	GMT_LONG n_cols_start = 3, justify, error = GMT_NOERROR;
-	GMT_LONG ex1, ex2, ex3, change, n_needed, read_mode, save_u = FALSE;
+	GMT_BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
+	GMT_BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
+	GMT_BOOLEAN default_outline, outline_active, save_u = FALSE;
+	COUNTER_MEDIUM k, j, geometry, tbl, pos2x, pos2y, set_type;
+	COUNTER_MEDIUM n_cols_start = 3, justify;
+	COUNTER_MEDIUM ex1, ex2, ex3, change, n_needed, read_mode;
+	GMT_LONG error = GMT_NOERROR;
+	
+	COUNTER_LARGE i, n, n_total_read = 0;
+	size_t n_alloc = 0;
 
 	char *text_rec = NULL;
 
@@ -435,7 +438,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;			/* Since these may have units appended */
 	for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles or km, not dimensions */
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
@@ -454,12 +457,12 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	lux[1] = fabs (GMT->current.proj.z_project.cos_az * GMT->current.proj.z_project.cos_el);
 	lux[2] = fabs (GMT->current.proj.z_project.sin_el);
 	tmp = MAX (lux[0], MAX (lux[1], lux[2]));
-	for (i = 0; i < 3; i++) lux[i] = (lux[i] / tmp) - 0.5;
+	for (k = 0; k < 3; k++) lux[k] = (lux[k] / tmp) - 0.5;
 
 	if ((Ctrl->C.active || current_fill.rgb[0]) >= 0 && (S.symbol == GMT_SYMBOL_COLUMN || S.symbol == GMT_SYMBOL_CUBE)) {	/* Modify the color for each facet */
-		for (i = 0; i < 3; i++) {
-			GMT_rgb_copy (rgb[i], current_fill.rgb);
-			if (S.shade3D) GMT_illuminate (GMT, lux[i], rgb[i]);
+		for (k = 0; k < 3; k++) {
+			GMT_rgb_copy (rgb[k], current_fill.rgb);
+			if (S.shade3D) GMT_illuminate (GMT, lux[k], rgb[k]);
 		}
 	}
 
@@ -520,7 +523,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, set_type, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -564,8 +567,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (j = n_cols_start; j < 7; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (GMT_conv_intext2dbl (GMT, text_rec, 7)) {	/* Max 7 columns needs to be parsed */
-					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skipped)\n", n_total_read);
+				if (GMT_conv_intext2dbl (GMT, text_rec, 7U)) {	/* Max 7 columns needs to be parsed */
+					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
 				}
 				if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC) {	/* One of the vector symbols */
@@ -677,7 +680,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %ld. Skipped\n", n_total_read);
+							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
 						data[n].dim[1] = hypot (data[n].x - x_2, data[n].y - y_2);	/* Compute vector length in case of shrinking */
@@ -758,7 +761,8 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 
-		data = GMT_malloc (GMT, data, 0, &n, struct PSXYZ_DATA);
+		n_alloc = n;
+		data = GMT_malloc (GMT, data, 0, &n_alloc, struct PSXYZ_DATA);
 
 		/* Sort according to distance from viewer */
 
@@ -906,12 +910,13 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, data);
 	}
 	else {	/* Line/polygon part */
+		COUNTER_LARGE seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT segment table(s) */
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -923,7 +928,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				L = D->table[tbl]->segment[seg];	/* Set shortcut to current segment */
 				if (polygon && GMT_polygon_is_hole (L)) continue;	/* Holes are handled together with perimeters */
 
-				n = L->n_rows;				/* Number of points in this segment */
+				n = (GMT_LONG)L->n_rows;				/* Number of points in this segment */
 
 				/* We had here things like:	x = D->table[tbl]->segment[seg]->coord[GMT_X];
 				 * but reallocating x below lead to disasters.  */
@@ -1026,7 +1031,7 @@ GMT_LONG GMT_psxyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */
 
-	if (current_pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 

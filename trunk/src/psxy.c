@@ -27,56 +27,55 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, GMT_LONG mode, GMT_LONG cmd);
-EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
+char * gmt_get_char_ptr (char **ptr);
 
 /* Control structure for psxy */
 
 struct PSXY_CTRL {
 	struct A {	/* -A[m|p|step] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double step;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<dx>/<dy> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double dx, dy;
 	} D;
 	struct E {	/* -E[x|X][y|Y][cap][/[+|-]<pen>] */
-		GMT_LONG active;
-		GMT_LONG xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
-		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = box-whisker, 3 notched box-whisker */
+		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
 		struct GMT_PEN pen;
 	} E;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I<intensity> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *arg;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 0 = normal, 1 = -C applies to pen color only, 2 = -C applies to symbol fill & pen color */
 		struct GMT_PEN pen;
 	} W;
 };
@@ -105,18 +104,18 @@ void Free_psxy_Ctrl (struct GMT_CTRL *GMT, struct PSXY_CTRL *C) {	/* Deallocate 
 
 void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_x, double error_width2, GMT_LONG line) {
 	double x_1, x_2, y_1, y_2;
-	GMT_LONG tip1, tip2;
+	GMT_BOOLEAN tip1, tip2;
 
 	tip1 = tip2 = (error_width2 > 0.0);
 	GMT_geo_to_xy (GMT, x - delta_x, y, &x_1, &y_1);
 	GMT_geo_to_xy (GMT, x + delta_x, y, &x_2, &y_2);
 	if (GMT_is_dnan (x_1)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %ld. Set to x_min\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %d. Set to x_min\n", line);
 		x_1 = GMT->current.proj.rect[XLO];
 		tip1 = FALSE;
 	}
 	if (GMT_is_dnan (x_2)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %ld. Set to x_max\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: X error bar exceeded domain near line %d. Set to x_max\n", line);
 		x_2 = GMT->current.proj.rect[XHI];
 		tip2 = FALSE;
 	}
@@ -127,18 +126,18 @@ void plot_x_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 
 void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double delta_y, double error_width2, GMT_LONG line) {
 	double x_1, x_2, y_1, y_2;
-	GMT_LONG tip1, tip2;
+	GMT_BOOLEAN tip1, tip2;
 
 	tip1 = tip2 = (error_width2 > 0.0);
 	GMT_geo_to_xy (GMT, x, y - delta_y, &x_1, &y_1);
 	GMT_geo_to_xy (GMT, x, y + delta_y, &x_2, &y_2);
 	if (GMT_is_dnan (y_1)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %ld. Set to y_min\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %d. Set to y_min\n", line);
 		y_1 = GMT->current.proj.rect[YLO];
 		tip1 = FALSE;
 	}
 	if (GMT_is_dnan (y_2)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %ld. Set to y_max\n", line);
+		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y error bar exceeded domain near line %d. Set to y_max\n", line);
 		y_2 = GMT->current.proj.rect[YHI];
 		tip2 = FALSE;
 	}
@@ -148,15 +147,15 @@ void plot_y_errorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, doub
 }
 
 void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], GMT_LONG line, GMT_LONG kind) {
-	GMT_LONG i;
-	static GMT_LONG q[4] = {0, 25, 75, 100};
+	COUNTER_MEDIUM i;
+	static COUNTER_MEDIUM q[4] = {0, 25, 75, 100};
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		GMT_geo_to_xy (GMT, hinge[i], y, &xx[i], &yy[i]);
 		if (GMT_is_dnan (xx[i])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: X %ld %% hinge exceeded domain near line %ld\n", q[i], line);
-			xx[i] = (i <2 ) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: X %d %% hinge exceeded domain near line %d\n", q[i], line);
+			xx[i] = (i < 2) ? GMT->current.proj.rect[XLO] : GMT->current.proj.rect[XHI];
 		}
 	}
 	yy[1] -= error_width2;
@@ -191,15 +190,15 @@ void plot_x_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, do
 }
 
 void plot_y_whiskerbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double y, double hinge[], double error_width2, double rgb[], GMT_LONG line, GMT_LONG kind) {
-	GMT_LONG i;
-	static GMT_LONG q[4] = {0, 25, 75, 100};
+	COUNTER_MEDIUM i;
+	static COUNTER_MEDIUM q[4] = {0, 25, 75, 100};
 	double xx[4], yy[4];
 
 	for (i = 0; i < 4; i++) {	/* for 0, 25, 75, 100% hinges */
 		GMT_geo_to_xy (GMT, x, hinge[i], &xx[i], &yy[i]);
 		if (GMT_is_dnan (yy[i])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y %ld %% hinge exceeded domain near line %ld\n", q[i], line);
-			yy[i] = (i <2 ) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
+			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Y %d %% hinge exceeded domain near line %d\n", q[i], line);
+			yy[i] = (i < 2) ? GMT->current.proj.rect[YLO] : GMT->current.proj.rect[YHI];
 		}
 	}
 	xx[1] -= error_width2;
@@ -358,7 +357,8 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, j0, n_errors = 0;
+	COUNTER_MEDIUM j0, n_errors = 0;
+	GMT_LONG j;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -494,14 +494,15 @@ GMT_LONG GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct G
 
 GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psxy task */
-	GMT_LONG polygon, penset_OK = TRUE, not_line, old_is_world;
-	GMT_LONG get_rgb, read_symbol, clip_set = FALSE, fill_active;
-	GMT_LONG default_outline, outline_active, set_type, n_needed;
-	GMT_LONG error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
-	GMT_LONG i, n_total_read = 0, j, geometry, tbl, seg, read_mode;
-	GMT_LONG n_cols_start = 2, justify, error = GMT_NOERROR;
-	GMT_LONG ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
-	GMT_LONG xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
+	GMT_BOOLEAN polygon, penset_OK = TRUE, not_line, old_is_world;
+	GMT_BOOLEAN get_rgb, read_symbol, clip_set = FALSE, fill_active;
+	GMT_BOOLEAN error_x = FALSE, error_y = FALSE, def_err_xy = FALSE;
+	GMT_BOOLEAN default_outline, outline_active;
+	COUNTER_MEDIUM set_type, n_needed, n_cols_start = 2, justify, tbl;
+	COUNTER_MEDIUM i, n_total_read = 0, j, geometry, read_mode;
+	COUNTER_MEDIUM ex1, ex2, ex3, change, pos2x, pos2y, save_u = FALSE;
+	COUNTER_MEDIUM xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
+	GMT_LONG error = GMT_NOERROR;
 
 	char *text_rec = NULL;
 
@@ -605,7 +606,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		S.symbol = GMT_SYMBOL_NONE;
 
 	if (Ctrl->C.active) {
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (get_rgb) n_cols_start++;
@@ -716,7 +717,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
-		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, set_type, GMT_IN) != GMT_OK) {		/* Enables data input and sets access mode */
@@ -759,8 +760,8 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (j = n_cols_start; j < 6; j++) GMT->current.io.col_type[GMT_IN][j] = GMT_IS_DIMENSION;		/* Since these may have units appended */
 				for (j = 0; j < S.n_nondim; j++) GMT->current.io.col_type[GMT_IN][S.nondim_col[j]+get_rgb] = GMT_IS_FLOAT;	/* Since these are angles, not dimensions */
 				/* Now convert the leading text items to doubles; col_type[GMT_IN] might have been updated above */
-				if (GMT_conv_intext2dbl (GMT, text_rec, 6)) {	/* Max 6 columns needs to be parsed */
-					GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skipped)\n", n_total_read);
+				if (GMT_conv_intext2dbl (GMT, text_rec, 6U)) {	/* Max 6 columns needs to be parsed */
+					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, skipped)\n", n_total_read);
 					continue;
 				}
 				if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC) {	/* One of the vector symbols */
@@ -795,11 +796,11 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y)) continue;	/* NaNs on input */
 
 			if (GMT_is_dnan (plot_x)) {	/* Transformation of x yielded a NaN (e.g. log (-ve)) */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with x = NaN near line %ld\n", n_total_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with x = NaN near line %d\n", n_total_read);
 				continue;
 			}
 			if (GMT_is_dnan (plot_y)) {	/* Transformation of y yielded a NaN (e.g. log (-ve)) */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with y = NaN near line %ld\n", n_total_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Data point with y = NaN near line %d\n", n_total_read);
 				continue;
 			}
 
@@ -925,7 +926,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (S.v.status & GMT_VEC_JUST_S) {	/* Got coordinates of tip instead of dir/length */
 						GMT_geo_to_xy (GMT, in[pos2x], in[pos2y], &x_2, &y_2);
 						if (GMT_is_dnan (x_2) || GMT_is_dnan (y_2)) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %ld. Skipped\n", n_total_read);
+							GMT_report (GMT, GMT_MSG_FATAL, "Warning: Vector head coordinates contain NaNs near line %d. Skipped\n", n_total_read);
 							continue;
 						}
 						length = hypot (plot_x - x_2, plot_y - y_2);	/* Compute vector length in case of shrinking */
@@ -998,12 +999,13 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else {	/* Line/polygon part */
+		COUNTER_LARGE seg;
 		struct GMT_DATASET *D = NULL;	/* Pointer to GMT multisegment table(s) */
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -1052,8 +1054,10 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
 					/* Explicitly close polygon so that arc will work */
+					size_t n_alloc;
 					L->n_rows++;
-					GMT_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &L->n_rows, double);
+					n_alloc = L->n_rows;
+					GMT_malloc2 (GMT, L->coord[GMT_X], L->coord[GMT_Y], 0, &n_alloc, double);
 					L->coord[GMT_X][L->n_rows-1] = L->coord[GMT_X][0];
 					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
 				}
@@ -1100,7 +1104,7 @@ GMT_LONG GMT_psxy (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (clip_set) GMT_map_clip_off (GMT);
 
-	if (current_pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
 
 	GMT_map_basemap (GMT);

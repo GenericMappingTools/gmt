@@ -26,11 +26,10 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, GMT_LONG n, double **x, double **y, GMT_LONG *total_nx);
 void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 
-#define POL_IS_CW 1
-#define POL_IS_CCW 0
+#define POL_IS_CW	1
+#define POL_IS_CCW	0
 
 #define POL_UNION		0
 #define POL_INTERSECTION	1
@@ -44,11 +43,11 @@ void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, st
 #define MIN_SUBSET		2.0	/* If two close segments deemed approximate fits has lengths that differ by this factor then they are sub/super sets of each other */
 
 struct DUP {
-	GMT_LONG point;
-	GMT_LONG segment;
-	GMT_LONG table;
+	COUNTER_LARGE point;
+	COUNTER_LARGE segment;
+	COUNTER_MEDIUM table;
 	GMT_LONG mode;
-	GMT_LONG inside;
+	GMT_BOOLEAN inside;
 	double distance;
 	double closeness;
 	double setratio;
@@ -59,7 +58,7 @@ struct DUP {
 };
 
 struct DUP_INFO {
-	GMT_LONG point;
+	COUNTER_LARGE point;
 	GMT_LONG mode;
 	double distance;
 	double closeness;
@@ -68,59 +67,57 @@ struct DUP_INFO {
 
 struct GMTSPATIAL_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D[pol] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 		char unit;
 		char *file;
 		struct DUP I;
 	} D;
 	struct E {	/* -D[-|+] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} E;
 	struct I {	/* -I[i|e] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
 		char unit;
 		double s_cutoff, path_noise, box_offset;
 	} L;
 	struct N {	/* -N<file>[+a][+p>ID>][+r][+z] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
-		GMT_LONG all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
-		GMT_LONG start;	/* First ID for running polygon IDs */
-		GMT_LONG ID;	/* If 1 we use running numbers */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN all;	/* All points in lines and polygons must be inside a polygon for us to report ID */
+		COUNTER_MEDIUM mode;	/* 0 for reporting ID in -Z<ID> header, 1 via data column, 2 just as a report */
+		COUNTER_MEDIUM ID;	/* If 1 we use running numbers */
 		char *file;
 	} N;
 	struct Q {	/* -Q[+] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN header;
 		char unit;
 	} Q;
 	struct S {	/* -S[u|i|c] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} S;
 	struct T {	/* -T[pol] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 };
 
 struct PAIR {
 	double node;
-	GMT_LONG pos;
+	COUNTER_LARGE pos;
 };
 
 void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -147,14 +144,15 @@ void Free_gmtspatial_Ctrl (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-double area (double x[], double y[], GMT_LONG n)
+double area (double x[], double y[], COUNTER_LARGE n)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double area, xold, yold;
 	
 	/* Trapezoidal area calculation.
 	 * area will be +ve if polygon is CW, negative if CCW */
 	
+	if (n < 3) return (0.0);
 	area = yold = 0.0;
 	xold = x[n-1];	yold = y[n-1];
 	
@@ -165,10 +163,15 @@ double area (double x[], double y[], GMT_LONG n)
 	return (0.5 * area);
 }
 
-void centroid (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, double *pos, GMT_LONG geo)
+void centroid (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_LARGE n, double *pos, GMT_LONG geo)
 {	/* Estimate mean position */
-	GMT_LONG i, k;
+	COUNTER_LARGE i, k;
 	
+	assert (n > 0);
+	if (n == 1) {
+		pos[GMT_X] = x[0];	pos[GMT_Y] = y[0];
+		return;
+	}
 	n--; /* Skip 1st point since it is repeated as last */
 	if (n <= 0) return;
 
@@ -192,9 +195,9 @@ void centroid (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, double 
 	}
 }
 
-GMT_LONG area_size (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, double *out, GMT_LONG *geo)
+COUNTER_MEDIUM area_size (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_LARGE n, double *out, GMT_LONG *geo)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double wesn[4], xx, yy, size, ix, iy;
 	double *xp = NULL, *yp = NULL;
 	
@@ -247,11 +250,13 @@ GMT_LONG area_size (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, do
 	return ((size < 0.0) ? POL_IS_CCW : POL_IS_CW);
 }
 
-void length_size (struct GMT_CTRL *GMT, double x[], double y[], GMT_LONG n, double *out)
+void length_size (struct GMT_CTRL *GMT, double x[], double y[], COUNTER_LARGE n, double *out)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double length = 0.0, mid, f, *s = NULL;
 	
+	assert (n > 0);
+
 	/* Estimate 'average' position */
 	
 	s = GMT_memory (GMT, NULL, n, double);
@@ -279,9 +284,9 @@ int comp_pairs (const void *a, const void *b) {
 	return (0);
 }
 
-void write_record (struct GMT_CTRL *GMT, double **R, GMT_LONG n, GMT_LONG p)
+void write_record (struct GMT_CTRL *GMT, double **R, COUNTER_LARGE n, COUNTER_LARGE p)
 {
-	GMT_LONG c;
+	COUNTER_LARGE c;
 	double out[GMT_MAX_COLUMNS];
 	for (c = 0; c < n; c++) out[c] = R[c][p];
 	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
@@ -315,7 +320,10 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	 * not detect such crossings.  For most situations this should not matter much (?).
 	 */
 	
-	GMT_LONG k, row, tbl, seg, pt, np, n_close = 0, n_dup = 0, status, mode1, mode3;
+	GMT_BOOLEAN status;
+	COUNTER_MEDIUM k, tbl, n_close = 0, n_dup = 0, mode1, mode3;
+	COUNTER_LARGE row, seg, pt, np;
+	GMT_LONG k_signed;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;
@@ -386,7 +394,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 	if (n_close == 0)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Closest segment (Table %ld, segment %ld) is %.3f km away; %ld segments found within dmax\n", I->table, I->segment, I->distance, n_close);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Closest segment (Table %d, segment %" PRIu64 ") is %.3f km away; %d segments found within dmax\n", I->table, I->segment, I->distance, n_close);
 	
 	/* Here we have found the shortest distance from a point on S to another segment; S' is segment number seg */
 	
@@ -447,7 +455,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			separation[0] = (np) ? separation[0] / np : DBL_MAX;		/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np) ? separation[0] / use_length : DBL_MAX;		/* Closeness as viewed from S */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %ld/%ld]\n", length[0], separation[0], close[0], np, S->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
@@ -480,7 +488,7 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			separation[1] = (np) ? separation[1] / np : DBL_MAX;		/* Mean distance between S' and S */
 			use_length = (np) ? length[1] * np / Sp->n_rows : length[1];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[1] = (np) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %ld/%ld]\n", length[1], separation[1], close[1], np, Sp->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[1], separation[1], close[1], np, Sp->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
@@ -507,12 +515,12 @@ GMT_LONG GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, str
 			L[tbl][seg].setratio = (length[0] > length[1]) ? length[0] / length[1] : length[1] / length[0];	/* Ratio of length is used to detect subset (or superset) */
 	
 			if (length[0] < (length[1] / I->s_threshold))
-				k = 3;	/* S is a subset of Sp */
+				k_signed = 3;	/* S is a subset of Sp */
 			else if (length[1] < (length[0] / I->s_threshold))
-				k = 4;	/* S is a superset of Sp */
+				k_signed = 4;	/* S is a superset of Sp */
 			else
-				k = 2;	/* S and S' are practically the same feature */
-			L[tbl][seg].mode = (d1 < d2) ? k : -k;	/* Negative means Sp is reversed w.r.t. S */
+				k_signed = 2;	/* S and S' are practically the same feature */
+			L[tbl][seg].mode = (d1 < d2) ? k_signed : -k_signed;	/* Negative means Sp is reversed w.r.t. S */
 			n_dup++;
 		}
 	}
@@ -546,7 +554,7 @@ GMT_LONG GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t   By default we consider all points when comparing two lines.  Use +p to limit\n");
 	GMT_message (GMT, "\t   the comparison to points that project perpendicularly on to the other line.\n");
 	GMT_message (GMT, "\t-E Orient all polygons to have the same handedness.\n");
-	GMT_message (GMT, "\t   Append + for counter-clockwise or - for clockwise handedness.\n");
+	GMT_message (GMT, "\t   Append + for COUNTER_LARGE-clockwise or - for clockwise handedness.\n");
 	GMT_message (GMT, "\t-I Compute Intersection locations between input polygon(s).\n");
 	GMT_message (GMT, "\t   Append e or i for external or internal crossings only [Default is both].\n");
 	GMT_message (GMT, "\t   Use uppercase E or I to consider all segments within the same table as one entity [separate].\n");
@@ -588,7 +596,8 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_files[2] = {0, 0}, pos, n, n_errors = 0;
+	COUNTER_MEDIUM n_files[2] = {0, 0}, pos, n_errors = 0;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256], *s = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -666,7 +675,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 #endif
 			case 'Q':	/* Measure area/length and handedness of polygons */
 				Ctrl->Q.active = TRUE;
-				if (strchr (opt->arg, '+')) Ctrl->Q.active = 2;
+				if (strchr (opt->arg, '+')) Ctrl->Q.header = TRUE;
 				if (opt->arg[0] && opt->arg[0] != '+') Ctrl->Q.unit = opt->arg[0];				
 				break;
 			case 'N':	/* Determine containing polygons for features */
@@ -683,8 +692,7 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 							Ctrl->N.all = TRUE;
 							break;
 						case 'p':	/* Set start of running numbers [0] */
-							Ctrl->N.ID = 1;
-							Ctrl->N.start = (p[1]) ? atoi (&p[1]) - 1 : -1;	/* We increment before use */
+							Ctrl->N.ID = (p[1]) ? atoi (&p[1]) : 1;
 							break;
 						case 'r':	/* Just give a report */
 							Ctrl->N.mode = 1;
@@ -741,8 +749,9 @@ GMT_LONG GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ct
 
 GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, error = 0, in, p, c, mseg = FALSE, geometry = GMT_IS_POLY;
-	GMT_LONG internal = FALSE, external = FALSE;
+	GMT_LONG error = 0;
+	COUNTER_MEDIUM geometry = GMT_IS_POLY;
+	GMT_BOOLEAN internal = FALSE, external = FALSE, mseg = FALSE;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -794,11 +803,11 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read input data set */
 	
 	if (Ctrl->D.active) geometry = GMT_IS_LINE;
-	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read Input tables\n");
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	
@@ -819,28 +828,30 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* OK, with data in hand we can do some damage */
 	
 	if (Ctrl->L.active) {	/* Remove tile lines only */
-		GMT_LONG p, gap = 0, first, prev_OK;
+		GMT_LONG gap = 0, first, prev_OK;
+		COUNTER_LARGE row, seg;
+		COUNTER_MEDIUM tbl;
 		double dx, dy, DX, DY, dist;
 
 		GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 		
-		for (k = 0; k < D->n_tables; k++) {
-			for (j = 0; j < D->table[k]->n_segments; j++) {
-				S = D->table[k]->segment[j];
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+				S = D->table[tbl]->segment[seg];
 				if (S->n_rows == 0) continue;
-				for (p = 1, first = TRUE, prev_OK = FALSE; p < S->n_rows; p++) {
-					dx = S->coord[GMT_X][p] - S->coord[GMT_X][p-1];
-					dy = S->coord[GMT_Y][p] - S->coord[GMT_Y][p-1];
-					DX = MIN (fabs (S->coord[GMT_X][p] - GMT->common.R.wesn[XLO]), fabs (S->coord[GMT_X][p] - GMT->common.R.wesn[XHI]));
-					DY = MIN (fabs (S->coord[GMT_Y][p] - GMT->common.R.wesn[YLO]), fabs (S->coord[GMT_Y][p] - GMT->common.R.wesn[YHI]));
+				for (row = 1, first = TRUE, prev_OK = FALSE; row < S->n_rows; row++) {
+					dx = S->coord[GMT_X][row] - S->coord[GMT_X][row-1];
+					dy = S->coord[GMT_Y][row] - S->coord[GMT_Y][row-1];
+					DX = MIN (fabs (S->coord[GMT_X][row] - GMT->common.R.wesn[XLO]), fabs (S->coord[GMT_X][row] - GMT->common.R.wesn[XHI]));
+					DY = MIN (fabs (S->coord[GMT_Y][row] - GMT->common.R.wesn[YLO]), fabs (S->coord[GMT_Y][row] - GMT->common.R.wesn[YHI]));
 					gap = FALSE;
 					if ((fabs (dx) < Ctrl->L.path_noise && DX < Ctrl->L.box_offset) || (fabs (dy) < Ctrl->L.path_noise && DY < Ctrl->L.box_offset)) {	/* Going along a tile boundary */
-						dist = GMT_distance (GMT, S->coord[GMT_X][p], S->coord[GMT_Y][p], S->coord[GMT_X][p-1], S->coord[GMT_Y][p-1]);
+						dist = GMT_distance (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], S->coord[GMT_X][row-1], S->coord[GMT_Y][row-1]);
 						if (dist > Ctrl->L.s_cutoff) gap = TRUE;
 					}
 					if (gap) {	/* Distance exceed threshold, start new segment */
 						first = TRUE;
-						if (prev_OK) write_record (GMT, S->coord, S->n_columns, p-1);
+						if (prev_OK) write_record (GMT, S->coord, S->n_columns, row-1);
 						prev_OK = FALSE;
 					}
 					else {
@@ -848,12 +859,12 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							strcpy (GMT->current.io.segment_header, S->header);
 							GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 						}
-						write_record (GMT, S->coord, S->n_columns, p-1);
+						write_record (GMT, S->coord, S->n_columns, row-1);
 						first = FALSE;
 						prev_OK = TRUE;
 					}
 				}
-				if (!gap) write_record (GMT, S->coord, S->n_columns, p-1);
+				if (!gap) write_record (GMT, S->coord, S->n_columns, row-1);
 			}
 					
 		}
@@ -865,29 +876,31 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
-		GMT_LONG handedness = 0, c, p, mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
+		COUNTER_LARGE seg, row_f, row_l;
+		COUNTER_MEDIUM handedness = 0, tbl, col;
+		GMT_LONG mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
 
 		char line[GMT_BUFSIZ];
 		
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
-		if (Ctrl->Q.active == 2) {
+		if (Ctrl->Q.header) {
 			mode = GMT_IS_POLY;
 		}
 		else {
 			mode = GMT_IS_POINT;
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, mode, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		
-		for (k = 0; k < D->n_tables; k++) {
-			for (j = 0; j < D->table[k]->n_segments; j++) {
-				S = D->table[k]->segment[j];
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+				S = D->table[tbl]->segment[seg];
 				if (S->n_rows == 0) continue;
 				if (GMT_polygon_is_open (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {	/* Line */
 					length_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out);
@@ -897,10 +910,10 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, &geo);
 					poly = TRUE;
 				}
-				if (Ctrl->Q.active == 2) {
+				if (Ctrl->Q.header) {
 					if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
-						for (i = 0, p = S->n_rows - 1; i < S->n_rows/2; i++, p--) {
-							for (c = 0; c < S->n_columns; c++) d_swap (S->coord[c][i], S->coord[c][p]);
+						for (row_f = 0, row_l = S->n_rows - 1; row_f < S->n_rows/2; row_f++, row_l--) {
+							for (col = 0; col < S->n_columns; col++) d_swap (S->coord[col][row_f], S->coord[col][row_l]);
 						}
 						handedness = Ctrl->E.mode;
 					}
@@ -924,8 +937,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		/* Write out results */
-		if (Ctrl->Q.active == 2) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+		if (Ctrl->Q.header) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -939,7 +952,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
-		GMT_LONG k1, k2, j1, j2, nx, same;
+		GMT_BOOLEAN same_feature;
+		COUNTER_MEDIUM tbl1, tbl2, col, in;
+		COUNTER_LARGE nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
 		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ], fmt[GMT_BUFSIZ];
@@ -948,12 +963,12 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
-				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
+				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
-				GMT_LONG dim[4] = {1, 1, 2, 5};
+				COUNTER_LARGE dim[4] = {1, 1, 2, 5};
 				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->coord[GMT_X][0] = S1->coord[GMT_X][3] = S1->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
@@ -968,7 +983,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, C->n_columns)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -979,25 +994,27 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, \
 			GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 
-		for (k1 = 0; k1 < C->n_tables; k1++) {
-			for (j1 = 0; j1 < C->table[k1]->n_segments; j1++) {
-				S1 = C->table[k1]->segment[j1];
+		for (tbl1 = 0; tbl1 < C->n_tables; tbl1++) {
+			for (seg1 = 0; seg1 < C->table[tbl1]->n_segments; seg1++) {
+				S1 = C->table[tbl1]->segment[seg1];
 				if (S1->n_rows == 0) continue;
 				GMT_init_track (GMT, S1->coord[GMT_Y], S1->n_rows, &ylist1);
-				for (k2 = 0; k2 < D->n_tables; k2++) {
-					for (j2 = 0; j2 < D->table[k2]->n_segments; j2++) {
-						S2 = D->table[k2]->segment[j2];
+				for (tbl2 = 0; tbl2 < D->n_tables; tbl2++) {
+					for (seg2 = 0; seg2 < D->table[tbl2]->n_segments; seg2++) {
+						S2 = D->table[tbl2]->segment[seg2];
 						if (S2->n_rows == 0) continue;
 						if (Ctrl->S.mode != POL_CLIP) {
-							same = (external == 2 || internal == 2) ? (k1 == k2) : (k1 == k2 && j1 == j2);	/* What constitues the same feature */
-							if (!internal && same) continue;	/* Do not do internal crossings */
-							if (!external && !same) continue;	/* Do not do external crossings */
+							same_feature = (external == 2 || internal == 2) ? (tbl1 == tbl2) : (tbl1 == tbl2 && seg1 == seg2);	/* What constitues the same feature */
+							if (!internal && same_feature) continue;	/* Do not do internal crossings */
+							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
 						GMT_init_track (GMT, S2->coord[GMT_Y], S2->n_rows, &ylist2);
 						nx = GMT_crossover (GMT, S1->coord[GMT_X], S1->coord[GMT_Y], NULL, ylist1, S1->n_rows, S2->coord[GMT_X], S2->coord[GMT_Y], NULL, ylist2, S2->n_rows, FALSE, &XC);
 						if (nx) {	/* Polygon pair generated crossings */
+							COUNTER_LARGE px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
-								GMT_LONG p0, px, c, go, first;
+								COUNTER_LARGE row0;
+								GMT_BOOLEAN go, first;
 								double *xx = NULL, *yy = NULL, *kk = NULL;
 								struct PAIR *pair = NULL;
 								
@@ -1015,11 +1032,11 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								GMT_free (GMT, pair);
 								in = GMT_non_zero_winding (GMT, S2->coord[GMT_X][0], S2->coord[GMT_Y][0], S1->coord[GMT_X], S1->coord[GMT_Y], S1->n_rows);
 								go = first = TRUE;
-								p0 = px = 0;
+								row0 = px = 0;
 								while (go) {
-									for (p = p0; p < S2->n_rows && p < kk[px]; p++) {
+									for (row = row0; row < S2->n_rows && row < kk[px]; row++) {
 										if (!in) continue;
-										for (c = 0; c < S2->n_columns; c++) out[c] = S2->coord[c][p];
+										for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 										if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 											if (S2->header)
 												strcpy (GMT->current.io.segment_header, S2->header);
@@ -1039,17 +1056,17 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 										GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 										first = FALSE;
 									}
-									for (c = 2; c < S2->n_columns; c++) out[c] = 0.0;
+									for (col = 2; col < S2->n_columns; col++) out[col] = 0.0;
 									out[GMT_X] = xx[px];	out[GMT_Y] = yy[px];
 									GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 									px++;
 									in = !in;	/* Go from out to in or vice versa */
 									if (!in) first = TRUE;	/* Since we went outside */
-									p0 = p;
+									row0 = row;
 									if (px == nx) {
-										for (p = p0; p < S2->n_rows; p++) {
+										for (row = row0; row < S2->n_rows; row++) {
 											if (!in) continue;
-											for (c = 0; c < S2->n_columns; c++) out[c] = S2->coord[c][p];
+											for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 											if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 												if (S2->header)
 													strcpy (GMT->current.io.segment_header, S2->header);
@@ -1069,14 +1086,14 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							}
 							else {	/* Just report */
 								if (mseg){
-									sprintf (T1, "%s-%ld", C->table[k1]->file[GMT_IN], j1);
-									sprintf (T2, "%s-%ld", D->table[k2]->file[GMT_IN], j2);
+									sprintf (T1, "%s-%" PRIu64, C->table[tbl1]->file[GMT_IN], seg1);
+									sprintf (T2, "%s-%" PRIu64, D->table[tbl2]->file[GMT_IN], seg2);
 								}
 								else {
-									strcpy (T1, C->table[k1]->file[GMT_IN]);
-									strcpy (T2, D->table[k2]->file[GMT_IN]);
+									strcpy (T1, C->table[tbl1]->file[GMT_IN]);
+									strcpy (T2, D->table[tbl2]->file[GMT_IN]);
 								}
-								for (i = 0; i < nx; i++) printf (fmt, XC.x[i], XC.y[i], (double)XC.xnode[0][i], (double)XC.xnode[1][i], T1, T2);
+								for (px = 0; px < nx; px++) printf (fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
 							}
 							GMT_x_free (GMT, &XC);
 						}
@@ -1090,8 +1107,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 										sprintf (GMT->current.io.segment_header, "New segment");
 									GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 								}
-								for (p = 0; p < S2->n_rows; p++) {
-									for (c = 0; c < S2->n_columns; c++) out[c] = S2->coord[c][p];
+								for (row = 0; row < S2->n_rows; row++) {
+									for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 									GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 								}
 							}
@@ -1125,7 +1142,9 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
-		GMT_LONG tbl, seg, tbl2, seg2, k, n_dup, same = FALSE, poly_D, poly_S2;
+		COUNTER_MEDIUM tbl, tbl2, col, n_dup, poly_D, poly_S2;
+		COUNTER_LARGE seg, seg2;
+		GMT_BOOLEAN same_feature = FALSE;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
 		char record[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
@@ -1134,14 +1153,14 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->D.file, NULL)) == NULL) {
+			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			from = Ctrl->D.file;
 		}
 		else {
 			C = D;	/* Compare with itself */
-			same = TRUE;
+			same_feature = TRUE;
 			from = in;
 			S2 = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 			GMT_alloc_segment (GMT, S2, 0, C->n_columns, TRUE);
@@ -1149,7 +1168,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Info = GMT_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
 		for (tbl = 0; tbl < C->n_tables; tbl++) Info[tbl] = GMT_memory (GMT, NULL, C->table[tbl]->n_segments, struct DUP_INFO);
 			
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 			Return (API->error);	/* Registers default output destination, unless already set */
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {
@@ -1162,11 +1181,11 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S1 = D->table[tbl]->segment[seg];
 				if (S1->n_rows == 0) continue;
-				
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Check if segment %ld from Table %ld has duplicates:\n", seg, tbl);
-				if (same) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
+
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Check if segment %" PRIu64 "from Table %d has duplicates:\n", seg, tbl);
+				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
-					for (k = 0; k < S1->n_columns; k++) S2->coord[k] = S1->coord[k];
+					for (col = 0; col < S1->n_columns; col++) S2->coord[col] = S1->coord[col];
 					S1->n_rows = 0;	/* This means it will be skipped by GMT_is_duplicate */
 				}
 				else
@@ -1174,7 +1193,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				poly_S2 = (GMT_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows));
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) GMT_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
 				n_dup = GMT_is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
-				if (same) {
+				if (same_feature) {
 					S1->n_rows = S2->n_rows;	/* Reset the count */
 					if (Ctrl->D.I.table < tbl || (Ctrl->D.I.table == tbl && Ctrl->D.I.segment < seg)) n_dup = 0;	/* To avoid reporting the same pair twice */
 				}
@@ -1185,8 +1204,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (I->mode == 0) continue;
 						/* Report on all the close/exact matches */
 						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows));
-						sprintf (src, "[ table %ld segment %ld ]", tbl, seg);
-						(C->n_tables == 1) ? sprintf (dup, "[ segment %ld ]", seg2) : sprintf (dup, "[ table %ld segment %ld ]", tbl2, seg2);
+						sprintf (src, "[ table %d segment %" PRIu64 " ]", tbl, seg);
+						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %d segment %" PRIu64 " ]", tbl2, seg2);
 						sprintf (record, "%c : Input %s %s is an %s duplicate of a %s %s in %s, with d = %.3f c = %.6g s = %.4g", 
 							verdict[GMT_abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
@@ -1194,8 +1213,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		if (same) {
-			for (k = 0; k < S2->n_columns; k++) S2->coord[k] = NULL;	/* Since they were not allocated */
+		if (same_feature) {
+			for (col = 0; col < S2->n_columns; col++) S2->coord[col] = NULL;	/* Since they were not allocated */
 			GMT_free_segment (GMT, S2);
 		}
 		for (tbl = 0; tbl < C->n_tables; tbl++) GMT_free (GMT, Info[tbl]);
@@ -1213,7 +1232,8 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->C.active) {	/* Clip polygon to bounding box */
-		GMT_LONG np, c, p, nx;
+		COUNTER_LARGE np, p, nx;
+		COUNTER_MEDIUM tbl, seg, col;
 		double *cp[2] = {NULL, NULL};
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj */
@@ -1222,36 +1242,38 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT->common.J.active = TRUE;
 		}
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
-		for (k = 0; k < D->n_tables; k++) {
-			for (j = 0; j < D->table[k]->n_segments; j++) {
-				S = D->table[k]->segment[j];
+		for (tbl = 0; tbl < D->n_tables; tbl++) {
+			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+				S = D->table[tbl]->segment[seg];
 				if ((np = GMT_wesn_clip (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, &cp[GMT_X], &cp[GMT_Y], &nx)) == 0) continue;
 				if (np > S->n_rows) GMT_alloc_segment (GMT, S, np, S->n_columns, FALSE);
 				for (p = 0; p < np; p++) GMT_xy_to_geo (GMT, &cp[GMT_X][p], &cp[GMT_Y][p], cp[GMT_X][p], cp[GMT_Y][p]);
-				for (c = 0; c < 2; c++) {
-					GMT_memcpy (S->coord[c], cp[c], np, double);
-					GMT_free (GMT, cp[c]);
+				for (col = 0; col < 2; col++) {
+					GMT_memcpy (S->coord[col], cp[col], np, double);
+					GMT_free (GMT, cp[col]);
 				}
 				S->n_rows = np;
 			}
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 	}
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
-		GMT_LONG tbl, seg, seg2, ID = -1, row, first, last, n, p, np, n_inside, *count = NULL;
+		COUNTER_LARGE row, first, last, n, p, np, seg, seg2, n_inside;
+		COUNTER_MEDIUM tbl, *count = NULL;
+		GMT_LONG ID = -1;
 		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
 		
-		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -1259,7 +1281,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {	/* Regular data output */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 		}
@@ -1269,10 +1291,10 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Look for points/features inside polygon segment %ld :\n", seg2);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
-					ID = (GMT_LONG)GMT_get_aspatial_value (GMT, GMT_IS_Z, S2);
+					ID = lrint (GMT_get_aspatial_value (GMT, GMT_IS_Z, S2));
 				else if (GMT_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
@@ -1283,7 +1305,7 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else	/* Increment running polygon ID */
 				ID++;
 
-			count = GMT_memory (GMT, NULL, D->n_segments, GMT_LONG);
+			count = GMT_memory (GMT, NULL, D->n_segments, COUNTER_MEDIUM);
 			for (tbl = p = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++, p++) {
 					S = D->table[tbl]->segment[seg];
@@ -1294,30 +1316,30 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					if (n < np) continue;	/* Not inside this polygon */
 					if (count[p]) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Segment %ld-%ld already inside another polygon; skipped\n", tbl, seg);
+						GMT_report (GMT, GMT_MSG_FATAL, "Segment %d-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
 						continue;
 					}
 					count[p]++;
 					/* Here we are inside */
 					if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-						sprintf (record, "%s from table %ld segment %ld is inside polygon # %ld", kind[Ctrl->N.all], tbl, seg, ID);
+						sprintf (record, "%s from table %d segment %" PRIu64 " is inside polygon # %d", kind[Ctrl->N.all], tbl, seg, ID);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->coord[n][row] = (double)ID;
-						GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %ld segment %ld is inside polygon # %ld\n", kind[Ctrl->N.all], tbl, seg, ID);
+						GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
-							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %ld-%ld already has a -Z flag, skipped\n", tbl, seg);
+							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
 							buffer[0] = txt[0] = 0;
 							if (S->header) { strcpy (buffer, S->header); free (S->header); }
-							sprintf (txt, " -Z%ld", ID);
+							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
-							GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %ld segment %ld is inside polygon # %ld\n", kind[Ctrl->N.all], tbl, seg, ID);
+							GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 						}
 					}
 				}
@@ -1325,14 +1347,14 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (p = n_inside = 0; p < D->n_segments; p++) if (count[p]) n_inside++;
 		if (Ctrl->N.mode != 1) {	/* Write out results */
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld segments found to be inside polygons, %ld were outside and skipped\n", n_inside, D->n_segments - n_inside);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
 			Return (API->error);
 		}
@@ -1342,7 +1364,10 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active) {	/* Do geospatial operations */
-		GMT_LONG n_split = 0, tbl, seg, n_segs, crossing, dim[4] = {0, 1, 0, 0};
+		COUNTER_MEDIUM tbl;
+		COUNTER_LARGE n_split = 0, seg_out, seg, n_segs, kseg;
+		GMT_BOOLEAN crossing;
+		COUNTER_LARGE dim[4] = {0, 1, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT **L = NULL;
@@ -1354,36 +1379,36 @@ GMT_LONG GMT_gmtspatial (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			T = Dout->table[tbl];
 			n_segs = D->table[tbl]->n_segments;
 			Dout->table[tbl]->n_segments = 0;
-			for (j = seg = 0; j < D->table[tbl]->n_segments; j++) {
-				S = D->table[tbl]->segment[j];
+			for (seg = seg_out = 0; seg < D->table[tbl]->n_segments; seg++) {
+				S = D->table[tbl]->segment[seg];
 				if (S->n_rows == 0) continue;	/* Just skip empty segments */
 				crossing = GMT_crossing_dateline (GMT, S);
 				n_split = (crossing) ? GMT_split_poly_at_dateline (GMT, S, &L) : 1;
 				Dout->table[tbl]->n_segments += n_split;
 				if (Dout->table[tbl]->n_segments > n_segs) {
-					GMT_LONG old_n_segs = n_segs;
+					COUNTER_LARGE old_n_segs = n_segs;
 					n_segs = Dout->table[tbl]->n_segments;
 					T->segment = GMT_memory (GMT, T->segment, n_segs, struct GMT_LINE_SEGMENT *);	/* Allow more space for new segments */
 					GMT_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 				}
 				if (crossing) {
-					for (k = 0; k < n_split; k++) {
-						GMT_free_segment (GMT, T->segment[seg]);
-						T->segment[seg++] = L[k];	/* Add the remaining segments to the end */
+					for (kseg = 0; kseg < n_split; kseg++) {
+						GMT_free_segment (GMT, T->segment[seg_out]);
+						T->segment[seg_out++] = L[kseg];	/* Add the remaining segments to the end */
 					}
 					GMT_free (GMT, L);
 				}
 				else {	/* Just duplicate */
-					GMT_duplicate_segment (GMT, S, T->segment[seg++]);
+					GMT_duplicate_segment (GMT, S, T->segment[seg_out++]);
 				}
 			}
-			Dout->table[tbl]->n_segments = seg;
-			Dout->n_segments += seg;
+			Dout->table[tbl]->n_segments = seg_out;
+			Dout->n_segments += seg_out;
 		}
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Out.file, Dout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld segments split across the Dateline\n", n_split);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " segments split across the Dateline\n", n_split);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
 			Return (API->error);
 		}

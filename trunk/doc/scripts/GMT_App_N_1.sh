@@ -4,6 +4,7 @@
 #	Makes the insert for Appendix N(custom symbols)
 #	Note that this script also assembles App N tex
 #	file since the number of figures must be calculated.
+#	Dimensions are in inches
 #
 grep -v '^#' "${GMT_SOURCE_DIR}"/share/conf/gmt_custom_symbols.conf | awk '{print $1}' > tt.lis
 n=`cat tt.lis | wc -l`
@@ -74,7 +75,7 @@ EOF
 	done
 	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K tt.lines -Wthick -B0 > GMT_App_N_$p.ps
 	psxy -R -J -O -K -S${width}i -Wthinnest tt.symbols >> GMT_App_N_$p.ps
-	psxy -R -J -O -K -Sr -Gblack tt.bars >> GMT_App_N_$p.ps
+	psxy -R -J -O -K -Sri -Gblack tt.bars >> GMT_App_N_$p.ps
 	pstext -R -J -O tt.text -F+f${fs}p,white >> GMT_App_N_$p.ps
 done
 

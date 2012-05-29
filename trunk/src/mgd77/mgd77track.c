@@ -59,53 +59,52 @@ struct MGD77TRACK_MARKER {
 struct MGD77TRACK_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* May be negative */
 		double size;
 		struct MGD77TRACK_ANNOT info;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
-		GMT_LONG mode;	/* TRUE to skip recs with time == NaN */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;	/* TRUE to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active[2];
-		GMT_LONG value[2];
+		GMT_BOOLEAN active[2];
+		COUNTER_MEDIUM value[2];
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
-		GMT_LONG n;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct MGD77TRACK_ANNOT info;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
 		struct MGD77TRACK_MARKER marker[3];
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -183,9 +182,9 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 	GMT_message (GMT, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
 	GMT_message (GMT, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
 	GMT_message (GMT, "\t   Default settings for the three marker types are:\n");
-	GMT_message (GMT, "\t     -TT%g,black,%g,%ld,black\n", Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
-	GMT_message (GMT, "\t     -Tt%g,white,%g,%ld,black\n", Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
-	GMT_message (GMT, "\t     -Td%g,black,%g,%ld,black\n", Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
+	GMT_message (GMT, "\t     -TT%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
+	GMT_message (GMT, "\t     -Tt%g,white,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
+	GMT_message (GMT, "\t     -Td%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
 	GMT_explain_options (GMT, "UV");
 	GMT_message (GMT, "\t-W Set track pen attributes [%s].\n", GMT_putpen (GMT, Ctrl->W.pen));
 	GMT_explain_options (GMT, "Xcpt.");
@@ -195,7 +194,8 @@ GMT_LONG GMT_mgd77track_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD
 
 GMT_LONG get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info)
 {
-	GMT_LONG i1, i2, error = FALSE, flag1, flag2, type;
+	GMT_LONG i1, i2, flag1, flag2, type;
+	GMT_BOOLEAN error = FALSE;
 	double value;
 	
 	info->annot_int_dist = info->tick_int_dist = 0;
@@ -272,7 +272,9 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, mrk = 0, error = FALSE;
+	COUNTER_MEDIUM n_errors = 0, mrk = 0;
+	GMT_BOOLEAN error = FALSE;
+	GMT_LONG j;
 	char ms[GMT_TEXT_LEN64], mc[GMT_TEXT_LEN64], tmp[GMT_TEXT_LEN64], mfs[GMT_TEXT_LEN64], mf[GMT_TEXT_LEN64];
 	char comment[GMT_BUFSIZ], mfc[GMT_TEXT_LEN64], *t = NULL;
 	double dist_scale;
@@ -360,11 +362,11 @@ GMT_LONG GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ct
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance gap in km */
 					Ctrl->G.active[GAP_D] = TRUE;
-						Ctrl->G.value[GAP_D] = (GMT_LONG)(atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
+						Ctrl->G.value[GAP_D] = lrint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
 						break;
 					case 't':	/* Distance gap in minutes */
 						Ctrl->G.active[GAP_T] = TRUE;
-						Ctrl->G.value[GAP_T] = (GMT_LONG)(atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
+						Ctrl->G.value[GAP_T] = lrint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					default:
 						GMT_report (GMT, GMT_MSG_FATAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
@@ -527,9 +529,12 @@ extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal
 
 GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG rec, first_rec, last_rec, n_alloc_c = GMT_SMALL_CHUNK, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths;
-	GMT_LONG this_julian = 0, last_julian, argno, n_cruises = 0, error = FALSE, first, form, both = FALSE;
-	GMT_LONG annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
+	COUNTER_LARGE rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths, argno, n_cruises = 0;
+	GMT_LONG this_julian = 0, last_julian;
+	GMT_BOOLEAN error = FALSE, first, form, both = FALSE;
+	COUNTER_MEDIUM annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
+	
+	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
        	char label[GMT_TEXT_LEN256], date[GMT_TEXT_LEN64], clock[GMT_TEXT_LEN64];
 	char name[GMT_TEXT_LEN64], **list = NULL;
@@ -624,7 +629,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (name, D->H.mgd77[use]->Survey_Identifier);
 		else {			/* Use file name prefix */
 			strcpy (name, list[argno]);
-			for (i = 0; i < (int)strlen (name); i++) if (name[i] == '.') name[i] = '\0';
+			for (i = 0; i < strlen (name); i++) if (name[i] == '.') name[i] = '\0';
 		}
 	
 		/* Start reading data from file */
@@ -648,7 +653,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* First draw the track line, clip segments outside the area */
 		
 		if (Ctrl->G.active[GAP_D] || Ctrl->G.active[GAP_T]) {
-			GMT_LONG start, stop;
+			COUNTER_LARGE start, stop;
 			start = first_rec;
 			while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
 				lon[start] = GMT->session.d_NaN;	/* Flag to make sure we do not plot this gap later */
@@ -689,7 +694,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						strcpy (cruise_id[n_id].text, name);
 						n_id++;
 						if (n_id == n_alloc_c) {
-							GMT_LONG old_n_alloc = n_alloc_c;
+							size_t old_n_alloc = n_alloc_c;
 							n_alloc_c <<= 1;
 							cruise_id = GMT_memory (GMT, cruise_id, n_alloc_c, struct MGD77TRACK_LEG_ANNOT);
 							GMT_memset (&(cruise_id[old_n_alloc]), n_alloc_c - old_n_alloc,  struct MGD77TRACK_LEG_ANNOT);	/* Set to NULL/0 */
@@ -800,7 +805,7 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_map_basemap (GMT);
 	
 	if (Ctrl->A.mode > 0 && Ctrl->N.active) {	/* Plot leg names after clipping is terminated ( see -N) */
-		int id;
+		COUNTER_MEDIUM id;
 		double size;
 		size = GMT->session.u2u[GMT_INCH][GMT_PT] * 1.25 * Ctrl->A.size;
 		for (id = 0; id < n_id; id++) annot_legname (GMT, PSL, cruise_id[id].x, cruise_id[id].y, cruise_id[id].lon, cruise_id[id].lat, cruise_id[id].angle, cruise_id[id].text, size);
@@ -810,9 +815,9 @@ GMT_LONG GMT_mgd77track (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Plotted %ld cruises\n", n_cruises);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Plotted %d cruises\n", n_cruises);
 
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 	
 	Return (GMT_OK);

@@ -5,14 +5,11 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdint.h>
 #define NR_END 1
 #define FREE_ARG char*
-#ifndef _WIN64
-typedef long GMT_LONG;			/* A signed 4 (or 8-byte for 64-bit) integer */
-typedef unsigned long GMT_ULONG;	/* A signed 4 (or 8-byte for 64-bit) integer */
-#else
-typedef __int64 GMT_LONG;
-typedef unsigned __int64 GMT_ULONG;	/* A signed 4 (or 8-byte for 64-bit) integer */
+#ifndef GMT_LONG
+typedef int GMT_LONG;
 #endif
 
 void nrerror (char error_text[])
@@ -54,12 +51,12 @@ unsigned char *cvector(GMT_LONG nl, GMT_LONG nh)
 	return v-nl+NR_END;
 }
 
-GMT_ULONG *lvector(GMT_LONG nl, GMT_LONG nh)
-/* allocate an GMT_ULONG vector with subscript range v[nl..nh] */
+int64_t *lvector(GMT_LONG nl, GMT_LONG nh)
+/* allocate an int64_t vector with subscript range v[nl..nh] */
 {
-	GMT_ULONG *v;
+	int64_t *v;
 
-	v=(GMT_ULONG *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(GMT_LONG)));
+	v=(int64_t *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(int64_t)));
 	if (!v) nrerror("allocation failure in lvector()");
 	return v-nl+NR_END;
 }
@@ -242,8 +239,8 @@ void free_cvector(unsigned char *v, GMT_LONG nl)
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_lvector(GMT_ULONG *v, GMT_LONG nl)
-/* free an GMT_ULONG vector allocated with lvector() */
+void free_lvector(int64_t *v, GMT_LONG nl)
+/* free an int64_t vector allocated with lvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }

@@ -1134,7 +1134,7 @@ void gmt_genper_tolatlong (struct GMT_CTRL *C, double x, double y, double h, dou
 			if (GMT_is_dnan(Kp) || GMT_is_dnan(X) || GMT_is_dnan(Y) || GMT_is_dnan(S) || GMT_is_dnan(phi) || GMT_is_dnan(E)) set_exit++;
 			if (set_exit == 1) GMT_message (C, "gmt_genper_tolatlong - 4 \n");
 			if (set_exit || C->current.proj.g_debug > 1) {
-				GMT_message (C, "\niter %ld\n", niter);
+				GMT_message (C, "\niter %d\n", niter);
 				GMT_message (C, "t    %12.7f\n", t);
 				GMT_message (C, "Kp   %12.1f\n", Kp);
 				GMT_message (C, "X    %12.1f\n", X);
@@ -1511,7 +1511,7 @@ void GMT_vgenper (struct GMT_CTRL *C, double lon0, double lat0, double altitude,
 			y *= rmax;
 			gmt_genper_to_xtyt (C, (double)az, x, y, C->current.proj.g_yoffset, &xt, &yt);
 
-			if (C->current.proj.g_debug > 2) fprintf (fp,"%3ld x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
+			if (C->current.proj.g_debug > 2) fprintf (fp,"%3d x %10.2f y %10.2f xt %10.3f yt %10.3f\n", az, x/1000, y/1000, xt/1000, yt/1000);
 
 			xt_min = MIN (xt, xt_min);
 			xt_max = MAX (xt, xt_max);
@@ -1542,7 +1542,7 @@ void GMT_vgenper (struct GMT_CTRL *C, double lon0, double lat0, double altitude,
 
 	if (C->current.proj.g_debug > 0) {
 		GMT_genper (C, lonvp, latvp, &xt_vp, &yt_vp);
-		GMT_message (C, "\nvgenper: polar %ld north %ld\n", C->current.proj.polar, C->current.proj.north_pole);
+		GMT_message (C, "\nvgenper: polar %d north %d\n", C->current.proj.polar, C->current.proj.north_pole);
 		GMT_message (C, "vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
 		GMT_message (C, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
 		GMT_message (C, "vgenper: viewpoint width %5.1f height %5.1f degrees\n", width, height);
@@ -1563,7 +1563,7 @@ void GMT_vgenper (struct GMT_CTRL *C, double lon0, double lat0, double altitude,
 		GMT_message (C, "vgenper: gamma %6.3f Omega %6.3f \n", gamma, Omega);
 		GMT_message (C, "vgenper: viewpoint lon %6.3f lat %6.3f \n", lonvp, latvp);
 		GMT_message (C, "vgenper: viewpoint xt %6.3f yt %6.3f \n", xt_vp/1000.0, yt_vp/1000.0);
-		GMT_message (C, "vgenper: user viewpoint %ld\n", C->current.proj.g_box);
+		GMT_message (C, "vgenper: user viewpoint %d\n", C->current.proj.g_box);
 	}
 
 }
@@ -1692,17 +1692,17 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 	return;
 }
 
-GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, GMT_LONG np, double *work_x, double *work_y)
+GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, COUNTER_LARGE np, double *work_x, double *work_y)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double da, angle;
 	double x, y, xt, yt;
 
 	if (C->current.proj.g_debug > 0) {
-		GMT_message (C, "\n\ngenper_map_clip_path: np %ld\n", np);
+		GMT_message (C, "\n\ngenper_map_clip_path: np %" PRIu64 "\n", np);
 		GMT_message (C, " x_scale %e y_scale %e, x0 %e y0 %e\n", C->current.proj.scale[GMT_X], C->current.proj.scale[GMT_Y], C->current.proj.origin[GMT_X], C->current.proj.origin[GMT_Y]);
 	}
-
+	assert (np > 1);
 	da = TWO_PI/(np-1);
 
 	for (i = 0; i < np; i++) {
@@ -1834,7 +1834,7 @@ void GMT_azeqdist (struct GMT_CTRL *C, double lon, double lat, double *x, double
 
 	t = clat * clon;
 	cc = C->current.proj.sinp * slat + C->current.proj.cosp * t;
-	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase counter */
+	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase COUNTER_LARGE */
 		*x = *y = C->session.d_NaN;
 		C->current.proj.n_antipoles++;
 	}

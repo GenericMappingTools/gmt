@@ -33,35 +33,35 @@
 
 struct GRDGRADIENT_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<azim>[/<azim2>] */
-		GMT_LONG active;
-		GMT_LONG two;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN two;
 		double azimuth[2];
 	} A;
 	struct D {	/* -D[a][o][n] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
-		GMT_LONG mode;
 	} E;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 1 = atan, 2 = exp */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
 	struct S {	/* -S<slopefile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 };
@@ -159,7 +159,8 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, j, entry, pos, n_opt_args = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0, j, entry, pos;
+	GMT_LONG n_opt_args = 0;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -246,7 +247,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
+				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
 				/* in this case are 2 lines bellow we code it here */
@@ -309,8 +310,10 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 
 GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad;
-	GMT_LONG p[4], row, col, ij, ij0, index, n, n_used = 0, new_grid = FALSE;
+	GMT_BOOLEAN error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad, new_grid = FALSE;
+	GMT_LONG p[4], mx;
+	COUNTER_MEDIUM row, col, n;
+	COUNTER_LARGE ij, ij0, index, n_used = 0;
 	
 	char format[GMT_BUFSIZ];
 	
@@ -375,13 +378,13 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
-	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+	if ((Surf = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
 	GMT_grd_init (GMT, Surf->header, options, TRUE);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
@@ -414,7 +417,8 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Index offset of 4-star points relative to current node */
-	p[0] = 1;	p[1] = -1;	p[2] = Surf->header->mx;	p[3] = -Surf->header->mx;
+	mx = Surf->header->mx;	/* Need a signed mx for p[3] in line below */
+	p[0] = 1;	p[1] = -1;	p[2] = mx;	p[3] = -mx;
 
 	min_gradient = DBL_MAX;	max_gradient = -DBL_MAX;	ave_gradient = 0.0;
 	if (Ctrl->E.mode == 3) {
@@ -427,7 +431,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		x_factor = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
 	}
 	for (row = ij0 = 0; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
-		if (GMT_is_geographic (GMT, GMT_IN) && Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
+		if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);
 			if (dx_grid > 0.0) x_factor = -1.0 / (2.0 * dx_grid);	/* Use previous value at the poles */
@@ -612,13 +616,13 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (Out->header->title, "Directions of maximum slopes");
 	}
 
-	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Out) != GMT_OK) {
+	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 
 	if (Ctrl->S.active) {
 		strcpy (Slope->header->title, "Magnitude of maximum slopes");
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->S.file, Slope) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Slope) != GMT_OK) {
 			Return (API->error);
 		}
 	}

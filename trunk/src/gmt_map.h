@@ -55,13 +55,10 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 	GMT_DIST_COS = 30};	/* 2-D lon, lat data, convert distance to cos of spherical degree */
 
 struct GMT_DIST {	/* Holds info for a particular distance calculation */
-	GMT_LONG init;	/* TRUE if we have initialized settings for this type via GMT_init_distaz */
-	GMT_LONG arc;	/* TRUE if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */
-	p_func_d func;	/* pointer to function returning distance between two points points */
+	GMT_BOOLEAN init;	/* TRUE if we have initialized settings for this type via GMT_init_distaz */
+	GMT_BOOLEAN arc;	/* TRUE if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */
+	double (*func) (struct GMT_CTRL *, double, double, double, double);	/* pointer to function returning distance between two points points */
 	double scale;	/* Scale to convert function output to desired unit */
 };
-
-/* The enxt is used when we are not doing grid coordinates but have loops for (i = 0; i <= n; i++) x = x0 * i * dx;, i.e. loop includes n, and off = 0 */
-#define GMT_i_to_coord(i,x0,x1,dx,nx) (((i) == ((nx))) ? (x1) : (x0) + (i) * (dx))
 
 #endif /* _GMT_MAP_H */

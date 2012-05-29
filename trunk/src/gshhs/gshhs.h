@@ -78,8 +78,8 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 	 * 4th byte:	river = (flag >> 25) & 1: Values: 0 = not set, 1 = river-lake and GSHHS level = 2 (or WDBII class 0)
 	 * 4th byte:	area magnitude scale p (as in 10^p) = flag >> 26.  We divide area by 10^p.
 	 */
-	int32_t west, east, south, north;	/* min/max extent in micro-degrees */
-	uint32_t area;	/* Area of polygon in km^2 * 10^p for this resolution file */
+	int32_t west, east, south, north;	/* Signed min/max extent in micro-degrees */
+	uint32_t area;		/* Area of polygon in km^2 * 10^p for this resolution file */
 	uint32_t area_full;	/* Area of corresponding full-resolution polygon in km^2 * 10^p */
 	int32_t container;	/* Id of container polygon that encloses this polygon (-1 if none) */
 	int32_t ancestor;	/* Id of ancestor polygon in the full resolution set that was the source of this polygon (-1 if none) */
@@ -89,7 +89,7 @@ struct GSHHS {	/* Global Self-consistent Hierarchical High-resolution Shorelines
 #define GSHHS_STRUCT_N_MEMBERS 11
 static inline void bswap_GSHHS_struct (struct GSHHS *h) {
 	uint32_t unsigned32[GSHHS_STRUCT_N_MEMBERS];
-	unsigned n;
+	uint32_t n;
 
 	/* since all members are 32 bit words: */
 	memcpy (&unsigned32, h, sizeof(struct GSHHS));

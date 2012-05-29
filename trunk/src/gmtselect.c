@@ -56,53 +56,53 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* Form of distance calculation */
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
 	struct D {	/* -D<resolution> */
-		GMT_LONG active;
-		GMT_LONG force;	/* if TRUE, select next highest level if current set is not avaialble */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E<operators> , <op> = combination or f,n */
-		GMT_LONG active;
-		GMT_LONG inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
-		GMT_LONG active;
-		GMT_LONG end_mode;	/* Controls what happens beyond segment endpoints */
-		GMT_LONG mode;	/* Form of distance calculation */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM end_mode;	/* Controls what happens beyond segment endpoints */
+		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Distance of influence for each line */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with lines */
 	} L;
 	struct F {	/* -F<polygon> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;	/* Name of file with polygons */
 	} F;
 	struct I {	/* -Icflrsz */
-		GMT_LONG active;
-		GMT_LONG pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct N {	/* -N<maskvalues> */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
-		GMT_LONG mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		GMT_BOOLEAN mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
 	struct Z {	/* -Z<min>/<max> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double min;	/* Smallest z-value to pass through */
 		double max;	/* Largest z-value to pass through */
 	} Z;
 	struct dbg {	/* -+step */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double step;
 	} dbg;
 };
@@ -117,10 +117,10 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
-	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;	/* Default is that points on a boundary are inside */
+	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;		/* Default is that points on a boundary are inside */
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
-	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, GMT_LONG);		/* Default for "wet" areas = 0 (outside) */
-	C->N.mask[1] = C->N.mask[3] = 1;				/* Default for "dry" areas = 1 (inside) */
+	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, GMT_BOOLEAN);		/* Default for "wet" areas = FALSE (outside) */
+	C->N.mask[1] = C->N.mask[3] = TRUE;				/* Default for "dry" areas = TRUE (inside) */
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
 	return (C);
@@ -212,12 +212,12 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, pos, j, k;
+	COUNTER_MEDIUM n_errors = 0, pos, j, k;
 	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
-	GMT_LONG fix = FALSE;
+	GMT_BOOLEAN fix = FALSE;
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -347,10 +347,10 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (buffer, "/", &pos, ptr))) {
 					switch (ptr[0]) {
 						case 's':	/* Skip points in this level */
-							Ctrl->N.mask[j] = 0;
+							Ctrl->N.mask[j] = FALSE;
 							break;
 						case 'k':
-							Ctrl->N.mask[j] = 1;
+							Ctrl->N.mask[j] = TRUE;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Bad modifier (use s or k)\n");
@@ -409,11 +409,14 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 
 GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, err, n_minimum = 2, n_read = 0, n_pass = 0, r_mode;
-	GMT_LONG n_fields, ind, bin, last_bin = -1, pt_cartesian = FALSE, inside;
-	GMT_LONG np[2] = {0, 0}, base = 3, wd[2] = {0, 0}, id, this_node, side, row, col;
-	GMT_LONG error = FALSE, need_header, shuffle, just_copy_record = FALSE;
-	GMT_LONG output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+	GMT_LONG err;	/* Required by GMT_err_fail */
+	COUNTER_MEDIUM base = 3, np[2] = {0, 0}, r_mode;
+	COUNTER_MEDIUM side, col, id;
+	GMT_LONG n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
+	GMT_BOOLEAN inside, error = FALSE, need_header, shuffle, just_copy_record = FALSE, pt_cartesian = FALSE;
+	GMT_BOOLEAN output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+
+	COUNTER_LARGE k, row, seg, n_read = 0, n_pass = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -511,7 +514,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
 	
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
-		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, GMT_IO_ASCII, Ctrl->C.file, NULL)) == NULL) {
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Cin->n_columns < 2) {	/* Trouble */
@@ -523,13 +526,13 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
-		for (i = 0; i < point->n_segments; i++) {
-			if (Cin->n_columns == 2) point->segment[i]->dist = Ctrl->C.dist;
+		for (seg = 0; seg < point->n_segments; seg++) {
+			if (Cin->n_columns == 2) point->segment[seg]->dist = Ctrl->C.dist;
 			if (do_project) {	/* Convert all the points using the map projection */
-				for (j = 0; j < point->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, point->segment[i]->coord[GMT_X][j], point->segment[i]->coord[GMT_Y][j], &xx, &yy);
-					point->segment[i]->coord[GMT_X][j] = xx;
-					point->segment[i]->coord[GMT_Y][j] = yy;
+				for (row = 0; row < point->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, point->segment[seg]->coord[GMT_X][row], point->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					point->segment[seg]->coord[GMT_X][row] = xx;
+					point->segment[seg]->coord[GMT_Y][row] = yy;
 				}
 				pt_cartesian = TRUE;	/* Well, now it is */
 			}
@@ -541,22 +544,22 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			data = GMT_memory (GMT, NULL, point->n_records, struct GMTSELECT_DATA);
 
-			for (i = k = 0; i < point->n_segments; i++) {
-				for (j = 0; j < point->segment[i]->n_rows; j++, k++) {
-					data[k].x = point->segment[i]->coord[GMT_X][j];
-					data[k].y = point->segment[i]->coord[GMT_Y][j];
-					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[i]->coord[GMT_Z][j] : Ctrl->C.dist;
+			for (seg = k = 0; seg < point->n_segments; seg++) {
+				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
+					data[k].x = point->segment[seg]->coord[GMT_X][row];
+					data[k].y = point->segment[seg]->coord[GMT_Y][row];
+					data[k].d = (Ctrl->C.dist == 0.0) ? point->segment[seg]->coord[GMT_Z][row] : Ctrl->C.dist;
 				}
 			}
 			
 			/* Sort on x to speed up inside testing */
-			qsort (data, (size_t)point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
+			qsort (data, point->n_records, sizeof (struct GMTSELECT_DATA), compare_x);
 			
-			for (i = k = 0; i < point->n_segments; i++) {	/* Put back the new order */
-				for (j = 0; j < point->segment[i]->n_rows; j++, k++) {
-					point->segment[i]->coord[GMT_X][j] = data[k].x;
-					point->segment[i]->coord[GMT_Y][j] = data[k].y;
-					if (Ctrl->C.dist == 0.0) point->segment[i]->coord[GMT_Z][j] = data[k].d ;
+			for (seg = k = 0; seg < point->n_segments; seg++) {	/* Put back the new order */
+				for (row = 0; row < point->segment[seg]->n_rows; row++, k++) {
+					point->segment[seg]->coord[GMT_X][row] = data[k].x;
+					point->segment[seg]->coord[GMT_Y][row] = data[k].y;
+					if (Ctrl->C.dist == 0.0) point->segment[seg]->coord[GMT_Z][row] = data[k].d ;
 				}
 			}
 			GMT_free (GMT, data);
@@ -564,7 +567,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->L.active) {	/* Initialize lines structure used in test for proximity to lines [use Ctrl->L.dist, ] */
-		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, GMT_IO_ASCII, Ctrl->L.file, NULL)) == NULL) {
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_ASCII, NULL, Ctrl->L.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Lin->n_columns < 2) {	/* Trouble */
@@ -572,20 +575,20 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
-		for (i = 0; i < line->n_segments; i++) {
-			if (Ctrl->L.dist > 0.0) line->segment[i]->dist = Ctrl->L.dist;	/* Only override when nonzero */
+		for (seg = 0; seg < line->n_segments; seg++) {
+			if (Ctrl->L.dist > 0.0) line->segment[seg]->dist = Ctrl->L.dist;	/* Only override when nonzero */
 			if (do_project) {	/* Convert all the line points using the map projection */
-				for (j = 0; j < line->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, line->segment[i]->coord[GMT_X][j], line->segment[i]->coord[GMT_Y][j], &xx, &yy);
-					line->segment[i]->coord[GMT_X][j] = xx;
-					line->segment[i]->coord[GMT_Y][j] = yy;
+				for (row = 0; row < line->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, line->segment[seg]->coord[GMT_X][row], line->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					line->segment[seg]->coord[GMT_X][row] = xx;
+					line->segment[seg]->coord[GMT_Y][row] = yy;
 				}
 			}
 		}
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
 		GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, GMT_IO_ASCII, Ctrl->F.file, NULL)) == NULL) {
+		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
@@ -595,11 +598,11 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
 		if (do_project) {	/* Convert all the polygons points using the map projection */
-			for (i = 0; i < pol->n_segments; i++) {
-				for (j = 0; j < pol->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, pol->segment[i]->coord[GMT_X][j], pol->segment[i]->coord[GMT_Y][j], &xx, &yy);
-					pol->segment[i]->coord[GMT_X][j] = xx;
-					pol->segment[i]->coord[GMT_Y][j] = yy;
+			for (seg = 0; seg < pol->n_segments; seg++) {
+				for (row = 0; row < pol->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, pol->segment[seg]->coord[GMT_X][row], pol->segment[seg]->coord[GMT_Y][row], &xx, &yy);
+					pol->segment[seg]->coord[GMT_X][row] = xx;
+					pol->segment[seg]->coord[GMT_Y][row] = yy;
 				}
 			}
 		}
@@ -607,10 +610,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Gather input/output  file names (or stdin/out) and enable i/o */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -622,7 +625,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
-	GMT->common.b.ncol[GMT_OUT] = -1;
+	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
 	need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 	
@@ -687,10 +690,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (do_project) {	/* Projected lon/lat; temporary reset input type for GMT_inonout to do Cartesian mode */
 				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 			}
-			inside = FALSE;
-			for (i = 0; i < pol->n_segments && !inside; i++) {	/* Check each polygon until we find that our point is inside */
-				if (GMT_polygon_is_hole (pol->segment[i])) continue;	/* Holes are handled within GMT_inonout */
-				inside = (GMT_inonout (GMT, xx, yy, pol->segment[i]) >= Ctrl->E.inside[F_ITEM]);
+			inside = 0;
+			for (seg = 0; seg < pol->n_segments && !inside; seg++) {	/* Check each polygon until we find that our point is inside */
+				if (GMT_polygon_is_hole (pol->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
+				inside = (GMT_inonout (GMT, xx, yy, pol->segment[seg]) >= Ctrl->E.inside[F_ITEM]);
 			}
 			if (do_project) {	/* Reset input type for GMT_inonout to do Cartesian mode */
 				GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
@@ -700,12 +703,13 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
+			GMT_LONG brow, i, this_node;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
-			row = ((GMT_LONG)floor ((90.0 - in[GMT_Y]) / c.bsize));
-			if (row >= c.bin_ny) row = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
-			col = (GMT_LONG)floor (xx / c.bsize);
-			bin = row * c.bin_nx + col;
+			brow = lrint (floor ((90.0 - in[GMT_Y]) / c.bsize));
+			if (brow >= c.bin_ny) brow = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
+			col = lrint (floor (xx / c.bsize));
+			bin = brow * c.bin_nx + col;
 			if (bin != last_bin) {	/* Do this upon entering new bin */
 				ind = 0;
 				while (ind < c.nb && c.bins[ind] != bin) ind++;	/* Set ind to right bin */
@@ -788,7 +792,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\n", n_read, n_pass);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
 		GMT_free_shore (GMT, &c);

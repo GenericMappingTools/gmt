@@ -38,23 +38,23 @@
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct Q {	/* -Q<interpolation> */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 	struct Z {	/* -Z to scale data */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -132,7 +132,8 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, m;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_LONG m;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -198,7 +199,7 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode < 0 || Ctrl->Q.mode > 3, "Syntax error -T: Must specify a mode in the 0-3 range\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode > 3, "Syntax error -T: Must specify a mode in the 0-3 range\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -208,8 +209,12 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 
 GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, i, ij, ij_f, n = 0, n_alloc = 0, error = FALSE;
+	COUNTER_MEDIUM row, col;
+	GMT_BOOLEAN error = FALSE;
 
+	size_t n_alloc = 0;
+	COUNTER_LARGE i, n = 0, ij, ij_f;
+	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
 
@@ -248,7 +253,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -284,9 +289,10 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n, double);
+	n_alloc = n;
+	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %ld points\n", n);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %" PRIu64 " points\n", n);
 
 	if (Ctrl->Z.active && w_max > w_min) {	/* Scale the data */
 		sf = 1.0 / (w_max - w_min);
@@ -311,7 +317,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	sf = (w_max - w_min);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
-		ij_f = col * Grid->header->ny + row;	/* Fortran index */
+		ij_f = (COUNTER_LARGE)col * (COUNTER_LARGE)Grid->header->ny + (COUNTER_LARGE)row;	/* Fortran index */
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (float)sf;
 	}
@@ -319,7 +325,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Write solution */
 	
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 

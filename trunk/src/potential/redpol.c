@@ -35,43 +35,43 @@
 
 struct REDPOL_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG use_igrf;
-		GMT_LONG const_f;
+		GMT_BOOLEAN use_igrf;
+		GMT_BOOLEAN const_f;
 		double	dec;
 		double	dip;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
-		GMT_LONG dip_grd_only;
-		GMT_LONG dip_dec_grd;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN dip_grd_only;
+		GMT_BOOLEAN dip_dec_grd;
 		char *decfile;
 		char *dipfile;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
-		GMT_LONG	ncoef_row;
-		GMT_LONG	ncoef_col;
-		GMT_LONG	compute_n;	/* Compute ncoef_col */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM	ncoef_row;
+		COUNTER_MEDIUM	ncoef_col;
+		COUNTER_MEDIUM	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char	*file;
 	} G;
 	struct M {	/* -M */
-		GMT_LONG pad_zero;
-		GMT_LONG mirror;
+		GMT_BOOLEAN pad_zero;
+		GMT_BOOLEAN mirror;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S, size of working grid */
-		GMT_LONG	nx;
-		GMT_LONG	ny;
+		COUNTER_MEDIUM	nx;
+		COUNTER_MEDIUM	ny;
 	} S;
 	struct T {	/* -T */
 		double	year;
@@ -80,7 +80,7 @@ struct REDPOL_CTRL {
 		double	wid;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char	*file;
 	} Z;
 };
@@ -115,11 +115,11 @@ void Free_redpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-void rtp_filt_colinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double *gxi, double *gxar, 
+void rtp_filt_colinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u, 
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
-	GMT_LONG ij = ij_mn(Ctrl,i,j-n21+1);
+	COUNTER_LARGE ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, t2, t3;
 	ro2 = u * u + v * v;    ro = sqrt(ro2);     ro3 = ro2 * ro;
@@ -150,12 +150,12 @@ void rtp_filt_colinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double 
 }
 
 
-void rtp_filt_NOTcolinear(GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, double *gxi, double *gxar, 
+void rtp_filt_NOTcolinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr, 
 		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa, 
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
 
-	GMT_LONG ij = ij_mn(Ctrl,i,j-n21+1);
+	COUNTER_LARGE ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, den_r, den_i1, den_i2;
 	double tau_u, mu_v, nu_ro, nu_ro_2, tau_u_mu_v, tau_u_mu_v_2, tau_u_mu_v_gama;
@@ -209,10 +209,11 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
 	   Ctrl->S.nx & Ctrl->S.ny are the grid's original number of column/rows before extension */
-	GMT_LONG	i, j, ins, isn, iss, jww, jwe, jee, jew;
+	GMT_LONG	i, j, ins, isn, iss, jww, jwe, jee, jew, upper_nx, upper_ny;
 
 	/* First reflect about xmin and xmax, point symmetric about edge point */
 
+	upper_ny = Ctrl->S.ny+i_data_start;
 	for (j = 1; j <= j_data_start; j++) {	/* COLUMNS */
 		jww = j_data_start-j;		/* Minimum Outside xmin and aproaching West border  */
 		jee = Ctrl->S.nx + j_data_start + j-1;	/* Minimum Outside xmax and aproching East border  */
@@ -224,7 +225,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 			jwe = j_data_start;			/* West border */
 			jew = Ctrl->S.nx + j_data_start - 1;	/* East border */
 		}
-		for (i = i_data_start; i < Ctrl->S.ny+i_data_start; i++) {	/* ROWS */
+		for (i = i_data_start; i < upper_ny; i++) {	/* ROWS */
 			grid[ij0_data(Ctrl,i,jww)] = grid[ij0_data(Ctrl,i,jwe)];	/* West border */
 			grid[ij0_data(Ctrl,i,jee)] = grid[ij0_data(Ctrl,i,jew)];	/* East border */
 		}
@@ -232,6 +233,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 
 	/* Next, reflect about ymin and ymax. At the same time, since x has been reflected, we can use these vals */
 
+	upper_nx = Ctrl->S.nx + nc;
 	for (i = 0; i < i_data_start; i++) {	/* ROWS */
 		iss = Ctrl->S.ny+i_data_start+i;	/* Minimum Outside ymin and aproaching South border  */
 		if (Ctrl->M.mirror) {
@@ -242,7 +244,7 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 			ins = i_data_start;			/* North border */
 			isn = Ctrl->S.ny+i_data_start-1;	/* South border */
 		}
-		for (j = 0; j < (Ctrl->S.nx + nc); j++) {	/* COLUMNS */
+		for (j = 0; j < upper_nx; j++) {	/* COLUMNS */
 			grid[ij0_data(Ctrl,i,j)] = grid[ij0_data(Ctrl,ins,j)];		/* North border */
 			grid[ij0_data(Ctrl,iss,j)] = grid[ij0_data(Ctrl,isn,j)];	/* South border */
 		}
@@ -1018,7 +1020,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 	 */
 
 
-	GMT_LONG j, n_errors = 0, n_files = 0, pos = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos = 0;
+	GMT_LONG j;
 	char	p[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
@@ -1064,7 +1067,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				Ctrl->C.use_igrf = FALSE;
 				break;
 			case 'F':
-				j = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
+				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = TRUE;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: number of filter coefficients must be odd\n");
@@ -1127,9 +1130,10 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 
 GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	GMT_LONG error = FALSE, wrote_one = FALSE;
-	GMT_LONG row, col, nx_new, ny_new, one_or_zero, m21, n21;
-        GMT_LONG i, j, ij, k, l, i2, j2, i3, n_jlon, n_jlat, jj, n_coef;
+	GMT_BOOLEAN error = FALSE, wrote_one = FALSE;
+	COUNTER_MEDIUM i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
+        COUNTER_MEDIUM k, l, i3, n_jlon, n_jlat, n_coef;
+	COUNTER_LARGE ij, jj;
         double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
         double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;
 	double	*gxar = NULL, *gxai = NULL, *gxbr = NULL, *gxbi = NULL, *gxgr = NULL;
@@ -1177,7 +1181,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	GMT->current.io.pad[XLO] = GMT->current.io.pad[XHI] = n21-1;
 	GMT->current.io.pad[YLO] = GMT->current.io.pad[YHI] = m21-1;
 
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -1194,7 +1198,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_grd_init (GMT, Gin->header, options, TRUE);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
@@ -1226,63 +1230,63 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* Section to deal with possible external grids with dip and dec for interpolation */
 
 	if (Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd) {
-		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->E.dipfile, NULL)) == NULL) {	/* Get header only */
+		if ((Gdip = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->E.dipfile, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->E.dipfile, Gdip) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->E.dipfile, Gdip) == NULL) {
 			Return (API->error);
 		}
 	}
 	if (Ctrl->E.dip_dec_grd) {
-		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->E.decfile, NULL)) == NULL) {
+		if ((Gdec = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->E.decfile, NULL)) == NULL) {
 			Return (API->error);
 		}
 	
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->E.decfile, Gdec) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->E.decfile, Gdec) == NULL) {
 			Return (API->error);
 		}
 	}
 
 	n_coef = Ctrl->F.ncoef_row * Ctrl->F.ncoef_col;
-       	cosphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	sinphi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	cospsi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	sinpsi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxr    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxi    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxar   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxai   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxbr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxbi   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxgr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	gxgi   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxr    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fix    = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxar   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxbr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	fxgr   = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       	ftlon  = GMT_memory (GMT, NULL, (size_t) Gin->header->nx, double);
-       	ftlat  = GMT_memory (GMT, NULL, (size_t) Gin->header->ny, double);
+       	cosphi = GMT_memory (GMT, NULL, n_coef, double);
+       	sinphi = GMT_memory (GMT, NULL, n_coef, double);
+       	cospsi = GMT_memory (GMT, NULL, n_coef, double);
+       	sinpsi = GMT_memory (GMT, NULL, n_coef, double);
+       	gxr    = GMT_memory (GMT, NULL, n_coef, double);
+       	gxi    = GMT_memory (GMT, NULL, n_coef, double);
+       	gxar   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxai   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxbr   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxbi   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxgr   = GMT_memory (GMT, NULL, n_coef, double);
+       	gxgi   = GMT_memory (GMT, NULL, n_coef, double);
+       	fxr    = GMT_memory (GMT, NULL, n_coef, double);
+       	fix    = GMT_memory (GMT, NULL, n_coef, double);
+       	fxar   = GMT_memory (GMT, NULL, n_coef, double);
+       	fxbr   = GMT_memory (GMT, NULL, n_coef, double);
+       	fxgr   = GMT_memory (GMT, NULL, n_coef, double);
+       	ftlon  = GMT_memory (GMT, NULL, Gin->header->nx, double);
+       	ftlat  = GMT_memory (GMT, NULL, Gin->header->ny, double);
 
 	if ((Ctrl->E.dip_grd_only || Ctrl->E.dip_dec_grd)) { 
-       		gxtr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxti = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxmr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxmi = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxnr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		gxni = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxtr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxmr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
-       		fxnr = GMT_memory (GMT, NULL, (size_t)n_coef, double);
+       		gxtr = GMT_memory (GMT, NULL, n_coef, double);
+       		gxti = GMT_memory (GMT, NULL, n_coef, double);
+       		gxmr = GMT_memory (GMT, NULL, n_coef, double);
+       		gxmi = GMT_memory (GMT, NULL, n_coef, double);
+       		gxnr = GMT_memory (GMT, NULL, n_coef, double);
+       		gxni = GMT_memory (GMT, NULL, n_coef, double);
+       		fxtr = GMT_memory (GMT, NULL, n_coef, double);
+       		fxmr = GMT_memory (GMT, NULL, n_coef, double);
+       		fxnr = GMT_memory (GMT, NULL, n_coef, double);
 	}
 
 	/* Generate vectors of lon & lats */
 	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = GMT_grd_col_to_x (GMT, col, Gin->header);
 	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = GMT_grd_row_to_y (GMT, row, Gin->header);
 
-	n_jlon = (int)((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
-	n_jlat = (int)((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
+	n_jlon = lrint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
+	n_jlat = lrint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
 
 	if (Ctrl->C.const_f) {
 		alfa = -cos(Ctrl->C.dip) * cos(Ctrl->C.dec);
@@ -1440,7 +1444,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 						}
 					}
 					else
-						memcpy(fix, fxr, (size_t)(n_coef * sizeof(double)));
+						GMT_memcpy (fix, fxr, n_coef, double);
 
 					if (Ctrl->Z.active && !wrote_one && l == 0 && k == 0) {
 						for (i2 = jj = 0; i2 < Ctrl->F.ncoef_row; i2++)		/* Remember, filter is columnwise */
@@ -1488,10 +1492,10 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	strcpy (Gout->header->title, "Anomaly reducted to the pole");
 	strcpy (Gout->header->z_units, "nT");
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 		Return (API->error);
 	}
-	if (Ctrl->Z.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->Z.file, Gfilt) != GMT_OK) {
+	if (Ctrl->Z.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->Z.file, Gfilt) != GMT_OK) {
 		Return (API->error);
 	}
 

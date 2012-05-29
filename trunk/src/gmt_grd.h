@@ -41,30 +41,30 @@
 /* Nodes that are unconstrained are assumed to be set to NaN */
 
 enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
-	GMT_PIXEL_REG};
+	GMT_PIXEL_REG = 1U};
 
 /* These lengths (except GRD_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
-enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80,
-			GRD_TITLE_LEN80	= 80,
-		GRD_VARNAME_LEN80	= 80,
-		GRD_COMMAND_LEN320	= 320,
-		GRD_REMARK_LEN160	= 160};
+enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80U,
+			GRD_TITLE_LEN80	= 80U,
+		GRD_VARNAME_LEN80	= 80U,
+		GRD_COMMAND_LEN320	= 320U,
+		GRD_REMARK_LEN160	= 160U};
 
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
-	int nx;				/* Number of columns */
-	int ny;				/* Number of rows */
-	int registration;		/* 0 for node grids, 1 for pixel grids */
+	unsigned int nx;		/* Number of columns */
+	unsigned int ny;		/* Number of rows */
+	unsigned int registration;	/* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
-	GMT_LONG type;			/* Grid format */
-	GMT_LONG bits;			/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	GMT_LONG complex_mode;		/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
-	GMT_LONG mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
-	GMT_LONG nm;			/* Number of data items in this grid (nx * ny) [padding is excluded] */
-	GMT_LONG n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
-	GMT_LONG size;			/* Actual number of items required to hold this grid (mx * my) */
-	GMT_LONG pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
-	GMT_LONG BC[4];			/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+	int type;			/* Grid format */
+	unsigned int bits;		/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
+	unsigned int complex_mode;	/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
+	COUNTER_MEDIUM mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
+	COUNTER_LARGE nm;		/* Number of data items in this grid (nx * ny) [padding is excluded] */
+	COUNTER_LARGE size;		/* Actual number of items required to hold this grid (= mx * my) */
+	unsigned int n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
+	unsigned int pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
+	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
 	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
@@ -78,13 +78,13 @@ struct GRD_HEADER {
 	char flags[4];			/* Flags used for ESRI grids */
 	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
 	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
-	GMT_LONG bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
-	GMT_LONG bcr_n;			/* Width of the interpolation function */
-	GMT_LONG no_BC;			/* If TRUE we skip BC stuff entirely */
-	GMT_LONG nxp;			/* if X periodic, nxp > 0 is the period in pixels  */
-	GMT_LONG nyp;			/* if Y periodic, nxp > 0 is the period in pixels  */
-	GMT_LONG gn;			/* TRUE if top    edge will be set as N pole  */
-	GMT_LONG gs;			/* TRUE if bottom edge will be set as S pole  */
+	unsigned int bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
+	unsigned int bcr_n;		/* Width of the interpolation function */
+	COUNTER_MEDIUM nxp;		/* if X periodic, nxp > 0 is the period in pixels  */
+	COUNTER_MEDIUM nyp;		/* if Y periodic, nxp > 0 is the period in pixels  */
+	GMT_BOOLEAN no_BC;			/* If TRUE we skip BC stuff entirely */
+	GMT_BOOLEAN gn;			/* TRUE if top    edge will be set as N pole  */
+	GMT_BOOLEAN gs;			/* TRUE if bottom edge will be set as S pole  */
 	
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
@@ -133,12 +133,13 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
  * overhead.  Note: gmt_x_to_col does not need nx but we included it for symmetry reasons.
  * gmt_y_to_row must first compute j', the number of rows in the increasing y-direction (to
  * match the sense of truncation used for x) then we revert to row number increasing down
- * by flipping: j = ny - 1 - j'. */
+ * by flipping: j = ny - 1 - j'.
+ * Note that input col, row _may_ be negative, hence we do the cast to (int) here. */
 
 #define gmt_x_to_col(x,x0,dx,off,nx) (lrint((((x) - (x0)) / (dx)) - (off)))
 #define gmt_y_to_row(y,y0,dy,off,ny) ((ny) - 1 - lrint(((((y) - (y0)) / (dy)) - (off))))
-#define GMT_col_to_x(C,col,x0,x1,dx,off,nx) (((col) == ((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
-#define GMT_row_to_y(C,row,y0,y1,dy,off,ny) (((row) == ((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
+#define GMT_col_to_x(C,col,x0,x1,dx,off,nx) (((int)(col) == (int)((nx)-1)) ? (x1) - (off) * (dx) : (x0) + ((col) + (off)) * (dx))
+#define GMT_row_to_y(C,row,y0,y1,dy,off,ny) (((int)(row) == (int)((ny)-1)) ? (y0) + (off) * (dy) : (y1) - ((row) + (off)) * (dy))
 
 /* The follow macros simplify using the 4 above macros when all info is in the struct header h. */
 
@@ -159,17 +160,17 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 
 /* The follow macros gets the full length or rows and columns when padding is considered (i.e., mx and my) */
 
-#define gmt_grd_get_nxpad(h,pad) ((GMT_LONG)(h->nx) + pad[XLO] + pad[XHI])
-#define gmt_grd_get_nypad(h,pad) ((GMT_LONG)(h->ny) + pad[YLO] + pad[YHI])
+#define gmt_grd_get_nxpad(h,pad) ((h->nx) + pad[XLO] + pad[XHI])
+#define gmt_grd_get_nypad(h,pad) ((h->ny) + pad[YLO] + pad[YHI])
 
 /* 64-bit-safe macros to return the number of points in the grid given its dimensions */
 
-#define GMT_get_nm(C,nx,ny) (((GMT_LONG)(nx)) * ((GMT_LONG)(ny)))
-#define gmt_grd_get_nm(h) (((GMT_LONG)(h->nx)) * ((GMT_LONG)(h->ny)))
+#define GMT_get_nm(C,nx,ny) (((COUNTER_LARGE)(nx)) * ((COUNTER_LARGE)(ny)))
+#define gmt_grd_get_nm(h) (((COUNTER_LARGE)(h->nx)) * ((COUNTER_LARGE)(h->ny)))
 
 /* GMT_grd_setpad copies the given pad into the header */
 
-#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(GMT_LONG))
+#define GMT_grd_setpad(C,h,newpad) memcpy ((h)->pad, newpad, 4*sizeof(unsigned int))
 
 /* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 
@@ -180,34 +181,35 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
  * we pass the column dimension as padding is added by the macro. */
 
 /* New IJP macro using h and the pad info */
-#define GMT_IJP(h,row,col) (((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO])
+#define GMT_IJP(h,row,col) (((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO])
 /* New IJPR|C macros using h and the pad info to get the real or imag component of a complex array*/
-#define GMT_IJPR(h,row,col) (2*(((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO]))
+#define GMT_IJPR(h,row,col) (2*(((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO]))
 #define GMT_IJPC(h,row,col) (GMT_IJPR(h,row,col)+1)
 /* New IJ0 macro using h but ignores the pad info */
-#define GMT_IJ0(h,row,col) (((GMT_LONG)(row))*((GMT_LONG)h->nx)+(GMT_LONG)(col))
+#define GMT_IJ0(h,row,col) (((COUNTER_LARGE)(row))*((COUNTER_LARGE)h->nx)+(COUNTER_LARGE)(col))
 /* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
-#define GMT_IJPGI(h,row,col) (((GMT_LONG)(row)+(GMT_LONG)h->pad[YHI])*((GMT_LONG)h->mx*(GMT_LONG)h->n_bands)+(GMT_LONG)(col)+(GMT_LONG)h->pad[XLO]*(GMT_LONG)h->n_bands)
+#define GMT_IJPGI(h,row,col) (((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx*(COUNTER_LARGE)h->n_bands)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO]*(COUNTER_LARGE)h->n_bands)
 
 /* Obtain row and col from index */
-#define GMT_col(h,ij) ((ij) % h->mx - h->pad[XLO])
-#define GMT_row(h,ij) ((ij) / h->mx - h->pad[YHI])
+#define GMT_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
+#define GMT_row(h,ij) (((ij) / h->mx) - h->pad[YHI])
 
 /* To set up a standard double for-loop over rows and columns to visit all nodes in a padded array by computing the node index, use GMT_grd_loop */
-/* Note: All arguments must be actual variables and not expressions */
+/* Note: All arguments must be actual variables and not expressions.
+ * Note: that input col, row _may_ be signed, hence we do the cast to (int) here. */
 
-#define GMT_row_loop(C,G,row) for (row = 0; row < G->header->ny; row++)
-#define GMT_col_loop(C,G,row,col,ij) for (col = 0, ij = GMT_IJP (G->header, row, 0); col < G->header->nx; col++, ij++)
+#define GMT_row_loop(C,G,row) for (row = 0; (int)row < (int)G->header->ny; row++)
+#define GMT_col_loop(C,G,row,col,ij) for (col = 0, ij = GMT_IJP (G->header, row, 0); (int)col < (int)G->header->nx; col++, ij++)
 #define GMT_grd_loop(C,G,row,col,ij) GMT_row_loop(C,G,row) GMT_col_loop(C,G,row,col,ij)
 /* Just a loop over columns */
-#define GMT_col_loop2(C,G,col) for (col = 0; col < G->header->nx; col++)
+#define GMT_col_loop2(C,G,col) for (col = 0; (int)col < (int)G->header->nx; col++)
 /* Loop over all nodes including the pad */
-#define GMT_row_padloop(C,G,row,ij) for (row = ij = 0; row < G->header->my; row++)
-#define GMT_col_padloop(C,G,col,ij) for (col = 0; col < G->header->mx; col++, ij++)
+#define GMT_row_padloop(C,G,row,ij) for (row = ij = 0; (int)row < (int)G->header->my; row++)
+#define GMT_col_padloop(C,G,col,ij) for (col = 0; (int)col < (int)G->header->mx; col++, ij++)
 #define GMT_grd_padloop(C,G,row,col,ij) GMT_row_padloop(C,G,row,ij) GMT_col_padloop(C,G,col,ij)
 
 /* The usage could be:
-	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %ld and col = %ld is %g\n", row, col, Grid->data[node]);
+	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
 */
 /* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
  * For GMT_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.

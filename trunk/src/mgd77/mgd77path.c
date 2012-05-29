@@ -21,15 +21,15 @@
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 	} A;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
 	struct I {	/* -I */
-		GMT_LONG active;
-		GMT_LONG n;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 };
@@ -76,7 +76,7 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -133,7 +133,8 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 
 GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, n_cruises = 0, n_paths, error = FALSE;
+	COUNTER_MEDIUM i, n_cruises = 0, n_paths;
+	GMT_BOOLEAN error = FALSE;
 	
 	char path[GMT_BUFSIZ], **list = NULL;
 	
@@ -190,9 +191,9 @@ GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld cruises\n", n_cruises);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Found %d cruises\n", n_cruises);
 	
-	MGD77_Path_Free (GMT, (int)n_paths, list);
+	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
 	
 	Return (GMT_OK);

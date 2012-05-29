@@ -67,11 +67,13 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
+#define GMTAPI_MAX_ID 100000	/* Largest integer to keep in %6.6d format */
+
 #ifdef FORTRAN_API
 static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;	/* Global structure needed for FORTRAN-77 [PW: not tested yet - is it even needed?] */
 #endif
 
-static GMT_LONG GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions for multi-session programs */
+static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions for multi-session programs */
 static char *GMTAPI_errstr[] = {
 #include "gmtapi_errstr.h"
 };
@@ -111,7 +113,7 @@ struct GMT_IMAGE   * gmt_get_image_ptr (struct GMT_IMAGE **ptr) {return (*ptr);}
 #endif
 
 /* return_address is a convenience function that, given type, calls the correct converter */
-void *return_address (void *data, GMT_LONG type) {
+void *return_address (void *data, int type) {
 	void *p = NULL;
 	switch (type) {
 		case GMT_IS_GRID:	p = gmt_get_grid_ptr (data);	break;
@@ -127,34 +129,40 @@ void *return_address (void *data, GMT_LONG type) {
 	return (p);
 }
 
+/* p_func_size_t is used as a pointer to functions that returns a size_t dimension */
+typedef size_t (*p_func_size_t) (GMT_LONG row, GMT_LONG col, GMT_LONG dim);
+
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
-void GMT_io_banner (struct GMT_CTRL *C, GMT_LONG direction)
+void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
 {	/* Write verbose message about binary record i/o format */
 	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
 	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};
-	GMT_LONG col;
+	COUNTER_MEDIUM col;
+	COUNTER_LARGE n_bytes;
 	
 	if (C->current.setting.verbose < GMT_MSG_NORMAL) return;	/* Not in verbose mode anyway */
 	if (!C->common.b.active[direction]) return;	/* Not using binary i/o */
 	GMT_memset (message, GMT_TEXT_LEN256, char);	/* Start with a blank message */
 	for (col = 0; col < C->common.b.ncol[direction]; col++) {	/* For each binary column of data */
 		if (C->current.io.fmt[direction][col].skip < 0) {	/* Must skip BEFORE reading this column */
-			sprintf (skip, "%dx", -C->current.io.fmt[direction][col].skip);
+			n_bytes = -C->current.io.fmt[direction][col].skip;
+			sprintf (skip, "%" PRIu64 "x", n_bytes);
 			strcat (message, skip);
 		}
 		s[0] = letter[C->current.io.fmt[direction][col].type];	/* Get data type code */
 		strcat (message, s);
 		if (C->current.io.fmt[direction][col].skip > 0) {	/* Must skip AFTER reading this column */
-			sprintf (skip, "%dx", C->current.io.fmt[direction][col].skip);
+			n_bytes = C->current.io.fmt[direction][col].skip;
+			sprintf (skip, "%" PRIu64 "x", n_bytes);
 			strcat (message, skip);
 		}
 	}
-	GMT_report (C, GMT_MSG_NORMAL, "%s %ld columns via binary records using format %s\n", GMT_direction[direction], C->common.b.ncol[direction], message);
+	GMT_report (C, GMT_MSG_NORMAL, "%s %d columns via binary records using format %s\n", GMT_direction[direction], C->common.b.ncol[direction], message);
 }
 
-double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, GMT_LONG row, GMT_LONG type)
+double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, COUNTER_LARGE row, unsigned int type)
 {	/* Returns a double value from the <type> column array pointed to by the union pointer *u, at row position row.
  	 * Used in GMTAPI_Import_Dataset and GMTAPI_Import_Grid. */
 	double val;
@@ -171,7 +179,7 @@ double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, GMT_LONG
 		case GMTAPI_FLOAT:	val = u->f4[row];	break;
 		case GMTAPI_DOUBLE:	val = u->f8[row];	break;
 		default:
-			fprintf (stderr, "GMT API: Internal error in GMTAPI_get_val: Passed bad type (%" GMT_LL "d)\n", type);
+			fprintf (stderr, "GMT API: Internal error in GMTAPI_get_val: Passed bad type (%d)\n", type);
 			val = 0.0;
 			API->error = GMT_NOT_A_VALID_TYPE;
 			break;
@@ -179,7 +187,7 @@ double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, GMT_LONG
 	return (val);
 }
 
-void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val, GMT_LONG row, GMT_LONG type)
+void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val, COUNTER_LARGE row, unsigned int type)
 { /* Places a double value in the <type> column array[i] pointed to by the union pointer *u, at row position row.
 	 * No check to see if the type can hold the value is performed, so truncation may result.
 	 * Used in GMTAPI_Export_Dataset and GMTAPI_Export_Grid. */
@@ -191,22 +199,22 @@ void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val
 		case GMTAPI_SHORT:  u->si2[row] = (int16_t)val;  break;
 		case GMTAPI_UINT:   u->ui4[row] = (uint32_t)val; break;
 		case GMTAPI_INT:    u->si4[row] = (int32_t)val;  break;
-		case GMTAPI_ULONG:  u->ui8[row] = (uint64_t)val; break;
+		case GMTAPI_ULONG:  u->ui8[row] = (COUNTER_LARGE)val; break;
 		case GMTAPI_LONG:   u->si8[row] = (int64_t)val;  break;
 		case GMTAPI_FLOAT:  u->f4[row]  = (float)val;    break;
 		case GMTAPI_DOUBLE: u->f8[row]  = val;           break;
 		default:
-			fprintf (stderr, "GMT API: Internal error in GMTAPI_put_val: Passed bad type (%" GMT_LL "d)\n", type);
+			fprintf (stderr, "GMT API: Internal error in GMTAPI_put_val: Passed bad type (%d)\n", type);
 			API->error = GMT_NOT_A_VALID_TYPE;
 			break;
 	}
 }
 
-GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, GMT_LONG *first_ID)
+COUNTER_MEDIUM GMTAPI_n_items (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID)
 {	/* Count how many data sets of the given family are currently registered and unused for the given direction (GMT_IN|GMT_OUT).
  	 * Also return the ID of the first data object for the given direction (GMTAPI_NOTSET if not found).
 	 */
-	GMT_LONG i, n;
+	COUNTER_MEDIUM i, n;
 
 	*first_ID = GMTAPI_NOTSET;	/* Not found yet */
 	API->error = GMT_OK;		/* No error yet */
@@ -226,43 +234,43 @@ GMT_LONG GMTAPI_n_items (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG dire
  * via pointers to these functions, hence they are not macros.
  */
 
-GMT_LONG GMTAPI_2D_to_index_C_normal (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
+size_t GMTAPI_2D_to_index_C_normal (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 {	/* Maps (row,col) to 1-D index for C normal grid */
-	return ((row * dim) + col);	/* Normal grid */
+	return (((size_t)row * (size_t)dim) + (size_t)col);	/* Normal grid */
 }
 
-GMT_LONG GMTAPI_2D_to_index_C_cplx_real (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
+size_t GMTAPI_2D_to_index_C_cplx_real (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 {	/* Maps (row,col) to 1-D index for C complex grid, real component */
-	return (2*(row * dim) + col);	/* Complex grid, real(1) component */
+	return (2*((size_t)row * (size_t)dim) + (size_t)col);	/* Complex grid, real(1) component */
 }
 
-GMT_LONG GMTAPI_2D_to_index_C_cplx_imag (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
+size_t GMTAPI_2D_to_index_C_cplx_imag (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 {	/* Maps (row,col) to 1-D index for C complex grid, imaginary component */
-	return (2*(row * dim) + col + 1);	/* Complex grid, imag(2) component */
+	return (2*((size_t)row * (size_t)dim) + (size_t)col + 1);	/* Complex grid, imag(2) component */
 }
 
-GMT_LONG GMTAPI_2D_to_index_F_normal (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
+size_t GMTAPI_2D_to_index_F_normal (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 {	/* Maps (row,col) to 1-D index for Fortran */
-	return ((col * dim) + row);
+	return (((size_t)col * (size_t)dim) + (size_t)row);
 }
 
-GMT_LONG GMTAPI_2D_to_index_F_cplx_real (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
+size_t GMTAPI_2D_to_index_F_cplx_real (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 {	/* Maps (row,col) to 1-D index for Fortran complex grid, real component */
-	return (2*(col * dim) + row);	/* Complex grid, real(1) */
+	return (2*((size_t)col * (size_t)dim) + (size_t)row);	/* Complex grid, real(1) */
 }
 
-GMT_LONG GMTAPI_2D_to_index_F_cplx_imag (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
+size_t GMTAPI_2D_to_index_F_cplx_imag (GMT_LONG row, GMT_LONG col, GMT_LONG dim)
 {	/* Maps (row,col) to 1-D index for Fortran complex grid, imaginary component  */
-	return (2*(col * dim) + row + 1);	/* Complex grid, imag(2) component */
+	return (2*((size_t)col * (size_t)dim) + (size_t)row + 1);	/* Complex grid, imag(2) component */
 }
 
-p_func_l GMTAPI_get_2D_to_index (GMT_LONG shape, GMT_LONG mode)
+p_func_size_t GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
 {
 	/* Return pointer to the required 2D-index function above.  Here
 	 * shape is either GMTAPI_ORDER_ROW (C) or GMTAPI_ORDER_COL (FORTRAN);
 	 * mode is either 0 (regular grid), 1 (complex real) or 2 (complex imag)
 	 */
-	p_func_l p = NULL;
+	p_func_size_t p = NULL;
 	
 	switch (mode) {
 		case GMT_IS_NORMAL:
@@ -282,14 +290,14 @@ p_func_l GMTAPI_get_2D_to_index (GMT_LONG shape, GMT_LONG mode)
 }
 
 #if 0	/* Unused at the present time */
-void GMTAPI_index_to_2D_C (GMT_LONG *row, GMT_LONG *col, GMT_LONG index, GMT_LONG dim, GMT_LONG mode)
+void GMTAPI_index_to_2D_C (GMT_LONG *row, GMT_LONG *col, size_t index, GMT_LONG dim, int mode)
 {	/* Maps 1-D index to (row,col) for C */
 	if (mode) index /= 2;
 	*col = (index % dim);
 	*row = (index / dim);
 }
 
-void GMTAPI_index_to_2D_F (GMT_LONG *row, GMT_LONG *col, GMT_LONG index, GMT_LONG dim, GMT_LONG mode)
+void GMTAPI_index_to_2D_F (GMT_LONG *row, GMT_LONG *col, size_t index, GMT_LONG dim, int mode)
 {	/* Maps 1-D index to (row,col) for Fortran */
 	if (mode) index /= 2;
 	*col = (index / dim);
@@ -307,9 +315,9 @@ void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
 
 void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
-	h->nx = (int)M_obj->n_columns;	/* Cast to int due to definition of GRD_HEADER */
-	h->ny = (int)M_obj->n_rows;
-	h->registration = (int)M_obj->registration;
+	h->nx = M_obj->n_columns;
+	h->ny = M_obj->n_rows;
+	h->registration = M_obj->registration;
 	GMT_memcpy (h->wesn, M_obj->limit, 4, double);
 	/* Compute xy_off and increments */
 	h->xy_off = (h->registration == GMT_GRIDLINE_REG) ? 0.0 : 0.5;
@@ -317,22 +325,22 @@ void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct 
 	h->inc[GMT_Y] = GMT_get_inc (C, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 }
 
-GMT_LONG GMTAPI_need_grdpadding (struct GRD_HEADER *h, GMT_LONG *pad)
+GMT_BOOLEAN GMTAPI_need_grdpadding (struct GRD_HEADER *h, COUNTER_MEDIUM *pad)
 {	/* Compares current grid pad status to output pad requested.  If we need
 	 * to add a pad we return TRUE here, otherwise FALSE. */
-	GMT_LONG side;
+	COUNTER_MEDIUM side;
 	
 	for (side = 0; side < 4; side++) if (h->pad[side] < pad[side]) return (TRUE);
 	return (FALSE);
 }
 
-GMT_LONG GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn)
+size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn)
 {	/* Determines size of grid given grid spacing and grid domain in h.
  	 * However, if wesn is given and not empty we use that sub-region instead.
  	 * Finally, the current pad is used when calculating the grid size.
 	 * NOTE: This function leaves h unchanged by testing on a temporary header. */
 	struct GRD_HEADER *h_tmp = NULL;
-	GMT_LONG size;
+	size_t size;
 	
 	/* Must duplicate header and possibly reset wesn, then set pad and recalculate the dims */
 	h_tmp = GMT_memory (C, NULL, 1, struct GRD_HEADER);
@@ -346,12 +354,12 @@ GMT_LONG GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, dou
 	return (size);
 }
 
-GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
+int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 {	/* Get ready for the next source/destination (open file, initialize counters, etc.).
 	 * Note this is only a mechanism for dataset and textset files where it is common
 	 * to give many files on the command line (e.g., *.txt) and we do rec-by-rec processing. */
 	int *fd = NULL;	/* !!! Must be int* due to nature of Unix system function */
-	GMT_LONG error = 0, kind, via = 0;
+	int error = 0, kind, via = 0;
 	static const char *dir[2] = {"from", "to"};
 	static const char *operation[2] = {"Reading", "Writing"};
 	char *mode = NULL;
@@ -361,12 +369,12 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 	
 	API->error = GMT_OK;		/* No error yet */
 	S_obj = API->object[API->current_item[direction]];		/* For shorthand purposes only */
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Next_IO_Source: Selected object %" GMT_LL "d\n", S_obj->ID);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Next_IO_Source: Selected object %d\n", S_obj->ID);
 	mode = (direction == GMT_IN) ? API->GMT->current.io.r_mode : API->GMT->current.io.w_mode;	/* Reading or writing */
 	S_obj->close_file = FALSE;		/* Do not want to close file pointers passed to us unless WE open them below */
 	/* Either use binary n_columns settings or initialize to unknown, i.e., GMT_MAX_COLUMNS */
 	S_obj->n_expected_fields = (API->GMT->common.b.ncol[direction]) ? API->GMT->common.b.ncol[direction] : GMT_MAX_COLUMNS;
-	GMT_memset (API->GMT->current.io.curr_pos[direction], 3, GMT_LONG);	/* Reset file, seg, point counters */
+	GMT_memset (API->GMT->current.io.curr_pos[direction], 3, COUNTER_LARGE);	/* Reset file, seg, point counters */
 	if (S_obj->method >= GMT_VIA_VECTOR) via = (S_obj->method / GMT_VIA_VECTOR) - 1;
 	
 	switch (S_obj->method) {	/* File, array, stream etc ? */
@@ -382,7 +390,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary file %s\n",
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary file %s\n",
 					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], S_obj->filename);
 			}
 			break;
@@ -398,7 +406,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream\n",
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary %s stream\n",
 					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
@@ -415,7 +423,7 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %ld bytes of header %s binary %s stream via supplied file descriptor\n",
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary %s stream via supplied file descriptor\n",
 					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
@@ -473,45 +481,46 @@ GMT_LONG GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, GMT_LONG direction)
 	}
 
 	/* A few things pertaining only to data/text tables */
-	API->GMT->current.io.rec_in_tbl_no = -1;	/* Start on new table */
-	S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? (p_func_vp)GMT_ascii_textinput : API->GMT->current.io.input;	/* The latter may point to ascii or binary input functions */
+	API->GMT->current.io.rec_in_tbl_no = 0;	/* Start on new table */
+	S_obj->import = (S_obj->family == GMT_IS_TEXTSET) ? &GMT_ascii_textinput : API->GMT->current.io.input;	/* The latter may point to ascii or binary input functions */
 
 	return (GMT_OK);		
 }
 
-GMT_LONG GMTAPI_Next_Data_Object (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction)
+int GMTAPI_Next_Data_Object (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction)
 {	/* Sets up current_item to be the next unused item of the required direction; or return EOF.
 	 * When EOF is returned, API->current_item[direction] holds the last object ID used. */
-	GMT_LONG found = FALSE, k;
+	GMT_BOOLEAN found = FALSE;
+	COUNTER_MEDIUM item;
 	
 	API->error = GMT_OK;		/* No error yet */
-	k = API->current_item[direction] + 1;	/* Advance to next item, if possible */
-	while (k < API->n_objects && !found) {
-		if (API->object[k] && API->object[k]->status == GMT_IS_UNUSED && API->object[k]->direction == direction && family == API->object[k]->family)
+	item = API->current_item[direction] + 1;	/* Advance to next item, if possible */
+	while (item < API->n_objects && !found) {
+		if (API->object[item] && API->object[item]->status == GMT_IS_UNUSED && API->object[item]->direction == direction && family == API->object[item]->family)
 			found = TRUE;	/* Got item that is unused, has correct direction and family */
 		else
-			k++;	/* No, keep looking */
+			item++;	/* No, keep looking */
 	}
 	if (found) {	/* Update to use next item */
-		API->current_item[direction] = k;	/* The next item */
+		API->current_item[direction] = item;	/* The next item */
 		return (GMTAPI_Next_IO_Source (API, direction));	/* Initialize the next source/destination */
 	}
 	else
 		return (EOF);	/* No more objects available for this direction; return EOF */
 }				
 
-GMT_LONG GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object)
+int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *object)
 {	/* Hook object to end of linked list and assign unique id (> 0) which is returned */
 	
 	/* Find the first entry in the API->object array which is unoccupied, and if
 	 * they are all occupied then reallocate the array to make more space.
 	 * We thus find and return the lowest available ID. */
-	GMT_LONG object_ID;
+	int object_ID;
 	
 	API->error = GMT_OK;		/* No error yet */
 	API->n_objects++;		/* Add one more entry to the tally */
 	if (API->n_objects == API->n_objects_alloc) {	/* Must allocate more space for more data descriptors */
-		GMT_LONG old_n_alloc = API->n_objects_alloc;
+		size_t old_n_alloc = API->n_objects_alloc;
 		API->n_objects_alloc += GMT_SMALL_CHUNK;
 		API->object = GMT_memory (API->GMT, API->object, API->n_objects_alloc, struct GMTAPI_DATA_OBJECT *);
 		GMT_memset (&(API->object[old_n_alloc]), API->n_objects_alloc - old_n_alloc, struct GMTAPI_DATA_OBJECT *);	/* Set to NULL */
@@ -523,16 +532,18 @@ GMT_LONG GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJ
 	object_ID = object->ID = API->unique_ID++;	/* Assign a unique object ID */
 	API->object[API->n_objects-1] = object;		/* Hook the current object onto the end of the list */
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Add_Data_Object: Added new object %" GMT_LL "d: method = %s geometry = %s direction = %s\n",
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Add_Data_Object: Added new object %d: method = %s geometry = %s direction = %s\n",
 		object->ID, GMT_method[object->method], GMT_geometry[object->geometry], GMT_direction[object->direction]);
 	
 	return (object_ID);		
 }
 
-GMT_LONG GMTAPI_Get_Item (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG direction)
+#if 0	/* NOT USED? */
+int GMTAPI_Get_Item (struct GMTAPI_CTRL *API, int object_ID, int direction)
 {	/* Checks to see if the given object_ID is listed and of the right direction.  If so
  	 * we return the item number; otherwise return GMTAPI_NOTSET and set API->error to the error code. */
-	GMT_LONG i, item;
+	COUNTER_MEDIUM i;
+	int item, s_value;
 
 	 /* Search for the object in the active list.  However, if object_ID == GMTAPI_NOTSET we pick the first in that direction */
 	
@@ -545,7 +556,7 @@ GMT_LONG GMTAPI_Get_Item (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG 
 	if (item == GMTAPI_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMTAPI_NOTSET); }		/* No such object found */
 
 	/* OK, we found the object; is it the right kind (input or output)? */
-	if (direction != GMTAPI_NOTSET && API->object[item]->direction != direction) {
+	if (direction != GMTAPI_NOTSET && (s_value = API->object[item]->direction) != direction) {
 		/* Passing an input object but it is listed as output, or vice versa */
 		if (direction == GMT_IN)  { API->error = GMT_NOT_INPUT_OBJECT;  return (GMTAPI_NOTSET); }
 		if (direction == GMT_OUT) { API->error = GMT_NOT_OUTPUT_OBJECT; return (GMTAPI_NOTSET); }
@@ -553,11 +564,14 @@ GMT_LONG GMTAPI_Get_Item (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG 
 	/* Here we have been successful in finding the right object */
 	return (item);		
 }
+#endif
 
-GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG direction)
+int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction)
 {	/* Checks to see if the given object_ID is listed and of the right direction.  If so
- 	 * we return the item number; otherwise return GMTAPI_NOTSET and set API->error to the error code. */
-	GMT_LONG i, item;
+ 	 * we return the item number; otherwise return GMTAPI_NOTSET and set API->error to the error code.
+	 * Note: int arguments MAY be GMTAPI_NOTSET, hence signed ints */
+	COUNTER_MEDIUM i;
+	int item, s_value;
 
 	 /* Search for the object in the active list.  However, if object_ID == GMTAPI_NOTSET we pick the first in that direction */
 	
@@ -565,15 +579,15 @@ GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;	/* Empty object */
 		if (direction != GMTAPI_NOTSET && API->object[i]->status != GMT_IS_UNUSED) continue;	/* Already used this object */
-		if (!(family == GMTAPI_NOTSET || family == API->object[i]->family)) continue;		/* Not the required data type */
-		if (object_ID == GMTAPI_NOTSET && direction == API->object[i]->direction) item = i;	/* Pick the first object with the specified direction */
-		else if (direction == GMTAPI_NOTSET && API->object[i]->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
-		else if (API->object[i]->ID == object_ID) item = i;					/* Pick the requested object */
+		if (!(family == GMTAPI_NOTSET || (s_value = API->object[i]->family) == family)) continue;	/* Not the required data type */
+		if (object_ID == GMTAPI_NOTSET && (s_value = API->object[i]->direction) == direction) item = i;	/* Pick the first object with the specified direction */
+		else if (direction == GMTAPI_NOTSET && (s_value = API->object[i]->ID) == object_ID) item = i;	/* Pick the requested object regardless of direction */
+		else if ((s_value = API->object[i]->ID) == object_ID) item = i;					/* Pick the requested object */
 	}
 	if (item == GMTAPI_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMTAPI_NOTSET); }		/* No such object found */
 
 	/* OK, we found the object; is it the right kind (input or output)? */
-	if (direction != GMTAPI_NOTSET && API->object[item]->direction != direction) {
+	if (direction != GMTAPI_NOTSET && (s_value = API->object[item]->direction) != direction) {
 		/* Passing an input object but it is listed as output, or vice versa */
 		if (direction == GMT_IN)  { API->error = GMT_NOT_INPUT_OBJECT;  return (GMTAPI_NOTSET); }
 		if (direction == GMT_OUT) { API->error = GMT_NOT_OUTPUT_OBJECT; return (GMTAPI_NOTSET); }
@@ -582,25 +596,26 @@ GMT_LONG GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	return (item);		
 }
 
-GMT_LONG GMTAPI_Decode_ID (char *filename)
+int GMTAPI_Decode_ID (char *filename)
 {	/* Checking if filename contains a name with embedded GMTAPI Object ID.
 	 * If found we return the ID, otherwise we return GMTAPI_NOTSET.
  	*/
-	GMT_LONG object_ID = GMTAPI_NOTSET;
+	int object_ID = GMTAPI_NOTSET;
 	
 	if (GMT_File_Is_Memory (filename)) {	/* Passing ID of an already registered object */
-		if (sscanf (&filename[9], "%" GMT_LL "d", &object_ID) != 1) return (GMTAPI_NOTSET);	/* Get the object ID unless we fail scanning */
+		if (sscanf (&filename[9], "%d", &object_ID) != 1) return (GMTAPI_NOTSET);	/* Get the object ID unless we fail scanning */
 	}
 	return (object_ID);	/* Returns GMTAPI_NOTSET if no embedded ID was found */
 }
 
-GMT_LONG GMTAPI_ptr2id (struct GMTAPI_CTRL *API, void *ptr)
+int GMTAPI_ptr2id (struct GMTAPI_CTRL *API, void *ptr)
 {	/* Returns the ID of the first object whose data pointer matches ptr.
  	 * This is necessary since many objects may have the same pointer
 	 * but we only want to destroy the memory once.  This function is
 	 * only used in GMT_Destroy_Data.
 	 */
-	GMT_LONG i, object_ID = GMTAPI_NOTSET;	/* Not found yet */
+	COUNTER_MEDIUM i;
+	int object_ID = GMTAPI_NOTSET;	/* Not found yet */
 	void *data = NULL;
 	
 	for (i = 0; object_ID == GMTAPI_NOTSET && i < API->n_objects; i++) {	/* Loop over all objects */
@@ -611,13 +626,14 @@ GMT_LONG GMTAPI_ptr2id (struct GMTAPI_CTRL *API, void *ptr)
 	return (object_ID);	/* Return ID or -1 if not found */	
 }
 
-GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, void *resource)
+int GMTAPI_is_registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int direction, void *resource)
 {	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
  	 * and then is registered again when reading the whole grid.  In those cases
 	 * we dont want to register them twice.
 	 */
-	GMT_LONG i, item;
+	COUNTER_MEDIUM i;
+	int item;
 
 	if (API->n_objects == 0) return (GMTAPI_NOTSET);	/* There are no known resources yet */
 	
@@ -634,20 +650,22 @@ GMT_LONG GMTAPI_is_registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LON
 	return (item);		/* The ID of the object (or -1) */
 }
 
-GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG direction)
+int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction)
 {	/* Remove specified object ID from active list of objects */
-	GMT_LONG item;
+	int s_item;
+	unsigned item;
 
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));		/* GMT_Create_Session has not been called */
 	API->error = GMT_OK;		/* No error yet */
 	if (API->n_objects == 0) return (GMT_Report_Error (API, GMT_NO_RESOURCES));	/* There are no known resources yet */
 
 	/* Check if this is a valid ID and matches the direction */
-	if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, direction)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
+	if ((s_item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, direction)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
 
-	/* OK, now it is safe to remove the object */
+	/* OK, now it is safe to remove the object; item >= 0 */
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Unregistering object no %" GMT_LL "d\n", API->object[item]->ID);
+	item = s_item;
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Unregister_IO: Unregistering object no %d\n", API->object[item]->ID);
 
 	if (API->object[item]->method == GMT_IS_FILE && API->object[item]->filename) free (API->object[item]->filename);	/* Free any strdup-allocated filenames */
 	GMT_free (API->GMT, API->object[item]);		/* Free the current data object */
@@ -661,17 +679,17 @@ GMT_LONG GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode)
+struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode)
 {	/* Does the actual work of loading in a CPT palette table.
  	 * The mode controls how the back-, fore-, NaN-color entries are handled.
 	 * Note: Memory is allocated to hold the GMT_PALETTE structure except for method GMT_IS_REF.
 	 */
 	
-	GMT_LONG item, kind;
+	int item, kind;
 	struct GMT_PALETTE *P_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_CPT: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_CPT: Passed ID = %d and mode = %d\n", object_ID, mode);
 	
 	if (object_ID == GMTAPI_NOTSET) return_null (API, GMT_NO_INPUT);
 	API->error = GMT_OK;		/* No error yet */
@@ -728,15 +746,15 @@ struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, GMT_LONG object
 	return (P_obj);	/* Pass back the palette */	
 }
 
-GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, struct GMT_PALETTE *P_obj)
+int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_PALETTE *P_obj)
 {	/* Does the actual work of writing out the specified CPT to a destination.
 	 * The mode controls how the back, for, NaN color entries are handled.
 	 */
-	GMT_LONG item, kind, error;
+	int item, kind, error;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_PALETTE *P_copy = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_CPT: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_CPT: Passed ID = %d and mode = %d\n", object_ID, mode);
 	
 	API->error = GMT_OK;		/* No error yet */
 	if (object_ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
@@ -789,8 +807,8 @@ GMT_LONG GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LON
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-GMT_LONG col_check (struct GMT_TABLE *T, GMT_LONG *n_cols) {
-	GMT_LONG seg;
+GMT_BOOLEAN col_check (struct GMT_TABLE *T, COUNTER_MEDIUM *n_cols) {
+	COUNTER_LARGE seg;
 	/* Checks that all segments in this table has the correct number of columns.
 	 * If *n_cols == 0 we set it to the number of columns found in the first segment. */
 	
@@ -801,21 +819,25 @@ GMT_LONG col_check (struct GMT_TABLE *T, GMT_LONG *n_cols) {
 	return (FALSE);	/* All is well */
 }
 
-struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode)
+struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode)
 {	/* Does the actual work of loading in the entire virtual data set (possibly via many sources)
 	 * If object_ID == GMTAPI_NOTSET we get all registered input tables, otherwise we just get the one requested.
 	 * Note: Memory is allocated for the Dataset except for method GMT_IS_DATASET_REF.
 	 */
 	
-	GMT_LONG item, col, row, seg, n_cols = 0, ij, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
-	GMT_LONG allocate = FALSE, update = FALSE, n_alloc, all_D, use_GMT_io, poly;
-	p_func_l GMT_2D_to_index;
+	int item, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
+	GMT_BOOLEAN allocate = FALSE, update = FALSE, all_D, use_GMT_io, poly;
+	size_t n_alloc;
+	COUNTER_LARGE row, seg, ij;
+	COUNTER_MEDIUM n_cols = 0, col;
+	p_func_size_t GMT_2D_to_index = NULL;
+	
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Passed ID = %d and mode = %d\n", object_ID, mode);
 	
 	API->error = GMT_OK;		/* No error yet */
 	if (object_ID == GMTAPI_NOTSET) {	/* More than one source: Merge all registered data tables into a single virtual data set */
@@ -838,7 +860,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ob
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* S_obj is the current data object */
 		if (!S_obj) {	/* Probably not a good sign */
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Skipped empty object (item = %ld)\n", item);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Dataset: Skipped empty object (item = %d)\n", item);
 			continue;
 		}
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so skip output objects */
@@ -873,7 +895,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ob
 #endif
 				if (API->GMT->current.io.ogr == 1 && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
-				GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading %s from %s %lx\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (GMT_LONG)S_obj->fp);
+				GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading %s from %s %lx\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (int64_t)S_obj->fp);
 				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (API->GMT, S_obj->fp, S_obj->method, FALSE, poly, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
@@ -986,7 +1008,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ob
 				for (seg = 0; seg < D_obj->table[D_obj->n_tables-1]->n_segments; seg++) 
 					D_obj->table[D_obj->n_tables-1]->segment[seg]->id += D_obj->table[D_obj->n_tables-2]->n_segments;
 			if (allocate && D_obj->n_tables == n_alloc) {	/* Must allocate space for more tables */
-				GMT_LONG old_n_alloc = n_alloc;
+				size_t old_n_alloc = n_alloc;
 				n_alloc += GMT_TINY_CHUNK;
 				D_obj->table = GMT_memory (API->GMT, D_obj->table, n_alloc, struct GMT_TABLE *);
 				GMT_memset (&(D_obj->table[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_TABLE *);	/* Set to NULL */
@@ -1014,20 +1036,22 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, GMT_LONG ob
 	return (D_obj);		
 }
 
-GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, struct GMT_DATASET *D_obj)
+int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_DATASET *D_obj)
 {	/* Does the actual work of writing out the specified data set to one destination.
 	 * If object_ID == GMTAPI_NOTSET we use the first registered output destination, otherwise we just use the one requested.
 	 * See the GMTAPI documentation for how mode is used to create multiple files from segments, etc.
 	 */
-	GMT_LONG tbl, item, seg, row, col, offset, ij, error, default_method;
-	p_func_l GMT_2D_to_index;
+	GMT_LONG item, error, default_method;
+	COUNTER_MEDIUM tbl, col, offset;
+	COUNTER_LARGE row, seg, ij;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_DATASET *D_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
 	void *ptr = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_Dataset: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_Dataset: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	API->error = GMT_OK;		/* No error yet */
 	if (object_ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
@@ -1035,7 +1059,7 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT
 
 	S_obj = API->object[item];	/* S is the object whose data we will export */
 	if (S_obj->family != GMT_IS_DATASET) return (GMT_Report_Error (API, GMT_WRONG_KIND));			/* Called with wrong data type */
-	if (mode > GMT_WRITE_DATASET && !S_obj->filename) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
+	if (mode > GMT_WRITE_SET && !S_obj->filename) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));	/* Must have filename when segments are to be written */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once unless overridden by mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
 	default_method = GMT_IS_FILE;
@@ -1141,19 +1165,22 @@ GMT_LONG GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode)
+struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode)
 {	/* Does the actual work of loading in the entire virtual text set (possibly via many sources)
 	 * If object_ID == GMTAPI_NOTSET we get all registered input tables, otherwise we just get the one requested.
 	 * Note: Memory is allocated for the Dataset except for GMT_IS_DATASET_REF.
 	 */
 	
-	GMT_LONG item, row, seg, first_item = 0, last_item, n_alloc, update = FALSE, allocate = FALSE;
+	int item, first_item = 0, last_item;
+	GMT_BOOLEAN update = FALSE, allocate = FALSE;
+	size_t n_alloc;
+	COUNTER_LARGE row, seg;
 	char *t = NULL;
 	struct GMT_TEXTSET *T_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	API->error = GMT_OK;		/* No error yet */
 	T_obj = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXTSET);
@@ -1174,7 +1201,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ob
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* Current object */
 		if (!S_obj) {	/* Probably not a good sign */
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Skipped empty object (item = %ld)\n", item);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Textset: Skipped empty object (item = %d)\n", item);
 			continue;
 		}
 		if (S_obj->direction == GMT_OUT) continue;	/* We're doing reading here, so bugger off! */
@@ -1200,7 +1227,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ob
 				if (item == first_item) GMT_setmode (API->GMT, GMT_IN);
 #endif
 				/* GMT_read_texttable will report where it is reading from if level is GMT_MSG_NORMAL */
-				GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading %s from %s %lx\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (GMT_LONG)S_obj->fp);
+				GMT_report (API->GMT, GMT_MSG_NORMAL, "Reading %s from %s %lx\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (int64_t)S_obj->fp);
 				if ((T_obj->table[T_obj->n_tables] = GMT_read_texttable (API->GMT, S_obj->fp, S_obj->method)) == NULL) continue;	/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				T_obj->table[T_obj->n_tables]->id = T_obj->n_tables;	/* Give internal object_ID numbers to tables */
 				update = TRUE;
@@ -1230,7 +1257,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ob
 				T_obj->table[T_obj->n_tables]->segment[0] = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXT_SEGMENT);
 				T_obj->table[T_obj->n_tables]->segment[0]->record = GMT_memory (API->GMT, NULL, M_obj->n_rows, char *);
 				t = (char *)M_obj->data.sc1;
-				for (row = 0; row < M_obj->n_rows; row++) {
+				for (row = 0; row < (COUNTER_LARGE)M_obj->n_rows; row++) {
 					T_obj->table[T_obj->n_tables]->segment[0]->record[row] = strdup (&t[row*M_obj->dim]);
 				}
 				T_obj->table[T_obj->n_tables]->segment[0]->n_rows = M_obj->n_rows;
@@ -1255,7 +1282,7 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ob
 			T_obj->n_tables++;
 		}
 		if (allocate && T_obj->n_tables == n_alloc) {	/* Must allocate space for more tables */
-			GMT_LONG old_n_alloc = n_alloc;
+			size_t old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			T_obj->table = GMT_memory (API->GMT, T_obj->table, n_alloc, struct GMT_TEXT_TABLE *);
 			GMT_memset (&(T_obj->table[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_TEXT_TABLE *);	/* Set to NULL */
@@ -1277,25 +1304,27 @@ struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, GMT_LONG ob
 	return (T_obj);		
 }
 
-GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, struct GMT_TEXTSET *T_obj)
+int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_TEXTSET *T_obj)
 {	/* Does the actual work of writing out the specified text set to one destination.
 	 * If object_ID == GMTAPI_NOTSET we use the first registered output destination, otherwise we just use the one requested.
 	 * Again, see GMTAPI documentation for the meaning of mode.
 	 */
-	GMT_LONG tbl, item, seg, row, offset, error, default_method;
+	int item, error, default_method;
+	COUNTER_MEDIUM tbl;
+	COUNTER_LARGE row, seg, offset;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_TEXTSET *T_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	char *ptr = NULL;
 	void *dest = NULL;
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_Textset: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_Textset: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	API->error = GMT_OK;		/* No error yet */
 	if (object_ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_TEXTSET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMT_Report_Error (API, API->error));
 
-	default_method = (mode > GMT_WRITE_DATASET) ? GMT_IS_FILE : GMT_IS_STREAM;
+	default_method = (mode > GMT_WRITE_SET) ? GMT_IS_FILE : GMT_IS_STREAM;
 	S_obj = API->object[item];
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET))	/* Only allow writing of a data set once, unless overridden by mode */
 		return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));
@@ -1337,7 +1366,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT
 			M_obj->n_rows = T_obj->n_records;	/* Number of rows needed to hold the data records */
 			M_obj->n_columns = 1;		/* Number of columns needed to hold the data records */
 			if (API->GMT->current.io.multi_segments[GMT_OUT]) M_obj->n_rows += T_obj->n_segments;	/* Add one row for each segment header */
-			S_obj->n_alloc = M_obj->n_rows * M_obj->dim;	/* Get total number of elements as n_rows * dim */
+			S_obj->n_alloc = GMT_get_nm (API->GMT, M_obj->n_rows, M_obj->dim);	/* Get total number of elements as n_rows * dim */
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMT_Report_Error (API, error));
 
 			ptr = (char *)M_obj->data.sc1;
@@ -1366,7 +1395,7 @@ GMT_LONG GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT
 }
 
 #ifdef USE_GDAL
-struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, struct GMT_IMAGE *image)
+struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image)
 {	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire image:
  	 * 	mode = GMT_GRID_ALL reads both header and image;
@@ -1377,14 +1406,18 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object
 	 * If the image->data array is NULL it will be allocated for you.
 	 */
 	
-	GMT_LONG item, row, col, i0, i1, j0, j1, ij, ij_orig, complex_mode, reset, size, done = 1;
+	int item, complex_mode, reset;
+	GMT_BOOLEAN done = TRUE;
+	COUNTER_MEDIUM row, col, i0, i1, j0, j1;
+	COUNTER_LARGE ij, ij_orig;
+	size_t size;
 	double dx, dy;
-	p_func_l GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Image: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Image: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	API->error = GMT_OK;		/* No error yet */
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_IMAGE, object_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
@@ -1407,7 +1440,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object
 			else
 				I_obj = image;	/* We are passing in a image already allocated */
 			I_obj->header->complex_mode = complex_mode;		/* Set the complex mode */
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {		/* Must init header and read the header information from file */
 				GMT_grd_init (API->GMT, I_obj->header, NULL, FALSE);
 				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S_obj->filename, I_obj), S_obj->filename)) 
@@ -1440,7 +1473,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object
 			}
 			else
 				I_obj = image;	/* We are passing in an image already */
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {	/* Must init header and copy the header information from the existing grid */
 				GMT_memcpy (I_obj->header, I_orig->header, 1, struct GRD_HEADER);
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header, get out of here */
@@ -1480,7 +1513,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing image data from GMT_IMAGE memory location\n");
 			if ((I_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read image */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read image */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Image: Change alloc mode\n");
 			I_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Image: Check pad\n");
@@ -1494,7 +1527,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object
 	 	case GMT_IS_READONLY:	/* GMT grid and header in a GMT_GRID container object by exact reference (no changes allowed to grid values) */
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			if ((I_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			if (GMTAPI_need_grdpadding (I_obj->header, API->GMT->current.io.pad)) return_null (API, GMT_PADDING_NOT_ALLOWED);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing image data from read-only GMT_IMAGE memory location\n");
 			I_obj->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
@@ -1574,7 +1607,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, GMT_LONG object
 }
 #endif
 
-struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, struct GMT_GRID *grid)
+struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *grid)
 {	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire grid:
  	 * 	mode = GMT_GRID_ALL reads both header and grid;
@@ -1585,14 +1618,18 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_I
 	 * If the grid->data array is NULL it will be allocated for you.
 	 */
 	
-	GMT_LONG item, row, col, i0, i1, j0, j1, ij, ij_orig, complex_mode, reset, size, done = 1;
+	int item, complex_mode, reset;
+	GMT_BOOLEAN done = TRUE;
+ 	COUNTER_MEDIUM row, col, i0, i1, j0, j1;
+	COUNTER_LARGE ij, ij_orig;
+	size_t size;
 	double dx, dy;
-	p_func_l GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Grid: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Grid: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	API->error = GMT_OK;		/* No error yet */
 	if ((item = GMTAPI_Validate_ID (API, GMT_IS_GRID, object_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
@@ -1614,7 +1651,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_I
 			else
 				G_obj = grid;	/* We are working on a grid already allocated */
 			G_obj->header->complex_mode = complex_mode;		/* Set the complex mode */
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {		/* Must init header and read the header information from file */
 				GMT_grd_init (API->GMT, G_obj->header, NULL, FALSE);
 				if (GMT_err_pass (API->GMT, GMT_read_grd_info (API->GMT, S_obj->filename, G_obj->header), S_obj->filename)) 
@@ -1648,7 +1685,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_I
 			}
 			else
 				G_obj = grid;	/* We are passing in a grid already */
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {	/* Must init header and copy the header information from the existing grid */
 				GMT_memcpy (G_obj->header, G_orig->header, 1, struct GRD_HEADER);
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header, get out of here */
@@ -1689,7 +1726,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_I
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			GMT_report (API->GMT, GMT_MSG_NORMAL, "Referencing grid data from GMT_GRID memory location\n");
 			if ((G_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Grid: Change alloc mode\n");
 			G_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Import_Grid: Check pad\n");
@@ -1705,7 +1742,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_I
 	 	case GMT_IS_READONLY:	/* GMT grid and header in a GMT_GRID container object by exact reference (no changes allowed to grid values) */
 			if (S_obj->region) return_null (API, GMT_SUBSET_NOT_ALLOWED);
 			if ((G_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-			done = (mode == GMT_GRID_HEADER) ? 0 : 1;	/* Not done until we read grid */
+			done = (mode == GMT_GRID_HEADER) ? FALSE : TRUE;	/* Not done until we read grid */
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj), "Grid memory")) return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
 			if (GMTAPI_need_grdpadding (G_obj->header, API->GMT->current.io.pad)) return_null (API, GMT_PADDING_NOT_ALLOWED);
@@ -1792,16 +1829,20 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_I
 	return (G_obj);	/* Pass back out what we have so far */	
 }
 
-GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, struct GMT_GRID *G_obj)
+int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *G_obj)
 {	/* Writes out a single grid to destination */
-	GMT_LONG item, row, col, ij, ijp, ij_orig, error, i0, i1, j0, j1, complex_mode, size, done = 1;
+	int item, error, complex_mode;
+	GMT_BOOLEAN done = TRUE;
+	COUNTER_MEDIUM row, col, i0, i1, j0, j1;
+	COUNTER_LARGE ij, ijp, ij_orig;
+	size_t size;
 	double dx, dy;
-	p_func_l GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_GRID *G_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_Grid: Passed ID = %" GMT_LL "d and mode = %" GMT_LL "d\n", object_ID, mode);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Export_Grid: Passed ID = %d and mode = %d\n", object_ID, mode);
 
 	API->error = GMT_OK;		/* No error yet */
 	if (object_ID == GMTAPI_NOTSET) return (GMT_Report_Error (API, GMT_OUTPUT_NOT_SET));
@@ -1817,7 +1858,7 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LO
 			if (mode == GMT_GRID_HEADER) {	/* Update header structure only */
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "Updating grid header for file %s\n", S_obj->filename);
 				if (GMT_update_grd_info (API->GMT, NULL, G_obj->header)) return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
-				done = 0;	/* Since we are not done with writing */
+				done = FALSE;	/* Since we are not done with writing */
 			}
 			else {
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "Writing grid to file %s\n", S_obj->filename);
@@ -1920,13 +1961,13 @@ GMT_LONG GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LO
 	return (GMT_OK);		
 }
 
-void * GMTAPI_Import_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG mode, void *data)
+void * GMTAPI_Import_Data (struct GMTAPI_CTRL *API, unsigned int family, int object_ID, unsigned int mode, void *data)
 {
 	/* Function that will import the data object referred to by the object_ID (or all registered inputs if object_ID == GMTAPI_NOTSET).
 	 * This is a wrapper functions for CPT, Dataset, Textset, Grid and Image imports; see the specific functions
 	 * for details on the arguments, in particular the mode setting (or see the GMT API documentation).
 	 */
-	GMT_LONG item;
+	int item;
 	void *new = NULL;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);			/* GMT_Create_Session has not been called */
@@ -1966,11 +2007,11 @@ void * GMTAPI_Import_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG ob
 	return (new);	/* Successful, return pointer */
 }
 
-GMT_LONG GMTAPI_Export_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG object_ID, GMT_LONG mode, void *data)
+int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, unsigned int family, int object_ID, unsigned int mode, void *data)
 {
 	/* Function that will export the single data object referred to by the object_ID as registered by GMT_Register_IO.
 	 */
-	GMT_LONG error, item;
+	int error, item;
 	
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));			/* GMT_Create_Session has not been called */
 	API->error = GMT_OK;		/* No error yet */
@@ -2002,7 +2043,7 @@ GMT_LONG GMTAPI_Export_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	return (GMT_Report_Error (API, error));	/* Return status */
 }
 
-GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometry, GMT_LONG mode, struct GMT_OPTION *head)
+int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int mode, struct GMT_OPTION *head)
 {	/* Handle registration of data files given with option arguments and/or stdin as input sources.
 	 * These are the possible actions taken:
 	 * 1. If (mode | GMT_REG_FILES_IF_NONE) is TRUE and NO resources have previously been registered, then we scan the option list for files (option == '<' (input)).
@@ -2013,7 +2054,8 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	 * 4. If (mode & GMT_REG_STD_ALWAYS) is TRUE we will register stdin as an input source, regardless of other items already registered.
 	 */
 	
-	GMT_LONG n_reg, n_new = 0, object_ID, first_ID;
+	int object_ID, first_ID;
+ 	COUNTER_MEDIUM n_reg, n_new = 0;
 	struct GMT_OPTION *current = NULL;
 	double *wesn = NULL;
 	
@@ -2032,7 +2074,7 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 						GMT_memcpy (wesn, API->GMT->common.R.wesn, 4, double);
 					}
 				}
-				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_IN, current->arg, wesn)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
+				if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_IN, wesn, current->arg)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
 				n_new++;	/* Count of new items registered */
 				if (wesn) GMT_free (API->GMT, wesn);
 				if (first_ID == GMTAPI_NOTSET) first_ID = object_ID;	/* Found our first ID */
@@ -2040,13 +2082,13 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 			current = current->next;	/* Go to next option */
 		}
 		n_reg += n_new;	/* Total registration count so far */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added %ld new sources\n", n_new);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added %d new sources\n", n_new);
 	}
 	
 	/* Note that n_reg can have changed if we added file args above */
 	
 	if ((mode & GMT_REG_STD_ALWAYS) || ((mode & GMT_REG_STD_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
-		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, API->GMT->session.std[GMT_IN], NULL)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdin */
+		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
 		if (first_ID == GMTAPI_NOTSET) first_ID = object_ID;	/* Found our first ID */
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added stdin to registered sources\n");
@@ -2054,7 +2096,7 @@ GMT_LONG GMTAPI_Init_Import (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	return (first_ID);		
 }
 
-GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometry, GMT_LONG mode, struct GMT_OPTION *head)
+int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int mode, struct GMT_OPTION *head)
 {	/* Handle registration of output file given with option arguments and/or stdout as output destinations.
 	 * Only a single output may be considered.  These are the possible actions taken:
 	 * 1. If (mode | GMT_REG_FILES_IF_NONE) is TRUE and NO destinations have previously been registered, 
@@ -2067,7 +2109,8 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	 *    and give error if other output items have already been registered.
 	 */
 	
-	GMT_LONG n_reg, object_ID;
+	COUNTER_MEDIUM n_reg;
+	int object_ID;
 	struct GMT_OPTION *current = NULL;
 	
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Passed family = %s and geometry = %s\n", GMT_family[family], GMT_geometry[geometry]);
@@ -2075,7 +2118,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	API->error = GMT_OK;		/* No error yet */
 	n_reg = GMTAPI_n_items (API, family, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {						/* There is a destination registered already */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Found one registered destination (object ID = %ld); skip further registrations\n", object_ID);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Found one registered destination (object ID = %d); skip further registrations\n", object_ID);
 		return (object_ID);
 	}
 	if (n_reg > 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output destination allowed at once */
@@ -2095,7 +2138,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 			while (current) {		/* Loop over the list and look for output files (we know there is only one) */
 				if (current->option == GMTAPI_OPT_OUTFILE) {	/* File given, register it */
 					fprintf (stderr, "%c %s\n", current->option, current->arg);
-					if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, current->arg, NULL)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
+					if ((object_ID = GMT_Register_IO (API, family, GMT_IS_FILE, geometry, GMT_OUT, NULL, current->arg)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register */
 					GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Added 1 new destination\n");
 				}
 				current = current->next;	/* Go to next option */
@@ -2107,7 +2150,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	if ((mode & GMT_REG_STD_ALWAYS) && n_reg == 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output destination allowed at once */
 	
 	if (n_reg == 0 && ((mode & GMT_REG_STD_ALWAYS) || (mode & GMT_REG_STD_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
-		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, API->GMT->session.std[GMT_OUT], NULL)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdout?*/
+		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, NULL, API->GMT->session.std[GMT_OUT])) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdout?*/
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Added stdout to registered destinations\n");
 		n_reg = 1;	/* Only have one item */
 	}
@@ -2115,7 +2158,7 @@ GMT_LONG GMTAPI_Init_Export (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG 
 	return (object_ID);		
 }
 
-GMT_LONG GMTAPI_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG direction)
+int GMTAPI_Begin_IO (struct GMTAPI_CTRL *API, unsigned int direction)
 {
 	/* Initializes the i/o mechanism for either input or output (given by direction).
 	 * GMTAPI_Begin_IO must be called before any bulk data i/o is allowed.
@@ -2137,7 +2180,7 @@ GMT_LONG GMTAPI_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG direction)
 }
 
 #ifdef USE_GDAL
-GMT_LONG GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_IMAGE **I_obj)
+int GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_IMAGE **I_obj)
 {
 	/* Delete the given image resource.
 	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_REFERENCE */
@@ -2154,7 +2197,7 @@ GMT_LONG GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GM
 }
 #endif
 
-GMT_LONG GMTAPI_Destroy_Grid (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_GRID **G_obj)
+int GMTAPI_Destroy_Grid (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_GRID **G_obj)
 {
 	/* Delete the given grid resource.
 	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_REFERENCE */
@@ -2170,7 +2213,7 @@ GMT_LONG GMTAPI_Destroy_Grid (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-GMT_LONG GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_DATASET **D_obj)
+int GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_DATASET **D_obj)
 {
 	/* Delete the given dataset resource.
 	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_REFERENCE */
@@ -2186,7 +2229,7 @@ GMT_LONG GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, GMT_LONG mode, struct 
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-GMT_LONG GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_TEXTSET **T_obj)
+int GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_TEXTSET **T_obj)
 {
 	/* Delete the given textset resource.
 	 * Mode 0 means we don't free things whose allocation mode flag == GMT_REFERENCE */
@@ -2202,7 +2245,7 @@ GMT_LONG GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, GMT_LONG mode, struct 
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-GMT_LONG GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_PALETTE **P_obj)
+int GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_PALETTE **P_obj)
 {
 	/* Delete the given CPT resource.
 	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_REFERENCE */
@@ -2218,7 +2261,7 @@ GMT_LONG GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-GMT_LONG GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_MATRIX **M_obj)
+int GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_MATRIX **M_obj)
 {
 	/* Delete the given Matrix resource.
 	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_REFERENCE */
@@ -2234,7 +2277,7 @@ GMT_LONG GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, GMT_LONG mode, struct G
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-GMT_LONG GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, GMT_LONG mode, struct GMT_VECTOR **V_obj)
+int GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_VECTOR **V_obj)
 {
 	/* Delete the given Matrix resource.
 	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_REFERENCE */
@@ -2250,7 +2293,7 @@ GMT_LONG GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, GMT_LONG mode, struct G
 	return (GMT_Report_Error (API, GMT_OK));
 }
 
-struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, void *resource, GMT_LONG direction)
+struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, void *resource, unsigned int direction)
 {	/* Simply the creation and initialization of this DATA_OBJECT structure */
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 
@@ -2265,7 +2308,7 @@ struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, GMT
 	return (S_obj);
 }
 
-GMT_LONG GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, GMT_LONG family, void *ptr)
+int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr)
 {
 	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
 	 * We pass GMT_CLOBBER to make sure we free the memory.
@@ -2310,12 +2353,13 @@ GMT_LONG GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, GMT_LONG family, void *p
 }
 
 
-void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, GMT_LONG level)
+void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 {
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
 	 * or for the entire session if level == GMTAPI_NOTSET (-1) */
 	
-	GMT_LONG i, j, error, n_free;
+	COUNTER_MEDIUM i, j, n_free, u_level = 0;
+	int error;
 	void *address = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	
@@ -2326,26 +2370,27 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, GMT_LONG level)
 	
 	API->error = GMT_OK;		/* No error yet */
 	i = n_free = 0;
+	if (level != GMTAPI_NOTSET) u_level = level;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
 		if (!S_obj) {		/* Skip empty object [Should not happen?] */
-			GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_Garbage_Collection found empty object number % " GMT_LL "d [Bug?]\n", i++);
+			GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_Garbage_Collection found empty object number % d [Bug?]\n", i++);
 			continue;
 		}
-		if (!(level == GMTAPI_NOTSET || S_obj->level == level)) {	/* Not the right module level (or not end of session) */
+		if (!(level == GMTAPI_NOTSET || S_obj->level == u_level)) {	/* Not the right module level (or not end of session) */
 			i++;	continue;
 		}
 		if (!S_obj->data) {	/* No memory to free (probably freed earlier); handle trashing of object after this loop */
 			i++;	continue;
 		}
 		/* Here we will try to free the memory pointed to by S_obj->resource */
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%ld A=%ld ID=%ld W=%s F=%s M=%s S=%s P=%lx D=%lx N=%s\n",
-			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (GMT_LONG)S_obj->resource, (GMT_LONG)S_obj->data, S_obj->filename);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%lx D=%lx N=%s\n",
+			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (int64_t)S_obj->resource, (int64_t)S_obj->data, S_obj->filename);
 		address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
 		error = GMT_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
 		
 		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
-			GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_Garbage_Collection failed to destroy memory for object % " GMT_LL "d [Bug?]\n", i++);
+			GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_Garbage_Collection failed to destroy memory for object % d [Bug?]\n", i++);
 			/* Skip it for now; but this is possibly a fatal error [Bug]? */
 		}
 		else {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
@@ -2355,22 +2400,22 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, GMT_LONG level)
 		}
 		i++;	/* Go to next */
 	}
- 	if (n_free) GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMTAPI_Garbage_Collection freed %ld memory objects\n", n_free);
+ 	if (n_free) GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMTAPI_Garbage_Collection freed %d memory objects\n", n_free);
 
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o or those set to NULL above) set during this module (or session) */
 	i = 0;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
-		if (S_obj && (level == GMTAPI_NOTSET || S_obj->level == level))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
+		if (S_obj && (level == GMTAPI_NOTSET || S_obj->level == u_level))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
 			GMTAPI_Unregister_IO (API, S_obj->ID, GMTAPI_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */
 	}
 }
 
-GMT_LONG GMTAPI_Already_Registered (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction, void *resource) {
+int GMTAPI_Already_Registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, void *resource) {
 	/* Determine if resource is a filename and that it has already been registered */
-	GMT_LONG object_ID, item;
+	int object_ID, item;
 	
 	if ((object_ID = GMTAPI_Decode_ID (resource)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not a registered resource */
 	if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not the right attributes */
@@ -2384,7 +2429,7 @@ GMT_LONG GMTAPI_Already_Registered (struct GMTAPI_CTRL *API, GMT_LONG family, GM
 
 /*===>  Create a new GMT Session */
 
-struct GMTAPI_CTRL * GMT_Create_Session (char *session, GMT_LONG mode)
+struct GMTAPI_CTRL * GMT_Create_Session (char *session, unsigned int mode)
 {
 	/* Initializes the GMT API for a new session. This is typically called once in a program,
 	 * but programs that manage many threads might call it several times to create as many
@@ -2426,7 +2471,7 @@ struct GMTAPI_CTRL * GMT_Create_Session (char *session, GMT_LONG mode)
 
 #ifdef FORTRAN_API
 /* Fortran binding [THESE MAY CHANGE ONCE WE ACTUALLY TRY TO USE THESE] */
-struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, GMT_LONG *mode, int len)
+struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, unsigned int *mode, int len)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
 	return (GMT_Create_Session (tag, *mode));
 }
@@ -2434,12 +2479,12 @@ struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, GMT_LONG *mode, int len)
 
 /*===>  Destroy a registered GMT Session */
 
-GMT_LONG GMT_Destroy_Session (struct GMTAPI_CTRL **C)
+int GMT_Destroy_Session (struct GMTAPI_CTRL **C)
 {
 	/* GMT_Destroy_Session terminates the information for the specified session and frees all memory.
 	 * Returns FALSE if all is well and TRUE if there were errors. */
 	
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	struct GMTAPI_CTRL *API = *C;
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
@@ -2457,7 +2502,7 @@ GMT_LONG GMT_Destroy_Session (struct GMTAPI_CTRL **C)
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Destroy_Session_ ()
+int GMT_Destroy_Session_ ()
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
 	return (GMT_Destroy_Session (&GMT_FORTRAN));
 }
@@ -2465,40 +2510,42 @@ GMT_LONG GMT_Destroy_Session_ ()
 
 /*===>  Error message reporting */
 
-GMT_LONG GMT_Report_Error (struct GMTAPI_CTRL *API, GMT_LONG error)
+int GMT_Report_Error (struct GMTAPI_CTRL *API, int error)
 {	/* Write error message to log or stderr, then return error code back.
  	 * All functions can call this, even if API has not been initialized. */
 	FILE *fp = NULL;
 	if (error < GMT_OK) {	/* Report only negative numbers as errors: positive are warnings only */
 		if (!API || !API->GMT || (fp = API->GMT->session.std[GMT_ERR]) == NULL) fp = stderr;
-		if (API && API->session_tag) fprintf (fp, "[Session %s (%" GMT_LL "d)]: ", API->session_tag, API->session_ID);
-		fprintf (fp, "Error returned from GMT API: %s (%" GMT_LL "d)\n", GMTAPI_errstr[-error], error);
+		if (API && API->session_tag) fprintf (fp, "[Session %s (%d)]: ", API->session_tag, API->session_ID);
+		fprintf (fp, "Error returned from GMT API: %s (%d)\n", GMTAPI_errstr[-error], error);
 	}
 	else if (error)
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Report_Error: Warning returned from GMT API: %" GMT_LL "d\n", error);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Report_Error: Warning returned from GMT API: %d\n", error);
 	if (API) API->error = error;	/* Update API error value of API exists */
 	return (error);
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Report_Error_ (GMT_LONG *error)
+int GMT_Report_Error_ (int *error)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
 	return (GMT_Report_Error (GMT_FORTRAN, *error));
 }
 #endif
 
-GMT_LONG GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, GMT_LONG object_ID)
+int GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, int object_ID)
 {
 	/* Creates a filename with the embedded GMTAPI Object ID.  Space must exist */
 	
 	if (!filename) return_error (API, GMT_MEMORY_ERROR);	/* Oops, not allocated space */
+	if (object_ID == GMTAPI_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);	/* ID is nont set yet */
+	if (object_ID >= GMTAPI_MAX_ID) return_error (API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %6.6d format below */
 	
-	sprintf (filename, "@GMTAPI@-%6.6" GMT_LL "d", object_ID);	/* Place the object ID in the special GMT API format */
+	sprintf (filename, "@GMTAPI@-%6.6d", object_ID);	/* Place the object ID in the special GMT API format */
 	return (API->error = GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Encode_ID_ (char *filename, GMT_LONG *object_ID, int len)
+int GMT_Encode_ID_ (char *filename, int *object_ID, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Encode_ID (GMT_FORTRAN, filename, *object_ID));
 }
@@ -2545,7 +2592,7 @@ GMT_LONG GMT_Encode_ID_ (char *filename, GMT_LONG *object_ID, int len)
  * GMT_Put_Record.  This keeps data i/o in the modules uniform and simple across GMT.
  */
 
-GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, GMT_LONG direction, void *resource, double wesn[])
+int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource)
 {
 	/* Adds a new data object to the list of registered objects and returns a unique object ID.
 	 * Arguments are as listed for GMTAPI_Register_Im|Export (); see those for details.
@@ -2614,7 +2661,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 	 * GMTAPI_Register_Export will allocate and populate a GMTAPI_DATA_OBJECT structure which
 	 * is appended to the data list maintained by the GMTAPI_CTRL API structure.
 	 */
-	GMT_LONG item, via = 0, m, object_ID;
+	int item, via = 0, m, object_ID;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -2675,7 +2722,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			S_obj->fp = resource;	/* Pass the stream of fdesc onward */
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx as an %s resource\n", GMT_family[family], GMT_method[method], (GMT_LONG)resource, GMT_direction[direction]);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx as an %s resource\n", GMT_family[family], GMT_method[method], (int64_t)resource, GMT_direction[direction]);
 			break;
 
 		case GMT_IS_COPY:
@@ -2690,7 +2737,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 			if ((S_obj = GMTAPI_Make_DataObject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx as an %s resource\n", GMT_family[family], GMT_method[method], (GMT_LONG)resource, GMT_direction[direction]);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx as an %s resource\n", GMT_family[family], GMT_method[method], (int64_t)resource, GMT_direction[direction]);
 			break;
 
 		 case GMT_IS_COPY + GMT_VIA_MATRIX:	/* Here, a data grid is passed via a GMT_MATRIX structure */
@@ -2709,7 +2756,7 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			API->GMT->common.b.active[direction] = TRUE;
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx via %s as an %s resource\n", GMT_family[family], GMT_method[m], (GMT_LONG)resource, GMT_via[via], GMT_direction[direction]);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx via %s as an %s resource\n", GMT_family[family], GMT_method[m], (int64_t)resource, GMT_via[via], GMT_direction[direction]);
 			break;
 		 case GMT_IS_COPY + GMT_VIA_VECTOR:	/* Here, some data vectors are passed via a GMT_VECTOR structure */
 		 case GMT_IS_REF + GMT_VIA_VECTOR:
@@ -2727,11 +2774,11 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			API->GMT->common.b.active[direction] = TRUE;
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx via %s as an %s resource\n", GMT_family[family], GMT_method[m], (GMT_LONG)resource, GMT_via[via], GMT_direction[direction]);
+			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %lx via %s as an %s resource\n", GMT_family[family], GMT_method[m], (int64_t)resource, GMT_via[via], GMT_direction[direction]);
 			break;
 
 		default:
-			GMT_report (API->GMT, GMT_MSG_FATAL, "Error in GMT_Register_IO (%s): Unrecognized method %" GMT_LL "d\n", GMT_direction[direction], method);
+			GMT_report (API->GMT, GMT_MSG_FATAL, "Error in GMT_Register_IO (%s): Unrecognized method %d\n", GMT_direction[direction], method);
 			return_value (API, GMT_NOT_A_VALID_METHOD, GMTAPI_NOTSET);
 			break;
 	}
@@ -2751,13 +2798,13 @@ GMT_LONG GMT_Register_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG met
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Register_IO_ (GMT_LONG *family, GMT_LONG *method, void *input, GMT_LONG *geometry, double wesn[], GMT_LONG *direction)
+int GMT_Register_IO_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *direction, double wesn[], void *input)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Register_IO (GMT_FORTRAN, *family, *method, *geometry, *direction, input, wesn));
+	return (GMT_Register_IO (GMT_FORTRAN, *family, *method, *geometry, *direction, wesn, input));
 }
 #endif
 
-GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometry, GMT_LONG direction, GMT_LONG mode, struct GMT_OPTION *head)
+int GMT_Init_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args)
 {
 	/* Registers program option file arguments as sources/destinations for the current module.
 	 * All modules planning to use std* and/or command-line file args must call GMT_Init_IO to register these resources.
@@ -2766,22 +2813,28 @@ GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometr
 	 * direction:	Either GMT_IN or GMT_OUT
 	 * mode:	Bitflags composed of 1 = add command line (option) files, 2 = add std* if no other input/output,
 	 *		4 = add std* regardless.  mode must be > 0.
-	 * head:	Linked list of program option arguments.
+	 * n_args:	Either 0 if we pass linked option structs or argc if we pass argv[]
+	 * args:	Either linked list of program option arguments (n_args == 0) or char *argv[].
 	 *
 	 * Returns:	FALSE if successfull, TRUE if error.
 	 */
 #ifdef DEBUG
-	GMT_LONG object_ID;	/* ID of first object [only for debug purposes - not used in this function] */
+	int object_ID;	/* ID of first object [only for debug purposes - not used in this function] */
 	#define ASSIGN_OR_VOID object_ID =
 #else
 	#define ASSIGN_OR_VOID (void)
 #endif
+	struct GMT_OPTION *head = NULL;
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_OK;		/* No error yet */
-	if (geometry < GMT_IS_TEXT || geometry > GMT_IS_SURFACE) return_error (API, GMT_BAD_GEOMETRY);
+	if (geometry > GMT_IS_SURFACE) return_error (API, GMT_BAD_GEOMETRY);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
 	if (mode < 1 || mode > 5) return_error (API, GMT_NOT_A_VALID_MODE);
 
+	if (n_args == 0) /* Passed the head of linked option structures */
+		head = args;
+	else		/* Passed argc, argv, likely from Fortran */
+		head = GMT_Prep_Options (API, n_args, args);
 	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
 		ASSIGN_OR_VOID GMTAPI_Init_Import (API, family, geometry, mode, head);
@@ -2791,13 +2844,13 @@ GMT_LONG GMT_Init_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG geometr
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Init_IO_ (GMT_LONG *family, GMT_LONG *geometry, GMT_LONG *direction, GMT_LONG *mode, struct GMT_OPTION *head)
+int GMT_Init_IO_ (unsigned int *family, unsigned int *geometry, unsigned int *direction, unsigned int *mode, unsigned int *n_args, void *args)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Init_IO (GMT_FORTRAN, *family, *geometry, *direction, *mode, head));
+	return (GMT_Init_IO (GMT_FORTRAN, *family, *geometry, *direction, *mode, *n_args, args));
 }
 #endif
 
-GMT_LONG GMT_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direction)
+int GMT_Begin_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction)
 {
 	/* Initializes the rec-by-rec i/o mechanism for either input or output (given by direction).
 	 * GMT_Begin_IO must be called before any data i/o is allowed.
@@ -2805,7 +2858,7 @@ GMT_LONG GMT_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direct
 	 * direction:	Either GMT_IN or GMT_OUT.
 	 * Returns:	FALSE if successfull, TRUE if error.
 	 */
-	GMT_LONG error;
+	int error;
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
@@ -2826,14 +2879,14 @@ GMT_LONG GMT_Begin_IO (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG direct
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Begin_IO_ (GMT_LONG *family, GMT_LONG *direction)
+int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction));
 	
 }
 #endif
 
-GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
+int GMT_End_IO (struct GMTAPI_CTRL *API, unsigned int direction, unsigned int mode)
 {
 	/* Terminates the i/o mechanism for either input or output (given by direction).
 	 * GMT_End_IO must be called after all data i/o is completed.
@@ -2846,7 +2899,7 @@ GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
-	if (mode < GMT_IO_DONE || mode > GMT_IO_UNREG) return_error (API, GMT_NOT_A_VALID_IO_MODE);
+	if (mode > GMT_IO_UNREG) return_error (API, GMT_NOT_A_VALID_IO_MODE);
 	
 	GMT_free_ogr (API->GMT, &(API->GMT->current.io.OGR), 0);	/* Free segment-related array */
 	API->io_enabled[direction] = FALSE;	/* No longer OK to access resources */
@@ -2860,8 +2913,8 @@ GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
 					struct GMT_DATASET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_TABLE *T_obj = D_obj->table[0];
-						GMT_LONG *p = API->GMT->current.io.curr_pos[GMT_OUT];
-						if (p[1] >= 0) GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], T_obj->segment[p[1]]->n_rows, T_obj->n_columns, FALSE);	/* Last segment */
+						COUNTER_LARGE *p = API->GMT->current.io.curr_pos[GMT_OUT];
+						if (p[1] > 0) GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], T_obj->segment[p[1]]->n_rows, T_obj->n_columns, FALSE);	/* Last segment */
 						T_obj->segment = GMT_memory (API->GMT, T_obj->segment, T_obj->n_segments, struct GMT_LINE_SEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
 						GMT_set_tbl_minmax (API->GMT, T_obj);
@@ -2871,8 +2924,8 @@ GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
 					struct GMT_TEXTSET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_TEXT_TABLE *T_obj = D_obj->table[0];
-						GMT_LONG *p = API->GMT->current.io.curr_pos[GMT_OUT];
-						if (p[1] >= 0) T_obj->segment[p[1]]->record = GMT_memory (API->GMT, T_obj->segment[p[1]]->record, T_obj->segment[p[1]]->n_rows, char *);	/* Last segment */
+						COUNTER_LARGE *p = API->GMT->current.io.curr_pos[GMT_OUT];
+						if (p[1] > 0) T_obj->segment[p[1]]->record = GMT_memory (API->GMT, T_obj->segment[p[1]]->record, T_obj->segment[p[1]]->n_rows, char *);	/* Last segment */
 						T_obj->segment = GMT_memory (API->GMT, T_obj->segment, T_obj->n_segments, struct GMT_TEXT_SEGMENT *);
 						D_obj->n_segments = T_obj->n_segments;
 					}
@@ -2891,14 +2944,14 @@ GMT_LONG GMT_End_IO (struct GMTAPI_CTRL *API, GMT_LONG direction, GMT_LONG mode)
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_End_IO_ (GMT_LONG *direction, GMT_LONG *mode)
+int GMT_End_IO_ (unsigned int *direction, unsigned int *mode)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_End_IO (GMT_FORTRAN, *direction, *mode));
 	
 }
 #endif
 
-void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID)
+void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, int object_ID)
 {
 	/* Function to return pointer to the container for a registered data set.
 	 * Typically used when we wish a module to "write" its results to a memory
@@ -2909,7 +2962,7 @@ void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID)
 	 * GMT_Retrieve_Data simply returns that pointer given the registered ID.
 	 */
 	
-	GMT_LONG item;
+	int item;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	
@@ -2926,14 +2979,23 @@ void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID)
 	return (API->object[item]->resource);	/* Return pointer to the container */
 }
 
-void * GMT_Get_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, void *data)
+#ifdef FORTRAN_API
+int GMT_Retrieve_Data_ (int *object_ID)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Retrieve_Data (GMT_FORTRAN, *object_ID));
+	
+}
+#endif
+
+void * GMT_Get_Data (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, void *data)
 {
 	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
 	 * data is pointer to an existing grid container when we read a grid in two steps, otherwise use NULL.
 	 * ID is the registered resource from which to import.
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
-	GMT_LONG item, was_enabled;
+	int item;
+	GMT_BOOLEAN was_enabled;
 	void *new = NULL;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
@@ -2961,14 +3023,14 @@ void * GMT_Get_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode,
 }
 
 #ifdef FORTRAN_API
-void * GMT_Get_Data_ (GMT_LONG *ID, GMT_LONG *mode, void *data)
+void * GMT_Get_Data_ (int *ID, int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Data (GMT_FORTRAN, *ID, *mode, data));
 	
 }
 #endif
 
-void * GMT_Read_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, char *input, void *data)
+void * GMT_Read_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data)
 {
 	/* Function to read data files directly into program memory as a set (not record-by-record).
 	 * We can combine the <register resource - import resource > sequence in
@@ -2979,16 +3041,16 @@ void * GMT_Read_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method,
 	 * Case 3: geometry == 0: Loop over all previously registered AND unread sources and combine as virtual dataset [DATASET|TEXTSET only]
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
-	GMT_LONG in_ID = GMTAPI_NOTSET;
+	int in_ID = GMTAPI_NOTSET;
 	void *new = NULL;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	
 	if (input) {	/* Case 1: Load from a single, given source. Register it first. */
-		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, input, wesn)) == GMTAPI_NOTSET) return_null (API, API->error);
+		if ((in_ID = GMT_Register_IO (API, family, method, geometry, GMT_IN, wesn, input)) == GMTAPI_NOTSET) return_null (API, API->error);
 	}
 	else if (input == NULL && geometry) {	/* Case 2: Load from stdin.  Register stdin first */
-		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, API->GMT->session.std[GMT_IN], wesn)) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
+		if ((in_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, wesn, API->GMT->session.std[GMT_IN])) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register std??? */
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!(family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
@@ -3001,14 +3063,14 @@ void * GMT_Read_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method,
 }
 
 #ifdef FORTRAN_API
-void * GMT_Read_Data_ (GMT_LONG *family, GMT_LONG *method, GMT_LONG *geometry, double *wesn, GMT_LONG *mode, char *input, void *data)
+void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Data (GMT_FORTRAN, *family, *method, *geometry, wesn, *mode, input, data));
+	return (GMT_Get_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, input, data));
 	
 }
 #endif
 
-GMT_LONG GMT_Write_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG method, GMT_LONG geometry, double wesn[], GMT_LONG mode, char *output, void *data)
+int GMT_Write_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data)
 {
 	/* Function to write data directly from program memory as a set (not record-by-record).
 	 * We can combine the <register resource - export resource > sequence in
@@ -3022,16 +3084,17 @@ GMT_LONG GMT_Write_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG meth
 	 * description in the documentation for how to enable this feature.)
 	 * Return: FALSE if all is well, TRUE if there was an error (and set API->error).
 	 */
-	GMT_LONG out_ID, n_reg;
+	COUNTER_MEDIUM n_reg;
+	int out_ID;
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 
 	if (output) {	/* Case 1: Save to a single specified destination.  Register it first. */
-		if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, output, wesn)) == GMTAPI_NOTSET) return_error (API, API->error);
+		if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMTAPI_NOTSET) return_error (API, API->error);
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
 		if (family == GMT_IS_GRID) return_error (API, GMT_STREAM_NOT_ALLOWED);	/* Cannot write grids to stream */
-		if ((out_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, API->GMT->session.std[GMT_OUT], wesn)) == GMTAPI_NOTSET) return_error (API, API->error);	/* Failure to register std??? */
+		if ((out_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, wesn, API->GMT->session.std[GMT_OUT])) == GMTAPI_NOTSET) return_error (API, API->error);	/* Failure to register std??? */
 	}
 	else {	/* Case 3: output == NULL && geometry == 0, so use the previously registered destination */
 		if ((n_reg = GMTAPI_n_items (API, family, GMT_OUT, &out_ID)) != 1) return_error (API, GMT_NO_OUTPUT);	/* There is no registered output */
@@ -3042,14 +3105,14 @@ GMT_LONG GMT_Write_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG meth
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Write_Data_ (GMT_LONG *family, GMT_LONG *method, GMT_LONG *geometry, double *wesn, GMT_LONG *mode, char *output, void *data)
+int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *output, void *data, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Put_Data (GMT_FORTRAN, *family, *method, *geometry, wesn, *mode, output, data));
+	return (GMT_Write_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, output, data));
 	
 }
 #endif
 
-GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mode, void *data)
+int GMT_Put_Data (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, void *data)
 {
 	/* Function to write data directly from program memory as a set (not record-by-record).
 	 * We can combine the <register resource - export resource > sequence in
@@ -3061,10 +3124,10 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mod
 	 * description in the documentation for how to enable this feature.)
 	 * Return: FALSE if all is well, TRUE if there was an error (and set API->error).
 	 */
-	GMT_LONG item, was_enabled;
+	int item;
+	GMT_BOOLEAN was_enabled;
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (object_ID == GMTAPI_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);
 
 	/* Determine the item in the object list that matches this ID and direction */
 	if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) return_error (API, API->error);
@@ -3082,14 +3145,14 @@ GMT_LONG GMT_Put_Data (struct GMTAPI_CTRL *API, GMT_LONG object_ID, GMT_LONG mod
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Put_Data_ (GMT_LONG *object_ID, GMT_LONG *mode, void *data)
+int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Data (GMT_FORTRAN, *object_ID, *mode, data));
 	
 }
 #endif
 
-void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
+void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 {
 	/* Retrieves the next data record from the virtual input source and
 	 * returns the number of columns found via *retval (unless retval == NULL).
@@ -3104,10 +3167,13 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 	 * If not a data record we return NULL, and pass status via API->GMT->current.io.status.
 	 */
 
-	GMT_LONG get_next_record, status, col, n_nan, ij, n_fields = 0, *p = NULL;
+	int status, n_fields = 0;
+	GMT_BOOLEAN get_next_record;
+	COUNTER_MEDIUM col, n_nan;
+	COUNTER_LARGE *p = NULL, ij;
 	char *t_record = NULL;
 	void *record = NULL;
-	p_func_l GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_TEXTSET *DT_obj = NULL;
 	struct GMT_DATASET *DS_obj = NULL;
@@ -3137,8 +3203,8 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 			case GMT_IS_FILE:	/* File, stream, and fd are all the same for us, regardless of data or text input */
 		 	case GMT_IS_STREAM:
 		 	case GMT_IS_FDESC:
-			 	record = S_obj->import (API->GMT, S_obj->fp, &(S_obj->n_expected_fields), &(S_obj->n_columns));	/* Get that next record */
-				n_fields = S_obj->n_columns;	/* Get that next record */
+		 		record = S_obj->import (API->GMT, S_obj->fp, &(S_obj->n_expected_fields), &status);	/* Get that next record */
+				n_fields = S_obj->n_columns = status;	/* Get that next record */
 				if (API->GMT->current.io.status & GMT_IO_EOF) {			/* End-of-file in current file (but there may be many files) */
 					S_obj->status = GMT_IS_USED;	/* Mark as read */
 					if (S_obj->close_file) {	/* Close if it was a file that we opened earlier */
@@ -3233,7 +3299,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 							record = NULL;
 						}
 					}
-					if (p[0] == DS_obj->n_tables) {	/* End of entire data set */
+					if (p[0] == (COUNTER_LARGE)DS_obj->n_tables) {	/* End of entire data set */
 						status = GMT_IO_EOF;
 						n_fields = EOF;
 						record = NULL;
@@ -3301,14 +3367,14 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, GMT_LONG *retval)
 }
 
 #ifdef FORTRAN_API
-void * GMT_Get_Record_ (GMT_LONG *mode, GMT_LONG *status)
+void * GMT_Get_Record_ (unsigned int *mode, int *status)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Record (GMT_FORTRAN, *mode, status));
 	
 }
 #endif
 
-GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
+int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 {	/* Writes a single data record to destimation.
 	 * We use mode to signal the kind of record:
 	 *   GMT_WRITE_TBLHEADER: Write an ASCII table header
@@ -3319,10 +3385,12 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 	 * Returns FALSE if a record was written successfully(See what -s[r] can do).
 	 * If an error occurs we return TRUE and set API->error.
 	 */
-	GMT_LONG error = 0, col, ij, wrote = 1, *p = NULL;
+	int error = 0, wrote = 1;
+	COUNTER_MEDIUM col;
+	COUNTER_LARGE *p = NULL, ij;
 	char *s = NULL;
 	double *d = NULL;
-	p_func_l GMT_2D_to_index;
+	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -3347,7 +3415,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 					GMT_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);
 					break;
 				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */
-					if (API->GMT->common.b.ncol[GMT_OUT] < 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
+					if (API->GMT->common.b.ncol[GMT_OUT] == UINT_MAX) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 					wrote = API->GMT->current.io.output (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT], record);
 					break;
 				case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
@@ -3366,9 +3434,9 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				struct GMT_TABLE *T_obj = NULL;
 				if (!D_obj) {	/* First time allocation */
-					D_obj = GMT_create_dataset (API->GMT, 1, -GMT_TINY_CHUNK, 0, 0);	
+					D_obj = GMT_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, TRUE);	
 					S_obj->resource = D_obj;
-					API->GMT->current.io.curr_pos[GMT_OUT][1] = -1;	/* Start at seg = -1 */
+					API->GMT->current.io.curr_pos[GMT_OUT][1] = 0;	/* Start at seg = 0 */
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table */
@@ -3387,12 +3455,13 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 						T_obj->n_segments++;
 						break;
 					case GMT_WRITE_DOUBLE:		/* Export a segment row */
-						if (p[1] == -1) { GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal Warning: GMT_Put_Record (double) called before any segments declared\n"); p[1] = 0; T_obj->n_segments = 1;}
-						if (API->GMT->common.b.ncol[GMT_OUT] < 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
+						if (p[1] == 0) { GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal Warning: GMT_Put_Record (double) called before any segments declared\n"); p[1] = 0; T_obj->n_segments = 1;}
+						if (API->GMT->common.b.ncol[GMT_OUT] == 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 						if (!T_obj->segment[p[1]]) T_obj->segment[p[1]] = GMT_memory (API->GMT, NULL, 1, struct GMT_LINE_SEGMENT);	
 						if (p[2] == T_obj->segment[p[1]]->n_alloc) {
+							int64_t n_alloc_signed = T_obj->segment[p[1]]->n_alloc;
 							T_obj->segment[p[1]]->n_alloc = (T_obj->segment[p[1]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[p[1]]->n_alloc << 1;
-							GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], -T_obj->segment[p[1]]->n_alloc, T_obj->n_columns, T_obj->segment[p[1]]->n_rows == 0);
+							GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], -n_alloc_signed, T_obj->n_columns, T_obj->segment[p[1]]->n_rows == 0);
 						}
 						for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) T_obj->segment[p[1]]->coord[col][p[2]] = ((double *)record)[col];
 						p[2]++;	T_obj->segment[p[1]]->n_rows++;
@@ -3408,9 +3477,9 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 				struct GMT_TEXTSET *D_obj = S_obj->resource;
 				struct GMT_TEXT_TABLE *T_obj = NULL;
 				if (!D_obj) {	/* First time allocation of one table */
-					D_obj = GMT_create_textset (API->GMT, 1, -GMT_TINY_CHUNK, 0);	
+					D_obj = GMT_create_textset (API->GMT, 1, GMT_TINY_CHUNK, 0, TRUE);
 					S_obj->resource = D_obj;
-					API->GMT->current.io.curr_pos[GMT_OUT][1] = -1;	/* Start at seg = -1 */
+					API->GMT->current.io.curr_pos[GMT_OUT][1] = 0;	/* Start at seg = 0 */
 				}
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table */
 				p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table, segment, row */
@@ -3428,7 +3497,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 						T_obj->n_segments++;
 						break;
 					case GMT_WRITE_TEXT:		/* Export a record */
-						if (p[1] == -1) { GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal Warning: GMT_Put_Record (text) called before any segments declared\n"); p[1] = 0; T_obj->n_segments = 1;}
+						if (p[1] == 0) { GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal Warning: GMT_Put_Record (text) called before any segments declared\n"); p[1] = 0; T_obj->n_segments = 1;}
 						if (!T_obj->segment[p[1]]) T_obj->segment[p[1]] = GMT_memory (API->GMT, NULL, 1, struct GMT_TEXT_SEGMENT);	/* Allocate new segment */
 						if (p[2] == T_obj->segment[p[1]]->n_alloc) {	/* Allocate more records */
 							T_obj->segment[p[1]]->n_alloc = (T_obj->segment[p[1]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[p[1]]->n_alloc << 1;
@@ -3501,7 +3570,7 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 	if (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
 	
 	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory */
-		GMT_LONG size;
+		size_t size;
 		S_obj->n_alloc += GMT_CHUNK;
 		size = S_obj->n_alloc;
 		size *= API->GMT->common.b.ncol[GMT_OUT];
@@ -3520,14 +3589,14 @@ GMT_LONG GMT_Put_Record (struct GMTAPI_CTRL *API, GMT_LONG mode, void *record)
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Put_Record_ (GMT_LONG *mode, void *record)
+int GMT_Put_Record_ (unsigned int *mode, void *record)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Record (GMT_FORTRAN, *mode, record));
 	
 }
 #endif
 
-void * GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par[])
+void * GMT_Create_Data (struct GMTAPI_CTRL *API, unsigned int family, COUNTER_LARGE par[])
 {
 	/* Create an empty container of the requested kind; no data are provided.
 	 * The known kinds are GMT_IS_{DATASET,TEXTSET,GMTGRID,CPT}, but we also
@@ -3548,12 +3617,14 @@ void * GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par[]
 		 	data = GMT_create_grid (API->GMT);
 			break;
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables */
-			data = GMT_create_dataset (API->GMT, par[0], par[1], par[2], par[3]);
+			if (par[0] > UINT_MAX || par[2] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
+			data = GMT_create_dataset (API->GMT, par[0], par[1], par[2], par[3], FALSE);
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables */
-			data = GMT_create_textset (API->GMT, par[0], par[1], par[2]);
+			if (par[0] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
+			data = GMT_create_textset (API->GMT, par[0], par[1], par[2], FALSE);
 			break;
-		case GMT_IS_CPT:	/* GMT CPT table, allocate one with no contents */
+		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for par[0] color entries */
 		 	data = GMT_create_palette (API->GMT, par[0]);
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with no contents */
@@ -3573,7 +3644,7 @@ void * GMT_Create_Data (struct GMTAPI_CTRL *API, GMT_LONG family, GMT_LONG par[]
 }
 
 #ifdef FORTRAN_API
-void * GMT_Create_Data_ (GMT_LONG *family, GMT_LONG *par)
+void * GMT_Create_Data_ (unsigned int *family, COUNTER_LARGE *par)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Create_Data (GMT_FORTRAN, *family, par));
 	
@@ -3582,14 +3653,14 @@ void * GMT_Create_Data_ (GMT_LONG *family, GMT_LONG *par)
 
 char *ptrvoid (char ** p) { return *p; }	/* Handle as char ** just to determine if address is of a NULL pointer */
 
-GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void *object)
+int GMT_Destroy_Data (struct GMTAPI_CTRL *API, unsigned int mode, void *object)
 {
 	/* Destroy a resource that is no longer needed.
 	 * Mode GMTAPI_ALLOCATE (0) means we dont free objects whose allocation
 	 * flag == GMT_REFERENCE (1), otherwise we try to free.
 	 * Return: FALSE if all is well, otherwise TRUE and API->error is set.
 	 */
-	GMT_LONG error, item, object_ID;
+	int error, item, object_ID;
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	API->error = GMT_OK;			/* No error yet */
@@ -3630,9 +3701,9 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void *object)
 	}
 	if (error == GMT_PTR_IS_NULL) return (FALSE);	/* Quietly ignore objects pointing to NULL */
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
-		GMT_LONG j;
+		COUNTER_MEDIUM j;
 		void *address = API->object[item]->data;
-		GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMT_Destroy_Data: freed memory for a %s for object %ld\n", GMT_family[API->object[item]->family], object_ID);
+		GMT_report (API->GMT, GMT_MSG_VERBOSE, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[API->object[item]->family], object_ID);
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, GMTAPI_NOTSET))) return_error (API, error);	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
 	}
@@ -3641,7 +3712,7 @@ GMT_LONG GMT_Destroy_Data (struct GMTAPI_CTRL *API, GMT_LONG mode, void *object)
 }
 
 #ifdef FORTRAN_API
-GMT_LONG GMT_Destroy_Data_ (GMT_LONG *mode, void *object)
+int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Destroy_Data (GMT_FORTRAN, *mode, object));
 	

@@ -31,46 +31,46 @@
 
 struct GRDVECTOR_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file[2];
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<size>[+<mods>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} Q;
 	struct S {	/* -S[l]<scale>[<unit>] */
-		GMT_LONG active;
-		GMT_LONG constant;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN constant;
 		char unit;
 		double factor;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -142,7 +142,9 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, j;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG j;
+	size_t len;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT
 	char txt_c[GMT_TEXT_LEN256];
@@ -234,11 +236,11 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = TRUE;
-				j = (GMT_LONG)strlen (opt->arg) - 1;
-				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j]))	/* Recognized unit character */
-					Ctrl->S.unit = opt->arg[j];
-				else if (! (opt->arg[j] == '.' || isdigit ((int)opt->arg[j]))) {	/* Not decimal point or digit means trouble */
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[j]);
+				len = strlen (opt->arg) - 1;
+				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
+					Ctrl->S.unit = opt->arg[len];
+				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
+					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
@@ -288,7 +290,10 @@ GMT_LONG GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl
 
 GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, col_0, row_0, d_col, d_row, k, ij, justify, error = FALSE;
+	COUNTER_MEDIUM row, col, col_0, row_0, d_col, d_row, k;
+	GMT_BOOLEAN justify, error = FALSE;
+	
+	COUNTER_LARGE ij;
 
 	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
 	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
@@ -321,7 +326,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	d_col = d_row = 1;
 	col_0 = row_0 = 0;
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -331,7 +336,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	for (k = 0; k < 2; k++) {
-		if ((Grid[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
+		if ((Grid[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		GMT_grd_init (GMT, Grid[k]->header, options, TRUE);
@@ -368,7 +373,7 @@ GMT_LONG GMT_grdvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Read data */
 
-	for (k = 0; k < 2; k++) if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file[k], Grid[k]) == NULL) {	/* Get data */
+	for (k = 0; k < 2; k++) if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file[k], Grid[k]) == NULL) {	/* Get data */
 		Return (API->error);
 	}
 

@@ -31,70 +31,70 @@
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 1 turns off all labels */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
-		GMT_LONG cpt;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cpt;
 		char *file;
 		double interval;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
-		GMT_LONG active;
-		GMT_LONG label;
-		GMT_LONG low, high;	/* TRUE to tick low and high locals */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN label;
+		GMT_BOOLEAN low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct Q {	/* -Q<indexfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Q;
 	struct W {	/* -W[+|-]<type><pen> */
-		GMT_LONG active;
-		GMT_LONG color_cont;
-		GMT_LONG color_text;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN color_cont;
+		GMT_BOOLEAN color_text;
 		struct GMT_PEN pen[2];
 	} W;
 };
 
-#define GRDCONTOUR_MIN_LENGTH 0.01	/* Contours shorter than this are skipped */
+#define PSCONTOUR_MIN_LENGTH 0.01	/* Contours shorter than this are skipped */
 #define TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
 #define TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
 
 struct SAVE {
 	double *x, *y;
 	double cval;
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 	struct GMT_PEN pen;
-	GMT_LONG do_it, high;
+	GMT_BOOLEAN do_it, high;
 };
 
 /* Returns the id of the node common to the two edges */
-#define get_node_index(edge_1, edge_2) (((PSCONTOUR_SUM = (edge_1) + (edge_2)) == 1) ? 1 : ((PSCONTOUR_SUM == 2) ? 0 : 2))
-#define get_other_node(node1, node2) (((PSCONTOUR_SUM = (node1 + node2)) == 3) ? 0 : ((PSCONTOUR_SUM == 2) ? 1 : 2))	/* The other node needed */
+#define get_node_index(edge_1, edge_2) (((pscontour_sum = (edge_1) + (edge_2)) == 1) ? 1 : ((pscontour_sum == 2) ? 0 : 2))
+#define get_other_node(node1, node2) (((pscontour_sum = (node1 + node2)) == 3) ? 0 : ((pscontour_sum == 2) ? 1 : 2))	/* The other node needed */
 
 struct PSCONTOUR_LINE {	/* Beginning and end of straight contour segment */
 	double x0, y0;
@@ -102,11 +102,13 @@ struct PSCONTOUR_LINE {	/* Beginning and end of straight contour segment */
 };
 
 struct PSCONTOUR {
-	GMT_LONG n_alloc, nl;
 	double val;
 	double angle;
-	char type, do_tick;
+	size_t n_alloc;
+	COUNTER_MEDIUM nl;
+	GMT_BOOLEAN do_tick;
 	struct PSCONTOUR_LINE *L;
+	char type;
 };
 
 struct PSCONTOUR_PT {
@@ -149,14 +151,16 @@ void Free_pscontour_Ctrl (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_LONG n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, GMT_LONG **v, GMT_LONG **cindex)
+GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, COUNTER_MEDIUM n_conts, double *x, double *y, double *z, int *ind, double small, double **xc, double **yc, double **zc, COUNTER_MEDIUM **v, COUNTER_MEDIUM **cindex)
 {
 	/* This routine finds all the contour crossings for this triangle.  Each contour consists of
 	 * linesegments made up of two points, with coordinates xc, yc, and contour level zc.
 	 */
 	 
-	GMT_LONG i, j, k, k2, i1, nx, n_alloc, ok, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
+	COUNTER_MEDIUM i, j, k, k2, i1, nx, n_ok, *vout = NULL, *cind = NULL, *ctmp = NULL;
+	GMT_BOOLEAN ok;
 	double xx[3], yy[3], zz[3], zmin, zmax, dz, frac, *xout = NULL, *yout = NULL, *zout = NULL, *ztmp = NULL;
+	size_t n_alloc;
 
 	xx[0] = x[ind[0]];	yy[0] = y[ind[0]];	zz[0] = z[ind[0]];
 	xx[1] = x[ind[1]];	yy[1] = y[ind[1]];	zz[1] = z[ind[1]];
@@ -181,9 +185,9 @@ GMT_LONG get_triangle_crossings (struct GMT_CTRL *GMT, struct PSCONTOUR *P, GMT_
 	yout = GMT_memory (GMT, NULL, n_alloc, double);
 	ztmp = GMT_memory (GMT, NULL, n_alloc, double);
 	zout = GMT_memory (GMT, NULL, n_alloc, double);
-	vout = GMT_memory (GMT, NULL, n_alloc, GMT_LONG);
-	ctmp = GMT_memory (GMT, NULL, nx, GMT_LONG);
-	cind = GMT_memory (GMT, NULL, nx, GMT_LONG);
+	vout = GMT_memory (GMT, NULL, n_alloc, COUNTER_MEDIUM);
+	ctmp = GMT_memory (GMT, NULL, nx, COUNTER_MEDIUM);
+	cind = GMT_memory (GMT, NULL, nx, COUNTER_MEDIUM);
 
 	/* Fill out array zout which holds the nx contour levels */
 
@@ -262,20 +266,21 @@ void paint_it_pscontour (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_
 	PSL_plotpolygon (PSL, x, y, n);
 }
 
-void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, GMT_LONG n, double *x, double *y, double *z, GMT_LONG nn, double tick_gap, double tick_length, GMT_LONG tick_low, GMT_LONG tick_high, GMT_LONG tick_label, char *lbl[])
+void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, double *x, double *y, double *z, COUNTER_MEDIUM nn, double tick_gap, double tick_length, GMT_BOOLEAN tick_low, GMT_BOOLEAN tick_high, GMT_BOOLEAN tick_label, char *lbl[])
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	which are the innermost ones. */
-	GMT_LONG np, i, j, k, inside, n_ticks, way, form;
+	COUNTER_MEDIUM np, pol, pol2, j, kk, inside, n_ticks, form;
+	GMT_LONG way, k;
 	double add, dx, dy, x_back, y_back, x_end, y_end, sa, ca, s;
 	double x_mean, y_mean, a, xmin, xmax, ymin, ymax, length;
 
 	/* The x/y coordinates in SAVE are now all projected to map inches */
 
-	for (i = 0; i < n; i++) {	/* Mark polygons that have other polygons inside them */
-		np = save[i].n;
-		for (j = 0; save[i].do_it && j < n; j++) {
-			inside = GMT_non_zero_winding (GMT, save[j].x[0], save[j].y[0], save[i].x, save[i].y, np);
-			if (inside == 2) save[i].do_it = FALSE;
+	for (pol = 0; pol < n; pol++) {	/* Mark polygons that have other polygons inside them */
+		np = save[pol].n;
+		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
+			inside = GMT_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
+			if (inside == 2) save[pol].do_it = FALSE;
 		}
 	}
 
@@ -283,19 +288,19 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = TRUE */
 
-	for (i = 0; i < n; i++) {
-		if (!save[i].do_it) continue;
-		np = save[i].n;
+	for (pol = 0; pol < n; pol++) {
+		if (!save[pol].do_it) continue;
+		np = save[pol].n;
 
 		/* Here we need to figure out if this is a local high or low. */
 
 		/* First determine the bounding box for this contour */
-		xmin = xmax = save[i].x[0];	ymin = ymax = save[i].y[0];
+		xmin = xmax = save[pol].x[0];	ymin = ymax = save[pol].y[0];
 		for (j = 1; j < np; j++) {
-			xmin = MIN (xmin, save[i].x[j]);
-			xmax = MAX (xmax, save[i].x[j]);
-			ymin = MIN (ymin, save[i].y[j]);
-			ymax = MAX (ymax, save[i].y[j]);
+			xmin = MIN (xmin, save[pol].x[j]);
+			xmax = MAX (xmax, save[pol].x[j]);
+			ymin = MIN (ymin, save[pol].y[j]);
+			ymax = MAX (ymax, save[pol].y[j]);
 		}
 		
 		/* Now try to find a data point inside this contour */
@@ -304,38 +309,38 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 			if (GMT_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
 			if (GMT_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use GMT_y_is_outside since projected x-coordinates)*/
 			
-			inside = GMT_non_zero_winding (GMT, x[j], y[j], save[i].x, save[i].y, np);
+			inside = GMT_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
 		}
 		if (k < 0) continue;	/* Unable to determine */
-		save[i].high = (z[k] > save[i].cval);
+		save[pol].high = (z[k] > save[pol].cval);
 
-		if (save[i].high && !tick_high) continue;	/* Do not tick highs */
-		if (!save[i].high && !tick_low) continue;	/* Do not tick lows */
+		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
+		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
 		for (j = 1, s = 0.0; j < np; j++) {	/* Compute distance along the contour */
-			s += hypot (save[i].x[j]-save[i].x[j-1], save[i].y[j]-save[i].y[j-1]);
+			s += hypot (save[pol].x[j]-save[pol].x[j-1], save[pol].y[j]-save[pol].y[j-1]);
 		}
-		if (s < GRDCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
+		if (s < PSCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
 
-		n_ticks = (GMT_LONG)(s / tick_gap);
+		n_ticks = lrint (floor (s / tick_gap));
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
-		GMT_setpen (GMT, &save[i].pen);
-		way = GMT_polygon_centroid (GMT, save[i].x, save[i].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
+		GMT_setpen (GMT, &save[pol].pen);
+		way = GMT_polygon_centroid (GMT, save[pol].x, save[pol].y, np, &x_mean, &y_mean);	/* -1 is CCW, +1 is CW */
 		if (tick_label)	/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
-			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
-		add = M_PI_2 * ((save[i].high) ? -way : +way);	/* So that tick points in the right direction */
+			PSL_plottext (PSL, x_mean, y_mean, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+		add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
 		for (j = 1; j < np; j++) {	/* Consider each segment from point j-1 to j */
-			dx = save[i].x[j] - save[i].x[j-1];
-			dy = save[i].y[j] - save[i].y[j-1];
+			dx = save[pol].x[j] - save[pol].x[j-1];
+			dy = save[pol].y[j] - save[pol].y[j-1];
 			length = hypot (dx, dy);
-			n_ticks = (GMT_LONG)ceil (length / tick_gap);	/* At least one per side */
+			n_ticks = lrint (ceil (length / tick_gap));	/* At least one per side */
 			a = atan2 (dy, dx) + add;
 			sincos (a, &sa, &ca);
-			for (k = 0; k <= n_ticks; k++) {
-				x_back = save[i].x[j-1] + k * dx / (n_ticks + 1);
-				y_back = save[i].y[j-1] + k * dy / (n_ticks + 1);
+			for (kk = 0; kk <= n_ticks; kk++) {
+				x_back = save[pol].x[j-1] + kk * dx / (n_ticks + 1);
+				y_back = save[pol].y[j-1] + kk * dy / (n_ticks + 1);
 				x_end = x_back + tick_length * ca;
 				y_end = y_back + tick_length * sa;
 				PSL_plotsegment (PSL, x_back, y_back, x_end, y_end);
@@ -418,7 +423,8 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, j, n, id;
+	COUNTER_MEDIUM n_errors = 0, id;
+	GMT_LONG k, j, n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -449,7 +455,7 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 				Ctrl->C.active = TRUE;
 				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
-					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", (size_t)4)) ? TRUE : FALSE;
+					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? TRUE : FALSE;
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else
@@ -591,12 +597,15 @@ GMT_LONG GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl
 
 GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG nx, k2, k3, node1, node2, c, PSCONTOUR_SUM, cont_counts[2] = {0, 0};
-	GMT_LONG n_alloc, n_contours = 0, io_mode = 0, id;
-	GMT_LONG add, last_entry, last_exit, make_plot, n_save = 0, n_save_alloc = 0;
-	GMT_LONG ij, n, np, k, i, low, high, *vert = NULL, *cind = NULL;
-	GMT_LONG error = FALSE, skip = FALSE, closed, *n_seg_alloc = NULL, *n_seg = NULL;
-	GMT_LONG tbl_scl = 0, two_only = FALSE, fmt[3] = {0, 0, 0}, n_tables = 0, tbl;
+	GMT_LONG add;
+	GMT_BOOLEAN two_only = FALSE, make_plot, error = FALSE, skip = FALSE;
+	
+	COUNTER_MEDIUM pscontour_sum, n, nx, k2, k3, node1, node2, closed, c, cont_counts[2] = {0, 0}, last_entry, last_exit, fmt[3] = {0, 0, 0};
+	COUNTER_MEDIUM np, k, i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
+	
+	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
+	
+	COUNTER_LARGE ij, *n_seg = NULL;
 	
 	int *ind = NULL;	/* Must remain int due to triangle */
 	
@@ -638,7 +647,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -646,7 +655,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file; read it here so we can crash if no-such-file before we process input data */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (Ctrl->I.active && P->is_continuous) {
@@ -730,11 +739,12 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
-		GMT_LONG seg, row, col;
+		GMT_LONG col;
+		COUNTER_LARGE seg, row;
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_TABLE *T = NULL;
 
-		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Q.file, NULL)) == NULL) {
+		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -756,11 +766,11 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld indices triplets from %s.\n", np, Ctrl->Q.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Read %d indices triplets from %s.\n", np, Ctrl->Q.file);
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = GMT_delaunay (GMT, x, y, n, &ind);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %ld indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %d indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
@@ -781,7 +791,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
 			cont[c].type = (P->range[i].annot && !Ctrl->A.mode) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-			cont[c].do_tick = (char)Ctrl->T.active;
+			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		}
 		cont[c].val = P->range[P->n_colors-1].z_high;
@@ -792,15 +802,15 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			cont[c].type = (Ctrl->contour.annot) ? 'A' : 'C';
 		cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-		cont[c].do_tick = (char)Ctrl->T.active;
+		cont[c].do_tick = Ctrl->T.active;
 		n_contours = c + 1;
 	}
 	else if (Ctrl->C.file) {	/* read contour info from file with cval C|A [angle] records */
 		char *record = NULL;
-		GMT_LONG got, in_ID, NL, c_alloc = 0;
+		GMT_LONG got, in_ID, NL;
 		double tmp;
 
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, NULL, Ctrl->C.file)) == GMTAPI_NOTSET) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
@@ -823,10 +833,10 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			got = sscanf (record, "%lf %c %lf", &cont[c].val, &cont[c].type, &tmp);
 			if (cont[c].type == '\0') cont[c].type = 'C';
-			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? 1 : 0;
+			cont[c].do_tick = (Ctrl->T.active && ((cont[c].type == 'C') || (cont[c].type == 'A'))) ? TRUE : FALSE;
 			cont[c].angle = (got == 3) ? tmp : GMT->session.d_NaN;
 			if (got == 3) Ctrl->contour.angle_type = 2;	/* Must set this directly if angles are provided */
-			cont[c].do_tick = (char)Ctrl->T.active;
+			cont[c].do_tick = Ctrl->T.active;
 			c++;
 		} while (TRUE);
 		
@@ -836,7 +846,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_contours = c;
 	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
-		GMT_LONG c_alloc = 0, ic;
+		GMT_LONG ic;
 		double min, max, aval;
 		min = floor (xyz[0][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (min < xyz[0][GMT_Z]) min += Ctrl->C.interval;
 		max = ceil (xyz[1][GMT_Z] / Ctrl->C.interval) * Ctrl->C.interval; if (max > xyz[1][GMT_Z]) max -= Ctrl->C.interval;
@@ -853,16 +863,17 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;
 			cont[c].type = (fabs (cont[c].val - aval) < GMT_SMALL) ? 'A' : 'C';
 			cont[c].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
-			cont[c].do_tick = (char)Ctrl->T.active;
+			cont[c].do_tick = Ctrl->T.active;
 		}
 		n_contours = c;
 	}
-	cont = GMT_malloc (GMT, cont, 0, &n_contours, struct PSCONTOUR);
+	c_alloc = n_contours;
+	cont = GMT_malloc (GMT, cont, 0, &c_alloc, struct PSCONTOUR);
 
 	if (Ctrl->D.active) {
-		GMT_LONG dim[4] = {0, 0, 3, 0};
+		COUNTER_LARGE dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
-			io_mode = GMT_WRITE_DATASET;
+			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
 			i = 0;
 			while (Ctrl->D.file[i]) {
@@ -895,8 +906,8 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
-		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
-		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
+		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
+		n_seg = GMT_memory (GMT, NULL, n_tables, COUNTER_LARGE);
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
 	}
 	
@@ -1211,11 +1222,11 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 
 				if (make_plot && (cont[c].type == 'A' || cont[c].type == 'a')) {	/* Annotated contours */
-					GMT_get_format (GMT, cont[c].val, Ctrl->contour.unit, CNULL, format);
+					GMT_get_format (GMT, cont[c].val, Ctrl->contour.unit, NULL, format);
 					sprintf (cont_label, format, cont[c].val);
 				}
 				if (Ctrl->D.active) {
-					GMT_LONG count;
+					size_t count;
 					double *xtmp = NULL, *ytmp = NULL;
 					/* Must first apply inverse map transform */
 					xtmp = GMT_memory (GMT, NULL, n, double);
@@ -1225,7 +1236,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Select which table this segment should be added to */
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
-						GMT_LONG n_old_alloc = n_seg_alloc[tbl];
+						size_t n_old_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
 						GMT_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 					}
@@ -1266,13 +1277,14 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((error = GMT_contlabel_save (GMT, &Ctrl->contour))) Return (error);
 		}
 		if (make_plot) {
+			size_t kk;
 			if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
 				save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
 
 				sort_and_plot_ticks (GMT, PSL, save, n_save, x, y, z, n, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
-				for (i = 0; i < n_save; i++) {
-					GMT_free (GMT, save[i].x);
-					GMT_free (GMT, save[i].y);
+				for (kk = 0; kk < n_save; kk++) {
+					GMT_free (GMT, save[kk].x);
+					GMT_free (GMT, save[kk].y);
 				}
 				GMT_free (GMT, save);
 			}
@@ -1283,7 +1295,7 @@ GMT_LONG GMT_pscontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_free (GMT, n_seg_alloc);

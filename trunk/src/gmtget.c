@@ -31,10 +31,10 @@
 
 struct GMTGET_CTRL {
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct G {	/* -Gfilename */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 };
@@ -79,7 +79,7 @@ GMT_LONG GMT_gmtget_parse (struct GMTAPI_CTRL *C, struct GMTGET_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

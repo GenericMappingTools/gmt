@@ -34,51 +34,52 @@
 struct GRDOKB_CTRL {
 
 	struct GRDOKB_In {
-		int active;
+		GMT_BOOLEAN active;
 		char *file[3];
 	} In;
 
 	struct GRDOKB_C {	/* -C */
-		int active;
+		GMT_BOOLEAN active;
 		double rho;
 	} C;
 	struct GRDOKB_D {	/* -D */
+		GMT_BOOLEAN active;
 		float z_dir;
 	} D;
 	struct GRDOKB_I {	/* -Idx[/dy] */
-		int active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct GRDOKB_F {	/* -F<grdfile> */
-		int active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct GRDOKB_G {	/* -G<grdfile> */
-		int active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct GRDOKB_H {	/* -H */
-		int active;
+		GMT_BOOLEAN active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
 	struct GRDOKB_L {	/* -L */
 		double zobs;
 	} L;
 	struct GRDOKB_S {	/* -S */
-		int active;
+		GMT_BOOLEAN active;
 		double radius;
 	} S;
 	struct GRDOKB_Z {	/* -Z */
 		double z0;
 	} Z;
 	struct GRDOKB_Q {	/* -Q */
-		int active;
-		int n_pad;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n_pad;
 		char region[GMT_BUFSIZ];	/* gmt_parse_R_option has this!!!! */
 		double pad_dist;
 	} Q;
 	struct GRDOKB_box {	/* No option, just a container */
-		int is_geog;
+		GMT_BOOLEAN is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
 	} box;
 };
@@ -87,15 +88,15 @@ struct DATA {
 	double  x, y;
 } *data;
 
-GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, int switch_xy);
-void set_center (int n_triang);
-int grdokb_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
+GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy);
+void set_center (COUNTER_MEDIUM n_triang);
+int grdokb_body_set (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
-	double *cos_vec, int j, int i, int inc_j, int inc_i);
+	double *cos_vec, COUNTER_MEDIUM j, COUNTER_MEDIUM i, COUNTER_MEDIUM inc_j, COUNTER_MEDIUM inc_i);
 int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc,
-	struct BODY_VERTS **body_verts, int face);
+	struct BODY_VERTS **body_verts, COUNTER_MEDIUM face);
 void grdokb_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
-	struct GMT_GRID *Gout, double *g, int n_pts, double *x_grd, double *y_grd, double *x_obs,
+	struct GMT_GRID *Gout, double *g, COUNTER_MEDIUM n_pts, double *x_grd, double *y_grd, double *x_obs,
 	double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
 	struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts);
 
@@ -166,10 +167,9 @@ GMT_LONG GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
-	int n_files = 0;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -193,6 +193,7 @@ GMT_LONG GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, stru
 				Ctrl->C.active = TRUE;
 				break;
 			case 'D':
+				Ctrl->D.active = TRUE;
 				Ctrl->D.z_dir = 1;
 				break;
 			case 'F':
@@ -284,18 +285,18 @@ GMT_LONG GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	int nx_p, ny_p, i, j, k, ndata = 0;
-	int two_grids = FALSE, switch_xy = FALSE, clockwise_type[] = {0, 5};
-	int km = 0;		/* index of current body facet (for mag only) */
-	GMT_LONG error = FALSE;
-	GMT_LONG n_vert_max;
+	COUNTER_MEDIUM nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
+	GMT_BOOLEAN two_grids = FALSE, switch_xy = FALSE;
+	COUNTER_MEDIUM km = 0;		/* index of current body facet (for mag only) */
+	GMT_LONG error = 0, retval;
+	COUNTER_MEDIUM n_vert_max;
 	double	a, d, x_o, y_o;
 	double	*x_obs = NULL, *y_obs = NULL, *x_grd = NULL, *y_grd = NULL, *cos_vec = NULL;
 	double	*g = NULL, *x_grd2 = NULL, *y_grd2 = NULL, *cos_vec2 = NULL;
 	double	cc_t, cs_t, s_t, wesn_new[4], wesn_padded[4];
 
 	struct	GMT_GRID *GridA = NULL, *GridB = NULL;
-	struct	LOC_OR *loc_or;
+	struct	LOC_OR *loc_or = NULL;
 	struct	BODY_VERTS *body_verts = NULL;
 	struct	BODY_DESC body_desc;
 	struct	GRDOKB_CTRL *Ctrl = NULL;
@@ -335,15 +336,16 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		/*Ctrl->box.d_to_m = 2.0 * M_PI * gmtdefs.ellipse[N_ELLIPSOIDS-1].eq_radius / 360.0;*/
 
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
-		if ( (ndata = (int)read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
+		if ( (retval = read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->F.file);
 			return (EXIT_FAILURE);
 		}
+		ndata = retval;
 	}
 
 	/* ---------------------------------------------------------------------------- */
 
-	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER,
+	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL,
 				Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -417,7 +419,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	else
 		GMT_memcpy (wesn_padded, GridA->header->wesn, 4, double);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_padded, GMT_GRID_DATA, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset, or all */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_padded, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset, or all */
 		Return (API->error);
 	}
 
@@ -454,7 +456,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* In case we have one second grid, for bottom surface */
 	if (Ctrl->In.file[1]) {
-		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 
@@ -489,7 +491,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	y_grd = GMT_memory (GMT, NULL, GridA->header->ny, double);
 	x_obs = GMT_memory (GMT, NULL, nx_p, double);
 	y_obs = GMT_memory (GMT, NULL, ny_p, double);
-	if (Ctrl->F.active) g = GMT_memory (GMT, NULL, (size_t) ndata, double);
+	if (Ctrl->F.active) g = GMT_memory (GMT, NULL, ndata, double);
 
 	d = GridA->header->xy_off;		/*  0.5 : 0.0 */
 
@@ -512,8 +514,8 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	if (two_grids) {
 		d = GridB->header->xy_off;		/*  0.5 : 0.0 */
-		x_grd2 = GMT_memory (GMT, NULL, (size_t) GridB->header->nx, double);
-		y_grd2 = GMT_memory (GMT, NULL, (size_t) GridB->header->ny, double);
+		x_grd2 = GMT_memory (GMT, NULL, GridB->header->nx, double);
+		y_grd2 = GMT_memory (GMT, NULL, GridB->header->ny, double);
 		for (i = 0; i < GridB->header->nx; i++)
 			x_grd2[i] = (i == (GridB->header->nx-1)) ? GridB->header->wesn[XHI] - d*GridB->header->inc[GMT_X] :
 				GridB->header->wesn[XLO] + (i + d) * GridB->header->inc[GMT_X];
@@ -671,7 +673,7 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			strcpy (Gout->header->z_units, "nT");
 		}
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -700,10 +702,11 @@ GMT_LONG GMT_grdokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, int switch_xy) {
+GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed
 	   This is a temporary function while we not use the API to do this job. */
-	int n_alloc, ndata, ix = 0, iy = 1;
+	COUNTER_MEDIUM ndata, ix = 0, iy = 1;
+	size_t n_alloc;
 	double in[2];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -718,7 +721,7 @@ GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, int switch_xy) {
 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of polygon file\n", ndata+1);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
 		if (ndata == n_alloc) {
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data, n_alloc, struct DATA);
@@ -732,7 +735,7 @@ GMT_LONG read_poly__ (struct GMT_CTRL *GMT, char *fname, int switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, int face) {
+int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY_DESC *body_desc, struct BODY_VERTS **body_verts, COUNTER_MEDIUM face) {
 /*
 		__________________________________________
 		|                                        |
@@ -754,10 +757,10 @@ int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY
 	if (face == 0) {			/* Decompose the TOP square surface in 2 triangles using CW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, GMT_LONG);
+			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, COUNTER_MEDIUM);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], GMT_LONG);
+			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], COUNTER_MEDIUM);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 1; 	body_desc->ind[2] = 2;	/* 1st top triang (0 1 3)*/
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 2; 	body_desc->ind[5] = 3;	/* 2nd top triang (1 2 3) */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
@@ -766,10 +769,10 @@ int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY
 	else if (face == 5) {			/* Decompose the BOT square surface in 2 triangles using CCW order */
 		body_desc->n_f = 2;
 		if (body_desc->n_v == NULL)
-			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, GMT_LONG);
+			body_desc->n_v = GMT_memory (GMT, NULL, body_desc->n_f, COUNTER_MEDIUM);
 		body_desc->n_v[0] = body_desc->n_v[1] = 3;
 		if (body_desc->ind == NULL)
-			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], GMT_LONG);
+			body_desc->ind = GMT_memory (GMT, NULL, body_desc->n_v[0] + body_desc->n_v[1], COUNTER_MEDIUM);
 		body_desc->ind[0] = 0;	body_desc->ind[1] = 2; 	body_desc->ind[2] = 1;	/* 1st bot triang */
 		body_desc->ind[3] = 0;	body_desc->ind[4] = 3; 	body_desc->ind[5] = 2;	/* 2nd bot triang */
 		if (*body_verts == NULL) *body_verts = GMT_memory (GMT, NULL, 4, struct BODY_VERTS);
@@ -781,10 +784,11 @@ int grdokb_body_desc(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct BODY
 
 int grdokb_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts, double *x, double *y,
-		double *cos_vec, int j, int i, int inc_j, int inc_i) {
+		double *cos_vec, COUNTER_MEDIUM j, COUNTER_MEDIUM i, COUNTER_MEDIUM inc_j, COUNTER_MEDIUM inc_i) {
 	/* Allocate and fille the body_desc structure with the description on how to
 	   connect the vertex of the polygonal planar surface */
-	int i1, j1, is_geog = Ctrl->box.is_geog;
+	COUNTER_MEDIUM i1, j1;
+	GMT_BOOLEAN is_geog = Ctrl->box.is_geog;
 	float *z = Grid->data;
 	double cosj, cosj1;
 	struct GRD_HEADER *h = Grid->header;
@@ -883,13 +887,13 @@ int grdokb_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_G
 }
 
 void grdokb_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_GRID *Grid,
-		struct GMT_GRID *Gout, double *g, int n_pts, double *x_grd, double *y_grd, double *x_obs,
+		struct GMT_GRID *Gout, double *g, COUNTER_MEDIUM n_pts, double *x_grd, double *y_grd, double *x_obs,
 		double *y_obs, double *cos_vec, struct MAG_VAR *mag_var, struct LOC_OR *loc_or,
 		struct BODY_DESC *body_desc, struct BODY_VERTS *body_verts) {
 
 	/* Send g = NULL for grid computations (e.g. -G) or Gout = NULL otherwise (-F).
 	   In case of polyline output (-F) n_pts is the number of output locations (irrelevant otherwise) */
-	int row, col, k, i, km;
+	COUNTER_MEDIUM row, col, k, i, km;
 	double x_o, y_o, tmp = 1, a;
 
 /*#ifdef _OPENMP

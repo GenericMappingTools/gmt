@@ -39,49 +39,49 @@
 
 struct SEGY2GRD_CTRL {
 	struct In {	/* -In */
-		bool active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		bool active;
+		GMT_BOOLEAN active;
 		int mode;
 	} A;
 	struct C {	/* -C<cpt> */
-		bool active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		bool active;
+		GMT_BOOLEAN active;
 		char *text;
 	} D;
 	struct G {	/* -G */
-		bool active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L */
-		bool active;
+		GMT_BOOLEAN active;
 		int value;
 	} L;
 	struct M {	/* -M */
-		bool active;
-		int value;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM value;
 	} M;
 	struct N {	/* -N */
-		bool active;
+		GMT_BOOLEAN active;
 		double d_value;
 		float f_value;
 	} N;
 	struct Q {	/* -Qx|y */
-		bool active[2];
+		GMT_BOOLEAN active[2];
 		double value[2];
 	} Q;
 	struct S {	/* -S */
-		bool active;
-		int mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		int value;
 	} S;
 };
@@ -153,7 +153,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -264,12 +264,14 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 
 GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = false, read_cont = false;
-	GMT_LONG swap_bytes = !GMT_BIGENDIAN;
+	GMT_BOOLEAN  error = FALSE, read_cont = FALSE, swap_bytes = !GMT_BIGENDIAN;
+	
+	COUNTER_MEDIUM n_samp = 0, ij0;
+	COUNTER_MEDIUM ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
+	COUNTER_MEDIUM n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
 
-	GMT_LONG ij, ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
-	GMT_LONG n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, n_samp=0, ix, isamp, ij0;
-
+	COUNTER_LARGE ij;
+	
 	double idy, x0, yval;
 
 	char line[GMT_BUFSIZ];
@@ -319,7 +321,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
-	flag = GMT_memory (GMT, NULL, Grid->header->size, GMT_LONG);
+	flag = GMT_memory (GMT, NULL, Grid->header->size, COUNTER_MEDIUM);
 
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
@@ -355,21 +357,21 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %ld\n", Ctrl->M.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %d\n", Ctrl->M.value);
 
 	if (!Ctrl->L.value) {	/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value,  binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %ld\n", Ctrl->L.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples for reel is %d\n", Ctrl->L.value);
 
 	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
@@ -412,7 +414,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* get number of samples in _this_ trace or set to number in reel header */
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
-			ij0 = (GMT_LONG)(GMT->common.R.wesn[YLO] * idy);
+			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
 			if (n_samp - ij0 > Grid->header->ny) n_samp = Grid->header->ny + ij0;
 
 			if (swap_bytes) {
@@ -425,7 +427,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 
-			for (ij = ij0; ij < n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
+			for (ij = ij0; ij < (COUNTER_LARGE)n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 
@@ -535,17 +537,17 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_message (GMT, " n_read: %ld  n_used: %ld  n_filled: %ld  n_empty: %ld set to ",
+			GMT_message (GMT, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to ",
 				n_read, n_used, n_filled, n_empty);
 			(GMT_is_dnan (Ctrl->N.d_value)) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.d_value);
-			if (n_bad) GMT_message (GMT, "%ld records unreadable\n", n_bad);
-			if (n_stuffed) GMT_message (GMT, "Warning - %ld nodes had multiple entries that were averaged\n", n_stuffed);
-			if (n_confused) GMT_message (GMT, "Warning - %ld values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+			if (n_bad) GMT_message (GMT, "%d records unreadable\n", n_bad);
+			if (n_stuffed) GMT_message (GMT, "Warning - %d nodes had multiple entries that were averaged\n", n_stuffed);
+			if (n_confused) GMT_message (GMT, "Warning - %d values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 		}
 	}
 
 	GMT_grd_pad_on (GMT, Grid, GMT->current.io.pad);	/* Restore padding */
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 

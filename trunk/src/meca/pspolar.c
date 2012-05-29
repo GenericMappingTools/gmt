@@ -28,53 +28,53 @@
 
 struct PSPOLAR_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double lon, lat, size;
 		struct GMT_PEN pen;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double lon, lat;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG outline;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} E;
 	struct F {	/* -F<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} F;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 		struct GMT_PEN pen;
 	} G;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double ech;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q only -h for Hypo71 */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -r<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG symbol;
 		char type;
 		double scale, size;
 		struct GMT_FILL fill;
 	} S;
 	struct S2 {	/* -r<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN scolor;
+		GMT_BOOLEAN vector;
 		GMT_LONG symbol;
 		GMT_LONG outline;
-		GMT_LONG scolor;
-		GMT_LONG vector;
 		char type;
 		double size;
 		double width, length, head;
@@ -82,13 +82,13 @@ struct PSPOLAR_CTRL {
 		struct GMT_FILL fill;
 	} S2;
 	struct T {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double angle, fontsize;
 		GMT_LONG form, justify;
 		struct GMT_PEN pen;
  	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -192,7 +192,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n;
+	COUNTER_MEDIUM n_errors = 0, n;
 	char txt[GMT_TEXT_LEN64],txt_b[GMT_TEXT_LEN64],txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -296,7 +296,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 				if (strchr (opt->arg, 'V')) {
 					Ctrl->S2.vector = TRUE;
 					strcpy (txt, strchr (opt->arg, 'V'));
-					if (strncmp (txt,"VG",(size_t)2) == 0 || strncmp(txt,"VL",(size_t)2) == 0 || strlen (txt) == 1) {
+					if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
 						Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
 						if (!GMT->current.setting.proj_length_unit) {
 							Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
@@ -319,7 +319,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 			case 'T':	/* Information about label printing */
 				Ctrl->T.active = TRUE;
 				if (strlen (opt->arg)) {
-					sscanf (opt->arg, "%lf/%ld/%ld/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
+					sscanf (opt->arg, "%lf/%d/%d/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
 				}
 				break;
 			case 't':	/* Set color for station label */
@@ -351,7 +351,8 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 
 GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n, error = FALSE, old_is_world;
+	GMT_LONG n = 0;
+	GMT_BOOLEAN error = FALSE, old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;
@@ -416,7 +417,7 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_setfill (GMT, &(Ctrl->F.fill), Ctrl->F.active);
 	PSL_plotsymbol (PSL, plot_x0, plot_y0, &(Ctrl->M.ech), GMT_SYMBOL_CIRCLE);
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -434,27 +435,27 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		/* Data record to process */
- 
-		switch (Ctrl->Q.active) {
-			case 0 :
-				if (!Ctrl->S2.active)
-					sscanf (line, "%s %lf %lf %c", stacode, &azimut, &ih, &pol);
-				else {
-					n = sscanf (line, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
-					if (n == 4) azS = -1.0;
-				}
-				break;
-			case 1 :
-				if (!Ctrl->S2.active) {
-					sscanf (line, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
-					pol = col[3][2];
-				}
-				else {
-					n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
-					pol = col[3][2];
-					if (n == 7) azS = -1.0;
-				}
-				break;
+
+		if (Ctrl->Q.active) {
+			if (Ctrl->S2.active) {
+				n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
+				pol = col[3][2];
+				if (n == 7)
+					azS = -1.0;
+			}
+			else { /* !Ctrl->S2.active */
+				sscanf (line, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
+				pol = col[3][2];
+			}
+		}
+		else { /* !Ctrl->Q.active */
+			if (Ctrl->S2.active)
+				n = sscanf (line, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
+				if (n == 4)
+					azS = -1.0;
+			else { /* !Ctrl->S2.active */
+				sscanf (line, "%s %lf %lf %c", stacode, &azimut, &ih, &pol);
+			}
 		}
 
 		if (strcmp (col[0], "000000")) {
@@ -550,7 +551,7 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
     
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 

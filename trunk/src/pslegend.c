@@ -34,18 +34,18 @@
 
 struct PSLEGEND_CTRL {
 	struct C {	/* -C<dx>/<dy> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[x]<x0>/<y0>/w/h/just[/xoff/yoff] */
-		GMT_LONG active;
-		GMT_LONG cartesian;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cartesian;
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
 	struct F {	/* -F+r[<radius>][+p<pen>][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<fill>]] */
-		GMT_LONG active;
-		GMT_LONG mode;			/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
 		double gap;			/* Space bewteen main and secondary frame */
@@ -53,11 +53,11 @@ struct PSLEGEND_CTRL {
 		struct GMT_FILL fill;		/* Background shade */
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<spacing> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double spacing;
 	} L;
 };
@@ -135,7 +135,8 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG k, n, pos, n_errors = 0;
+	COUNTER_MEDIUM k, n_errors = 0, pos;
+	COUNTER_MEDIUM n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], txt_f[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -283,9 +284,10 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
-	GMT_LONG flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options;
-	GMT_LONG dim[4] = {1, 1, 0, 2}, status = 0, object_ID, did_old = FALSE;
-
+	GMT_LONG status = 0, object_ID;
+	GMT_BOOLEAN flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options, did_old = FALSE;
+	COUNTER_LARGE dim[4] = {1, 1, 0, 2};
+	 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
 	char symbol[GMT_TEXT_LEN256], text[GMT_BUFSIZ], image[GMT_BUFSIZ], xx[GMT_TEXT_LEN256], yy[GMT_TEXT_LEN256];
@@ -343,7 +345,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
 	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 #endif
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -464,7 +466,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
 				status = GMT_psscale (API, 0, buffer);	/* Plot the colorbar */
 				if (status) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psscale returned error %ld.\n", status);
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psscale returned error %d.\n", status);
 					Return (EXIT_FAILURE);
 				}
 				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
@@ -527,7 +529,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
 				status = GMT_psimage (API, 0, buffer);	/* Plot the image */
 				if (status) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psimage returned error %ld.\n", status);
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psimage returned error %d.\n", status);
 					Return (EXIT_FAILURE);
 				}
 				y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
@@ -567,7 +569,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
-					GMT_LONG pos = 0;
+					COUNTER_MEDIUM pos = 0;
 					strcpy (txt_cpy, opt);
 					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 						switch (p[0]) {
@@ -598,7 +600,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				status = GMT_psbasemap (API, 0, buffer);	/* Plot the scale */
 				if (status) {
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psbasemap returned error %ld.\n", status);
+					GMT_report (GMT, GMT_MSG_FATAL, "GMT_psbasemap returned error %d.\n", status);
 					Return (EXIT_FAILURE);
 				}
 				if (gave_label && just == 'b') y0 -= d_off;
@@ -621,11 +623,11 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 				if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 				if (!(n == 0 || n == 9)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: The > record must have 0 or 9 arguments (only %ld found)\n", n);
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
 					Return (GMT_RUNTIME_ERROR);
 				}
 				if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
-				if (n == 0 || font[0] == '-') sprintf (font, "%ld", GMT->current.setting.font_annot[0].id);
+				if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[0].id);
 				sprintf (tmp, "%s,%s,", size, font);
 				did_old = TRUE;
 #endif
@@ -634,7 +636,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 					if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 					if (!(n == 0 || n == 8)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: The P record must have 0 or 9 arguments (only %ld found)\n", n);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error: The P record must have 0 or 9 arguments (only %d found)\n", n);
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
@@ -644,7 +646,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #endif
 				if (n == 0 || xx[0] == '-') sprintf (xx, "%g", x0);
 				if (n == 0 || yy[0] == '-') sprintf (yy, "%g", y0);
-				if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%ld,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
+				if (n == 0 || tmp[0] == '-') sprintf (tmp, "%g,%d,%s", GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor);
 				if (n == 0 || angle[0] == '-') sprintf (angle, "0");
 				if (n == 0 || key[0] == '-') sprintf (key, "TL");
 				if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
@@ -682,7 +684,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					F->coord[GMT_X][0] = x_off + off_ss-x;	F->coord[GMT_Y][0] = y0;
 					F->coord[GMT_X][1] = x_off + off_ss+x;	F->coord[GMT_Y][1] = y0;
 					Front->n_records = F->n_rows = 2;
-					if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_LINE, GMT_IN, Front, NULL)) == GMTAPI_NOTSET) {
+					if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_LINE, GMT_IN, NULL, Front)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
@@ -693,7 +695,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 					status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 					if (status) {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT_psxy returned error %ld.\n", status);
+						GMT_report (GMT, GMT_MSG_FATAL, "GMT_psxy returned error %d.\n", status);
 						Return (EXIT_FAILURE);
 					}
 					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy */
@@ -749,7 +751,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				y0 -= half_line_spacing;	/* Go back to bottom of box */
 				if (n_scan == 7) {	/* Place symbol text */
 					S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
-					sprintf (buffer, "%g %g %g,%ld,%s BL %s", x_off + off_tt, y0 + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
+					sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, y0 + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
 					S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 					if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 				}
@@ -764,7 +766,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S[PAR] = D[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 				if (!flush_paragraph) {
 					d_off = 0.5 * (Ctrl->L.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
-					sprintf (buffer, "> %g %g %g,%ld,%s 0 TL %gi %gi j", x0, y0 - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.width - 2.0 * Ctrl->C.dx);
+					sprintf (buffer, "> %g %g %g,%d,%s 0 TL %gi %gi j", x0, y0 - d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, one_line_spacing, Ctrl->D.width - 2.0 * Ctrl->C.dx);
 					S[PAR]->record[S[PAR]->n_rows++] = strdup (buffer);
 					if (S[PAR]->n_rows == S[PAR]->n_alloc) S[PAR]->record = GMT_memory (GMT, S[PAR]->record, S[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
 				}
@@ -825,7 +827,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (S[SYM] && S[SYM]->n_rows) {
 		/* Create option list, register D[SYM] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[SYM], NULL)) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, NULL, D[SYM])) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
@@ -838,7 +840,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[TXT], NULL)) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, NULL, D[TXT])) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
@@ -851,7 +853,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, D[PAR], NULL)) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, NULL, D[PAR])) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {

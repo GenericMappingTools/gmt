@@ -37,65 +37,64 @@
 
 struct GRD2CPT_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} In;
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct E {	/* -E<nlevels> */
-		GMT_LONG active;
-		GMT_LONG levels;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM levels;
 	} E;
 	struct F {	/* -F[R|r|h|c] */
-		GMT_LONG active;
-		GMT_LONG model;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM model;
 	} F;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<min_limit>/<max_limit> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double min, max;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q[i|o] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} Q;
 	struct S {	/* -S<z_start>/<z_stop>/<z_inc> */
-		GMT_LONG active;
-		GMT_LONG cpt;
+		GMT_BOOLEAN active;
 		double low, high, inc;
 		char *file;
 	} S;
 	struct T {	/* -T<kind> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} T;
 	struct W {	/* -W */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -165,7 +164,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files[2] = {0, 0};
+	COUNTER_MEDIUM n_errors = 0, n_files[2] = {0, 0};
 	char kind;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -199,7 +198,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 				break;
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = TRUE;
-				if (sscanf (opt->arg, "%ld", &Ctrl->E.levels) != 1) {
+				if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
@@ -290,8 +289,11 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, j, k, ij, ngrd = 0, nxyg, nfound, ngood, cpt_flags = 0;
-	GMT_LONG n_alloc = GMT_TINY_CHUNK, error = FALSE;
+	COUNTER_LARGE ij, k, ngrd = 0, nxyg, nfound, ngood;
+	COUNTER_MEDIUM row, col, j, cpt_flags = 0;
+	GMT_LONG signed_levels;
+	size_t n_alloc = GMT_TINY_CHUNK;
+	GMT_BOOLEAN error = FALSE;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 
@@ -342,7 +344,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.mode == 2) cpt_flags |= 2;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
 	file = CPT_file;
-	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, NULL)) == NULL) {
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, file, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -355,7 +357,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (opt = options, k = 0; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_ALL, opt->arg, NULL)) == NULL) {
+		if ((G[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
 		grdfile[k] = strdup (opt->arg);
@@ -366,7 +368,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		k++;
 		if (k == n_alloc) {
-			GMT_LONG old_n_alloc = n_alloc;
+			size_t old_n_alloc = n_alloc;
 			n_alloc += GMT_TINY_CHUNK;
 			G = GMT_memory (GMT, G, n_alloc, struct GMT_GRID *);
 			GMT_memset (&(G[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_GRID *);	/* Set to NULL */
@@ -437,10 +439,10 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Decide how to make steps in z.  */
 	if (Ctrl->S.active) {	/* Use predefined levels and interval */
-		GMT_LONG i, j;
+		COUNTER_MEDIUM i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
-		Ctrl->E.levels += (GMT_LONG)floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc) + 1;
+		Ctrl->E.levels += lrint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
 		if (G[0]->header->z_max > Ctrl->S.high) Ctrl->E.levels++;
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		if (G[0]->header->z_min < Ctrl->S.low) {
@@ -482,7 +484,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		range = (Ctrl->T.kind) ? 2.0 * fabs (start) : G[0]->header->z_max - G[0]->header->z_min;
 		Ctrl->S.inc = range / (double)(Ctrl->E.levels - 1);
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		for (k = 0; k < Ctrl->E.levels; k++) cdf_cpt[k].z = start + k * Ctrl->S.inc;
+		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->S.inc;
 	}
 
 	else {	/* This is completely ad-hoc.  It chooses z based on steps of 0.1 for a Gaussian CDF:  */
@@ -532,10 +534,11 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now the cdf function has been found.  We now resample the chosen cptfile  */
 
 	z = GMT_memory (GMT, NULL, Ctrl->E.levels, double);
-	for (k = 0; k < Ctrl->E.levels; k++) z[k] = cdf_cpt[k].z;
-	if (Ctrl->Q.mode == 2) for (k = 0; k < Ctrl->E.levels; k++) z[k] = d_log10 (GMT, z[k]);	/* Make log10(z) values for interpolation step */
+	for (j = 0; j < Ctrl->E.levels; j++) z[j] = cdf_cpt[j].z;
+	if (Ctrl->Q.mode == 2) for (j = 0; j < Ctrl->E.levels; j++) z[j] = d_log10 (GMT, z[j]);	/* Make log10(z) values for interpolation step */
 
-	Pout = GMT_sample_cpt (GMT, Pin, z, -Ctrl->E.levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
+	signed_levels = Ctrl->E.levels;
+	Pout = GMT_sample_cpt (GMT, Pin, z, -signed_levels, Ctrl->Z.active, Ctrl->I.active, Ctrl->Q.mode, Ctrl->W.active);	/* -ve to keep original colors */
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;
@@ -545,7 +548,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */
 
-	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_OK) {
 		Return (API->error);
 	}
 

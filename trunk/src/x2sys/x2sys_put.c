@@ -33,20 +33,20 @@
 
 struct X2SYS_PUT_CTRL {
 	struct In {	/* -In */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -94,7 +94,7 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -139,12 +139,12 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int x2sys_bix_remove_track (struct GMT_CTRL *GMT, int track_id, struct X2SYS_BIX *B)
+int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SYS_BIX *B)
 {
 	/* Remove all traces of the track with id track_id from structure tree for all bins */
 
-	struct X2SYS_BIX_TRACK *track, *skip_track;
-	int bin;
+	struct X2SYS_BIX_TRACK *track = NULL, *skip_track = NULL;
+	COUNTER_LARGE bin;
 
 	for (bin = 0; bin < B->nm_bin; bin++) {
 		if (B->base[bin].n_tracks == 0) continue;	/* No tracks crossed this bin */
@@ -164,7 +164,7 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, int track_id, struct X2SYS_BIX
 	return (track_id);
 }
 
-struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_LONG *found_it, struct X2SYS_BIX *B)
+struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_BOOLEAN *found_it, struct X2SYS_BIX *B)
 {	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to TRUE.
 	 * I.e., the track is actually this_info->next_info.  If not found set found_it to FALSE and return pointer where
 	 * this track should be inserted */
@@ -190,13 +190,11 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
 	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 
-	GMT_LONG error = FALSE, found_it, skip, last_id;
+	GMT_BOOLEAN error = FALSE, found_it, skip;
 
 	FILE *fp = NULL, *fbin = NULL, *ftrack = NULL;
 
-	/* Leave these as 4-byte ints */
-	int index, id, bin, free_id, max_flag, flag;
-	int i, bit, total_flag;
+	uint32_t last_id, index, id, free_id, max_flag, flag, i, bit, total_flag; /* These must remain uint32_t */
 	
 	struct X2SYS_PUT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -247,7 +245,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Read existing track-information from <ID>_tracks.d file */
 
 	 x2sys_err_fail (GMT, x2sys_bix_read_tracks (GMT, s, &B, 0, &last_id), "");
-	 last_id--;
+	 last_id--;	/* Since last_id as returned is the number of IDs */
 
 	/* Read geographical track-info from <ID>_index.b file */
 
@@ -276,7 +274,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (found_it) {	/* This track already exists in the database */
 			if (Ctrl->D.active) {	/* Here we wish to delete it (and possibly replace the contents) */
 				GMT_report (GMT, GMT_MSG_NORMAL, "Removing existing information for track: %s\n", track);
-				free_id = x2sys_bix_remove_track (GMT, (int)this_info->next_info->track_id, &B);
+				free_id = x2sys_bix_remove_track (GMT, this_info->next_info->track_id, &B);
 				GMT_report (GMT, GMT_MSG_NORMAL, "track %s removed\n", track);
 				this_info->next_info = this_info->next_info->next_info;
 				skip = !Ctrl->F.active;	/* If we are not replacing the info then we skip the new info */
@@ -306,7 +304,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* If a track is replaced, then use the same id_no, else increment to get a new one */
 
-			id = (free_id) ? free_id : (int)++last_id;
+			id = (free_id) ? free_id : ++last_id;
 			if (!free_id) {	/* Must create a new entry */
 				new_info = x2sys_bix_make_entry (GMT, track, id, 0);
 				new_info->next_info = this_info->next_info;
@@ -377,28 +375,28 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	fprintf (ftrack,"# %s\n", Ctrl->T.TAG);
 	for (this_info = B.head->next_info; this_info; this_info = this_info->next_info)
-		fprintf (ftrack,"%s %ld %ld\n",this_info->trackname, this_info->track_id, this_info->flag);
+		fprintf (ftrack,"%s %d %d\n",this_info->trackname, this_info->track_id, this_info->flag);
 
 	fclose (ftrack);
 	chmod (track_file, (mode_t)S_RDONLY);
 
-	for (bin = 0; bin < B.nm_bin; bin++) {
-		if (B.base[bin].n_tracks == 0) continue;
+	for (index = 0; index < B.nm_bin; index++) {
+		if (B.base[index].n_tracks == 0) continue;
 
-		if (fwrite ((&bin), (size_t)4, (size_t)1, fbin) != 1) {
+		if (fwrite (&index, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
 			Return (EXIT_FAILURE);
 		}
-		if (fwrite ((&B.base[bin].n_tracks), (size_t)4, (size_t)1, fbin) != 1) {
+		if (fwrite (&B.base[index].n_tracks, sizeof (uint32_t), 1U, fbin) != 1U) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
 			Return (EXIT_FAILURE);
 		}
-		for (this_track = B.base[bin].first_track->next_track; this_track; this_track = this_track->next_track) {
-			if (fwrite ((&this_track->track_id), (size_t)4, (size_t)1, fbin) != 1) {
+		for (this_track = B.base[index].first_track->next_track; this_track; this_track = this_track->next_track) {
+			if (fwrite (&this_track->track_id, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
 				Return (EXIT_FAILURE);
 			}
-			if (fwrite ((&this_track->track_flag), (size_t)4, (size_t)1, fbin) != 1) {
+			if (fwrite (&this_track->track_flag, sizeof (uint32_t), 1U, fbin) != 1U) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Failed to write to binary file. Aborts!\n");
 				Return (EXIT_FAILURE);
 			}

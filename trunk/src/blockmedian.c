@@ -75,7 +75,7 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -147,11 +147,13 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_in_cell, GMT_LONG first_in_new_cell, double weight_sum, double *out, double *extra,
-	GMT_LONG go_quickly, GMT_LONG emode, double *quantile, GMT_LONG n_quantiles, struct BLK_DATA *data)
+void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE first_in_cell, COUNTER_LARGE first_in_new_cell, double weight_sum, double *out, double *extra,
+	COUNTER_MEDIUM go_quickly, COUNTER_MEDIUM emode, double *quantile, COUNTER_MEDIUM n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
-	GMT_LONG node, n_in_cell, node1, k, k_for_xy, way;
+	COUNTER_LARGE node, n_in_cell, node1;
+	COUNTER_MEDIUM k, k_for_xy;
+	GMT_LONG way;
 
 	/* Remember: Data are already sorted on z for each cell */
 
@@ -196,9 +198,9 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 	if (go_quickly == 1) return;	/* Already have everything requested so we return */
 
 	if (go_quickly == 2) {	/* Return center of block instead of computing a representative location */
-		GMT_LONG row, col;
-		row = GMT_row (h, data[node].i);
-		col = GMT_col (h, data[node].i);
+		COUNTER_MEDIUM row, col;
+		row = GMT_row (h, data[node].ij);
+		col = GMT_col (h, data[node].ij);
 		out[GMT_X] = GMT_grd_col_to_x (GMT, col, h);
 		out[GMT_Y] = GMT_grd_row_to_y (GMT, row, h);
 		return;
@@ -208,13 +210,13 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 
 	weight_half = quantile[k_for_xy] * weight_sum;	/* We want the same quantile for locations as was used for z */
 
-	if (n_in_cell > 2) qsort(&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
+	if (n_in_cell > 2) qsort(&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_x);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
 	out[GMT_X] = (weight_count == weight_half) ?  0.5 * (data[node].a[GMT_X] + data[node + 1].a[GMT_X]) : data[node].a[GMT_X];
 
-	if (n_in_cell > 2) qsort (&data[first_in_cell], (size_t)n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
+	if (n_in_cell > 2) qsort (&data[first_in_cell], n_in_cell, sizeof (struct BLK_DATA), BLK_compare_y);
 	node = first_in_cell;
 	weight_count = data[first_in_cell].a[BLK_W];
 	while (weight_count < weight_half) weight_count += data[++node].a[BLK_W];
@@ -227,11 +229,14 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, GMT_LONG first_i
 
 GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, do_extra;
-	GMT_LONG nz, n_read, n_lost, node, first_in_cell, first_in_new_cell;
-	GMT_LONG n_alloc = 0, nz_alloc = 0, n_pitched, row, col, n_cells_filled;
-	GMT_LONG w_col, i_col, emode = 0, n_output, n_quantiles = 1, go_quickly = 0;
-
+	COUNTER_LARGE n_lost, node, first_in_cell, first_in_new_cell;
+	COUNTER_LARGE n_read, nz, n_pitched, n_cells_filled;
+	
+	size_t n_alloc = 0, nz_alloc = 0;
+	
+	GMT_BOOLEAN error = FALSE, do_extra;
+	COUNTER_MEDIUM row, col, w_col, i_col, emode = 0, n_output, n_quantiles = 1, go_quickly = 0;
+	
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, *in = NULL, *z_tmp = NULL;
 
 	char format[GMT_BUFSIZ], *old_format = NULL;
@@ -291,7 +296,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!(Ctrl->E.mode & BLK_DO_EXTEND4)) quantile[0] = Ctrl->T.quantile;	/* Just get the single quantile [median] */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
-		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 
@@ -306,10 +311,10 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Register likely data sources unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 
@@ -344,17 +349,14 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		if (col < 0 || col >= Grid->header->nx ) continue;
-		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-		if (row < 0 || row >= Grid->header->ny ) continue;
+		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 
 		/* OK, this point is definitively inside and will be used */
 
 		node = GMT_IJP (Grid->header, row, col);	/* Bin node */
 
 		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
-		data[n_pitched].i = node;
+		data[n_pitched].ij = node;
 		data[n_pitched].rec_no = n_read;
 		data[n_pitched].a[BLK_W] = ((Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0);
 		if (!Ctrl->C.active) {	/* Need to store (x,y) so we can compute median location later */
@@ -399,7 +401,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Sort on node and Z value */
 
-	qsort (data, (size_t)n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
+	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	/* Find n_in_cell and write appropriate output  */
 
@@ -412,7 +414,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			nz = 1;
 		}
 		first_in_new_cell = first_in_cell + 1;
-		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].i == data[first_in_cell].i)) {
+		while ((first_in_new_cell < n_pitched) && (data[first_in_new_cell].ij == data[first_in_cell].ij)) {
 			weight += data[first_in_new_cell].a[BLK_W];
 			if (do_extra) {	/* Must get a temporary copy of the sorted z array */
 				if (nz == nz_alloc) z_tmp = GMT_malloc (GMT, z_tmp, nz, &nz_alloc, double);

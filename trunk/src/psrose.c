@@ -36,57 +36,57 @@
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A<sector_angle>[r] */
-		GMT_LONG active;
-		GMT_LONG rose;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN rose;
 		double inc;
 	} A;
 	struct C {	/* -C[<modefile>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *w, *e, *s, *n;
 	} L;
 	struct M {	/* -M[<size>][<modifiers>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_SYMBOL S;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -Sscale[n] */
-		GMT_LONG active;
-		GMT_LONG normalize;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN normalize;
 		double scale;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 	struct W {	/* -W[v]<pen> */
-		GMT_LONG active[2];
+		GMT_BOOLEAN active[2];
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Zu|<scale> */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double scale;
 	} Z;
 };
@@ -182,7 +182,8 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n, n_errors = 0, n_files = 0;
+	GMT_LONG n;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	double range;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
@@ -334,10 +335,14 @@ GMT_LONG GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, find_mean = FALSE, half_only = 0;
-	GMT_LONG automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
-	GMT_LONG n_bins, n_annot, n_alpha, n_modes, form, n_in;
-	GMT_LONG i, bin, n = 0, do_fill = FALSE, n_alloc = GMT_CHUNK;
+	GMT_BOOLEAN error = FALSE, find_mean = FALSE, do_fill = FALSE;
+	GMT_BOOLEAN automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
+	COUNTER_MEDIUM n_bins, n_modes, form, n_in, half_only = 0, bin;
+	GMT_LONG k, n_annot, n_alpha, sbin;
+	
+	COUNTER_LARGE n = 0, i;
+	
+	size_t n_alloc = GMT_CHUNK;
 
 	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
 
@@ -420,7 +425,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_in)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -494,11 +499,17 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else
 				this_az = azimuth[i];
-			bin = (GMT_LONG) ((this_az + az_offset) / Ctrl->A.inc);
+			sbin = lrint (floor ((this_az + az_offset) / Ctrl->A.inc));
+			assert (sbin >= 0);
+			bin = sbin;
+			if (bin == n_bins) {
+				bin = 0;
+			}
+			assert (bin < n_bins);
 			sum[bin] += length[i];
 			if (Ctrl->T.active) {	/* Also count its other end */
 				this_az += 180.0;	if (this_az >= 360.0) this_az -= 360.0;
-				bin = (GMT_LONG) ((this_az + az_offset) / Ctrl->A.inc);
+				bin = lrint (floor ((this_az + az_offset) / Ctrl->A.inc));
 				sum[bin] += length[i];
 			}
 		}
@@ -525,7 +536,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		if (Ctrl->In.file) strcpy (text, Ctrl->In.file); else strcpy (text, "<stdin>");
-		sprintf (format, "Info for %%s: n = %%ld rmax = %s mean r/az = (%s/%s) totlength = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "Info for %%s: n = %% " PRIu64 " rmax = %s mean r/az = (%s/%s) totlength = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_FATAL, format, text, n, max, mean_radius, mean_theta, total);
 		if (Ctrl->I.active) {
 			GMT_free (GMT, sum);
@@ -652,15 +663,17 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		y2 = (sum[n_bins-1] * Ctrl->S.scale) * s;
 		PSL_plotpoint (PSL, x1, y1, PSL_MOVE);
 		PSL_plotpoint (PSL, x2, y2, PSL_DRAW);
-		for (bin = n_bins-1; bin >= 0; bin--) {
-			az = bin * Ctrl->A.inc - az_offset + half_bin_width;
+		for (bin = n_bins; bin > 0; bin--) {
+			k = bin - 1;
+			az = k * Ctrl->A.inc - az_offset + half_bin_width;
 			angle1 = 90.0 - az - Ctrl->A.inc;
 			angle2 = angle1 + Ctrl->A.inc;
-			PSL_plotarc (PSL, 0.0, 0.0, sum[bin] * Ctrl->S.scale, angle1, angle2, (bin == 0) ? PSL_STROKE : PSL_DRAW);
+			PSL_plotarc (PSL, 0.0, 0.0, sum[k] * Ctrl->S.scale, angle1, angle2, (k == 0) ? PSL_STROKE : PSL_DRAW);
 		}
 	}
 
 	if (Ctrl->C.active) {
+		COUNTER_MEDIUM this_mode;
 		if (!Ctrl->W.active[1]) Ctrl->W.pen[1] = Ctrl->W.pen[0];	/* No separate pen specified; use same as for rose outline */
 		if (!Ctrl->C.file) {	/* Not given, calculate and use mean direction only */
 			find_mean = TRUE;
@@ -671,7 +684,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			mode_length[0] = mean_radius;
 		}
 		else {	/* Get mode parameters from separate file */
-			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+			if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
@@ -694,13 +707,13 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		dim[6] = (double)Ctrl->M.S.v.status;
 		if (Ctrl->M.S.v.status & GMT_VEC_OUTLINE2) GMT_setpen (GMT, &Ctrl->W.pen[1]);
 		if (Ctrl->M.S.v.status & GMT_VEC_FILL2) GMT_setfill (GMT, &Ctrl->M.S.v.fill, TRUE);       /* Use fill structure */
-		for (i = 0; i < n_modes; i++) {
-			if (Ctrl->N.active) mode_length[i] = sqrt (mode_length[i]);
-			if (half_only && mode_direction[i] > 90.0 && mode_direction[i] <= 270.0) mode_direction[i] -= 180.0;
-			angle = start_angle - mode_direction[i];
+		for (this_mode = 0; this_mode < n_modes; this_mode++) {
+			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);
+			if (half_only && mode_direction[this_mode] > 90.0 && mode_direction[this_mode] <= 270.0) mode_direction[this_mode] -= 180.0;
+			angle = start_angle - mode_direction[this_mode];
 			sincosd (angle, &s, &c);
-			xr = Ctrl->S.scale * mode_length[i] * c;
-			yr = Ctrl->S.scale * mode_length[i] * s;
+			xr = Ctrl->S.scale * mode_length[this_mode] * c;
+			yr = Ctrl->S.scale * mode_length[this_mode] * s;
 			dim[0] = xr, dim[1] = yr;
 			PSL_plotsymbol (PSL, 0.0, 0.0, dim, PSL_VECTOR);
 		}
@@ -723,8 +736,8 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_setpen (GMT, &GMT->current.setting.map_grid_pen[0]);
 		off = max_radius * Ctrl->S.scale;
 		n_alpha = (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval > 0.0) ? lrint (total_arc / GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval) : -1;
-		for (i = 0; i <= n_alpha; i++) {
-			angle = i * GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval;
+		for (k = 0; k <= n_alpha; k++) {
+			angle = k * GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval;
 			sincosd (angle, &s, &c);
 			x = max_radius * Ctrl->S.scale * c;
 			y = max_radius * Ctrl->S.scale * s;
@@ -732,8 +745,8 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		n_bins = (GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) ? lrint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) : -1;
-		for (i = 1; i <= n_bins; i++)
-			PSL_plotarc (PSL, 0.0, 0.0, i * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
+		for (bin = 1; bin <= n_bins; bin++)
+			PSL_plotarc (PSL, 0.0, 0.0, bin * GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval * Ctrl->S.scale, 0.0, total_arc, PSL_MOVE + PSL_STROKE);
 		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 		y = lsize + 6.0 * GMT->current.setting.map_annot_offset[0];
 		form = GMT_setfont (GMT, &GMT->current.setting.font_title);
@@ -778,8 +791,8 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 			PSL_plottext (PSL, 0.0, -GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_annot[0].size, "0", 0.0, 10, form);
 			n_annot = (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval > 0.0) ? lrint (max_radius / GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval) : -1;
-			for (i = 1; i <= n_annot; i++) {
-				x = i * GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
+			for (k = 1; n_annot > 0 && k <= n_annot; k++) {
+				x = k * GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval;
 				sprintf (text, format, x);
 				x *= Ctrl->S.scale;
 				PSL_plottext (PSL, x, -GMT->current.setting.map_annot_offset[0], GMT->current.setting.font_annot[0].size, text, 0.0, 10, form);

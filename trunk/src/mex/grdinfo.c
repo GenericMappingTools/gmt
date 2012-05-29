@@ -49,7 +49,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if ((API = GMT_Create_Session ("GMT/MEX-API", GMTAPI_GMT)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. READING IN A GRID */
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, filein, NULL)) == NULL) mexErrMsgTxt ("GMT: (grdinfo) Read failure\n");
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, filein, NULL)) == NULL) mexErrMsgTxt ("GMT: (grdinfo) Read failure\n");
 	
 	mexPrintf("%s: Title: %s\n", filein, G->header->title);
 	mexPrintf("%s: Command: %s\n", filein, G->header->command);

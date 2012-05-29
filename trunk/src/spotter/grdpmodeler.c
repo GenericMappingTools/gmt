@@ -39,31 +39,31 @@
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct E {	/* -Erotfile */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} E;
 	struct F {	/* -Fpolfile */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} S;
 	struct T {	/* -T<fixtime> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} T;
 };
@@ -129,7 +129,7 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -144,8 +144,8 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 			/* Supplemental parameters */
 			
 			case 'E':	/* File with stage poles */
-				Ctrl->E.active = TRUE;	n = 0;
-				Ctrl->E.file  = strdup (&opt->arg[n]);
+				Ctrl->E.active = TRUE;
+				Ctrl->E.file  = strdup (opt->arg);
 				break;
 			case 'F':
 				Ctrl->F.active = TRUE;
@@ -224,7 +224,11 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 
 GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG col, row, node, inside, seg, k, n_stages, registration, error = FALSE;
+	COUNTER_MEDIUM col, row, inside, stage, n_stages, registration;
+	GMT_LONG retval;
+	GMT_BOOLEAN error = FALSE;
+	
+	COUNTER_LARGE node, seg;
 	
 	double lon, lat, d, value = 0.0, t_max, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 	
@@ -263,11 +267,11 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {	/* Gave an age grid */
-		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G_age = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : G_age->header->wesn), 4, double);
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G_age) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, G_age) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		GMT_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
@@ -280,7 +284,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
@@ -288,12 +292,12 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, FALSE, FALSE, 0, &t_max);
-	for (k = 0; k < n_stages; k++) {
-		if (p[k].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
-			p[k].omega = -p[k].omega;
-			p[k].lat = -p[k].lat;
-			p[k].lon += 180.0;
-			if (p[k].lon > 360.0) p[k].lon -= 360.0;
+	for (stage = 0; stage < n_stages; stage++) {
+		if (p[stage].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
+			p[stage].omega = -p[stage].omega;
+			p[stage].lat = -p[stage].lat;
+			p[stage].lon += 180.0;
+			if (p[stage].lon > 360.0) p[stage].lon -= 360.0;
 		}
 	}
 	if (Ctrl->T.active && Ctrl->T.value > t_max) {
@@ -336,43 +340,44 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 		age = (Ctrl->T.active) ? Ctrl->T.value : G_age->data[node];
 		if (GMT_is_dnan (age)) continue;	/* No crustal age */
-		if ((k = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
+		if ((retval = spotter_stage (GMT, age, p, n_stages)) < 0) continue;	/* Outside valid stage rotation range */
+		stage = retval;
 		switch (Ctrl->S.mode) {
 			case PM_RATE:	/* Compute plate motion speed at this point in time/space */
-				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat);
-				value = sind (d) * p[k].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
+				d = GMT_distance (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat);
+				value = sind (d) * p[stage].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
 				break;
 			case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[k].lon, p[k].lat, FALSE) - 90.0;
+				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, FALSE) - 90.0;
 				GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
 				break;
 			case PM_OMEGA:	/* Compute plate rotation rate omega */
-				value = p[k].omega;	/* degree/Myr  */
+				value = p[stage].omega;	/* degree/Myr  */
 				break;
 			case PM_DLAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, FALSE, NULL, NULL);
+				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = grd_y[row] - GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				break;
 			case PM_LAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, FALSE, NULL, NULL);
+				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 				break;
 			case PM_DLON:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, FALSE, NULL, NULL);
+				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = grd_x[col] - lon * R2D;
 				if (fabs (value) > 180.0) value = copysign (360.0 - fabs (value), -value);
 				break;
 			case PM_LON:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, FALSE, NULL, NULL);
+				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = lon * R2D;
 				break;
 			case PM_DIST:	/* Compute distance between node and point of origin at ridge */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, FALSE, NULL, NULL);
+				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D) * GMT->current.proj.DIST_KM_PR_DEG;
 				break;
 		}
@@ -408,7 +413,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 	sprintf (G_mod->header->remark, "Plate Model predictions of %s for model %s", quantity[Ctrl->S.mode], Ctrl->E.file);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G_mod) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_mod) != GMT_OK) {
 		Return (API->error);
 	}
 

@@ -39,41 +39,37 @@
 
 struct GMTVECTOR_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct In {	/* infile */
-		GMT_LONG active;
-		GMT_LONG n_args;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n_args;
 		char *arg;
 	} In;
 	struct A {	/* -A[m[<conf>]|<vec>] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double conf;
 		char *arg;
 	} A;
 	struct C {	/* -C[i|o] */
-		GMT_LONG active[2];
+		GMT_BOOLEAN active[2];
 	} C;
-	struct D {	/* -D[dim] */
-		GMT_LONG active;
-		GMT_LONG mode;
-	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} E;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S[vec] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *arg;
 	} S;
 	struct T {	/* -T[operator] */
-		GMT_LONG active;
-		GMT_LONG mode;
-		GMT_LONG degree;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN degree;
+		COUNTER_MEDIUM mode;
 		double par[3];
 	} T;
 };
@@ -144,7 +140,8 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG  n, n_in, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_in, n_errors = 0, n_files = 0;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -240,7 +237,7 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 
 	n_in = (Ctrl->C.active[GMT_IN] && GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
-	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_in);
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_in);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.arg && !GMT_access (GMT, Ctrl->S.arg, R_OK), "Syntax error -S: Secondary vector cannot be a file!\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->In.n_args && Ctrl->A.active && Ctrl->A.mode == 0, "Syntax error: Cannot give input files and -A<vec> at the same time\n");
@@ -249,11 +246,14 @@ GMT_LONG GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl
 }
 
 GMT_LONG decode_vector (struct GMT_CTRL *C, char *arg, double coord[], GMT_LONG cartesian, GMT_LONG geocentric) {
-	GMT_LONG n, n_out, n_errors = 0, ix, iy;
+	COUNTER_MEDIUM n_out, n_errors = 0, ix, iy;
+	GMT_LONG n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	
 	ix = (C->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-	n = n_out = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+	n = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+	assert (n >= 2);
+	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
 		if (GMT_is_geographic (C, GMT_IN)) {
 			n_errors += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][ix], GMT_scanf_arg (C, txt_a, C->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
@@ -321,9 +321,9 @@ void make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, do
 	R[2][2] = E[2] * E[2] * c + cos_w;
 }
 
-void matrix_vect_mult (struct GMT_CTRL *C, GMT_LONG dim, double a[3][3], double b[3], double c[3])
+void matrix_vect_mult (struct GMT_CTRL *C, COUNTER_MEDIUM dim, double a[3][3], double b[3], double c[3])
 {	/* c = A * b */
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
@@ -331,7 +331,7 @@ void matrix_vect_mult (struct GMT_CTRL *C, GMT_LONG dim, double a[3][3], double 
 void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 {	/* Given points in A and B, return the bisector pole via P */
 	 
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 	double Pa[3], M[3];
 	 
 	/* Get mid point between A and B */
@@ -350,11 +350,12 @@ void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 	GMT_normalize3v (C, P);
 }
 
-void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesian, double conf, double *M, double *E)
+void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_BOOLEAN cartesian, double conf, double *M, double *E)
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
-	GMT_LONG i, j, k, p, tbl, seg, row, nv, n, nrots;
+	COUNTER_MEDIUM i, j, k, tbl, nv, nrots;
+	COUNTER_LARGE row, n, seg, p;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -393,7 +394,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesia
 	}
 	for (k = 0; k < nv; k++) GMT_free (GMT, P[k]);
 
-	if (GMT_jacobi (GMT, C, &nv, &nv, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
+	if (GMT_jacobi (GMT, C, nv, nv, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
 		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (nv == 3) {
@@ -434,7 +435,10 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, GMT_LONG cartesia
 
 GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG tbl, seg, row, error = 0, k, n, nv, n_out, add = 0, single = FALSE;
+	COUNTER_MEDIUM tbl, error = 0, k, n, nv, n_out, add = 0;
+	GMT_BOOLEAN single = FALSE;
+	
+	COUNTER_LARGE row, seg;
 
 	double out[3], vector_1[3], vector_2[3], vector_3[3], R[3][3], E[3];
 
@@ -487,12 +491,12 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (vector_1, 3, double);
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
-		GMT_LONG dim[4] = {1, 1, 3, 1};
+		COUNTER_LARGE dim[4] = {1, 1, 3, 1};
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 				Return (API->error);
 			}
-			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
@@ -519,10 +523,10 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		single = TRUE;
 	}
 	else {	/* Read input files or stdin */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
-		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
 		}
 		n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
@@ -619,10 +623,10 @@ GMT_LONG GMT_gmtvector (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Time to write out the results */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, Ctrl->Out.file, Dout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
 	if (single) GMT_free_dataset (GMT, &Din);

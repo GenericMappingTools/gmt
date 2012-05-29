@@ -119,8 +119,8 @@ static void getIndexes (Grid *_grid, GridPoint *coord, XPoint *index)
   int column, row;
   GMTGrid *grid = (GMTGrid *)_grid;
   
-  column = (int)((coord->x - grid->header.wesn[XLO]) / grid->header.inc[GMT_X]);
-  row    = (int)((coord->y - grid->header.wesn[YLO]) / grid->header.inc[GMT_Y]);
+  column = lrint ((coord->x - grid->header.wesn[XLO]) / grid->header.inc[GMT_X]);
+  row    = lrint ((coord->y - grid->header.wesn[YLO]) / grid->header.inc[GMT_Y]);
   index->x = column;
   /* Allow for origin being at the bottom rather than the top */
   index->y = grid->header.ny - row;

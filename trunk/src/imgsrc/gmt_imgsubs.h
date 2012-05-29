@@ -58,7 +58,7 @@ struct GMT_IMG_RANGE {
  * to simplify the computation of coordinates for N by N
  * averages in the output:  */
  
- struct GMT_IMG_COORD {
+struct GMT_IMG_COORD {
 	double	radius;		/* # of pixels in 1 radian of longitude */
 	GMT_LONG	nx360;		/* # of pixels in 360 degrees of longtd */
 	GMT_LONG	nxcol;		/* # of columns in input img file  */

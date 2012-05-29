@@ -89,8 +89,8 @@ struct PSSEGYZ_CTRL {
 	} Q;
 	struct S {	/* -S */
 		bool active;
-		int fixed[2];
-		int mode[2];
+		bool fixed[2];
+		COUNTER_MEDIUM mode[2];
 		int value[2];
 		double orig[2];
 	} S;
@@ -181,7 +181,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG k, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM k, n_errors = 0, n_files = 0;
 	char *txt[2], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -351,22 +351,22 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	GMT_geoz_to_xy (GMT, x0+(double)data1*dev_x, y0+(double)data1*dev_y, z1, &xp1, &yp1);
 	slope = (yp1 - yp0) / (xp1 - xp0);
 
-	px0 = (GMT_LONG) ((xp0 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
-	px1 = (GMT_LONG) ((xp1 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
-	py0 = (GMT_LONG) ((yp0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
-	py1 = (GMT_LONG) ((yp1 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	px0 = lrint ((xp0 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
+	px1 = lrint ((xp1 - GMT->current.proj.z_project.xmin) * PSL_DOTS_PER_INCH);
+	py0 = lrint ((yp0 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
+	py1 = lrint ((yp1 - GMT->current.proj.z_project.ymin) * PSL_DOTS_PER_INCH);
 
 	/* now have the pixel locations for the two samples - join with a line..... */
 	if (fabs (slope) <= 1.0) { /* more pixels needed in x direction */
 		if (px0 < px1) {
 			for (ix = px0; ix <= px1; ix++) {
-				iy = py0 + (GMT_LONG) (slope * (float) (ix - px0));
+				iy = py0 + lrint (slope * (float) (ix - px0));
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (ix = px1; ix <= px0; ix++) {
-				iy = py0 + (GMT_LONG) (slope * (float) (ix - px0));
+				iy = py0 + lrint (slope * (float) (ix - px0));
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 
@@ -375,13 +375,13 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	else { /* more pixels needed in y direction */
 		if (py0 < py1) {
 			for (iy = py0; iy <= py1; iy++) {
-				ix = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+				ix = px0 + lrint (((float) (iy - py0)) / slope);
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
 		else {
 			for (iy = py1; iy <= py0; iy++) {
-				ix = px0 + (GMT_LONG) (((float) (iy - py0)) / slope);
+				ix = px0 + lrint (((float) (iy - py0)) / slope);
 				segyz_paint (ix, iy, bitmap, bm_nx, bm_ny);
 			}
 		}
@@ -440,7 +440,7 @@ and slopes of the two other sides */
 			x1 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
 			x2 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
 #ifdef DEBUG
-			GMT_report (GMT, GMT_MSG_DEBUG, "apex_y<edge_y iy %ld x1 %ld x2 %ld\n",iy,x1,x2);
+			GMT_report (GMT, GMT_MSG_DEBUG, "apex_y<edge_y iy %d x1 %d x2 %d\n",iy,x1,x2);
 #endif
 			/* locations in pixels of two x positions for this scan line */
 			if (x1 < x2) {
@@ -454,7 +454,7 @@ and slopes of the two other sides */
 			x1 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH) + GMT->current.proj.z_project.ymin - apex_y) * slope) * PSL_DOTS_PER_INCH);
 			x2 = lrint ((apex_x - GMT->current.proj.z_project.xmin + (((double)iy / PSL_DOTS_PER_INCH )+ GMT->current.proj.z_project.ymin - apex_y) * slope0) * PSL_DOTS_PER_INCH);
 #ifdef DEBUG
-				GMT_report (GMT, GMT_MSG_DEBUG, "apex_y>edge_y iy %ld x1 %ld x2 %ld\n",iy,x1,x2);
+				GMT_report (GMT, GMT_MSG_DEBUG, "apex_y>edge_y iy %d x1 %d x2 %d\n",iy,x1,x2);
 #endif
 			if (x1 < x2) {
 				for (ix = x1; ix < x2; ix++) segyz_paint (ix,iy, bitmap, bm_nx, bm_ny);
@@ -554,7 +554,7 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 		z1 = (float )(dz * (float) iz + toffset);
 		if (z1 >= GMT->common.R.wesn[ZLO] && z1 <= GMT->common.R.wesn[ZHI]) {	/* check within z bounds specified */
 #ifdef DEBUG
-			GMT_report (GMT, GMT_MSG_DEBUG, "x0, %f\t y0, %f\t,z1, %f\t data[iz], %f\t iz, %ld\n", x0, y0, z1, data[iz], iz);
+			GMT_report (GMT, GMT_MSG_DEBUG, "x0, %f\t y0, %f\t,z1, %f\t data[iz], %f\t iz, %d\n", x0, y0, z1, data[iz], iz);
 #endif
 			if (plot_wig) wig_bmap (GMT, x0, y0, data[iz-1],data[iz], z0, z1, dev_x, dev_y,bitmap, bm_nx, bm_ny);	/* plotting wiggle */
 			if (do_fill) {	/* plotting VA -- check data points first */
@@ -631,11 +631,11 @@ GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* define area for plotting and size of array for bitmap */
 	xlen = GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO];
 	xpix = xlen * PSL_DOTS_PER_INCH; /* pixels in x direction */
-	bm_nx = (GMT_LONG) ceil (xpix / 8.0); /* store 8 pixels per byte in x direction but must have
+	bm_nx = lrint (ceil (xpix / 8.0)); /* store 8 pixels per byte in x direction but must have
 				whole number of bytes per scan */
 	ylen = GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO];
 	ypix = ylen * PSL_DOTS_PER_INCH; /* pixels in y direction */
-	bm_ny = (GMT_LONG) ypix;
+	bm_ny = lrint (ypix);
 	nm = bm_nx * bm_ny;
 
 	if ((check = get_segy_reelhd (fpi, reelhead)) != true) exit (1);
@@ -654,22 +654,22 @@ use a few of these*/
 /* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %ld\n", Ctrl->M.value);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %d\n", Ctrl->M.value);
 
 
 	if (!Ctrl->L.value) {/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %ld\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %ld, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
 		exit (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples is %ld\n", n_samp);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples is %d\n", n_samp);
 
 	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
 
@@ -763,7 +763,7 @@ use a few of these*/
 			header->num_samps = bswap32 (header->num_samps);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "trace %ld at x=%f, y=%f \n", ix+1, x0, y0);
+		GMT_report (GMT, GMT_MSG_NORMAL, "trace %d at x=%f, y=%f \n", ix+1, x0, y0);
 
 		if (Ctrl->Q.value[U_ID]) {
 			toffset = (float) -(fabs ((double)(header->sourceToRecDist)) / Ctrl->Q.value[U_ID]);

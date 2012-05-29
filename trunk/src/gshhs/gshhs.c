@@ -47,35 +47,35 @@
 
 struct GSHHS_CTRL {
 	struct In {	/* <file> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct Out {	/* > <file> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double min;	/* Cutoff area in km^2 */
 	} A;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct G {	/* -G */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} G;
 	struct I {	/* -I[<id>|c] */
-		GMT_LONG active;
-		GMT_LONG mode;
-		GMT_LONG id;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM id;
 	} I;
 	struct N {	/* -N<level> */
-		GMT_LONG active;
-		GMT_LONG level;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM level;
 	} N;
 	struct Q {	/* -Qe|i */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} Q;
 };
 
@@ -125,7 +125,8 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -157,12 +158,17 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 				Ctrl->I.active = TRUE;
 				if (opt->arg[0] == 'c')
 					Ctrl->I.mode = 1;
-				else
-					Ctrl->I.id = atoi (opt->arg);
+				else {
+					sval = atoi (opt->arg);
+					n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -I: ID cannot be negative!\n");
+					Ctrl->I.id = sval;
+				}
 				break;
 			case 'N':
 				Ctrl->N.active = TRUE;
-				Ctrl->N.level = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N: Level cannot be negative!\n");
+				Ctrl->N.level = sval;
 				break;
 			case 'Q':
 				Ctrl->Q.active = TRUE;
@@ -180,9 +186,7 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	}
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: No data file specified!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.level < 0, "Syntax error -N: Level cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && Ctrl->A.min < 0.0, "Syntax error -A: area cannot be negative!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->I.id < 0, "Syntax error -I: ID cannot be negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && Ctrl->Q.mode == 3, "Syntax error -Q: Append e or i!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -197,9 +201,14 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 
 GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, seg_no = 0, is_line = 0, n_alloc = 0, n_seg = 0, max_east = 270000000;
-	GMT_LONG error, n_read, m, gmode, level, version, greenwich, is_river, src;
-	GMT_LONG must_swab, dim[4] = {1, 0, 2, 0}, OK, first = TRUE;
+	COUNTER_MEDIUM row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
+	GMT_LONG error, gmode, version, greenwich, is_river, src;
+	int32_t max_east = 270000000;
+	GMT_BOOLEAN must_swab, OK, first = TRUE;
+	
+	COUNTER_LARGE dim[4] = {1, 0, 2, 0};
+	
+	size_t n_alloc = 0;
 
 	double w, e, s, n, area, f_area, scale = 10.0;
 
@@ -284,7 +293,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
-	n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);
+	n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);
 	version = (h.flag >> 8) & 255;
 	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
@@ -297,7 +306,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
-		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %ld in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = FALSE;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -316,13 +325,14 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		area = h.area / scale;				/* Now im km^2 */
 		f_area = h.area_full / scale;			/* Now im km^2 */
+		this_id = h.id;
 		
-		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && h.id == Ctrl->I.id) || (Ctrl->I.mode && h.id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
+		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && this_id == Ctrl->I.id) || (Ctrl->I.mode && this_id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
 		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread (&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+			n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);	/* Get the next GSHHS header */
 			continue;	/* Back to top of loop */
 		}
 		
@@ -336,7 +346,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else {
 			dim[3] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
-				GMT_LONG old_n_alloc = n_alloc;
+				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
 				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
 				GMT_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
@@ -345,13 +355,13 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Create the segment/polygon header record */
 		if (is_line) {	/* River or border line-segment */
-			sprintf (header, "%6d%8d%3ld%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
+			sprintf (header, "%6d%8d%3d%2c%11.5f%10.5f%10.5f%10.5f", h.id, h.n, level, source, w, e, s, n);
 			max_east = 180000000;	/* For line segments we always use -180/+180  */
 		}
 		else {		/* Island or lake polygon */
 			(h.container == -1) ? sprintf (container, "-") : sprintf (container, "%6d", h.container);
 			(h.ancestor == -1) ? sprintf (ancestor, "-") : sprintf (ancestor, "%6d", h.ancestor);
-			sprintf (header, "%6d%8d%2ld%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
+			sprintf (header, "%6d%8d%2d%2c %.12g %.12g%11.5f%11.5f%10.5f%10.5f %s %s", h.id, h.n, level, source, area, f_area, w, e, s, n, container, ancestor);
 		}
 
 		if (Ctrl->L.active) {	/* Skip data, only wanted the headers */
@@ -371,23 +381,23 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			/* Allocate h.n number of data records */
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
-			for (k = 0; k < h.n; k++) {
-				if (fread (&p, (size_t)sizeof(struct POINT), (size_t)1, fp) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %ld.\n", Ctrl->In.file, name[is_line], h.id, k);
+			for (row = 0; row < h.n; row++) {
+				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					Return (EXIT_FAILURE);
 				}
 				if (must_swab) /* Must deal with different endianness */
 					bswap_POINT_struct (&p);
-				T[seg_no]->coord[GMT_X][k] = p.x * GSHHS_SCL;
-				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][k] -= 360.0;
-				T[seg_no]->coord[GMT_Y][k] = p.y * GSHHS_SCL;
+				T[seg_no]->coord[GMT_X][row] = p.x * GSHHS_SCL;
+				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][row] -= 360.0;
+				T[seg_no]->coord[GMT_Y][row] = p.y * GSHHS_SCL;
 			}
-			T[seg_no]->coord[GMT_X][k] = T[seg_no]->coord[GMT_Y][k] = GMT->session.d_NaN;
+			T[seg_no]->coord[GMT_X][row] = T[seg_no]->coord[GMT_Y][row] = GMT->session.d_NaN;
 			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
-		n_read = fread(&h, (size_t)sizeof (struct GSHHS), (size_t)1, fp);	/* Get the next GSHHS header */
+		n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);	/* Get the next GSHHS header */
 	}
 	GMT_fclose (GMT, fp);
 	
@@ -396,7 +406,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, NULL, 0, Ctrl->Out.file, X) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -406,12 +416,12 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, NULL, 0, Ctrl->Out.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, gmode, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %ld %s out: %ld\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

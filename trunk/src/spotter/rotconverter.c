@@ -67,30 +67,30 @@
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
 	struct E {	/* -E[<value>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
-		GMT_LONG mode;	/* out mode (TRUE if total reconstruction rotations) */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;	/* out mode (TRUE if total reconstruction rotations) */
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} G;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -148,7 +148,7 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -238,12 +238,14 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct EULER *a = NULL, *b = NULL;	/* Pointer to arrays of stage poles */
 
-	GMT_LONG i, j, n_p, n_a = 1, n_b, n, k;	/* Misc. counters */
-	GMT_LONG last_sign, n_slash, n_out = 0, n_opt = 0, confusion = FALSE, online_stage = FALSE;
-	GMT_LONG error = FALSE;		/* Set to TRUE if arguments are inconsistent */
-	GMT_LONG first = TRUE;		/* TRUE for first input file */
-	GMT_LONG online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
-	GMT_LONG no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
+	COUNTER_MEDIUM col, k, stage;	/* Misc. counters */
+	COUNTER_MEDIUM n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
+	GMT_LONG last_sign;
+	GMT_BOOLEAN confusion = FALSE, online_stage = FALSE;
+	GMT_BOOLEAN error = FALSE;		/* Set to TRUE if arguments are inconsistent */
+	GMT_BOOLEAN first = TRUE;		/* TRUE for first input file */
+	GMT_BOOLEAN online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
+	GMT_BOOLEAN no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
 
 	double zero = 0.0;		/* Needed to pass to spotter_init */
 	double lon = 0.0, lat = 0.0;	/* Pole location for online rotations */
@@ -329,15 +331,15 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			online_rot = FALSE;
 		}
 		else if (GMT_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
-			for (j = n_slash = 0; opt->arg[j]; j++) if (opt->arg[j] == '/') n_slash++;
+			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot read file %s\n", opt->arg);
 				Return (EXIT_FAILURE);
 			}
 			else {	/* Try to decode as a single rotation */
 
-				j = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &lon, &lat, &t0, &t1, &angle);
-				if (j == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
+				k = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &lon, &lat, &t0, &t1, &angle);
+				if (k == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = TRUE;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
@@ -348,7 +350,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				online_rot = TRUE;
-				online_stage = (j == 5);
+				online_stage = (k == 5);
 			}
 		}
 		else
@@ -368,11 +370,11 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_a = spotter_init (GMT, opt->arg, &a, FALSE, TRUE, FALSE, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
 			if (last_sign == -1) {	/* Leading - sign, simply reverse the rotation angles */
-				for (j = 0; j < n_a; j++) {
-					a[j].omega = -a[j].omega;
-					spotter_cov_of_inverse (GMT, &a[j], a[j].C);
+				for (stage = 0; stage < n_a; stage++) {
+					a[stage].omega = -a[stage].omega;
+					spotter_cov_of_inverse (GMT, &a[stage], a[stage].C);
 				}
-				last_sign = 1;
+				last_sign = +1;
 			}
 			first = FALSE;
 		}
@@ -389,7 +391,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				n_b = spotter_init (GMT, opt->arg, &b, FALSE, TRUE, FALSE, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
-			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);			/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
+			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);		/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
 			GMT_free (GMT, a);
 			GMT_free (GMT, b);
 			a = p;
@@ -405,7 +407,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -420,47 +422,47 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else if (Ctrl->F.mode)	/* Easy, simply output what we've got following a header*/
 		sprintf (record, "#longitude%slatitude%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, time_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	else if (Ctrl->F.mode)		/* Easy, simply output what we've got without a header */
-		i = 0;	/* Do nothing here really */
+		k = 0;	/* Do nothing here really */
 	else {	/* Convert total reconstruction to stages before output */
 		spotter_total_to_stages (GMT, a, n_a, TRUE, TRUE);				/* To ensure we have the right kind of poles for output */
 		printf (record, "#longitude%slatitude%s%s%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, start_text[Ctrl->A.active], GMT->current.setting.io_col_separator, end_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	}
 	if (GMT->current.io.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	
-	for (i = 0; i < n_a; i++) {
-		if (Ctrl->T.active) a[i].omega = -a[i].omega;
-		if ((Ctrl->S.active && a[i].lat > 0.0) || (Ctrl->N.active && a[i].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active) && a[i].omega < 0.0))	/* flip to antipole */
-			a[i].lat = -a[i].lat, a[i].lon += 180.0, a[i].omega = -a[i].omega;
-		while (a[i].lon >= 360.0) a[i].lon -= 360.0;				/* Force geodetic longitude range */
-		while (a[i].lon <= -180.0) a[i].lon += 360.0;				/* Force geodetic longitude range */
-		while (!Ctrl->D.active && a[i].lon < 0.0) a[i].lon += 360.0;		/* Force geodetic longitude range */
-		while (Ctrl->D.active && a[i].lon > 180.0) a[i].lon -= 360.0;		/* Force a geographic longitude range */
-		if (Ctrl->E.active) a[i].omega *= Ctrl->E.value;
-		out[GMT_X] = a[i].lon;	out[GMT_Y] = a[i].lat;
-		n = 2;
+	for (stage = 0; stage < n_a; stage++) {
+		if (Ctrl->T.active) a[stage].omega = -a[stage].omega;
+		if ((Ctrl->S.active && a[stage].lat > 0.0) || (Ctrl->N.active && a[stage].lat < 0.0) || (!(Ctrl->S.active || Ctrl->N.active) && a[stage].omega < 0.0))	/* flip to antipole */
+			a[stage].lat = -a[stage].lat, a[stage].lon += 180.0, a[stage].omega = -a[stage].omega;
+		while (a[stage].lon >= 360.0) a[stage].lon -= 360.0;				/* Force geodetic longitude range */
+		while (a[stage].lon <= -180.0) a[stage].lon += 360.0;				/* Force geodetic longitude range */
+		while (!Ctrl->D.active && a[stage].lon < 0.0) a[stage].lon += 360.0;		/* Force geodetic longitude range */
+		while (Ctrl->D.active && a[stage].lon > 180.0) a[stage].lon -= 360.0;		/* Force a geographic longitude range */
+		if (Ctrl->E.active) a[stage].omega *= Ctrl->E.value;
+		out[GMT_X] = a[stage].lon;	out[GMT_Y] = a[stage].lat;
+		col = 2;
 		if (Ctrl->G.active) {
-			out[0] = (double)a[i].id[0];	out[5] = (double)a[i].id[1];
-			out[1] = a[i].t_start;
-			out[2] = a[i].lat;
-			out[3] = a[i].lon;
-			out[4] = a[i].omega * a[i].duration;
+			out[0] = (double)a[stage].id[0];	out[5] = (double)a[stage].id[1];
+			out[1] = a[stage].t_start;
+			out[2] = a[stage].lat;
+			out[3] = a[stage].lon;
+			out[4] = a[stage].omega * a[stage].duration;
 		}
 		else if (Ctrl->F.mode && no_time) {
-			out[n++] = a[i].omega * a[i].duration;
+			out[col++] = a[stage].omega * a[stage].duration;
 		}
 		else if (Ctrl->F.mode) {
-			out[n++] = a[i].t_start;
-			out[n++] = a[i].omega * a[i].duration;
+			out[col++] = a[stage].t_start;
+			out[col++] = a[stage].omega * a[stage].duration;
 		}
 		else {
-			out[n++] = a[i].t_start;
-			out[n++] = a[i].t_stop;
-			out[n++] = a[i].omega * a[i].duration;
+			out[col++] = a[stage].t_start;
+			out[col++] = a[stage].t_stop;
+			out[col++] = a[stage].omega * a[stage].duration;
 		}
-		if (a[i].has_cov) {
+		if (a[stage].has_cov) {
 			double K[9];
-			spotter_covar_to_record (GMT, &a[i], K);
-			for (k = 0; k < 9; k++) out[n++] = K[k];
+			spotter_covar_to_record (GMT, &a[stage], K);
+			for (k = 0; k < 9; k++) out[col++] = K[k];
 		}
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 	}

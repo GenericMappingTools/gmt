@@ -903,10 +903,10 @@ L920:
 	return 0;
 } /* fourt_ */
 
-GMT_LONG gmt_get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
+GMT_LONG gmt_get_non_symmetric_f (COUNTER_MEDIUM *f, COUNTER_MEDIUM n_in)
 {
 	/* Return the product of the non-symmetric factors in f[]  */
-	GMT_LONG i = 0, j = 1, retval = 1;
+	GMT_LONG i = 0, j = 1, retval = 1, n = n_in;
 
 	if (n == 1) return (f[0]);
 
@@ -920,7 +920,7 @@ GMT_LONG gmt_get_non_symmetric_f (GMT_LONG *f, GMT_LONG n)
 	return (retval);
 }
 
-GMT_LONG brenner_worksize (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny)
+size_t brenner_worksize (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny)
 {
 	/* Find the size of the workspace that will be needed by the transform.
 	 * To use this routine for a 1-D transform, set ny = 1.
@@ -938,7 +938,8 @@ GMT_LONG brenner_worksize (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny)
 	 * W. H. F. Smith, 26 February 1992.
 	 *  */
 
-	GMT_LONG f[32], n_factors, nonsymx, nonsymy, nonsym, storage, ntotal;
+	COUNTER_MEDIUM f[32], n_factors, nonsymx, nonsymy, nonsym;
+	size_t storage, ntotal;
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
 	n_factors = GMT_get_prime_factors (C, nx, f);
@@ -2498,7 +2499,7 @@ void cfft1d_fftpack (int *np, fcomplex *c, int *dir)
 	}
 }
 
-GMT_LONG GMT_fft_1d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_fftpack (&np, (fcomplex)data, &dir);
@@ -2574,9 +2575,9 @@ int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 
 return 0;
 
-GMT_LONG GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
-	int N = (int)ny, M = (int)nx, dir = (int)direction;
+	int N = ny, M = nx, dir = direction;
 	return (cfft2d_fftpack (&N, &M, (struct FCOMPLEX *)data, &dir));
 }
 #endif
@@ -2635,7 +2636,7 @@ cfft1d_fftw (int *np, fftwf_complex *c, int *dir)
 	}
 }
 
-GMT_LONG GMT_fft_1d_fftw (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_fftw (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_fftw (&np, (fftwf_complex)data, &dir);
@@ -2700,7 +2701,7 @@ cfft1d_perflib (int *np,fcomplex *c,int *dir)
 	}
 }
 
-GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_perflib (&np, (fcomplex)data, &dir);
@@ -2767,7 +2768,7 @@ void cfft1d_cleanup_()
 	}
 }
 
-GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	int np = (int)n, dir = (int)direction;
 	cfft1d_accelerate (&np, (DSPComplex *)data, &dir);
@@ -2779,7 +2780,7 @@ GMT_LONG GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT
 
 #define GMT_radix2(n) doubleAlmostEqualZero(log2 ((double)n), floor(log2 ((double)n)))
 
-GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GMT_LONG ksign, GMT_LONG iform, float *work) */
 	/* Data array */
@@ -2788,16 +2789,17 @@ GMT_LONG GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LO
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 1, work_size = 0;
+	GMT_LONG ksign, ndim = 1, n_signed = n, kmode = mode;
+	size_t work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, n, 1))) work = GMT_memory (C, NULL, work_size, float);
-	(void) BRENNER_fourt_ (data, &n, &ndim, &ksign, &mode, work);
+	(void) BRENNER_fourt_ (data, &n_signed, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* Data array */
 	/* Dimension array */
@@ -2805,12 +2807,13 @@ GMT_LONG GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_L
 	/* Forward(-1) or Inverse(+1) */
 	/* Real(0) or complex(1) data */
 	/* Work array */
-	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny}, work_size = 0;
+	GMT_LONG ksign, ndim = 2, nn[2] = {nx, ny}, kmode = mode;
+	size_t work_size = 0;
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
-	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %ld\n", work_size);
-	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &mode, work);
+	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
+	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
 }
@@ -2830,7 +2833,7 @@ void GMT_fourt (struct GMT_CTRL *C, float *data, GMT_LONG *nn, GMT_LONG ndim, GM
 }
 #endif
 
-GMT_LONG GMT_fft_1d_selection (struct GMT_CTRL *C, GMT_LONG n) {
+GMT_LONG GMT_fft_1d_selection (struct GMT_CTRL *C, COUNTER_MEDIUM n) {
 	/* Returns the most suitable 1-D FFT for the job - or the one requested via GMT_FFT */
 	
 	if (C->current.setting.fft != GMT_FFT_AUTO) return (C->current.setting.fft);	/* Specific selection requested */
@@ -2842,7 +2845,7 @@ GMT_LONG GMT_fft_1d_selection (struct GMT_CTRL *C, GMT_LONG n) {
 	return (GMT_FFT_BRENNER);						/* Default */
 }
 
-GMT_LONG GMT_fft_2d_selection (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny) {
+GMT_LONG GMT_fft_2d_selection (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny) {
 	/* Returns the most suitable 2-D FFT for the job - or the one requested via GMT_FFT */
 	
 	if (C->current.setting.fft != GMT_FFT_AUTO) {	/* Specific selection requested */
@@ -2858,7 +2861,7 @@ GMT_LONG GMT_fft_2d_selection (struct GMT_CTRL *C, GMT_LONG nx, GMT_LONG ny) {
 	return (GMT_FFT_BRENNER);						/* Default */
 }
 
-GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM n, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
@@ -2872,7 +2875,7 @@ GMT_LONG GMT_fft_1d (struct GMT_CTRL *C, float *data, GMT_LONG n, GMT_LONG direc
 	return (status);
 }
 
-GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, GMT_LONG direction, GMT_LONG mode)
+GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, GMT_LONG direction, COUNTER_MEDIUM mode)
 {
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes
@@ -2888,28 +2891,31 @@ GMT_LONG GMT_fft_2d (struct GMT_CTRL *C, float *data, GMT_LONG nx, GMT_LONG ny, 
 
 void GMT_fft_initialization (struct GMT_CTRL *C) {
 	/* Called by GMT_begin and sets up pointers to the available FFT calls */
+	COUNTER_MEDIUM k;
 	
-	GMT_memset (C->session.fft1d, N_GMT_FFT, p_func_l);	/* Start with nothing */
-	GMT_memset (C->session.fft2d, N_GMT_FFT, p_func_l);	/* Start with nothing */
+	for (k = 0; k < N_GMT_FFT; k++) {
+		C->session.fft1d[k] = NULL;	/* Start with nothing */
+		C->session.fft2d[k] = NULL;	/* Start with nothing */
+	}
 #ifdef WITH_ACCELERATE
-	C->session.fft1d[GMT_FFT_ACCELERATE] = GMT_fft_1d_accelerate;	/* OS X Accelerate Framework */
-	// C->session.fft2d[GMT_FFT_ACCELERATE] = GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */
+	C->session.fft1d[GMT_FFT_ACCELERATE] = &GMT_fft_1d_accelerate;	/* OS X Accelerate Framework */
+	// C->session.fft2d[GMT_FFT_ACCELERATE] = &GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */
 	C->session.fft2d[GMT_FFT_ACCELERATE] = NULL;	/* OS X Accelerate Framework */
 #endif
 #ifdef WITH_FFTW
-	C->session.fft1d[GMT_FFT_W] = GMT_fft_1d_fftw;	/* FFTW */
-	//C->session.fft2d[GMT_FFT_W] = GMT_fft_2d_fftw;	/* FFTW */
+	C->session.fft1d[GMT_FFT_W] = &GMT_fft_1d_fftw;	/* FFTW */
+	//C->session.fft2d[GMT_FFT_W] = &GMT_fft_2d_fftw;	/* FFTW */
 	C->session.fft2d[GMT_FFT_W] = NULL;	/* FFTW */
 #endif
 #ifdef WITH_PERFLIB
-	C->session.fft1d[GMT_FFT_PERFLIB] = GMT_fft_1d_perflib;		/* Sun Performance Library */
-	//C->session.fft2d[GMT_FFT_PERFLIB] = GMT_fft_2d_perflib;		/* Sun Performance Library */
+	C->session.fft1d[GMT_FFT_PERFLIB] = &GMT_fft_1d_perflib;		/* Sun Performance Library */
+	//C->session.fft2d[GMT_FFT_PERFLIB] = &GMT_fft_2d_perflib;		/* Sun Performance Library */
 	C->session.fft2d[GMT_FFT_PERFLIB] = NULL;		/* Sun Performance Library */
 #endif
 #ifdef WITH_FFTPACK
-	C->session.fft1d[GMT_FFT_PACK] = GMT_fft_1d_fftpack;		/* FFTPack */
-	C->session.fft2d[GMT_FFT_PACK] = GMT_fft_2d_fftpack;
+	C->session.fft1d[GMT_FFT_PACK] = &GMT_fft_1d_fftpack;		/* FFTPack */
+	C->session.fft2d[GMT_FFT_PACK] = &GMT_fft_2d_fftpack;
 #endif
-	C->session.fft1d[GMT_FFT_BRENNER] = GMT_fft_1d_brenner;	/* The old GMT standby is always available */
-	C->session.fft2d[GMT_FFT_BRENNER] = GMT_fft_2d_brenner;	/* The old GMT standby is always available */
+	C->session.fft1d[GMT_FFT_BRENNER] = &GMT_fft_1d_brenner;	/* The old GMT standby is always available */
+	C->session.fft2d[GMT_FFT_BRENNER] = &GMT_fft_2d_brenner;	/* The old GMT standby is always available */
 }

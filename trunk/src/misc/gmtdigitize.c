@@ -62,32 +62,32 @@
 struct GMTDIGITIZE_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* Device */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *device;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double limit;
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG LPI;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *name;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_LONG active[2];
+		GMT_BOOLEAN active[2];
 	} Z;
 };
 
@@ -117,15 +117,15 @@ GMT_LONG get_digitize_raw (struct GMT_CTRL *GMT, GMT_LONG digunit, double *xdig,
 	GMT_LONG i, n, ix, iy;
 	char buffer[256], button;
 	
-	n = read (digunit, buffer, (size_t)255);
+	n = read (digunit, buffer, 255U);
 	if (n <= 0) return (END_BUTTON);
 	n--;
 	buffer[n] = 0;
 #ifdef DEBUG
-	GMT_report (GMT, GMT_MSG_DEBUG, "Got %ld bytes [%s]\n", n, buffer);
+	GMT_report (GMT, GMT_MSG_DEBUG, "Got %d bytes [%s]\n", n, buffer);
 #endif
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
-	sscanf (buffer, "%ld %ld %c", &ix, &iy, &button);
+	sscanf (buffer, "%d %d %c", &ix, &iy, &button);
 	
 	*xdig = (double)(ix) * C->INV_LPI;	/* Convert from lines per inch to inches */
 	*ydig = (double)(iy) * C->INV_LPI;
@@ -155,7 +155,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 		if (strchr (name, '%') != NULL)	/* Individual file names */
 			sprintf (this_file, name, n_segments);
 		else
-			strncpy (this_file, name, (size_t)GMT_BUFSIZ);
+			strncpy (this_file, name, GMT_BUFSIZ);
 		if ((fp = GMT_fopen (GMT, this_file, "w")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Could not create file %s\n", this_file);
 			return (NULL);
@@ -212,7 +212,7 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -272,8 +272,8 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 
 GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, ok, multi_files, n_segments = 0;
-	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit;
+	GMT_BOOLEAN error = FALSE, ok, multi_files;
+	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
 	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
 	
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[80], this_file[GMT_BUFSIZ];
@@ -492,9 +492,9 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	n_expected_fields = 2 + Ctrl->Z.active[V_ID] + Ctrl->Z.active[K_ID];
 	if (Ctrl->Z.active[V_ID])
-		sprintf (format, "%s%s%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
+		sprintf (format, "%s%s%s%s%s%s%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	else
-		sprintf (format, "%s%s%s%s%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
+		sprintf (format, "%s%s%s%s%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	
 	x_in_min = y_in_min = x_out_min = y_out_min = DBL_MAX;
 	x_in_max = y_in_max = x_out_max = y_out_max = -DBL_MAX;
@@ -545,7 +545,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_fclose (GMT, fp);
 						sys_retval = chown (this_file, uid, gid);
 						if (sys_retval) {
-							GMT_message (GMT, "chown error - returned %ld", sys_retval);
+							GMT_message (GMT, "chown error - returned %d", sys_retval);
 							exit (EXIT_FAILURE);
 						}
 					}
@@ -562,7 +562,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					z_val = atof (line);
 				}
 				if (button == MULTISEG_BUTTON1) {	/* Just write blank segment header */
-					sprintf (GMT->current.io.segment_header, "%ld", n_segments);
+					sprintf (GMT->current.io.segment_header, "%d", n_segments);
 				}
 				else {	/* Ask for what to write out */
 					GMT_message (GMT, "Enter segment header: ");
@@ -571,7 +571,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						exit (EXIT_FAILURE);
 					}
 					GMT_chop (line);
-					sprintf (GMT->current.io.segment_header, "%ld %s", n_segments, line);
+					sprintf (GMT->current.io.segment_header, "%d %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
 				GMT_report (GMT, GMT_MSG_NORMAL, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
@@ -619,7 +619,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_fclose (GMT, fp);
 		sys_retval = chown (this_file, uid, gid);
 		if (sys_retval) {
-			GMT_message (GMT, "chown error - returned %ld", sys_retval);
+			GMT_message (GMT, "chown error - returned %d", sys_retval);
 			exit (EXIT_FAILURE);
 		}
 	}
@@ -629,8 +629,8 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_message (GMT, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_message (GMT, format, x_out_min, x_out_max, y_out_min, y_out_max);
-		GMT_message (GMT, "Digitized %ld points\n", n);
-		if (Ctrl->S.active && n != n_read) GMT_message (GMT, "%ld fell outside region\n", n_read - n);
+		GMT_message (GMT, "Digitized %d points\n", n);
+		if (Ctrl->S.active && n != n_read) GMT_message (GMT, "%d fell outside region\n", n_read - n);
 	}
 
 	Return (GMT_OK);
@@ -645,7 +645,7 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session (argv[0], GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = (int)GMT_gmtdigitize (API, argc-1, (argv+1));
+	status = GMT_gmtdigitize (API, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

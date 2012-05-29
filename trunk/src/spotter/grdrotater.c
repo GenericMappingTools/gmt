@@ -30,38 +30,38 @@
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct D {	/* -Drotpolfile */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E[+]rotfile */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double lon, lat, w;
 	} e;
 	struct F {	/* -Fpolfile */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} T;
 };
@@ -128,7 +128,7 @@ GMT_LONG GMT_grdrotater_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n, n_files = 0;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -224,7 +224,8 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	 * Note that the path is the same for pixel or grid-registered grids.
 	 */
 
-	GMT_LONG np = 0, add, i, j, dim[4] = {1, 1, 2, 0};
+	COUNTER_MEDIUM np = 0, add, col, row;
+	COUNTER_LARGE dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
 	
@@ -244,9 +245,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 		add = h->nx - !h->registration;
 		S->coord[GMT_X] = GMT_memory (GMT, NULL, add, double);
 		S->coord[GMT_Y] = GMT_memory (GMT, NULL, add, double);
-		for (i = 0; i < add; i++) {
-			S->coord[GMT_X][i] = GMT_col_to_x (GMT, i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			S->coord[GMT_Y][i] = h->wesn[YLO];
+		for (col = 0; col < add; col++) {
+			S->coord[GMT_X][col] = GMT_col_to_x (GMT, col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_Y][col] = h->wesn[YLO];
 		}
 	}
 	np += add;
@@ -254,9 +255,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	add = h->ny - !h->registration;
 	S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
 	S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
-	for (j = 0; j < add; j++) {	/* Loop along east border from south to north */
-		S->coord[GMT_X][np+j] = h->wesn[XHI];
-		S->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, h->ny - 1 - j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+	for (row = 0; row < add; row++) {	/* Loop along east border from south to north */
+		S->coord[GMT_X][np+row] = h->wesn[XHI];
+		S->coord[GMT_Y][np+row] = GMT_row_to_y (GMT, h->ny - 1 - row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	/* Add north border e->w */
@@ -271,9 +272,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 		add = h->nx - !h->registration;
 		S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np, double);
 		S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np, double);
-		for (i = 0; i < add; i++) {
-			S->coord[GMT_X][np+i] = GMT_col_to_x (GMT, h->nx - 1 - i, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
-			S->coord[GMT_Y][np+i] = h->wesn[YHI];
+		for (col = 0; col < add; col++) {
+			S->coord[GMT_X][np+col] = GMT_col_to_x (GMT, h->nx - 1 - col, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], 0.0, h->nx);
+			S->coord[GMT_Y][np+col] = h->wesn[YHI];
 		}
 	}
 	np += add;
@@ -281,9 +282,9 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	add = h->ny - !h->registration;
 	S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], add + np + 1, double);
 	S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], add + np + 1, double);
-	for (j = 0; j < add; j++) {	/* Loop along west border from north to south */
-		S->coord[GMT_X][np+j] = h->wesn[XLO];
-		S->coord[GMT_Y][np+j] = GMT_row_to_y (GMT, j, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
+	for (row = 0; row < add; row++) {	/* Loop along west border from north to south */
+		S->coord[GMT_X][np+row] = h->wesn[XLO];
+		S->coord[GMT_Y][np+row] = GMT_row_to_y (GMT, row, h->wesn[YLO], h->wesn[YHI], h->inc[GMT_Y], 0.0, h->ny);
 	}
 	np += add;
 	S->coord[GMT_X][np] = S->coord[GMT_X][0];	/* Close polygon explicitly */
@@ -298,9 +299,10 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	return (D);
 }
 
-GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
+GMT_BOOLEAN skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
 {	/* Returns TRUE if the selected point is outside the polygon */
-	GMT_LONG seg, inside = FALSE;
+	COUNTER_LARGE seg;
+	COUNTER_MEDIUM inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 		if (GMT_polygon_is_hole (P->segment[seg])) continue;	/* Holes are handled within GMT_inonout */
 		inside = (GMT_inonout (GMT, lon, lat, P->segment[seg]) > 0);
@@ -313,9 +315,12 @@ GMT_LONG skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon,
 
 GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ij, col, row, ij_rot, seg, rec, not_global, registered_d = FALSE;
-	GMT_LONG col2, row2, col_o, row_o, error = FALSE, global = FALSE;
+	GMT_LONG scol, srow;	/* Signed row, col */
+	GMT_BOOLEAN not_global, registered_d = FALSE, error = FALSE, global = FALSE;
+	COUNTER_MEDIUM col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	
+	COUNTER_LARGE ij, ij_rot, seg, rec;
+
 	double xx, yy, lon, P_original[3], P_rotated[3], R[3][3];
 	double *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 
@@ -351,7 +356,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 
@@ -370,13 +375,13 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (!Ctrl->S.active) {	/* Read the input grid */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read grid file\n");
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT->common.R.wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
 	}
 	
 	if (Ctrl->F.active) {	/* Read the user's polygon file */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->F.file, NULL)) == NULL) {
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
@@ -425,7 +430,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	GMT_set_tbl_minmax (GMT, pol);	/* Update table domain */
 	if (!Ctrl->N.active && not_global) {
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->D.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 		registered_d = TRUE;
@@ -498,24 +503,30 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 			lon = pol->segment[seg]->coord[GMT_X][rec];
 			while (lon < G_rot->header->wesn[XLO]) lon += 360.0;
-			col = GMT_grd_x_to_col (GMT, lon, G_rot->header);
-			row = GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
+			scol = GMT_grd_x_to_col (GMT, lon, G_rot->header);
+			srow = GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
 			/* Visit the PAD * PAD number of cells centered on col, row and make sure they have been set */
-			for (row2 = (row - PAD); row2 <= (row + PAD); row2++) {
-				if (row2 < 0 || row2 >= G_rot->header->ny) continue;
-				for (col2 = (col - PAD); col2 <= (col + PAD); col2++) {
-					if (col2 < 0 || col2 >= G_rot->header->nx) continue;
-					ij_rot = GMT_IJP (G_rot->header, row2, col2);
+			start_row = (srow > PAD) ? srow - PAD : 0;
+			stop_row  = srow + PAD;
+			start_col = (scol > PAD) ? scol - PAD : 0;
+			stop_col  = scol + PAD;
+			for (row = start_row; row <= stop_row; row++) {
+				if (row >= G_rot->header->ny) continue;
+				for (col = start_col; col <= stop_col; col++) {
+					if (col >= G_rot->header->nx) continue;
+					ij_rot = GMT_IJP (G_rot->header, row, col);
 					if (!GMT_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
-					if (not_global && skip_if_outside (GMT, pol, grd_x[col2], grd_yc[row2])) continue;	/* Outside polygon */
-					GMT_geo_to_cart (GMT, grd_yc[row2], grd_x[col2], P_rotated, TRUE);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
+					if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside polygon */
+					GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, TRUE);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
 					spotter_matrix_vect_mult (GMT, R, P_rotated, P_original);	/* Rotate the vector */
 					GMT_cart_to_geo (GMT, &xx, &yy, P_original, TRUE);	/* Recover degree lon lat representation */
 					yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-					col_o = GMT_grd_x_to_col (GMT, xx, G->header);
-					if (col_o < 0 || col_o >= G->header->nx) continue;
-					row_o = GMT_grd_y_to_row (GMT, yy, G->header);
-					if (row_o < 0 || row_o >= G->header->ny) continue;
+					scol = GMT_grd_x_to_col (GMT, xx, G->header);
+					if (scol < 0) continue;
+					col_o = scol;	if (col_o >= G->header->nx) continue;
+					srow = GMT_grd_y_to_row (GMT, yy, G->header);
+					if (srow < 0) continue;
+					row_o = srow;	if (row_o >= G->header->ny) continue;
 					ij = GMT_IJP (G->header, row_o, col_o);
 					G_rot->data[ij_rot] = G->data[ij];
 				}
@@ -528,7 +539,7 @@ GMT_LONG GMT_grdrotater (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Write reconstructed grid\n");
 
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, G_rot) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_rot) != GMT_OK) {
 		Return (API->error);
 	}
 

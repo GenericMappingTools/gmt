@@ -165,7 +165,7 @@ struct GMT_LATSWAP_CONSTS {
 	double  c[GMT_LATSWAP_N][4];	/* Coefficients in 4-term series  */
 	double	ra;			/* Authalic   radius (sphere for equal-area)  */
 	double	rm;			/* Meridional radius (sphere for N-S distance)  */
-	GMT_LONG spherical;		/* True if no conversions need to be done.  */
+	GMT_BOOLEAN spherical;		/* True if no conversions need to be done.  */
 };
 
 struct GMT_THREE_D {
@@ -178,25 +178,25 @@ struct GMT_THREE_D {
 	double x_off, y_off;			/* Offsets to the final projected coordinates */
 	double sign[4];		/* Used to determine direction of tickmarks etc */
 	double level;		/* Indicates the last level of the perspective plane (if any) */
-	GMT_LONG view_plane;	/* Determines on which plane needs to be projected */
+	COUNTER_MEDIUM view_plane;	/* Determines on which plane needs to be projected */
 	GMT_LONG plane;		/* Indicates which last plane was plotted in perspective (-1 = none) */
-	GMT_LONG quadrant;	/* quadrant we're looking from */
-	GMT_LONG z_axis;	/* Which z-axis to draw. */
-	GMT_LONG face[3];	/* Tells if this facet has normal in pos direction */
-	GMT_LONG draw[4];	/* axes to draw */
-	GMT_LONG fixed;		/* TRUE if we want a given point to be fixed in the projection [for animations] */
-	GMT_LONG world_given;	/* TRUE if a fixed world point was given in -E ..+glon/lat/z */
-	GMT_LONG view_given;	/* TRUE if a fixed projected point was given in -E ..+cx0/y0 */
+	COUNTER_MEDIUM quadrant;	/* quadrant we're looking from */
+	COUNTER_MEDIUM z_axis;	/* Which z-axis to draw. */
+	COUNTER_MEDIUM face[3];	/* Tells if this facet has normal in pos direction */
+	GMT_BOOLEAN draw[4];	/* axes to draw */
+	GMT_BOOLEAN fixed;		/* TRUE if we want a given point to be fixed in the projection [for animations] */
+	GMT_BOOLEAN world_given;	/* TRUE if a fixed world point was given in -E ..+glon/lat/z */
+	GMT_BOOLEAN view_given;	/* TRUE if a fixed projected point was given in -E ..+cx0/y0 */
 };
 
 struct GMT_DATUM {	/* Main parameter for a particular datum */
 	double a, b, f, e_squared, ep_squared;
 	double xyz[3];
-	GMT_LONG ellipsoid_id;	/* Ellipsoid GMT ID number */
+	GMT_LONG ellipsoid_id;	/* Ellipsoid GMT ID number (or -1) */
 };
 
 struct GMT_DATUM_CONV {
-	GMT_LONG h_given;	/* TRUE if we have incoming height data [h = 0] */
+	GMT_BOOLEAN h_given;	/* TRUE if we have incoming height data [h = 0] */
 	double da;		/* Major semi-axis in meters */
 	double df;		/* Flattening */
 	double e_squared;	/* Eccentricity squared (e^2 = 2*f - f*f) */
@@ -207,7 +207,7 @@ struct GMT_DATUM_CONV {
 
 struct GMT_PROJ4 {	/* Used to assign proj4 projections from GMT projections */
 	char *name;
-	GMT_LONG id;
+	COUNTER_MEDIUM id;
 };
 
 struct GMT_PROJ {
@@ -215,25 +215,29 @@ struct GMT_PROJ {
 	struct GMT_THREE_D z_project;
 	struct GMT_DATUM_CONV datum;	/* For datum conversions */
 	struct GMT_PROJ4 *proj4;	/* A read-only resource we allocate once and pass pointer around */
-	p_func_l fwd, inv;		/* Pointers to the selected mapping functions */
-	p_func_l fwd_x, inv_x;		/* Pointers to the selected linear functions */
-	p_func_l fwd_y, inv_y;		/* Pointers to the selected linear functions */
-	p_func_l fwd_z, inv_z;		/* Pointers to the selected linear functions */
+	void (*fwd) (struct GMT_CTRL *, double, double, double *, double *);/* Pointers to the selected forward mapping function */
+	void (*inv) (struct GMT_CTRL *, double *, double *, double, double);/* Pointers to the selected inverse mapping function */
+	void (*fwd_x) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear x forward function */
+	void (*fwd_y) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear y forward function */
+	void (*fwd_z) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear z forward function */
+	void (*inv_x) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear x inverse function */
+	void (*inv_y) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear y inverse function */
+	void (*inv_z) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear z inverse function */
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */
 
 	/* Common projection parameters */
 
-	GMT_LONG projection;		/* Gives the id number for the projection used */
+	GMT_LONG projection;		/* Gives the id number for the projection used (-1 if not set) */
 
-	GMT_LONG units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
-	GMT_LONG north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
-	GMT_LONG edge[4];		/* TRUE if the edge is a map boundary */
-	GMT_LONG three_D;		/* Parameters for 3-D projections */
-	GMT_LONG JZ_set;		/* TRUE if -Jz|Z was set */
-	GMT_LONG GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
-	GMT_LONG n_antipoles;		/* Number of antipole coordinates so far [used for -JE only] */
+	GMT_BOOLEAN units_pr_degree;	/* TRUE if scale is given as inch (or cm)/degree.  FALSE for 1:xxxxx */
+	GMT_BOOLEAN north_pole;		/* TRUE if projection is on northern hemisphere, FALSE on southern */
+	GMT_BOOLEAN edge[4];		/* TRUE if the edge is a map boundary */
+	GMT_BOOLEAN three_D;		/* Parameters for 3-D projections */
+	GMT_BOOLEAN JZ_set;		/* TRUE if -Jz|Z was set */
+	GMT_BOOLEAN GMT_convert_latitudes;	/* TRUE if using spherical code with authalic/conformal latitudes */
+	COUNTER_MEDIUM n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */
@@ -252,15 +256,15 @@ struct GMT_PROJ {
 	double DIST_KM_PR_DEG;		/* Current spherical approximations to convert degrees to km even if -J was not set */
 	double half_ECC, i_half_ECC;	/* 0.5 * ECC and 0.5 / ECC */
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
-	GMT_LONG gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
+	COUNTER_MEDIUM gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
 
 	double f_horizon, rho_max;	/* Azimuthal horizon (deg) and in plot coordinates */
 
 	/* Linear plot parameters */
 
-	GMT_LONG xyz_projection[3];	/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
-	GMT_LONG xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
-	GMT_LONG compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
+	COUNTER_MEDIUM xyz_projection[3];	/* For linear projection, 0 = linear, 1 = log10, 2 = pow */
+	GMT_BOOLEAN xyz_pos[3];		/* TRUE if x,y,z-axis increases in normal positive direction */
+	GMT_BOOLEAN compute_scale[3];	/* TRUE if axes lengths were set rather than scales */
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
 
@@ -289,8 +293,8 @@ struct GMT_PROJ {
 	double t_i1, t_i2, t_i3, t_i4, t_i5;
 	double t_r, t_ir;		/* Short for GMT->current.proj.EQ_RAD * GMT->current.setting.proj_scale_factor and its inverse */
 	GMT_LONG utm_hemisphere;	/* -1 for S, +1 for N, 0 if to be set by -R */
-	GMT_LONG utm_zonex;		/* The longitude component 1-60 */
-	GMT_LONG utm_zoney;		/* The latitude component A-Z */
+	COUNTER_MEDIUM utm_zonex;	/* The longitude component 1-60 */
+	char utm_zoney;			/* The latitude component A-Z */
 
 	/* Lambert Azimuthal Equal-Area Projection */
 
@@ -302,7 +306,7 @@ struct GMT_PROJ {
 
 	double s_c, s_ic;
 	double r;		/* Radius of projected sphere in plot units (inch or cm) */
-	GMT_LONG polar;		/* True if projection pole coincides with S or N pole */
+	GMT_BOOLEAN polar;		/* True if projection pole coincides with S or N pole */
 
 	/* Mollweide, Hammer-Aitoff and Winkel Projection */
 
@@ -370,13 +374,13 @@ struct GMT_PROJ {
         double g_xmin, g_xmax;
         double g_ymin, g_ymax;
 
-        GMT_LONG g_debug;
+        COUNTER_MEDIUM g_debug;
         GMT_LONG g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
 
 	/* Polar (cylindrical) projection */
 
 	double p_base_angle;
-	GMT_LONG got_azimuths, got_elevations, z_down;
+	GMT_BOOLEAN got_azimuths, got_elevations, z_down;
 
 };
 
@@ -421,19 +425,19 @@ enum GMT_enum_tick {GMT_ANNOT_UPPER = 0,	/* Tick annotations closest to the axis
 
 struct GMT_PLOT_AXIS_ITEM {		/* Information for one type of tick/annotation */
 	double interval;		/* Distance between ticks in user units */
-	GMT_LONG parent;		/* Id of axis this item belongs to (0,1,2) */
-	GMT_LONG active;		/* TRUE if we want to use this item */
-	GMT_LONG special;		/* TRUE if custom interval annotations */
-	GMT_LONG flavor;		/* Index into month/day name abbreviation array (0-2) */
-	GMT_LONG upper_case;		/* TRUE if we want upper case text (used with flavor) */
+	COUNTER_MEDIUM parent;		/* Id of axis this item belongs to (0,1,2) */
+	GMT_BOOLEAN active;			/* TRUE if we want to use this item */
+	GMT_BOOLEAN special;		/* TRUE if custom interval annotations */
+	COUNTER_MEDIUM flavor;		/* Index into month/day name abbreviation array (0-2) */
+	GMT_BOOLEAN upper_case;		/* TRUE if we want upper case text (used with flavor) */
 	char type;			/* One of a, A, i, I, f, F, g, G */
 	char unit;			/* User's interval unit (y, M, u, d, h, m, c) */
 };
 
 struct GMT_PLOT_AXIS {		/* Information for one time axis */
-	GMT_LONG id;			/* 0 (x), 1(y), or 2(z) */
-	GMT_LONG type;			/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
-	GMT_LONG special;		/* 0, GMT_CUSTOM, GMT_CPT */
+	COUNTER_MEDIUM id;		/* 0 (x), 1(y), or 2(z) */
+	COUNTER_MEDIUM type;		/* GMT_LINEAR, GMT_LOG10, GMT_POW, GMT_TIME */
+	COUNTER_MEDIUM special;		/* 0, GMT_CUSTOM, GMT_CPT */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	char label[GMT_TEXT_LEN256];	/* Label of the axis */
@@ -446,16 +450,16 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[GMT_TEXT_LEN256];	/* Plot title */
 	struct GMT_FILL fill;		/* Fill for the basemap inside, if paint == TRUE */
-	GMT_LONG plotted_header;	/* TRUE if header has been plotted */
-	GMT_LONG init;			/* TRUE if -B was used */
-	GMT_LONG draw;			/* TRUE if -B<int> was used, even -B0, as sign to draw axes */
-	GMT_LONG paint;			/* TRUE if -B +g<fill> was used */
-	GMT_LONG draw_box;		/* TRUE is a 3-D Z-box is desired */
-	GMT_LONG check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
-	GMT_LONG horizontal;		/* TRUE is S/N annotations should be parallel to axes */
-	GMT_LONG primary;		/* TRUE if current axis is primary, FALSE if secondary */
-	GMT_LONG side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
-	GMT_LONG slash;			/* TRUE if slashes were used in the -B argument */
+	GMT_BOOLEAN plotted_header;		/* TRUE if header has been plotted */
+	GMT_BOOLEAN init;			/* TRUE if -B was used */
+	GMT_BOOLEAN draw;			/* TRUE if -B<int> was used, even -B0, as sign to draw axes */
+	GMT_BOOLEAN paint;			/* TRUE if -B +g<fill> was used */
+	GMT_BOOLEAN draw_box;		/* TRUE is a 3-D Z-box is desired */
+	GMT_BOOLEAN check_side;		/* TRUE if lon and lat annotations should be on x and y axis only */
+	GMT_BOOLEAN primary;		/* TRUE if current axis is primary, FALSE if secondary */
+	GMT_BOOLEAN slash;			/* TRUE if slashes were used in the -B argument */
+	COUNTER_MEDIUM horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
+	COUNTER_MEDIUM side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 };
 
 #endif /* _GMT_PROJECT_H */

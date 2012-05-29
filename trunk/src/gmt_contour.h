@@ -37,8 +37,8 @@ struct GMT_XOVER {		/* Structure with info on all track cross-over */
 };
 
 struct GMT_XSEGMENT {
-	GMT_LONG start;	/* y-array index for minimum y endpoint */
-	GMT_LONG stop;	/* y-array index for maximum y endpoint */
+	COUNTER_LARGE start;	/* y-array index for minimum y endpoint */
+	COUNTER_LARGE stop;	/* y-array index for maximum y endpoint */
 };
 
 struct GMT_LABEL {	/* Contains information on contour/lineation labels */
@@ -46,15 +46,15 @@ struct GMT_LABEL {	/* Contains information on contour/lineation labels */
 	double angle;		/* Angle of text unless curved text */
 	double line_angle;	/* Angle of line at label unless curved text */
 	double dist;
-	GMT_LONG node;
+	COUNTER_LARGE node;		/* Node of label on the line */
 	GMT_LONG end;		/* If N is used then -1 is start, +1 is end label */
 	char *label;
 };
 
 struct GMT_CONTOUR_LINE {
-	GMT_LONG n;			/* Length of the contour */
-	GMT_LONG annot;			/* TRUE if we want labels */
-	GMT_LONG n_labels;		/* Number of labels; if 0 we just have a line segment */
+	COUNTER_LARGE n;			/* Length of the contour */
+	COUNTER_MEDIUM n_labels;		/* Number of labels; if 0 we just have a line segment */
+	GMT_BOOLEAN annot;			/* TRUE if we want labels */
 	double z;			/* Datum of this contour (z-value) */
 	double rgb[4];			/* Box rgb */
 	double *x, *y;			/* Coordinates of the contour */
@@ -78,43 +78,43 @@ struct GMT_CONTOUR {
 	double clearance[2];		/* Spacing between text and textbox */
 	double nudge[2];		/* Shift between calculated and desired text placement */
 	double rgb[4];			/* Opaque box fill */
-	GMT_LONG current_file_no;	/* Number (0->) of current input data file */
-	GMT_LONG current_seg_no;	/* Number (0->) of current segment in current data file */
-	GMT_LONG annot;			/* TRUE if we want labels */
-	GMT_LONG isolate;		/* TRUE if we have a limit on how close labels may appear (see below) */
-	GMT_LONG spacing;		/* TRUE if we have spacing constraints to apply */
-	GMT_LONG line_type;		/* Kind of line: contour (1) or line (0) */
-	GMT_LONG dist_kind;		/* What kind of distance [0 = xy, 1 = map ] */
-	GMT_LONG dist_unit;		/* Units for labelled distances along tracks [cip] */
-	GMT_LONG proj_type;		/* type of scaling */
-	GMT_LONG L_proj_type;		/* type of scaling for label content only */
-	GMT_LONG half_width;		/* Number of points to use in smoothing the angle [10/2] */
-	GMT_LONG number;		/* TRUE if we have constraints on the number of labels to apply */
-	GMT_LONG number_placement;	/* How the n_cont labels are distributed */
-	GMT_LONG n_cont;		/* Number of labels per segment */
-	GMT_LONG do_interpolate;	/* TRUE if we must resample the crossing lines */
-	GMT_LONG crossing;		/* 1 for crossing simple lines, 2 for file with crossing lines */
-	GMT_LONG nx;			/* Number of crossovers at any time */
-	GMT_LONG fixed;			/* TRUE if we chose fixed positions */
-	GMT_LONG f_n;			/* Number of such points */
-	GMT_LONG clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
-	GMT_LONG nudge_flag;		/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
-	GMT_LONG transparent;		/* TRUE for transparent textbox, FALSE for opaque */
-	GMT_LONG box;			/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
-	GMT_LONG curved_text;		/* TRUE for text to follow curved lines */
-	GMT_LONG n_label;		/* Length of list */
-	GMT_LONG just;			/* Label justification */
-	GMT_LONG end_just[2];		/* Justification for end of lines */
-	GMT_LONG angle_type;		/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
+	COUNTER_LARGE current_seg_no;	/* Number (0->) of current segment in current data file */
+	COUNTER_MEDIUM current_file_no;	/* Number (0->) of current input data file */
+	COUNTER_MEDIUM line_type;	/* Kind of line: contour (1) or line (0) */
+	COUNTER_MEDIUM dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
+	COUNTER_MEDIUM dist_unit;	/* Units for labelled distances along tracks [cip] */
+	COUNTER_MEDIUM proj_type;	/* type of scaling */
+	COUNTER_MEDIUM L_proj_type;	/* type of scaling for label content only */
+	COUNTER_MEDIUM half_width;	/* Number of points to use in smoothing the angle [10/2] */
+	COUNTER_MEDIUM n_cont;		/* Number of labels per segment */
+	COUNTER_MEDIUM crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
+	COUNTER_MEDIUM nx;		/* Number of crossovers at any time */
+	COUNTER_MEDIUM f_n;			/* Number of such points */
+	COUNTER_MEDIUM clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
+	COUNTER_MEDIUM nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
+	COUNTER_MEDIUM box;		/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
+	COUNTER_MEDIUM n_label;		/* Length of list */
+	COUNTER_MEDIUM just;		/* Label justification */
+	COUNTER_MEDIUM end_just[2];	/* Justification for end of lines */
+	COUNTER_MEDIUM angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
+	COUNTER_MEDIUM label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
+	COUNTER_MEDIUM n_segments;		/* The number of segments */
+	GMT_LONG number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
 	GMT_LONG hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
-	GMT_LONG no_gap;		/* Clip contour or not depends on label placement */
-	GMT_LONG label_type;		/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
-	GMT_LONG save_labels;		/* TRUE if we wish to save label locations to a text file */
-	GMT_LONG data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
-	GMT_LONG debug;			/* TRUE of we want to draw helper lines/points */
-	GMT_LONG delay;			/* TRUE of we want to delay the actual annotation plotting until later */
-	GMT_LONG n_segments;		/* The number of segments */
-	GMT_LONG n_alloc;		/* How many allocated so far */
+	GMT_BOOLEAN annot;			/* TRUE if we want labels */
+	GMT_BOOLEAN isolate;		/* TRUE if we have a limit on how close labels may appear (see below) */
+	GMT_BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
+	GMT_BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
+	GMT_BOOLEAN do_interpolate;		/* TRUE if we must resample the crossing lines */
+	GMT_BOOLEAN fixed;			/* TRUE if we chose fixed positions */
+	GMT_BOOLEAN transparent;		/* TRUE for transparent textbox, FALSE for opaque */
+	GMT_BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
+	GMT_BOOLEAN no_gap;		/* Clip contour or not depends on label placement */
+	GMT_BOOLEAN save_labels;		/* TRUE if we wish to save label locations to a text file */
+	GMT_BOOLEAN data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
+	GMT_BOOLEAN debug;			/* TRUE of we want to draw helper lines/points */
+	GMT_BOOLEAN delay;			/* TRUE of we want to delay the actual annotation plotting until later */
+	size_t n_alloc;			/* How many allocated so far */
 	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char label[GMT_BUFSIZ];		/* Fixed label */
@@ -124,8 +124,6 @@ struct GMT_CONTOUR {
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
 	char **f_label;			/* Array for fixed labels */
-	p_func_d dist_func;		/* Pointer to function that calculates distances */
-	p_func_d L_dist_func;		/* Pointer to function that calculates distances for label content only */
 	struct GMT_FONT font_label;	/* Which font */
 	struct GMT_TABLE *xp;		/* Table with list of structures with crossing-line coordinates */
 	struct GMT_XSEGMENT *ylist_XP;	/* Sorted y-segments for crossing-lines */

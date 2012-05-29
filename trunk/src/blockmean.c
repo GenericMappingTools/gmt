@@ -81,7 +81,7 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -161,8 +161,10 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 
 GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, node, w_col, error, use_xy, use_weight;
-	GMT_LONG n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
+	COUNTER_LARGE node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
+	COUNTER_MEDIUM row, col, w_col;
+	GMT_LONG error;
+	GMT_BOOLEAN use_xy, use_weight;
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
 
@@ -203,7 +205,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (Ctrl->E.active) slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH);
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, GMT_LONG);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, COUNTER_LARGE);
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
@@ -214,28 +216,28 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Register likely data sources unless the caller has already done so */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
-		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%ld ny: %%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 	
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Memory reporting */
-		GMT_LONG kind = 0;
-		double mem = (double)sizeof (struct BLK_PAIR);
+		COUNTER_MEDIUM kind = 0;
+		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
+		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
-		if (!Ctrl->C.active) mem += (double)sizeof (struct BLK_PAIR);
-		if (Ctrl->E.active)  mem += (double)sizeof (struct BLK_SLH);
-		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) mem += (double)sizeof (GMT_LONG);
-		mem *= (double)Grid->header->nm;
-		mem /= 1024.0;	/* Report kbytes unless it is too much */
+		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
+		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLH);
+		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (COUNTER_LARGE);
+		mem = n_bytes_per_record * Grid->header->nm / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Using a total of %.3g %cb for all arrays.\n", mem, unit[kind]);
 	}
@@ -273,10 +275,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* We appear to be inside: Get row and col indices of this block */
 
-		col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		if (col < 0 || col >= Grid->header->nx) continue;
-		row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-		if (row < 0 || row >= Grid->header->ny) continue;
+		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 
 		/* OK, this point is definitively inside and will be used */
 
@@ -366,9 +365,11 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as an i/o resource */
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
+	
 	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
 
 	Return (GMT_OK);

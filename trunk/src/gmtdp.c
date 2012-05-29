@@ -44,12 +44,12 @@
 
 struct GMTDP_CTRL {
 	struct Out {	/* ->[<outfile>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* Can be negative */
 		double tolerance;
 		char unit;
 	} T;
@@ -97,7 +97,7 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -139,14 +139,14 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 /* Stack-based Douglas Peucker line simplification routine */
 /* returned value is the number of output points */
 
-GMT_LONG Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], GMT_LONG n_source, double band, GMT_LONG geo, GMT_LONG index[]) {
+COUNTER_LARGE Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], COUNTER_LARGE n_source, double band, GMT_LONG geo, COUNTER_LARGE index[]) {
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
 /* geo:		TRUE if data is lon/lat */
 /* index[]	output co-ordinates indices */
 
-	GMT_LONG n_stack, n_dest, start, end, i, sig;
-	GMT_LONG *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */
+	COUNTER_LARGE n_stack, n_dest, start, end, i, sig;
+	COUNTER_LARGE *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */
 
 	double dev_sqr, max_dev_sqr, band_sqr;
 	double x12, y12, d12, x13, y13, d13, x23, y23, d23;
@@ -160,8 +160,8 @@ GMT_LONG Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 	/* more complex case. initialise stack */
 
-	sig_start = GMT_memory (GMT, NULL, n_source, GMT_LONG);
-	sig_end   = GMT_memory (GMT, NULL, n_source, GMT_LONG);
+	sig_start = GMT_memory (GMT, NULL, n_source, COUNTER_LARGE);
+	sig_end   = GMT_memory (GMT, NULL, n_source, COUNTER_LARGE);
 
 	/* All calculations uses the original units, either Cartesian or FlatEarth */
 	/* The tolerance (band) must be in the same units as the data */
@@ -262,7 +262,10 @@ GMT_LONG Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG seg, tbl, col, row, np_out, geo, error, *index = NULL;
+	COUNTER_MEDIUM tbl, col;
+	GMT_LONG error;
+	GMT_BOOLEAN geo;
+	COUNTER_LARGE row, seg, np_out, *index = NULL;
 	
 	double tolerance;
 	
@@ -297,10 +300,10 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Now we are ready to take on some input values */
 	/* Allocate memory and read in all the files; each file can have many lines */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	
@@ -338,7 +341,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
 			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
-			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, GMT_LONG);
+			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, COUNTER_LARGE);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 
 			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, FALSE);	/* Reallocate to get correct n_rows */
@@ -350,7 +353,7 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
 	

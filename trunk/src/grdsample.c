@@ -33,19 +33,19 @@
 
 struct GRDSAMPLE_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -127,7 +127,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
+				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
 				/* in this case are 2 lines bellow we code it here */
@@ -139,10 +139,13 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
 				Ctrl->I.active = TRUE;
-				sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &ii, &jj);
+				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
-				sprintf (format, "%" GMT_LL "d+/%" GMT_LL "d+", ii, jj);
-				GMT_getinc (GMT, format, Ctrl->I.inc);
+				sprintf (format, "%d+/%d+", ii, jj);
+				if (GMT_getinc (GMT, format, Ctrl->I.inc)) {
+					GMT_inc_syntax (GMT, 'I', 1);
+					n_errors++;
+				}
 				break;
 #endif
 			case 'T':	/* Convert from pixel file <-> gridfile */
@@ -171,7 +174,10 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 
 GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	GMT_LONG error = 0, ij, row, col;
+	GMT_LONG error = 0;
+	COUNTER_MEDIUM row, col;
+	
+	COUNTER_LARGE ij;
 	
 	char format[GMT_BUFSIZ];
 	
@@ -199,7 +205,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/*---------------------------- This is the grdsample main code ----------------------------*/
 
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -266,7 +272,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->nx, Gout->header->ny,
 		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
@@ -299,7 +305,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		GMT_col_loop (GMT, Gout, row, col, ij) Gout->data[ij] = (float)GMT_get_bcr_z (GMT, Gin, lon[col], lat);
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 		Return (API->error);
 	}
 

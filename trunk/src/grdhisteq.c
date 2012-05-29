@@ -28,27 +28,27 @@
 
 struct GRDHISTEQ_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C<n_cells>*/
-		GMT_LONG active;
-		GMT_LONG value;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM value;
 	} C;
 	struct D {	/* -D[<file>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct G {	/* -G<file> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N[<norm>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double norm;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 };
 
@@ -110,7 +110,8 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -126,7 +127,9 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 
 			case 'C':	/* Get # of cells */
 				Ctrl->C.active = TRUE;
-				Ctrl->C.value = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -C option: n_cells must be positive\n");
+				Ctrl->C.value = sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
 				Ctrl->D.active = TRUE;
@@ -153,15 +156,14 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.file, "Syntax error -N option: Must also specify output grid file with -G\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
 	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_cell)
+float get_cell (float x, struct CELL *cell, COUNTER_MEDIUM n_cells_m1, COUNTER_MEDIUM last_cell)
 {
-	GMT_LONG low, high, i;
+	COUNTER_MEDIUM low, high, i;
 
 	low = 0;
 	high = n_cells_m1;
@@ -190,9 +192,10 @@ float get_cell (float x, struct CELL *cell, GMT_LONG n_cells_m1, GMT_LONG last_c
 	return (0.0);	/* Cannot get here - just used to quiet compiler */
 }
 
-GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, GMT_LONG n_cells, GMT_LONG quadratic, GMT_LONG dump_intervals)
+GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, COUNTER_MEDIUM n_cells, GMT_BOOLEAN quadratic, GMT_BOOLEAN dump_intervals)
 {	/* Do basic histogram equalization */
-	GMT_LONG last_cell, n_cells_m1 = 0, current_cell, i, j, nxy, pad[4];
+	COUNTER_LARGE i, j, nxy;
+	COUNTER_MEDIUM last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
@@ -221,10 +224,10 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 			j = nxy - 1;
 		else if (quadratic) {	/* Use y = 2x - x**2 scaling  */
 			target = (current_cell + 1.0) / n_cells;
-			j = (GMT_LONG)floor (nxy * (1.0 - sqrt (1.0 - target)));
+			j = lrint (floor (nxy * (1.0 - sqrt (1.0 - target))));
 		}
 		else	/* Use simple linear scale  */
-			j = (GMT_LONG)(floor ((current_cell + 1) * delta_cell)) - 1;
+			j = lrint (floor ((current_cell + 1) * delta_cell)) - 1;
 
 		cell[current_cell].low  = Grid->data[i];
 		cell[current_cell].high = Grid->data[j];
@@ -267,7 +270,8 @@ int compare_indices (const void *point_1, const void *point_2)
 
 GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {	/* Make an output grid file with standard normal scores */
-	GMT_LONG i = 0, j = 0, ij, row, col, nxy;
+	COUNTER_MEDIUM row, col;
+	COUNTER_LARGE i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
 
@@ -289,7 +293,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data value  */
 
-	qsort (indexed_data, (size_t)nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
+	qsort (indexed_data, nxy, sizeof (struct INDEXED_DATA), compare_indexed_floats);
 
 	dnxy = 1.0 / (nxy + 1);
 
@@ -302,7 +306,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 	/* Sort on data index  */
 
-	qsort (indexed_data, (size_t)Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
+	qsort (indexed_data, Grid->header->nm, sizeof (struct INDEXED_DATA), compare_indices);
 
 	i = 0;
 	GMT_grd_loop (GMT, Grid, row, col, ij) Grid->data[ij] = indexed_data[i++].x;	/* Load up the grid */
@@ -316,7 +320,7 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 
 GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	double wesn[4];
 	
@@ -343,11 +347,11 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (GMT_is_subset (GMT, Grid->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Grid->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 	(void)GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */
@@ -358,13 +362,13 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
 			GMT_LONG out_ID;
-			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->D.file, NULL)) == GMTAPI_NOTSET) {
+			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->D.file)) == GMTAPI_NOTSET) {
 				Return (EXIT_FAILURE);
 			}
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 				Return (error);
 			}
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -374,7 +378,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
 		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was TRUE */
 	}
-	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Out) != GMT_OK) {
+	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 

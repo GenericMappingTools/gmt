@@ -37,7 +37,8 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double *z = NULL;
 	char *fileout = NULL, *title = NULL;
 	struct GMT_GRID *G = NULL;
-	GMT_LONG gmt_ij, row, col, error = 0, k;
+	GMT_LONG row, col, error = 0, k;
+	COUNTER_LARGE gmt_ij;
 
 	if (nrhs < 3 || nrhs > 6) {
 		GMT5MEX_banner;
@@ -75,7 +76,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = z[MEX_IJ(G,row,col)];
 	
 	/* 7. Write the grid */
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, fileout, G) != GMT_OK) mexErrMsgTxt ("Read failure\n");
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, fileout, G) != GMT_OK) mexErrMsgTxt ("Read failure\n");
 	
 	/* 8. Destroy the temporary grid */
 	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G)) mexErrMsgTxt ("Run-time error\n");

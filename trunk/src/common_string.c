@@ -51,9 +51,9 @@
 
 #include <limits.h>
 
-#include "common_string.h"
 #include "gmt_notposix.h"
 #include "gmt_types.h"
+#include "common_string.h"
 
 #define BUF_SIZE 4096
 
@@ -159,7 +159,7 @@ size_t GMT_strlcmp (char *str1, char *str2)
 	return i;
 }
 
-GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *token)
+COUNTER_MEDIUM GMT_strtok (const char *string, const char *sep, COUNTER_MEDIUM *pos, char *token)
 {
 	/* Reentrant replacement for strtok that uses no static variables.
 	 * Breaks string into tokens separated by one of more separator
@@ -171,7 +171,7 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *t
 	 * string is not changed by GMT_strtok.
 	 */
 
-	GMT_LONG i, j, string_len;
+	size_t i, j, string_len;
 
 	string_len = strlen (string);
 
@@ -195,42 +195,38 @@ GMT_LONG GMT_strtok (const char *string, const char *sep, GMT_LONG *pos, char *t
 }
 
 #ifdef WIN32
-/* Turn /c/dir/... paths into c:/dir/...
- * Must do it in a loop since dir may be several ;-separated dirs
- */
+/* Turn '/c/dir/...' paths into 'c:/dir/...'
+ * Must do it in a loop since dir may be several ';'-separated dirs */
 void DOS_path_fix (char *dir)
 {
-	GMT_LONG k, n;
+	size_t n, k;
 
-	if (!dir)
-		return; /* Given NULL */
+	if (!dir || (n = strlen (dir)) < 2U)
+		/* Given NULL or too short dir to work */
+		return;
 
-	if (!strncmp(dir, "/cygdrive/", 10))
+	if (!strncmp (dir, "/cygdrive/", 10U))
 		/* May happen for example when Cygwin sets GMT_SHAREDIR */
-		GMT_strlshift (dir, 9); /* Chop "/cygdrive" */
+		GMT_strlshift (dir, 9); /* Chop '/cygdrive' */
 
 	/* Replace dumb backslashes with slashes */
 	GMT_strrepc (dir, '\\', '/');
 
-	if (dir[0] == '/' && dir[2] == '\0') {
+	/* If dir begins with '/' and is 2 long, as in '/c', replace with 'c:' */
+	if (n == 2U && dir[0] == '/') {
 		dir[0] = dir[1];
 		dir[1] = ':';
 		return;
 	}
 
-	/* if you replace the for loop with while and check for \0 (e.g. GMT_strrep)
-	 * you can skip the extra iteration with strlen.
-	 *
-	 * the following is potentially dangerous: buffer/string could be of length < 3:
-	 */
-
-	/* Also take care that cases like c:/j/... (mine) don't turn into c:j:/... */
-	n = strlen (dir);
-	if (dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
+	/* If dir is longer than 2 and, e.g., '/c/', replace with 'c:/' */
+	if (n > 2U && dir[0] == '/' && dir[2] == '/' && isalpha ((int)dir[1])) {
 		dir[0] = dir[1];
 		dir[1] = ':';
 	}
-	for (k = 4; k < n-2; k++) {
+
+	/* Do same with dirs separated by ';' but do not replace '/c/j/...' with 'c:j:/...' */
+	for (k = 4; k < n-2; ++k) {
 		if ( (dir[k-1] == ';' && dir[k] == '/' && dir[k+2] == '/' && isalpha ((int)dir[k+1])) ) {
 			dir[k] = dir[k+1];
 			dir[k+1] = ':';
@@ -458,4 +454,3 @@ int match_string_in_file (const char *filename, const char *string) {
 	/* string not found in file */
 	return false;
 }
-

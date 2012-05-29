@@ -30,7 +30,7 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
+GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 #ifdef GMT_COMPAT
 	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
@@ -43,43 +43,43 @@ EXTERN_MSC GMT_LONG gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 
 struct GMTCONVERT_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct D {	/* -D[<template>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *name;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* -3, -1, -1, 0, or increment stride */
 	} E;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct I {	/* -I[ast] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		GMT_LONG active;
-		GMT_LONG seg;
+		GMT_BOOLEAN active;
+		COUNTER_LARGE seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		GMT_LONG active;
-		GMT_LONG inverse;
-		GMT_LONG regexp;
-		GMT_LONG caseless;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN inverse;
+		GMT_BOOLEAN regexp;
+		GMT_BOOLEAN caseless;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -155,7 +155,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 	 */
 
 	size_t arg_length;
-	GMT_LONG n_errors = 0, k, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -220,7 +220,7 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 				break;
 			case 'Q':	/* Only report for specified segment number */
 				Ctrl->Q.active = TRUE;
-				Ctrl->Q.seg = atoi (opt->arg);
+				Ctrl->Q.seg = atol (opt->arg);
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = TRUE;
@@ -264,10 +264,11 @@ GMT_LONG GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ct
 
 GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG last_row, n_rows, out_col, n_out_seg = 0, error = 0;
-	GMT_LONG tbl, seg, col, row, n_cols_in, n_cols_out, out_seg = 0;
-	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	GMT_LONG match = FALSE, warn = FALSE, ogr_match = FALSE, ogr_item = 0;
+	GMT_BOOLEAN match = FALSE, warn = FALSE, ogr_match = FALSE;
+	GMT_LONG error = 0, ogr_item = 0;
+	COUNTER_MEDIUM out_col, col, n_cols_in, n_cols_out, tbl;
+	COUNTER_MEDIUM n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
+	COUNTER_LARGE last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 	
 	double *val = NULL;
 
@@ -295,13 +296,13 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}
 	
 	/* Read in the input tables */
 	
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -416,7 +417,8 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, val);
 
 	if (Ctrl->I.active) {	/* Must reverse the order of tables, segments and/or records */
-		GMT_LONG tbl1, tbl2, seg1, seg2, row1, row2;
+		COUNTER_MEDIUM tbl1, tbl2;
+		COUNTER_LARGE row1, row2, seg1, seg2;
 		void *p = NULL;
 		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of records within each segment.\n");
@@ -455,7 +457,7 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* TODO: move this block to GMT_gmtconvert_parse() and replace exit() with
 		 * Return() */
 		/* Must write individual segments to separate files so create the needed template */
-		GMT_LONG n_formats = 0;
+		COUNTER_MEDIUM n_formats = 0;
 		if (!Ctrl->D.name) {
 			Ctrl->D.name = GMT->common.b.active[GMT_OUT] ?
 					strdup ("gmtconvert_segment_%d.bin") : strdup ("gmtconvert_segment_%d.txt");
@@ -496,11 +498,11 @@ GMT_LONG GMT_gmtconvert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			D[GMT_OUT]->io_mode = GMT_WRITE_OGR;
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld tables %s, %ld records passed (input cols = %ld; output cols = %ld)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
 	Return (GMT_OK);

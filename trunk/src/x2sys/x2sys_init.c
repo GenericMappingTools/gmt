@@ -32,43 +32,43 @@ extern void x2sys_set_home (struct GMT_CTRL *GMT);
 
 struct X2SYS_INIT_CTRL {
 	struct In {	/*  */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *string;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *string;
 	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *string;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 		char *string;
 	} I;
 	struct m {	/* -m */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *string;
 	} m;
 	struct N {	/* -N */
-		GMT_LONG active[2];
+		GMT_BOOLEAN active[2];
 		char *string[2];
 	} N;
 	struct W {	/* -W */
-		GMT_LONG active[2];
+		GMT_BOOLEAN active[2];
 		char *string[2];
 	} W;
 };
@@ -149,7 +149,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, n_tags = 0;
+	COUNTER_MEDIUM n_errors = 0, k, n_tags = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	/* We are just checking the options for syntax here, not parsing is actually needed */
@@ -257,7 +257,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
 	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
 
-	GMT_LONG error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	FILE *fp = NULL, *fp_def = NULL;
 
@@ -294,7 +294,7 @@ GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "Unable to open local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
-	for (d_start = (int)strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
+	for (d_start = strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
 	d_start++;		/* Find start of file name */
 	
 	/* Determine the TAG directory */
