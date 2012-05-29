@@ -61,7 +61,4 @@ struct GMT_DIST {	/* Holds info for a particular distance calculation */
 	double scale;	/* Scale to convert function output to desired unit */
 };
 
-/* The enxt is used when we are not doing grid coordinates but have loops for (i = 0; i <= n; i++) x = x0 * i * dx;, i.e. loop includes n, and off = 0 */
-#define GMT_i_to_coord(i,x0,x1,dx,nx) (((i) == ((nx))) ? (x1) : (x0) + (i) * (dx))
-
 #endif /* _GMT_MAP_H */

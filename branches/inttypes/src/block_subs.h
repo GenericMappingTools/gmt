@@ -41,7 +41,7 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	} C;
 	struct E {	/* -E */
 		GMT_BOOLEAN active;
-#if !defined(BLOCKMEAN)		/* Blockmedian ahs -Eb and blockmedian & blockmode has -Er[-] option */
+#if !defined(BLOCKMEAN)		/* Blockmedian has -Eb and blockmedian & blockmode has -Er[-] option */
 		COUNTER_MEDIUM mode;
 #endif
 	} E;
@@ -91,6 +91,7 @@ struct BLK_SLH {	/* Holds std, low, and high values */
 #define BLK_DO_EXTEND4	2
 #define BLK_DO_INDEX_LO	4
 #define BLK_DO_INDEX_HI	8
+
 enum GMT_enum_blks {BLK_Z	= 2,
 		BLK_W		= 3};
 struct BLK_DATA {

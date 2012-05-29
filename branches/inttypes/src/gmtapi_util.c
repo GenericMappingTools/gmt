@@ -140,19 +140,22 @@ void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
 	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
 	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};
 	COUNTER_MEDIUM col;
+	COUNTER_LARGE n_bytes;
 	
 	if (C->current.setting.verbose < GMT_MSG_NORMAL) return;	/* Not in verbose mode anyway */
 	if (!C->common.b.active[direction]) return;	/* Not using binary i/o */
 	GMT_memset (message, GMT_TEXT_LEN256, char);	/* Start with a blank message */
 	for (col = 0; col < C->common.b.ncol[direction]; col++) {	/* For each binary column of data */
 		if (C->current.io.fmt[direction][col].skip < 0) {	/* Must skip BEFORE reading this column */
-			sprintf (skip, "%dx", -C->current.io.fmt[direction][col].skip);
+			n_bytes = -C->current.io.fmt[direction][col].skip;
+			sprintf (skip, "%" PRIu64 "x", n_bytes);
 			strcat (message, skip);
 		}
 		s[0] = letter[C->current.io.fmt[direction][col].type];	/* Get data type code */
 		strcat (message, s);
 		if (C->current.io.fmt[direction][col].skip > 0) {	/* Must skip AFTER reading this column */
-			sprintf (skip, "%dx", C->current.io.fmt[direction][col].skip);
+			n_bytes = C->current.io.fmt[direction][col].skip;
+			sprintf (skip, "%" PRIu64 "x", n_bytes);
 			strcat (message, skip);
 		}
 	}

@@ -1408,9 +1408,9 @@ COUNTER_MEDIUM gmt_bin_colselect (struct GMT_CTRL *C)
 
 /* Sub functions for gmt_bin_input */
 
-GMT_LONG gmt_x_read (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n)
-{	/* Used to skip (*n) bytes; no reading takes place */
-	if (fseek (fp, (off_t)n, SEEK_CUR)) {
+GMT_LONG gmt_x_read (struct GMT_CTRL *C, FILE *fp, off_t rel_move)
+{	/* Used to skip rel_move bytes; no reading takes place */
+	if (fseek (fp, rel_move, SEEK_CUR)) {
 		C->current.io.status = GMT_IO_EOF;
 		return (-1);
 	}

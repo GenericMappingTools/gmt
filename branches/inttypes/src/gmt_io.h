@@ -311,12 +311,12 @@ struct GMT_DATE_IO {
 
 struct GMT_GEO_IO {			/* For geographic output and plotting */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
-	GMT_LONG order[3];		/* The relative order of degree, minute, seconds in form (-ve if unused) */
-	COUNTER_MEDIUM range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
-	GMT_BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
-	GMT_BOOLEAN wesn;			/* TRUE if we want sign encoded with suffix W, E, S, N */
-	GMT_BOOLEAN no_sign;		/* TRUE if we want absolute values (plot only) */
 	COUNTER_MEDIUM n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
+	COUNTER_MEDIUM range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
+	GMT_LONG order[3];		/* The relative order of degree, minute, seconds in form (-ve if unused) */
+	GMT_BOOLEAN decimal;		/* TRUE if we want to use the D_FORMAT for decimal degrees only */
+	GMT_BOOLEAN wesn;		/* TRUE if we want sign encoded with suffix W, E, S, N */
+	GMT_BOOLEAN no_sign;		/* TRUE if we want absolute values (plot only) */
 	char x_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output longitude */
 	char y_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output latitude */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
@@ -353,17 +353,16 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	COUNTER_MEDIUM type;	/* Data type e.g., GMTAPI_FLOAT */
-	int skip;		/* Rather than read/write an item, jump skip bytes */
+	off_t skip;		/* Rather than read/write an item, jump |skip| bytes before (-ve) or after (+ve) read/write */
 	GMT_LONG (*io) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to the correct read or write function given type/swab */
-	
 };
 
 struct GMT_IO {				/* Used to process input data records */
 	void * (*input) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM *, GMT_LONG *);	/* Pointer to function reading ascii or binary tables */
 	GMT_LONG (*output) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);	/* Pointer to function writing ascii or binary tables */
-	GMT_LONG (*read_item) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to function reading 1-col z tables in grd2xyz */
-	GMT_LONG (*write_item) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to function writing 1-col z tables in xyz2grd */
-	GMT_BOOLEAN (*ogr_parser) (struct GMT_CTRL *, char *);	/* Set to handle either header or data OGR records */
+	GMT_LONG (*read_item) (struct GMT_CTRL *, FILE *, unsigned, double *);		/* Pointer to function reading 1-col z tables in grd2xyz */
+	GMT_LONG (*write_item) (struct GMT_CTRL *, FILE *, unsigned, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
+	GMT_BOOLEAN (*ogr_parser) (struct GMT_CTRL *, char *);				/* Set to handle either header or data OGR records */
 
 	COUNTER_MEDIUM pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	COUNTER_MEDIUM inc_code[2];

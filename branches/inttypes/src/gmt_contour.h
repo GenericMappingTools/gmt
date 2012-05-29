@@ -78,42 +78,42 @@ struct GMT_CONTOUR {
 	double clearance[2];		/* Spacing between text and textbox */
 	double nudge[2];		/* Shift between calculated and desired text placement */
 	double rgb[4];			/* Opaque box fill */
-	COUNTER_MEDIUM current_file_no;	/* Number (0->) of current input data file */
 	COUNTER_LARGE current_seg_no;	/* Number (0->) of current segment in current data file */
-	GMT_BOOLEAN annot;			/* TRUE if we want labels */
-	GMT_BOOLEAN isolate;		/* TRUE if we have a limit on how close labels may appear (see below) */
-	GMT_BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
+	COUNTER_MEDIUM current_file_no;	/* Number (0->) of current input data file */
 	COUNTER_MEDIUM line_type;	/* Kind of line: contour (1) or line (0) */
 	COUNTER_MEDIUM dist_kind;	/* What kind of distance [0 = xy, 1 = map ] */
 	COUNTER_MEDIUM dist_unit;	/* Units for labelled distances along tracks [cip] */
 	COUNTER_MEDIUM proj_type;	/* type of scaling */
 	COUNTER_MEDIUM L_proj_type;	/* type of scaling for label content only */
 	COUNTER_MEDIUM half_width;	/* Number of points to use in smoothing the angle [10/2] */
-	GMT_BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
-	GMT_LONG number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
 	COUNTER_MEDIUM n_cont;		/* Number of labels per segment */
-	GMT_BOOLEAN do_interpolate;		/* TRUE if we must resample the crossing lines */
 	COUNTER_MEDIUM crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
 	COUNTER_MEDIUM nx;		/* Number of crossovers at any time */
-	GMT_BOOLEAN fixed;			/* TRUE if we chose fixed positions */
 	COUNTER_MEDIUM f_n;			/* Number of such points */
 	COUNTER_MEDIUM clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */
 	COUNTER_MEDIUM nudge_flag;	/* 0 if off, 1 if nudging relative to x/y axis, 2 if following local line coordinate system */
-	GMT_BOOLEAN transparent;		/* TRUE for transparent textbox, FALSE for opaque */
 	COUNTER_MEDIUM box;		/* Textbox bits [1 = outline, 2 = rect box shape, 4 = rounded rect shape] */
-	GMT_BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
 	COUNTER_MEDIUM n_label;		/* Length of list */
 	COUNTER_MEDIUM just;		/* Label justification */
 	COUNTER_MEDIUM end_just[2];	/* Justification for end of lines */
 	COUNTER_MEDIUM angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
-	GMT_LONG hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
-	GMT_BOOLEAN no_gap;		/* Clip contour or not depends on label placement */
 	COUNTER_MEDIUM label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
+	COUNTER_MEDIUM n_segments;		/* The number of segments */
+	GMT_LONG number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
+	GMT_LONG hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
+	GMT_BOOLEAN annot;			/* TRUE if we want labels */
+	GMT_BOOLEAN isolate;		/* TRUE if we have a limit on how close labels may appear (see below) */
+	GMT_BOOLEAN spacing;		/* TRUE if we have spacing constraints to apply */
+	GMT_BOOLEAN number;			/* TRUE if we have constraints on the number of labels to apply */
+	GMT_BOOLEAN do_interpolate;		/* TRUE if we must resample the crossing lines */
+	GMT_BOOLEAN fixed;			/* TRUE if we chose fixed positions */
+	GMT_BOOLEAN transparent;		/* TRUE for transparent textbox, FALSE for opaque */
+	GMT_BOOLEAN curved_text;		/* TRUE for text to follow curved lines */
+	GMT_BOOLEAN no_gap;		/* Clip contour or not depends on label placement */
 	GMT_BOOLEAN save_labels;		/* TRUE if we wish to save label locations to a text file */
 	GMT_BOOLEAN data_col;		/* TRUE if there is data in the zz arrays passed, FALSE if they are NULL */
 	GMT_BOOLEAN debug;			/* TRUE of we want to draw helper lines/points */
 	GMT_BOOLEAN delay;			/* TRUE of we want to delay the actual annotation plotting until later */
-	COUNTER_MEDIUM n_segments;		/* The number of segments */
 	size_t n_alloc;			/* How many allocated so far */
 	char file[GMT_BUFSIZ];		/* File with crossing lines, if specified */
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
