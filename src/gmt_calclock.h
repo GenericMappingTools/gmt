@@ -64,7 +64,7 @@ struct GMT_MOMENT_INTERVAL {
 
 struct GMT_TRUNCATE_TIME {		/* Used when TIME_IS_INTERVAL is not OFF */
 	struct GMT_MOMENT_INTERVAL T;
-	GMT_LONG direction;			/* 0 [+] to center on next interval, 1 [-] for previous interval */
+	COUNTER_MEDIUM direction;		/* 0 [+] to center on next interval, 1 [-] for previous interval */
 };
 
 #endif /* !_GMT_CALCLOCK_H */

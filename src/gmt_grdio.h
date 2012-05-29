@@ -36,13 +36,13 @@
 #define GMT_IMG_MINLAT_80	-80.7380086280
 #define GMT_IMG_MAXLAT_80	+80.7380086280
 
-enum GMT_enum_img {GMT_IMG_NLON_1M 	= 21600,	/* At 1 min resolution */
-	GMT_IMG_NLON_2M			= 10800,	/* At 2 min resolution */
-	GMT_IMG_NLAT_1M_72		= 12672,	/* At 1 min resolution */
-	GMT_IMG_NLAT_1M_80		= 17280,	/* At 1 min resolution */
-	GMT_IMG_NLAT_2M_72		= 6336,		/* At 1 min resolution */
-	GMT_IMG_NLAT_2M_80		= 8640,		/* At 1 min resolution */
-	GMT_IMG_ITEMSIZE		= 2};		/* Size of 2 byte short ints */
+enum GMT_enum_img {GMT_IMG_NLON_1M 	= 21600U,	/* At 1 min resolution */
+	GMT_IMG_NLON_2M			= 10800U,	/* At 2 min resolution */
+	GMT_IMG_NLAT_1M_72		= 12672U,	/* At 1 min resolution */
+	GMT_IMG_NLAT_1M_80		= 17280U,	/* At 1 min resolution */
+	GMT_IMG_NLAT_2M_72		= 6336U,	/* At 1 min resolution */
+	GMT_IMG_NLAT_2M_80		= 8640U,	/* At 1 min resolution */
+	GMT_IMG_ITEMSIZE		= 2U};		/* Size of 2 byte short ints */
 
 /* Special grid format IDs */
 

@@ -4727,8 +4727,8 @@ GMT_LONG GMT_hash_lookup (struct GMT_CTRL *C, char *key, struct GMT_HASH *hashno
 	if (i < 0 || (ui = i) >= n || !hashnode[i].next) return (-1);	/* Bad key */
 	this = hashnode[i].next;
 	while (this && strcmp (this->key, key)) this = this->next;
-
-	return ((this) ? this->id : -1);
+	if (!this) return (-1);	/* Bad key */
+	return (this->id);
 }
 
 void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode, char **keys, COUNTER_MEDIUM n_hash, COUNTER_MEDIUM n_keys)

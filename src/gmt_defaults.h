@@ -45,8 +45,7 @@ struct DATUM {	/* Information about a particular datum */
 	double xyz[3];		/* Coordinate shifts in meter for x, y, and z */
 };
 
-struct gmt_encoding
-{
+struct gmt_encoding {
 	char name[GMT_TEXT_LEN64];
 	GMT_LONG code[5]; /* Codes for symbols we print. */
 };
@@ -80,24 +79,24 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_logo[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
-	GMT_LONG fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
-	GMT_BOOLEAN history;			/* TRUE to pass information via gmt.conf files */
 	COUNTER_MEDIUM interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	COUNTER_MEDIUM triangulate;		/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	COUNTER_MEDIUM verbose;			/* Level of verbosity 0-4 [1] */
+	GMT_LONG fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
+	GMT_BOOLEAN history;			/* TRUE to pass information via gmt.conf files */
 	/* IO group */
-	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
-	char io_gridfile_format[GMT_TEXT_LEN64];	/* Default grid file format */
-	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
-	GMT_BOOLEAN io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
-	GMT_BOOLEAN io_header[2];			/* Input & Output data has header records [FALSE, FALSE] */
 	COUNTER_MEDIUM io_n_header_items;	/* number of header records [0] */
-	GMT_BOOLEAN io_nan_records;			/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	COUNTER_MEDIUM io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
 	COUNTER_MEDIUM io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
+	GMT_BOOLEAN io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
+	GMT_BOOLEAN io_header[2];			/* Input & Output data has header records [FALSE, FALSE] */
+	GMT_BOOLEAN io_nan_records;			/* Determines what NaNs in input records should mean (beyond skipping the record) */
 	GMT_BOOLEAN io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
 	GMT_BOOLEAN io_blankline[2];		/* TRUE means blank lines should be treated as segment breaks [FALSE,FALSE] */
 	GMT_BOOLEAN io_nanline[2];			/* TRUE means lines with all NaNs should be treated as segment breaks [FALSE,FALSE] */
+	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
+	char io_gridfile_format[GMT_TEXT_LEN64];	/* Default grid file format */
+	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
@@ -114,13 +113,13 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
 	COUNTER_MEDIUM map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */
-	GMT_BOOLEAN map_logo;			/* Plot time and map projection on map [FALSE] */
 	COUNTER_MEDIUM map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
+	COUNTER_MEDIUM map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
+	GMT_BOOLEAN map_logo;			/* Plot time and map projection on map [FALSE] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
 	struct GMT_PEN map_tick_pen[2];		/* Pen attributes for primary and secondary tickmarks [thinner,black] */
-	COUNTER_MEDIUM map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	char map_frame_axes[5];			/* Which axes to draw and annotate ["WESN"]  */
 	char map_annot_ortho[5];		/* Which axes have orthogonal annotations in linear projections ["we"] */
 	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
@@ -140,8 +139,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 #ifdef GMT_COMPAT
 	COUNTER_MEDIUM ps_copies;		/* How man copies of each plot [>=1] */
 #endif
-	GMT_BOOLEAN ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
 	GMT_LONG ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
+	GMT_BOOLEAN ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
 	GMT_BOOLEAN ps_comments;			/* TRUE if we write comments in the PS file */
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
 	struct gmt_encoding ps_encoding;
