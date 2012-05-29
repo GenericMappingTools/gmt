@@ -52,7 +52,7 @@ GMT_FFT				= brenner
 GMT_HISTORY			= true
 GMT_INTERPOLANT			= akima
 GMT_TRIANGULATE			= @GMT_TRIANGULATE@
-GMT_VERBOSE			= 1
+GMT_VERBOSE			= compat
 #
 # I/O Parameters
 #

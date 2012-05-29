@@ -48,13 +48,6 @@ extern "C" {
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
-/* GMT 4 compatibility */
-#ifdef DEBUG
-#define GMT_MSG_COMPAT 1	/* Set high rank warning level for compatibility for debuggers */
-#else
-#define GMT_MSG_COMPAT 1	/* Set lower rank warning level otherwise */
-#endif
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 

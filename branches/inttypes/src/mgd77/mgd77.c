@@ -1182,8 +1182,8 @@ static int mgd77_get_quadrant (int x, int y)
 static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single MGD77 record */
 {
 	int i, nwords, value, yyyy, mm, dd, nconv;
-	int64_t rata_die;
-	size_t len, k;
+	int64_t rata_die, k;
+	size_t len;
 	char line[GMT_BUFSIZ], currentField[10];
 	GMT_LONG may_convert;
 	double secs, tz;
@@ -1732,7 +1732,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct
 
 	int dims[2] = {0, 0}, var_id, time_id;
 	GMT_LONG id, j, set, entry, use;
-	size_t k;
+	size_t k, k0;
 	time_t now;
 	char string[128];
 
@@ -1752,7 +1752,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct
 		(void) time (&now);
 		sprintf (string, "%s [%s] Conversion from MGD77 ASCII to MGD77+ netCDF format", ctime(&now), H->author);
 		k = strlen (string);
-		for (j = 0; j < k; j++) if (string[j] == '\n') string[j] = ' ';	/* Remove the \n returned by ctime() */
+		for (k0 = 0; k0 < k; k0++) if (string[k0] == '\n') string[k0] = ' ';	/* Remove the \n returned by ctime() */
 		string[k++] = '\n';	string[k] = '\0';	/* Add LF at end of line */
 		H->history = GMT_memory (C, NULL, k + 1, char);		/* Don't understand why by I need the +1 JL */
 		strcpy (H->history, string);
@@ -3844,9 +3844,9 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	 */
 
 	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
-	int j, k, i, constraint;
+	int k;
 	size_t n;
-	COUNTER_MEDIUM pos;
+	COUNTER_MEDIUM pos, i, j, constraint;
 	GMT_BOOLEAN exact, all_exact;
 
 	/* Special test for keywords mgd77 and all */
