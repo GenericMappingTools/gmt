@@ -78,8 +78,8 @@
 #define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_report (C, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new); option = new; }
 #endif
 
-EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
-EXTERN_MSC void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
+GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
+void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
 /* private function prototypes */
 void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, GMT_LONG n_items);

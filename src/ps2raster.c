@@ -35,7 +35,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-EXTERN_MSC void GMT_str_toupper (char *string);
+void GMT_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>

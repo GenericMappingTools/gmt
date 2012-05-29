@@ -29,6 +29,7 @@
 
 #include "gmt.h"
 
+/* TODO: remove this func declaration and include gmt_module.h when implemented: */
 EXTERN_MSC GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
 
 int main (int argc, char *argv[]) {

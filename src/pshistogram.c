@@ -27,7 +27,7 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-EXTERN_MSC GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
+GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
 #endif
 
 struct PSHISTOGRAM_CTRL {

@@ -27,7 +27,7 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC char * gmt_get_char_ptr (char **ptr);
+char * gmt_get_char_ptr (char **ptr);
 
 /* Control structure for psxy */
 

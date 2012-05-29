@@ -25,7 +25,7 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
+GMT_LONG GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, GMT_LONG magic);
 
 struct GRDREFORMAT_CTRL {
 	struct IO {

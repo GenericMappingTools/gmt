@@ -26,8 +26,8 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
-EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
+GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1

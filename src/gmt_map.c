@@ -104,7 +104,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-EXTERN_MSC double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
+double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 
 /* Private functions internal to gmt_map.c */
 
