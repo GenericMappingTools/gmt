@@ -57,7 +57,7 @@ enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to me
 struct GMT_DIST {	/* Holds info for a particular distance calculation */
 	GMT_BOOLEAN init;	/* TRUE if we have initialized settings for this type via GMT_init_distaz */
 	GMT_BOOLEAN arc;	/* TRUE if distances are in deg/min/sec or arc; otherwise they are e|f|k|M|n or Cartesian */
-	p_func_d func;	/* pointer to function returning distance between two points points */
+	double (*func) (struct GMT_CTRL *, double, double, double, double);	/* pointer to function returning distance between two points points */
 	double scale;	/* Scale to convert function output to desired unit */
 };
 

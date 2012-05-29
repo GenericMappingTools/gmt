@@ -215,10 +215,14 @@ struct GMT_PROJ {
 	struct GMT_THREE_D z_project;
 	struct GMT_DATUM_CONV datum;	/* For datum conversions */
 	struct GMT_PROJ4 *proj4;	/* A read-only resource we allocate once and pass pointer around */
-	p_func_v fwd, inv;		/* Pointers to the selected mapping functions */
-	p_func_v fwd_x, inv_x;		/* Pointers to the selected linear functions */
-	p_func_v fwd_y, inv_y;		/* Pointers to the selected linear functions */
-	p_func_v fwd_z, inv_z;		/* Pointers to the selected linear functions */
+	void (*fwd) (struct GMT_CTRL *, double, double, double *, double *);/* Pointers to the selected forward mapping function */
+	void (*inv) (struct GMT_CTRL *, double *, double *, double, double);/* Pointers to the selected inverse mapping function */
+	void (*fwd_x) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear x forward function */
+	void (*fwd_y) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear y forward function */
+	void (*fwd_z) (struct GMT_CTRL *, double, double *);	/* Pointers to the selected linear z forward function */
+	void (*inv_x) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear x inverse function */
+	void (*inv_y) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear y inverse function */
+	void (*inv_z) (struct GMT_CTRL *, double *, double);	/* Pointers to the selected linear z inverse function */
 
 	double pars[10];		/* Raw unprocessed map-projection parameters as passed on command line */
 	double z_pars[2];		/* Raw unprocessed z-projection parameters as passed on command line */

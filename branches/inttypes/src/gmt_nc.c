@@ -48,7 +48,7 @@
 #include "gmt_internals.h"
 
 EXTERN_MSC GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
-EXTERN_MSC GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode);
+EXTERN_MSC GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode);
 
 GMT_LONG GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Returns type GMT_GRD_IS_N? (=n?) for new NetCDF grid,
@@ -478,7 +478,7 @@ GMT_LONG GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (gmt_nc_grd_info (C, header, 'w'));
 }
 
-GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -579,7 +579,7 @@ GMT_LONG GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]

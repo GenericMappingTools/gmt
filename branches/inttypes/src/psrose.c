@@ -338,7 +338,7 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_BOOLEAN error = FALSE, find_mean = FALSE, do_fill = FALSE;
 	GMT_BOOLEAN automatic = FALSE, sector_plot = FALSE, windrose = TRUE;
 	COUNTER_MEDIUM n_bins, n_modes, form, n_in, half_only = 0, bin;
-	GMT_LONG k, n_annot, n_alpha;
+	GMT_LONG k, n_annot, n_alpha, sbin;
 	
 	COUNTER_LARGE n = 0, i;
 	
@@ -499,11 +499,13 @@ GMT_LONG GMT_psrose (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else
 				this_az = azimuth[i];
-			bin = lrint (floor ((this_az + az_offset) / Ctrl->A.inc));
+			sbin = lrint (floor ((this_az + az_offset) / Ctrl->A.inc));
+			assert (sbin >= 0);
+			bin = sbin;
 			if (bin == n_bins) {
 				bin = 0;
 			}
-			assert (bin >= 0 && bin < n_bins);
+			assert (bin < n_bins);
 			sum[bin] += length[i];
 			if (Ctrl->T.active) {	/* Also count its other end */
 				this_az += 180.0;	if (this_az >= 360.0) this_az -= 360.0;

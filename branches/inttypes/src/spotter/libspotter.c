@@ -587,9 +587,9 @@ COUNTER_MEDIUM spotter_hotspot_init (struct GMT_CTRL *C, char *file, GMT_BOOLEAN
 	while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) {
 		if (buffer[0] == '#' || buffer[0] == '\n') continue;
 		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &ival, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
-		if (n == 3) ival = i;	/* Minimal lon, lat, abbrev */
+		if (n == 3) ival = i + 1;	/* Minimal lon, lat, abbrev */
 		if (ival <= 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Hotspot ID numbers mut be > 0\n");
+			GMT_report (C, GMT_MSG_FATAL, "Hotspot ID numbers must be > 0\n");
 			exit (EXIT_FAILURE);
 		}
 		e[i].id = ival;

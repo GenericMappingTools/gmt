@@ -379,7 +379,8 @@ GMT_LONG set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	COUNTER_MEDIUM i, i1, i2;
 	GMT_BOOLEAN normalize = FALSE;
 	double t_0, t_1, time, w_sum;
-	p_func_d get_weight[3];		/* Selects desired weight function.  */
+	double (*get_weight[3]) (double, double);	/* Pointers to desired weight function.  */
+	
 
 	t_0 = F->data[F->t_col][0];
 	t_1 = F->data[F->t_col][F->n_rows-1];

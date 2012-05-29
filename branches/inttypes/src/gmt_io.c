@@ -2895,9 +2895,9 @@ int GMT_get_io_type (struct GMT_CTRL *C, char type)
 	return (t);
 }
 
-p_func_l GMT_get_io_ptr (struct GMT_CTRL *C, COUNTER_MEDIUM direction, int swap, char type)
+p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, GMT_LONG direction, int swap, char type)
 {	/* Return pointer to read or write function for this data type */
-	p_func_l p = NULL;
+	p_to_io_func p = NULL;
 
 	switch (type) {	/* Set read pointer depending on data format */
 		case 'A':	/* ASCII with more than one per record */
@@ -3023,14 +3023,13 @@ void GMT_init_z_io (struct GMT_CTRL *C, char format[], GMT_BOOLEAN repeat[], int
 /* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
 void * GMT_z_input (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM *n, GMT_LONG *status)
 {
-	if ((*status = C->current.io.read_item (C, fp, n, C->current.io.curr_rec)) == -1) return (NULL);
+	if ((*status = C->current.io.read_item (C, fp, *n, C->current.io.curr_rec)) == -1) return (NULL);
 	return (C->current.io.curr_rec);
 }
 	
-GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n, void *data)
+GMT_LONG GMT_z_output (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n, double *data)
 {
-	double *ptr = data;
-	return (C->current.io.write_item (C, fp, n, ptr));
+	return (C->current.io.write_item (C, fp, n, data));
 }
 	
 GMT_LONG GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
@@ -4316,7 +4315,6 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, CO
 	char file[GMT_BUFSIZ], *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TEXT_TABLE *T = NULL;
-	p_func_p psave = NULL;
 
 	/* Determine input source */
 
@@ -4449,7 +4447,6 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, CO
 		}
 	}
 	if (close_file) GMT_fclose (C, fp);
-	C->current.io.input = psave;	/* Restore former pointer */
 
 	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (C, T->segment[seg]);
@@ -5020,7 +5017,8 @@ GMT_LONG GMT_write_table (struct GMT_CTRL *C, void *dest, COUNTER_MEDIUM dest_ty
 	char open_mode[4], file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	double *out = NULL;
 	FILE *fp = NULL;
-	p_func_l psave = NULL;
+	GMT_LONG (*psave) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *) = NULL;	/* Pointer to function writing tables */
+	
 
 	if (table->mode == GMT_WRITE_SKIP) return (0);	/* Skip this table */
 
@@ -5647,7 +5645,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, COUNTER_MED
 	double d, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TABLE *T = NULL;
-	p_func_p psave = NULL;
+	void * (*psave) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM *, GMT_LONG *) = NULL;	/* Pointer to function reading tables */
 
 	if (use_GMT_io) {	/* Use C->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
 		n_expected_fields = C->common.b.active[GMT_IN] ? C->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;

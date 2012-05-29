@@ -116,7 +116,8 @@ struct F_INFO {
 	double llambda[3];	/* Low full-wavelength where Gauss amp = 0.5 for r, x, and y	*/
 	double hlambda[3];	/* High full-wavelength where Gauss amp = 0.5  for r, x, and y	*/
 	double bw_order;	/* Order, N, of Butterworth filter	*/
-	p_func_d filter;		/* Points to the correct filter function */
+	double (*filter) (struct F_INFO *, double, int);	/* Points to the correct filter function */
+	
 	GMT_BOOLEAN do_this[3];	/* T/F this filter wanted for r, x, and y	*/
 	GMT_BOOLEAN set_already;	/* TRUE if we already filled in the structure */
 	COUNTER_MEDIUM kind;	/* FILTER_EXP, FILTER_BW, FILTER_COS  */
@@ -599,7 +600,8 @@ GMT_LONG do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, 
 	COUNTER_LARGE dim[4] = {1, 1, 1, 0};
 	COUNTER_LARGE k, nk, nused, ifreq;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
-	p_func_d get_k;
+	double (*get_k) (COUNTER_LARGE, struct K_XY *);
+	
 	float *datac = Grid->data;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;

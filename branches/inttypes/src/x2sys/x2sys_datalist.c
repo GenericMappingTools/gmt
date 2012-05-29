@@ -149,7 +149,8 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 
 GMT_BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	COUNTER_MEDIUM n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	COUNTER_MEDIUM n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	GMT_LONG n_fields;
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 	char file[GMT_BUFSIZ];
@@ -358,7 +359,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Reading track %s\n", trk_name[trk_no]);
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &k), trk_name[trk_no]);
+		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &j), trk_name[trk_no]);
 
 		if (Ctrl->L.active && s->t_col >= 0) MGD77_Init_Correction (GMT, CORR[trk_no], data);	/* Initialize origins if needed */
 

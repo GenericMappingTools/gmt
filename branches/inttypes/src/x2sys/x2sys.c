@@ -846,7 +846,8 @@ GMT_LONG x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data
 
 GMT_LONG x2sys_read_ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, COUNTER_LARGE *n_rec)
 {
-	GMT_LONG n_fields, n_expect = GMT_MAX_COLUMNS, ns = s->n_out_columns;
+	GMT_LONG n_fields, ns = s->n_out_columns;
+	COUNTER_MEDIUM n_expect = GMT_MAX_COLUMNS;
 	COUNTER_LARGE i, j;
 	char path[GMT_BUFSIZ];
 	double **z = NULL, *in = NULL;

@@ -247,7 +247,7 @@ GMT_LONG GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
+GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	FILE *fp = NULL;
@@ -354,7 +354,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	GMT_BOOLEAN is_float = FALSE, check;

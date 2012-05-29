@@ -1155,7 +1155,7 @@ COUNTER_LARGE gmt_rect_clip_old (struct GMT_CTRL *C, double *lon, double *lat, C
  */
 #define INTERSECTION_COORD(x_curr,y_curr,x_prev,y_prev,border) x_curr + (x_prev - x_curr) * (border - y_curr) / (y_prev - y_curr)
 
-COUNTER_MEDIUM gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, p_func_b inside, p_func_b outside, GMT_LONG *cross)
+COUNTER_MEDIUM gmt_clip_sn (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, GMT_BOOLEAN (*inside) (double, double), GMT_BOOLEAN (*outside) (double, double), GMT_LONG *cross)
 {	/* Clip against the south or north boundary (i.e., a horizontal line with y = border) */
 	*cross = 0;
 	if (doubleAlmostEqualZero (x_prev, x_curr) && doubleAlmostEqualZero (y_prev, y_curr))
@@ -1176,7 +1176,7 @@ COUNTER_MEDIUM gmt_clip_sn (double x_prev, double y_prev, double x_curr, double 
 	y[0] = border;	x[0] = INTERSECTION_COORD (x_curr, y_curr, x_prev, y_prev, border);	return (1);
 }
 
-COUNTER_MEDIUM gmt_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, p_func_b inside, p_func_b outside, GMT_LONG *cross)
+COUNTER_MEDIUM gmt_clip_we (double x_prev, double y_prev, double x_curr, double y_curr, double x[], double y[], double border, GMT_BOOLEAN (*inside) (double, double), GMT_BOOLEAN (*outside) (double, double), GMT_LONG *cross)
 {	/* Clip against the west or east boundary (i.e., a vertical line with x = border) */
 	*cross = 0;
 	if (doubleAlmostEqualZero (x_prev, x_curr) && doubleAlmostEqualZero (y_prev, y_curr))
@@ -1215,8 +1215,10 @@ COUNTER_LARGE gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 	GMT_LONG side, in = 1, out = 0, j, np, cross = 0;
 	GMT_BOOLEAN polygon;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
-	p_func_u4 clipper[4];
-	p_func_b inside[4], outside[4];
+	COUNTER_MEDIUM (*clipper[4]) (double, double, double, double, double *, double *, double, GMT_BOOLEAN (*inside) (double, double), GMT_BOOLEAN (*outside) (double, double), GMT_LONG *);
+	GMT_BOOLEAN (*inside[4]) (double, double);
+	GMT_BOOLEAN (*outside[4]) (double, double);
+	
 #ifdef DEBUG
 	FILE *fp = NULL;
 	GMT_BOOLEAN dump = FALSE;
@@ -1304,7 +1306,9 @@ COUNTER_MEDIUM GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_S
 	char label[GMT_BUFSIZ], *part = "EW";
 	double xx[2], yy[2];
 	struct GMT_LINE_SEGMENT **L = NULL;
-	p_func_b inside[2], outside[2];
+	GMT_BOOLEAN (*inside[2]) (double, double);
+	GMT_BOOLEAN (*outside[2]) (double, double);
+	
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
@@ -1472,8 +1476,10 @@ COUNTER_LARGE GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, COUNT
 	GMT_BOOLEAN curved, jump = FALSE, polygon, periodic = FALSE;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
-	p_func_u4 clipper[4];
-	p_func_b inside[4], outside[4];
+	COUNTER_MEDIUM (*clipper[4]) (double, double, double, double, double *, double *, double, GMT_BOOLEAN (*inside) (double, double), GMT_BOOLEAN (*outside) (double, double), GMT_LONG *);
+	GMT_BOOLEAN (*inside[4]) (double, double);
+	GMT_BOOLEAN (*outside[4]) (double, double);
+	
 	struct GMT_QUAD *Q = NULL;
 #ifdef DEBUG
 	FILE *fp = NULL;
@@ -3225,7 +3231,7 @@ GMT_BOOLEAN gmt_map_init_oblique (struct GMT_CTRL *C) {
 
 /* For global TM maps */
 
-COUNTER_MEDIUM gmt_wrap_around_check_tm (struct GMT_CTRL *C, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides)
+COUNTER_MEDIUM gmt_wrap_around_check_tm (struct GMT_CTRL *C, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, COUNTER_MEDIUM *sides)
 {
 	double dx, dy, width, jump;
 
@@ -3327,7 +3333,7 @@ GMT_BOOLEAN gmt_map_init_tm (struct GMT_CTRL *C) {
 	C->current.map.wrap_around_check = &gmt_wrap_around_check_tm;
 	C->current.map.jump = &gmt_map_jump_tm;
 	C->current.map.will_it_wrap = &gmt_will_it_wrap_tm;
-	C->current.map.this_point_wraps = &gmt_this_point_wraps_tm;
+	// C->current.map.this_point_wraps = &gmt_this_point_wraps_tm;
 	C->current.map.get_crossings = &gmt_get_crossings_tm;
 
 	if (C->current.setting.proj_scale_factor == -1.0) C->current.setting.proj_scale_factor = 1.0;	/* Select default map scale for TM */
@@ -4733,7 +4739,7 @@ GMT_BOOLEAN GMT_map_outside (struct GMT_CTRL *C, double lon, double lat)
 	return ((*C->current.map.outside) (C, lon, lat));
 }
 
-COUNTER_MEDIUM gmt_wrap_around_check_x (struct GMT_CTRL *C, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, GMT_LONG *sides)
+COUNTER_MEDIUM gmt_wrap_around_check_x (struct GMT_CTRL *C, double *angle, double last_x, double last_y, double this_x, double this_y, double *xx, double *yy, COUNTER_MEDIUM *sides)
 {
 	double dx, dy, width, jump, GMT_half_map_width (struct GMT_CTRL *C, double y);
 
@@ -7343,7 +7349,7 @@ GMT_LONG GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 	C->current.map.wrap_around_check = &gmt_wrap_around_check_x;
 	C->current.map.jump = &gmt_map_jump_x;
 	C->current.map.will_it_wrap = &gmt_will_it_wrap_x;
-	C->current.map.this_point_wraps = &gmt_this_point_wraps_x;
+	//C->current.map.this_point_wraps = &gmt_this_point_wraps_x;
 	C->current.map.get_crossings = &gmt_get_crossings_x;
 
 	C->current.map.lon_wrap = TRUE;

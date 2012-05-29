@@ -709,7 +709,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						/* Estimate heading there */
 
 						j = k + 6;
-						out[j] = (!GMT_is_dnan (speed[k]) && (!Ctrl->S.active[HHI] || speed[k] > Ctrl->S.limit[HHI])) ? (*GMT->current.map.azimuth_func) (data[k][s->x_col][right[k]], data[k][s->y_col][right[k]], data[k][s->x_col][left[k]], data[k][s->y_col][left[k]], FALSE) : X2SYS_NaN;
+						out[j] = (!GMT_is_dnan (speed[k]) && (!Ctrl->S.active[HHI] || speed[k] > Ctrl->S.limit[HHI])) ? (*GMT->current.map.azimuth_func) (GMT, data[k][s->x_col][right[k]], data[k][s->y_col][right[k]], data[k][s->x_col][left[k]], data[k][s->y_col][left[k]], FALSE) : X2SYS_NaN;
 
 						/* Estimate velocities there */
 

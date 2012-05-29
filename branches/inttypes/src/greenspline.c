@@ -137,7 +137,7 @@ struct ZGRID {
 
 #ifdef DEBUG
 GMT_BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
-void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
+void dump_green (double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
 
 void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -466,7 +466,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
+void dump_green (double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
 {
 	GMT_LONG i;
 	double x, dx, dy, y, t, ry, rdy;
@@ -1085,7 +1085,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	FILE *fp = NULL;
 
-	p_func_d G = NULL, dGdr = NULL;
+	double (*G) (struct GMT_CTRL *, double, double *, double *) = NULL;	/* Pointer to chosen Green's function */
+	double (*dGdr) (struct GMT_CTRL *, double, double *, double *) = NULL;	/* Pointer to chosen gradient of Green's function */
+	
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct ZGRID Z;
@@ -1366,40 +1368,40 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
 		case SANDWELL_1987_1D:
-			G = spline1d_sandwell;
-			dGdr = gradspline1d_sandwell;
+			G = &spline1d_sandwell;
+			dGdr = &gradspline1d_sandwell;
 			break;
 		case SANDWELL_1987_2D:
-			G = spline2d_sandwell;
-			dGdr = gradspline2d_sandwell;
+			G = &spline2d_sandwell;
+			dGdr = &gradspline2d_sandwell;
 			break;
 		case SANDWELL_1987_3D:
-			G = spline3d_sandwell;
-			dGdr = gradspline3d_sandwell;
+			G = &spline3d_sandwell;
+			dGdr = &gradspline3d_sandwell;
 			break;
 		case WESSEL_BERCOVICI_1998_1D:
 			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = Grid->header->inc[GMT_X];
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
-			G = spline1d_Wessel_Bercovici;
-			dGdr = gradspline1d_Wessel_Bercovici;
+			G = &spline1d_Wessel_Bercovici;
+			dGdr = &gradspline1d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_2D:
 			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = 0.5 * (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y]);
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
-			G = spline2d_Wessel_Bercovici;
-			dGdr = gradspline2d_Wessel_Bercovici;
+			G = &spline2d_Wessel_Bercovici;
+			dGdr = &gradspline2d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_3D:
 			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y] + Z.z_inc) / 3.0;
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
-			G = spline3d_Wessel_Bercovici;
-			dGdr = gradspline3d_Wessel_Bercovici;
+			G = &spline3d_Wessel_Bercovici;
+			dGdr = &gradspline3d_Wessel_Bercovici;
 			break;
 		case MITASOVA_MITAS_1993_2D:
 			/* par[0] = Ctrl->S.value[0]; */
@@ -1408,8 +1410,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_DEBUG, "p_val = %g\n", p_val);
 			par[0] = p_val;
 			par[1] = 0.25 * par[0] * par[0];
-			G = spline2d_Mitasova_Mitas;
-			dGdr = gradspline2d_Mitasova_Mitas;
+			G = &spline2d_Mitasova_Mitas;
+			dGdr = &gradspline2d_Mitasova_Mitas;
 			break;
 		case MITASOVA_MITAS_1993_3D:
 			/* par[0] = Ctrl->S.value[0]; */
@@ -1418,13 +1420,13 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_DEBUG, "p_val = %g\n", p_val);
 			par[0] = p_val;
 			par[1] = 0.25 * par[0] * par[0];
-			G = spline3d_Mitasova_Mitas;
-			dGdr = gradspline3d_Mitasova_Mitas;
+			G = &spline3d_Mitasova_Mitas;
+			dGdr = &gradspline3d_Mitasova_Mitas;
 			break;
 		case PARKER_1994:
 			par[0] = 6.0 / (M_PI*M_PI);
-			G = spline2d_Parker;
-			dGdr = gradspline2d_Parker;
+			G = &spline2d_Parker;
+			dGdr = &gradspline2d_Parker;
 #ifdef DEBUG
 			if (TEST) x0 = -1.0, x1 = 1.0;
 #endif
@@ -1468,12 +1470,12 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->A.active) WB_g = GMT_memory (GMT, NULL, nx, double);
 				spline2d_Wessel_Becker_init (GMT, par, WB_z, WB_g, Ctrl->A.active);
 				GMT_report (GMT, GMT_MSG_NORMAL, "done\n");
-				G = spline2d_Wessel_Becker_lookup;
-				dGdr = gradspline2d_Wessel_Becker_lookup;
+				G = &spline2d_Wessel_Becker_lookup;
+				dGdr = &gradspline2d_Wessel_Becker_lookup;
 			}
 			else {
-				G = spline2d_Wessel_Becker;
-				dGdr = gradspline2d_Wessel_Becker;
+				G = &spline2d_Wessel_Becker;
+				dGdr = &gradspline2d_Wessel_Becker;
 			}
 #ifdef DEBUG
 			if (TEST) x0 = -1.0, x1 = 1.0;

@@ -354,15 +354,16 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	COUNTER_MEDIUM type;	/* Data type e.g., GMTAPI_FLOAT */
 	int skip;		/* Rather than read/write an item, jump skip bytes */
-	p_func_l io;		/* Pointer to the correct read or write function given type/swab */
+	GMT_LONG (*io) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to the correct read or write function given type/swab */
+	
 };
 
 struct GMT_IO {				/* Used to process input data records */
-	p_func_p input;			/* Pointer to function reading ascii or binary tables */
-	p_func_l output;		/* Pointer to function writing ascii or binary tables */
-	p_func_l read_item;		/* Pointer to function reading 1-col z tables in grd2xyz */
-	p_func_l write_item;		/* Pointer to function writing 1-col z tables in xyz2grd */
-	p_func_b ogr_parser;		/* Set to handle either header or data OGR records */
+	void * (*input) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM *, GMT_LONG *);	/* Pointer to function reading ascii or binary tables */
+	GMT_LONG (*output) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);	/* Pointer to function writing ascii or binary tables */
+	GMT_LONG (*read_item) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to function reading 1-col z tables in grd2xyz */
+	GMT_LONG (*write_item) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to function writing 1-col z tables in xyz2grd */
+	GMT_BOOLEAN (*ogr_parser) (struct GMT_CTRL *, char *);	/* Set to handle either header or data OGR records */
 
 	COUNTER_MEDIUM pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */
 	COUNTER_MEDIUM inc_code[2];
@@ -440,7 +441,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	COUNTER_MEDIUM gmt_j;		/* Current row number in the GMT registered grid */
 	COUNTER_LARGE n_expected;	/* Number of data element expected to be read */
 	off_t skip;		/* Number of bytes to skip before reading data */
-	p_func_u8 get_gmt_ij;	/* Pointer to function that converts running number to GMT ij */
+	COUNTER_LARGE (*get_gmt_ij) (struct GMT_Z_IO *, struct GMT_GRID *, COUNTER_LARGE);	/* Pointer to function that converts running number to GMT ij */
 };
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */

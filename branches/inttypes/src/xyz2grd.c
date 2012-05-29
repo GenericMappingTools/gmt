@@ -297,8 +297,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	float no_data_f;
 
-	p_func_p save_i = NULL;
-	p_func_l save_o = NULL;
+	void * (*save_i) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM *, GMT_LONG *) = NULL;
+	GMT_LONG (*save_o) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);
+	
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_Z_IO io;
 	struct XYZ2GRD_CTRL *Ctrl = NULL;
