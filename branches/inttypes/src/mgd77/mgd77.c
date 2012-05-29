@@ -2755,7 +2755,8 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
 	 * rw		0  for read or 1 for write.
 	 */
 
-	size_t len, start, stop;
+	int start, stop;
+	size_t len;
 	char mode[2];
 
 	mode[1] = '\0';	/* Thus mode will be a 1-char string */
@@ -4035,9 +4036,10 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 
+	GMT_LONG i;
 	COUNTER_MEDIUM n = 0, n_dig, j, k;
 	GMT_BOOLEAN all, NGDC_ID_likely;
-	size_t n_alloc = 0, length, i;
+	size_t n_alloc = 0, length;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
 #ifdef HAVE_DIRENT_H_
