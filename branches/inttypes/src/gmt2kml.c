@@ -28,8 +28,8 @@
  
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item);
-EXTERN_MSC void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, double value, double *rgb);
+GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item);
+void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, double value, double *rgb);
 
 #define POINT			0
 #define EVENT			1

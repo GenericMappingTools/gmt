@@ -33,7 +33,7 @@
 #include "gmt_dbase.h"
 #include "common_byteswap.h"
 
-EXTERN_MSC void GMT_str_toupper (char *string);
+void GMT_str_toupper (char *string);
 
 struct GRDRASTER_CTRL {
 	struct In {

@@ -21,7 +21,7 @@
  
 #include "gmt_mex.h"
 
-/* EXTERN_MSC GMT_LONG FUNC (struct GMTAPI_CTRL *API, GMT_LONG argc, char **cmd); */
+/*GMT_LONG FUNC (struct GMTAPI_CTRL *API, GMT_LONG argc, char **cmd); */
 
 /* Matlab Gateway routine for this grd??? prog */
 

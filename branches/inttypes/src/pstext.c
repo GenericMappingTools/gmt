@@ -29,8 +29,8 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size);
-EXTERN_MSC GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
+void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size);
+GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 
 #define PSTEXT_CLIP		1
 #define PSTEXT_PLOT		2

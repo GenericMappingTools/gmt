@@ -28,21 +28,24 @@
 #include "pslib.h"
 #include "gmt.h"
 
+/* TODO: remove this func declaration and include gmt_module.h when implemented: */
 EXTERN_MSC GMT_LONG FUNC (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
 
 int main (int argc, char *argv[]) {
 
-	int status = 0;				/* Status code from GMT API */
-	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
+	int status = 0;                 /* Status code from GMT API */
+	struct GMTAPI_CTRL *API = NULL; /* GMT API control structure */
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], FUNC_MODE)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session (argv[0], FUNC_MODE)) == NULL)
+		exit (EXIT_FAILURE);
 
 	/* 2. Run GMT function, or give usage message if errors arise during parsing */
 	status = FUNC (API, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (&API) != GMT_OK) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Session (&API) != GMT_OK)
+		exit (EXIT_FAILURE);
 
-	exit (status);		/* Return the status from FUNC */
+	exit (status); /* Return the status from FUNC */
 }

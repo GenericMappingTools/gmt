@@ -5,7 +5,7 @@
 	values in a GMT binary grid file.	*/
 
 #include "gmt.h"
-EXTERN_MSC void GMT_grdio_init (void);       /* Defined in gmt_customio.c */
+void GMT_grdio_init (void);       /* Defined in gmt_customio.c */
 
 #include <stdio.h>
 #include <X11/Intrinsic.h>

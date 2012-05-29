@@ -81,8 +81,8 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE, GMT_LONG id);
-EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */
+double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE, GMT_LONG id);
+char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */
 
 /** @brief XYZ color of the D65 white point */
 #define WHITEPOINT_X	0.950456

@@ -51,7 +51,7 @@
 
 #include "spotter.h"
 
-EXTERN_MSC void GMT_get_point_from_r_az (struct GMT_CTRL *C, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
+void GMT_get_point_from_r_az (struct GMT_CTRL *C, double lon0, double lat0, double r, double azim, double *lon1, double *lat1);
 
 #define SPOTTER_N_STEPS		360
 #define SPOTTER_DEL_STEP	(TWO_PI/SPOTTER_N_STEPS)

@@ -27,7 +27,7 @@
 
 #include "gmt_mex.h"
 
-EXTERN_MSC GMT_LONG FUNC (struct GMTAPI_CTRL *API, struct GMT_OPTION *options);
+GMT_LONG FUNC (struct GMTAPI_CTRL *API, struct GMT_OPTION *options);
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	int status = 0;				/* Status code from GMT API */
