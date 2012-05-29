@@ -137,7 +137,6 @@ struct ZGRID {
 
 #ifdef DEBUG
 GMT_BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
-void dump_green (double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
 #endif
 
 void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -466,7 +465,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
+void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
 {
 	GMT_LONG i;
 	double x, dx, dy, y, t, ry, rdy;
@@ -479,8 +478,8 @@ void dump_green (double (*G) (struct GMT_CTRL *, double, double *, double *), do
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
 		t = (x0 < 0.0) ? acosd (x) : x;
-		y = G(x, par, zz);
-		dy = D(x, par, gg);
+		y = G (C, x, par, zz);
+		dy = D (C, x, par, gg);
 		if (y < min_y) min_y = y;
 		if (y > max_y) max_y = y;
 		if (dy < min_dy) min_dy = dy;
@@ -491,8 +490,8 @@ void dump_green (double (*G) (struct GMT_CTRL *, double, double *, double *), do
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
 		t = (x0 < 0.0) ? acosd (x) : x;
-		y = G(x, par, zz);
-		dy = D(x, par, gg);
+		y = G (C, x, par, zz);
+		dy = D (C, x, par, gg);
 		dy = (rdy > 0.0) ? (dy - min_dy)/rdy : 1.0;
 		printf ("%g\t%g\t%g\t%g\n", x, (y - min_y) / ry, dy, t);
 	}
@@ -1487,7 +1486,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (TEST) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
-		dump_green (G, dGdr, par, x0, x1, 10001, WB_z, WB_g);
+		dump_green (GMT, G, dGdr, par, x0, x1, 10001, WB_z, WB_g);
 		Return (0);
 	}
 #endif
