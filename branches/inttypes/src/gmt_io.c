@@ -1485,10 +1485,10 @@ GMT_BOOLEAN gmt_skip_output (struct GMT_CTRL *C, double *cols, COUNTER_MEDIUM n_
 	return (FALSE);	/* No match, output record */
 }
 
-int gmt_x_write (struct GMT_CTRL *C, FILE *fp, COUNTER_MEDIUM n)
+int gmt_x_write (struct GMT_CTRL *C, FILE *fp, off_t n)
 { /* Used to write n bytes of space for filler on binary output */
 	char c = ' ';
-	COUNTER_MEDIUM i;
+	off_t i;
 	for (i = 0; i < n; ++i) {
 		if (GMT_fwrite (&c, sizeof (char), 1U, fp) != 1U)
 		return (GMT_DATA_WRITE_ERROR);
