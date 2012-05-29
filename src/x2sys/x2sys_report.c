@@ -29,44 +29,44 @@
 
 struct X2SYS_REPORT_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *col;
 	} C;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
-		GMT_LONG min;
+		GMT_BOOLEAN active;
+		COUNTER_LARGE min;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
 
 struct COE_REPORT {	/* Holds summary info for each track */
-	int nx;	/* Total number of COE for this track */
+	COUNTER_LARGE nx;	/* Total number of COE for this track */
 	double mean, stdev, rms;
 	double sum, sum2, W;
 	double d_max;	/* Length of track in distance units */
@@ -79,7 +79,8 @@ struct COE_ADJUST {	/* Holds adjustment spline knots */
 
 struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 	struct COE_ADJUST *K;
-	int n, n_alloc;
+	COUNTER_MEDIUM n;
+	size_t n_alloc;
 };
 
 void *New_x2sys_report_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -138,7 +139,7 @@ GMT_LONG GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -222,11 +223,11 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_COE_PAIR *P = NULL;
 	struct COE_REPORT *R = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
-	GMT_LONG error = FALSE;
-	GMT_LONG internal = FALSE;	/* FALSE if only external xovers are needed */
-	GMT_LONG external = TRUE;	/* FALSE if only internal xovers are needed */
-	GMT_LONG i, k, n, coe_kind, n_use, n_tracks;
-	GMT_LONG p, np, nx, Tnx = 0;
+	GMT_BOOLEAN error = FALSE;
+	GMT_BOOLEAN internal = FALSE;	/* FALSE if only external xovers are needed */
+	GMT_BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
+	COUNTER_LARGE i, k, n, coe_kind, n_use, n_tracks;
+	COUNTER_LARGE p, np, nx, Tnx = 0;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
 	struct GMT_OPTION *opt = NULL;
@@ -280,7 +281,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Read crossover database %s...\n", Ctrl->In.file);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, GMT->common.R.wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld pairs and a total of %ld crossover records.\n", np, nx);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -311,7 +312,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Tsum += COE;	Tsum2 += COE * COE;	Tnx++;
 		}
 		for (k = 0, sign = 1.0; n && k < 2; k++) {
-			R[P[p].id[k]].nx += (int)n;
+			R[P[p].id[k]].nx += n;
 			R[P[p].id[k]].sum += sign * sum;
 			R[P[p].id[k]].sum2 += sum2;
 			R[P[p].id[k]].d_max = P[p].dist[k];	/* Just copy over max distance for later */
@@ -337,22 +338,22 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
 	if (!Ctrl->In.file) fprintf (GMT->session.std[GMT_OUT], " [stdin]");
 	for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-	fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%ld]\n", c, c, c, c, c, n_use);
+	fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]\n", c, c, c, c, c, n_use);
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;
-	printf ("TOTAL%s%ld%s%g%s%g%s%g%s1\n", c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
+	printf ("TOTAL%s%" PRIu64 "%s%g%s%g%s%g%s1\n", c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
 	for (k = 0; k < n_tracks; k++) {	/* For each track that generated crossovers */
 		if (R[k].nx <= Ctrl->N.min) continue;			/* Not enough COEs */
 		if (!GMT_is_dnan (R[k].W)) R[k].W *= scale;
 		R[k].mean = (R[k].nx) ? R[k].sum / R[k].nx : GMT->session.d_NaN;
 		R[k].stdev = (R[k].nx > 1) ? sqrt ((R[k].nx * R[k].sum2 - R[k].sum * R[k].sum) / (R[k].nx * (R[k].nx - 1.0))) : GMT->session.d_NaN;
 		R[k].rms = (R[k].nx) ? sqrt (R[k].sum2 / R[k].nx) : GMT->session.d_NaN;
-		printf ("%s%s%d%s%g%s%g%s%g%s%g\n", trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
+		printf ("%s%s%" PRIu64 "%s%g%s%g%s%g%s%g\n", trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
-		int n_out, n1;
+		COUNTER_MEDIUM n_out, n1;
 		char file[GMT_BUFSIZ];
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;
@@ -390,7 +391,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			adj[k].K[adj[k].n].c = 0.0;
 			adj[k].n++;
 			
-			qsort(adj[k].K, (size_t)adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
+			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);

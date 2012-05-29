@@ -30,27 +30,27 @@
 
 struct GRDVOLUME_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double low, high, inc;
 	} C;
 	struct L {	/* -L<base> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} L;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char unit;
 	} S;
 	struct T {	/* -T[c|z] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} T;
 	struct Z {	/* Z<fact>[/<shift>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double scale, offset;
 	} Z;
 };
@@ -59,7 +59,7 @@ struct GRDVOLUME_CTRL {
  * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
  */
 
-double vol_prism_frac_x (struct GMT_GRID *G, GMT_LONG ij, double x0, double x1, double a, double b, double c, double d)
+double vol_prism_frac_x (struct GMT_GRID *G, COUNTER_LARGE ij, double x0, double x1, double a, double b, double c, double d)
 {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
 
@@ -87,7 +87,7 @@ double vol_prism_frac_x (struct GMT_GRID *G, GMT_LONG ij, double x0, double x1, 
  * lines y0 and y1 and two vertical lines x0 = ay +b and x1 = cy + d
  */
 
-double vol_prism_frac_y (struct GMT_GRID *G, GMT_LONG ij, double y0, double y1, double a, double b, double c, double d)
+double vol_prism_frac_y (struct GMT_GRID *G, COUNTER_LARGE ij, double y0, double y1, double a, double b, double c, double d)
 {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
 
@@ -111,7 +111,7 @@ double vol_prism_frac_y (struct GMT_GRID *G, GMT_LONG ij, double y0, double y1, 
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a SW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, frac;
@@ -129,7 +129,7 @@ void SW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a NE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
@@ -152,7 +152,7 @@ void NE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a SE-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
@@ -174,7 +174,7 @@ void SE_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv, double *da)
+void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
 {	/* Calculates area of a NW-corner triangle */
 	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
 	double x1, y0, y0_1, frac;
@@ -193,7 +193,7 @@ void NW_triangle (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG triangle, double *dv
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG right, double *dv, double *da)
+void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN right, double *dv, double *da)
 {	/* Calculates area of a NS trapezoid */
 	/* right = TRUE gets the right trapezoid, FALSE gets the left */
 	double x0, x1;
@@ -210,7 +210,7 @@ void NS_trapezoid (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG right, double *dv, 
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, GMT_LONG ij, GMT_LONG top, double *dv, double *da)
+void EW_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN top, double *dv, double *da)
 {	/* Calculates area of a EW trapezoid */
 	/* top = TRUE gets the top trapezoid, FALSE gets the bottom */
 	double y0, y1;
@@ -241,9 +241,9 @@ double median3 (double x[])
 	}
 }
 
-GMT_LONG ors_find_kink (struct GMT_CTRL *GMT, double y[], GMT_LONG n, GMT_LONG mode)
+GMT_LONG ors_find_kink (struct GMT_CTRL *GMT, double y[], COUNTER_MEDIUM n, COUNTER_MEDIUM mode)
 {	/* mode: 0 = find value maximum, 1 = find curvature maximum */
-	GMT_LONG i, im;
+	COUNTER_MEDIUM i, im;
 	double *c = NULL, *f = NULL;
 
 	if (mode == 0) {	/* Find maximum value */
@@ -324,7 +324,8 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, n = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG n = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -396,8 +397,11 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 
 GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, bad, cut[4], ij, ij_inc[5];
-	GMT_LONG row, col, c, k, pos, neg, nc, n_contours;
+	GMT_BOOLEAN error = FALSE, bad, cut[4];
+	GMT_LONG ij_inc[5];
+	COUNTER_MEDIUM row, col, c, k, pos, neg, nc, n_contours;
+	
+	COUNTER_LARGE ij;
 
 	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, out[4];
 	double *area = NULL, *vol = NULL, *height = NULL, this_base, small, wesn[4];
@@ -424,7 +428,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
-	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
@@ -435,7 +439,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, Grid->header->wesn, 4, double);	/* No -R, use grid domain */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, Grid) == NULL) {
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);
 	}
 
@@ -443,7 +447,8 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_grd_init (GMT, Work->header, options, TRUE);
 
 	/* Set node increments relative to the lower-left node of a 4-point box */
-	ij_inc[0] = ij_inc[4] = 0;	ij_inc[1] = 1;	ij_inc[2] = 1 - Work->header->mx;	ij_inc[3] = -Work->header->mx;
+	GMT_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
+	ij_inc[4] = ij_inc[0];	/* Repeat for convenience */
 	cellsize = Work->header->inc[GMT_X] * Work->header->inc[GMT_Y];
 	if (Ctrl->S.active) {
 		GMT_init_distaz (GMT, Ctrl->S.unit, 1, GMT_MAP_DIST);	/* Flat Earth mode */
@@ -599,7 +604,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */

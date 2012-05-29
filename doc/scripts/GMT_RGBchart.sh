@@ -56,7 +56,7 @@ awk -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %gp,1 %s\n",
 awk -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %gp,1 @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' $allinfo > $labels
 
 # Plot all tiles and texts
-psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -C$cpt -Sr -W $rects -K > $ps
+psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -C$cpt -Sri -W $rects -K > $ps
 pstext -R -J -O -K $labels -F+f --FONT=black >> $ps
 pstext -R -J -O -K $blacktags -F+f --FONT=black >> $ps
 pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps

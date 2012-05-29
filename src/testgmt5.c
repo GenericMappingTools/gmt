@@ -44,11 +44,11 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. READING IN A GRID */
-	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
-	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_IN, Gin, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_IN, NULL, Gin)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	/* 3b. Register a grid struct Gout to be the destination allocated and written to by grdcut */
 	if ((out_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
@@ -69,7 +69,7 @@ int main (int argc, char *argv[]) {
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_grdcut (API, -1, head);	/* This allocates memory for the export grid associated with the -G option */
 	if (status) {
-		GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_grdcut returned error %ld\n", status);
+		GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_grdcut returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((Gout = GMT_Retrieve_Data (API, out_grdcut_ID)) == NULL) exit (EXIT_FAILURE);
@@ -78,7 +78,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Destroy_Options (API, &head)) exit (EXIT_FAILURE);
 
 	/* 7. WRITING THE RESULT TO FILE */
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, out_grid, Gout) != GMT_OK) exit (EXIT_FAILURE);
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_grid, Gout) != GMT_OK) exit (EXIT_FAILURE);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

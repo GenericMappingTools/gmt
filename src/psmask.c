@@ -41,53 +41,53 @@
 
 struct PSMASK_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 #ifdef DEBUG
-		GMT_LONG debug;
+		GMT_BOOLEAN debug;
 #endif
 	} D;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<cut> */
-		GMT_LONG active;
-		GMT_LONG min;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM min;
 	} Q;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n|s] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
 struct PSMASK_INFO {
-	GMT_LONG first_dump;
+	GMT_BOOLEAN first_dump;
 	GMT_LONG p[5], i_off[5], j_off[5], k_off[5], offset;
 	unsigned int bit[32];
 };
 
-void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, GMT_LONG nn, double rgb[], GMT_LONG id, GMT_LONG flag)
+void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, COUNTER_LARGE nn, double rgb[], COUNTER_MEDIUM id, COUNTER_MEDIUM flag)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double x, y;
 
 	if (nn < 2 && flag < 2) return;
@@ -98,15 +98,15 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	}
 	nn = GMT_compact_line (GMT, xx, yy, nn, FALSE, 0);
 
-	if (nn > 0) PSL_comment (PSL, "Start of clip path sub-segment %ld\n", id);
+	if (nn > 0) PSL_comment (PSL, "Start of clip path sub-segment %d\n", id);
 	PSL_beginclipping (PSL, xx, yy, nn, rgb, flag);
-	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %ld\n", id);
+	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
-GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, GMT_LONG *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, GMT_LONG *max)
+GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, COUNTER_MEDIUM *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, GMT_LONG i, GMT_LONG j, GMT_LONG kk, COUNTER_LARGE *max)
 {
-	GMT_LONG n = 1, k, k0, n_cuts, kk_opposite, first_k, more;
-	GMT_LONG edge_word, edge_bit, ij, ij0, m;
+	GMT_LONG k, k0, n_cuts, kk_opposite, first_k, more;
+	COUNTER_LARGE n = 1, edge_word, edge_bit, ij, ij0, m;
 	double xk[4], yk[4], x0, y0;
 
 	m = *max - 2;
@@ -226,26 +226,29 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);
 }
 
-GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], GMT_LONG *edge, GMT_LONG first, double **x, double **y, GMT_LONG *max)
+GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], COUNTER_MEDIUM *edge, COUNTER_MEDIUM first, double **x, double **y, COUNTER_LARGE *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
 	 */
 	 
-	static GMT_LONG i0, j0, side;
-	GMT_LONG ij, i, j, n = 0, n_edges, edge_word, edge_bit, go_on = TRUE;
+	COUNTER_MEDIUM n_edges, edge_word, edge_bit, i, j, n = 0;
+	static COUNTER_MEDIUM i0, j0, side;
+	COUNTER_LARGE ij;
+	GMT_BOOLEAN go_on = TRUE;
 	 
 	 
-	n_edges = h->ny * (GMT_LONG) ceil (h->nx / 16.0);
+	n_edges = h->ny * lrint (ceil (h->nx / 16.0));
 	 
 	 /* Reset edge-flags to zero, if necessary */
 	 if (first) {
+		GMT_LONG signed_nx = h->nx;	/* Needed to assign p[3] below */
 		info->offset = n_edges / 2;
 	 	i0 = 0;	/* Begin with upper left bin which is i = 0 and j = 1 */
 	 	j0 = 1;
 		side = 4;	/* Vertical interior gridlines */
-		info->p[0] = info->p[4] = 0;	info->p[1] = 1;	info->p[2] = 1 - h->nx;	info->p[3] = -h->nx;
+		info->p[0] = info->p[4] = 0;	info->p[1] = 1;	info->p[2] = 1 - signed_nx;	info->p[3] = -signed_nx;
 		info->i_off[0] = info->i_off[2] = info->i_off[3] = info->i_off[4] = 0;	info->i_off[1] =  1;
 		info->j_off[0] = info->j_off[1] = info->j_off[3] = info->j_off[4] = 0;	info->j_off[2] = -1;
 		info->k_off[0] = info->k_off[2] = info->k_off[4] = 0;	info->k_off[1] = info->k_off[3] = 1;
@@ -301,10 +304,10 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	return (n);
 }
 
-void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, GMT_LONG n, double w, double e)
+void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, COUNTER_MEDIUM n, double w, double e)
 {
 	/* Moves outside points to boundary */
-	GMT_LONG i;
+	COUNTER_MEDIUM i;
 
 	for (i = 0; i < n; i++) {
 		if (x[i] < w)
@@ -389,7 +392,7 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 #ifdef GMT_COMPAT
 	GMT_LONG n_plus, k;
 #endif
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -493,10 +496,14 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG ij, k, n, row, col, n_edges, *d_col = NULL, d_row = 0, ii, jj, make_plot, n_seg = 0;
-	GMT_LONG section, n_read, n_alloc, closed, io_mode = 0, max_d_col = 0;
-	GMT_LONG error = FALSE, first = TRUE, node_only, n_seg_alloc = 0;
-	GMT_LONG fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
+	COUNTER_MEDIUM section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
+	COUNTER_MEDIUM io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
+	COUNTER_MEDIUM fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
+	GMT_BOOLEAN error = FALSE, node_only, make_plot, closed;
+	
+	COUNTER_LARGE ij, n_points, n_seg = 0, n_read, n;
+	
+	size_t n_seg_alloc = 0;
 
 	char *grd = NULL;
 
@@ -540,9 +547,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
-		GMT_LONG dim[4] = {1, 0, 2, 0};
+		COUNTER_LARGE dim[4] = {1, 0, 2, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
-			io_mode = GMT_WRITE_DATASET;
+			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
 			k = 0;
 			while (Ctrl->D.file[k]) {
@@ -616,7 +623,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -642,28 +649,25 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Determine the node closest to the data point */
 
-			col = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-			if (col < 0 || col >= Grid->header->nx) continue;
-			row = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
-			if (row < 0 || row >= Grid->header->ny) continue;
+			if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;			/* Outside grid node range */
 
 			if (node_only) {
 				ij = GMT_IJP (Grid->header, row, col);
 				grd[ij] = 1;
 			}
-			else {
-
-				/* Set coordinate of this node */
+			else {	/* Set coordinate of this node */
 
 				x0 = GMT_grd_col_to_x (GMT, col, Grid->header);
 				y0 = GMT_grd_row_to_y (GMT, row, Grid->header);
 
 				/* Set this and all nodes within radius distance to 1 */
 
-				for (jj = row - d_row; jj <= row + d_row; jj++) {
-					if (jj < 0 || jj >= Grid->header->ny) continue;
-					for (ii = col - d_col[jj]; ii <= col + d_col[jj]; ii++) {
-						if (ii < 0 || ii >= Grid->header->nx) continue;
+				j_start = (row > d_row) ? row - d_row : 0;
+				for (jj = j_start; jj <= row + d_row; jj++) {
+					if (jj >= Grid->header->ny) continue;
+					i_start = (col > d_col[jj]) ? col - d_col[jj] : 0;
+					for (ii = i_start; ii <= col + d_col[jj]; ii++) {
+						if (ii >= Grid->header->nx) continue;
 						distance = GMT_distance (GMT, x0, y0, grd_x0[ii], grd_y0[jj]);
 						if (distance > Ctrl->S.radius) continue;
 						ij = GMT_IJP (Grid->header, jj, ii);
@@ -677,9 +681,9 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld data points\n", n_read);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " data points\n", n_read);
 
-		if (Ctrl->N.active) for (k = 0; k < Grid->header->nm; k++) grd[k] = 1 - grd[k];	/* Reverse sense of test */
+		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->nm; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
 		/* Force perimeter nodes to be FALSE; thus all contours will be closed */
 
@@ -689,7 +693,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 		if (Ctrl->D.debug) {	/* Save a copy of the grid to psmask.nc */
 			float *z = GMT_memory (GMT, NULL, Grid->header->nm, float);
-			for (k = 0; k < Grid->header->nm; k++) z[k] = (float)grd[k];
+			for (ij = 0; ij < Grid->header->nm; ij++) z[ij] = (float)grd[ij];
 			GMT_write_grd (GMT, "psmask.nc", Grid->header, z, NULL, GMT->current.io.pad, FALSE);
 			GMT_free (GMT, z);
 		}
@@ -698,25 +702,24 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Arrays holding the contour xy values */
 			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
-			n_alloc = GMT_CHUNK;
 
-			n_edges = Grid->header->ny * (GMT_LONG )ceil (Grid->header->nx / 16.0);
-			edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);
+			n_edges = Grid->header->ny * lrint (ceil (Grid->header->nx / 16.0));
+			edge = GMT_memory (GMT, NULL, n_edges, COUNTER_MEDIUM);
 
 			if (make_plot) GMT_map_basemap (GMT);
 
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tracing the clip path\n");
 
 			section = 0;
-			first = TRUE;
-			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_alloc)) > 0) {
+			first = 1;
+			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_points)) > 0) {
 				closed = FALSE;
 				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
-				if (Ctrl->D.active && n > Ctrl->Q.min) {	/* Save the contour as output data */
+				if (Ctrl->D.active && n > (COUNTER_LARGE)Ctrl->Q.min) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, GMT->session.d_NaN);
 					/* Select which table this segment should be added to */
 					if (n_seg == n_seg_alloc) {
-						GMT_LONG n_old_alloc = n_seg_alloc;
+						size_t n_old_alloc = n_seg_alloc;
 						D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
 						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 					}
@@ -730,7 +733,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 				}
 				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
-				first = FALSE;
+				first = 0;
 				section++;
 			}
 
@@ -741,13 +744,13 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
 				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_LINE_SEGMENT *);
-				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 					Return (API->error);
 				}
 			}
 		}
 		else {	/* Just paint tiles */
-			GMT_LONG start, n_use, np, plot_n;
+			COUNTER_LARGE start, n_use, np, plot_n;
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tiling...\n");
 

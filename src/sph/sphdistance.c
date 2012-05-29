@@ -40,32 +40,32 @@
 
 struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
 	struct E {	/* -E */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} E;
 	struct G {	/* -G<maskfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<unit>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char unit;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Q;
 };
@@ -74,18 +74,18 @@ void prepare_polygon (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *P)
 {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
-	GMT_LONG i;
+	COUNTER_LARGE row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 	
 	GMT_set_seg_minmax (C, P);	/* Set the domain of the segment */
 	
 	/* Then loop over points to accumulate sums */
 	
-	for (i = 1; i < P->n_rows; i++) {	/* Start at i = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
-		dlon = P->coord[GMT_X][i] - P->coord[GMT_X][i-1];
+	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
+		dlon = P->coord[GMT_X][row] - P->coord[GMT_X][row-1];
 		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
 		lon_sum += dlon;
-		lat_sum += P->coord[GMT_Y][i];
+		lat_sum += P->coord[GMT_Y][row];
 	}
 	P->pole = 0;
 	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* Contains a pole */
@@ -159,7 +159,7 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -231,9 +231,14 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 
 GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, n = 0, n_dup = 0, n_set = 0, ij, ii, s_row, n_row, w_col, e_col, side;
-	GMT_LONG n_alloc, p_alloc = 0, nx1, error = FALSE, first = FALSE;
-	GMT_LONG node, vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
+	GMT_BOOLEAN error = FALSE, first = FALSE, periodic;
+	GMT_LONG s_row, south_row, north_row, w_col, e_col;
+
+	COUNTER_MEDIUM row, col, p_col, west_col, east_col;
+	COUNTER_LARGE nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;
+	COUNTER_LARGE vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
+
+	size_t n_alloc, p_alloc = 0;
 
 	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
@@ -275,16 +280,16 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		Grid->header->wesn[XLO] = 0.0;	Grid->header->wesn[XHI] = 360.0;	Grid->header->wesn[YLO] = -90.0;	Grid->header->wesn[YHI] = 90.0;
 	}
-
+	periodic = GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Read Volonoi polygons from %s ...", Ctrl->Q.file);
-		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, NULL, 0, Ctrl->Q.file, NULL)) == NULL) {
+		if ((Qin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		Table = Qin->table[0];	/* Only one table in a file */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld segments\n", Table->n_segments);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " segments\n", Table->n_segments);
 	 	lon = GMT_memory (GMT, NULL, Table->n_segments, double);
 	 	lat = GMT_memory (GMT, NULL, Table->n_segments, double);
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
@@ -294,7 +299,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (error);
 			}
 			GMT_report (GMT, GMT_MSG_NORMAL, "Read Nodes from %s ...", Ctrl->N.file);
-			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+			if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 				Return (API->error);
 			}
 			NTable = Nin->table[0];	/* Only one table in a file with a single segment */
@@ -302,7 +307,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Table->n_segments != NTable->n_records) {
+			if (Table->n_segments != (COUNTER_LARGE)NTable->n_records) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -311,7 +316,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Nin) != GMT_OK) {
 				Return (API->error);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld records\n", NTable->n_records);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " records\n", NTable->n_records);
 		}
 		else {	/* Get extract them from the segment header */
 			for (node = 0; node < Table->n_segments; node++) {
@@ -323,7 +328,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {
@@ -370,18 +375,18 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			if (++n == n_alloc) {	/* Get more memory */
-				if (!Ctrl->C.active) { GMT_LONG n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
+				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 			}
 			first = FALSE;
 		} while (TRUE);
 
-		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n, double);
-		GMT_malloc3 (GMT, xx, yy, zz, 0, &n, double);
 		n_alloc = n;
+		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
+		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %ld duplicate points in segments\n", n_dup);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %ld points\n", n);
+		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_NORMAL, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
 		stripack_lists (GMT, n, xx, yy, zz, &T);	/* Do the basic triangulation */
@@ -454,7 +459,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			} while (node_new != node_stop);
 			P->coord[GMT_X][vertex] = P->coord[GMT_X][0];	/* Close polygon explicitly */
 			P->coord[GMT_Y][vertex] = P->coord[GMT_Y][0];
-			if (++vertex == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
+			if ((++vertex) == p_alloc) GMT_malloc2 (GMT, P->coord[GMT_X], P->coord[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 		}
 		
@@ -462,14 +467,27 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
-		s_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
-		n_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
-		w_col = GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		south_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
+		north_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
+		w_col  = GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		while (w_col < 0) w_col += nx1;
+		west_col = w_col;
 		e_col = GMT_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
-
-		for (row = n_row; row <= s_row; row++) {	/* For each scanline intersecting this polygon */
-			for (ii = w_col; ii <= e_col; ii++) {	/* March along the scanline */
-				col = (ii >= 0) ? ii : ii + nx1;
+		while (e_col < w_col) e_col += nx1;
+		east_col = e_col;
+		/* So here, any polygon will have a positive (or 0) west_col with an east_col >= west_col */
+		for (s_row = north_row; s_row <= south_row; s_row++) {	/* For each scanline intersecting this polygon */
+			if (s_row < 0) continue;	/* North of region */
+			row = s_row; if (row >= Grid->header->ny) continue;	/* South of region */
+			for (p_col = west_col; p_col <= east_col; p_col++) {	/* March along the scanline using col >= 0 */
+				if (p_col >= Grid->header->nx) {	/* Off the east end of the grid */
+					if (periodic)	/* Just shuffle to the corresponding point inside the global grid */
+						col = p_col - nx1;
+					else		/* Sorry, really outside the region */
+						continue;
+				}
+				else
+					col = p_col;
 				side = GMT_inonout_sphpol (GMT, grid_lon[col], grid_lat[row], P);	/* No holes to worry about here */
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
@@ -501,11 +519,11 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, lat);
 	}
 	
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Spherical distance calculation completed, %ld nodes visited (at least once)\n", n_set);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
 	
 	Return (GMT_OK);
 }

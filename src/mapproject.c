@@ -42,61 +42,61 @@
 struct MAPPROJECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct A {	/* -Ab|B|f|Fb|B|o|O<lon0>/<lat0> */
-		GMT_LONG active;
-		GMT_LONG azims;
-		GMT_LONG orient;	/* TRUE if we want orientations, not azimuths */
-		GMT_LONG reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
-		GMT_LONG geodesic;	/* TRUE if we want geodesic azimuths [Default is great circle azimuths] */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN azims;
+		GMT_BOOLEAN orient;	/* TRUE if we want orientations, not azimuths */
+		GMT_BOOLEAN reverse;	/* TRUE if we want back-azimuths instead of regular azimuths */
+		GMT_BOOLEAN geodesic;	/* TRUE if we want geodesic azimuths [Default is great circle azimuths] */
 		double lon, lat;	/* Fixed point of reference */
 	} A;
 	struct C {	/* -C[<false_easting>/<false_northing>] */
-		GMT_LONG active;
-		GMT_LONG shift;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN shift;
 		double easting, northing;	/* Shifts */
 	} C;
 	struct D {	/* -D<c|i|p> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char unit;
 	} D;
 	struct E {	/* -E[<datum>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_DATUM datum;	/* Contains a, f, xyz[3] */
 	} E;
 	struct F {	/* -F[k|m|n|i|c|p] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char unit;
 	} F;
 	struct G {	/* -G<lon0>/<lat0>[d|e|f|k|m|M|n|s|c|C] */
-		GMT_LONG active;
-		GMT_LONG mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
-		GMT_LONG sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;		/* 1 = distance to fixed point, 2 = cumulative distances, 3 = incremental distances, 4 = 2nd point in cols 3/4 */
+		COUNTER_MEDIUM sph;		/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		double lon, lat;	/* Fixed point of reference */
 		char unit;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<line.xy>[/<d|e|f|k|m|M|n|s|c|C>] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
-		GMT_LONG sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 0 = dist to nearest point, 1 = also get the point, 2 = instead get seg#, pt# */
+		COUNTER_MEDIUM sph;	/* 0 = Flat Earth, 1 = spherical [Default], 2 = ellipsoidal */
 		char *file;	/* Name of file with lines */
 		char unit;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} N;
 	struct Q {	/* -Q[e|d] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 1 = print =Qe, 2 print -Qd, 3 print both */
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T[h]<from>[/<to>] */
-		GMT_LONG active;
-		GMT_LONG heights;	/* True if we have heights */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN heights;	/* True if we have heights */
 		struct GMT_DATUM from;	/* Contains a, f, xyz[3] */
 		struct GMT_DATUM to;	/* Contains a, f, xyz[3] */
 	} T;
@@ -194,7 +194,10 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_slash, n, k, n_errors = 0, slash, last, geodetic_calc = FALSE;
+	COUNTER_MEDIUM n_slash,k, n_errors = 0, slash;
+	GMT_LONG n;
+	size_t last;
+	GMT_BOOLEAN geodetic_calc = FALSE;
 	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -302,7 +305,7 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 			case 'L':	/* [-L<line.xy>[/[+|-]<unit>]][+] */
 				Ctrl->L.active = TRUE;
 				Ctrl->L.file = strdup (opt->arg);
-				k = (GMT_LONG)strlen (Ctrl->L.file) - 1;	/* Index of last character */
+				k = (int)strlen (Ctrl->L.file) - 1;	/* Index of last character */
 				if (Ctrl->L.file[k] == '+') {			/* Flag to get point number instead of coordinates at nearest point on line */
 					Ctrl->L.mode = 3;
 					Ctrl->L.file[k] = '\0';	/* Chop off the trailing plus sign */
@@ -405,11 +408,14 @@ GMT_LONG GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ct
 
 GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG k, x, y, rmode, pos, i = 0, j, n_fields, n_output = 0, two;
-	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, n_read = 0, n = 0, proj_type = 0;
-	GMT_LONG error = FALSE, line_start = TRUE, n_read_in_seg, do_geo_conv = FALSE;
-	GMT_LONG geodetic_calc = FALSE, lat_mode = 0;
-	GMT_LONG datum_conv_only = FALSE, double_whammy = FALSE, way;
+	GMT_LONG k, x, y, rmode, n_fields, n_output = 0, two, way;
+	GMT_LONG fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
+	GMT_BOOLEAN error = FALSE, line_start = TRUE, do_geo_conv = FALSE;
+	GMT_BOOLEAN geodetic_calc = FALSE, datum_conv_only = FALSE, double_whammy = FALSE;
+	
+	COUNTER_MEDIUM i = 0, pos;
+	
+	COUNTER_LARGE row, n_read_in_seg, seg, n_read = 0, n = 0;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
@@ -546,7 +552,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 		ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 		if (Ctrl->F.active) {	/* Convert to GMT inches */
-			strncpy (unit_name, scale_unit_name, (size_t)GMT_TEXT_LEN64);
+			strncpy (unit_name, scale_unit_name, GMT_TEXT_LEN64);
 			xmin /= GMT->current.proj.scale[GMT_X];
 			xmax /= GMT->current.proj.scale[GMT_X];
 			ymin /= GMT->current.proj.scale[GMT_Y];
@@ -583,29 +589,29 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->L.active) {
 		/* Initialize the i/o for doing table reading */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 			Return (API->error);
 		}
 
-		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, 0, Ctrl->L.file, NULL)) == NULL) {
+		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */
-			for (i = 0; i < xyline->n_segments; i++) {
-				for (j = 0; j < xyline->segment[i]->n_rows; j++) {
-					GMT_geo_to_xy (GMT, xyline->segment[i]->coord[GMT_X][j], xyline->segment[i]->coord[GMT_Y][j], &xtmp, &ytmp);
-					xyline->segment[i]->coord[GMT_X][j] = xtmp;
-					xyline->segment[i]->coord[GMT_Y][j] = ytmp;
+			for (seg = 0; seg < xyline->n_segments; seg++) {
+				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
+					GMT_geo_to_xy (GMT, xyline->segment[seg]->coord[GMT_X][row], xyline->segment[seg]->coord[GMT_Y][row], &xtmp, &ytmp);
+					xyline->segment[seg]->coord[GMT_X][row] = xtmp;
+					xyline->segment[seg]->coord[GMT_Y][row] = ytmp;
 				}
 			}
 		}
 		else if (GMT_is_geographic (GMT, GMT_IN) && proj_type == GMT_GEOGRAPHIC && !GMT_IS_SPHERICAL (GMT)) {
 			do_geo_conv = TRUE;
 			/* Will need spherical trig so convert to geocentric latitudes if on an ellipsoid */
-			for (i = 0; i < xyline->n_segments; i++) {
-				for (j = 0; j < xyline->segment[i]->n_rows; j++) {
-					xyline->segment[i]->coord[GMT_Y][j] = GMT_lat_swap (GMT, xyline->segment[i]->coord[GMT_Y][j], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			for (seg = 0; seg < xyline->n_segments; seg++) {
+				for (row = 0; row < xyline->segment[seg]->n_rows; row++) {
+					xyline->segment[seg]->coord[GMT_Y][row] = GMT_lat_swap (GMT, xyline->segment[seg]->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 				}
 			}
 		}
@@ -628,10 +634,10 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN,  0))) Return (error);
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	rmode = (!GMT->common.b.active[GMT_IN] && !GMT->common.b.active[GMT_OUT] && !GMT->common.o.active && GMT_get_cols (GMT, GMT_IN) > 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
@@ -781,7 +787,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %ld points\r", n);
+			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 		else {		/* Do forward transformation */
 
@@ -948,7 +954,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\r", n);
+			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %" PRIu64 " points\r", n);
 		}
 	} while (TRUE);
 	
@@ -960,7 +966,7 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %ld points\n", n);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %" PRIu64 " points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		if (!geodetic_calc) {
@@ -968,26 +974,26 @@ GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, format, x_out_min, x_out_max, y_out_min, y_out_max);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
-					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld ECEF coordinates [m] to (lon,lat,h)\n", n);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
 				else if (Ctrl->N.active)
-					GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
 				else
-					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld x-y pairs [%s] to lon-lat\n", n, unit_name);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
 			}
 			else if (Ctrl->T.active && GMT->current.proj.datum.h_given)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %ld (lon,lat,h) triplets\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
 			else if (Ctrl->T.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %ld (lon,lat) pairs\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
 			else if (Ctrl->E.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
 			else if (Ctrl->N.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
 			else if (GMT_is_geographic (GMT, GMT_IN))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld lon-lat pairs to x-y [%s]\n", n, unit_name);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %ld data pairs to x-y [%s]\n", n, unit_name);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
 		}
-		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_NORMAL, "%ld fell outside region\n", n_read - n);
+		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
 
 	GMT_free (GMT, out);

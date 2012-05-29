@@ -444,7 +444,7 @@
 # if (__STDC__ && __STDC_VERSION__ >= 199901L) || defined (S_SPLINT_S)
 #  define stdint_int64_defined
    typedef long long int64_t;
-   typedef unsigned long long uint64_t;
+   typedef unsigned long long COUNTER_LARGE;
 #  define UINT64_C(v) v ## ULL
 #  define  INT64_C(v) v ## LL
 #  ifndef PRINTF_INT64_MODIFIER
@@ -457,7 +457,7 @@
 # if defined(__GNUC__)
 #  define stdint_int64_defined
    __extension__ typedef long long int64_t;
-   __extension__ typedef unsigned long long uint64_t;
+   __extension__ typedef unsigned long long COUNTER_LARGE;
 #  define UINT64_C(v) v ## ULL
 #  define  INT64_C(v) v ## LL
 #  ifndef PRINTF_INT64_MODIFIER
@@ -466,7 +466,7 @@
 # elif defined(__MWERKS__) || defined (__SUNPRO_C) || defined (__SUNPRO_CC) || defined (__APPLE_CC__) || defined (_LONG_LONG) || defined (_CRAYC) || defined (S_SPLINT_S)
 #  define stdint_int64_defined
    typedef long long int64_t;
-   typedef unsigned long long uint64_t;
+   typedef unsigned long long COUNTER_LARGE;
 #  define UINT64_C(v) v ## ULL
 #  define  INT64_C(v) v ## LL
 #  ifndef PRINTF_INT64_MODIFIER
@@ -475,7 +475,7 @@
 # elif (defined(__WATCOMC__) && defined(__WATCOM_INT64__)) || (defined(_MSC_VER) && _INTEGRAL_MAX_BITS >= 64) || (defined (__BORLANDC__) && __BORLANDC__ > 0x460) || defined (__alpha) || defined (__DECC)
 #  define stdint_int64_defined
    typedef __int64 int64_t;
-   typedef unsigned __int64 uint64_t;
+   typedef unsigned __int64 COUNTER_LARGE;
 #  define UINT64_C(v) v ## UI64
 #  define  INT64_C(v) v ## I64
 #  ifndef PRINTF_INT64_MODIFIER
@@ -539,7 +539,7 @@
 
 #ifdef stdint_int64_defined
   typedef int64_t intmax_t;
-  typedef uint64_t uintmax_t;
+  typedef COUNTER_LARGE uintmax_t;
 # define  INTMAX_MAX   INT64_MAX
 # define  INTMAX_MIN   INT64_MIN
 # define UINTMAX_MAX  UINT64_MAX
@@ -599,7 +599,7 @@
 # define  INT_LEAST32_MIN  INT32_MIN
 # ifdef stdint_int64_defined
     typedef  int64_t  int_least64_t;
-    typedef uint64_t uint_least64_t;
+    typedef COUNTER_LARGE uint_least64_t;
 #   define PRINTF_LEAST64_MODIFIER PRINTF_INT64_MODIFIER
 #   define UINT_LEAST64_MAX UINT64_MAX
 #   define  INT_LEAST64_MAX  INT64_MAX

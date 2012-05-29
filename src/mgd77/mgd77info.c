@@ -33,26 +33,26 @@
 struct MGD77INFO_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct C {	/* -C */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} E;
 	struct I {	/* -I */
-		GMT_LONG active;
-		GMT_LONG n;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
-		GMT_LONG mode;
-		GMT_LONG flag;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM flag;
 	} M;
 };
 
@@ -117,7 +117,8 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_LONG sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -151,8 +152,9 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 				Ctrl->M.active = TRUE;
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
-					Ctrl->M.flag = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);
-					if (Ctrl->M.flag < 0) n_errors++;
+					sval = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);
+					if (sval < 0) n_errors++;
+					Ctrl->M.flag = sval;
 				}
 				else if (opt->arg[0] == 'r') {
 					Ctrl->M.mode = RAW_HEADER;
@@ -238,10 +240,14 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 
 GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, id, rec, argno, length, id_col, t_col, x_col, y_col, saved_range, use;
-	GMT_LONG n_paths, counter[MGD77_MAX_COLS], quad_no, n_quad, rata_die;
-	GMT_LONG error = FALSE, first = TRUE, read_file;
-	GMT_LONG quad[4] = {FALSE, FALSE, FALSE, FALSE};
+	GMT_LONG i, id, id_col, t_col, x_col, y_col;
+	
+	int64_t rata_die;
+	size_t length;
+	
+	COUNTER_LARGE rec, argno, n_paths, counter[MGD77_MAX_COLS];
+	COUNTER_MEDIUM saved_range, quad_no, n_quad, use, k;
+	GMT_BOOLEAN error = FALSE, first = TRUE, read_file, quad[4] = {FALSE, FALSE, FALSE, FALSE};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;
@@ -361,19 +367,19 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		id_col = MGD77_Get_Column (GMT, "id", &M);
 		
 		if (first && Ctrl->E.active) {	/* Output all column headers */
-			for (i = 0; i < M.n_out_columns; i++) {
+			for (i = k = 0; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
-				fprintf (GMT->session.std[GMT_OUT],"%s%s", GMT->current.setting.io_col_separator, D->H.info[M.order[i].set].col[M.order[i].item].abbrev);
+				fprintf (GMT->session.std[GMT_OUT],"%s%s", GMT->current.setting.io_col_separator, D->H.info[M.order[k].set].col[M.order[k].item].abbrev);
 			}
 			fprintf (GMT->session.std[GMT_OUT],"\n");
 		}
 		
 		if (Ctrl->C.active) {	/* Just list names and info for any extra columns */
-			for (i = 0, first = TRUE; i < M.n_out_columns; i++) {
+			for (i = k = 0, first = TRUE; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
 				if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-				if (((Ctrl->C.mode & 1) && M.order[i].set == 0) || ((Ctrl->C.mode & 2) && M.order[i].set == 1)) {
-					fprintf (GMT->session.std[GMT_OUT], "%s", D->H.info[M.order[i].set].col[M.order[i].item].abbrev);
+				if (((Ctrl->C.mode & 1) && M.order[k].set == 0) || ((Ctrl->C.mode & 2) && M.order[k].set == 1)) {
+					fprintf (GMT->session.std[GMT_OUT], "%s", D->H.info[M.order[k].set].col[M.order[k].item].abbrev);
 					first = FALSE;
 				}
 			}
@@ -393,12 +399,12 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fprintf (GMT->session.std[GMT_OUT], "----------------------------------------\n");
 			if (M.format == MGD77_FORMAT_CDF) {
 				fprintf (GMT->session.std[GMT_OUT], "%s\n", D->H.history);
-				for (i = 0; i < M.n_out_columns; i++) {
-					if (M.order[i].set == MGD77_CDF_SET) {
-						fprintf (GMT->session.std[GMT_OUT], "> %s%s%s%s%s%s%s", D->H.info[MGD77_CDF_SET].col[M.order[i].item].abbrev, GMT->current.setting.io_col_separator,
-						D->H.info[MGD77_CDF_SET].col[M.order[i].item].name, GMT->current.setting.io_col_separator,
-						D->H.info[MGD77_CDF_SET].col[M.order[i].item].units, GMT->current.setting.io_col_separator,
-						D->H.info[MGD77_CDF_SET].col[M.order[i].item].comment);
+				for (i = k = 0; k < M.n_out_columns; i++, k++) {
+					if (M.order[k].set == MGD77_CDF_SET) {
+						fprintf (GMT->session.std[GMT_OUT], "> %s%s%s%s%s%s%s", D->H.info[MGD77_CDF_SET].col[M.order[k].item].abbrev, GMT->current.setting.io_col_separator,
+						D->H.info[MGD77_CDF_SET].col[M.order[k].item].name, GMT->current.setting.io_col_separator,
+						D->H.info[MGD77_CDF_SET].col[M.order[k].item].units, GMT->current.setting.io_col_separator,
+						D->H.info[MGD77_CDF_SET].col[M.order[k].item].comment);
 					}
 				}
 			}
@@ -411,8 +417,8 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
 		ymax = -180.0;
-		GMT_memset (quad, 4, GMT_LONG);	/* Set all to FALSE */
-		GMT_memset (counter, MGD77_MAX_COLS, GMT_LONG);
+		GMT_memset (quad, 4, GMT_BOOLEAN);	/* Set all to FALSE */
+		GMT_memset (counter, MGD77_MAX_COLS, COUNTER_LARGE);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
 			dvalue[i] = D->values[i];
@@ -439,7 +445,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (this_lon < 0.0) this_lon += 360.0;	/* Start off with everything in 0-360 range */
 			xmin1 = MIN (this_lon, xmin1);
 			xmax1 = MAX (this_lon, xmax1);
-			quad_no = (GMT_LONG)floor (this_lon/90.0);	/* Yields quadrants 0-3 */
+			quad_no = lrint (floor (this_lon/90.0));	/* Yields quadrants 0-3 */
 			if (quad_no == 4) quad_no = 0;		/* When this_lon == 360.0 */
 			quad[quad_no] = TRUE;
 			if (lon_w > 180.0) this_lon -= 360.0;	/* For -180/+180 range */
@@ -460,13 +466,13 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 			/* Count the number of non-NaN observations */
 			
-			for (i = 1; i < M.n_out_columns; i++) {
+			for (i = k = 1; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
-				if ((length = D->H.info[M.order[i].set].col[M.order[i].item].text)) {
-					if (strncmp (&tvalue[i][rec*length], ALL_NINES, (size_t)length)) counter[i]++;
+				if ((length = D->H.info[M.order[k].set].col[M.order[k].item].text)) {
+					if (strncmp (&tvalue[k][rec*length], ALL_NINES, length)) counter[k]++;
 				}
 				else
-					if (!GMT_is_dnan (dvalue[i][rec])) counter[i]++;
+					if (!GMT_is_dnan (dvalue[k][rec])) counter[k]++;
 			}
 		}
 
@@ -504,12 +510,12 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_dnan(tmin) || GMT_is_dnan(tmax)) {
 			int yy[2], mm[2], dd[2];
 			GMT_report (GMT, GMT_MSG_NORMAL, "warning: cruise %s no time records.\n", M.NGDC_id);
-			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, (size_t)4)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
-			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, (size_t)4)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
-			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);
-			mm[1] = (!D->H.mgd77[use]->Survey_Arrival_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Month, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Month);
-			dd[0] = (!D->H.mgd77[use]->Survey_Departure_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Day, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Day);
-			dd[1] = (!D->H.mgd77[use]->Survey_Arrival_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, (size_t)2)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Day);
+			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
+			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
+			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);
+			mm[1] = (!D->H.mgd77[use]->Survey_Arrival_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Month);
+			dd[0] = (!D->H.mgd77[use]->Survey_Departure_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Day, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Day);
+			dd[1] = (!D->H.mgd77[use]->Survey_Arrival_Day[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Day, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Arrival_Day);
 			if (! (yy[0] == 0 && yy[1] == 0)) {	/* With year we can do something */
 				rata_die = GMT_rd_from_gymd (GMT, yy[0], mm[0], dd[0]);
 				tmin = GMT_rdc2dt (GMT, rata_die, 0.0);
@@ -531,11 +537,11 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				D->H.mgd77[use]->Survey_Departure_Year, D->H.mgd77[use]->Survey_Departure_Month, D->H.mgd77[use]->Survey_Departure_Day, GMT->current.setting.io_col_separator,
 				D->H.mgd77[use]->Survey_Arrival_Year, D->H.mgd77[use]->Survey_Arrival_Month, D->H.mgd77[use]->Survey_Arrival_Day, GMT->current.setting.io_col_separator);
 			}
-			fprintf (GMT->session.std[GMT_OUT], "%ld%s%ld", lrint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
-			for (i = 1; i < M.n_out_columns; i++) {
+			fprintf (GMT->session.std[GMT_OUT], "%ld%s%" PRIu64, lrint (this_dist), GMT->current.setting.io_col_separator, D->H.n_records);
+			for (i = k = 1; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
-				if (((Ctrl->E.mode & 1) && M.order[i].set == 0) || ((Ctrl->E.mode & 2) && M.order[i].set == 1))
-					fprintf (GMT->session.std[GMT_OUT],"%s%ld",	GMT->current.setting.io_col_separator, counter[i]);
+				if (((Ctrl->E.mode & 1) && M.order[k].set == 0) || ((Ctrl->E.mode & 2) && M.order[k].set == 1))
+					fprintf (GMT->session.std[GMT_OUT],"%s%" PRIu64,	GMT->current.setting.io_col_separator, counter[k]);
 			}
 			fprintf (GMT->session.std[GMT_OUT],"\n");
 		}

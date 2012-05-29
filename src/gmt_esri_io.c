@@ -49,6 +49,13 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		file = strdup (header->name);
 		GMT_chop_ext (file);
 		name_len = strlen (header->name);
+		if (name_len < strlen(file) + 4) {
+			/* The file extension had less than 3 chars, which means that 1) it's not an esri file. 
+			   2) would corrupt the heap with the later strcat (file, ".hdr");
+			      On Win this would later cause a crash upon freeing 'file' */
+			free (file);
+			return (-1);
+		}
 		if (isupper ((unsigned char) header->name[name_len - 1]))
 			strcat (file, ".HDR");
 		else
@@ -146,12 +153,12 @@ GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %" GMT_LL "d", &header->bits) != 1) {
+	if (sscanf (record, "%*s %d", &header->bits) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding NBITS record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	if ( header->bits != 16 && header->bits != 32 ) {
-		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: This data type (%ld bits) is not supported\n", header->bits);
+		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: This data type (%d bits) is not supported\n", header->bits);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);		/* BANDROWBYTES  */ 
@@ -291,14 +298,14 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_str_tolower (record);
-	if (!strncmp (record, "xllcorner", (size_t)9)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+	if (!strncmp (record, "xllcorner", 9U)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding yll record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_str_tolower (record);
-	if (!strncmp (record, "yllcorner", (size_t)9)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+	if (!strncmp (record, "yllcorner", 9U)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
 		GMT_report (C, GMT_MSG_FATAL, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
@@ -412,12 +419,16 @@ GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG pad[], GMT_LONG complex_mode)
+GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {
-	GMT_LONG col, width_out, height_in, ii, kk, in_nx, inc, off;
-	GMT_LONG first_col, last_col, first_row, last_row, n_left = 0;
-	GMT_LONG row, row2, ij, width_in, check, error, *k = NULL;
-	GMT_LONG nBits = 32, i_0_out, is_binary = FALSE, swap = FALSE;
+	GMT_LONG error;
+	GMT_BOOLEAN check, is_binary = FALSE, swap = FALSE;
+	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx;
+	GMT_LONG row, first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM row2, width_in, *actual_col = NULL;
+	COUNTER_MEDIUM nBits = 32, i_0_out;
+	COUNTER_LARGE ij, kk, width_out, n_left = 0;
+	size_t n_expected;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;
 	float value, *tmp = NULL;
@@ -442,33 +453,34 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
 	
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 	width_out *= inc;		/* Possibly twice if complex is TRUE */
+	n_expected = header->nx;
 
 	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
-		tmp = GMT_memory (C, NULL, header->nx, float);
+		tmp = GMT_memory (C, NULL, n_expected, float);
 	else
-		tmp16 = GMT_memory (C, NULL, header->nx, int16_t);
+		tmp16 = GMT_memory (C, NULL, n_expected, int16_t);
 
 	if (is_binary) {
-
-		if (last_row - first_row + 1 != header->ny)		/* We have a sub-region */
-			if (fseek (fp, (off_t) (first_row * header->nx * 4 * nBits / 32), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		GMT_LONG ny = header->ny;
+		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
+			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
 		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 		ij = pad[YHI] * width_out + i_0_out;
 
 		for (row = first_row; row <= last_row; row++, ij += width_out) {
 			if (nBits == 32) {		/* Get one row */
-				if (GMT_fread (tmp, 4, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread (tmp, 4, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 			}
 			else {
-				if (GMT_fread (tmp16, 2, (size_t)header->nx, fp) < (size_t)header->nx) return (GMT_GRDIO_READ_FAILED);
+				if (GMT_fread (tmp16, 2, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 			}
 			for (col = 0, kk = ij; col < width_in; col++, kk+=inc) {
 				if (nBits == 32) {
@@ -476,18 +488,18 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 						/* need to memcpy because casting from float* to uint32_t*
 						 * violates strict-aliasing rules. */
 						uint32_t u;
-						memcpy (&u, &tmp[k[col]], sizeof (uint32_t));
+						memcpy (&u, &tmp[actual_col[col]], sizeof (uint32_t));
 						u = bswap32 (u);
-						memcpy (&tmp[k[col]], &u, sizeof (uint32_t));
+						memcpy (&tmp[actual_col[col]], &u, sizeof (uint32_t));
 					}
-					grid[kk] = tmp[k[col]];
+					grid[kk] = tmp[actual_col[col]];
 				}
 				else {
 					if (swap) {
-						uint16_t *p = (uint16_t *)&tmp16[k[col]]; /* here casting the pointer is allowed */
+						uint16_t *p = (uint16_t *)&tmp16[actual_col[col]]; /* here casting the pointer is allowed */
 						*p = bswap16 (*p);
 					}
-					grid[kk] = tmp16[k[col]];
+					grid[kk] = tmp16[actual_col[col]];
 				}
 				if (grid[kk] == header->nan_value) 
 					grid[kk] = C->session.f_NaN;
@@ -509,7 +521,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		row2 = 0;	/* For the inside region */
 		check = !GMT_is_dnan (header->nan_value);
 		in_nx = header->nx;
-		header->nx = (int)width_in;	/* Needed to be set here due to GMT_IJP below */
+		header->nx = width_in;	/* Needed to be set here due to GMT_IJP below */
 		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 		while (fscanf (fp, "%f", &value) == 1 && n_left) {	/* We read all values and skip those not inside our w/e/s/n */
 			tmp[col] = value;	/* Build up a single input row */
@@ -519,7 +531,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 					ij = GMT_IJP (header, row2, 0);	/* First out index for this row */
 					for (ii = 0; ii < width_in; ii++) {
 						kk = inc * (ij + ii) + off;
-						grid[kk] = (check && tmp[k[ii]] == header->nan_value) ? C->session.f_NaN : tmp[k[ii]];
+						grid[kk] = (check && tmp[actual_col[ii]] == header->nan_value) ? C->session.f_NaN : tmp[actual_col[ii]];
 						if (GMT_is_fnan (grid[kk])) continue;
 						/* Update z_min, z_max */
 						header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -534,26 +546,27 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	}
 
 	GMT_fclose (C, fp);
-	GMT_free (C, k);
+	GMT_free (C, actual_col);
 	GMT_free (C, tmp);
 
 	if (n_left) {
-		GMT_report (C, GMT_MSG_FATAL, "Expected %ld points, found only %ld\n", header->nm, header->nm - n_left);
+		GMT_report (C, GMT_MSG_FATAL, "Expected % "PRIu64 " points, found only % "PRIu64 "\n", header->nm, header->nm - n_left);
 		return (GMT_GRDIO_READ_FAILED);
 	}
 
-	header->nx = (int)width_in;
-	header->ny = (int)height_in;
+	header->nx = width_in;
+	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode, GMT_LONG floating)
+GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode, GMT_LONG floating)
 {
-	GMT_LONG i2, j, j2, width_out, height_out, last, inc, off;
-	GMT_LONG first_col, last_col, first_row, last_row, kk;
-	GMT_LONG i, ij, width_in, *k = NULL;
+	COUNTER_MEDIUM inc, off, i2, j, j2, width_out, height_out, last;
+	GMT_LONG first_col, last_col, first_row, last_row;
+	COUNTER_MEDIUM i, *actual_col = NULL;
+	COUNTER_LARGE ij, width_in, kk;
 	char item[GMT_TEXT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
 
@@ -566,7 +579,7 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	else
 		write_esri_info (C, fp, header);
 
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_in = width_out;		/* Physical width of input array */
@@ -584,7 +597,7 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		c[0] = '\t';
 		for (i = 0; i < width_out; i++) {
 			if (i == last) c[0] = '\n';
-			kk = inc * (ij+k[i]) + off;
+			kk = inc * (ij+actual_col[i]) + off;
 			if (GMT_is_fnan (grid[kk]))
 				sprintf (item, "%ld%c", lrint (header->nan_value), c[0]);
 			else if (floating) {
@@ -597,18 +610,18 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 		}
 	}
 
-	GMT_free (C, k);
+	GMT_free (C, actual_col);
 	GMT_fclose (C, fp);
 
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_writei_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_esri_writei_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* Standard integer values on output only */
 	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, FALSE));
 }
 
-GMT_LONG GMT_esri_writef_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], GMT_LONG *pad, GMT_LONG complex_mode)
+GMT_LONG GMT_esri_writef_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
 {	/* Write floating point on output */
 	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, TRUE));
 }

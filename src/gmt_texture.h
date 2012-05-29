@@ -40,16 +40,16 @@ struct GMT_PEN {	/* Holds pen attributes */
 struct GMT_FILL {	/* Holds fill attributes */
 	double rgb[4];			/* Chosen color if no pattern + Transparency 0-1 [0 = opaque] */
 	double f_rgb[4], b_rgb[4];	/* Colors applied to unset and set bits in 1-bit image */
-	GMT_LONG use_pattern;		/* TRUE if pattern rather than rgb is set */
-	GMT_LONG pattern_no;		/* Number of predefined pattern, if set */
-	GMT_LONG dpi;			/* Desired dpi of image building-block */
+	GMT_BOOLEAN use_pattern;		/* TRUE if pattern rather than rgb is set */
+	GMT_LONG pattern_no;		/* Number of predefined pattern, or -1 if not set */
+	COUNTER_MEDIUM dpi;		/* Desired dpi of image building-block */
 	char pattern[GMT_BUFSIZ];		/* Full filename of user-define raster */
 };
 
 struct GMT_FONT {	/* Holds font attributes */
 	double size;			/* Font size in points */
-	GMT_LONG id;			/* Font ID number from predefined list */
-	GMT_LONG form;			/* Combination of binary 1 = fill, 2 = outline, 4 = pattern fill [1] */
+	COUNTER_MEDIUM id;		/* Font ID number from predefined list */
+	COUNTER_MEDIUM form;		/* Combination of binary 1 = fill, 2 = outline, 4 = pattern fill [1] */
 	struct GMT_FILL fill;		/* Font fill [black] */
 	struct GMT_PEN pen;		/* Font outline pen [none] */
 };

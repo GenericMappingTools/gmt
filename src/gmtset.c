@@ -27,20 +27,20 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-EXTERN_MSC void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
+void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 
 /* Control structure for gmtset */
 
 struct GMTSET_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D[s|u] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char mode;
 	} D;
 	struct G {	/* -Gfilename */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 };
@@ -92,7 +92,7 @@ GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

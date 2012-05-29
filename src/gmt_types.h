@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * gmt_constants.h contains definitions of special types used by GMT.
+ * gmt_types.h contains definitions of special types used by GMT.
  *
  * Author:	Paul Wessel
  * Date:	01-OCT-2009
@@ -25,42 +25,27 @@
 
 #ifndef _GMT_TYPES_H
 #define _GMT_TYPES_H
+#ifdef HAVE_STDBOOL_H_
+#	include <stdbool.h>
+#else
+#	include "compat/stdbool.h"
+#endif
+#include <stdint.h>
+/* Two types for counting, depending on expected range of unsigned integers we need */
+#define COUNTER_LARGE	uint64_t
+#define COUNTER_MEDIUM	unsigned
+/* Type for TRUE [!0] or FALSE [0] only */
+#define GMT_BOOLEAN	bool
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
  *--------------------------------------------------------------------*/
 
-/* Note: Under Windows 64-bit a 64-bit integer is __int64 and when used
- * with scanf the format must be %lld.  This is not exactly what we call
- * POSIX-clean where %ld is expected.  Thus, in places where such 64-bit
- * variables are processed we let the compiler build the actual format
- * using the GMT_LL string which is either "l" or "ll"
- */
-#ifdef _WIN64
-typedef __int64 GMT_LONG;		/* A signed 8-byte integer under 64-bit Windows */
-typedef unsigned __int64 GMT_ULONG;	/* A unsigned 8-byte integer under 64-bit Windows */
-#define GMT_LL "ll"
-#else
-//#if SIZEOF_LONG == 8
-typedef long GMT_LONG;			/* A signed 8-byte integer */
-typedef unsigned long GMT_ULONG;	/* A unsigned 8-byte integer */
-#	define GMT_LL "l"
-/*#elif SIZEOF_LONG_LONG == 8
-typedef long long GMT_LONG;
-typedef unsigned long long GMT_ULONG;
-#	define GMT_LL "ll"
-#else
-# error "no 64-bit int type available"
-#endif*/
-#endif
+typedef int GMT_LONG;		/* plain signed integer */
+struct GMT_CTRL;		 /* forward declaration of GMT_CTRL */
 
-typedef void (*p_func_v) ();         /* p_func_v declares a pointer to a function returning void */
-typedef void* (*p_func_vp) ();       /* p_func_vp declares a pointer to a function returning void* */
-typedef GMT_LONG (*p_func_l) ();     /* p_func_l declares a pointer to a function returning an GMT_LONG */
-typedef int (*p_func_i) ();          /* p_func_i declares a pointer to a function returning an int */
-typedef double (*p_func_d) ();       /* p_func_d declares a pointer to a function returning a double */
-
-typedef struct {float x[2];} fpair;	/* Can be used to hold pairs of data, e.g. real, imag or x, weight */
-typedef struct {double x[2];} dpair;	/* Same, at double precision */
+/* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
+ * and is used to declare GMT_get_io_ptr in gmt_io.c and gmt_prototypes.h */
+typedef GMT_LONG (*p_to_io_func) (struct GMT_CTRL *, FILE *, unsigned, double *);
 
 #endif  /* _GMT_TYPES_H */

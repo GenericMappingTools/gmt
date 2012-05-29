@@ -12,14 +12,14 @@
 
 #include "mgd77.h"
 
-struct MGD77_HEADER_LOOKUP {    /* Book-keeping for one header parameter  */
-        char name[64];          /* Name of this parameter (e.g., "Gravity_Sampling_Rate") */
-        GMT_LONG length;        /* Number of bytes to use */
-        int record;             /* Header record number where it occurs (1-24) */
-        int item;               /* Sequential item order in this record (1->) */
-        GMT_LONG check;         /* TRUE if we actually do a test on this item */
-        GMT_LONG revised;       /* TRUE if read in via the _REVISED attribute */
-        char *ptr[2];           /* Pointers to the corresponding named variable in struct MGD77_HEADER_PARAMS (orig and revised) */
+struct MGD77_HEADER_LOOKUP {	/* Book-keeping for one header parameter  */
+        char name[64];		/* Name of this parameter (e.g., "Gravity_Sampling_Rate") */
+        size_t length;		/* Number of bytes to use */
+        unsigned int record;	/* Header record number where it occurs (1-24) */
+        unsigned int item;	/* Sequential item order in this record (1->) */
+        GMT_BOOLEAN check;	/* TRUE if we actually do a test on this item */
+        unsigned int revised;	/* 1 if read/write in via the _REVISED attribute */
+        char *ptr[2];		/* Pointers to the corresponding named variable in struct MGD77_HEADER_PARAMS (orig and revised) */
 };
 
 struct MGD77_HEADER_PARAMS {            /* See MGD-77 Documentation from NGDC for details */
@@ -123,15 +123,15 @@ struct MGD77_HEADER_PARAMS {            /* See MGD-77 Documentation from NGDC fo
 
 void MGD77_Write_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P);
 
-GMT_LONG MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_revised);
-void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, GMT_LONG revised);
+unsigned int MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, char *value_orig, char *value_revised);
+void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, size_t length_orig, char *value_orig, size_t length_rev, char *value_revised, unsigned int revised);
 void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS **P);
 void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
 void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F);
 void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P);
 int MGD77_Param_Key (struct GMT_CTRL *C, GMT_LONG record, int item);
 
-#define MGD77_N_HEADER_PARAMS 72
+#define MGD77_N_HEADER_PARAMS 72U
 
 extern struct MGD77_HEADER_LOOKUP MGD77_Header_Lookup[];
 

@@ -31,26 +31,26 @@
 
 struct GRDINFO_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
-		GMT_LONG status;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM status;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct L {	/* -L[1|2] */
-		GMT_LONG active;
-		GMT_LONG norm;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM norm;
 	} L;
 	struct T {	/* -T[s]<dz> */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;
 		double inc;
 	} T;
 };
@@ -109,7 +109,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -159,7 +159,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 			case 'T':	/* CPT range */
 				Ctrl->T.active = TRUE;
 				if (opt->arg[0] == 's') {	/* Want symmetrical range about 0, i.e., -3500/3500/500 */
-					Ctrl->T.mode = 1;
+					Ctrl->T.mode = TRUE;
 					Ctrl->T.inc = atof (&opt->arg[1]);
 				}
 				else
@@ -187,7 +187,11 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n_grds = 0, n_nan = 0, n = 0, ij, error, subset;
+	GMT_LONG error;
+	COUNTER_MEDIUM n_grds = 0;
+	GMT_BOOLEAN subset;
+	
+	COUNTER_LARGE ij, n_nan = 0, n = 0;
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
@@ -224,7 +228,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	global_xmin = global_ymin = global_zmin = DBL_MAX;
 	global_xmax = global_ymax = global_zmax = -DBL_MAX;
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -235,7 +239,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
 		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
@@ -248,13 +252,14 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_grds++;
 
 		if (Ctrl->M.active || Ctrl->L.active || subset) {	/* Need to read the data (all or subset) */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, G) == NULL) {
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, opt->arg, G) == NULL) {
 				Return (API->error);
 			}
 		}
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
-			GMT_LONG ij_min, ij_max, col, row;
+			COUNTER_LARGE ij_min, ij_max;
+			COUNTER_MEDIUM col, row;
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -366,7 +371,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcat (record, GMT->current.setting.io_col_separator);	GMT_ascii_format_col (GMT, text, stdev, GMT_Z);	strcat (record, text);
 				strcat (record, GMT->current.setting.io_col_separator);	GMT_ascii_format_col (GMT, text, rms, GMT_Z);	strcat (record, text);
 			}
-			if (Ctrl->M.active) { sprintf (text, "%s%" GMT_LL "d", GMT->current.setting.io_col_separator, n_nan);	strcat (record, text); }
+			if (Ctrl->M.active) { sprintf (text, "%s%" PRIu64, GMT->current.setting.io_col_separator, n_nan);	strcat (record, text); }
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		}
 		else if (!(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == 2))) {
@@ -379,7 +384,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				sprintf (record, "%s: Unknown registration! Probably not a GMT grid", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			if (G->header->type >= 0 && G->header->type < GMT_N_GRD_FORMATS)
+			if (G->header->type < GMT_N_GRD_FORMATS)
 				sprintf (record, "%s: Grid file format: %s", G->header->name, GMT->session.grdformat[G->header->type]);
 			else
 				sprintf (record, "%s: Unrecognized grid file format! Probably not a GMT grid", G->header->name);
@@ -468,7 +473,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
 			sprintf (format, "%s: scale_factor: %s add_offset: %%s", G->header->name, GMT->current.setting.format_float_out);
 			sprintf (record, format, G->header->z_scale_factor, text);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			if (n_nan) { sprintf (record, "%s: %" GMT_LL "d nodes set to NaN", G->header->name, n_nan);	GMT_Put_Record (API, GMT_WRITE_TEXT, record); }
+			if (n_nan) { sprintf (record, "%s: %" PRIu64 " nodes set to NaN", G->header->name, n_nan);	GMT_Put_Record (API, GMT_WRITE_TEXT, record); }
 			if (Ctrl->L.norm & 1) {
 				sprintf (record, "%s: median: ", G->header->name);
 				GMT_ascii_format_col (GMT, text, median, GMT_Z);	strcat (record, text);
@@ -507,7 +512,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		global_xmax = ceil  (global_xmax / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		global_ymin = floor (global_ymin / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		global_ymax = ceil  (global_ymax / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
-		sprintf (record, "%" GMT_LL "d%s", n_grds, GMT->current.setting.io_col_separator);
+		sprintf (record, "%d%s", n_grds, GMT->current.setting.io_col_separator);
 		GMT_ascii_format_col (GMT, text, global_xmin, GMT_X);	strcat (record, text);	strcat (record, GMT->current.setting.io_col_separator);
 		GMT_ascii_format_col (GMT, text, global_xmax, GMT_X);	strcat (record, text);	strcat (record, GMT->current.setting.io_col_separator);
 		GMT_ascii_format_col (GMT, text, global_ymin, GMT_Y);	strcat (record, text);	strcat (record, GMT->current.setting.io_col_separator);

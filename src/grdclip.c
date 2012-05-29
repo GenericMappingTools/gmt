@@ -34,16 +34,16 @@
 
 struct GRDCLIP_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct S {	/* -Sa<high/above> or -Sb<low/below> */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		float high, above;
 		float low, below;
 	} S;
@@ -96,7 +96,8 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, n;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG n;
 	char txt[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -162,7 +163,10 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 #define Return(code) {Free_grdclip_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
-	GMT_LONG k, row, col, n_above = 0, n_below = 0, error, new_grid;
+	COUNTER_MEDIUM row, col;
+	GMT_BOOLEAN error, new_grid;
+	
+	COUNTER_LARGE ij, n_above = 0, n_below = 0;
 	
 	double wesn[4];
 	
@@ -190,30 +194,30 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (GMT_is_subset (GMT, G->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);	/* Get subset */
 	}
 
 	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* TRUE if input is a read-only array */
 
-	GMT_grd_loop (GMT, G, row, col, k) {	/* Checking if extremes are exceeded (need not check NaN) */
-		if (Ctrl->S.mode & 1 && G->data[k] > Ctrl->S.high) {
-			Out->data[k] = Ctrl->S.above;
+	GMT_grd_loop (GMT, G, row, col, ij) {	/* Checking if extremes are exceeded (need not check NaN) */
+		if (Ctrl->S.mode & 1 && G->data[ij] > Ctrl->S.high) {
+			Out->data[ij] = Ctrl->S.above;
 			n_above++;
 		}
-		else if (Ctrl->S.mode & 2 && G->data[k] < Ctrl->S.low) {
-			Out->data[k] = Ctrl->S.below;
+		else if (Ctrl->S.mode & 2 && G->data[ij] < Ctrl->S.low) {
+			Out->data[ij] = Ctrl->S.below;
 			n_below++;
 		}
 		else if (new_grid)
-			Out->data[k] = G->data[k];
+			Out->data[ij] = G->data[ij];
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Out) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 
@@ -221,11 +225,11 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "%s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		if (Ctrl->S.mode & 2) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld values < ", n_below);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values < ", n_below);
 			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.low, (double)Ctrl->S.below);
 		}
 		if (Ctrl->S.mode & 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld values > ", n_above);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values > ", n_above);
 			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
 		}
 	}

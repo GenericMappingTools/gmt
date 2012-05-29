@@ -30,21 +30,21 @@
 
 struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} F;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -104,7 +104,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -147,9 +147,11 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
+GMT_BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	GMT_LONG n_fields, n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT}, n_alloc = GMT_CHUNK;
+	COUNTER_MEDIUM n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	GMT_LONG n_fields;
+	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 	char file[GMT_BUFSIZ];
 	FILE *fp = NULL;
@@ -188,8 +190,10 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG i, j, k, bad, trk_no, n_tracks, n_data_col_out = 0;
-	GMT_LONG error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
+	GMT_LONG is, this_col;
+	GMT_BOOLEAN error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
+	COUNTER_MEDIUM bad, trk_no, n_tracks, n_data_col_out = 0, k;
+	COUNTER_LARGE i, j;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;
@@ -200,9 +204,9 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct MGD77_CORRTABLE **CORR = NULL;
 	struct MGD77_AUX_INFO aux[N_MGD77_AUX];
 	struct MGD77_AUXLIST auxlist[N_GENERIC_AUX] = {
-		{ "dist",    MGD77_AUX_DS, 0, 0, "d(km)"},
-		{ "azim",    MGD77_AUX_AZ, 0, 0, "azimuth"},
-		{ "vel",     MGD77_AUX_SP, 0, 0, "v(m/s)"}
+		{ "dist",    MGD77_AUX_DS, FALSE, FALSE, "d(km)"},
+		{ "azim",    MGD77_AUX_AZ, FALSE, FALSE, "azimuth"},
+		{ "vel",     MGD77_AUX_SP, FALSE, FALSE, "v(m/s)"}
 	};
 	struct X2SYS_ADJUST **A = NULL;
 	struct X2SYS_DATALIST_CTRL *Ctrl = NULL;
@@ -253,12 +257,12 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	out = GMT_memory (GMT, NULL, s->n_fields, double);
 
-	for (i = 0; i < s->n_out_columns; i++) {	/* Set output formats */
-		if (i == s->t_col)
+	for (i = is = 0; i < s->n_out_columns; i++, is++) {	/* Set output formats */
+		if (is == s->t_col)
 			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
-		else if (i == s->x_col)
+		else if (is == s->x_col)
 			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
-		else if (i == s->y_col)
+		else if (is == s->y_col)
 			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
 		else
 			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
@@ -269,15 +273,17 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (i = n_data_col_out = 0; i < s->n_out_columns; i++) {
-			if (s->out_order[i] == s->t_col) continue;
-			if (s->out_order[i] == s->x_col) continue;
-			if (s->out_order[i] == s->y_col) continue;
+			this_col = s->out_order[i];
+			if (this_col == s->t_col) continue;
+			if (this_col == s->x_col) continue;
+			if (this_col == s->y_col) continue;
 			n_data_col_out++;
 		}
 	}
 
-	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION], &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
+	MGD77_Set_Unit (GMT, s->unit[X2SYS_DIST_SELECTION],  &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 	MGD77_Set_Unit (GMT, s->unit[X2SYS_SPEED_SELECTION], &vel_scale,  -1);	/* Sets output scale for distances using in velocities */
+	
 	switch (s->unit[X2SYS_SPEED_SELECTION][0]) {
 		case 'c':
 			vel_scale = 1.0;
@@ -287,7 +293,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(m/s)");
 			break;
 		case 'f':
-			vel_scale /= (METERS_IN_A_FOOT * dist_scale);		/* Must counteract any distance scaling to get feet. dt is in sec so we get ft/s */
+			vel_scale /= (METERS_IN_A_FOOT * dist_scale);	/* Must counteract any distance scaling to get feet. dt is in sec so we get ft/s */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(ft/s)");
 			break;
 		case 'k':
@@ -309,26 +315,26 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	switch (s->unit[X2SYS_DIST_SELECTION][0]) {
 		case 'c':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(user)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(user)");
 			break;
 		case 'e':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(m)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(m)");
 			break;
 		case 'f':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(feet)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(feet)");
 			break;
 		case 'k':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(km)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(km)");
 			break;
 #ifdef GMT_COMPAT
 		case 'm':
 			GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
 #endif
 		case 'M':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(miles)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(miles)");
 			break;
 		case 'n':
-			strcpy (auxlist[MGD77_AUX_SP].header, "d(nm)");
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(nm)");
 			break;
 	}
 
@@ -346,14 +352,14 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) {
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
-		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, GMT_LONG);
+		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, GMT_BOOLEAN);
 	}
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Reading track %s\n", trk_name[trk_no]);
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &k), trk_name[trk_no]);
+		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &j), trk_name[trk_no]);
 
 		if (Ctrl->L.active && s->t_col >= 0) MGD77_Init_Correction (GMT, CORR[trk_no], data);	/* Initialize origins if needed */
 
@@ -368,9 +374,10 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT->common.R.active && GMT_map_outside (GMT, data[s->x_col][j], data[s->y_col][j])) continue;
 			if (Ctrl->S.active) {
 				for (k = bad = 0; k < s->n_out_columns; k++) {
-					if (s->out_order[k] == s->t_col) continue;
-					if (s->out_order[k] == s->x_col) continue;
-					if (s->out_order[k] == s->y_col) continue;
+					this_col = s->out_order[k];
+					if (this_col == s->t_col) continue;
+					if (this_col == s->x_col) continue;
+					if (this_col == s->y_col) continue;
 					if (GMT_is_dnan (data[s->out_order[k]][j])) bad++;
 				}
 				if (bad == n_data_col_out) continue;
@@ -394,7 +401,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][k].term, data, aux_dvalue, j) : 0.0;
 				if (Ctrl->A.active && adj_col[k]) {
 					if (GMT_intpol (GMT, A[k]->d, A[k]->c, A[k]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error interpolating adjustment for %s near row %ld - no adjustment made!\n", s->info[s->out_order[k]].name, j);
+						GMT_report (GMT, GMT_MSG_FATAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[k]].name, j);
 						adj_amount = 0.0;
 					}
 					correction -= adj_amount;

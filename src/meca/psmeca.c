@@ -43,87 +43,87 @@ PostScript code is written to stdout.
 
 struct PSMECA_CTRL {
 	struct C {	/* -C[<pen>][P<pointsize>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double size;
 		struct GMT_PEN pen;
 	} C;
  	struct D {	/* -D<min/max> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double depmin, depmax;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
-		GMT_LONG active;
-		GMT_LONG readmode;
-		GMT_LONG plotmode;
-		GMT_LONG justify;
-		GMT_LONG no_label;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN no_label;
+		COUNTER_MEDIUM readmode;
+		COUNTER_MEDIUM plotmode;
+		COUNTER_MEDIUM justify;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
-		GMT_LONG active;
-		GMT_LONG n_plane;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct Z2 {	/* -z<pen>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} Z2;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<cptfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Z;
 	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
  	struct E2 {	/* -e<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E2;
  	struct G2 {	/* -g<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G2;
  	struct P2 {	/* -p[<pen>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} P2;
 	struct R2 {	/* -r[<fill>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} R2;
  	struct T2 {	/* -t[<pen>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} T2;
  	struct O2 {	/* -o */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} O2;
 };
 
@@ -256,7 +256,8 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, no_size_needed;
+	COUNTER_MEDIUM n_errors = 0;
+	GMT_BOOLEAN no_size_needed;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -363,7 +364,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				break;
 			case 'T':
 				Ctrl->T.active = TRUE;
-				sscanf (opt->arg, "%ld", &Ctrl->T.n_plane);
+				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					GMT_pen_syntax (GMT, 'T', " ");
 					n_errors++;
@@ -478,7 +479,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psmeca task */
 	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0, new;
 	GMT_LONG n_rec = 0, n_plane_old = 0, error;
-	GMT_LONG transparence_old = FALSE, not_defined = FALSE;
+	GMT_BOOLEAN transparence_old = FALSE, not_defined = FALSE;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
@@ -520,7 +521,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	string[0] = '\0';
 
 	if (Ctrl->Z.active) {
-		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, NULL)) == NULL) {
+		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}
@@ -536,7 +537,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -590,7 +591,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Immediately skip locations outside of the map area */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, must exit)\n", n_rec);
+			GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -805,7 +806,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 

@@ -66,55 +66,57 @@
 
 struct XYZOKB_CTRL {
 	struct XYZOKB_C {	/* -C */
-		int active;
+		GMT_BOOLEAN active;
 		double rho;
 	} C;
 	struct XYZOKB_D {	/* -D */
+		GMT_BOOLEAN active;
 		double dir;
 	} D;
 	struct XYZOKB_I {	/* -Idx[/dy] */
-		int active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct XYZOKB_F {	/* -F<grdfile> */
-		int active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct XYZOKB_G {	/* -G<grdfile> */
-		int active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct XYZOKB_H {	/* -H */
-		int active;
+		GMT_BOOLEAN active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
 	struct XYZOKB_L {	/* -L */
+		GMT_BOOLEAN active;
 		double zobs;
 	} L;
 	struct XYZOKB_E {	/* -T */
-		int active;
+		GMT_BOOLEAN active;
 		double dz;
 	} E;
 	struct XYZOKB_S {	/* -S */
-		int active;
+		GMT_BOOLEAN active;
 		double radius;
 	} S;
 	struct XYZOKB_Z {	/* -Z */
 		double z0;
 	} Z;
 	struct XYZOKB_T {	/* -T */
-		int active;
-		int triangulate;
-		int raw;
-		int stl;
-		int m_var, m_var1, m_var2, m_var3, m_var4;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN triangulate;
+		GMT_BOOLEAN raw;
+		GMT_BOOLEAN stl;
+		GMT_BOOLEAN m_var, m_var1, m_var2, m_var3, m_var4;
 		char *xyz_file;
 		char *t_file;
 		char *raw_file;
 		char *stl_file;
 	} T;
 	struct XYZOKB_box {	/* No option, just a container */
-		int is_geog;
+		GMT_BOOLEAN is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
 	} box;
 };
@@ -128,7 +130,7 @@ struct TRIANG {
 } *triang;
 
 struct  VERT {
-	GMT_LONG  a, b, c;
+	COUNTER_MEDIUM  a, b, c;
 } *vert;
 
 struct  TRI_CENTER {
@@ -173,11 +175,11 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname);
 GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
 GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
-GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy);
-void set_center (GMT_LONG n_triang);
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG bat);
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG geo);
-GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type);
+GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy);
+void set_center (COUNTER_MEDIUM n_triang);
+GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN bat);
+GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN geo);
+GMT_LONG check_triang_cw (COUNTER_MEDIUM n, COUNTER_MEDIUM type);
 
 GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 
@@ -222,7 +224,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n_errors = 0, n_files = 0, pos = 0;
+	COUNTER_MEDIUM j, pos = 0, n_errors = 0, n_files = 0;
 	char	ptr[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
@@ -252,6 +254,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 				Ctrl->H.active = FALSE;
 				break;
 			case 'D':
+				Ctrl->D.active = TRUE;
 				Ctrl->D.dir = 1;
 				break;
 			case 'F':
@@ -270,6 +273,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 				}
 				break;
 			case 'L':
+				Ctrl->L.active = TRUE;
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 #ifdef GMT_COMPAT
@@ -363,12 +367,13 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 
 GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
-	GMT_LONG error = FALSE;
-	GMT_LONG row, col, i, j, ij, k;
-	GMT_LONG bat = TRUE, switch_xy = FALSE, DO = TRUE;
-	GMT_LONG kk, nm, ndata_r = 0;
-	GMT_LONG ndata_p = 0, ndata_xyz = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
-	GMT_LONG z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
+	GMT_BOOLEAN error = FALSE, bat = TRUE, switch_xy = FALSE, DO = TRUE;
+	COUNTER_MEDIUM row, col, i, j, k, kk, ndata_r = 0;
+	COUNTER_MEDIUM ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
+	COUNTER_MEDIUM z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
+	GMT_LONG retval;
+	COUNTER_LARGE ij;
+	size_t nm;
 	int km, pm;		/* index of current body facet (for mag only) */
 	float	*g = NULL, one_100;
 	double	s_rad2, x_o, y_o, t_mag, a, DX, DY;
@@ -419,22 +424,24 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* ---- Read files section ---------------------------------------------------- */
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
-		if ( (ndata_p = read_poly (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
+		if ( (retval = read_poly (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->F.file);
 			return (EXIT_FAILURE);
 		}
+		ndata_p = retval;
 	}
 
 	if (Ctrl->T.triangulate) { 	/* Read triangle file output from triangulate */
-		if ( (ndata_xyz = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
+		if ( (retval = read_xyz (GMT, Ctrl, Ctrl->T.xyz_file, &lon_0, &lat_0)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.xyz_file);
 			return (EXIT_FAILURE);
 		}
 		/* read vertex file */
-		if ( (ndata_t = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
+		if ( (retval = read_t (GMT, Ctrl->T.t_file)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.t_file);
 			return (EXIT_FAILURE);
 		}
+		ndata_t = retval;
 
 		t_center = GMT_memory (GMT, NULL, ndata_t, struct TRI_CENTER);
 		/* compute aproximate center of each triangle */
@@ -442,22 +449,24 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		set_center (ndata_t);
 	}
 	else if (Ctrl->T.stl) { 	/* Read STL file defining a closed volume */
-		if ( (ndata_s = read_stl (GMT, Ctrl->T.stl_file, Ctrl->D.dir)) < 0 ) {
+		if ( (retval = read_stl (GMT, Ctrl->T.stl_file, Ctrl->D.dir)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.stl_file);
 			return (EXIT_FAILURE);
 		}
+		ndata_s = retval;
 		/*n_swap = check_triang_cw (ndata_s, 1);*/
 	}
 	else if (Ctrl->T.raw) { 	/* Read RAW file defining a closed volume */
-		if ( (ndata_r = read_raw (GMT, Ctrl->T.raw_file, Ctrl->D.dir)) < 0 ) {
+		if ( (retval = read_raw (GMT, Ctrl->T.raw_file, Ctrl->D.dir)) < 0 ) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->T.raw_file);
 			return (EXIT_FAILURE);
 		}
+		ndata_r = retval;
 		/*n_swap = check_triang_cw (ndata_r, 1);*/
 	}
 
 	if (n_swap > 0)
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld triangles had ccw order\n", n_swap);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d triangles had ccw order\n", n_swap);
 /* ---------------------------------------------------------------------------- */
 
 	if (Ctrl->G.active) {
@@ -499,12 +508,12 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
 		body_desc.n_f = 5;		/* Number of prism facets */
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, GMT_LONG);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, COUNTER_MEDIUM);
 		body_desc.n_v[0] = 3;	body_desc.n_v[1] = 3;
 		body_desc.n_v[2] = 4;	body_desc.n_v[3] = 4;
 		body_desc.n_v[4] = 4;
 		body_desc.ind = GMT_memory (GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
-			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), GMT_LONG);
+			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), COUNTER_MEDIUM);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;	/* top triang */
 		body_desc.ind[3] = 3;	body_desc.ind[4] = 5; 	body_desc.ind[5] = 4;	/* bot triang */
 		body_desc.ind[6] = 1;	body_desc.ind[7] = 4; 	body_desc.ind[8] = 5;	body_desc.ind[9] = 2;
@@ -519,9 +528,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	else if (Ctrl->T.raw || Ctrl->T.stl) {
 		n_triang = (Ctrl->T.raw) ? ndata_r : ndata_s;
 		body_desc.n_f = 1;
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, GMT_LONG);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, COUNTER_MEDIUM);
 		body_desc.n_v[0] = 3;
-		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], GMT_LONG);
+		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], COUNTER_MEDIUM);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
 	else {
@@ -613,7 +622,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	for (i = j = 0; i < n_triang; i++) {		/* Main loop over all the triangles */
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && i > j*one_100) {
-			GMT_message (GMT, "computed %.2ld%s of %ld prisms\r", j, "%", n_triang);
+			GMT_message (GMT, "computed %.2d%s of %d prisms\r", j, "%", n_triang);
 			j++;
 		}
 		km = (int)((Ctrl->T.m_var)  ? i : 0);
@@ -670,7 +679,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			strcpy (Gout->header->z_units, "nT");
 		}
 
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Gout) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -709,7 +718,8 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
-	GMT_LONG n_alloc, ndata_xyz;
+	COUNTER_MEDIUM ndata_xyz;
+	size_t n_alloc;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
 	char line[GMT_TEXT_LEN256];
@@ -744,24 +754,24 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (!Ctrl->T.m_var) {
 			if(sscanf (line, "%lg %lg %lg", &in[0], &in[1], &in[2]) !=3)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var1) { /* data file has 4 columns and the last contains magnetization */
 			if(sscanf (line, "%lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var2) { /* data file has 5 columns: x,y,z,mag,dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4]) !=5)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else if (Ctrl->T.m_var3) { /* data file has 6 columns: x,y,z,mag_int,mag_dec,mag_dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg", &in[0], &in[1], &in[2], &in[3], &in[4], &in[5]) !=6)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		else {		/* data file has 8 columns: x,y,z,field_dec,field_dip,mag_int,mag_dec,mag_dip */
 			if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg",
 				   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7]) !=8)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_xyz+1, Ctrl->T.xyz_file);
 		}
 		if (ndata_xyz == n_alloc) {
 			n_alloc <<= 1;
@@ -805,7 +815,8 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 /* -----------------------------------------------------------------*/
 GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
-	GMT_LONG n_alloc, ndata_t;
+	COUNTER_MEDIUM ndata_t;
+	size_t n_alloc;
 	int in[3];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -817,12 +828,16 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 	vert = GMT_memory (GMT, NULL, n_alloc, struct VERT);
 	
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
-		if(sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_t+1, fname);
+		if (sscanf (line, "%d %d %d", &in[0], &in[1], &in[2]) !=3)
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_t+1, fname);
 		if (ndata_t == n_alloc) {
 			n_alloc <<= 1;
 			vert = GMT_memory (GMT, vert, n_alloc, struct VERT);
                	}
+		if (in[0] < 0 || in[1] < 0 || in[2] < 0) {
+			GMT_report (GMT, GMT_MSG_FATAL, "Negative indices for line %d of %s\n", ndata_t+1, fname);
+	
+		}
 		vert[ndata_t].a = in[0];
 		vert[ndata_t].b = in[1];
 		vert[ndata_t].c = in[2];
@@ -835,7 +850,8 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 /* -----------------------------------------------------------------*/
 GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
-	GMT_LONG n_alloc, ndata_r;
+	COUNTER_MEDIUM ndata_r;
+	size_t n_alloc;
 	double in[9];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -849,7 +865,7 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if(sscanf (line, "%lg %lg %lg %lg %lg %lg %lg %lg %lg",
 			   &in[0], &in[1], &in[2], &in[3], &in[4], &in[5], &in[6], &in[7], &in[8]) !=9)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of %s\n", ndata_r+1, fname);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of %s\n", ndata_r+1, fname);
               	if (ndata_r == n_alloc) {
 			n_alloc <<= 1;
 			raw_mesh = GMT_memory (GMT, raw_mesh, n_alloc, struct RAW);
@@ -872,7 +888,8 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 /* -----------------------------------------------------------------*/
 GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
-	GMT_LONG n_alloc, ndata_s;
+	COUNTER_MEDIUM ndata_s;
+	size_t n_alloc;
 	double in[3];
 	char line[GMT_TEXT_LEN256], text[128], ver_txt[128];
 	FILE *fp = NULL;
@@ -888,19 +905,19 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 		if (strcmp (text, "outer") == 0) {
 			fgets (line, GMT_TEXT_LEN256, fp); /* get first vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t1[0] = in[0];
 			raw_mesh[ndata_s].t1[1] = -in[1];
 			raw_mesh[ndata_s].t1[2] = in[2] * z_dir;
 			fgets (line, GMT_TEXT_LEN256, fp); /* get second vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t2[0] = in[0];
 			raw_mesh[ndata_s].t2[1] = -in[1];
 			raw_mesh[ndata_s].t2[2] = in[2] * z_dir;
 			fgets (line, GMT_TEXT_LEN256, fp); /* get third vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %ld of %s\n", ndata_s+1, fname);
+				GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t3[0] = in[0];
 			raw_mesh[ndata_s].t3[1] = -in[1];
 			raw_mesh[ndata_s].t3[2] = in[2] * z_dir;
@@ -918,9 +935,10 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
+GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed*/
-	GMT_LONG n_alloc, ndata, ix = 0, iy = 1;
+	COUNTER_MEDIUM ndata, ix = 0, iy = 1;
+	size_t n_alloc;
 	double in[2];
 	char line[GMT_TEXT_LEN256];
 	FILE *fp = NULL;
@@ -935,7 +953,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %ld of polygon file\n", ndata+1);
+			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
 		if (ndata == n_alloc) {
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data, n_alloc, struct DATA);
@@ -949,7 +967,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_LONG switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG bat) {
+GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1016,7 +1034,7 @@ GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_ve
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT_LONG i, GMT_LONG geo) {
+GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN geo) {
 	/* Sets coodinates for the facet in the RAW format */
 	double cos_a, cos_b, cos_c, x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1040,9 +1058,9 @@ GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, GMT
 }
 
 /* ---------------------------------------------------------------------- */
-void set_center (GMT_LONG n_triang) {
+void set_center (COUNTER_MEDIUM n_triang) {
 	/* Calculates triangle center by an aproximate (iterative) formula */
-	GMT_LONG i, j, k = 5;
+	COUNTER_MEDIUM i, j, k = 5;
 	double x, y, z, xa[6], ya[6], xb[6], yb[6], xc[6], yc[6];
 
 	for (i = 0; i < n_triang; i++) {
@@ -1096,7 +1114,7 @@ void triang_norm (GMT_LONG n_triang) {
 }
 #endif
 
-GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type) {
+GMT_LONG check_triang_cw (COUNTER_MEDIUM n, COUNTER_MEDIUM type) {
 	/* Checks that triangles are given in the correct clock-wise order.
 	If not swap them. This is a tricky issue. In the case of "classic"
 	trihedron (x positive right; y positive "north" and z positive up),
@@ -1106,7 +1124,7 @@ GMT_LONG check_triang_cw (GMT_LONG n, GMT_LONG type) {
 	x->north; y->east; z->down)), counter clockwise order follows if
 	determinant is negative. */
 
-	GMT_LONG i, n_swaped = 0, tmp;
+	COUNTER_MEDIUM i, n_swaped = 0, tmp;
 	double x1 = 0, x2 = 0, x3 = 0, y1 = 0, y2 = 0, y3 = 0, det, d_tmp[3];
 
 	if (type > 0)	/* Not yet implemented || 28-4-2010. Dont't undersand why but seams true !!!! */

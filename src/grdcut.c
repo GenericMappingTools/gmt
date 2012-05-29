@@ -32,16 +32,16 @@
 
 struct GRDCUT_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct Z {	/* -Z[min/max] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 1 means NaN */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 1 means NaN */
 		double min, max;
 	} Z;
 };
@@ -99,7 +99,7 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
 	char za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -149,7 +149,8 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 
 GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = 0, i, nx_old, ny_old;
+	GMT_LONG error = 0;
+	unsigned int nx_old, ny_old;
 
 	double wesn_new[4], wesn_old[4];
 
@@ -177,66 +178,72 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
-		GMT_LONG i0, i1, j0, j1, j, ij;
+		COUNTER_MEDIUM row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
+		COUNTER_LARGE ij;
+		GMT_BOOLEAN go;
 		
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->In.file, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
 		}
 		
-		for (i = 0, i0 = -1; i0 == -1 && i < G->header->nx; i++) {	/* Scan from xmin towards xmax */
-			for (j = 0, ij = GMT_IJP (G->header, 0, i); i0 == -1 && j < G->header->ny; j++, ij += G->header->mx) {
+		for (row = 0, go = TRUE; go && row < G->header->nx; row++) {	/* Scan from xmin towards xmax */
+			for (col = 0, ij = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, ij += G->header->mx) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_OUTSIDE) i0 = i;	/* Must stop since this NaN value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_OUTSIDE) go = FALSE;	/* Must stop since this NaN value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					i0 = i;
+					go = FALSE;
+				if (!go) row0 = row;	/* Found starting column */
 			}
 		}
-		if (i0 == -1) {
+		if (go) {
 			GMT_report (GMT, GMT_MSG_FATAL, "The sub-region implied by -Z is empty!\n");
 			Return (EXIT_FAILURE);
 		}
-		for (i = G->header->nx-1, i1 = -1; i1 == -1 && i > i0; i--) {	/* Scan from xmax towards xmin */
-			for (j = 0, ij = GMT_IJP (G->header, 0, i); i1 == -1 && j < G->header->ny; j++, ij += G->header->mx) {
+		for (row = G->header->nx-1, go = TRUE; go && row > row0; row--) {	/* Scan from xmax towards xmin */
+			for (col = 0, ij = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, ij += G->header->mx) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_INSIDE) i1 = i;	/* Must stop since this value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = FALSE;	/* Must stop since this value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					i1 = i;
+					go = FALSE;
+				if (!go) row1 = row;	/* Found stopping column */
 			}
 		}
-		for (j = 0, j0 = -1; j0 == -1 && j < G->header->ny; j++) {	/* Scan from ymin towards ymax */
-			for (i = i0, ij = GMT_IJP (G->header, j, i0); j0 == -1 && i < i1; i++, ij++) {
+		for (col = 0, go = TRUE; go && col < G->header->ny; col++) {	/* Scan from ymin towards ymax */
+			for (row = row0, ij = GMT_IJP (G->header, col, row0); go && row < row1; row++, ij++) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_INSIDE) j0 = j;	/* Must stop since this value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = FALSE;	/* Must stop since this value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					j0 = j;
+					go = FALSE;
+				if (!go) col0 = col;	/* Found starting row */
 			}
 		}
-		for (j = G->header->ny-1, j1 = -1; j1 == -1 && j >= j0; j--) {	/* Scan from ymax towards ymin */
-			for (i = i0, ij = GMT_IJP (G->header, j, i0); j1 == -1 && i < i1; i++, ij++) {
+		for (col = G->header->ny-1, go = TRUE; go && col >= col0; col--) {	/* Scan from ymax towards ymin */
+			for (row = row0, ij = GMT_IJP (G->header, col, row0); go && row < row1; row++, ij++) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_INSIDE) j1 = j;	/* Must stop since this value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = FALSE;	/* Must stop since this value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					j1 = j;
+					go = FALSE;
+				if (!go) col1 = col;	/* Found starting row */
 			}
 		}
-		if (i0 == 0 && j0 == 0 && i1 == (G->header->nx-1) && j1 == (G->header->ny-1)) {
+		if (row0 == 0 && col0 == 0 && row1 == (G->header->nx-1) && col1 == (G->header->ny-1)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Your -Z limits produced no subset - output grid is identical to input grid\n");
 			GMT_memcpy (wesn_new, G->header->wesn, 4, double);
 		}
 		else {	/* Adjust boundaries inwards */
-			wesn_new[XLO] = G->header->wesn[XLO] + i0 * G->header->inc[GMT_X];
-			wesn_new[XHI] = G->header->wesn[XHI] - (G->header->nx - 1 - i1) * G->header->inc[GMT_X];
-			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - j1) * G->header->inc[GMT_Y];
-			wesn_new[YHI] = G->header->wesn[YHI] - j0 * G->header->inc[GMT_Y];
+			wesn_new[XLO] = G->header->wesn[XLO] + row0 * G->header->inc[GMT_X];
+			wesn_new[XHI] = G->header->wesn[XHI] - (G->header->nx - 1 - row1) * G->header->inc[GMT_X];
+			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - col1) * G->header->inc[GMT_Y];
+			wesn_new[YHI] = G->header->wesn[YHI] - col0 * G->header->inc[GMT_Y];
 		}
 		GMT_free (GMT, G->data);	/* Free the grid array only as we need the header below */
 	}
 	else {	/* Just the usual subset selection via -R */
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
@@ -296,13 +303,13 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->nx;		ny_old = G->header->ny;
 	
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn_new, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char format[GMT_BUFSIZ];
-		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%ld\t%%ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
+		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, "File spec:\tW E S N dx dy nx ny:\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "Old:");
@@ -313,7 +320,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Send the subset of the grid to the destination. */
 	
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, G) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 		Return (API->error);
 	}
 

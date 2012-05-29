@@ -36,37 +36,37 @@
 
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
-		GMT_LONG active;
-		GMT_LONG dir;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM dir;
 	} D;
 	struct E {	/* -E<value> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
 struct TRIANGULATE_EDGE {
-	GMT_LONG begin, end;
+	COUNTER_MEDIUM begin, end;
 };
 
 int compare_edge (const void *p1, const void *p2)
@@ -88,7 +88,7 @@ void *New_triangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C = GMT_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->D.dir = -1;	/* No derivatives */
+	C->D.dir = 2;	/* No derivatives */
 	return (C);
 }
 
@@ -139,7 +139,7 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -204,7 +204,6 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	n_errors += GMT_check_binary_io (GMT, 2);
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.dir < GMT_X || Ctrl->D.dir > GMT_Y), "Syntax error -D option: Must specify x or y\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && (Ctrl->I.active + GMT->common.R.active) != 2, "Syntax error: Must specify -R, -I, -G for gridding\n");
@@ -223,10 +222,13 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
 	
-	GMT_LONG ij, ij1, ij2, ij3, np, n_alloc, n = 0, i, j, k, n_edge;
-	GMT_LONG col_min, col_max, row_min, row_max, p, n_output;
-	GMT_LONG row, col, n_input, triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
-
+	COUNTER_LARGE ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
+	COUNTER_MEDIUM n_input, n_output;
+	GMT_LONG row, col, col_min, col_max, row_min, row_max;
+	GMT_BOOLEAN triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
+	
+	size_t n_alloc;
+	
 	double zj, zk, zl, zlj, zkj, xp, yp, a, b, c, f;
 	double xkj, xlj, ykj, ylj, out[3], vx[4], vy[4];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *in = NULL;
@@ -284,7 +286,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -370,16 +372,16 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->Q.active)
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld Voronoi edges found\n", np);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " Voronoi edges found\n", np);
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld Delaunay triangles found\n", np);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " Delaunay triangles found\n", np);
 	
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
-
+		GMT_LONG nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
-		for (i = 0; i < Grid->header->size; i++) Grid->data[i] = (float)Ctrl->E.value;	/* initialize grid */
+		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
 
 		for (k = ij = 0; k < np; k++) {
 
@@ -409,14 +411,14 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			/* Adjustments for triangles outside -R region. */
 			/* Triangle to the left or right. */
-			if ((col_max < 0) || (col_min >= Grid->header->nx)) continue;
+			if ((col_max < 0) || (col_min >= nx)) continue;
 			/* Triangle Above or below */
-			if ((row_max < 0) || (row_min >= Grid->header->ny)) continue;
+			if ((row_max < 0) || (row_min >= ny)) continue;
 
 			/* Triangle covers boundary, left or right. */
-			if (col_min < 0) col_min = 0;       if (col_max >= Grid->header->nx) col_max = Grid->header->nx - 1;
+			if (col_min < 0) col_min = 0;       if (col_max >= nx) col_max = Grid->header->nx - 1;
 			/* Triangle covers boundary, top or bottom. */
-			if (row_min < 0) row_min = 0;       if (row_max >= Grid->header->ny) row_max = Grid->header->ny - 1;
+			if (row_min < 0) row_min = 0;       if (row_max >= ny) row_max = Grid->header->ny - 1;
 
 			for (row = row_min; row <= row_max; row++) {
 				yp = GMT_grd_row_to_y (GMT, row, Grid->header);
@@ -435,12 +437,12 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 		}
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 			Return (API->error);
 		}
 	}
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -449,7 +451,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->M.active) {	/* Must find unique edges to output only once */
 		if (Ctrl->Q.active) {	/* Voronoi edges */
 			for (i = j = 0; i < np; i++) {
-				fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
+				fprintf (GMT->session.std[GMT_OUT], "%c Edge %" PRIu64 "\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
@@ -468,17 +470,17 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) l_swap (edge[i].begin, edge[i].end);
 
-			qsort (edge, (size_t)n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
+			qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
 			for (i = 1, j = 0; i < n_edge; i++) {
 				if (edge[i].begin != edge[j].begin || edge[i].end != edge[j].end) j++;
 				edge[j] = edge[i];
 			}
 			n_edge = j + 1;
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld unique triangle edges\n", n_edge);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " unique triangle edges\n", n_edge);
 
 			for (i = 0; i < n_edge; i++) {
-				fprintf (GMT->session.std[GMT_OUT], "%c Edge %ld-%ld\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
+				fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
 				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];

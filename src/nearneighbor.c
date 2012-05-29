@@ -39,35 +39,35 @@
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct E {	/* -E<empty> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} E;
 	struct G {	/* -G<grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct N {	/* -N<sectors> */
-		GMT_LONG active;
-		GMT_LONG sectors, min_sectors;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM sectors, min_sectors;
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* May be negative */
 		double radius;
 		char unit;
 	} S;
 	struct W {	/* -W */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} W;
 };
 
 struct NEARNEIGHBOR_NODE {	/* Structure with point id and distance pairs for all sectors */
 	float *distance;	/* Distance of nearest datapoint to this node per sector */
-	GMT_LONG *datum;	/* Point id of this data point */
+	int64_t *datum;		/* Point id of this data point */
 };
 
 struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
@@ -77,7 +77,7 @@ struct NEARNEIGHBOR_POINT {	/* Structure with input data constraints */
 void *New_nearneighbor_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct NEARNEIGHBOR_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct NEARNEIGHBOR_CTRL);
+	C = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_CTRL);
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 	C->N.sectors = NN_DEF_SECTORS;
@@ -91,17 +91,17 @@ void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) 
 	GMT_free (GMT, C);
 }
 
-struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, GMT_LONG n)
-{	/* Allocate an initialize a new node to have -1 in all the datum sectors */
-	struct NEARNEIGHBOR_NODE *new = GMT_memory (GMT, NULL, 1, struct NEARNEIGHBOR_NODE);
+struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, COUNTER_MEDIUM n)
+{	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
+	struct NEARNEIGHBOR_NODE *new = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new->distance = GMT_memory (GMT, NULL, n, float);
-	new->datum = GMT_memory (GMT, NULL, n, GMT_LONG);
+	new->datum = GMT_memory (GMT, NULL, n, int64_t);
 	while (n > 0) new->datum[--n] = -1;
 
 	return (new);
 }
 
-void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, GMT_LONG n_sector, GMT_LONG sector, double distance, GMT_LONG id)
+void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, COUNTER_MEDIUM n_sector, COUNTER_MEDIUM sector, double distance, COUNTER_LARGE id)
 {	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
 	if (!(*node)) *node = add_new_node (GMT, n_sector);
@@ -164,7 +164,8 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG n;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -200,7 +201,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, (size_t)4);
+				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
 				/* in this case are 2 lines bellow we code it here */
@@ -212,7 +213,7 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 #endif
 			case 'N':	/* Sectors */
 				Ctrl->N.active = TRUE;
-				n = sscanf (opt->arg, "%" GMT_LL "d/%" GMT_LL "d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
+				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
 				if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;
 				if (n < 2) Ctrl->N.min_sectors = NN_MIN_SECTORS;
 				if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
@@ -252,10 +253,13 @@ GMT_LONG GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL
 
 GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG row, col, k, col_0, row_0, ij, n, n_alloc = GMT_CHUNK, n_set;
-	GMT_LONG d_row, sector, ii, jj, ij0, n_read, *d_col = NULL;
-	GMT_LONG max_d_col, x_wrap, y_wrap, n_almost, n_none;
-	GMT_LONG error = FALSE, wrap_180, replicate_x, replicate_y, n_filled;
+	GMT_LONG col_0, row_0, row, col, row_end, col_end, ii, jj;
+	COUNTER_MEDIUM k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
+	GMT_BOOLEAN error = FALSE, wrap_180, replicate_x, replicate_y;
+	
+	size_t n_alloc = GMT_CHUNK;
+	
+	COUNTER_LARGE ij, ij0, kk, n, n_read, n_almost, n_none, n_set, n_filled;
 
 	double weight, weight_sum, grd_sum, dx, dy, delta, distance = 0.0;
 	double x_left, x_right, y_top, y_bottom, factor, three_over_radius;
@@ -299,7 +303,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 
@@ -310,8 +314,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-	for (col = 0; col < Grid->header->nx; col++) x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-	for (row = 0; row < Grid->header->ny; row++) y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+	for (colu = 0; colu < Grid->header->nx; colu++) x0[colu] = GMT_grd_col_to_x (GMT, colu, Grid->header);
+	for (rowu = 0; rowu < Grid->header->ny; rowu++) y0[rowu] = GMT_grd_row_to_y (GMT, rowu, Grid->header);
 
 	d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 
@@ -368,30 +372,33 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		point[n].z = (float)in[GMT_Z];
 		if (Ctrl->W.active) point[n].w = (float)in[3];
 
-		/* Find row/col indices of the node closest to this data point */
+		/* Find row/col indices of the node closest to this data point.  Note: These may be negative */
 
 		col_0 = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 		row_0 = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 
 		/* Loop over all nodes within radius of this node */
 
-		for (row = row_0 - d_row; row <= (row_0 + d_row); row++) {
+		row_end = row_0 + d_row;
+		for (row = row_0 - d_row; row <= row_end; row++) {
 
 			jj = row;
 			if (GMT_y_out_of_bounds (GMT, &jj, Grid->header, &wrap_180)) continue;	/* Outside y-range */
-
-			for (col = col_0 - d_col[jj]; col <= (col_0 + d_col[jj]); col++) {
+			rowu = jj;
+			col_end = col_0 + d_col[jj];
+			for (col = col_0 - d_col[jj]; col <= col_end; col++) {
 
 				ii = col;
 				if (GMT_x_out_of_bounds (GMT, &ii, Grid->header, wrap_180)) continue;	/* Outside x-range */ 
 
-				/* Here, (ii,jj) is index of a node (k) inside the grid */
+				/* Here, (ii,jj) [both are >= 0] is index of a node (kk) inside the grid */
+				colu = ii;
 
-				distance = GMT_distance (GMT, x0[ii], y0[jj], in[GMT_X], in[GMT_Y]);
+				distance = GMT_distance (GMT, x0[colu], y0[rowu], in[GMT_X], in[GMT_Y]);
 
 				if (distance > Ctrl->S.radius) continue;	/* Data constraint is too far from this node */
-				k = GMT_IJ0 (Grid->header, jj, ii);		/* No padding used for gridnode array */
-				dx = in[GMT_X] - x0[ii];	dy = in[GMT_Y] - y0[jj];
+				kk = GMT_IJ0 (Grid->header, rowu, colu);	/* No padding used for gridnode array */
+				dx = in[GMT_X] - x0[colu];	dy = in[GMT_Y] - y0[rowu];
 
 				/* Check for wrap-around in x or y.  This should only occur if the
 				   search radius is larger than 1/2 the grid width/height so that
@@ -404,8 +411,8 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
-				sector = ((GMT_LONG)((d_atan2 (dy, dx) + M_PI) * factor)) % Ctrl->N.sectors;
-				assign_node (GMT, &grid_node[k], Ctrl->N.sectors, sector, distance, n);
+				sector = (lrint (floor (((d_atan2 (dy, dx) + M_PI) * factor)))) % Ctrl->N.sectors;
+				assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns
 				   so we may have to assign the point to more than one node.  The next section deals
@@ -413,23 +420,23 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				*/
 
 				if (replicate_x) {	/* Must check if we have to replicate a column */
-					if (ii == 0) 	/* Must replicate left to right column */
-						assign_node (GMT, &grid_node[k+x_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (ii == Grid->header->nxp)	/* Must replicate right to left column */
-						assign_node (GMT, &grid_node[k-x_wrap], Ctrl->N.sectors, sector, distance, n);
+					if (colu == 0) 	/* Must replicate left to right column */
+						assign_node (GMT, &grid_node[kk+x_wrap], Ctrl->N.sectors, sector, distance, n);
+					else if (colu == Grid->header->nxp)	/* Must replicate right to left column */
+						assign_node (GMT, &grid_node[kk-x_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 				if (replicate_y) {	/* Must check if we have to replicate a row */
-					if (jj == 0)	/* Must replicate top to bottom row */
-						assign_node (GMT, &grid_node[k+y_wrap], Ctrl->N.sectors, sector, distance, n);
-					else if (jj == Grid->header->nyp)	/* Must replicate bottom to top row */
-						assign_node (GMT, &grid_node[k-y_wrap], Ctrl->N.sectors, sector, distance, n);
+					if (rowu == 0)	/* Must replicate top to bottom row */
+						assign_node (GMT, &grid_node[kk+y_wrap], Ctrl->N.sectors, sector, distance, n);
+					else if (rowu == Grid->header->nyp)	/* Must replicate bottom to top row */
+						assign_node (GMT, &grid_node[kk-y_wrap], Ctrl->N.sectors, sector, distance, n);
 				}
 			}
 		}
 		n++;
 		if (!(n%1000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
-			GMT_LONG old_n_alloc = n_alloc;
+			size_t old_n_alloc = n_alloc;
 #ifdef DEBUG
 			GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
@@ -462,12 +469,13 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
-	ij0 = -1;
+	ij0 = 0;
 	GMT_row_loop (GMT, Grid, row) {
 		GMT_col_loop (GMT, Grid, row, col, ij) {
-			if (!grid_node[++ij0]) {	/* No nearest neighbors, set to empty and goto next node */
+			if (!grid_node[ij0]) {	/* No nearest neighbors, set to empty and goto next node */
 				n_none++;
 				Grid->data[ij] = (float)Ctrl->E.value;
+				ij0++;
 				continue;
 			}
 
@@ -476,6 +484,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				n_almost++;
 				Grid->data[ij] = (float)Ctrl->E.value;
 				free_node (GMT, grid_node[ij0]);
+				ij0++;
 				continue;
 			}
 
@@ -494,6 +503,7 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			Grid->data[ij] = (float)(grd_sum / weight_sum);
 			free_node (GMT, grid_node[ij0]);
+			ij0++;
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\r", row);
 	}
@@ -501,15 +511,15 @@ GMT_LONG GMT_nearneighbor (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef DEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char line[GMT_BUFSIZ];
 		sprintf (line, "%s)\n", GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes were assigned an average value\n", n_set);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%ld nodes failed sector criteria and %ld nodes had no neighbor points (all set to ", n_almost, n_none);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes were assigned an average value\n", n_set);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes failed sector criteria and %" PRIu64 " nodes had no neighbor points (all set to ", n_almost, n_none);
 		(GMT_is_dnan (Ctrl->E.value)) ? GMT_message (GMT, "NaN)\n") : GMT_message (GMT,  line, Ctrl->E.value);
 	}
 

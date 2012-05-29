@@ -31,29 +31,29 @@
 
 struct X2SYS_GET_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} G;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG mode;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *flags;
 	} N;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *TAG;
 	} T;
 };
@@ -109,7 +109,7 @@ GMT_LONG GMT_x2sys_get_parse (struct GMTAPI_CTRL *C, struct X2SYS_GET_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k = 0;
+	COUNTER_MEDIUM n_errors = 0, k = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -160,9 +160,9 @@ GMT_LONG GMT_x2sys_get_parse (struct GMTAPI_CTRL *C, struct X2SYS_GET_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int find_leg (char *name, struct X2SYS_BIX *B, int n)
+int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
 {	/* Return track id # for this leg */
-	int i;
+	unsigned int i;
 	
 	for (i = 0; i < n; i++) if (!strcmp (name, B->head[i].trackname)) return (i);
 	return (-1);
@@ -175,7 +175,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ], *p = NULL;
 	
-	int *in_bin_flag = NULL;	/* Match type in struct X2SYS_BIX_TRACK */
+	uint32_t *in_bin_flag = NULL;	/* Match type in struct X2SYS_BIX_TRACK */
 	
 	double x, y;
 
@@ -183,13 +183,15 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_BIX B;
 	struct X2SYS_BIX_TRACK *track = NULL;
 
-	GMT_LONG error = FALSE, no_suffix = FALSE, y_ok, n_ok, first;
-	GMT_LONG combo = 0, ij, n_tracks_found, n_tracks, bit;
-	GMT_LONG id1, id2, item, n_flags = 0, n_pairs, missing = 0;
-	GMT_LONG i, j, k, kk, start_j, start_i, stop_j, stop_i;
-	GMT_LONG *ids_in_bin = NULL, *include = NULL;
+	GMT_BOOLEAN error = FALSE, no_suffix = FALSE, y_ok, n_ok, first;
+	GMT_LONG i, j, k, start_j, start_i, stop_j, stop_i;
+	COUNTER_MEDIUM combo = 0, n_tracks_found, n_tracks, ii;
+	COUNTER_MEDIUM id1, id2, item, n_flags = 0;
+	COUNTER_LARGE *ids_in_bin = NULL, ij, n_pairs, jj, kk;
+	unsigned char *include = NULL;
+	COUNTER_LARGE ID;
 	
-	unsigned int *matrix = NULL;	/* Needs to be a 32-bit unsigned int, not GMT_LONG */
+	unsigned int bit, missing = 0, *matrix = NULL;	/* Needs to be a 32-bit unsigned int, not GMT_LONG */
 
 	FILE *fp = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -229,12 +231,12 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region */
 
 	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
-	for (i = combo = 0; i < s->n_out_columns; i++) combo |= X2SYS_bit (s->out_order[i]);
+	for (ii = combo = 0; ii < s->n_out_columns; ii++) combo |= X2SYS_bit (s->out_order[ii]);
 
 	if (Ctrl->N.flags) {
 		x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->N.flags, s), "-N");
-		for (i = missing = 0; i < s->n_out_columns; i++)
-			missing |= X2SYS_bit (s->out_order[i]);
+		for (ii = missing = 0; ii < s->n_out_columns; ++ii)
+			missing |= X2SYS_bit (s->out_order[ii]);
 	}
 	
 	x2sys_bix_init (GMT, &B, FALSE);
@@ -248,8 +250,8 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	x2sys_err_fail (GMT, x2sys_bix_read_index (GMT, s, &B, Ctrl->S.active), "");
 
 	if (Ctrl->L.active) {
-		n_flags = (int)ceil (n_tracks / 32.0);
-		include = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
+		n_flags = lrint (ceil (n_tracks / 32.0));
+		include = GMT_memory (GMT, NULL, n_tracks, unsigned char);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
@@ -258,8 +260,8 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				GMT_chop (line);	/* Get rid of [CR]LF */
 				if (line[0] == '#' || line[0] == '\0') continue;
-				if ((p = strchr (line, '.'))) line[(int)(p-line)] = '\0';	/* Remove extension */
-				k = find_leg (line, &B, (int)n_tracks);	/* Return track id # for this leg */
+				if ((p = strchr (line, '.'))) line[(size_t)(p-line)] = '\0';	/* Remove extension */
+				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Leg %s not in the data base\n", line);
 					continue;
@@ -269,21 +271,21 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			fclose (fp);
 		}
 		else {	/* Use all */
-			for (k = 0; k < n_tracks; k++) include[k] = TRUE;
+			for (ii = 0; ii < n_tracks; ii++) include[ii] = TRUE;
 		}
 		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags, unsigned int);
-		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
+		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, COUNTER_LARGE);
 	}
 	else {
 		y_match = GMT_memory (GMT, NULL, n_tracks, char);
 		n_match = GMT_memory (GMT, NULL, n_tracks, char);
 	}
-	in_bin_flag = GMT_memory (GMT, NULL, n_tracks, int);
+	in_bin_flag = GMT_memory (GMT, NULL, n_tracks, uint32_t);
 	
 	/* Ok, now we can start finding the tracks requested */
 
-	x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &j), "");
-	x2sys_err_fail (GMT, x2sys_bix_get_ij (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &stop_i, &stop_j, &B, &j), "");
+	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &start_i, &start_j, &B, &ID), "");
+	x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &stop_i, &stop_j, &B, &ID), "");
 	if (B.periodic && stop_i < start_i) stop_i += B.nx_bin;	/* Deal with longitude periodicity */
 
 	for (j = start_j; j <= stop_j; j++) {
@@ -291,7 +293,7 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			ij = j * B.nx_bin + (i % B.nx_bin);	/* Since i may exceed nx_bin due to longitude periodicity */
 			if (B.base[ij].n_tracks == 0) continue;
 
-			for (k = kk = 0, track = B.base[ij].first_track->next_track, first = TRUE; first && k < B.base[ij].n_tracks; k++, track = track->next_track) {
+			for (jj = kk = 0, track = B.base[ij].first_track->next_track, first = TRUE; first && jj < B.base[ij].n_tracks; jj++, track = track->next_track) {
 				in_bin_flag[track->track_id] |= track->track_flag;	/* Build the total bit flag for this cruise INSIDE the region only */
 				if (Ctrl->L.active) {	/* Just build integer list of track ids for this bin */
 					y_ok = n_ok = TRUE;
@@ -352,29 +354,31 @@ GMT_LONG GMT_x2sys_get (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, matrix);
 		GMT_free (GMT, include);
 		GMT_free (GMT, ids_in_bin);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld pairs for crossover consideration\n", n_pairs);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
-		for (k = n_tracks_found = 0; k < n_tracks; k++)
-			if (y_match[k] == 1 && n_match[k] == 0) n_tracks_found++;
+		for (ii = n_tracks_found = 0; ii < n_tracks; ++ii) {
+			if (y_match[ii] == 1 && n_match[ii] == 0)
+				++n_tracks_found;
+		}
 		if (n_tracks_found) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld tracks\n", n_tracks_found);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Found %d tracks\n", n_tracks_found);
 	
 			printf ("# Search command: %s", GMT->init.progname);
 			for (opt = options; opt; opt = opt->next)
 				(opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
 			printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
-			for (i = 0; i < (s->n_fields-1); i++) printf ("%s%s", s->info[i].name, GMT->current.setting.io_col_separator);
+			for (ii = 0; ii < (s->n_fields-1); ii++) printf ("%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
 			printf ("%s\n", s->info[s->n_fields-1].name);
-			for (k = 0; k < n_tracks; k++) {
-				if (y_match[k] == 0 || n_match[k] == 1) continue;
+			for (kk = 0; kk < n_tracks; kk++) {
+				if (y_match[kk] == 0 || n_match[kk] == 1) continue;
 				if (no_suffix) {
-					for (i = strlen (B.head[k].trackname) - 1; i > 0 && B.head[k].trackname[i] != '.'; i--);
-					if (i) B.head[k].trackname[i] = '\0';
+					for (i = strlen (B.head[kk].trackname) - 1; i > 0 && B.head[kk].trackname[i] != '.'; i--);
+					if (i) B.head[kk].trackname[i] = '\0';
 				}
-				printf ("%s", B.head[k].trackname);
-				for (i = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
-					(((Ctrl->G.active) ? B.head[k].flag : in_bin_flag[k]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
+				printf ("%s", B.head[kk].trackname);
+				for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
+					(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
 				}
 				printf ("\n");
 			}

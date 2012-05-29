@@ -20,45 +20,36 @@
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct MGD77_CM4 *CM4;
-	GMT_LONG copy_input;
-	GMT_LONG do_IGRF;
-	GMT_LONG do_CM4;
-	GMT_LONG joint_IGRF_CM4;
+	GMT_BOOLEAN copy_input;
+	GMT_BOOLEAN do_IGRF;
+	GMT_BOOLEAN do_CM4;
+	GMT_BOOLEAN joint_IGRF_CM4;
 	struct A {	/* -A */
-		GMT_LONG active;
-		GMT_LONG fixed_alt;
-		GMT_LONG fixed_time;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN fixed_alt;
+		GMT_BOOLEAN fixed_time;
 		GMT_LONG years;
 		GMT_LONG t_col;
 		double altitude;
 		double time;
 	} A;
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
-	struct E {	/* -E */
-		GMT_LONG active;
-		GMT_LONG mode;
-	} E;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -G */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} G;
-	struct I {	/* -I */
-		GMT_LONG active;
-		GMT_LONG n;
-		char code[3];
-	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 };
 
@@ -66,7 +57,7 @@ void *New_mgd77magref_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	struct MGD77MAGREF_CTRL *C = NULL;
 
 	C = GMT_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
-	C->CM4 = calloc ((size_t)1, sizeof (struct MGD77_CM4));
+	C->CM4 = calloc (1U, sizeof (struct MGD77_CM4));
 
 	/* Initialize values whose defaults are not 0/FALSE/NULL */
 
@@ -162,8 +153,8 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, pos, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
-	GMT_LONG n_out, lfval = 0;
+	COUNTER_MEDIUM n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
+	GMT_LONG j;
 	char p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -385,7 +376,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_out;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, 
-			"Syntax error: Binary input data (-bi) must have at least %ld columns\n", n_out);
+			"Syntax error: Binary input data (-bi) must have at least %d columns\n", n_out);
 	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, 
 			"Syntax error: You cannot select both -F and -L options\n");
 
@@ -397,8 +388,12 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 
 GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, s, nval = 0, nfval = 0, error = 0, t_col = 3, n_out = 0, cm4_igrf_T = FALSE;
-	GMT_LONG lval = 0, lfval = 0, n_field_components, n_alloc = 0, need = 0, tbl;
+	COUNTER_MEDIUM j, nval = 0, nfval = 0, error = 0;
+	COUNTER_MEDIUM lval = 0, lfval = 0, n_field_components, tbl;
+	COUNTER_MEDIUM n_out = 0, t_col = 3;
+	GMT_BOOLEAN cm4_igrf_T = FALSE;
+	
+	size_t i, s, need = 0, n_alloc = 0;
 
 	double the_altitude, the_time, *time_array = NULL, *alt_array = NULL, *time_years = NULL, IGRF[7], out[GMT_MAX_COLUMNS];
 	double *igrf_xyz = NULL;	/* Temporary storage for the joint_IGRF_CM4 case */
@@ -429,7 +424,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
 
-	Ctrl->CM4->CM4_D.dst = calloc((size_t)(1), sizeof(double));	/* We need at least a size of one in case a value is given in input */
+	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
 
 	/* Shorthand for these */
@@ -509,14 +504,14 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.io.col_type[GMT_IN][t_col+1] = GMT->current.io.col_type[GMT_OUT][t_col+1] = GMT_IS_FLOAT;		/* Override any previous t_col = 3 settings */
 	if (!Ctrl->copy_input) GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;	/* No time on output */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
@@ -526,7 +521,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %ld columns (your -bo option only set %ld)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
+		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %d columns (your -bo option only set %d)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
 	}
 
@@ -582,8 +577,9 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					MGD77_igrf10syn (GMT, 0, the_time, type, the_altitude, T->segment[s]->coord[GMT_X][i],
 							T->segment[s]->coord[GMT_Y][i], IGRF);
 					if (!Ctrl->joint_IGRF_CM4) {		/* IGRF only */
-						for (j = 0; j < Ctrl->CM4->CM4_F.n_field_components; j++)
-							Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+j] = IGRF[Ctrl->CM4->CM4_F.field_components[j]];
+						int jj;
+						for (jj = 0; jj < Ctrl->CM4->CM4_F.n_field_components; jj++)
+							Ctrl->CM4->CM4_DATA.out_field[i*n_field_components+jj] = IGRF[Ctrl->CM4->CM4_F.field_components[jj]];
 					}
 					else {				/* Store the IGRF x,y,z components for later use */
 						for (j = 0; j < 3; j++)

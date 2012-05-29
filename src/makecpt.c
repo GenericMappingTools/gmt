@@ -30,56 +30,55 @@
 
 #include "gmt.h"
 
-EXTERN_MSC GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 
 struct MAKECPT_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} D;
 	struct F {	/* -F[r|R|h|c] */
-		GMT_LONG active;
-		GMT_LONG model;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM model;
 	} F;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct T {	/* -T<z0/z1/dz> */
-		GMT_LONG active;
-		GMT_LONG cpt;
+		GMT_BOOLEAN active;
 		double low, high, inc;
 		char *file;
 	} T;
 	struct Q {	/* -Q[i|o] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} Q;
 	struct W {	/* -W */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Z;
 };
 
@@ -147,7 +146,7 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files[2] = {0, 0};
+	COUNTER_MEDIUM n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -288,7 +287,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	file = CPT_file;
 
-	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, file, NULL)) == NULL) {
+	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, file, NULL)) == NULL) {
 		Return (API->error);
 	}
 	if (Pin->categorical) Ctrl->W.active = TRUE;	/* Do not want to sample a categorical table */
@@ -296,7 +295,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Set up arrays */
 
 	if (Ctrl->T.file) {	/* Array passed as a data file */
-		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->T.file, NULL)) == NULL) {
+		if ((T = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (T->n_tables != 1 || T->table[0]->n_segments != 1) {
@@ -308,7 +307,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->coord[GMT_X];
-		nz = T->table[0]->segment[0]->n_rows;
+		nz = (GMT_LONG)T->table[0]->segment[0]->n_rows;
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {
@@ -365,7 +364,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.mode == 1) cpt_flags |= 2;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 
-	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, cpt_flags, Ctrl->Out.file, Pout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_OK) {
 		Return (API->error);
 	}
 

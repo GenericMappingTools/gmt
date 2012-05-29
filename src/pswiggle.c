@@ -35,50 +35,51 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-EXTERN_MSC GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 #endif
 
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A<azimuth> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} A;
 	struct C {	/* -C<center> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} C;
 	struct G {	/* -G[+|-|=]<fill> */
-		GMT_LONG active[2];
+		GMT_BOOLEAN active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<azimuth> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} I;
 	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> */
-		GMT_LONG active;
-		GMT_LONG cartesian;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cartesian;
 		double lon, lat, length;
 		char *label;
 	} S;
 	struct T {	/* -T<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<scale> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double scale;
 		char unit;
 	} Z;
 };
 
-void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, GMT_LONG np, double zscale, double start_az, double stop_az, GMT_LONG fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, GMT_LONG paint_wiggle, GMT_LONG negative, GMT_LONG outline, GMT_LONG track)
+void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, COUNTER_LARGE n_in, double zscale, double start_az, double stop_az, GMT_LONG fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, GMT_LONG paint_wiggle, GMT_LONG negative, GMT_LONG outline, GMT_LONG track)
 {
-	GMT_LONG n = 0, i;
+	COUNTER_LARGE n = 0;
+	int64_t i, np = n_in;
 	double dx, dy, len, az = 0.0, s = 0.0, c = 0.0, x_inc, y_inc;
 
 	if (fixed) {
@@ -245,9 +246,9 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k, wantx, wanty, n_errors = 0;
+	COUNTER_MEDIUM j, k, wantx, wanty, n_errors = 0;
 #ifdef GMT_COMPAT
-	GMT_LONG N_active = FALSE;
+	GMT_BOOLEAN N_active = FALSE;
 #endif
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -369,7 +370,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pswiggle_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-void alloc_space (struct GMT_CTRL *GMT, GMT_LONG *n_alloc, double **xx, double **yy, double **zz)
+void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **yy, double **zz)
 {
 	(*n_alloc) <<= 1;
 	*xx = GMT_memory (GMT, *xx, *n_alloc, double);
@@ -379,7 +380,12 @@ void alloc_space (struct GMT_CTRL *GMT, GMT_LONG *n_alloc, double **xx, double *
 
 GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, negative, i, j, tbl, seg, n_alloc = GMT_CHUNK;
+	GMT_BOOLEAN error = FALSE, negative;
+	
+	COUNTER_MEDIUM tbl;
+	
+	COUNTER_LARGE row, seg, j;
+	size_t n_alloc = GMT_CHUNK;
 
 	double x_2, y_2, start_az, stop_az, fix_az, dz;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL, *z = NULL;
@@ -446,13 +452,13 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	yy  = GMT_memory (GMT, NULL, n_alloc, double);
 	zz  = GMT_memory (GMT, NULL, n_alloc, double);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, GMT_FILE_BREAK, NULL, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_FILE_BREAK, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -466,24 +472,24 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			PSL_comment (PSL, "%s\n", T->segment[seg]->header);
 
-			lon = T->segment[seg]->coord[GMT_X];
+			lon = T->segment[seg]->coord[GMT_X];	/* lon, lat, z are just shorthands */
 			lat = T->segment[seg]->coord[GMT_Y];
 			z = T->segment[seg]->coord[GMT_Z];
 			
 			GMT_geo_to_xy (GMT, lon[0], lat[0], &xx[0], &yy[0]);
 			zz[0] = z[0] - Ctrl->C.value;
-			for (i = j = 1; i < T->segment[seg]->n_rows; i++) {	/* Convert to inches/cm and get distance increments */
-				GMT_geo_to_xy (GMT, lon[i], lat[i], &x_2, &y_2);
+			for (row = j = 1; row < T->segment[seg]->n_rows; row++) {	/* Convert to inches/cm and get distance increments */
+				GMT_geo_to_xy (GMT, lon[row], lat[row], &x_2, &y_2);
 
-				if (j > 0 && GMT_is_dnan (z[i])) {	/* Data gap, plot what we have */
+				if (j > 0 && GMT_is_dnan (z[row])) {	/* Data gap, plot what we have */
 					negative = zz[j-1] < 0.0;
 					plot_wiggle (GMT, PSL, xx, yy, zz, j, Ctrl->Z.scale, start_az, stop_az, Ctrl->I.active, fix_az, &Ctrl->G.fill[negative], &Ctrl->W.pen, &Ctrl->T.pen, Ctrl->G.active[negative], negative, Ctrl->W.active, Ctrl->T.active);
 					j = 0;
 				}
-				else if (!GMT_is_dnan (z[i-1]) && (z[i]*z[i-1] < 0.0 || z[i] == 0.0)) {	/* Crossed 0, add new point and plot */
-					dz = z[i] - z[i-1];
-					xx[j] = (dz == 0.0) ? xx[j-1] : xx[j-1] + fabs (z[i-1] / dz) * (x_2 - xx[j-1]);
-					yy[j] = (dz == 0.0) ? yy[j-1] : yy[j-1] + fabs (z[i-1] / dz) * (y_2 - yy[j-1]);
+				else if (!GMT_is_dnan (z[row-1]) && (z[row]*z[row-1] < 0.0 || z[row] == 0.0)) {	/* Crossed 0, add new point and plot */
+					dz = z[row] - z[row-1];
+					xx[j] = (dz == 0.0) ? xx[j-1] : xx[j-1] + fabs (z[row-1] / dz) * (x_2 - xx[j-1]);
+					yy[j] = (dz == 0.0) ? yy[j-1] : yy[j-1] + fabs (z[row-1] / dz) * (y_2 - yy[j-1]);
 					zz[j++] = 0.0;
 					if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 					negative = zz[j-2] < 0.0;
@@ -495,8 +501,8 @@ GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				xx[j] = x_2;
 				yy[j] = y_2;
-				zz[j] = z[i] - Ctrl->C.value;
-				if (!GMT_is_dnan (z[i])) j++;
+				zz[j] = z[row] - Ctrl->C.value;
+				if (!GMT_is_dnan (z[row])) j++;
 				if (j == n_alloc) alloc_space (GMT, &n_alloc, &xx, &yy, &zz);
 			}
 	

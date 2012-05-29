@@ -37,36 +37,38 @@
 
 struct BLOCK_CTRL {	/* All control options for this program (except common args) */
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} C;
 	struct E {	/* -E */
-		GMT_LONG active;
-#if !defined(BLOCKMEAN)		/* Blockmedian ahs -Eb and blockmedian & blockmode has -Er[-] option */
-		int mode;
+		GMT_BOOLEAN active;
+#if !defined(BLOCKMEAN)		/* Blockmedian has -Eb and blockmedian & blockmode has -Er[-] option */
+		COUNTER_MEDIUM mode;
 #endif
 	} E;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 #endif
 #if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
 	struct T {	/* -T<quantile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double quantile;
 	} T;
 #endif
+#if defined(BLOCKMEAN)		/* Only blockmean has a -S option */
 	struct S {	/* -S[m|w|z] */
-		GMT_LONG active;
-		int mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} S;
+#endif
 	struct W {	/* -W[i][o] */
-		GMT_LONG active;
-		GMT_LONG weighted[2];
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN weighted[2];
 	} W;
 };
 
@@ -76,9 +78,11 @@ enum GMT_enum_blks {BLK_Z	= 0,
 	BLK_S		= 0,
 	BLK_L		= 1,
 	BLK_H		= 2};
+
 struct BLK_PAIR {	/* Used for weighted mean location */
 	double a[2];	/* a[0] = x, a[1] = y */
 };
+
 struct BLK_SLH {	/* Holds std, low, and high values */
 	double a[3];	/* a[0] = w.std, a[1] = min, a[2] = max */
 };
@@ -87,13 +91,14 @@ struct BLK_SLH {	/* Holds std, low, and high values */
 #define BLK_DO_EXTEND4	2
 #define BLK_DO_INDEX_LO	4
 #define BLK_DO_INDEX_HI	8
+
 enum GMT_enum_blks {BLK_Z	= 2,
-	BLK_W		= 3};
+		BLK_W		= 3};
 struct BLK_DATA {
-	double a[4];	/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	GMT_LONG i;	/* Index to output block */
+	double a[4];		/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
+	COUNTER_LARGE ij;	/* Grid index for data value */
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
-	GMT_LONG rec_no;	/* Data record on input */
+	COUNTER_LARGE rec_no;	/* Data record on input */
 #endif
 };
 #endif

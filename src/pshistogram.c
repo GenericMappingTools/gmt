@@ -27,49 +27,49 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-EXTERN_MSC GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
+GMT_LONG gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
 #endif
 
 struct PSHISTOGRAM_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct F {	/* -F */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} F;
 	struct G {	/* -Gfill */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct I {	/* -I[o] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} I;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct W {	/* -W<width> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc;
 	} W;
 	struct Z {	/* -Z<type> */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} Z;
 };
 
@@ -96,7 +96,7 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 	double add_half = 0.0;
 	GMT_LONG b0, b1, i, ibox, count_sum;
 
-	F->n_boxes = (GMT_LONG)ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5);
+	F->n_boxes = lrint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
 
 	if (F->center_box) {
 		F->n_boxes++;
@@ -112,7 +112,7 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		ibox = (GMT_LONG)floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half);
+		ibox = lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
 		if (ibox < 0 || ibox >= F->n_boxes) continue;
 		F->boxh[ibox]++;
 		F->n_counted++;
@@ -173,7 +173,8 @@ GMT_LONG fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *d
 
 GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, GMT_LONG stairs, GMT_LONG flip_to_y, GMT_LONG draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, GMT_LONG cpt)
 {
-	GMT_LONG i, ibox, first = TRUE, index;
+	GMT_LONG i, ibox, index;
+	GMT_BOOLEAN first = TRUE;
 	double rgb[4], x[4], y[4], xx, yy, xval, *px = NULL, *py = NULL;
 	struct GMT_FILL *f = NULL;
 
@@ -246,11 +247,12 @@ GMT_LONG plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALE
 	return (0);
 }
 
-GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, GMT_LONG n, double *stats)
+GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, COUNTER_LARGE n, double *stats)
 {
 	/* Returns stats[] = L2, L1, LMS location, L2, L1, LMS scale  */
 
-	GMT_LONG i, j, n_multiples;
+	COUNTER_LARGE i, j;
+	COUNTER_MEDIUM n_multiples;
 	double dx;
 
 	if (n < 3) return (-1);
@@ -264,7 +266,7 @@ GMT_LONG get_loc_scl (struct GMT_CTRL *GMT, double *data, GMT_LONG n, double *st
 	/* Get mode */
 
 	GMT_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %ld multiple modes found\n", n_multiples);
+	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", n_multiples);
 
 	/* Get MAD for L1 */
 
@@ -361,7 +363,8 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	GMT_LONG sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -424,7 +427,9 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 				break;
 			case 'Z':
 				Ctrl->Z.active = TRUE;
-				Ctrl->Z.mode = atoi (opt->arg);
+				sval = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, sval < PSHISTOGRAM_COUNTS || sval > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option: histogram type must be in 0-5 range\n");
+				Ctrl->Z.mode = sval;
 				break;
 
 			default:	/* Report bad options */
@@ -434,7 +439,6 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 	}
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->I.active && !GMT_IS_LINEAR (GMT), "Syntax error -J option: Only linear projection supported.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.mode < PSHISTOGRAM_COUNTS || Ctrl->Z.mode > PSHISTOGRAM_LOG10_FREQ_PCT, "Syntax error -Z option: histogram type must be in 0-5 range\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->W.active, "Syntax error -W option: Must specify bin width\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->W.inc <= 0.0, "Syntax error -W option: bin width must be nonzero\n");
 
@@ -452,7 +456,11 @@ GMT_LONG GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *
 
 GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, automatic = FALSE, n_alloc = GMT_CHUNK, n;
+	GMT_BOOLEAN error = FALSE, automatic = FALSE;
+	
+	COUNTER_LARGE n;
+	
+	size_t n_alloc = GMT_CHUNK;
 
 	char format[GMT_BUFSIZ];
 	
@@ -496,14 +504,14 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (GMT_DATA_READ_ERROR);
 	}
 
@@ -546,7 +554,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld points read\n", n);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " points read\n", n);
 
 	data = GMT_memory (GMT, data, n, double);
 
@@ -588,7 +596,8 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			GMT_LONG ibox, dim[4] = {1, 1, 2, 0};
+			GMT_LONG ibox;
+			COUNTER_LARGE dim[4] = {1, 1, 2, 0};
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_LINE_SEGMENT *S = NULL;
@@ -621,7 +630,7 @@ GMT_LONG GMT_pshistogram (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S->coord[GMT_X][ibox] = xx;
 				S->coord[GMT_Y][ibox] = yy;
 			}
-			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, NULL, D->io_mode, Ctrl->Out.file, D) != GMT_OK) {
+			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {

@@ -38,66 +38,66 @@
 
 #include "gmt.h"
 
-EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
-EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
-EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
-EXTERN_MSC double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
-EXTERN_MSC double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
+void gmt_Cmul (double A[], double B[], double C[]);
+void gmt_Cdiv (double A[], double B[], double C[]);
+void gmt_Ccot (double Z[], double cotZ[]);
+double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
+double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 
 /* Control structure for greenspline */
 
 struct GREENSPLINE_CTRL {
 	struct A {	/* -A<gradientfile> */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
 	struct C {	/* -C<cutoff> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 		char *file;
 	} C;
 	struct D {	/* -D<distflag> */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* Can be negative */
 	} D;
 	struct G {	/* -G<output_grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy[/dz]] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[3];
 	} I;
 	struct L {	/* -L */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} L;
 	struct N {	/* -N<outputnode_file> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} N;
 	struct Q {	/* -Qdaz */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double az;
 		double dir[3];
 	} Q;
 	struct R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
-		GMT_LONG active;
-		GMT_LONG mode;		/* TRUE if settings came from a grid file */
-		GMT_LONG dimension;	/* 1, 2, or 3 */
-		GMT_LONG offset;	/* 0 or 1 */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN mode;		/* TRUE if settings came from a grid file */
+		COUNTER_MEDIUM dimension;	/* 1, 2, or 3 */
+		COUNTER_MEDIUM offset;	/* 0 or 1 */
 		double range[6];	/* Min/max for each dimension */
 		double inc[2];		/* xinc/yinc when -Rgridfile was given*/
 	} R3;
 	struct S {	/* -S<mode>[/args] */
-		GMT_LONG active, fast;
-		GMT_LONG mode;
+		GMT_BOOLEAN active, fast;
+		COUNTER_MEDIUM mode;
 		double value[2];
 		double rval[2];
 		char *arg;
 	} S;
 	struct T {	/* -T<mask_grdfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} T;
 };
@@ -131,13 +131,12 @@ struct GREENSPLINE_CTRL {
 #define N_X 	100001
 
 struct ZGRID {
-	GMT_LONG nz;
+	COUNTER_MEDIUM nz;
 	double z_min, z_max, z_inc;
 };
 
-GMT_LONG TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 #ifdef DEBUG
-void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg);
+GMT_BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 #endif
 
 void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -242,7 +241,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_items, k, j, dimension;
+	GMT_LONG n_items;
+	COUNTER_MEDIUM n_errors = 0, dimension, k;
 	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -269,7 +269,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				}
 				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
 					struct GMT_GRID *G = NULL;	
-					if ((G = GMT_Read_Data (C, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) {	/* Get header only */
+					if ((G = GMT_Read_Data (C, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
 						return (C->error);
 					}
 					Ctrl->R3.range[0] = G->header->wesn[XLO]; Ctrl->R3.range[1] = G->header->wesn[XHI];
@@ -277,7 +277,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 					Ctrl->R3.inc[GMT_X] = G->header->inc[GMT_X];	Ctrl->R3.inc[GMT_Y] = G->header->inc[GMT_Y];
 					Ctrl->R3.offset = G->header->registration;
 					Ctrl->R3.dimension = 2;
-					Ctrl->R3.mode = 1;
+					Ctrl->R3.mode = TRUE;
 					if (GMT_Destroy_Data (C, GMT_ALLOCATED, &G) != GMT_OK) {
 						return (C->error);
 					}
@@ -307,12 +307,12 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 			case 'A':	/* Gradient data */
 				Ctrl->A.active = TRUE;
-				j = 0;
+				k = 0;
 				if (strchr (opt->arg, ',')) {	/* Specified a particular format with -A<mode>,<file> */
 					Ctrl->A.mode = (GMT_LONG)(opt->arg[0] - '0');
-					j = 2;
+					k = 2;
 				}
-				Ctrl->A.file = strdup (&opt->arg[j]);
+				Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = TRUE;
@@ -352,8 +352,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 			case 'Q':	/* Directional derivative */
 				Ctrl->Q.active = TRUE;
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
-					k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
-					if (k != 3) {
+					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
+					if (n_items != 3) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
 						n_errors++;
 					}
@@ -393,8 +393,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 						Ctrl->S.mode = WESSEL_BECKER_2008;
 						Ctrl->S.fast = TRUE; 
 						if (strchr (opt->arg, '/')) {
-							k = sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1], &Ctrl->S.rval[0], &Ctrl->S.rval[1]);
-							if (k == 2) {
+							n_items = sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1], &Ctrl->S.rval[0], &Ctrl->S.rval[1]);
+							if (n_items == 2) {
 								Ctrl->S.rval[0] = -1.0;
 								Ctrl->S.rval[1] = +1.0;
 							}
@@ -465,7 +465,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
+void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
 {
 	GMT_LONG i;
 	double x, dx, dy, y, t, ry, rdy;
@@ -478,8 +478,8 @@ void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
 		t = (x0 < 0.0) ? acosd (x) : x;
-		y = G(x, par, zz);
-		dy = D(x, par, gg);
+		y = G (C, x, par, zz);
+		dy = D (C, x, par, gg);
 		if (y < min_y) min_y = y;
 		if (y > max_y) max_y = y;
 		if (dy < min_dy) min_dy = dy;
@@ -490,8 +490,8 @@ void dump_green (p_func_d G, p_func_d D, double par[], double x0, double x1, GMT
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
 		t = (x0 < 0.0) ? acosd (x) : x;
-		y = G(x, par, zz);
-		dy = D(x, par, gg);
+		y = G (C, x, par, zz);
+		dy = D (C, x, par, gg);
 		dy = (rdy > 0.0) ? (dy - min_dy)/rdy : 1.0;
 		printf ("%g\t%g\t%g\t%g\n", x, (y - min_y) / ry, dy, t);
 	}
@@ -702,7 +702,7 @@ double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], double
 
 double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) normalized to 0-1 */
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 	double z[2], pq[4];
 
 	if (doubleAlmostEqual(x, 1.0))
@@ -725,7 +725,7 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 
 double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = -M_PI * (v+1)*[x*Pv(-x)+Pv+1(-x)]/(sin (v*x)*sin(theta)) - 1/(1-x), normalized to 0-1 */
-	GMT_LONG n;
+	COUNTER_MEDIUM n;
 	double z[2], v1[2], pq[4], s;
 	
 	if (x == +1.0 || x == -1.0) return (0.0);
@@ -765,7 +765,7 @@ double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], double *y)
 	f = (x - par[10]) * par[9];	/* Floating point index */
 	f0 = floor (f);
 	df = f - f0;
-	k = (GMT_LONG)f0;
+	k = lrint (f0);
 	if (df == 0.0) return (y[k]);
 	return (y[k]*(1.0 - df) + y[k+1] * df);
 }
@@ -786,7 +786,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 	double x;
 #ifdef DUMP
 	FILE *fp = NULL;
-	size_t n_out;
+	COUNTER_LARGE n_out;
 	double out[3];
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (grad) ? 3 : 2;
@@ -887,10 +887,10 @@ double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
  * coeff[6]:	The normalizing scale for the detrended data
  */
 
-void do_normalization_1d (double **X, double *obs, GMT_LONG n, GMT_LONG mode, double *coeff)
+void do_normalization_1d (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *coeff)
 {	/* mode == 1 norm w; mode == 2: also remove linear trend, norm & 4: also normalize result by range */
 
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double d;
 	
 	GMT_memset (coeff, 5, double);
@@ -934,10 +934,10 @@ void do_normalization_1d (double **X, double *obs, GMT_LONG n, GMT_LONG mode, do
 
 }
 
-void do_normalization (double **X, double *obs, GMT_LONG n, GMT_LONG mode, double *coeff)
+void do_normalization (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *coeff)
 {	/* mode == 1 norm z; mode == 2: also remove plane, norm & 4: also normalize result by range */
 
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double d;
 	
 	GMT_memset (coeff, 5, double);
@@ -994,7 +994,7 @@ void do_normalization (double **X, double *obs, GMT_LONG n, GMT_LONG mode, doubl
 
 }
 
-double undo_normalization (double *X, double w_norm, GMT_LONG mode, double *coeff)
+double undo_normalization (double *X, double w_norm, COUNTER_MEDIUM mode, double *coeff)
 {
 	double w;
 	w = w_norm;
@@ -1004,7 +1004,7 @@ double undo_normalization (double *X, double w_norm, GMT_LONG mode, double *coef
 	return (w);
 }
 
-double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, GMT_LONG dim)
+double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, COUNTER_MEDIUM dim)
 {
 	double r = 0.0;
 	/* Get distance between the two points */
@@ -1023,7 +1023,7 @@ double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, GMT_LONG dim)
 	return (r);
 }
 
-double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, GMT_LONG dim, GMT_LONG baz)
+double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, COUNTER_MEDIUM dim, GMT_BOOLEAN baz)
 {
 	/* D, the directional cosines of the observed gradient:
 	 * X0: Observation point.
@@ -1057,9 +1057,11 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, G
 
 GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, j, k, p, ii, n, m, nm, error, dimension = 0;
-	GMT_LONG normalize = 1, unit = 0, out_ID;
-	GMT_LONG old_n_alloc, n_alloc, ij, ji, nxy, n_ok = 0, way, new_grid = FALSE;
+	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii;
+	COUNTER_MEDIUM dimension = 0, normalize = 1, unit = 0;
+	size_t old_n_alloc, n_alloc;
+	GMT_LONG error, out_ID, way;
+	GMT_BOOLEAN new_grid = FALSE;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1082,7 +1084,9 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	FILE *fp = NULL;
 
-	p_func_d G = NULL, dGdr = NULL;
+	double (*G) (struct GMT_CTRL *, double, double *, double *) = NULL;	/* Pointer to chosen Green's function */
+	double (*dGdr) (struct GMT_CTRL *, double, double *, double *) = NULL;	/* Pointer to chosen gradient of Green's function */
+	
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct ZGRID Z;
@@ -1149,7 +1153,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		case 4:	/* 3-D Cartesian x,y,z data handled separately */
 			break;
 		default:	/* Cannot happen unless we make a bug */
-			GMT_report (GMT, GMT_MSG_FATAL, "BUG since D (=%ld) cannot be outside 0-5 range\n", Ctrl->D.mode+1);
+			GMT_report (GMT, GMT_MSG_FATAL, "BUG since D (=%d) cannot be outside 0-5 range\n", Ctrl->D.mode+1);
 			break;
 	}
 
@@ -1162,7 +1166,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Now we are ready to take on some input values */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 
@@ -1212,7 +1216,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *S = NULL;
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
-		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->A.file, NULL)) == NULL) {
+		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		S = Din->table[0];	/* Can only be one table */
@@ -1223,18 +1227,18 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		obs = GMT_memory (GMT, obs, nm, double);
 		D = GMT_memory (GMT, NULL, m, double *);
 		for (k = 0; k < m; k++) D[k] = GMT_memory (GMT, NULL, dimension, double);
-		for (i = k = 0, p = n; i < S->n_segments; i++) {
-			for (j = 0; j < S->segment[i]->n_rows; j++, k++, p++) {
-				for (ii = 0; ii < dimension; ii++) X[p][ii] = S->segment[i]->coord[ii][j];
+		for (seg = k = 0, p = n; seg < S->n_segments; seg++) {
+			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
+				for (ii = 0; ii < dimension; ii++) X[p][ii] = S->segment[seg]->coord[ii][row];
 				switch (dimension) {
 					case 1:	/* 1-D */
 						switch (Ctrl->A.mode) {
 							case 0:	/* x, slope */
 								D[k][0] = 1.0;	/* Dummy since there is no direction for 1-D spline (the gradient is in the x-y plane) */
-								obs[p] = S->segment[i]->coord[dimension][j];
+								obs[p] = S->segment[seg]->coord[dimension][row];
 								break;
 							default:
-								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 1-D data (%ld) - aborting!\n", Ctrl->A.mode);
+								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 1-D data (%d) - aborting!\n", Ctrl->A.mode);
 								Return (GMT_DATA_READ_ERROR);
 								break;
 						}
@@ -1242,27 +1246,27 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					case 2:	/* 2-D */
 						switch (Ctrl->A.mode) {
 							case 1:	/* (x, y, az, gradient) */
-								az = D2R * S->segment[i]->coord[2][j];
-								obs[p] = S->segment[i]->coord[3][j];
+								az = D2R * S->segment[seg]->coord[2][row];
+								obs[p] = S->segment[seg]->coord[3][row];
 								break;
 							case 2:	/* (x, y, gradient, azimuth) */
-								az = D2R * S->segment[i]->coord[3][j];
-								obs[p] = S->segment[i]->coord[2][j];
+								az = D2R * S->segment[seg]->coord[3][row];
+								obs[p] = S->segment[seg]->coord[2][row];
 								break;
 							case 3:	/* (x, y, direction, gradient) */
-								az = M_PI_2 - D2R * S->segment[i]->coord[2][j];
-								obs[p] = S->segment[i]->coord[3][j];
+								az = M_PI_2 - D2R * S->segment[seg]->coord[2][row];
+								obs[p] = S->segment[seg]->coord[3][row];
 								break;
 							case 4:	/* (x, y, gx, gy) */
-								az = atan2 (S->segment[i]->coord[2][j], S->segment[i]->coord[3][j]);		/* Get azimuth of gradient */
-								obs[p] = hypot (S->segment[i]->coord[3][j], S->segment[i]->coord[3][j]);	/* Get magnitude of gradient */
+								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
+								obs[p] = hypot (S->segment[seg]->coord[3][row], S->segment[seg]->coord[3][row]);	/* Get magnitude of gradient */
 								break;
 							case 5:	/* (x, y, nx, ny, gradient) */
-								az = atan2 (S->segment[i]->coord[2][j], S->segment[i]->coord[3][j]);		/* Get azimuth of gradient */
-								obs[p] = S->segment[i]->coord[4][j];	/* Magnitude of gradient */
+								az = atan2 (S->segment[seg]->coord[2][row], S->segment[seg]->coord[3][row]);		/* Get azimuth of gradient */
+								obs[p] = S->segment[seg]->coord[4][row];	/* Magnitude of gradient */
 								break;
 							default:
-								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 2-D data (%ld) - aborting!\n", Ctrl->A.mode);
+								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 2-D data (%d) - aborting!\n", Ctrl->A.mode);
 								Return (GMT_DATA_READ_ERROR);
 								break;
 						}
@@ -1271,22 +1275,22 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					case 3:	/* 3-D */
 						switch (Ctrl->A.mode) {
 							case 4:	/* (x, y, z, gx, gy, gz) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[i]->coord[3+ii][j];	/* Get the gradient vector */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the gradient vector */
 								obs[p] = GMT_mag3v (GMT, D[k]);	/* This is the gradient magnitude */
 								GMT_normalize3v (GMT, D[k]);		/* These are the direction cosines of the gradient */
 								break;
 							case 5: /* (x, y, z, nx, ny, nz, gradient) */
-								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[i]->coord[3+ii][j];	/* Get the unit vector */
-								obs[p] = S->segment[i]->coord[6][j];	/* This is the gradient magnitude */
+								for (ii = 0; ii < 3; ii++) D[k][ii] = S->segment[seg]->coord[3+ii][row];	/* Get the unit vector */
+								obs[p] = S->segment[seg]->coord[6][row];	/* This is the gradient magnitude */
 								break;
 							default:
-								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 3-D data (%ld) - aborting!\n", Ctrl->A.mode);
+								GMT_report (GMT, GMT_MSG_FATAL, "Bad gradient mode selected for 3-D data (%d) - aborting!\n", Ctrl->A.mode);
 								Return (GMT_DATA_READ_ERROR);
 								break;
 						}
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Bad dimension selected (%ld) - aborting!\n", dimension);
+						GMT_report (GMT, GMT_MSG_FATAL, "Bad dimension selected (%d) - aborting!\n", dimension);
 						Return (GMT_DATA_READ_ERROR);
 						break;
 				}
@@ -1303,12 +1307,12 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (m == 0)
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld data points, yielding a %ld by %ld set of linear equations\n", n, nm, nm);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " data points, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n", n, nm, nm);
 	else 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %ld data points and %ld gradients, yielding a %ld by %ld set of linear equations\n", n, m, nm, nm);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " data points and %" PRIu64 " gradients, yielding a %" PRIu64 " by %" PRIu64 " set of linear equations\n", n, m, nm, nm);
 		
 	if (Ctrl->T.file) {	/* Existing grid that will have zeros and NaNs, only */
-		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
+		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->T.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (! (Grid->header->wesn[XLO] == Ctrl->R3.range[0] && Grid->header->wesn[XHI] == Ctrl->R3.range[1] && Grid->header->wesn[YLO] == Ctrl->R3.range[2] && Grid->header->wesn[YHI] == Ctrl->R3.range[3])) {
@@ -1319,11 +1323,11 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The mask grid resolution does not match your specified grid spacing\n");
 			Return (EXIT_FAILURE);
 		}
-		if (! (Grid->header->registration == GMT->common.r.active)) {
+		if (! (Grid->header->registration == (unsigned int)GMT->common.r.active)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_DATA, Ctrl->T.file, Grid) == NULL) {	/* Get data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 		new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; otherwise Out is just a pointer to Grid */
@@ -1331,7 +1335,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (ij = 0; ij < nxy; ij++) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
-		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->N.file, NULL)) == NULL) {
+		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		T = Nin->table[0];
@@ -1363,40 +1367,40 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
 		case SANDWELL_1987_1D:
-			G = spline1d_sandwell;
-			dGdr = gradspline1d_sandwell;
+			G = &spline1d_sandwell;
+			dGdr = &gradspline1d_sandwell;
 			break;
 		case SANDWELL_1987_2D:
-			G = spline2d_sandwell;
-			dGdr = gradspline2d_sandwell;
+			G = &spline2d_sandwell;
+			dGdr = &gradspline2d_sandwell;
 			break;
 		case SANDWELL_1987_3D:
-			G = spline3d_sandwell;
-			dGdr = gradspline3d_sandwell;
+			G = &spline3d_sandwell;
+			dGdr = &gradspline3d_sandwell;
 			break;
 		case WESSEL_BERCOVICI_1998_1D:
 			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = Grid->header->inc[GMT_X];
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
-			G = spline1d_Wessel_Bercovici;
-			dGdr = gradspline1d_Wessel_Bercovici;
+			G = &spline1d_Wessel_Bercovici;
+			dGdr = &gradspline1d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_2D:
 			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = 0.5 * (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y]);
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
-			G = spline2d_Wessel_Bercovici;
-			dGdr = gradspline2d_Wessel_Bercovici;
+			G = &spline2d_Wessel_Bercovici;
+			dGdr = &gradspline2d_Wessel_Bercovici;
 			break;
 		case WESSEL_BERCOVICI_1998_3D:
 			if (Ctrl->S.value[1] == 0.0 && Grid->header->inc[GMT_X] > 0.0) Ctrl->S.value[1] = (Grid->header->inc[GMT_X] + Grid->header->inc[GMT_Y] + Z.z_inc) / 3.0;
 			if (Ctrl->S.value[1] == 0.0) Ctrl->S.value[1] = 1.0;
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0])) / Ctrl->S.value[1];
 			par[1] = 2.0 / par[0];
-			G = spline3d_Wessel_Bercovici;
-			dGdr = gradspline3d_Wessel_Bercovici;
+			G = &spline3d_Wessel_Bercovici;
+			dGdr = &gradspline3d_Wessel_Bercovici;
 			break;
 		case MITASOVA_MITAS_1993_2D:
 			/* par[0] = Ctrl->S.value[0]; */
@@ -1405,8 +1409,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_DEBUG, "p_val = %g\n", p_val);
 			par[0] = p_val;
 			par[1] = 0.25 * par[0] * par[0];
-			G = spline2d_Mitasova_Mitas;
-			dGdr = gradspline2d_Mitasova_Mitas;
+			G = &spline2d_Mitasova_Mitas;
+			dGdr = &gradspline2d_Mitasova_Mitas;
 			break;
 		case MITASOVA_MITAS_1993_3D:
 			/* par[0] = Ctrl->S.value[0]; */
@@ -1415,13 +1419,13 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_DEBUG, "p_val = %g\n", p_val);
 			par[0] = p_val;
 			par[1] = 0.25 * par[0] * par[0];
-			G = spline3d_Mitasova_Mitas;
-			dGdr = gradspline3d_Mitasova_Mitas;
+			G = &spline3d_Mitasova_Mitas;
+			dGdr = &gradspline3d_Mitasova_Mitas;
 			break;
 		case PARKER_1994:
 			par[0] = 6.0 / (M_PI*M_PI);
-			G = spline2d_Parker;
-			dGdr = gradspline2d_Parker;
+			G = &spline2d_Parker;
+			dGdr = &gradspline2d_Parker;
 #ifdef DEBUG
 			if (TEST) x0 = -1.0, x1 = 1.0;
 #endif
@@ -1460,17 +1464,17 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				par[9] = 1.0 / par[8];
 				par[10] = Ctrl->S.rval[0];
 				nx = lrint (par[7]);
-				GMT_report (GMT, GMT_MSG_NORMAL, "Precalculate -SQ lookup table with %ld items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Precalculate -SQ lookup table with %d items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 				WB_z = GMT_memory (GMT, NULL, nx, double);
 				if (Ctrl->A.active) WB_g = GMT_memory (GMT, NULL, nx, double);
 				spline2d_Wessel_Becker_init (GMT, par, WB_z, WB_g, Ctrl->A.active);
 				GMT_report (GMT, GMT_MSG_NORMAL, "done\n");
-				G = spline2d_Wessel_Becker_lookup;
-				dGdr = gradspline2d_Wessel_Becker_lookup;
+				G = &spline2d_Wessel_Becker_lookup;
+				dGdr = &gradspline2d_Wessel_Becker_lookup;
 			}
 			else {
-				G = spline2d_Wessel_Becker;
-				dGdr = gradspline2d_Wessel_Becker;
+				G = &spline2d_Wessel_Becker;
+				dGdr = &gradspline2d_Wessel_Becker;
 			}
 #ifdef DEBUG
 			if (TEST) x0 = -1.0, x1 = 1.0;
@@ -1482,7 +1486,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (TEST) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "greenspline running in TEST mode for %s\n", method[Ctrl->S.mode]);
 		printf ("# %s\n#x\tG\tdG/dx\tt\n", method[Ctrl->S.mode]);
-		dump_green (G, dGdr, par, x0, x1, 10001, WB_z, WB_g);
+		dump_green (GMT, G, dGdr, par, x0, x1, 10001, WB_z, WB_g);
 		Return (0);
 	}
 #endif
@@ -1565,7 +1569,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memcpy (b, obs, nm, double);
 		n_use = GMT_solve_svd (GMT, A, nm, nm, v, s, b, 1, obs, Ctrl->C.value);
 		if (n_use == -1) Return (EXIT_FAILURE);
-		GMT_report (GMT, GMT_MSG_NORMAL, "[%ld of %ld eigen-values used]\n", n_use, nm);
+		GMT_report (GMT, GMT_MSG_NORMAL, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 			
 		GMT_free (GMT, s);
 		GMT_free (GMT, v);
@@ -1583,7 +1587,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		double out[4];
 	
-		if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->G.file, NULL)) == GMTAPI_NOTSET) {
+		if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMTAPI_NOTSET) {
 			Return (error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -1591,10 +1595,11 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld given locations\n", T->n_records);
-		for (i = 0; i < T->n_segments; i++) {
-			for (j = 0; j < T->segment[i]->n_rows; j++) {
-				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[i]->coord[ii][j];
+		GMT_memset (out, 4, double);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %" PRIu64 " given locations\n", T->n_records);
+		for (seg = 0; seg < T->n_segments; seg++) {
+			for (row = 0; row < T->segment[seg]->n_rows; row++) {
+				for (ii = 0; ii < dimension; ii++) out[ii] = T->segment[seg]->coord[ii][row];
 				out[dimension] = 0.0;
 				for (p = 0; p < nm; p++) {
 					r = get_radius (GMT, out, X[p], dimension);
@@ -1621,9 +1626,10 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_fclose (GMT, fp);
 	}
 	else {
-		GMT_LONG nz_off, nxy, col, row;
+		COUNTER_LARGE nz_off, nxy;
+		COUNTER_MEDIUM col, row, layer;
 		double *xp = NULL, *yp = NULL, wp, V[4];
-		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %ld equidistant output locations\n", n_ok);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
 		xp = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) xp[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
@@ -1634,18 +1640,19 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ascii table to named file or stdout */
-			if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, Ctrl->G.file, NULL)) == GMTAPI_NOTSET) {
+			if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMTAPI_NOTSET) {
 				Return (error);
 			}
-			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes std output */
+			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes std output */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
 		}
-		for (k = nz_off = 0; k < Z.nz; k++, nz_off += nxy) {
-			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, k, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
+		GMT_memset (V, 4, double);
+		for (layer = nz_off = 0; layer < Z.nz; layer++, nz_off += nxy) {
+			if (dimension == 3) V[GMT_Z] = GMT_col_to_x (GMT, layer, Z.z_min, Z.z_max, Z.z_inc, Grid->header->xy_off, Z.nz);
 			for (row = 0; row < Grid->header->ny; row++) {
 				if (dimension > 1) V[GMT_Y] = yp[row];
 				for (col = 0; col < Grid->header->nx; col++) {
@@ -1676,7 +1683,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (dimension == 2) {
 			GMT_grd_init (GMT, Out->header, options, TRUE);
 			sprintf (Out->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_ALL, Ctrl->G.file, Out) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 				Return (API->error);
 			}
 		}

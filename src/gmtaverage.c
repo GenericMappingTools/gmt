@@ -32,12 +32,12 @@
 
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} E;
 	struct T {	/* -T<quantile> */
-		GMT_LONG active;
-		GMT_LONG median;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN median;
 		double quantile;
 	} T;
 };
@@ -105,7 +105,7 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -147,7 +147,7 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 						Ctrl->T.median = TRUE;
 						break;
 					default:
-						Ctrl->T.median = 2;	/* Flag bad modifier */
+						n_errors += GMT_check_condition (GMT, TRUE, "Syntax error: Bad modifier in -T option\n");
 						n_errors++;
 						break;
 				}
@@ -160,7 +160,6 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 	}
 	
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "Syntax error: Must specify -T option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.median == 2, "Syntax error: Bad modifier in -T option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.quantile < 0.0 || Ctrl->T.quantile >= 1.0,
 			"Syntax error: 0 < q < 1 for quantile in -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->T.median, "Syntax error: -Eb requires -Te|<q>\n");
@@ -174,13 +173,13 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 
 GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *t_ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	p_func_l func = NULL;
+	GMT_LONG (*func) (struct GMTAPI_CTRL *, GMT_LONG, void *) = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -221,6 +220,6 @@ GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			break;
 	}
 	
-	error = func (API, options);	/* If errors then we return that next */
+	error = func (API, mode, options);	/* If errors then we return that next */
 	Return (error);
 }

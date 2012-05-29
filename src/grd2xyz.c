@@ -29,17 +29,17 @@
 struct GRD2XYZ_CTRL {
 #ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
-		GMT_LONG active;
-		GMT_LONG floating;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN floating;
 		double nodata;
 	} E;
 #endif
 	struct N {	/* -N<nodata> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double value;
 	} N;
 	struct W {	/* -W[<weight>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double weight;
 	} W;
 	struct GMT_PARSE_Z_IO Z;
@@ -114,7 +114,7 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -186,8 +186,10 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 
 GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, first = TRUE;
-	GMT_LONG row, col, ij, gmt_ij, ok, n_suppressed = 0, n_total = 0;
+	GMT_BOOLEAN error = FALSE, first = TRUE, ok;
+	COUNTER_MEDIUM row, col;
+	
+	COUNTER_LARGE ij, gmt_ij, n_total = 0, n_suppressed = 0;
 
 	char header[GMT_BUFSIZ];
 
@@ -236,7 +238,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 0)) != GMT_OK) Return (error);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options) != GMT_OK) {	/* Registers stdout, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, 0, options) != GMT_OK) {	/* Registers stdout, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -249,7 +251,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (opt->option != '<') continue;	/* We are only processing input files here */
 
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, opt->arg, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
 
@@ -258,7 +260,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");
 
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, opt->arg, G) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, opt->arg, G) == NULL) {
 			Return (API->error);	/* Get subset */
 		}
 
@@ -267,8 +269,10 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
-			p_func_l save = GMT->current.io.output;
-			GMT_LONG previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
+			GMT_BOOLEAN previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
+			GMT_LONG (*save) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);
+			save = GMT->current.io.output;
+			
 			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
@@ -289,7 +293,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else if (Ctrl->E.active) {	/* ESRI format */
 			double slop;
 			char *record = NULL, item[GMT_BUFSIZ];
-			GMT_LONG n_alloc, len, rec_len;
+			size_t n_alloc, len, rec_len;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!GMT_IS_ZERO (slop)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
@@ -350,7 +354,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		else {	/* Regular x,y,z[,w] output */
-			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, options) != GMT_OK) {	/* Establishes data output */
+			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, 0, options) != GMT_OK) {	/* Establishes data output */
 				Return (API->error);
 			}
 
@@ -393,12 +397,12 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld values extracted\n", n_total - n_suppressed);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
 		if (GMT->current.setting.io_nan_mode == 2)
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld finite values suppressed\n", n_suppressed);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
-			GMT_report (GMT, GMT_MSG_NORMAL, "%ld NaN values suppressed\n", n_suppressed);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
 	Return (GMT_OK);

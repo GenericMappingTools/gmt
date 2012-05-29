@@ -95,7 +95,8 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 	 * first break this command string into separate words.
 	 */
 
-	GMT_LONG arg, first_char, n_args, error = GMT_OK;
+	GMT_LONG error = GMT_OK;
+	COUNTER_MEDIUM arg, first_char, n_args;
 	char option, **args = NULL, **new_args = NULL;
 	struct GMT_OPTION *head = NULL, *new = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
@@ -103,7 +104,9 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, GMT_LONG n_args
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
-		GMT_LONG pos = 0, new_n_args = 0, n_alloc = GMT_SMALL_CHUNK;
+		COUNTER_MEDIUM pos = 0;
+		uint32_t new_n_args = 0;
+		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
 
@@ -186,7 +189,8 @@ char ** GMT_Create_Args (struct GMTAPI_CTRL *API, GMT_LONG *argc, struct GMT_OPT
 	 */
 
 	char **txt = NULL, buffer[GMT_BUFSIZ];
-	GMT_LONG arg = 0, n_alloc = GMT_SMALL_CHUNK;
+	COUNTER_MEDIUM arg = 0;
+	size_t n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
 
@@ -248,7 +252,8 @@ char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *head)
 	 */
 
 	char *txt = NULL, buffer[GMT_BUFSIZ];
-	GMT_LONG n_alloc = GMT_BUFSIZ, length = 0, inc, first = TRUE;
+	GMT_BOOLEAN first = TRUE;
+	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *G = API->GMT;	/* GMT control structure */
 

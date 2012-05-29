@@ -55,7 +55,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-GMT_LONG gmt_f_test_new (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob, GMT_LONG iside)
+GMT_LONG gmt_f_test_new (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob, GMT_LONG iside)
 {
 	/* Given chisq1 and chisq2, random variables distributed as chi-square
 		with nu1 and nu2 degrees of freedom, respectively, except that
@@ -256,7 +256,7 @@ GMT_LONG gmt_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double 
 }
 
 
-GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
+GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob)
 {
 	/* Routine to compute the probability that
 		two variances are the same.
@@ -308,7 +308,7 @@ GMT_LONG gmt_f_test (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chi
 	return (0);
 }
 
-GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, GMT_LONG n1, double chi2, GMT_LONG n2, double level, double *prob)
+GMT_LONG GMT_sig_f (struct GMT_CTRL *C, double chi1, COUNTER_LARGE n1, double chi2, COUNTER_LARGE n2, double level, double *prob)
 {
 	/* Returns TRUE if chi1/n1 significantly less than chi2/n2
 		at the level level.  Returns FALSE if:
@@ -607,11 +607,11 @@ double GMT_i1 (struct GMT_CTRL *C, double x)
 	return (res);
 }
 
-double GMT_in (struct GMT_CTRL *C, GMT_LONG n, double x)
+double GMT_in (struct GMT_CTRL *C, COUNTER_MEDIUM n, double x)
 {
 	/* Modified Bessel function In(x) */
 
-	GMT_LONG j, m, IACC = 40;
+	COUNTER_MEDIUM j, m, IACC = 40;
 	double res, tox, bip, bi, bim;
 	double BIGNO = 1.0e10, BIGNI = 1.0e-10;
 
@@ -677,11 +677,11 @@ double GMT_k1 (struct GMT_CTRL *C, double x)
 	return (res);
 }
 
-double GMT_kn (struct GMT_CTRL *C, GMT_LONG n, double x)
+double GMT_kn (struct GMT_CTRL *C, COUNTER_MEDIUM n, double x)
 {
 	/* Modified Bessel function Kn(x) */
 
-	GMT_LONG j;
+	COUNTER_MEDIUM j;
 	double bkm, bk, bkp, tox;
 
 	if (n == 0) return (GMT_k0 (C, x));
@@ -740,7 +740,7 @@ double GMT_plm (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x)
 	return (pll);
 }
 
-double GMT_plm_bar (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x, GMT_LONG ortho)
+double GMT_plm_bar (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x, GMT_BOOLEAN ortho)
 {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. u must be in the range [-1;1] and 0 <= |m| <= l.
@@ -778,7 +778,7 @@ double GMT_plm_bar (struct GMT_CTRL *C, GMT_LONG l, GMT_LONG m, double x, GMT_LO
 	 * Journal of Geodesy, 76, 279-299, 2002. doi:10.1007/s00190-002-0216-2.
 	 */
 	GMT_LONG i;
-	GMT_LONG csphase = FALSE;
+	GMT_BOOLEAN csphase = FALSE;
 	double scalef=1.0e280, u, r, pmm, pmm0, pmm1, pmm2;
 
 	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
@@ -970,7 +970,7 @@ double GMT_erfinv (struct GMT_CTRL *C, double y)
 	return (x);
 }
 
-GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2, GMT_LONG nu2, double *prob)
+GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, COUNTER_LARGE nu1, double chisq2, COUNTER_LARGE nu2, double *prob)
 {
 	/* Routine to compute Q(F, nu1, nu2) = 1 - P(F, nu1, nu2), where nu1
 		and nu2 are positive integers, chisq1 and chisq2 are random
@@ -1026,7 +1026,7 @@ GMT_LONG GMT_f_q (struct GMT_CTRL *C, double chisq1, GMT_LONG nu1, double chisq2
 	return (0);
 }
 
-GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob)
+GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, COUNTER_LARGE n, double *prob)
 {
 	/* Probability integral called A(t,n) by Abramowitz &
 	Stegun for the student's t distribution with n degrees
@@ -1060,9 +1060,9 @@ GMT_LONG GMT_student_t_a (struct GMT_CTRL *C, double t, GMT_LONG n, double *prob
 */
 
 	double	theta, s, c, csq, term, sum;
-	GMT_LONG	k, kstop, kt, kb;
+	int64_t	k, kstop, kt, kb;
 
-	if (t < 0.0 || n <= 0) {
+	if (t < 0.0 || n == 0) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_student_t_a:  Bad argument(s).\n");
 		*prob = C->session.d_NaN;
 		return (-1);
@@ -1207,7 +1207,8 @@ double GMT_tcrit (struct GMT_CTRL *C, double alpha, double nu)
 {
 	/* Critical values for Student t-distribution */
 
-	GMT_LONG NU, done;
+	GMT_LONG NU;
+	GMT_BOOLEAN done;
 	double t_low, t_high, t_mid = 0.0, p_high, p_mid, p, sign;
 
 	if (alpha > 0.5) {	/* right tail */
@@ -1250,7 +1251,7 @@ double GMT_chi2crit (struct GMT_CTRL *C, double alpha, double nu)
 {
 	/* Critical values for Chi^2-distribution */
 
-	GMT_LONG done;
+	GMT_BOOLEAN done;
 	double chi2_low, chi2_high, chi2_mid = 0.0, p_high, p_mid, p;
 
 	p = 1.0 - alpha;
@@ -1291,7 +1292,8 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 {
 	/* Critical values for F-distribution */
 
-	GMT_LONG NU1, NU2, done;
+	GMT_LONG NU1, NU2;
+	GMT_BOOLEAN done;
 	double F_low, F_high, F_mid = 0.0, p_high, p_mid, p, chisq1, chisq2;
 
 	F_high = 5.0;
@@ -1433,9 +1435,9 @@ void GMT_cumpoisson (struct GMT_CTRL *C, double k, double mu, double *prob) {
 	*prob = (k == 0.0) ? exp (-mu) : gmt_gammq (C, k, mu);
 }
 
-double GMT_std (struct GMT_CTRL *C, double *x, GMT_LONG n)
+double GMT_mean_and_std (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double *std)
 {	/* Return the standard deviation of the non-NaN values in x */
-	GMT_LONG k, m;
+	COUNTER_LARGE k, m;
 	double dx, mean = 0.0, sum2 = 0.0;
 	for (k = m = 0; k < n; k++) {	/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 		if (GMT_is_dnan (x[k])) continue;
@@ -1444,27 +1446,18 @@ double GMT_std (struct GMT_CTRL *C, double *x, GMT_LONG n)
 		mean += dx / m;
 		sum2 += dx * (x[k] - mean);
 	}
-	return ((m > 1) ? sqrt (sum2 / (m-1.0)) : C->session.d_NaN);
+	*std = (m > 1) ? sqrt (sum2 / (m-1.0)) : C->session.d_NaN;
+	return ((m) ? mean : C->session.d_NaN);
 }
 
-double GMT_mean (struct GMT_CTRL *C, double *x, GMT_LONG n)
-{	/* Return the mean of the non-NaN values in x */
-	GMT_LONG k, m;
-	double X = 0.0;
-	for (k = m = 0; k < n; k++) {
-		if (GMT_is_dnan (x[k])) continue;
-		m++;
-		X += x[k];
-	}
-	return ((m) ? X / m : C->session.d_NaN);
-}
-
-GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, double xmax, double m_initial, double *med)
+GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double xmin, double xmax, double m_initial, double *med)
 {
 	double lower_bound, upper_bound, m_guess, t_0, t_1, t_middle;
 	double lub, glb, xx, temp;
-	GMT_LONG i, n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers */
-	GMT_LONG iteration = 0, finished = FALSE;
+	COUNTER_LARGE i;
+	int64_t n_above, n_below, n_equal, n_lub, n_glb, one;	/* These must be signed integers (PW: Why?) */
+	GMT_LONG iteration = 0;
+	GMT_BOOLEAN finished = FALSE;
 
 	if (n == 0) {
 		*med = m_initial;
@@ -1559,61 +1552,68 @@ GMT_LONG GMT_median (struct GMT_CTRL *C, double *x, GMT_LONG n, double xmin, dou
 	return (iteration);
 }
 
-int compare_fpair (const void *point_1, const void *point_2)
+int compare_observation (const void *a, const void *b)
 {
-	/* Sorts pairs into ascending order based on x[0]  */
-	if (((fpair *)point_1)->x[0] < ((fpair *)point_2)->x[0]) return (-1);
-	if (((fpair *)point_1)->x[0] > ((fpair *)point_2)->x[0]) return (+1);
-	return (0);
+	struct OBSERVATION *obs_1, *obs_2;
+	obs_1 = (struct OBSERVATION *)a;
+	obs_2 = (struct OBSERVATION *)b;
+
+	/* Sorts observations into ascending order based on obs->value */
+	if (obs_1->value < obs_2->value)
+		return -1;
+	if (obs_1->value > obs_2->value)
+		return 1;
+	return 0;
 }
 
-double GMT_median_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n, double quantile)
+double GMT_median_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n, double quantile)
 {
-	GMT_LONG k;
+	COUNTER_LARGE k;
 	double weight_half = 0.0, weight_count;
 
 	/* First sort data on z */
 
-	qsort (data, (size_t)n, sizeof (fpair), compare_fpair);
-	
+	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+
 	/* Find weight sum, then get half-value */
-	
-	for (k = 0; k < n; k++) weight_half += data[k].x[1];
+
+	for (k = 0; k < n; k++) weight_half += data[k].weight;
 	weight_half *= quantile;	/* Normally quantile = 0.5 hence the name "half" */
-	
+
 	/* Determine the point where we hit the desired quantile */
 
-	k = 0;	weight_count = data[k].x[1];
-	while (weight_count < weight_half) weight_count += data[++k].x[1];	/* Wind up until weight_count hits the mark */
+	k = 0;	weight_count = data[k].weight;
+	while (weight_count < weight_half) weight_count += data[++k].weight;	/* Wind up until weight_count hits the mark */
 
-	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].x[0] + data[k+1].x[0]) : data[k].x[0]));
+	return ((double)((weight_count == weight_half) ? 0.5 * (data[k].value + data[k+1].value) : data[k].value));
 }
 
-double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n)
+double GMT_mode_weighted (struct GMT_CTRL *C, struct OBSERVATION *data, COUNTER_LARGE n)
 {
 	/* Based on mode_output in blockmode_func.c */
 
 	double top, topj, topi, bottomj, bottomi, pj, pi, wsum = 0.0;
-	GMT_LONG k, i = 0, j = n - 1, nh = n / 2;
+	COUNTER_LARGE k;
+	int64_t i = 0, j = n - 1, nh = n / 2;
 
 	/* First sort data on z */
 
-	qsort (data, (size_t)n, sizeof (fpair), compare_fpair);
-	
+	qsort (data, n, sizeof (struct OBSERVATION), compare_observation);
+
 	/* Find weight sum, then get half-value */
-	
-	for (k = 0; k < n; k++) wsum += data[k].x[1];
+
+	for (k = 0; k < n; k++) wsum += data[k].weight;
 
 	top = wsum;
 
 	while ((j-i) > nh) {
-		topi = top - data[i].x[1];
-		topj = top - data[j].x[1];
-		bottomi = data[j].x[0] - data[i+1].x[0];
-		bottomj = data[j-1].x[0] - data[i].x[0];
+		topi = top - data[i].weight;
+		topj = top - data[j].weight;
+		bottomi = data[j].value - data[i+1].value;
+		bottomj = data[j-1].value - data[i].value;
 
-		if (bottomj == 0.0) return (data[j-1].x[0]);
-		if (bottomi == 0.0) return (data[i+1].x[0]);
+		if (bottomj == 0.0) return (data[j-1].value);
+		if (bottomi == 0.0) return (data[i+1].value);
 		pi = topi / bottomi;
 		pj = topj / bottomj;
 		if (pi > pj) {
@@ -1623,16 +1623,17 @@ double GMT_mode_weighted (struct GMT_CTRL *C, fpair *data, GMT_LONG n)
 			j--;	top = topj;
 		}
 		else {
-			top -= (data[i].x[1] + data[j].x[1]);
+			top -= (data[i].weight + data[j].weight);
 			i++;	j--;
 		}
 	}
-	return ((double)(0.5 * (data[j].x[0] + data[i].x[0])));
+	return ((double)(0.5 * (data[j].value + data[i].value)));
 }
 
-GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est)
+GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, COUNTER_LARGE j, GMT_BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est)
 {
-	GMT_LONG i, istop, multiplicity;
+	COUNTER_LARGE i, istop;
+	COUNTER_MEDIUM multiplicity;
 	double mid_point_sum = 0.0, length, short_length = DBL_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -1684,9 +1685,10 @@ GMT_LONG GMT_mode (struct GMT_CTRL *C, double *x, GMT_LONG n, GMT_LONG j, GMT_LO
 	return (0);
 }
 
-GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_LONG sort, GMT_LONG mode_selection, GMT_LONG *n_multiples, double *mode_est)
+GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, COUNTER_LARGE n, COUNTER_LARGE j, GMT_BOOLEAN sort, COUNTER_MEDIUM mode_selection, COUNTER_MEDIUM *n_multiples, double *mode_est)
 {
-	GMT_LONG i, istop, multiplicity;
+	COUNTER_LARGE i, istop;
+	COUNTER_MEDIUM multiplicity;
 	double mid_point_sum = 0.0, length, short_length = FLT_MAX, this_mode;
 
 	if (n == 0) return (0);
@@ -1739,14 +1741,14 @@ GMT_LONG GMT_mode_f (struct GMT_CTRL *C, float *x, GMT_LONG n, GMT_LONG j, GMT_L
 
 /* Replacement slower functions until we figure out the problem with the algorithm */
 
-void GMT_getmad (struct GMT_CTRL *C, double *x, GMT_LONG n, double location, double *scale)
+void GMT_getmad (struct GMT_CTRL *C, double *x, COUNTER_LARGE n, double location, double *scale)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	double med, *dev = GMT_memory (C, NULL, n, double);
 
 	for (i = 0; i < n; i++) dev[i] = fabs (x[i] - location);
 	GMT_sort_array (C, dev, n, GMTAPI_DOUBLE);
-	for (i = n; GMT_is_dnan (dev[i-1]) && i > 1; i--);
+	for (i = n; i > 1 && GMT_is_dnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
@@ -1755,15 +1757,15 @@ void GMT_getmad (struct GMT_CTRL *C, double *x, GMT_LONG n, double location, dou
 	*scale = 1.4826 * med;
 }
 
-void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, double *scale)
+void GMT_getmad_f (struct GMT_CTRL *C, float *x, COUNTER_LARGE n, double location, double *scale)
 {
-	GMT_LONG i;
+	COUNTER_LARGE i;
 	float *dev = GMT_memory (C, NULL, n, float);
 	double med;
 
 	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
 	GMT_sort_array (C, dev, n, GMTAPI_FLOAT);
-	for (i = n; GMT_is_fnan (dev[i-1]) && i > 1; i--);
+	for (i = n; i > 1 && GMT_is_fnan (dev[i-1]); i--);
 	if (i)
 		med = (i%2) ? dev[i/2] : 0.5 * (dev[(i-1)/2] + dev[i/2]);
 	else
@@ -1772,7 +1774,7 @@ void GMT_getmad_f (struct GMT_CTRL *C, float *x, GMT_LONG n, double location, do
 	*scale = 1.4826 * med;
 }
 
-double GMT_extreme (struct GMT_CTRL *C, double x[], GMT_LONG n, double x_default, GMT_LONG kind, GMT_LONG way)
+double GMT_extreme (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double x_default, GMT_LONG kind, GMT_LONG way)
 {
 	/* Returns the extreme value in the x array according to:
 	*  kind: -1 means only consider negative values.
@@ -1784,7 +1786,7 @@ double GMT_extreme (struct GMT_CTRL *C, double x[], GMT_LONG n, double x_default
 	* If kind == 0 we expect x_default to be set so that x[0] will reset x_select.
 	*/
 
-	GMT_LONG i, k;
+	COUNTER_LARGE i, k;
 	double x_select = C->session.d_NaN;
 
 	for (i = k = 0; i < n; i++) {
@@ -1835,13 +1837,13 @@ GMT_LONG GMT_chebyshev (struct GMT_CTRL *C, double x, GMT_LONG n, double *t)
 	return (GMT_NOERROR);
 }
 
-double GMT_corrcoeff (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_LONG mode)
+double GMT_corrcoeff (struct GMT_CTRL *C, double *x, double *y, COUNTER_LARGE n, COUNTER_MEDIUM mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
 	 */
 
-	GMT_LONG i, n_use;
+	COUNTER_LARGE i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
 
 	if (mode == 0) {
@@ -1870,13 +1872,13 @@ double GMT_corrcoeff (struct GMT_CTRL *C, double *x, double *y, GMT_LONG n, GMT_
 	return (r);
 }
 
-double GMT_corrcoeff_f (struct GMT_CTRL *C, float *x, float *y, GMT_LONG n, GMT_LONG mode)
+double GMT_corrcoeff_f (struct GMT_CTRL *C, float *x, float *y, COUNTER_LARGE n, COUNTER_MEDIUM mode)
 {
 	/* Returns plain correlation coefficient, r.
 	 * If mode = 1 we assume mean(x) = mean(y) = 0.
 	 */
 
-	GMT_LONG i, n_use;
+	COUNTER_LARGE i, n_use;
 	double xmean = 0.0, ymean = 0.0, dx, dy, vx, vy, vxy, r;
 
 	if (mode == 0) {
@@ -1905,20 +1907,20 @@ double GMT_corrcoeff_f (struct GMT_CTRL *C, float *x, float *y, GMT_LONG n, GMT_
 	return (r);
 }
 
-double GMT_quantile (struct GMT_CTRL *C, double *x, double q, GMT_LONG n)
+double GMT_quantile (struct GMT_CTRL *C, double *x, double q, COUNTER_LARGE n)
 {
 	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
 	 * q is expected to be 0 < q < 100 */
 
-	GMT_LONG i_f;
+	COUNTER_LARGE i_f;
 	double p, f, df;
 
-	while (n > 1 && GMT_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
-	if (n < 1) return (C->session.d_NaN);			/* Need at least 1 point to do something */
 	if (q == 0.0) return (x[0]);			/* 0% quantile == min(x) */
+	while (n > 1 && GMT_is_dnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
+	if (n < 1) return (C->session.d_NaN);		/* Need at least 1 point to do something */
 	if (q == 100.0) return (x[n-1]);		/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
-	i_f = (GMT_LONG)floor (f);
+	i_f = (COUNTER_LARGE)floor (f);
 	if ((df = (f - (double)i_f)) > 0.0)		/* Must interpolate between the two neighbors */
 		p = x[i_f+1] * df + x[i_f] * (1.0 - df);
 	else						/* Exactly on a node */
@@ -1927,20 +1929,20 @@ double GMT_quantile (struct GMT_CTRL *C, double *x, double q, GMT_LONG n)
 	return (p);
 }
 
-double GMT_quantile_f (struct GMT_CTRL *C, float *x, double q, GMT_LONG n)
+double GMT_quantile_f (struct GMT_CTRL *C, float *x, double q, COUNTER_LARGE n)
 {
 	/* Returns the q'th (q in percent) quantile of x (assumed sorted).
 	 * q is expected to be 0 < q < 100 */
 
-	GMT_LONG i_f;
+	COUNTER_LARGE i_f;
 	double p, f, df;
 
-	while (n > 1 && GMT_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
-	if (n < 1) return (C->session.d_NaN);			/* Need at least 1 point to do something */
 	if (q == 0.0) return ((double)x[0]);		/* 0% quantile == min(x) */
+	while (n > 1 && GMT_is_fnan (x[n-1])) n--;	/* Skip any NaNs at the end of x */
+	if (n < 1) return (C->session.d_NaN);		/* Need at least 1 point to do something */
 	if (q == 100.0) return ((double)x[n-1]);	/* 100% quantile == max(x) */
 	f = (n - 1) * q / 100.0;
-	i_f = (GMT_LONG)floor (f);
+	i_f = (COUNTER_LARGE)floor (f);
 	if ((df = (f - (double)i_f)) > 0.0)		/* Must interpolate between the two neighbors */
 		p = (double)(x[i_f+1] * df + x[i_f] * (1.0 - df));
 	else						/* Exactly on a node */
@@ -2052,13 +2054,13 @@ double GMT_psi (struct GMT_CTRL *P, double zz[], double p[])
 #define QV_RE 2
 #define QV_IM 3
 
-void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], GMT_LONG *iter)
+void GMT_PvQv (struct GMT_CTRL *C, double x, double v_ri[], double pq[], COUNTER_MEDIUM *iter)
 {
 	/* Here, -1 <= x <= +1, v_ri is an imaginary number [r,i], and we return
 	 * the real amd imaginary parts of Pv(x) and Qv(x) in the pq array.
 	 * Based on recipe in An Atlas of Functions */
 
-	GMT_LONG p_set, q_set;
+	GMT_BOOLEAN p_set, q_set;
 	double M, L, K, Xn, x2, k, k1, ep, em, sx, cx, fact;
 	double a[2], v[2], vp1[2], G[2], g[2], u[2], t[2], f[2];
 	double R[2], r[2], z[2], s[2], c[2], w[2], tmp[2], X[2], A[2], B[2];

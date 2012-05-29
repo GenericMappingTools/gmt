@@ -32,26 +32,26 @@
 
 struct GRDMASK_CTRL {
 	struct A {	/* -A[m|p|step] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double step;
 	} A;
 	struct G {	/* -G<maskfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<maskvalues> */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
 	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		GMT_LONG mode;	/* Could be negative */
 		double radius;
 		char unit;
 	} S;
@@ -116,7 +116,7 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, j, pos;
+	COUNTER_MEDIUM n_errors = 0, j, pos;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -205,9 +205,12 @@ GMT_LONG GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, st
 
 GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, periodic = FALSE, periodic_grid = FALSE;
-	GMT_LONG row, col, side, *d_col = NULL, d_row = 0, col_0, row_0;
-	GMT_LONG tbl, seg, gmode, n_pol = 0, k, ij, max_d_col = 0;
+	GMT_BOOLEAN error = FALSE, periodic = FALSE, periodic_grid = FALSE;
+	COUNTER_MEDIUM side, *d_col = NULL, d_row = 0, col_0, row_0;
+	COUNTER_MEDIUM tbl, gmode, n_pol = 0, max_d_col = 0;
+	GMT_LONG row, col, nx, ny;
+	
+	COUNTER_LARGE ij, k, seg;
 	
 	char seg_label[GMT_TEXT_LEN64];
 
@@ -268,13 +271,14 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 
+	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 		d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		grd_x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		grd_y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-		for (col = 0; col < Grid->header->nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-		for (row = 0; row < Grid->header->ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+		for (col = 0; col < nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
+		for (row = 0; row < ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
 	}
 	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
@@ -287,10 +291,10 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) Return (error);
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
 	GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 	GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
@@ -328,10 +332,10 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					if (Ctrl->S.radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
-					for (row = row_0 - d_row; row <= (row_0 + d_row); row++) {
-						if (row < 0 || row >= Grid->header->ny) continue;
-						for (col = col_0 - d_col[row]; col <= (col_0 + d_col[row]); col++) {
-							if (col < 0 || col >= Grid->header->nx) continue;
+					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
+						if (row < 0 || row >= ny) continue;
+						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
+							if (col < 0 || col >= nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
 							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
 							if (distance > Ctrl->S.radius) continue;
@@ -353,7 +357,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					ID += 1.0;
 
-				for (row = 0; row < Grid->header->ny; row++) {
+				for (row = 0; row < ny; row++) {
 
 					yy = GMT_grd_row_to_y (GMT, row, Grid->header);
 					
@@ -367,7 +371,7 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						continue;
 
 					/* Here we will have to consider the x coordinates as well */
-					for (col = 0; col < Grid->header->nx; col++) {
+					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
 						if ((side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
@@ -377,13 +381,13 @@ GMT_LONG GMT_grdmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (float)ID : mask_val[side];
 					}
-					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %ld scanning row %5.5ld\r", n_pol, row);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %d scanning row %5.5d\r", n_pol, row);
 				}
 			}
 		}
 	}
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, 0, Ctrl->G.file, Grid) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
 

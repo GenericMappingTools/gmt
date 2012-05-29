@@ -34,14 +34,14 @@
 
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
 	} C;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -99,7 +99,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -180,7 +180,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_report (C, GMT_MSG_NORMAL, "Restore %ld polygon clip levels\n", n);
+			GMT_report (C, GMT_MSG_NORMAL, "Restore %d polygon clip levels\n", n);
 			break;
 	}
 }
@@ -190,7 +190,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 
 GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE;
+	GMT_BOOLEAN error = FALSE;
 
 	double x0, y0;
 
@@ -241,7 +241,9 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
-		GMT_LONG tbl, seg, i, first = !Ctrl->N.active;
+		COUNTER_MEDIUM tbl;
+		GMT_BOOLEAN first = !Ctrl->N.active;
+		COUNTER_LARGE row, seg;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;
@@ -249,10 +251,10 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		if (!Ctrl->T.active) {
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 				Return (API->error);	/* Register data input */
 			}
-			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
 
@@ -267,9 +269,9 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						x = S->coord[GMT_X];	y = S->coord[GMT_Y];	/* Short hand for x,y columns */
 					}
 
-					for (i = 0; i < S->n_rows; i++) {
-						GMT_geo_to_xy (GMT, S->coord[GMT_X][i], S->coord[GMT_Y][i], &x0, &y0);
-						x[i] = x0; y[i] = y0;
+					for (row = 0; row < S->n_rows; row++) {
+						GMT_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
+						x[row] = x0; y[row] = y0;
 					}
 					PSL_beginclipping (PSL, x, y, S->n_rows, GMT->session.no_rgb, first);
 					first = 0;

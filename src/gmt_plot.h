@@ -114,12 +114,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
-	GMT_LONG status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
-	//GMT_LONG side;		/* 0 for normal head, -1 for left-half only, +1 for right-half only */
-	//GMT_LONG just;		/* How to justify vector: head point given (3), head (2), center(1), tail (0 - Default) */
-	//GMT_LONG heads;		/* 1 for head at beginning, 2 for head at end, 3 for both */
-	//GMT_LONG outline;	/* 1 to draw head outline with -W pen, 2 to draw with v_pen */
-	//GMT_LONG paint;		/* 1 to fill head with -G fill, 2 to fill with v_fill */
+	COUNTER_MEDIUM status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_width;		/* Width of vector stem in inches */
@@ -135,27 +130,27 @@ struct GMT_SYMBOL {
 	char string[GMT_TEXT_LEN64];	/* Character code to plot (could be octal) */
 
 	GMT_LONG symbol;	/* Symbol id */
-	GMT_LONG n_required;	/* Number of additional columns necessary to decode chosen symbol */
-	GMT_LONG u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
-	GMT_LONG u_set;		/* TRUE if u was set */
+	COUNTER_MEDIUM n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	COUNTER_MEDIUM u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	GMT_BOOLEAN u_set;		/* TRUE if u was set */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
-	GMT_LONG read_size;	/* TRUE when we must read symbol size from file */
-	GMT_LONG shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
+	GMT_BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
+	GMT_BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
-	GMT_LONG convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
-	GMT_LONG n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
-	GMT_LONG nondim_col[6];	/* Which columns has angles or km for this symbol */
-	GMT_LONG convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
+	COUNTER_MEDIUM convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	COUNTER_MEDIUM n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
+	COUNTER_MEDIUM nondim_col[6];	/* Which columns has angles or km for this symbol */
+	COUNTER_MEDIUM convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
 	double scale, origin;	/* Used to convert size = (given_size - origin) * scale */
 
 	/* These apply to bar symbols */
 
 	double base;		/* From what level to draw the bar */
-	GMT_LONG user_unit;	/* if TRUE */
-	GMT_LONG base_set;	/* TRUE if user provided a custom base [otherwise default to bottom axis */
+	GMT_BOOLEAN user_unit;	/* if TRUE */
+	GMT_BOOLEAN base_set;	/* TRUE if user provided a custom base [otherwise default to bottom axis */
 
 	/* These apply to vectors */
 

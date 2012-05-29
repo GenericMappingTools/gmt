@@ -35,7 +35,7 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-EXTERN_MSC void GMT_str_toupper (char *string);
+void GMT_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
@@ -68,63 +68,63 @@ EXTERN_MSC void GMT_str_toupper (char *string);
 
 struct PS2RASTER_CTRL {
 	struct In {	/* Input file info */
-		GMT_LONG n_files;
+		COUNTER_MEDIUM n_files;
 	} In;
 	struct A {	/* -A[u][-] [Adjust boundingbox] */
-		GMT_LONG active;
-		GMT_LONG strip;	/* Remove the -U time-stamp */
-		GMT_LONG reset;	/* The -A- turns -A off, overriding any automode in effect */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN strip;	/* Remove the -U time-stamp */
+		GMT_BOOLEAN reset;	/* The -A- turns -A off, overriding any automode in effect */
 		double margin[4];
 	} A;
 	struct C {	/* -C<option> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char arg[GMT_BUFSIZ];
 	} C;
 	struct D {	/* -D<dir> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *dir;
 	} D;
 	struct E {	/* -E<resolution> */
-		GMT_LONG active;
-		GMT_LONG dpi;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM dpi;
 	} E;
 	struct F {	/* -F<out_name> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} F;
 	struct G {	/* -G<GSpath> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} I;
 	struct L {	/* -L<listfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} L;
 	struct P2 {	/* -P */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} P;
 	struct Q {	/* -Q[g|t]<bits> */
-		GMT_LONG active;
-		GMT_LONG on[2];	/* [0] for graphics, [1] for text antialiasing */
-		GMT_LONG bits[2];
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN on[2];	/* [0] for graphics, [1] for text antialiasing */
+		COUNTER_MEDIUM bits[2];
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
-		GMT_LONG device;
+		GMT_LONG device;	/* May be negative */
 	} T;
 	struct W {	/* -W -- for world file production */
-		GMT_LONG active;
-		GMT_LONG folder;
-		GMT_LONG warp;
-		GMT_LONG kml;
-		GMT_LONG mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN folder;
+		GMT_BOOLEAN warp;
+		GMT_BOOLEAN kml;
+		COUNTER_MEDIUM mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
 		GMT_LONG min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
 		GMT_LONG min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
 		char *doctitle;		/* Name of KML document */
@@ -139,8 +139,8 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 	
-	GMT_LONG error = FALSE;
-	GMT_LONG pos = 0;
+	GMT_BOOLEAN error = FALSE;
+	COUNTER_MEDIUM pos = 0;
 	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
 	C->W.active = TRUE;
@@ -174,7 +174,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				}
 				break;
 			case 'f':	/* Set fading options in KML */
-				sscanf (&p[1], "%" GMT_LL "d/%" GMT_LL "d", &C->W.min_fade, &C->W.max_fade);
+				sscanf (&p[1], "%d/%d", &C->W.min_fade, &C->W.max_fade);
 				break;
 			case 'g':	/* Use gdal to make geotiff */
 				C->W.warp = TRUE;
@@ -183,7 +183,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				C->W.kml = TRUE;
 				break;
 			case 'l':	/* Set KML level of detail for image */
-				sscanf (&p[1], "%" GMT_LL "d/%" GMT_LL "d", &C->W.min_lod, &C->W.max_lod);
+				sscanf (&p[1], "%d/%d", &C->W.min_lod, &C->W.max_lod);
 				break;
 			case 'n':	/* Set KML document layer name */
 				if (C->W.overlayname) free (C->W.overlayname);	/* Already set, free then reset */
@@ -370,7 +370,9 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k, n_errors = 0, mode, grayscale;
+	COUNTER_MEDIUM k, n_errors = 0, mode;
+	GMT_LONG j;
+	GMT_BOOLEAN grayscale;
 	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -462,7 +464,7 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				}
 				Ctrl->Q.on[mode] = TRUE;
 				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
-				sprintf (text, "%s%ld", anti, Ctrl->Q.bits[mode]);
+				sprintf (text, "%s%d", anti, Ctrl->Q.bits[mode]);
 				add_to_list (Ctrl->C.arg, text);	/* Append to list of extra GS options */
 				break;
 			case 'S':	/* Write the GS command to STDOUT */
@@ -548,10 +550,11 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 
 GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG error = FALSE, found_proj = FALSE, setup, sys_retval = 0;
-	GMT_LONG isGMT_PS = FALSE, excessK;
-	GMT_LONG i, j, k, len, r, pos_file, pos_ext, pix_w = 0, pix_h = 0;
-	GMT_LONG got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	COUNTER_MEDIUM i, j, k, pix_w = 0, pix_h = 0;
+	GMT_LONG sys_retval = 0, r, pos_file, pos_ext;
+	size_t len;
+	GMT_BOOLEAN got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	GMT_BOOLEAN excessK, setup, error = FALSE, found_proj = FALSE, isGMT_PS = FALSE;
 
 	double xt, yt, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -644,7 +647,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (!*line || *line == '#') /* Empty line or comment */
 				continue;
 			ps_names[Ctrl->In.n_files++] = strdup (line);
-			if (Ctrl->In.n_files > (GMT_LONG)n_alloc) {
+			if (Ctrl->In.n_files > n_alloc) {
 				n_alloc <<= 1;
 				ps_names = GMT_memory (GMT, ps_names, n_alloc, char *);
 			}
@@ -700,7 +703,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			free (ps_names[k]);
 		}
 		cmd2 = GMT_memory (GMT, NULL, n_alloc + GMT_BUFSIZ, char);
-		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%ld -sOutputFile=%s.pdf %s",
+		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%d -sOutputFile=%s.pdf %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
 		system (cmd2);		/* Execute the GhostScript command */
@@ -749,7 +752,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = setup = FALSE;
 
-		len = (GMT_LONG)strlen(ps_file);
+		len = strlen (ps_file);
 		j = len - 1;
 		pos_file = -1;
 		pos_ext = -1;	/* In case file has no extension */
@@ -765,12 +768,12 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->A.active) {
 			char *psfile_to_use;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Find HiResBoundingBox ");
-			sprintf (BB_file, "%s/ps2raster_%ldc.bb", Ctrl->D.dir, (GMT_LONG)getpid());
+			sprintf (BB_file, "%s/ps2raster_%" PRIu64 "c.bb", Ctrl->D.dir, (uint64_t)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
@@ -792,13 +795,13 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sprintf (tmp_file, "%s/", Ctrl->D.dir);
 						strncat (tmp_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 						strcat (tmp_file, ext[Ctrl->T.device]);
-						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%ld -sOutputFile=%s -f%s", 
+						sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g1x1 -r%d -sOutputFile=%s -f%s", 
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
 						if (sys_retval) {
-							GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+							GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
 						}
 
@@ -829,7 +832,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		else {
-			sprintf (tmp_file, "%s/ps2raster_%ldd.eps", Ctrl->D.dir, (GMT_LONG)getpid());
+			sprintf (tmp_file, "%s/ps2raster_%" PRIu64 "d.eps", Ctrl->D.dir, (uint64_t)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
 				continue;
@@ -951,7 +954,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
 				if (got_BB)
-					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", (GMT_LONG)ceil(w), (GMT_LONG)ceil(h));
+					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w)), lrint (ceil(h)));
 				got_BB = FALSE;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
@@ -978,7 +981,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (Ctrl->T.eps != 1)	/* Write out /PageSize command */
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
-					fprintf (fpo, "%ld rotate\n", r);
+					fprintf (fpo, "%d rotate\n", r);
 				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt))
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
@@ -986,7 +989,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (!strncmp (line, "%%Page:", 7)) {
 				if (r != 0)
-					fprintf (fpo, "%ld rotate\n", r);
+					fprintf (fpo, "%d rotate\n", r);
 				if (!GMT_IS_ZERO (xt) || !GMT_IS_ZERO (yt))
 					fprintf (fpo, "%g %g translate\n", xt, yt);
 				xt = yt = 0.0;
@@ -1006,7 +1009,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				to_gdalread->W.active = TRUE;
 				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
 				GMT_gdalread (GMT, NULL, to_gdalread, from_gdalread);
-				if (from_gdalread->ProjectionRefWKT != CNULL) {
+				if (from_gdalread->ProjectionRefWKT != NULL) {
 					double x0, y0, x1;	/* Projected coordinates */
 					double h0, v0, h1;	/* Correspnding point coordinates */
 					double a, H, V;		/* a -> coeff of affine matrix; H,V -> origin shift in projected coords */
@@ -1085,9 +1088,9 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				strcpy (out_file, Ctrl->F.file);
 			strcat (out_file, ext[Ctrl->T.device]);
-			pix_w = (GMT_LONG)ceil (w * Ctrl->E.dpi / 72.0);
-			pix_h = (GMT_LONG)ceil (h * Ctrl->E.dpi / 72.0);
-			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%ldx%ld -r%ld -sOutputFile=%s -f%s",
+			pix_w = lrint (ceil (w * Ctrl->E.dpi / 72.0));
+			pix_h = lrint (ceil (h * Ctrl->E.dpi / 72.0));
+			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 
@@ -1098,7 +1101,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Execute the GhostScript command */
 			sys_retval = system (cmd);
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 
@@ -1136,7 +1139,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			x_inc = (east  - west)  / pix_w;
 			y_inc = (north - south) / pix_h;
-			GMT_report (GMT, GMT_MSG_NORMAL, "width = %ld\theight = %ld\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
+			GMT_report (GMT, GMT_MSG_NORMAL, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
 
 			/* West and North of the world file contain the coordinates of the
 			 * center of the pixel
@@ -1204,7 +1207,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
 				GMT_report (GMT, GMT_MSG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
-					GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %ld.\n", cmd, sys_retval);
+					GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (EXIT_FAILURE);
 				}
 			}
@@ -1268,10 +1271,10 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				fprintf (fpw, "\t\t</LatLonAltBox>\n");
 				if (Ctrl->W.min_lod != Ctrl->W.max_lod) {	/* Control layer visibility */
  					fprintf (fpw, "\t\t<Lod>\n");
- 					fprintf (fpw, "\t\t\t<minLodPixels>%ld</minLodPixels>\n", Ctrl->W.min_lod);
- 					fprintf (fpw, "\t\t\t<maxLodPixels>%ld</maxLodPixels>\n", Ctrl->W.max_lod);
-					if (Ctrl->W.min_fade) fprintf (fpw, "\t\t\t<minFadeExtent>%ld</minFadeExtent>\n", Ctrl->W.min_fade);
-	 				if (Ctrl->W.max_fade) fprintf (fpw, "\t\t\t<maxFadeExtent>%ld</maxFadeExtent>\n", Ctrl->W.max_fade);
+ 					fprintf (fpw, "\t\t\t<minLodPixels>%d</minLodPixels>\n", Ctrl->W.min_lod);
+ 					fprintf (fpw, "\t\t\t<maxLodPixels>%d</maxLodPixels>\n", Ctrl->W.max_lod);
+					if (Ctrl->W.min_fade) fprintf (fpw, "\t\t\t<minFadeExtent>%d</minFadeExtent>\n", Ctrl->W.min_fade);
+	 				if (Ctrl->W.max_fade) fprintf (fpw, "\t\t\t<maxFadeExtent>%d</maxFadeExtent>\n", Ctrl->W.max_fade);
  					fprintf (fpw, "\t\t</Lod>\n");
 				}
 				fprintf (fpw, "\t\t</Region>\n");
@@ -1317,7 +1320,7 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	unsigned long datatype;
 	long RegO, rc = 0;
 	int n = 0;
-	GMT_LONG bits64 = TRUE;
+	GMT_BOOLEAN bits64 = TRUE;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 #ifdef _WIN64

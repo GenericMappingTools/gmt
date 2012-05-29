@@ -28,8 +28,8 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
+void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T */
 #define V_BORDER 8	/* 8p vertical border space for -T */
@@ -38,61 +38,61 @@ EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS
 
 struct PSSCALE_CTRL {
 	struct A {	/* -A */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 	} A;
 	struct C {	/* -C<cptfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} C;
 	struct D {	/* -D<xpos/ypos/length/width[h]> */
-		GMT_LONG active;
-		GMT_LONG horizontal;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN horizontal;
 		double x, y, width, length;
 	} D;
 	struct E {	/* -E[b|f][<length>][+n[<text>]] */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		double length;
 		char *text;
 	} E;
 	struct I {	/* -I[<intens>|<min_i>/<max_i>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double min, max;
 	} I;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N<dpi> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double dpi;
 	} N;
 	struct L {	/* -L[i][<gap>] */
-		GMT_LONG active;
-		GMT_LONG interval;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN interval;
 		double spacing;
 	} L;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} S;
 	struct T {	/* -T[+l<off>][+r<off>][+b<off>][+t<off>][+g<fill>][+p<pen>] */
-		GMT_LONG active, do_pen, do_fill;
+		GMT_BOOLEAN active, do_pen, do_fill;
 		double off[4];
 		struct GMT_PEN pen;
 		struct GMT_FILL fill;
 	} T;
 	struct Z {	/* -Z<zfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Z;
 };
 
 void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSSCALE_CTRL *C;
-	GMT_LONG k;
+	COUNTER_MEDIUM k;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 	
@@ -185,7 +185,8 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, n, pos, n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n, pos, n_errors = 0, n_files = 0;
+	GMT_LONG j;
 	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *c = NULL;
 	char txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
@@ -218,7 +219,7 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 				break;
 			case 'D':
 				Ctrl->D.active = TRUE;
-				n = (GMT_LONG)strlen(opt->arg) - 1;
+				n = strlen (opt->arg) - 1;
 				flag = opt->arg[n];
 				if (flag == 'h' || flag == 'H') {
 					Ctrl->D.horizontal = TRUE;
@@ -352,9 +353,9 @@ GMT_LONG GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double get_z (struct GMT_PALETTE *P, double x, double *width, GMT_LONG n)
+double get_z (struct GMT_PALETTE *P, double x, double *width, COUNTER_MEDIUM n)
 {
-	GMT_LONG i = 0;
+	COUNTER_MEDIUM i = 0;
 	double tmp;
 
 	tmp = width[0];
@@ -365,16 +366,16 @@ double get_z (struct GMT_PALETTE *P, double x, double *width, GMT_LONG n)
 
 void fix_format (char *unit, char *format)
 {
-	GMT_LONG i, j;
+	COUNTER_MEDIUM i, j;
 	char text[GMT_TEXT_LEN64], new_format[GMT_BUFSIZ];
 
 	/* Check if annotation units should be added */
 
 	if (unit && unit[0]) {	/* Must append the unit string */
 		if (!strchr (unit, '%'))	/* No percent signs */
-			strncpy (text, unit, (size_t)GMT_TEXT_LEN64);
+			strncpy (text, unit, GMT_TEXT_LEN64);
 		else {
-			for (i = j = 0; i < (GMT_LONG)strlen (unit); i++) {
+			for (i = j = 0; i < strlen (unit); i++) {
 				text[j++] = unit[i];
 				if (unit[i] == '%') text[j++] = unit[i];
 			}
@@ -390,14 +391,15 @@ void fix_format (char *unit, char *format)
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
-void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, GMT_LONG flip, \
-	GMT_LONG B_set, GMT_LONG equi, GMT_LONG horizontal, GMT_LONG logscl, GMT_LONG intens, double *max_intens, GMT_LONG skip_lines, GMT_LONG extend, \
-	double e_length, char *nan_text, double gap, GMT_LONG interval_annot, GMT_LONG monochrome, struct T Ctrl_T)
+void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, COUNTER_MEDIUM flip, \
+	GMT_BOOLEAN B_set, GMT_BOOLEAN equi, GMT_BOOLEAN horizontal, GMT_BOOLEAN logscl, GMT_BOOLEAN intens, double *max_intens, GMT_BOOLEAN skip_lines, COUNTER_MEDIUM extend, \
+	double e_length, char *nan_text, double gap, GMT_BOOLEAN interval_annot, GMT_BOOLEAN monochrome, struct T Ctrl_T)
 {
-	GMT_LONG i, ii, id, j, nb, ndec = -1, dec, p_val, depth, Label_justify, form;
-	GMT_LONG cap = PSL->internal.line_cap, join = PSL->internal.line_join;
-	GMT_LONG nx = 0, ny = 0, nm, barmem, k, justify, l_justify, this_just, use_labels = 0;
-	GMT_LONG reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot;
+	COUNTER_MEDIUM i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
+	COUNTER_MEDIUM cap = PSL->internal.line_cap, join = PSL->internal.line_join;
+	COUNTER_MEDIUM nx = 0, ny = 0, nm, barmem, k, justify, l_justify, n_use_labels = 0;
+	GMT_LONG this_just;
+	GMT_BOOLEAN reverse, all = TRUE, use_image, center = FALSE, const_width = TRUE, do_annot, use_labels;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -423,15 +425,15 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	}
 	else {
 		for (i = 0; i < P->n_colors; i++) {
-			if (P->range[i].label) use_labels++;
+			if (P->range[i].label) n_use_labels++;
 			if (P->range[i].annot & 1) {
-				if ((dec = GMT_get_format (GMT, P->range[i].z_low, CNULL, CNULL, text)) > ndec) {
+				if ((dec = GMT_get_format (GMT, P->range[i].z_low, NULL, NULL, text)) > ndec) {
 					strcpy (format, text);
 					ndec = dec;
 				}
 			}
 			if (P->range[i].annot & 2) {
-				if ((dec = GMT_get_format (GMT, P->range[i].z_high, CNULL, CNULL, text)) > ndec) {
+				if ((dec = GMT_get_format (GMT, P->range[i].z_high, NULL, NULL, text)) > ndec) {
 					strcpy (format, text);
 					ndec = dec;
 				}
@@ -439,7 +441,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			if (P->range[i].annot) all = FALSE;
 		}
 	}
-	if (equi && use_labels == P->n_colors)
+	if (equi && n_use_labels == P->n_colors)
 		all = use_labels = TRUE;	/* Only use optional text labels for equal length scales */
 	else
 		use_labels = FALSE;
@@ -529,8 +531,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		else {	/* Determine center and dimensions of vertical background rectangle */
 			y_center = 0.5 * length; x_center = 0.5 * width;
 			/* Must guesstimate the width of the largest horizontal annotation */
-			sprintf (text, "%ld", (GMT_LONG) (floor (P->range[0].z_low)));
-			sprintf (test, "%ld", (GMT_LONG) (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
+			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((GMT_LONG)strlen (text), (GMT_LONG)strlen (test)) + ndec) * GMT_DEC_SIZE +
 				((ndec > 0) ? GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -761,7 +763,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					if (logscl) {
 						p_val = lrint (P->range[i].z_high);
 						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
-							sprintf (text, "10@+%ld@+", p_val);
+							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = FALSE;
 					}
@@ -825,15 +827,15 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 
 		if (center && interval_annot) {
-			sprintf (text, "%ld - %ld", (GMT_LONG) (floor (P->range[0].z_low)), (GMT_LONG) (ceil (P->range[0].z_high)));
-			sprintf (test, "%ld - %ld", (GMT_LONG) (floor (P->range[P->n_colors-1].z_low)), (GMT_LONG) (ceil (P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld - %ld", lrint (floor (P->range[0].z_low)), lrint (ceil (P->range[0].z_high)));
+			sprintf (test, "%ld - %ld", lrint (floor (P->range[P->n_colors-1].z_low)), lrint (ceil (P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((GMT_LONG)strlen (text), (GMT_LONG)strlen (test)) + 2*ndec) * GMT_DEC_SIZE - 0.4 + 
 				((ndec > 0) ? 2*GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 		}
 		else {
-			sprintf (text, "%ld", (GMT_LONG) (floor (P->range[0].z_low)));
-			sprintf (test, "%ld", (GMT_LONG) (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
+			sprintf (text, "%ld", lrint (floor (P->range[0].z_low)));
+			sprintf (test, "%ld", lrint (ceil (center ? P->range[P->n_colors-1].z_low : P->range[P->n_colors-1].z_high)));
 			off = ((MAX ((GMT_LONG)strlen (text), (GMT_LONG)strlen (test)) + ndec) * GMT_DEC_SIZE +
 				((ndec > 0) ? GMT_PER_SIZE : 0.0))
 				* GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -905,7 +907,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			PSL_plotsegment (PSL, xright, 0.0, xright, width);
 		}
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use GMT_xy_axis to draw a y-axis based on x parameters. */
-			p_func_l tmp = NULL;
+			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
+			
 			A = &GMT->current.map.frame.axis[GMT_X];
 			GMT_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
@@ -959,7 +962,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					else if (logscl) {
 						p_val = lrint (P->range[i].z_low);
 						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
-							sprintf (text, "10@+%ld@+", p_val);
+							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = FALSE;
 						this_just = l_justify;
@@ -983,7 +986,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					if (logscl) {
 						p_val = lrint (P->range[i].z_high);
 						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
-							sprintf (text, "10@+%ld@+", p_val);
+							sprintf (text, "10@+%d@+", p_val);
 						else
 							do_annot = FALSE;
 						this_just = l_justify;
@@ -1003,11 +1006,12 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 				PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
 			}
 			else {	/* Set label text as column (AARRGGHH) */
-				y_label += 0.5 * ((flip & 2) - 1) * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
+				GMT_LONG dir = (flip & 2) - 1;
+				y_label += 0.5 * dir * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				size = 0.9 * GMT->current.setting.font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
 				x0 = 0.5 * (length + ((GMT_LONG)strlen (label) -1) * size);
 				text[1] = 0;
-				for (i = 0; i < (GMT_LONG)strlen (label); i++) {
+				for (i = 0; i < strlen (label); i++) {
 					x1 = x0 - i * size;
 					text[0] = label[i];
 					PSL_plottext (PSL, x1, y_label, GMT->current.setting.font_label.size, text, -90.0, 6, form);
@@ -1031,7 +1035,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the psscale task */
-	GMT_LONG error = FALSE, i;
+	GMT_BOOLEAN error = FALSE;
+	COUNTER_MEDIUM i;
 
 	char text[GMT_TEXT_LEN256];
 
@@ -1066,7 +1071,7 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
-	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -1094,11 +1099,11 @@ GMT_LONG GMT_psscale (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	max_intens[1] = Ctrl->I.max;
 
 	if (Ctrl->Z.active) {
-		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, &D)) {
+		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Z.file, &D)) {
 			Return (API->error);
 		}
 		z_width = D->table[0]->segment[0]->coord[GMT_X];
-		if (D->table[0]->segment[0]->n_rows < P->n_colors) {
+		if (D->table[0]->segment[0]->n_rows < (COUNTER_LARGE)P->n_colors) {
 			GMT_report (GMT, GMT_MSG_FATAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}

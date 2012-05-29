@@ -37,26 +37,26 @@
 
 struct COLMATH_CTRL {
 	struct Out {	/* -> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} A;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		GMT_LONG active;
-		GMT_LONG seg;
+		GMT_BOOLEAN active;
+		COUNTER_LARGE seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		GMT_LONG active;
-		GMT_LONG inverse;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN inverse;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} T;
 };
 
@@ -110,7 +110,7 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, k, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -133,7 +133,7 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 				break;
 			case 'Q':	/* Only report for specified segment number */
 				Ctrl->Q.active = TRUE;
-				Ctrl->Q.seg = atoi (opt->arg);
+				Ctrl->Q.seg = atol (opt->arg);
 				break;
 			case 'S':	/* Segment header pattern search */
 				Ctrl->S.active = TRUE;
@@ -165,10 +165,11 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 
 GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG last_row, n_rows, out_col, n_out_seg = 0, error = 0;
-	GMT_LONG tbl, seg, col, row, n_cols_in, n_cols_out, out_seg = 0;
-	GMT_LONG n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	GMT_LONG match = FALSE, warn = FALSE;
+	GMT_LONG error = 0;
+	COUNTER_MEDIUM tbl, col, n_cols_in, n_cols_out, out_col;
+	COUNTER_MEDIUM n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
+	GMT_BOOLEAN match = FALSE, warn = FALSE;
+	COUNTER_LARGE row, last_row, n_rows, seg, out_seg = 0, n_out_seg = 0;
 	
 	double *val = NULL;
 
@@ -198,13 +199,13 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers on output */
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */
 	}
 	
 	/* Read in the input tables */
 	
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, NULL, 0, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -273,15 +274,15 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now ready for output */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 	
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, NULL, D[GMT_OUT]->io_mode, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, D[GMT_OUT]->io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "%ld tables %s, %ld records passed (input cols = %ld; output cols = %ld)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	GMT_report (GMT, GMT_MSG_NORMAL, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
 	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
 
 	Return (GMT_OK);

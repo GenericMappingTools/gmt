@@ -42,6 +42,8 @@
  * Include POSIX headers
  */
 
+#include <stdlib.h>
+
 #ifdef HAVE_ASSERT_H_
 #	include <assert.h>
 #else
@@ -78,12 +80,6 @@
 #ifdef HAVE_STAT_H_
 #	include <sys/stat.h>
 #endif
-
-#ifdef HAVE_STDBOOL_H_
-#	include <stdbool.h>
-#else
-#	include "compat/stdbool.h"
-#endif /* HAVE_STDBOOL_H_ */
 
 #ifdef HAVE_STDDEF_H_
 #	include <stddef.h>
@@ -176,9 +172,19 @@
 #	ifdef _MSC_VER
 		/* Suppress Visual Studio deprecation warnings */
 #		pragma warning( disable : 4996 )
+		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
+#		pragma warning( once : 4244 )
 		/* Visual Studio does not understand C99 restrict keyword */
 #		define restrict
-#	endif
+
+		/* isspace, isalpha, ...: avoid assert (only happens with debug CRT) 
+		   if passed a parameter that isn't EOF or in the range of 0 through 0xFF. */
+#		ifdef _DEBUG
+#			define isspace(c) (c > 0 && c < 0xFF && isspace(c))
+#			define isalpha(c) (c > 0 && c < 0xFF && isalpha(c))
+#		endif /* _DEBUG */
+
+#	endif /* defined _MSC_VER */
 
 #endif /* defined _WIN32 */
 

@@ -30,7 +30,7 @@ int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adf
 int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, GMT_LONG got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max);
 int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y, double *xy_c, double *xy_geo);
 void ComputeRasterMinMax (struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2], GMT_LONG nXSize, GMT_LONG nYSize, double, double);
-int gdal_decode_columns (struct GMT_CTRL *C, char *txt, GMT_LONG *whichBands, GMT_LONG n_col);
+int gdal_decode_columns (struct GMT_CTRL *C, char *txt, GMT_LONG *whichBands, COUNTER_MEDIUM n_col);
 
 GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	GDALDatasetH hDataset;
@@ -48,19 +48,20 @@ GMT_LONG GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
-	int	metadata_only;
-	int	do_BIP;		/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
 	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
-	int	pixel_reg = FALSE;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
-	int n, m, incStep = 1;
-	GMT_LONG	fliplr;
-	GMT_LONG	nn, off, got_R = FALSE, got_r = FALSE, error = FALSE;
+	int	n, m, incStep = 1;
+	GMT_BOOLEAN	do_BIP;		/* For images if BIP == TRUE data is stored Pixel interleaved, otherwise Band interleaved */
+	GMT_BOOLEAN	metadata_only;
+	GMT_BOOLEAN	pixel_reg = FALSE;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
+	GMT_BOOLEAN	fliplr, got_R = FALSE, got_r = FALSE, error = FALSE;
 	GMT_LONG	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
-	GMT_LONG	n_alloc, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	GMT_LONG	off, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
+	COUNTER_MEDIUM nn;
+	size_t n_alloc;
 	//GMT_LONG	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
 	double	tmpF64, adfMinMax[2];
@@ -81,8 +82,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			if (prhs->B.bands[n] == '-') n_dash = (int)n;
 		nn = MAX(n_commas+1, n_dash);
 		if (nn) {
-			nn = MAX( nn, atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
-			if (n_dash)	nn = MAX( nn, atoi(&prhs->B.bands[nn+1])+1 );
+			nn = MAX( nn, (COUNTER_MEDIUM)atoi(&prhs->B.bands[nc_ind-1])+1 );		/* +1 because band numbering in GMT is zero based */
+			if (n_dash)	nn = MAX( nn, (COUNTER_MEDIUM)atoi(&prhs->B.bands[nn+1])+1 );
 		}
 		else		/* Hmm, this else case is never reached */
 			nn = atoi(prhs->B.bands);
@@ -163,7 +164,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			Ctrl->ProjectionRefWKT = pszPrettyWkt;
 		}
 		else {
-			Ctrl->ProjectionRefWKT = CNULL;
+			Ctrl->ProjectionRefWKT = NULL;
 			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
 					Ctrl->ProjectionRefPROJ4);
 		}
@@ -598,7 +599,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			Ctrl->ProjectionRefPROJ4 = pszResult;
 		}
 		else
-			Ctrl->ProjectionRefPROJ4 = CNULL;
+			Ctrl->ProjectionRefPROJ4 = NULL;
 
 		/* Now in WKT format */
 		if( OSRImportFromWkt( hSRS, &pszProjection ) == CE_None ) {
@@ -608,7 +609,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 			CPLFree( pszPrettyWkt );
 		}
 		else
-			Ctrl->ProjectionRefWKT = CNULL;
+			Ctrl->ProjectionRefWKT = NULL;
 
 		OSRDestroySpatialReference( hSRS );
 	}
@@ -1040,15 +1041,15 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH
 }
 
 /* -------------------------------------------------------------------- */
-int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, GMT_LONG n_col) {
-	GMT_LONG n = 0, i, start, stop, pos = 0;
-	char p[1024];
+int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, GMT_LONG *whichBands, COUNTER_MEDIUM n_col) {
+	COUNTER_MEDIUM n = 0, i, start, stop, pos = 0;
+	char p[GMT_BUFSIZ];
 
 	while ((GMT_strtok (txt, ",", &pos, p))) {
 		if (strchr (p, '-'))
-			sscanf (p, "%" GMT_LL "d-%" GMT_LL "d", &start, &stop);
+			sscanf (p, "%d-%d", &start, &stop);
 		else {
-			sscanf (p, "%" GMT_LL "d", &start);
+			sscanf (p, "%d", &start);
 			stop = start;
 		}
 		stop = MIN (stop, n_col);

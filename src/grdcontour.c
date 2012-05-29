@@ -32,60 +32,60 @@
 
 struct GRDCONTOUR_CTRL {
 	struct In {
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
-		GMT_LONG active;
-		GMT_LONG mode;	/* 1 turns off all labels */
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;	/* 1 turns off all labels */
 		double interval;
 	} A;
 	struct C {	/* -C<cont_int> */
-		GMT_LONG active;
-		GMT_LONG cpt;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN cpt;
 		char *file;
 		double interval;
 	} C;
 	struct D {	/* -D<dumpfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} D;
 	struct F {	/* -F<way> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		GMT_LONG value;
 	} F;
 	struct G {	/* -G[d|f|n|l|L|x|X]<params> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} G;
 	struct L {	/* -L<Low/high> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		double low, high;
 	} L;
 	struct Q {	/* -Q<cut> */
-		GMT_LONG active;
-		GMT_LONG min;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM min;
 	} Q;
 	struct S {	/* -S<smooth> */
-		GMT_LONG active;
-		GMT_LONG value;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM value;
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
-		GMT_LONG active;
-		GMT_LONG label;
-		GMT_LONG low, high;	/* TRUE to tick low and high locals */
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN label;
+		GMT_BOOLEAN low, high;	/* TRUE to tick low and high locals */
 		double spacing, length;
 		char *txt[2];	/* Low and high label */
 	} T;
 	struct W {	/* -W[+]<type><pen> */
-		GMT_LONG active;
-		GMT_LONG color_cont;
-		GMT_LONG color_text;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN color_cont;
+		GMT_BOOLEAN color_text;
 		struct GMT_PEN pen[2];
 	} W;
 	struct Z {	/* -Z[<fact>[/shift>]][p] */
-		GMT_LONG active;
-		GMT_LONG periodic;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN periodic;
 		double scale, offset;
 	} Z;
 };
@@ -230,7 +230,8 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0, j, k, n, id;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0, id;
+	GMT_LONG j, k, n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -263,7 +264,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 				Ctrl->C.active = TRUE;
 				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file */
 					Ctrl->C.interval = 1.0;
-					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", (size_t)4)) ? TRUE : FALSE;
+					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? TRUE : FALSE;
 					Ctrl->C.file = strdup (opt->arg);
 				}
 				else
@@ -301,11 +302,15 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 				break;
 			case 'Q':	/* Skip small closed contours */
 				Ctrl->Q.active = TRUE;
-				Ctrl->Q.min = atoi (opt->arg);
+				n = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, n < 0, "Syntax error -Q option: Value must be >= 0\n");
+				Ctrl->Q.min = n;
 				break;
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = TRUE;
-				Ctrl->S.value = atoi (opt->arg);
+				j = atoi (opt->arg);
+				n_errors += GMT_check_condition (GMT, j < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
+				Ctrl->S.value = j;
 				break;
 			case 'T':	/* Ticking of innermost closed contours */
 				Ctrl->T.active = Ctrl->T.high = Ctrl->T.low = TRUE;	/* Default if just -T is given */
@@ -397,8 +402,6 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "Syntax error -L option: lower limit >= upper!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.value < 0, "Syntax error -S option: Smooth_factor must be > 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.min < 0, "Syntax error -Q option: Value must be >= 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.scale == 0.0, "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.color_cont && !Ctrl->C.cpt, "Syntax error -W option: + or - only valid if -C sets a cpt file\n");
@@ -408,7 +411,7 @@ GMT_LONG GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ct
 
 /* Three sub functions used by GMT_grdcontour */
 
-void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, GMT_LONG n, struct GMT_GRID *G, double tick_gap, double tick_length, GMT_LONG tick_low, GMT_LONG tick_high, GMT_LONG tick_label, char *lbl[])
+void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, GMT_BOOLEAN tick_low, GMT_BOOLEAN tick_high, GMT_BOOLEAN tick_label, char *lbl[])
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
@@ -416,79 +419,82 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	   2) Next, we mark closed contours with other contours inside them as not "innermost"
 	   3) We then determine if the remaining closed polygons contain highs or lows.
 	*/
-	GMT_LONG np, i, j, k, ij, inside, col, row, stop, done, n_ticks, way, form;
-	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end, match, found;
+	GMT_LONG np, j, k, inside, col, row, stop, n_ticks, way, form;
+	COUNTER_LARGE ij;
+	size_t pol, pol2;
+	GMT_BOOLEAN done, match, found;
+	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
 
 	/* The x/y coordinates in SAVE in original cooordinates */
 
-	for (i = 0; i < n; i++) {	/* Mark polygons that have other polygons inside them */
-		np = save[i].n;	/* Length of this polygon */
-		for (j = 0; save[i].do_it && j < n; j++) {
-			if (i == j) continue;		/* Cannot be inside itself */
-			if (!save[j].do_it) continue;	/* No point checking contours that have already failed */
-			if (GMT_abs (save[i].kind) == 3) {	/* These are not closed (in lon/lat) */
-				save[i].do_it = FALSE;		/* This may be improved in the future */
+	for (pol = 0; pol < n; pol++) {	/* Mark polygons that have other polygons inside them */
+		np = save[pol].n;	/* Length of this polygon */
+		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
+			if (pol == pol2) continue;		/* Cannot be inside itself */
+			if (!save[pol2].do_it) continue;	/* No point checking contours that have already failed */
+			if (GMT_abs (save[pol].kind) == 3) {	/* These are not closed (in lon/lat) */
+				save[pol].do_it = FALSE;		/* This may be improved in the future */
 				continue;
 			}
-			col = save[j].n / 2;	/* Pick the half-point for testing */
-			inside = GMT_non_zero_winding (GMT, save[j].x[col], save[j].y[col], save[i].x, save[i].y, np);
-			if (inside == 2) save[i].do_it = FALSE;	/* Not innermost so mark it for exclusion */
-			if (GMT_abs (save[j].kind) == 3) {	/* Polar caps are different */
-				if (GMT_abs (save[i].kind) == 3) {	/* Both are caps */
-					if (save[i].kind != save[j].kind) continue;	/* One is S and one is N cap as far as we can tell, so we skip */
+			col = save[pol2].n / 2;	/* Pick the half-point for testing */
+			inside = GMT_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
+			if (inside == 2) save[pol].do_it = FALSE;	/* Not innermost so mark it for exclusion */
+			if (GMT_abs (save[pol2].kind) == 3) {	/* Polar caps are different */
+				if (GMT_abs (save[pol].kind) == 3) {	/* Both are caps */
+					if (save[pol].kind != save[pol2].kind) continue;	/* One is S and one is N cap as far as we can tell, so we skip */
 					/* Crude test to determine if one is closer to the pole than the other; if so exclude the far one */
-					if ((save[j].kind == 3 && save[j].y[0] > save[i].y[0]) || (save[j].kind == -3 && save[j].y[0] < save[i].y[0])) save[i].do_it = FALSE;
+					if ((save[pol2].kind == 3 && save[pol2].y[0] > save[pol].y[0]) || (save[pol2].kind == -3 && save[pol2].y[0] < save[pol].y[0])) save[pol].do_it = FALSE;
 				}
 			}
 		}
 	}
-	for (i = 0; i < n; i++) if (GMT_abs (save[i].kind) == 2) save[i].n--;	/* Chop off the extra duplicate point for split periodic contours */
+	for (pol = 0; pol < n; pol++) if (GMT_abs (save[pol].kind) == 2) save[pol].n--;	/* Chop off the extra duplicate point for split periodic contours */
 
 	/* Must make sure that for split periodic contour that if one fails to be innermost them both should fail */
 	
-	for (i = 0; i < n; i++) {
-		if (GMT_abs (save[i].kind) != 2) continue;
-		for (j = 0, found = FALSE; !found && j < n; j++) {
-			if (i == j) continue;
-			if (GMT_abs (save[j].kind) != 2) continue;
-			match = ((save[i].y[0] == save[j].y[0] && save[i].y[save[i].n-1] == save[j].y[save[j].n-1]) || (save[i].y[0] == save[j].y[save[j].n-1] && save[i].y[save[i].n-1] == save[j].y[0]));
+	for (pol = 0; pol < n; pol++) {
+		if (GMT_abs (save[pol].kind) != 2) continue;
+		for (pol2 = 0, found = FALSE; !found && pol2 < n; pol2++) {
+			if (pol == pol2) continue;
+			if (GMT_abs (save[pol2].kind) != 2) continue;
+			match = ((save[pol].y[0] == save[pol2].y[0] && save[pol].y[save[pol].n-1] == save[pol2].y[save[pol2].n-1]) || (save[pol].y[0] == save[pol2].y[save[pol2].n-1] && save[pol].y[save[pol].n-1] == save[pol2].y[0]));
 			if (!match) continue;
-			if ((save[i].do_it + save[j].do_it) == 1) save[i].do_it = save[j].do_it = FALSE;
+			if ((save[pol].do_it + save[pol2].do_it) == 1) save[pol].do_it = save[pol2].do_it = FALSE;
 			found = TRUE;
 		}
-		if (!found) save[i].do_it = FALSE;	/* Probably was not a split closed contour */
+		if (!found) save[pol].do_it = FALSE;	/* Probably was not a split closed contour */
 	}
 	
 	/* Here, only the polygons that are innermost (containing the local max/min, will have do_it = TRUE */
 
-	for (i = 0; i < n; i++) {
-		if (!save[i].do_it) continue;
-		np = save[i].n;
+	for (pol = 0; pol < n; pol++) {
+		if (!save[pol].do_it) continue;
+		np = save[pol].n;
 
 		/* Need to determine if this is a local high or low */
 		
-		if (GMT_abs (save[i].kind) == 2) {	/* Closed contour split across a periodic boundary */
+		if (GMT_abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
-			col = (save[i].kind == -2) ? 0 : G->header->nx - 1;
-			row = GMT_grd_y_to_row (GMT, save[i].y[0], G->header);		/* Get start j-row */
-			row += GMT_grd_y_to_row (GMT, save[i].y[np-1], G->header);	/* Get stop j-row */
+			col = (save[pol].kind == -2) ? 0 : G->header->nx - 1;
+			row = GMT_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
+			row += GMT_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
 			row /= 2;
 		}
-		else if (GMT_abs (save[i].kind) == 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
+		else if (GMT_abs (save[pol].kind) == 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
 			col = G->header->nx / 2;
-			row = (save[i].kind == -3) ? G->header->ny - 1 : 0;
+			row = (save[pol].kind == -3) ? G->header->ny - 1 : 0;
 		}
 		else {
 			/* Loop around the contour and get min/max original x,y (longitude, latitude) coordinates */
 
-			xmin = xmax = save[i].x[0];	ymin = ymax = save[i].y[0];
+			xmin = xmax = save[pol].x[0];	ymin = ymax = save[pol].y[0];
 			for (j = 1; j < np; j++) {
-				xmin = MIN (xmin, save[i].x[j]);
-				xmax = MAX (xmax, save[i].x[j]);
-				ymin = MIN (ymin, save[i].y[j]);
-				ymax = MAX (ymax, save[i].y[j]);
+				xmin = MIN (xmin, save[pol].x[j]);
+				xmax = MAX (xmax, save[pol].x[j]);
+				ymin = MIN (ymin, save[pol].y[j]);
+				ymax = MAX (ymax, save[pol].y[j]);
 			}
 
 			/* Pick the mid-latitude and march along that line from east to west */
@@ -501,7 +507,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			done = FALSE;
 			while (!done && col <= stop) {
 				this_lon = GMT_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
-				inside = GMT_non_zero_winding (GMT, this_lon, this_lat, save[i].x, save[i].y, np);
+				inside = GMT_non_zero_winding (GMT, this_lon, this_lat, save[pol].x, save[pol].y, np);
 				if (inside == 2)	/* OK, this point is inside */
 					done = TRUE;
 				else
@@ -510,31 +516,31 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			if (!done) continue;	/* Failed to find an inside point */
 		}
 		ij = GMT_IJP (G->header, row, col);
-		save[i].high = (G->data[ij] > save[i].cval);
+		save[pol].high = (G->data[ij] > save[pol].cval);
 
-		if (save[i].high && !tick_high) continue;	/* Do not tick highs */
-		if (!save[i].high && !tick_low) continue;	/* Do not tick lows */
+		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
+		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
-		np = GMT_clip_to_map (GMT, save[i].x, save[i].y, np, &xp, &yp);	/* Convert to inches */
+		np = GMT_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
 		
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
-		n_ticks = (GMT_LONG)(s[np-1] / tick_gap);
+		n_ticks = lrint (floor (s[np-1] / tick_gap));
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
-			save[i].do_it = FALSE;
+			save[pol].do_it = FALSE;
 			GMT_free (GMT, s);	GMT_free (GMT, xp);	GMT_free (GMT, yp);
 			continue;
 		}
 
-		GMT_setpen (GMT, &save[i].pen);
-		way = GMT_polygon_centroid (GMT, xp, yp, np, &save[i].xlabel, &save[i].ylabel);	/* -1 is CCW, +1 is CW */
+		GMT_setpen (GMT, &save[pol].pen);
+		way = GMT_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
 		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 
 		x_back = xp[np-1];	/* Last point along contour */
 		y_back = yp[np-1];
 		dist = 0.0;
 		j = 0;
-		add = M_PI_2 * ((save[i].high) ? -way : +way);	/* So that tick points in the right direction */
+		add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
 		inc = s[np-1] / n_ticks;
 		while (j < np-1) {
 			x_front = xp[j+1];
@@ -562,29 +568,30 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	 * One idea would be to add help points to include the pole and used this polygon to compute where to
 	 * plot the label but then skip those points when drawing the line. */
 	
-	for (i = 0; tick_label && i < n; i++) {	/* Finally, do labels */
-		if (!save[i].do_it) continue;
-		if (GMT_abs (save[i].kind) == 2 && GMT_IS_AZIMUTHAL (GMT)) {	/* Only plot once at mean location */
-			for (j = 0, k = -1; j < n && k == -1; j++) {	/* Finally, do labels */
-				if (save[j].kind != -save[i].kind) continue;
-				if (save[j].cval != save[i].cval) continue;
-				k = j;	/* Found its counterpart */
+	for (pol = 0; tick_label && pol < n; pol++) {	/* Finally, do labels */
+		if (!save[pol].do_it) continue;
+		if (GMT_abs (save[pol].kind) == 2 && GMT_IS_AZIMUTHAL (GMT)) {	/* Only plot once at mean location */
+			for (pol2 = 0, k = -1; pol2 < n && k == -1; pol2++) {	/* Finally, do labels */
+				if (save[pol2].kind != -save[pol].kind) continue;
+				if (save[pol2].cval != save[pol].cval) continue;
+				k = pol2;	/* Found its counterpart */
 			}
 			if (k == -1) continue;
-			GMT_setpen (GMT, &save[i].pen);
-			PSL_plottext (PSL, 0.5 * (save[i].xlabel+save[k].xlabel), 0.5 * (save[i].ylabel+save[k].ylabel), GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
+			GMT_setpen (GMT, &save[pol].pen);
+			PSL_plottext (PSL, 0.5 * (save[pol].xlabel+save[k].xlabel), 0.5 * (save[pol].ylabel+save[k].ylabel), GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
 			save[k].do_it = FALSE;
 		}
 		else {
-			GMT_setpen (GMT, &save[i].pen);
-			PSL_plottext (PSL, save[i].xlabel, save[i].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[i].high], 0.0, 6, form);
+			GMT_setpen (GMT, &save[pol].pen);
+			PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
 		}
 	}
 }
 
 void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
 {	/* Determine the grid's global min and max locations and z values */
-	GMT_LONG row, col, ij, i, i_minmax[2] = {0, 0};
+	COUNTER_MEDIUM row, col, i;
+	COUNTER_LARGE ij, i_minmax[2] = {0, 0};
 	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
 
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
@@ -607,20 +614,21 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 
 void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid)
 {	/* Modify orientation of contours to have top of annotation facing the local hill top */
-	GMT_LONG i, k, col, row, ij;
+	GMT_LONG col, row;
+	COUNTER_LARGE k, seg, ij;
 	double nx, ny, x_on, y_on, x_node, y_node, x_node_p, y_node_p, dx, dy, dz, dot, angle;
 	struct GMT_CONTOUR_LINE *C = NULL;
 
-	for (i = 0; i < G->n_segments; i++) {
-		C = G->segment[i];	/* Pointer to current segment */
+	for (seg = 0; seg < G->n_segments; seg++) {
+		C = G->segment[seg];	/* Pointer to current segment */
 		for (k = 0; k < C->n_labels; k++) {
 			GMT_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
 			row = GMT_grd_y_to_row (GMT, y_on, Grid->header);
-			if (row < 0 || row >= Grid->header->ny) continue;		/* Somehow, outside y range */
+			if (row < 0 || row >= (int)Grid->header->ny) continue;		/* Somehow, outside y range */
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
 			col = GMT_grd_x_to_col (GMT, x_on, Grid->header);
-			if (col < 0 || col >= Grid->header->nx) continue;		/* Somehow, outside x range */
+			if (col < 0 || col >= (int)Grid->header->nx) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
 			if (angle > 90.0) angle -= 180.0;
 			sincosd (angle + 90, &ny, &nx);	/* Coordinate of normal to label line */
@@ -646,7 +654,7 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 }
 
 GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, GMT_LONG n)
-{	/* Determine if this is a closed contour */
+{	/* Determine if this is a closed contour; returns a flag in the -3/+3 range */
 	GMT_LONG closed = 0;
 	double small_x = 0.01 * G->header->inc[GMT_X], small_y = 0.01 * G->header->inc[GMT_Y];	/* Use 1% noise to find near-closed contours */
 	if (fabs (x[0] - x[n-1]) < small_x && fabs (y[0] - y[n-1]) < small_y) {	/* Closed interior contour */
@@ -674,11 +682,16 @@ GMT_LONG gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, dou
 
 GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	GMT_LONG c, n_edges, n_alloc = 0, n_contours, id, cont_counts[2] = {0, 0}, need_proj;
-	GMT_LONG tbl_scl = 1, n_save = 0, i, n, nn, ij, closed, begin, error, io_mode = 0, n_tmp;
-	GMT_LONG make_plot, fmt[3] = {0, 0, 0}, two_only = FALSE, n_tables = 1, tbl, extra;
-	GMT_LONG *n_seg_alloc = NULL, *n_seg = NULL, *edge = NULL;
+	GMT_LONG error, c, closed;
+	GMT_BOOLEAN need_proj, make_plot, two_only = FALSE, begin, is_closed; 
+	
+	COUNTER_MEDIUM id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl;
+	COUNTER_MEDIUM cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
+	
+	COUNTER_LARGE ij, *n_seg = NULL;
 
+	size_t n_save = 0, n_alloc = 0, n_tmp, *n_seg_alloc = NULL;
+	
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
@@ -718,7 +731,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
 	GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory and read data file\n");
 
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, NULL, GMT_GRID_HEADER, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -752,7 +765,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Read data */
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, wesn, GMT_GRID_DATA, Ctrl->In.file, G) == NULL) {
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);
 	}
 
@@ -785,7 +798,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		aval = G->header->z_max + 1.0;
 
 	if (Ctrl->C.cpt) {	/* Presumably got a cpt-file */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		if (P->categorical) {
@@ -826,7 +839,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		double tmp;
 
 		n_contours = 0;
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, Ctrl->C.file, NULL)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, NULL, Ctrl->C.file)) == GMTAPI_NOTSET) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
@@ -911,7 +924,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 	n_alloc = n_tmp = n_contours;
 	GMT_malloc2 (GMT, contour, cont_angle, 0, &n_tmp, double);
-	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_contours, char);
+	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_alloc, char);
 
 	GMT_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */
@@ -922,13 +935,13 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	 * original grid values and subtract the current contour value. */
 
 	G_orig = GMT_duplicate_grid (GMT, G, TRUE);	/* Original copy of grid used for contouring */
-	n_edges = G->header->ny * (GMT_LONG )ceil (G->header->nx / 16.0);
-	edge = GMT_memory (GMT, NULL, n_edges, GMT_LONG);	/* Bit flags used to keep track of contours */
+	n_edges = G->header->ny * lrint (ceil (G->header->nx / 16.0));
+	edge = GMT_memory (GMT, NULL, n_edges, COUNTER_MEDIUM);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
-		GMT_LONG dim[4] = {0, 0, 3, 0};
+		COUNTER_LARGE dim[4] = {0, 0, 3, 0};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
-			io_mode = GMT_WRITE_DATASET;
+			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
 			i = 0;
 			while (Ctrl->D.file[i]) {
@@ -960,8 +973,8 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		dim[0] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
-		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
-		n_seg = GMT_memory (GMT, NULL, n_tables, GMT_LONG);
+		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
+		n_seg = GMT_memory (GMT, NULL, n_tables, COUNTER_LARGE);
 	}
 
 	if (make_plot) {
@@ -972,7 +985,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	}
 
-	for (c = 0; c < n_contours; c++) {	/* For each contour value cval */
+	for (c = uc = 0; uc < n_contours; c++, uc++) {	/* For each contour value cval */
 
 		if (Ctrl->L.active && (contour[c] < Ctrl->L.low || contour[c] > Ctrl->L.high)) continue;	/* Outside desired range */
 
@@ -1005,14 +1018,15 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while ((n = GMT_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
+			is_closed = (closed != 0);
 
-			if (!closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria */
+			if (!closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria for closed contours */
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
-					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
+					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
-						GMT_LONG old_n_alloc = n_seg_alloc[tbl];
+						size_t old_n_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
 						GMT_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
 					}
@@ -1027,6 +1041,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
+					GMT_LONG extra;
 					if (n_save == n_alloc) save = GMT_malloc (GMT, save, n_save, &n_alloc, struct SAVE);
 					extra = (GMT_abs (closed) == 2);	/* Need extra slot to temporarily close half-polygons */
 					n_alloc = 0;
@@ -1044,7 +1059,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (need_proj && (nn = GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
-						GMT_get_format (GMT, cval, Ctrl->contour.unit, CNULL, format);
+						GMT_get_format (GMT, cval, Ctrl->contour.unit, NULL, format);
 						sprintf (cont_label, format, cval);
 					}
 					else
@@ -1065,7 +1080,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (error);
 		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, NULL, io_mode, Ctrl->D.file, D) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
@@ -1080,7 +1095,7 @@ GMT_LONG GMT_grdcontour (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (make_plot) {
-		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, CNULL, 0.0);
+		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, NULL, 0.0);
 
 		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
 			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);

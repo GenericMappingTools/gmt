@@ -32,12 +32,11 @@
 
 struct KML2GMT_CTRL {
 	struct In {	/* in file */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} In;
 	struct Z {	/* -Z */
-		GMT_LONG active;
-		GMT_LONG n_cols;
+		GMT_BOOLEAN active;
 	} Z;
 };
 	
@@ -61,7 +60,7 @@ GMT_LONG GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "kml2gmt %s [API] - Extract GMT table data from Google Earth KML files\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [-Z] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -85,7 +84,7 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	COUNTER_MEDIUM n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -121,7 +120,9 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 
 GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, start, fmode = POINT, scan = TRUE, first = TRUE, error = FALSE;
+	COUNTER_MEDIUM i, start, fmode = POINT;
+	size_t length;
+	GMT_BOOLEAN scan = TRUE, first = TRUE, error = FALSE;
 	
 	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
 
@@ -160,7 +161,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -193,10 +194,11 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (strstr (line, "<Point")) fmode = POINT;
 		if (strstr (line, "<LineString")) fmode = LINE;
 		if (strstr (line, "<Polygon")) fmode = POLYGON;
+		length = strlen (line);
 		if (strstr (line, "<name>")) {
-			for (i = 0; i < (GMT_LONG)strlen (line) && line[i] != '>'; i++);	/* Find end of <name> */
+			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <name> */
 			start = i + 1;
-			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </name> */
+			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
 			strcpy (name, &line[start]);
 			GMT_chop (name);
@@ -207,9 +209,9 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			first = FALSE;
 		}
 		if (strstr (line, "<description>")) {
-			for (i = 0; i < (GMT_LONG)strlen (line) && line[i] != '>'; i++);	/* Find end of <description> */
+			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <description> */
 			start = i + 1;
-			for (i = start; i < (GMT_LONG)strlen (line) && line[i] != '<'; i++);	/* Find start of </description> */
+			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
 			strcpy (description, &line[start]);
 			GMT_chop (description);
@@ -229,7 +231,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!strstr (line, "<coordinates>")) continue;
 		/* We get here when the line says coordinates */
 		if (fmode == POINT) {	/* Process the single point */
-			for (i = 0; i < (GMT_LONG)strlen (line) && line[i] != '>'; i++);		/* Find end of <coordinates> */
+			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point\n");
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */

@@ -45,8 +45,8 @@ PostScript code is written to stdout.
 
 struct PSCOUPE_CTRL {
 	struct A {	/* -A[<params>] */
-		GMT_LONG active;
-		GMT_LONG frame, fuseau, polygon;
+		GMT_BOOLEAN active, frame, polygon;
+		GMT_LONG fuseau;
 		char proj_type;
 		double p_width, p_length, dmin, dmax;
 		double xlonref, ylatref;
@@ -55,75 +55,75 @@ struct PSCOUPE_CTRL {
 		char newfile[GMT_TEXT_LEN256], extfile[GMT_TEXT_LEN256];
 	} A;
  	struct E {	/* -E<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} L;
 	struct M {	/* -M */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} M;
 	struct N {	/* -N */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} N;
 	struct Q {	/* -Q */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} Q;
 	struct S {	/* -S and -s */
-		GMT_LONG active;
-		GMT_LONG readmode;
-		GMT_LONG plotmode;
-		GMT_LONG justify;
-		GMT_LONG no_label;
+		GMT_BOOLEAN active;
+		GMT_BOOLEAN zerotrace;
+		GMT_BOOLEAN no_label;
+		COUNTER_MEDIUM readmode;
+		COUNTER_MEDIUM plotmode;
+		COUNTER_MEDIUM justify;
 		GMT_LONG symbol;
-		GMT_LONG zerotrace;
 		char P_symbol, T_symbol;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
-		GMT_LONG active;
-		GMT_LONG n_plane;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<cptfile> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char *file;
 	} Z;
 	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
 	struct E2 {	/* -e<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} E2;
  	struct G2 {	/* -g<fill> */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} G2;
  	struct P2 {	/* -p[<pen>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} P2;
 	struct R2 {	/* -r[<fill>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_FILL fill;
 	} R2;
  	struct T2 {	/* -t[<pen>] */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 		struct GMT_PEN pen;
 	} T2;
 };
@@ -310,7 +310,7 @@ GMT_LONG gutm (double lon, double lat, double *xutm, double *yutm, GMT_LONG fuse
 	double aj2, aj4, aj6, amo, al, arcme;
 	double si, co, ecoxi, eta, gn, uuu, vvv, xi;
 
-	if (fuseau == 0) fuseau = (GMT_LONG)floor ((lon + 186.) / 6.);
+	if (fuseau == 0) fuseau = lrint (floor ((lon + 186.) / 6.));
 
 	/* calcul des coordonnees utm */
 	amo = ((double)fuseau * 6. - 183.);
@@ -518,7 +518,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0;
+	COUNTER_MEDIUM n_errors = 0;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -667,7 +667,7 @@ GMT_LONG GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, st
 
 			case 'T':
 				Ctrl->T.active = TRUE;
-				sscanf (opt->arg, "%ld", &Ctrl->T.n_plane);
+				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					GMT_pen_syntax (GMT, 'T', " ");
 					n_errors++;
@@ -812,7 +812,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_memset (&moment, 1, moment);
 
 	if (Ctrl->Z.active) {
-		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, NULL, 0, Ctrl->Z.file, NULL)) == NULL) {
+		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}
@@ -837,7 +837,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);    iy = 1 - ix;
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -902,7 +902,7 @@ GMT_LONG GMT_pscoupe (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
 
  		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Record %ld had bad x and/or y coordinates, skip)\n", n_rec);
+			GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
 			continue;
 		}
 		depth = atof (col[2]);
@@ -1051,7 +1051,7 @@ Definition of scalar moment.
 			if (!Ctrl->Q.active) fprintf (pext, "%s\n", line);
 			if (Ctrl->S.readmode == READ_AXIS) {
 				if (!Ctrl->Q.active)
-					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %f %f %ld 0 0 %s\n",
+					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 					xy[0], xy[1], depth, Tr.val, Tr.str, Tr.dip, Nr.val, Nr.str, Nr.dip,
 					Pr.val, Pr.str, Pr.dip, moment.exponent, event_title);
 				T = Tr;
@@ -1060,14 +1060,14 @@ Definition of scalar moment.
 			}
 			else if (Ctrl->S.readmode == READ_TENSOR) {
 				if (!Ctrl->Q.active)
-					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %ld 0 0 %s\n",
+					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 					xy[0], xy[1], depth, mtr.f[0], mtr.f[1], mtr.f[2], mtr.f[3], mtr.f[4], mtr.f[5],
 					moment.exponent, event_title);
 				mt = mtr;
 			}
 			else {
 				if (!Ctrl->Q.active)
-					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %ld 0 0 %s\n",
+					fprintf (pnew, "%f %f %f %f %f %f %f %f %f %f %d 0 0 %s\n",
 					xy[0], xy[1], depth, mecar.NP1.str, mecar.NP1.dip, mecar.NP1.rake,
 					mecar.NP2.str, mecar.NP2.dip, mecar.NP2.rake,
 					moment.mant, moment.exponent, event_title);
@@ -1130,7 +1130,7 @@ Definition of scalar moment.
 
 	PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 
-	if (Ctrl->W.pen.style) PSL_setdash (PSL, CNULL, 0);
+	if (Ctrl->W.pen.style) PSL_setdash (PSL, NULL, 0);
 
 	GMT_map_basemap (GMT);
 

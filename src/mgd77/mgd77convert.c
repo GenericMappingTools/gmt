@@ -24,26 +24,26 @@
 #include "gmt_mgd77.h"
 #include "mgd77.h"
 
-EXTERN_MSC void MGD77_select_high_resolution (struct GMT_CTRL *C);
+void MGD77_select_high_resolution (struct GMT_CTRL *C);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is TRUE if the option has been activated */
 	struct D {	/* -D */
-		GMT_LONG active;
+		GMT_BOOLEAN active;
 	} D;
 	struct L {	/* -L */
-		GMT_LONG active;
-		GMT_LONG mode;
-		GMT_LONG dest;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
+		COUNTER_MEDIUM dest;
 	} L;
 	struct F {	/* -F */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		GMT_LONG format;
 	} F;
 	struct T {	/* -T */
-		GMT_LONG active;
-		GMT_LONG mode;
+		GMT_BOOLEAN active;
+		COUNTER_MEDIUM mode;
 		GMT_LONG format;
 	} T;
 };
@@ -97,7 +97,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, code_pos, i;
+	COUNTER_MEDIUM n_errors = 0, code_pos, i;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -188,7 +188,8 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 
 GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG i, argno, n_cruises = 0, n_paths, error = FALSE;
+	GMT_LONG i, argno, n_cruises = 0, n_paths;
+	GMT_BOOLEAN error = FALSE;
 	
 	char file[GMT_BUFSIZ], **list = NULL, *fcode = "actm";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};
@@ -220,8 +221,8 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	
-	M.verbose_level = (int)Ctrl->L.mode;
-	M.verbose_dest  = (int)Ctrl->L.dest;
+	M.verbose_level = Ctrl->L.mode;
+	M.verbose_dest  = Ctrl->L.dest;
 
 	/* Check that the options selected are mutually consistent */
 	
@@ -246,11 +247,11 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		MGD77_Reset (GMT, &M);		/* Reset to start fresh for next file */
 
-		M.format = (int)Ctrl->F.format;	/* Set input file's format and read everything into memory */
+		M.format = Ctrl->F.format;	/* Set input file's format and read everything into memory */
 		M.original = Ctrl->F.mode;
 		if (Ctrl->F.mode) M.use_corrections[MGD77_M77_SET] = M.use_corrections[MGD77_CDF_SET] = FALSE;	/* Turn off E77 corrections */
 		MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
-		for (i = 0; i < MGD77_N_FORMATS; i++) if (i != M.format) MGD77_Ignore_Format (GMT, (int)i);		/* ...only allow the specified input format */
+		for (i = 0; i < MGD77_N_FORMATS; i++) if (i != M.format) MGD77_Ignore_Format (GMT, i);		/* ...only allow the specified input format */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error reading header sequence for cruise %s\n", list[argno]);
@@ -296,7 +297,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* OK, ready to write out converted file */
 		
-		M.format = (int)Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
+		M.format = Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
 		M.original = TRUE;					/* Always write to original attributes */
 		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified output format */
 		if (D->H.author) GMT_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
@@ -316,7 +317,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_cruises++;
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Converted %ld MGD77 files\n", n_cruises);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Converted %d MGD77 files\n", n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
