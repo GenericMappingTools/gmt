@@ -100,11 +100,9 @@ GMT_LONG (*MGD77_column_test_string[9]) (char *, char *, size_t);
 
 unsigned int MGD77_this_bit[MGD77_SET_COLS];
 
-EXTERN_MSC GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart);
-EXTERN_MSC GMT_LONG GMT_is_gleap (GMT_LONG gyear);
-EXTERN_MSC void GMT_str_toupper (char *string);
-
-/* PRIVATE FUNCTIONS TO MGD77.C */
+GMT_LONG GMT_splitinteger (double value, GMT_LONG epsilon, double *doublepart);
+GMT_LONG GMT_is_gleap (GMT_LONG gyear);
+void GMT_str_toupper (char *string);
 
 void MGD77_nc_status (struct GMT_CTRL *C, int status)
 {	/* This function checks the return status of a netcdf function and takes
@@ -116,7 +114,9 @@ void MGD77_nc_status (struct GMT_CTRL *C, int status)
 	}
 }
 
-void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
+/* PRIVATE FUNCTIONS TO MGD77.C */
+
+static inline void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
 	char *this = NULL;
 
@@ -135,7 +135,7 @@ void MGD77_Set_Home (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 #endif
 }
 
-GMT_LONG MGD77_lt_test (double value, double limit)
+static inline GMT_LONG MGD77_lt_test (double value, double limit)
 {
 	/* Test that checks for value < limit */
 
@@ -143,7 +143,7 @@ GMT_LONG MGD77_lt_test (double value, double limit)
 	return (value < limit);
 }
 
-GMT_LONG MGD77_le_test (double value, double limit)
+static inline GMT_LONG MGD77_le_test (double value, double limit)
 {
 	/* Test that checks for value <= limit */
 
@@ -151,7 +151,7 @@ GMT_LONG MGD77_le_test (double value, double limit)
 	return (value <= limit);
 }
 
-GMT_LONG MGD77_eq_test (double value, double limit)
+static inline GMT_LONG MGD77_eq_test (double value, double limit)
 {
 	/* Test that checks for value == limit */
 
@@ -160,7 +160,7 @@ GMT_LONG MGD77_eq_test (double value, double limit)
 	return (value == limit);
 }
 
-GMT_LONG MGD77_bit_test (double value, double limit)
+static inline GMT_LONG MGD77_bit_test (double value, double limit)
 {
 	unsigned int ivalue, ilimit;
 
@@ -174,7 +174,7 @@ GMT_LONG MGD77_bit_test (double value, double limit)
 	return (ivalue & ilimit);			/* TRUE if any of the bits in limit line up with value */
 }
 
-GMT_LONG MGD77_neq_test (double value, double limit)
+static inline GMT_LONG MGD77_neq_test (double value, double limit)
 {
 	/* Test that checks for value != limit */
 
@@ -183,7 +183,7 @@ GMT_LONG MGD77_neq_test (double value, double limit)
 	return (value != limit);
 }
 
-GMT_LONG MGD77_ge_test (double value, double limit)
+static inline GMT_LONG MGD77_ge_test (double value, double limit)
 {
 	/* Test that checks for value >= limit */
 
@@ -191,7 +191,7 @@ GMT_LONG MGD77_ge_test (double value, double limit)
 	return (value >= limit);
 }
 
-GMT_LONG MGD77_gt_test (double value, double limit)
+static inline GMT_LONG MGD77_gt_test (double value, double limit)
 {
 	/* Test that checks for value > limit */
 
@@ -199,7 +199,7 @@ GMT_LONG MGD77_gt_test (double value, double limit)
 	return (value > limit);
 }
 
-GMT_LONG MGD77_clt_test (char *value, char *match, size_t len)
+static inline GMT_LONG MGD77_clt_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value < match for strings */
 
@@ -207,7 +207,7 @@ GMT_LONG MGD77_clt_test (char *value, char *match, size_t len)
 	return (strncmp (value, match, len) < 0);
 }
 
-GMT_LONG MGD77_cle_test (char *value, char *match, size_t len)
+static inline GMT_LONG MGD77_cle_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value <= match for strings */
 
@@ -215,7 +215,7 @@ GMT_LONG MGD77_cle_test (char *value, char *match, size_t len)
 	return (strncmp (value, match, len) <= 0);
 }
 
-GMT_LONG MGD77_ceq_test (char *value, char *match, size_t len)
+static inline GMT_LONG MGD77_ceq_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value == match for strings */
 
@@ -223,7 +223,7 @@ GMT_LONG MGD77_ceq_test (char *value, char *match, size_t len)
 	return (strncmp (value, match, len) == 0);
 }
 
-GMT_LONG MGD77_cneq_test (char *value, char *match, size_t len)
+static inline GMT_LONG MGD77_cneq_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value != match for strings */
 
@@ -231,7 +231,7 @@ GMT_LONG MGD77_cneq_test (char *value, char *match, size_t len)
 	return (strncmp (value, match, len) != 0);
 }
 
-GMT_LONG MGD77_cge_test (char *value, char *match, size_t len)
+static inline GMT_LONG MGD77_cge_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value >= match for strings */
 
@@ -239,7 +239,7 @@ GMT_LONG MGD77_cge_test (char *value, char *match, size_t len)
 	return (strncmp (value, match, len) >= 0);
 }
 
-GMT_LONG MGD77_cgt_test (char *value, char *match, size_t len)
+static inline GMT_LONG MGD77_cgt_test (char *value, char *match, size_t len)
 {
 	/* Test that checks for value > match for strings */
 
@@ -247,7 +247,7 @@ GMT_LONG MGD77_cgt_test (char *value, char *match, size_t len)
 	return (strncmp (value, match, len) > 0);
 }
 
-void MGD77_Init_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
+static inline void MGD77_Init_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {
 	/* Initializes the output columns to equal all the input columns
 	 * and using the original order.  To change this the program must
@@ -273,7 +273,7 @@ void MGD77_Init_Columns (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD
 	MGD77_column_test_string[MGD77_GT]   = MGD77_cgt_test;
 }
 
-static void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
+static inline void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 {
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ];
@@ -312,22 +312,22 @@ static void MGD77_Path_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	F->MGD77_datadir = GMT_memory (C, F->MGD77_datadir, F->n_MGD77_paths, char *);
 }
 
-double MGD77_Copy (double z) {
+static inline double MGD77_Copy (double z) {
 	/* Just returns its argument - used when no transformation is selected */
 	return (z);
 }
 
-double MGD77_Cosd (double z) {
+static inline double MGD77_Cosd (double z) {
 	/* cosine of degrees */
 	return (cosd (z));
 }
 
-double MGD77_Sind (double z) {
+static inline double MGD77_Sind (double z) {
 	/* sine of degrees */
 	return (sind (z));
 }
 
-int wrong_filler (char *field, size_t length) {
+static inline int wrong_filler (char *field, size_t length) {
 	/* Returns TRUE if the field is completely 00000.., 9999., or ?????. */
 	unsigned i, nines, zeros, qmarks;
 
@@ -342,7 +342,7 @@ int wrong_filler (char *field, size_t length) {
 	return (zeros == length || nines == length || qmarks == length);
 }
 
-int MGD77_atoi (char *txt) {
+static inline int MGD77_atoi (char *txt) {
 	/* Like atoi but checks if txt is not all integers - if bad it returns -9999 */
 	unsigned int i;
 	/* First skip leading blanks and sign (we really should count signs but ...) */
@@ -352,7 +352,7 @@ int MGD77_atoi (char *txt) {
 	return (atoi (txt));
 }
 
-int MGD77_Get_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *item)
+static inline int MGD77_Get_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *item)
 {	/* Used internally where item is known to be a single full name of a header item.
 	 * The id returned can used to get stuff in MGD77_Header_Lookup. */
 	int i, id;
@@ -369,7 +369,7 @@ int MGD77_Get_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *it
 	return id;
 }
 
-void MGD77_set_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H, GMT_LONG mgd77t_format)
+static inline void MGD77_set_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H, GMT_LONG mgd77t_format)
 {
 	int i, j, k;
 
@@ -448,7 +448,7 @@ void MGD77_set_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H, GMT_LONG
 	H->info[MGD77_M77_SET].n_col = (short)k;
 }
 
-void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H)
+static inline void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEADER *H)
 {
 	int c, id;
 
@@ -498,7 +498,7 @@ GMT_BOOLEAN MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], COUNTER_LARG
 	return (constant);
 }
 
-void MGD77_do_scale_offset_after_read (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double scale, double offset, double nan_val)
+static inline void MGD77_do_scale_offset_after_read (struct GMT_CTRL *C, double x[], COUNTER_LARGE n, double scale, double offset, double nan_val)
 {
 	COUNTER_LARGE k;
 	GMT_BOOLEAN check_nan;
