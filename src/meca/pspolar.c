@@ -351,7 +351,7 @@ GMT_LONG GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, st
 
 GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
-	GMT_LONG n;
+	GMT_LONG n = 0;
 	GMT_BOOLEAN error = FALSE, old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;

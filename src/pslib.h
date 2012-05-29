@@ -156,8 +156,9 @@ enum PSL_enum_line {PSL_BUTT_CAP	= 0,
 
 /* Verbosity levels */
 
-enum PSL_enum_verbose {PSL_MSG_SILENCE = 0,	/* No messages whatsoever */
-	PSL_MSG_FATAL,		/* Fatal messages */
+enum PSL_enum_verbose {PSL_MSG_QUIET = 0,	/* No messages whatsoever */
+	PSL_MSG_FATAL,		/* Fatal errors */
+	PSL_MSG_COMPAT,		/* Compatibility warnings */
 	PSL_MSG_NORMAL,		/* Warnings level -V */
 	PSL_MSG_VERBOSE,	/* Longer verbose, -Vl in some programs */
 	PSL_MSG_DEBUG};		/* Debug messages for developers mostly */

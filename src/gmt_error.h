@@ -28,11 +28,12 @@
 #define GMT_ERROR_H
 
 /* Verbosity levels */
-enum GMT_enum_verbose {GMT_MSG_SILENCE = 0,	/* No messages whatsoever */
-	GMT_MSG_FATAL		 = 1,	/* Fatal messages */
-	GMT_MSG_NORMAL		 = 2,	/* Warnings level -V */
-	GMT_MSG_VERBOSE		 = 3,	/* Longer verbose, -Vl in some programs */
-	GMT_MSG_DEBUG		 = 4};	/* Debug messages for developers mostly */
+enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
+	GMT_MSG_FATAL,		/* Fatal errors only */
+	GMT_MSG_COMPAT,		/* Compatibility warnings */
+	GMT_MSG_NORMAL,		/* Warnings level -V */
+	GMT_MSG_VERBOSE,	/* Longer verbose, -Vl in some programs */
+	GMT_MSG_DEBUG};		/* Debug messages for developers mostly */
 
 /* Grid i/o error codes */
 
