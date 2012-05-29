@@ -80,12 +80,12 @@ struct PSMASK_CTRL {
 };
 
 struct PSMASK_INFO {
-	GMT_LONG first_dump;
+	GMT_BOOLEAN first_dump;
 	GMT_LONG p[5], i_off[5], j_off[5], k_off[5], offset;
 	unsigned int bit[32];
 };
 
-void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, COUNTER_LARGE nn, double rgb[], GMT_LONG id, GMT_LONG flag)
+void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, COUNTER_LARGE nn, double rgb[], COUNTER_MEDIUM id, COUNTER_MEDIUM flag)
 {
 	COUNTER_LARGE i;
 	double x, y;
@@ -226,7 +226,7 @@ GMT_LONG trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);
 }
 
-GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], COUNTER_MEDIUM *edge, GMT_LONG first, double **x, double **y, COUNTER_LARGE *max)
+GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], COUNTER_MEDIUM *edge, COUNTER_MEDIUM first, double **x, double **y, COUNTER_LARGE *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -243,7 +243,7 @@ GMT_LONG clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *gr
 	 
 	 /* Reset edge-flags to zero, if necessary */
 	 if (first) {
-		GMT_LONG signed_nx = h->nx;	/* Needed to p[3] below */
+		GMT_LONG signed_nx = h->nx;	/* Needed to assign p[3] below */
 		info->offset = n_edges / 2;
 	 	i0 = 0;	/* Begin with upper left bin which is i = 0 and j = 1 */
 	 	j0 = 1;
@@ -497,9 +497,9 @@ GMT_LONG GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, stru
 GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 {
 	COUNTER_MEDIUM section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
-	COUNTER_MEDIUM io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start;
+	COUNTER_MEDIUM io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
 	COUNTER_MEDIUM fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
-	GMT_BOOLEAN error = FALSE, first = TRUE, node_only, make_plot, closed;
+	GMT_BOOLEAN error = FALSE, node_only, make_plot, closed;
 	
 	COUNTER_LARGE ij, n_points, n_seg = 0, n_read, n;
 	
@@ -711,7 +711,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Tracing the clip path\n");
 
 			section = 0;
-			first = TRUE;
+			first = 1;
 			while ((n = clip_contours (GMT, &info, grd, Grid->header, inc2, edge, first, &x, &y, &n_points)) > 0) {
 				closed = FALSE;
 				shrink_clip_contours (GMT, x, y, n, Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
@@ -733,7 +733,7 @@ GMT_LONG GMT_psmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 				}
 				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);
-				first = FALSE;
+				first = 0;
 				section++;
 			}
 
