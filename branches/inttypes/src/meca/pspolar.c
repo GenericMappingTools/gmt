@@ -435,27 +435,27 @@ GMT_LONG GMT_pspolar (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		/* Data record to process */
- 
-		switch (Ctrl->Q.active) {
-			case 0 :
-				if (!Ctrl->S2.active)
-					sscanf (line, "%s %lf %lf %c", stacode, &azimut, &ih, &pol);
-				else {
-					n = sscanf (line, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
-					if (n == 4) azS = -1.0;
-				}
-				break;
-			case 1 :
-				if (!Ctrl->S2.active) {
-					sscanf (line, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
-					pol = col[3][2];
-				}
-				else {
-					n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
-					pol = col[3][2];
-					if (n == 7) azS = -1.0;
-				}
-				break;
+
+		if (Ctrl->Q.active) {
+			if (Ctrl->S2.active) {
+				n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
+				pol = col[3][2];
+				if (n == 7)
+					azS = -1.0;
+			}
+			else { /* !Ctrl->S2.active */
+				sscanf (line, "%s %s %s %s %lf %lf %c", col[0], col[1], col[2], stacode, &azimut, &ih, col[3]);
+				pol = col[3][2];
+			}
+		}
+		else { /* !Ctrl->Q.active */
+			if (Ctrl->S2.active)
+				n = sscanf (line, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
+				if (n == 4)
+					azS = -1.0;
+			else { /* !Ctrl->S2.active */
+				sscanf (line, "%s %lf %lf %c", stacode, &azimut, &ih, &pol);
+			}
 		}
 
 		if (strcmp (col[0], "000000")) {
