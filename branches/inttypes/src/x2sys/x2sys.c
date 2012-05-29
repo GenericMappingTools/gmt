@@ -476,8 +476,9 @@ double *x2sys_dummytimes (struct GMT_CTRL *C, COUNTER_LARGE n)
 GMT_LONG x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G)
 {
 	GMT_BOOLEAN error = FALSE;
-	COUNTER_MEDIUM j, k, i, n_read = 0, pos;
+	COUNTER_MEDIUM j, k, i, pos;
 	GMT_LONG is;
+	size_t n_read = 0;
 	char line[GMT_BUFSIZ], buffer[GMT_TEXT_LEN64], p[GMT_BUFSIZ], c;
 	unsigned char u;
 	short int h;

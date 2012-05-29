@@ -1181,9 +1181,9 @@ static int mgd77_get_quadrant (int x, int y)
  */
 static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single MGD77 record */
 {
-	int i, k, nwords, value, yyyy, mm, dd, nconv;
+	int i, nwords, value, yyyy, mm, dd, nconv;
 	int64_t rata_die;
-	size_t len;
+	size_t len, k;
 	char line[GMT_BUFSIZ], currentField[10];
 	GMT_LONG may_convert;
 	double secs, tz;
@@ -1731,7 +1731,8 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct
 	 */
 
 	int dims[2] = {0, 0}, var_id, time_id;
-	GMT_LONG id, j, k, set, entry, use;
+	GMT_LONG id, j, set, entry, use;
+	size_t k;
 	time_t now;
 	char string[128];
 
@@ -2754,8 +2755,7 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
 	 * rw		0  for read or 1 for write.
 	 */
 
-	int start, stop;
-	size_t len;
+	size_t len, start, stop;
 	char mode[2];
 
 	mode[1] = '\0';	/* Thus mode will be a 1-char string */
@@ -3843,7 +3843,8 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	 */
 
 	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
-	int j, k, i, constraint, n;
+	int j, k, i, constraint;
+	size_t n;
 	COUNTER_MEDIUM pos;
 	GMT_BOOLEAN exact, all_exact;
 
@@ -4034,10 +4035,9 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none) */
 
-	GMT_LONG i;
 	COUNTER_MEDIUM n = 0, n_dig, j, k;
 	GMT_BOOLEAN all, NGDC_ID_likely;
-	size_t n_alloc = 0, length;
+	size_t n_alloc = 0, length, i;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
 #ifdef HAVE_DIRENT_H_
