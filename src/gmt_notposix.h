@@ -42,6 +42,8 @@
  * Include POSIX headers
  */
 
+#include <stdlib.h>
+
 #ifdef HAVE_ASSERT_H_
 #	include <assert.h>
 #else
@@ -170,6 +172,8 @@
 #	ifdef _MSC_VER
 		/* Suppress Visual Studio deprecation warnings */
 #		pragma warning( disable : 4996 )
+		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
+#		pragma warning( once : 4244 )
 		/* Visual Studio does not understand C99 restrict keyword */
 #		define restrict
 
