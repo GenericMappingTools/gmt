@@ -317,15 +317,17 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G_mod->header->ny; row++) grd_y[row] = GMT_grd_row_to_y (GMT, row, G_mod->header);
-	for (row = 0; row < G_mod->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
+	for (row = 0; row < G_mod->header->ny; row++) {
+		grd_y[row]  = GMT_grd_row_to_y (GMT, row, G_mod->header);
+		grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
+	}
 	for (col = 0; col < G_mod->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G_mod->header);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
 	GMT_report (GMT, GMT_MSG_NORMAL, "Evalute model prediction grid\n");
 
-	GMT_init_distaz (GMT, 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees */
+	GMT_init_distaz (GMT, (Ctrl->S.mode == PM_DIST) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
 	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
 
 	GMT_grd_loop (GMT, G_mod, row, col, node) {
@@ -356,29 +358,29 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 				break;
 			case PM_DLAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = grd_y[row] - GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				break;
 			case PM_LAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 				break;
 			case PM_DLON:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = grd_x[col] - lon * R2D;
 				if (fabs (value) > 180.0) value = copysign (360.0 - fabs (value), -value);
 				break;
 			case PM_LON:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = lon * R2D;
 				break;
 			case PM_DIST:	/* Compute distance between node and point of origin at ridge */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
-				value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D) * GMT->current.proj.DIST_KM_PR_DEG;
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1U, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D);
 				break;
 		}
 		G_mod->data[node] = (float)value;
