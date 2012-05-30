@@ -36,37 +36,37 @@
 
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM dir;
+		bool active;
+		unsigned int dir;
 	} D;
 	struct E {	/* -E<value> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
+		bool active;
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
 struct TRIANGULATE_EDGE {
-	COUNTER_MEDIUM begin, end;
+	unsigned int begin, end;
 };
 
 int compare_edge (const void *p1, const void *p2)
@@ -87,7 +87,7 @@ void *New_triangulate_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct TRIANGULATE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.dir = 2;	/* No derivatives */
 	return (C);
 }
@@ -98,7 +98,7 @@ void Free_triangulate_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_triangulate_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -131,7 +131,7 @@ GMT_LONG GMT_triangulate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to triangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -139,7 +139,7 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -152,7 +152,7 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'x': case 'X':
 						Ctrl->D.dir = GMT_X; break;
@@ -164,15 +164,15 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 				}
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -183,16 +183,16 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
 #endif
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -218,14 +218,14 @@ GMT_LONG GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_triangulate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	int *link = NULL;	/* Must remain int and not GMT_LONG due to triangle function */
+	int *link = NULL;	/* Must remain int and not int due to triangle function */
 	
-	COUNTER_LARGE ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
-	COUNTER_MEDIUM n_input, n_output;
-	GMT_LONG row, col, col_min, col_max, row_min, row_max;
-	GMT_BOOLEAN triplets[2] = {FALSE, FALSE}, error = FALSE, map_them = FALSE;
+	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
+	unsigned int n_input, n_output;
+	int row, col, col_min, col_max, row_min, row_max;
+	bool triplets[2] = {false, false}, error = false, map_them = false;
 	
 	size_t n_alloc;
 	
@@ -264,7 +264,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	if (Ctrl->G.active) {
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Grid->header, options, FALSE);
+		GMT_grd_init (GMT, Grid->header, options, false);
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 	}
@@ -274,7 +274,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
 	
 	if (GMT->common.R.active && GMT->common.J.active) { /* Gave -R -J */
-		map_them = TRUE;
+		map_them = true;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, Grid->header->wesn), "");
 	}
 
@@ -329,7 +329,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (triplets[GMT_IN]) GMT_free (GMT, zz);
 			Return (EXIT_FAILURE);
 		}
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -378,7 +378,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
-		GMT_LONG nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
+		int nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
@@ -468,7 +468,7 @@ GMT_LONG GMT_triangulate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				edge[ij2].begin = link[ij2];	edge[ij2].end = link[ij3];
 				edge[ij3].begin = link[ij1];	edge[ij3].end = link[ij3];
 			}
-			for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) l_swap (edge[i].begin, edge[i].end);
+			for (i = 0; i < n_edge; i++) if (edge[i].begin > edge[i].end) int_swap (edge[i].begin, edge[i].end);
 
 			qsort (edge, n_edge, sizeof (struct TRIANGULATE_EDGE), compare_edge);
 			for (i = 1, j = 0; i < n_edge; i++) {

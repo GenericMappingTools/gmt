@@ -38,31 +38,31 @@
 
 struct X2SYS_CROSS_CTRL {
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} A;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} I;
 	struct S {	/* -S */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		double limit[3];
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM width;
+		bool active;
+		unsigned int width;
 	} W;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} Q;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
@@ -75,7 +75,7 @@ void *New_x2sys_cross_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_CROSS_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->S.limit[VHI] = DBL_MAX;	/* Ignore crossovers on segments that implies speed higher than this */
 	C->W.width = 3;			/* Number of points on either side in the interpolation */
@@ -88,7 +88,7 @@ void Free_x2sys_cross_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "x2sys_cross %s - Calculate crossovers between track data files\n\n", X2SYS_VERSION);
@@ -124,7 +124,7 @@ GMT_LONG GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -132,7 +132,7 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -147,11 +147,11 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 			/* Processes program-specific parameters */
 			
 			case 'A':	/* Get list of approved filepair combinations to check */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
 						Ctrl->I.mode = 0;
@@ -175,17 +175,17 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 					case 'L':
 					case 'l':	/* Lower cutoff speed */
 						Ctrl->S.limit[VLO] = atof (&opt->arg[1]);
-						Ctrl->S.active[VLO] = TRUE;
+						Ctrl->S.active[VLO] = true;
 						break;
 					case 'U':
 					case 'u':	/* Upper cutoff speed */
 						Ctrl->S.limit[VHI] = atof (&opt->arg[1]);
-						Ctrl->S.active[VLO] = TRUE;
+						Ctrl->S.active[VLO] = true;
 						break;
 					case 'H':
 					case 'h':	/* Heading calculation cutoff speed */
 						Ctrl->S.limit[HHI] = atof (&opt->arg[1]);
-						Ctrl->S.active[HHI] = TRUE;
+						Ctrl->S.active[HHI] = true;
 						break;
 					default:
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -S<l|h|u><speed>\n");
@@ -194,21 +194,21 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 				}
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':	/* Get new window half-width as number of points */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				Ctrl->W.width = atoi (opt->arg);
 				break;
 			case 'Q':	/* Specify internal or external only */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'Z':	/* Return z1, z1 rather than (z1-z1) and 0.5 * (z1 + z2) */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -225,23 +225,23 @@ GMT_LONG GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG combo_ok (char *name_1, char *name_2, struct PAIR *pair, COUNTER_LARGE n_pairs)
+int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs)
 {
-	COUNTER_LARGE i;
+	uint64_t i;
 
-	/* Return TRUE if this particular combination is found in the list of pairs */
+	/* Return true if this particular combination is found in the list of pairs */
 
 	for (i = 0; i < n_pairs; i++) {
-		if (!(strcmp (name_1, pair[i].id1) || strcmp (name_2, pair[i].id2))) return (TRUE);
-		if (!(strcmp (name_2, pair[i].id1) || strcmp (name_1, pair[i].id2))) return (TRUE);
+		if (!(strcmp (name_1, pair[i].id1) || strcmp (name_2, pair[i].id2))) return (true);
+		if (!(strcmp (name_2, pair[i].id1) || strcmp (name_1, pair[i].id2))) return (true);
 	}
-	return (FALSE);
+	return (false);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_cross_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL;			/* Name of tracks */
 	char line[GMT_BUFSIZ];			/* buffer */
@@ -250,34 +250,34 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char name1[80], name2[80];		/* Name of two files to be examined */
 	char *x2sys_header = "%s %d %s %d %s";
 
-	COUNTER_LARGE n_rec[2];			/* Number of data records for both files */
-	COUNTER_LARGE window_width;			/* Max number of points to use in the interpolation */
-	COUNTER_LARGE n_tracks = 0;			/* Total number of data sets to compare */
-	COUNTER_LARGE nx;				/* Number of crossovers found for this pair */
-	COUNTER_LARGE *col_number = NULL;		/* Array with the column numbers of the data fields */
-	COUNTER_MEDIUM n_output;			/* Number of columns on output */
-	COUNTER_LARGE n_pairs = 0;			/* Number of acceptable combinations */
-	COUNTER_LARGE A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
-	COUNTER_LARGE end, first, n_ok;
-	COUNTER_LARGE n_data_col, left[2], t_left;
-	COUNTER_LARGE n_left, right[2], t_right, n_right;
-	COUNTER_LARGE n_duplicates, n_errors;
-	COUNTER_LARGE add_chunk;
-	GMT_LONG scol;
-	COUNTER_MEDIUM *ok = NULL;
+	uint64_t n_rec[2];			/* Number of data records for both files */
+	uint64_t window_width;			/* Max number of points to use in the interpolation */
+	uint64_t n_tracks = 0;			/* Total number of data sets to compare */
+	uint64_t nx;				/* Number of crossovers found for this pair */
+	uint64_t *col_number = NULL;		/* Array with the column numbers of the data fields */
+	unsigned int n_output;			/* Number of columns on output */
+	uint64_t n_pairs = 0;			/* Number of acceptable combinations */
+	uint64_t A, B, i, j, col, k, start, n_bad;	/* Misc. counters and local variables */
+	uint64_t end, first, n_ok;
+	uint64_t n_data_col, left[2], t_left;
+	uint64_t n_left, right[2], t_right, n_right;
+	uint64_t n_duplicates, n_errors;
+	uint64_t add_chunk;
+	int scol;
+	unsigned int *ok = NULL;
 
-	GMT_BOOLEAN xover_locations_only = FALSE;	/* TRUE if only x,y (and possible indices) to be output */
-	GMT_BOOLEAN internal = TRUE;		/* FALSE if only external xovers are needed */
-	GMT_BOOLEAN external = TRUE;		/* FALSE if only internal xovers are needed */
-	GMT_BOOLEAN error = FALSE;			/* TRUE for invalid arguments */
-	GMT_BOOLEAN do_project = FALSE;		/* TRUE if we must mapproject first */
-	GMT_BOOLEAN got_time = FALSE;		/* TRUE if there is a time column */
-	GMT_BOOLEAN first_header = TRUE;		/* TRUE for very first crossover */
-	GMT_BOOLEAN first_crossover;		/* TRUE for first crossover between two data sets */
-	GMT_BOOLEAN same = FALSE;			/* TRUE when the two cruises we compare have the same name */
-	GMT_BOOLEAN has_time[2];			/* TRUE for each cruises that actually has a time column */
-	GMT_BOOLEAN *duplicate = NULL;		/* Array, TRUE for any cruise that is already listed */
-	GMT_BOOLEAN cmdline_files = FALSE;		/* TRUE if files where given directly on the command line */
+	bool xover_locations_only = false;	/* true if only x,y (and possible indices) to be output */
+	bool internal = true;		/* false if only external xovers are needed */
+	bool external = true;		/* false if only internal xovers are needed */
+	bool error = false;			/* true for invalid arguments */
+	bool do_project = false;		/* true if we must mapproject first */
+	bool got_time = false;		/* true if there is a time column */
+	bool first_header = true;		/* true for very first crossover */
+	bool first_crossover;		/* true for first crossover between two data sets */
+	bool same = false;			/* true when the two cruises we compare have the same name */
+	bool has_time[2];			/* true for each cruises that actually has a time column */
+	bool *duplicate = NULL;		/* Array, true for any cruise that is already listed */
+	bool cmdline_files = false;		/* true if files where given directly on the command line */
 	
 	size_t n_alloc = 1;
 
@@ -343,13 +343,13 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	GMT->current.setting.interpolant = Ctrl->I.mode;
 	if (Ctrl->Q.active) {
-		if (Ctrl->Q.mode == 1) internal = FALSE;
-		if (Ctrl->Q.mode == 2) external = FALSE;
+		if (Ctrl->Q.mode == 1) internal = false;
+		if (Ctrl->Q.mode == 2) external = false;
 	}
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Files found: %" PRIu64 "\n", n_tracks);
 
-	duplicate = GMT_memory (GMT, NULL, n_tracks, GMT_BOOLEAN);
+	duplicate = GMT_memory (GMT, NULL, n_tracks, bool);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Checking for duplicates : ");
 	/* Make sure there are no duplicates */
@@ -360,7 +360,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			same = !strcmp (trk_name[A], trk_name[B]);
 			if (same) {
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s repeated on command line - skipped\n", trk_name[A]);
-				duplicate[B] = TRUE;
+				duplicate[B] = true;
 				n_duplicates++;
 			}
 		}
@@ -414,7 +414,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	window_width = 2 * Ctrl->W.width;
 	n_data_col = x2sys_n_data_cols (GMT, s);
 	got_time = (s->t_col >= 0);
-	if (!got_time) Ctrl->S.active[VLO] = FALSE;	/* Cannot check speed if there is no time */
+	if (!got_time) Ctrl->S.active[VLO] = false;	/* Cannot check speed if there is no time */
 
 	n_output = 10 + 2 * n_data_col;
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
@@ -423,14 +423,14 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (i = 0; i < n_data_col+2; i++) GMT->current.io.col_type[GMT_OUT][4+2*i] = GMT->current.io.col_type[GMT_OUT][5+2*i] = GMT_IS_FLOAT;
 
 	if (n_data_col == 0) {
-		xover_locations_only = TRUE;
+		xover_locations_only = true;
 		n_output = 2;
 	}
 	else {	/* Set the actual column numbers with data fields */
 		t = GMT_memory (GMT, NULL, window_width, double);
 		y = GMT_memory (GMT, NULL, window_width, double);
-		col_number = GMT_memory (GMT, NULL, n_data_col, COUNTER_LARGE);
-		ok = GMT_memory (GMT, NULL, n_data_col, COUNTER_MEDIUM);
+		col_number = GMT_memory (GMT, NULL, n_data_col, uint64_t);
+		ok = GMT_memory (GMT, NULL, n_data_col, unsigned int);
 		for (col = k = scol = 0; col < s->n_out_columns; col++, scol++) {
 			if (scol == s->x_col || scol == s->y_col || scol == s->t_col) continue;
 			col_number[k++] = col;
@@ -442,12 +442,12 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	xdata[0] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 	xdata[1] = GMT_memory (GMT, NULL, s->n_out_columns, double);
 
-	GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
-	GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on -ho explicitly */
+	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
+	GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
 
 	if (GMT->common.R.active && GMT->current.proj.projection != GMT_NO_PROJ) {
-		do_project = TRUE;
-		s->geographic = FALSE;	/* Since we then have x,y projected coordinates, not lon,lat */
+		do_project = true;
+		s->geographic = false;	/* Since we then have x,y projected coordinates, not lon,lat */
 		s->dist_flag = 0;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 	}
@@ -499,10 +499,10 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[A], &data[0], s, &data_set[0], &GMT->current.io, &n_rec[0]), trk_name[A]);
 
-		has_time[0] = FALSE;
+		has_time[0] = false;
 		if (got_time) {	/* Check to make sure we do in fact have time */
 			for (i = n_bad = 0; i < n_rec[0]; i++) n_bad += GMT_is_dnan (data[0][s->t_col][i]);
-			if (n_bad < n_rec[0]) has_time[0] = TRUE;
+			if (n_bad < n_rec[0]) has_time[0] = true;
 		}
 
 		if (do_project) {	/* Convert all the coordinates */
@@ -547,10 +547,10 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[B], &data[1], s, &data_set[1], &GMT->current.io, &n_rec[1]), trk_name[B]);
 
-				has_time[1] = FALSE;
+				has_time[1] = false;
 				if (got_time) {	/* Check to make sure we do in fact have time */
 					for (i = n_bad = 0; i < n_rec[1]; i++) n_bad += GMT_is_dnan (data[1][s->t_col][i]);
-					if (n_bad < n_rec[1]) has_time[1] = TRUE;
+					if (n_bad < n_rec[1]) has_time[1] = true;
 				}
 				
 				if (do_project) {	/* Convert all the coordinates */
@@ -585,11 +585,11 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else if (nx) {	/* Got crossovers, now estimate crossover values */
 				int64_t start_s;
-				first_crossover = TRUE;
+				first_crossover = true;
 
 				for (i = 0; i < nx; i++) {	/* For each potential crossover */
 
-					GMT_memset (ok, n_data_col, COUNTER_MEDIUM);
+					GMT_memset (ok, n_data_col, unsigned int);
 					n_ok = 0;
 
 					for (k = 0; k < 2; k++) {	/* For each of the two data sets involved */
@@ -709,7 +709,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						/* Estimate heading there */
 
 						j = k + 6;
-						out[j] = (!GMT_is_dnan (speed[k]) && (!Ctrl->S.active[HHI] || speed[k] > Ctrl->S.limit[HHI])) ? (*GMT->current.map.azimuth_func) (GMT, data[k][s->x_col][right[k]], data[k][s->y_col][right[k]], data[k][s->x_col][left[k]], data[k][s->y_col][left[k]], FALSE) : X2SYS_NaN;
+						out[j] = (!GMT_is_dnan (speed[k]) && (!Ctrl->S.active[HHI] || speed[k] > Ctrl->S.limit[HHI])) ? (*GMT->current.map.azimuth_func) (GMT, data[k][s->x_col][right[k]], data[k][s->y_col][right[k]], data[k][s->x_col][left[k]], data[k][s->y_col][left[k]], false) : X2SYS_NaN;
 
 						/* Estimate velocities there */
 
@@ -758,7 +758,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							strcat (line, item);
 						}
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
-						first_header = FALSE;
+						first_header = false;
 					}
 
 					if (first_crossover) {
@@ -779,7 +779,7 @@ GMT_LONG GMT_x2sys_cross (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						sprintf (info, "%s/%s/%g %s/%s/%g", start[0], stop[0], dist[0][n_rec[0]-1], start[1], stop[1], dist[1][n_rec[1]-1]);
 						sprintf (line, x2sys_header, trk_name[A], data_set[0].year, trk_name[B], data_set[1].year, info);
 						GMT_Put_Record (API, GMT_WRITE_SEGHEADER, line);
-						first_crossover = FALSE;
+						first_crossover = false;
 					}
 
 					if (s->geographic) GMT_lon_range_adjust (s->geodetic, &out[0]);

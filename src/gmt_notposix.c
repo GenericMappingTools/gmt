@@ -88,8 +88,8 @@ double strtod (const char *s, char **ends) {
 
 	char *t = NULL, savechar;
 	double x = 0.0;
-	GMT_LONG i, nsign[2], nradix[2], nexp, ndigits, error;
-	GMT_BOOLEAN inside = FALSE;
+	int i, nsign[2], nradix[2], nexp, ndigits, error;
+	bool inside = false;
 
 	t = s;
 	i = 0;
@@ -107,17 +107,17 @@ double strtod (const char *s, char **ends) {
 				case '-':
 					nsign[nexp]++;
 					if (inside) error++;
-					inside = TRUE;
+					inside = true;
 					break;
 				case '.':       /* This hardwires the radix char,
 						instead of using LOCALE  */
 					nradix[nexp]++;
-					inside = TRUE;
+					inside = true;
 					break;
 				case 'e':
 				case 'E':
 					nexp++;
-					inside = FALSE;
+					inside = false;
 					break;
 				default:
 					error++;
@@ -139,7 +139,7 @@ double strtod (const char *s, char **ends) {
 		}
 		else {
 			ndigits++;
-			inside = TRUE;
+			inside = true;
 		}
 		i++;
 	}
@@ -203,7 +203,7 @@ static double q2[5] = {1.872952849923460, 5.279051029514284e-01,
 #ifndef HAVE_ERF
 double erf (double y)
 {
-	GMT_LONG i, sign = 1;
+	int i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
 
 	x = y;
@@ -256,7 +256,7 @@ double erf (double y)
 #ifndef HAVE_ERFC
 double erfc (double y)
 {
-	GMT_LONG i, sign = 1;
+	int i, sign = 1;
 	double x, res, xsq, xnum, xden, xi;
 
 	x = y;

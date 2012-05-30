@@ -30,27 +30,27 @@
 
 struct GRDVOLUME_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 		double low, high, inc;
 	} C;
 	struct L {	/* -L<base> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} L;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		char unit;
 	} S;
 	struct T {	/* -T[c|z] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} T;
 	struct Z {	/* Z<fact>[/<shift>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double scale, offset;
 	} Z;
 };
@@ -59,7 +59,7 @@ struct GRDVOLUME_CTRL {
  * lines x0 and x1 and two horizontal lines y0 = ax +b and y1 = cx + d
  */
 
-double vol_prism_frac_x (struct GMT_GRID *G, COUNTER_LARGE ij, double x0, double x1, double a, double b, double c, double d)
+double vol_prism_frac_x (struct GMT_GRID *G, uint64_t ij, double x0, double x1, double a, double b, double c, double d)
 {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, x02, x12, x03, x04, x13, x14;
 
@@ -87,7 +87,7 @@ double vol_prism_frac_x (struct GMT_GRID *G, COUNTER_LARGE ij, double x0, double
  * lines y0 and y1 and two vertical lines x0 = ay +b and x1 = cy + d
  */
 
-double vol_prism_frac_y (struct GMT_GRID *G, COUNTER_LARGE ij, double y0, double y1, double a, double b, double c, double d)
+double vol_prism_frac_y (struct GMT_GRID *G, uint64_t ij, double y0, double y1, double a, double b, double c, double d)
 {
 	double dzdx, dzdy, dzdxy, ca, db, c2a2, d2b2, cdab, v, y02, y03, y04, y12, y13, y14;
 
@@ -111,9 +111,9 @@ double vol_prism_frac_y (struct GMT_GRID *G, COUNTER_LARGE ij, double y0, double
 	return (v);
 }
 
-void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
+void SW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
 {	/* Calculates area of a SW-corner triangle */
-	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
+	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, frac;
 
 	x1 = G->data[ij] / (G->data[ij] - G->data[ij+1]);
@@ -129,9 +129,9 @@ void SW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, do
 	}
 }
 
-void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
+void NE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
 {	/* Calculates area of a NE-corner triangle */
-	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
+	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, a, x0_1, y1_1, frac = 0.0;
 
 	x0 = G->data[ij-G->header->mx] / (G->data[ij-G->header->mx] - G->data[ij+1-G->header->mx]);
@@ -152,9 +152,9 @@ void NE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, do
 	}
 }
 
-void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
+void SE_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
 {	/* Calculates area of a SE-corner triangle */
-	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
+	/* triangle = true gets triangle, false gives the complementary area */
 	double x0, y1, c, x0_1, frac = 0.0;
 
 	x0 = G->data[ij] / (G->data[ij] - G->data[ij+1]);
@@ -174,9 +174,9 @@ void SE_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, do
 	}
 }
 
-void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, double *dv, double *da)
+void NW_triangle (struct GMT_GRID *G, uint64_t ij, bool triangle, double *dv, double *da)
 {	/* Calculates area of a NW-corner triangle */
-	/* triangle = TRUE gets triangle, FALSE gives the complementary area */
+	/* triangle = true gets triangle, false gives the complementary area */
 	double x1, y0, y0_1, frac;
 
 	x1 = G->data[ij-G->header->mx] / (G->data[ij-G->header->mx] - G->data[ij+1-G->header->mx]);
@@ -193,9 +193,9 @@ void NW_triangle (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN triangle, do
 	}
 }
 
-void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN right, double *dv, double *da)
+void NS_trapezoid (struct GMT_GRID *G, uint64_t ij, bool right, double *dv, double *da)
 {	/* Calculates area of a NS trapezoid */
-	/* right = TRUE gets the right trapezoid, FALSE gets the left */
+	/* right = true gets the right trapezoid, false gets the left */
 	double x0, x1;
 
 	x0 = G->data[ij] / (G->data[ij] - G->data[ij+1]);
@@ -210,9 +210,9 @@ void NS_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN right, doub
 	}
 }
 
-void EW_trapezoid (struct GMT_GRID *G, COUNTER_LARGE ij, GMT_BOOLEAN top, double *dv, double *da)
+void EW_trapezoid (struct GMT_GRID *G, uint64_t ij, bool top, double *dv, double *da)
 {	/* Calculates area of a EW trapezoid */
-	/* top = TRUE gets the top trapezoid, FALSE gets the bottom */
+	/* top = true gets the top trapezoid, false gets the bottom */
 	double y0, y1;
 
 	y0 = G->data[ij] / (G->data[ij] - G->data[ij-G->header->mx]);
@@ -241,9 +241,9 @@ double median3 (double x[])
 	}
 }
 
-GMT_LONG ors_find_kink (struct GMT_CTRL *GMT, double y[], COUNTER_MEDIUM n, COUNTER_MEDIUM mode)
+int ors_find_kink (struct GMT_CTRL *GMT, double y[], unsigned int n, unsigned int mode)
 {	/* mode: 0 = find value maximum, 1 = find curvature maximum */
-	COUNTER_MEDIUM i, im;
+	unsigned int i, im;
 	double *c = NULL, *f = NULL;
 
 	if (mode == 0) {	/* Find maximum value */
@@ -279,7 +279,7 @@ void *New_grdvolume_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDVOLUME_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.value = GMT->session.d_NaN;
 	C->Z.scale = 1.0;
 	return (C);
@@ -290,7 +290,7 @@ void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdvolume_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdvolume_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -315,7 +315,7 @@ GMT_LONG GMT_grdvolume_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdvolume and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -324,8 +324,8 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG n = 0;
+	unsigned int n_errors = 0, n_files = 0;
+	int n = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -333,14 +333,14 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->C.low, &Ctrl->C.high, &Ctrl->C.inc);
 				if (n == 3) {
 					n_errors += GMT_check_condition (GMT, Ctrl->C.low >= Ctrl->C.high || Ctrl->C.inc <= 0.0, "Syntax error -C option: high must exceed low and delta must be positive\n");
@@ -349,15 +349,15 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 					Ctrl->C.high = Ctrl->C.low, Ctrl->C.inc = 1.0;	/* So calculation of ncontours will yield 1 */
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				if (opt->arg[0]) Ctrl->L.value = atof (opt->arg);
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				Ctrl->S.unit = opt->arg[0];
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'c':
 						Ctrl->T.mode = 1;	/* Find maximum in height curvatures */
@@ -372,7 +372,7 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 				}
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				n_errors += GMT_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.scale, &Ctrl->Z.offset) < 1, "Syntax error option -Z: Must specify <fact> and optionally <shift>\n");
 				break;
 
@@ -395,13 +395,13 @@ GMT_LONG GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdvolume_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, bad, cut[4];
-	GMT_LONG ij_inc[5];
-	COUNTER_MEDIUM row, col, c, k, pos, neg, nc, n_contours;
+	bool error = false, bad, cut[4];
+	int ij_inc[5];
+	unsigned int row, col, c, k, pos, neg, nc, n_contours;
 	
-	COUNTER_LARGE ij;
+	uint64_t ij;
 
 	double take_out, dv, da, cval = 0.0, cellsize, fact, dist_pr_deg, sum, out[4];
 	double *area = NULL, *vol = NULL, *height = NULL, this_base, small, wesn[4];
@@ -443,8 +443,8 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 
-	(void) GMT_set_outgrid (GMT, Grid, &Work);	/* TRUE if input is a read-only array */
-	GMT_grd_init (GMT, Work->header, options, TRUE);
+	(void) GMT_set_outgrid (GMT, Grid, &Work);	/* true if input is a read-only array */
+	GMT_grd_init (GMT, Work->header, options, true);
 
 	/* Set node increments relative to the lower-left node of a 4-point box */
 	GMT_grd_set_ij_inc (GMT, Work->header->mx, ij_inc);
@@ -468,7 +468,7 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_grd_do_scaling (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
-		if (Ctrl->Z.scale < 0.0) d_swap (Work->header->z_min, Work->header->z_max);
+		if (Ctrl->Z.scale < 0.0) double_swap (Work->header->z_min, Work->header->z_max);
 	}
 
 	this_base = (Ctrl->L.active) ? Ctrl->L.value : 0.0;
@@ -500,9 +500,9 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				/* Find if a contour goes through this bin */
 
-				for (k = neg = pos = 0, bad = FALSE; !bad && k < 4; k++) {
+				for (k = neg = pos = 0, bad = false; !bad && k < 4; k++) {
 					(Work->data[ij+ij_inc[k]] <= (float)small) ? neg++ : pos++;
-					if (GMT_is_fnan (Work->data[ij+ij_inc[k]])) bad = TRUE;
+					if (GMT_is_fnan (Work->data[ij+ij_inc[k]])) bad = true;
 				}
 
 				if (bad || neg == 4) continue;	/* Contour not crossing, go to next bin */
@@ -515,19 +515,19 @@ GMT_LONG GMT_grdvolume (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else {	/* Need partial prisms */
 
 					for (k = nc = 0; k < 4; k++) {	/* Check the 4 sides for crossings */
-						cut[k] = FALSE;
-						if ((Work->data[ij+ij_inc[k]] * Work->data[ij+ij_inc[k+1]]) < 0.0) nc++, cut[k] = TRUE;	/* Crossing this border */
+						cut[k] = false;
+						if ((Work->data[ij+ij_inc[k]] * Work->data[ij+ij_inc[k+1]]) < 0.0) nc++, cut[k] = true;	/* Crossing this border */
 					}
 					if (nc < 2) continue;	/* Can happen if some nodes were 0 and then reset to small, thus passing the test */
 
 					if (nc == 4) {	/* Saddle scenario */
 						if (Work->data[ij] > 0.0) {	/* Need both SW and NE triangles */
-							SW_triangle (Work, ij, TRUE, &dv, &da);
-							NE_triangle (Work, ij, TRUE, &dv, &da);
+							SW_triangle (Work, ij, true, &dv, &da);
+							NE_triangle (Work, ij, true, &dv, &da);
 						}
 						else {			/* Need both SE and NW corners */
-							SE_triangle (Work, ij, TRUE, &dv, &da);
-							NW_triangle (Work, ij, TRUE, &dv, &da);
+							SE_triangle (Work, ij, true, &dv, &da);
+							NW_triangle (Work, ij, true, &dv, &da);
 						}
 
 					}

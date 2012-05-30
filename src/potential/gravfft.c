@@ -28,92 +28,92 @@
 #include "gmt_potential.h"
 
 struct GRAVFFT_CTRL {
-	COUNTER_MEDIUM n_par;
+	unsigned int n_par;
 	double *par;
 
 	struct GRVF_In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file[2];
 	} In;
 	struct GRVF_A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		double	te, rhol, rhom, rhow;
 		double	rho_cw;		/* crust-water density contrast */
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} A;
 	struct GRVF_C {	/* -C<zlevel> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n_pt;
+		bool active;
+		unsigned int n_pt;
 		double theor_inc;
 	} C;
 	struct GRVF_D {	/* -D[<scale>|g] */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct GRVF_E {	/* -E */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n_terms;
+		bool active;
+		unsigned int n_terms;
 	} E;
 	struct GRVF_F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 		double lc, lp, hp, hc;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct GRVF_H {
-		GMT_BOOLEAN active;
+		bool active;
 	} H;
 	struct GRVF_I {	/* -I[<scale>|g] */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} I;
 	struct GRVF_L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct GRVF_M {
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct GRVF_N {	/* -N<stuff> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN force_narray, suggest_narray, n_user_set;
-		COUNTER_MEDIUM nx2, ny2;
+		bool active;
+		bool force_narray, suggest_narray, n_user_set;
+		unsigned int nx2, ny2;
 		double value;
 	} N;
 	struct GRVF_Q {
-		GMT_BOOLEAN active;
+		bool active;
 	} Q;
 	struct GRVF_S {	/* -S<scale> */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct GRVF_s {
-		GMT_BOOLEAN active;
+		bool active;
 		double scale;
 	} s;
 	struct GRVF_T {	/* -T<te/rl/rm/rw/ri> */
-		GMT_BOOLEAN active;
+		bool active;
 		double te, rhol, rhom, rhow;
 		double	rho_cw;		/* crust-water density contrast */
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} T;
 	struct GRVF_t {	/* -t For saving real & imag FFT grids */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN sc_coherence, sc_admitt;
+		bool active;
+		bool sc_coherence, sc_admitt;
 	} t;
 	struct GRVF_Z {
 		double	zm;			/* mean Moho depth (given by user) */
 		double	zl;			/* mean depth of swell compensation (user given) */		
 	} Z;
 	struct GRVF_misc {	/* -T */
-		GMT_BOOLEAN coherence;
-		GMT_BOOLEAN give_wavelength;
-		GMT_BOOLEAN from_below;
-		GMT_BOOLEAN from_top;
-		GMT_BOOLEAN rem_nothing;
-		GMT_BOOLEAN mean_or_half_way;
+		bool coherence;
+		bool give_wavelength;
+		bool from_below;
+		bool from_top;
+		bool rem_nothing;
+		bool mean_or_half_way;
 		float k_or_m;
 		double	z_level;	/* mean bathymetry level computed from data */
 		double	z_offset;	/* constant that myght be added to grid data */
@@ -130,12 +130,12 @@ struct GRAVFFT_CTRL {
 #define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude */
 #define	POISSONS_RATIO	0.25
 
-GMT_BOOLEAN rem_mean = FALSE;
-GMT_BOOLEAN sphericity = FALSE;
+bool rem_mean = false;
+bool sphericity = false;
 
 struct FFT_SUGGESTION {
-	COUNTER_MEDIUM nx;
-	COUNTER_MEDIUM ny;
+	unsigned int nx;
+	unsigned int ny;
 	size_t worksize;	/* # single-complex elements needed in work array  */
 	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
 	double run_time;
@@ -143,7 +143,7 @@ struct FFT_SUGGESTION {
 }; /* [0] holds fastest, [1] most accurate, [2] least storage  */
 
 struct K_XY {	/* Holds parameters needed to calculate kx, ky, kr */
-	COUNTER_MEDIUM nx2, ny2;
+	unsigned int nx2, ny2;
 	double delta_kx, delta_ky;
 };
 
@@ -152,13 +152,13 @@ void *New_gravfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRAVFFT_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.te = 0.0;
 	C->s.scale = 1.0;
 	C->E.n_terms = 1;
 	C->misc.k_or_m = 1;
-	C->misc.mean_or_half_way = TRUE;
+	C->misc.mean_or_half_way = true;
 	return (C);
 }
 
@@ -175,7 +175,7 @@ double	scale_out = 1.0;
 double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
 void set_grid_radix_size__ (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_GRID *Gin);
-void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, COUNTER_LARGE n, double rho);
+void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, uint64_t n, double rho);
 void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
 void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl);
 void do_isostasy__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K);
@@ -183,14 +183,14 @@ void do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID 
 void remove_plane__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
 void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_below);
 void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_top);
-void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, COUNTER_MEDIUM n);
-void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, COUNTER_MEDIUM n);
+void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n);
+void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n);
 void compute_only_adimtts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_top_or_bot, double delta_pt);
 void write_script(void);
 
-GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	COUNTER_MEDIUM n_errors = 0, pos, n_files = 0;
+	unsigned int n_errors = 0, pos, n_files = 0;
 	/* first 2 cols from table III of Singleton's paper on fft.... */
 	int nlist[117] = {64,72,75,80,81,90,96,100,108,120,125,128,135,144,150,160,162,180,192,200,
 			216,225,240,243,250,256,270,288,300,320,324,360,375,384,400,405,432,450,480,
@@ -209,7 +209,7 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Input file */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files == 0) 
 					Ctrl->In.file[n_files++] = strdup (opt->arg);
 				else if (n_files == 1)
@@ -221,7 +221,7 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				break;
 #ifdef GMT_COMPAT
 			case 'A':		/* Old pre-GMT way of setting this */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->T.te, &Ctrl->T.rhol, &Ctrl->T.rhom, &Ctrl->T.rhow);
 				Ctrl->T.rho_cw = Ctrl->T.rhol - Ctrl->T.rhow;
 				Ctrl->T.rho_mc = Ctrl->T.rhom - Ctrl->T.rhol;
@@ -233,18 +233,18 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				break;
 #endif
 			case 'C':	/* For theoretical curves only */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				sscanf (opt->arg, "%d/%lf/%lf/%s", &Ctrl->C.n_pt, &Ctrl->C.theor_inc, &Ctrl->misc.z_level, t_or_b);
 				for (n = 0; t_or_b[n]; n++) {
 					switch (t_or_b[n]) {
 						case 'w':
-							Ctrl->misc.give_wavelength = TRUE;
+							Ctrl->misc.give_wavelength = true;
 							break;
 						case 'b':
-							Ctrl->misc.from_below = TRUE;
+							Ctrl->misc.from_below = true;
 							break;
 						case 't':
-							Ctrl->misc.from_top = TRUE;
+							Ctrl->misc.from_top = true;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C: [%s] is not valid, chose from [tbw]\n", &t_or_b[n]);
@@ -258,9 +258,9 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: must give density contrast\n");
 					n_errors++;
 				}
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->misc.rho = atof (opt->arg);
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
@@ -270,11 +270,11 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				}
 				break;
 			case 'H':
-				Ctrl->H.active = TRUE;
-				Ctrl->L.active = TRUE;
+				Ctrl->H.active = true;
+				Ctrl->L.active = true;
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				pos = j = 0;
 				while (GMT_strtok (opt->arg, "/", &pos, ptr)) {
 					switch (j) {
@@ -285,16 +285,16 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 							for (n = 0; ptr[n]; n++) {
 								switch (ptr[n]) {
 									case 'w':
-										Ctrl->misc.give_wavelength = TRUE;
+										Ctrl->misc.give_wavelength = true;
 										break;
 									case 'b':
-										Ctrl->misc.from_below = TRUE;
+										Ctrl->misc.from_below = true;
 										break;
 									case 'c':
-										Ctrl->misc.coherence = TRUE;
+										Ctrl->misc.coherence = true;
 										break;
 									case 't':
-										Ctrl->misc.from_top = TRUE;
+										Ctrl->misc.from_top = true;
 										break;
 									case 'k':
 										Ctrl->misc.k_or_m = 1000.;
@@ -313,19 +313,19 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 			case 'l':
 				if (opt->arg[0] == 'n' || opt->arg[0] == 'N')
-					Ctrl->misc.rem_nothing = TRUE;
+					Ctrl->misc.rem_nothing = true;
 				else
-					Ctrl->misc.mean_or_half_way = FALSE;
+					Ctrl->misc.mean_or_half_way = false;
 				break;
 			case 'N':
 				if (opt->arg[0] == 'f' || opt->arg[0] == 'F')
-					Ctrl->N.force_narray = TRUE;
+					Ctrl->N.force_narray = true;
 				else if (opt->arg[0] == 'q' || opt->arg[0] == 'Q')
-					Ctrl->N.suggest_narray = TRUE;
+					Ctrl->N.suggest_narray = true;
 				else if (opt->arg[0] == 's' || opt->arg[0] == 'S') {
 					fprintf (stderr, "\t\"Good\" numbers for FFT dimensions\n");
 					for (k = 0; k < 104; k++) {
@@ -337,14 +337,14 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				else {
 					if ((sscanf(opt->arg, "%d/%d", &Ctrl->N.nx2, &Ctrl->N.ny2)) != 2) n_errors++;
 					if (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0) n_errors++;
-					Ctrl->N.n_user_set = TRUE;
+					Ctrl->N.n_user_set = true;
 				}
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 #ifdef GMT_COMPAT
@@ -354,14 +354,14 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				break;
 #endif
 			case 'Q':
-				Ctrl->Q.active = TRUE;
-				Ctrl->L.active = TRUE;
+				Ctrl->Q.active = true;
+				Ctrl->L.active = true;
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->T.te, &Ctrl->T.rhol, &Ctrl->T.rhom, &Ctrl->T.rhow);
 				Ctrl->T.rho_cw = Ctrl->T.rhol - Ctrl->T.rhow;
 				Ctrl->T.rho_mc = Ctrl->T.rhom - Ctrl->T.rhol;
@@ -372,15 +372,15 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 				}
 				break;
 			case 's':
-				Ctrl->s.active = TRUE;
+				Ctrl->s.active = true;
 				Ctrl->s.scale = atof (opt->arg);
 				break;
 			case 't':
-				Ctrl->t.active = TRUE;
+				Ctrl->t.active = true;
 				if (opt->arg[0] == 'a')
-					Ctrl->t.sc_admitt = TRUE;
+					Ctrl->t.sc_admitt = true;
 				else if (opt->arg[0] == 'c')
-					Ctrl->t.sc_coherence = TRUE;
+					Ctrl->t.sc_coherence = true;
 				break;
 			case 'Z':
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.zm, &Ctrl->Z.zl);
@@ -429,7 +429,7 @@ GMT_LONG GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG GMT_gravfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -512,11 +512,11 @@ GMT_LONG GMT_gravfft_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gravfft_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 
-	COUNTER_MEDIUM i, j, k, n;
-	GMT_BOOLEAN error = FALSE, stop;
-	COUNTER_LARGE m;
+	unsigned int i, j, k, n;
+	bool error = false, stop;
+	uint64_t m;
 	char	line[256], line2[256], format[64], buffer[256];
 	float	*topo = NULL, *raised = NULL;
 	double	delta_pt, freq;
@@ -585,7 +585,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Ctrl->E.n_terms = 1;
 	}
 
-	GMT_grd_init (GMT, GridA->header, options, TRUE);
+	GMT_grd_init (GMT, GridA->header, options, true);
 	set_grid_radix_size__ (GMT, Ctrl, GridA);		/* This also sets the new pads */
 	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
 	for (j = 0; j < 4; j++) GridA->header->BC[j] = GMT_BC_IS_DATA;
@@ -596,7 +596,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 
 	/* Check that no NaNs are present */
-	stop = FALSE;
+	stop = false;
 	for (j = 0; !stop && j < GridA->header->ny; j++)
 		for (i = 0; !stop && i < GridA->header->nx; i++) 
 			stop = GMT_is_fnan (GridA->data[GMT_IJPR(GridA->header,j,i)]);
@@ -605,7 +605,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	(void)GMT_set_outgrid (GMT, GridA, &Out);	/* TRUE if input is a read-only array; otherwise Out just points to GridA */
+	(void)GMT_set_outgrid (GMT, GridA, &Out);	/* true if input is a read-only array; otherwise Out just points to GridA */
 
 	/* ------------------------------------------------------------------------------------ */
 	if (Ctrl->In.file[1]) {
@@ -661,7 +661,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing gravity file %s\n", Ctrl->In.file[1]);
 
-		GMT_grd_init (GMT, GridB->header, options, TRUE);
+		GMT_grd_init (GMT, GridB->header, options, true);
 		set_grid_radix_size__ (GMT, Ctrl, GridB);		/* This also sets the new pads */
 		/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
 		for (j = 0; j < 4; j++) GridB->header->BC[j] = GMT_BC_IS_DATA;
@@ -672,7 +672,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 
 		/* Check that no NaNs are present in gravity file */
-		stop = FALSE;
+		stop = false;
 		for (j = 0; !stop && j < GridB->header->ny; j++)
 			for (i = 0; !stop && i < GridB->header->nx; i++) 
 				stop = GMT_is_fnan (GridB->data[GMT_IJPR(GridB->header,j,i)]);
@@ -681,7 +681,7 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		(void)GMT_set_outgrid (GMT, GridB, &Out2);	/* TRUE if input is a read-only array; otherwise Out just points to GridB */
+		(void)GMT_set_outgrid (GMT, GridB, &Out2);	/* true if input is a read-only array; otherwise Out just points to GridB */
 		if (!Ctrl->L.active) remove_plane__ (GMT, Out2);
 		if (!Ctrl->N.force_narray) taper_edges__ (GMT, Out2);
 
@@ -733,13 +733,13 @@ GMT_LONG GMT_gravfft (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		strcpy (h.z_units, "fft-ed z_units");
 		strcpy (h.title, "Real part of fft transformed input grid");
 		strcpy (h.remark, "With origin at lower left corner, kx = 0 at (nx/2 + 1) and ky = 0 at ny/2");
-       		GMT_write_grd (infile_r, &h, datac, 0.0, 0.0, 0.0, 0.0, (GMT_LONG *)dummy, TRUE);*/
+       		GMT_write_grd (infile_r, &h, datac, 0.0, 0.0, 0.0, 0.0, (int *)dummy, true);*/
 
 		//for (i = 2; i < ndatac; i+= 2)	/* move imag to real position in the array */
 			//datac[i] = datac[i+1];	/* because that's what write_grd writes to file */
 
 		/*strcpy (h.title, "Imaginary part of fft transformed input grid");
-		GMT_write_grd (infile_i, &h, datac, 0.0, 0.0, 0.0, 0.0, (GMT_LONG *)dummy, TRUE);
+		GMT_write_grd (infile_i, &h, datac, 0.0, 0.0, 0.0, 0.0, (int *)dummy, true);
 
 		if (Ctrl->t.active) write_script();*/
 
@@ -835,8 +835,8 @@ void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CT
 	/* Remove the level corresponding to the mean or the half-way point.
 	   This level is used as the depth parameter in the exponential term */
 
-	COUNTER_MEDIUM i, j;
-	COUNTER_LARGE ji;
+	unsigned int i, j;
+	uint64_t ji;
 	double z_min, z_max, sum = 0.0, half_w = 0.0;
 	float *datac = Grid->data;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
@@ -869,9 +869,9 @@ void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CT
 }
 
 void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
-	GMT_LONG im, jm, il1, ir1, il2, ir2, jb1, jb2, jt1, jt2;
-	GMT_LONG i, j, i_data_start, j_data_start, mx;
-	COUNTER_MEDIUM ju;
+	int im, jm, il1, ir1, il2, ir2, jb1, jb2, jt1, jt2;
+	int i, j, i_data_start, j_data_start, mx;
+	unsigned int ju;
 	float *datac = Grid->data;
 	double scale, cos_wt;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
@@ -932,29 +932,29 @@ void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	GMT_report (GMT, GMT_MSG_NORMAL, "Data reflected and tapered\n");
 }
 
-double kx__ (COUNTER_LARGE k, struct K_XY *K) {
+double kx__ (uint64_t k, struct K_XY *K) {
 	/* Return the value of kx given k,
 		where kx = 2 pi / lambda x,
 		and k refers to the position
 		in the datac array, datac[k].  */
 
-	COUNTER_LARGE ii = (k/2)%(K->nx2);
+	uint64_t ii = (k/2)%(K->nx2);
 	if (ii > (K->nx2)/2) ii -= (K->nx2);
 	return (ii * K->delta_kx);
 }
 
-double ky__ (COUNTER_LARGE k, struct K_XY *K) {
+double ky__ (uint64_t k, struct K_XY *K) {
 	/* Return the value of ky given k,
 	 * where ky = 2 pi / lambda y,
 	 * and k refers to the position
 	 *in the datac array, datac[k].  */
 
-	COUNTER_LARGE jj = (k/2)/(K->nx2);
+	uint64_t jj = (k/2)/(K->nx2);
 	if (jj > (K->ny2)/2) jj -= (K->ny2);
 	return (jj * K->delta_ky);
 }
 
-double modk__ (COUNTER_LARGE k, struct K_XY *K) {
+double modk__ (uint64_t k, struct K_XY *K) {
 	/* Return the value of sqrt(kx*kx + ky*ky),
 	 * given k, where k is array position.  */
 
@@ -967,7 +967,7 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	densities in kg/m**3, Te in m, etc.
 	rw, the water density, is used to set the Airy ratio and the restoring
 	force on the plate (rm - ri)*gravity if ri = rw; so use zero for topo in air (ri changed to rl).  */
-	COUNTER_LARGE k;
+	uint64_t k;
 	double  airy_ratio, rigidity_d, d_over_restoring_force, mk, k2, k4, transfer_fn;
 	float *datac = Grid->data;
 
@@ -994,8 +994,8 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	}
 }
 
-void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, COUNTER_LARGE n, double rho) {
-	COUNTER_LARGE i, k;
+void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, uint64_t n, double rho) {
+	uint64_t i, k;
 	double f, p, t, mk, v, c;
 	float *datac = Grid->data;
 
@@ -1022,10 +1022,10 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 	}
 }
 
-COUNTER_MEDIUM get_non_symmetric_f__ (COUNTER_MEDIUM *f, COUNTER_MEDIUM n) {
+unsigned int get_non_symmetric_f__ (unsigned int *f, unsigned int n) {
 	/* Return the product of the non-symmetric factors in f[]  */
-	COUNTER_MEDIUM i = 0, j = 1;
-	COUNTER_MEDIUM retval = 1;
+	unsigned int i = 0, j = 1;
+	unsigned int retval = 1;
 
 	if (n == 1) return (f[0]);
 
@@ -1039,7 +1039,7 @@ COUNTER_MEDIUM get_non_symmetric_f__ (COUNTER_MEDIUM *f, COUNTER_MEDIUM n) {
 	return (retval);
 }
 
-void fourt_stats__ (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, COUNTER_MEDIUM *f, double *r, size_t *s, double *t) {
+void fourt_stats__ (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t) {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
 	 * of the workspace that will be needed by the transform.
@@ -1077,8 +1077,8 @@ void fourt_stats__ (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, CO
 	 * W. H. F. Smith, 26 February 1992.
 	 *  */
 
-	COUNTER_MEDIUM n_factors, i, sum2, sumnot2, nnot2;
-	COUNTER_MEDIUM nonsymx, nonsymy, nonsym, storage, ntotal;
+	unsigned int n_factors, i, sum2, sumnot2, nnot2;
+	unsigned int nonsymx, nonsymy, nonsym, storage, ntotal;
 	double err_scale;
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
@@ -1113,13 +1113,13 @@ void fourt_stats__ (struct GMT_CTRL *C, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, CO
 	return;
 }
 
-void suggest_fft__ (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, struct FFT_SUGGESTION *fft_sug, GMT_BOOLEAN do_print) {
-	COUNTER_MEDIUM f[32], xstop, ystop;
-	COUNTER_MEDIUM nx_best_t, ny_best_t;
-	COUNTER_MEDIUM nx_best_e, ny_best_e;
-	COUNTER_MEDIUM nx_best_s, ny_best_s;
-	COUNTER_MEDIUM nxg, nyg;       /* Guessed by this routine  */
-	COUNTER_MEDIUM nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
+void suggest_fft__ (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct FFT_SUGGESTION *fft_sug, bool do_print) {
+	unsigned int f[32], xstop, ystop;
+	unsigned int nx_best_t, ny_best_t;
+	unsigned int nx_best_e, ny_best_e;
+	unsigned int nx_best_s, ny_best_s;
+	unsigned int nxg, nyg;       /* Guessed by this routine  */
+	unsigned int nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
 	size_t current_space, best_space, given_space, e_space, t_space;
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
@@ -1218,7 +1218,7 @@ void suggest_fft__ (struct GMT_CTRL *GMT, COUNTER_MEDIUM nx, COUNTER_MEDIUM ny, 
 }
 
 void set_grid_radix_size__ (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_GRID *Gin) {
-	COUNTER_MEDIUM k, factors[32];
+	unsigned int k, factors[32];
 	size_t worksize;
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
@@ -1227,7 +1227,7 @@ void set_grid_radix_size__ (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, str
 	if (Ctrl->N.n_user_set) {
 		if (Ctrl->N.nx2 < Gin->header->nx || Ctrl->N.ny2 < Gin->header->ny) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: You specified -Nnx/ny smaller than input grid.  Ignored.\n");
-			Ctrl->N.n_user_set = FALSE;
+			Ctrl->N.n_user_set = false;
 		}
 	}
 	if (!(Ctrl->N.n_user_set) ) {
@@ -1285,8 +1285,8 @@ void remove_plane__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
 	spend some multiplications on normalizing the 
 	range of x,y into [-1,1], to avoid roundoff error.  */
 
-	COUNTER_MEDIUM i, j, one_or_zero;
-	COUNTER_LARGE ij;
+	unsigned int i, j, one_or_zero;
+	uint64_t ij;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
 	double sumx2, sumy2, data_var, x, y, z, a[3];
 	float *datac = Grid->data;
@@ -1348,8 +1348,8 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	 *	approximation of the integral."
 	 */
 
-	COUNTER_LARGE	k, k_0 = 0, nk, ifreq;
-	COUNTER_MEDIUM *nused = NULL;
+	uint64_t	k, k_0 = 0, nk, ifreq;
+	unsigned int *nused = NULL;
 	size_t n_alloc;
 	char	format[64], buffer[256];
 	double	delta_k, r_delta_k, freq;
@@ -1376,10 +1376,10 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	if (Ctrl->misc.from_top)
 		z_from_top = GMT_memory (GMT, NULL, n_alloc, double);
 	n_alloc   = Ctrl->N.nx2 * Ctrl->N.ny2;
-	nused   = GMT_memory (GMT, NULL, n_alloc, COUNTER_MEDIUM);
+	nused   = GMT_memory (GMT, NULL, n_alloc, unsigned int);
 
 	if (Ctrl->misc.coherence)
-		Ctrl->I.active = FALSE;
+		Ctrl->I.active = false;
 
 	/* Loop over it all, summing and storing, checking range for r */
 
@@ -1480,7 +1480,7 @@ void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, stru
 	   The z_from_below is a vector that must have been previously allocated 
 	   with a size of "nk" like that variable is computed here.	*/
 
-	COUNTER_MEDIUM k, nk;
+	unsigned int k, nk;
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2, t3;
 
 	if (K->delta_kx < K->delta_ky)
@@ -1514,7 +1514,7 @@ void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct
 	   The z_from_top is a vector that must have been previously allocated 
 	   with a size of "nk" like that variable is computed here.	*/
 
-	COUNTER_MEDIUM k, nk;
+	unsigned int k, nk;
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2;
 
 	if (K->delta_kx < K->delta_ky) 
@@ -1538,13 +1538,13 @@ void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct
 	}
 }
 
-void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, COUNTER_MEDIUM n) {
+void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from top" model --  M. McNutt & Shure (1986)  */
 
-	COUNTER_MEDIUM i;
-	COUNTER_LARGE k;
+	unsigned int i;
+	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, f, p, t, mk;
 	float *datac = Grid->data;
 
@@ -1576,13 +1576,13 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 	}
 }
 
-void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, COUNTER_MEDIUM n) {
+void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from below" model --  M. McNutt & Shure (1986)  */
 
-	COUNTER_MEDIUM i;
-	COUNTER_LARGE k;
+	unsigned int i;
+	uint64_t k;
 	double	earth_curvature, alfa, D, twopi, t1, t2, t3, f, p, t, mk;
 	float *datac = Grid->data;
 

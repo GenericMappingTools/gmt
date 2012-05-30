@@ -61,25 +61,25 @@ struct GMT_SHORE {	/* Struct used by pscoast and others */
 
 	/* Global variables that remain fixed for all bins */
 	
-	GMT_LONG nb;		/* Number of bins to use */
-	GMT_LONG *bins;		/* Array with the nb bin numbers to use */
-	GMT_LONG min_level;	/* Lowest level to include [0] */
-	GMT_LONG max_level;	/* Highest level to include [4] */
-	GMT_LONG flag;		/* If riverlakes or lakes are to be excluded */
-	GMT_LONG fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
+	int nb;		/* Number of bins to use */
+	int *bins;		/* Array with the nb bin numbers to use */
+	int min_level;	/* Lowest level to include [0] */
+	int max_level;	/* Highest level to include [4] */
+	int flag;		/* If riverlakes or lakes are to be excluded */
+	int fraction;	/* If not 0, the microfraction limit on a polygons area vs the full resolution version */
 	double min_area;	/* Smallest feature to include in km^2 */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
 	
 	/* Variables associated with the current bin */
 	
-	GMT_LONG ns;			/* Number of segments to use in current bin */
+	int ns;			/* Number of segments to use in current bin */
 	unsigned char node_level[4];
 	struct GMT_SHORE_SEGMENT *seg;	/* Array of these segments */
 	struct GSHHS_SIDE *side[4];	/* Has position & id for each side exit/entry */
-	GMT_LONG nside[4];		/* Number of entries per side, including corner */
-	GMT_LONG n_entries;
-	GMT_LONG leftmost_bin;		/* TRUE if current bin is at left edge of map */
-	GMT_LONG skip_feature;		/* TRUE if GSHHS version > 2.0 and +r or +l is in use */
+	int nside[4];		/* Number of entries per side, including corner */
+	int n_entries;
+	int leftmost_bin;		/* true if current bin is at left edge of map */
+	int skip_feature;		/* true if GSHHS version > 2.0 and +r or +l is in use */
 	double bsize;			/* Size of square bins in degrees */
 	double lon_sw;			/* Longitude of SW corner */
 	double lat_sw;			/* Latitude of SW corner */
@@ -159,13 +159,13 @@ struct GMT_BR {	/* Structure for Borders and Rivers */
 
 	/* Global variables that remain fixed for all bins */
 	
-	GMT_LONG nb;		/* Number of bins to use */
-	GMT_LONG *bins;		/* Array with the nb bin numbers to use */
+	int nb;		/* Number of bins to use */
+	int *bins;		/* Array with the nb bin numbers to use */
 	double scale;		/* Multiplier to convert dx, dy back to dlon, dlat in degrees */
 	
 	/* Variables associated with the current bin */
 	
-	GMT_LONG ns;		/* Number of segments to use in current bin */
+	int ns;		/* Number of segments to use in current bin */
 	struct GMT_BR_SEGMENT *seg;	/* Array of these segments */
 	double lon_sw;		/* Longitude of SW corner */
 	double lat_sw;		/* Latitude of SW corner */
@@ -217,10 +217,10 @@ struct GMT_BR_SEGMENT {
 };
 
 struct GMT_GSHHS_POL {
-	GMT_LONG n;
-	GMT_LONG interior;	/* TRUE if polygon is inside bin */
-	GMT_LONG level;
-	GMT_LONG fid;		/* Fill id; same as level but 5 if riverlake */
+	int n;
+	int interior;	/* true if polygon is inside bin */
+	int level;
+	int fid;		/* Fill id; same as level but 5 if riverlake */
 	double *lon;
 	double *lat;
 };

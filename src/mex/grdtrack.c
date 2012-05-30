@@ -24,7 +24,7 @@
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	GMT_LONG status;
+	int status;
 	struct	GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct	GMT_VECTOR *Vi = NULL, *Vo = NULL;
 	float	*Z = NULL;
@@ -67,7 +67,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (inputG) strcat(input, inputG);
 
 	/* Register output vectors Vo to be the destination, allocated and written to by the module */
-	output = GMTMEX_dest_vector_init (API, (GMT_LONG)nlhs, &Vo, nlhs, options);
+	output = GMTMEX_dest_vector_init (API, (int)nlhs, &Vo, nlhs, options);
 
 	/* Build module command from input, ouptput, and option strings */
 	cmd = GMTMEX_build_cmd (API, input, options, output, GMT_IS_DATASET);
@@ -80,11 +80,11 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nlhs) GMTMEX_prep_mextbl (API, plhs, nlhs, Vo);
 
 	/* Destroy the columns returned from the module  */
-	GMT_free_vector (API->GMT, &Vo, TRUE);	/* TRUE since vectors are being duplicated for Matlab */
+	GMT_free_vector (API->GMT, &Vo, true);	/* true since vectors are being duplicated for Matlab */
 	
 	/* Free temporary local variables  */
 	GMTMEX_free (input, output, options, cmd);
-	GMT_free_vector (API->GMT, &Vi, FALSE);	/* FALSE since vectors came from Matlab */
+	GMT_free_vector (API->GMT, &Vi, false);	/* false since vectors came from Matlab */
 	
 	/* Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");

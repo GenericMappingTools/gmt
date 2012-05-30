@@ -90,7 +90,7 @@ struct PSSEGYZ_CTRL {
 	struct S {	/* -S */
 		bool active;
 		bool fixed[2];
-		COUNTER_MEDIUM mode[2];
+		unsigned int mode[2];
 		int value[2];
 		double orig[2];
 	} S;
@@ -126,7 +126,7 @@ void Free_pssegyz_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_pssegyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_pssegyz_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -172,7 +172,7 @@ GMT_LONG GMT_pssegyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pssegyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -181,7 +181,7 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM k, n_errors = 0, n_files = 0;
+	unsigned int k, n_errors = 0, n_files = 0;
 	char *txt[2], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -316,9 +316,9 @@ GMT_LONG GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double segyz_rms (float *data, GMT_LONG n_samp)
+double segyz_rms (float *data, int n_samp)
 {	/* function to return rms amplitude of n_samp values from the array data */
-	GMT_LONG ix;
+	int ix;
 	double sumsq = 0.0;
 
 	for (ix = 0; ix < n_samp; ix++) sumsq += ((double) data[ix]) * ((double) data[ix]);
@@ -327,10 +327,10 @@ double segyz_rms (float *data, GMT_LONG n_samp)
 	return (sumsq);
 }
 
-GMT_LONG segyz_paint (GMT_LONG ix, GMT_LONG iy, unsigned char *bitmap, GMT_LONG bm_nx, GMT_LONG bm_ny)
+int segyz_paint (int ix, int iy, unsigned char *bitmap, int bm_nx, int bm_ny)
 {	/* ix iy is pixel to paint */
 	static unsigned char bmask[8]={128, 64, 32, 16, 8, 4, 2, 1};
-	GMT_LONG byte, quot, rem;
+	int byte, quot, rem;
 
 	quot = ix / 8;
 	rem = ix - quot * 8;
@@ -342,9 +342,9 @@ GMT_LONG segyz_paint (GMT_LONG ix, GMT_LONG iy, unsigned char *bitmap, GMT_LONG 
 	return (0);
 }
 
-void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, double dev_x, double dev_y, unsigned char *bitmap, GMT_LONG bm_nx, GMT_LONG bm_ny) /* apply current sample with all options to bitmap */
+void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, double dev_x, double dev_y, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current sample with all options to bitmap */
 {
-	GMT_LONG px0, px1, py0, py1, ix, iy;
+	int px0, px1, py0, py1, ix, iy;
 	double xp0, xp1, yp0, yp1, slope;
 
 	GMT_geoz_to_xy (GMT, x0+(double)data0*dev_x, y0+(double)data0*dev_y, z0, &xp0, &yp0); /* returns 2 ends of line segment in plot coords */
@@ -388,11 +388,11 @@ void wig_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float da
 	}
 }
 
-void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y_edge, double slope1, double slope0, unsigned char *bitmap, GMT_LONG bm_nx, GMT_LONG bm_ny)
+void shade_quad (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y_edge, double slope1, double slope0, unsigned char *bitmap, int bm_nx, int bm_ny)
 /* shade a quadrilateral with two sides parallel to x axis, one side at y=y0 with ends at x0 and x1,
 with lines with gradients slope0 and slope1 respectively */
 {
-	GMT_LONG pedge_y, py0, iy, ix1, ix2, ix;
+	int pedge_y, py0, iy, ix1, ix2, ix;
 
 	if (y0 == y_edge) return;
 
@@ -421,11 +421,11 @@ with lines with gradients slope0 and slope1 respectively */
 	}
 }
 
-void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, double edge_y, double slope, double slope0, unsigned char *bitmap, GMT_LONG bm_nx, GMT_LONG bm_ny)
+void shade_tri (struct GMT_CTRL *GMT, double apex_x, double apex_y, double edge_y, double slope, double slope0, unsigned char *bitmap, int bm_nx, int bm_ny)
 /* shade a triangle specified by apex coordinates, y coordinate of an edge (parallel to x-axis)
 and slopes of the two other sides */
 {
-	GMT_LONG papex_y, pedge_y, iy, ix, x1, x2;
+	int papex_y, pedge_y, iy, ix, x1, x2;
 
 #ifdef DEBUG
 	GMT_report (GMT, GMT_MSG_DEBUG, "in shade_tri apex_x %f apex_y %f edge_y %f slope %f slope0 %f\n",apex_x, apex_y, edge_y, slope, slope0);
@@ -467,9 +467,9 @@ and slopes of the two other sides */
 }
 
 #define NPTS 4 /* 4 points for the general case here */
-void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, GMT_LONG negative, double dev_x, double dev_y, unsigned char *bitmap, GMT_LONG bm_nx, GMT_LONG bm_ny) /* apply current samples with all options to bitmap */
+void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, float data1, double z0, double z1, int negative, double dev_x, double dev_y, unsigned char *bitmap, int bm_nx, int bm_ny) /* apply current samples with all options to bitmap */
 {
-	GMT_LONG ix, iy;
+	int ix, iy;
 	double xp[NPTS], yp[NPTS], interp, slope01, slope02, slope12, slope13, slope23, slope03;
 	double slope0, slope1, slope2, slope3;
 
@@ -499,8 +499,8 @@ void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, 
 	for (ix = 0; ix < NPTS-1; ix++)
 		for (iy = ix + 1; iy < NPTS; iy++)
 			if (yp[ix] > yp[iy]) {
-				d_swap (yp[iy], yp[ix]);
-				d_swap (xp[iy], xp[ix]);
+				double_swap (yp[iy], yp[ix]);
+				double_swap (xp[iy], xp[ix]);
 			}
 
 
@@ -543,11 +543,11 @@ void segyz_shade_bmap (struct GMT_CTRL *GMT, double x0, double y0, float data0, 
 	}
 }
 
-void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, double y0, GMT_LONG n_samp, GMT_LONG do_fill, GMT_LONG negative, GMT_LONG plot_wig, float toffset, double dev_x, double dev_y, unsigned char *bitmap, GMT_LONG  bm_nx, GMT_LONG bm_ny)
+void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, double y0, int n_samp, int do_fill, int negative, int plot_wig, float toffset, double dev_x, double dev_y, unsigned char *bitmap, int  bm_nx, int bm_ny)
 	/* shell function to loop over all samples in the current trace, determine plot options
 	 * and call the appropriate bitmap routine */
 {
-	GMT_LONG iz, paint_wiggle;
+	int iz, paint_wiggle;
 	float z0 = (float)GMT->common.R.wesn[ZLO], z1;
 
 	for (iz = 1; iz < n_samp; iz++) {	/* loop over samples on trace - refer to pairs iz-1, iz */
@@ -569,9 +569,9 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pssegyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_pssegyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_pssegyz (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = false, nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
+	int error = false, nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
 
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};
 

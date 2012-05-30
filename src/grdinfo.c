@@ -31,26 +31,26 @@
 
 struct GRDINFO_CTRL {
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 	} F;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM status;
+		bool active;
+		unsigned int status;
 		double inc[2];
 	} I;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct L {	/* -L[1|2] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM norm;
+		bool active;
+		unsigned int norm;
 	} L;
 	struct T {	/* -T[s]<dz> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 		double inc;
 	} T;
 };
@@ -60,7 +60,7 @@ void *New_grdinfo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDINFO_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -69,7 +69,7 @@ void Free_grdinfo_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdinfo_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdinfo %s [API] - Extract information from grids\n\n", GMT_VERSION);
@@ -101,7 +101,7 @@ GMT_LONG GMT_grdinfo_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -109,7 +109,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -125,13 +125,13 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Column format */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'F':	/* Wolrd mapping format */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				break;
 			case 'I':	/* Increment rounding */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (!opt->arg[0])	/* No args given, we want to output the -I string */
 					Ctrl->I.status = 0;
 				else if (opt->arg[0] == '-' && opt->arg[1] == '\0')	/* Dash given, we want to output the actual -R string */
@@ -145,7 +145,7 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 				}
 				break;
 			case 'L':	/* Selects norm */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case '2':
 						Ctrl->L.norm |= 2; break;
@@ -154,12 +154,12 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 				}
 				break;
 			case 'M':	/* Global extrema */
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'T':	/* CPT range */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if (opt->arg[0] == 's') {	/* Want symmetrical range about 0, i.e., -3500/3500/500 */
-					Ctrl->T.mode = TRUE;
+					Ctrl->T.mode = true;
 					Ctrl->T.inc = atof (&opt->arg[1]);
 				}
 				else
@@ -185,13 +185,13 @@ GMT_LONG GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdinfo_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error;
-	COUNTER_MEDIUM n_grds = 0;
-	GMT_BOOLEAN subset;
+	int error;
+	unsigned int n_grds = 0;
+	bool subset;
 	
-	COUNTER_LARGE ij, n_nan = 0, n = 0;
+	uint64_t ij, n_nan = 0, n = 0;
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
@@ -258,8 +258,8 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		if (Ctrl->M.active || Ctrl->L.active) {	/* Must determine the location of global min and max values */
-			COUNTER_LARGE ij_min, ij_max;
-			COUNTER_MEDIUM col, row;
+			uint64_t ij_min, ij_max;
+			unsigned int col, row;
 
 			z_min = DBL_MAX;	z_max = -DBL_MAX;
 			mean = median = sum2 = 0.0;
@@ -292,12 +292,12 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and L1 scale */
-			GMT_LONG new_grid;
+			int new_grid;
 			struct GMT_GRID *G2 = NULL;
 			
 			/* Note that this option rearranges the input grid, so if a memory location is passed then
 			 * the grid in the calling program is no longer the original values */
-			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* TRUE if input is a read-only array */
+			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* true if input is a read-only array */
 			GMT_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
 			GMT_sort_array (GMT, G2->data, G2->header->nm, GMTAPI_FLOAT);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);
@@ -306,7 +306,7 @@ GMT_LONG GMT_grdinfo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */
-				GMT_free_grid (GMT, &G2, TRUE);
+				GMT_free_grid (GMT, &G2, true);
 			}
 		}
 		if (Ctrl->L.norm & 2) {	/* Calculate the mean, standard deviation, and rms */

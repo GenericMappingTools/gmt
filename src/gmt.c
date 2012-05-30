@@ -29,15 +29,15 @@
 
 struct GMT_PROGRAMS {		/* Struct with name and mode for each GMT 4 program */
 	char name[GMT_TEXT_LEN64];	/* Program name */
-	COUNTER_MEDIUM mode;		/* Either GMTAPI_GMT or GMTAPI_GMTPSL */
+	unsigned int mode;		/* Either GMTAPI_GMT or GMTAPI_GMTPSL */
 };
 
-typedef GMT_LONG (*ptr_to_gmt_module) (struct GMTAPI_CTRL *, GMT_LONG, void *);
+typedef int (*ptr_to_gmt_module) (struct GMTAPI_CTRL *, int, void *);
 
-ptr_to_gmt_module lookup_program (char *prog, struct GMT_PROGRAMS *programs, COUNTER_MEDIUM n_progs, COUNTER_MEDIUM *mode)
+ptr_to_gmt_module lookup_program (char *prog, struct GMT_PROGRAMS *programs, unsigned int n_progs, unsigned int *mode)
 {
-	COUNTER_MEDIUM k = 0;
-	GMT_LONG id = -1;
+	unsigned int k = 0;
+	int id = -1;
 	ptr_to_gmt_module func = NULL;
 
 	for (k = 0; id == -1 && k < n_progs; k++) if (!strcmp (prog, programs[k].name)) id = k;	/* Get program id */
@@ -52,8 +52,8 @@ ptr_to_gmt_module lookup_program (char *prog, struct GMT_PROGRAMS *programs, COU
 
 int main (int argc, char *argv[]) {
 
-	GMT_LONG status = 0;			/* Status code from GMT API */
-	COUNTER_MEDIUM mode = 0;		/* Mode of the selected function */
+	int status = 0;			/* Status code from GMT API */
+	unsigned int mode = 0;		/* Mode of the selected function */
 	ptr_to_gmt_module func = NULL;		/* Pointer to the selected function */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_PROGRAMS program[GMT_N_PROGRAMS] = {	/* Sorted array with program information */

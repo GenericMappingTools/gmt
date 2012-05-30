@@ -54,9 +54,9 @@ static void readFromFile (Grid *_grid, String fileName, int *status)
       return;
 
     grid->value = calloc (grid->header.nm, sizeof (float));
-    GMT_memset (grid->GMT->current.io.pad, 4, GMT_LONG);
+    GMT_memset (grid->GMT->current.io.pad, 4, int);
     *status = GMT_read_grd (grid->GMT, fileName, &grid->header, grid->value, NULL,
-	grid->GMT->current.io.pad, FALSE);
+	grid->GMT->current.io.pad, false);
 
     /* Update generic grid values */    
     grid->methods.width  = grid->header.nx;
@@ -71,8 +71,8 @@ static void writeToFile (Grid *_grid, String fileName, int *status)
 	GMTGrid *grid = (GMTGrid *)_grid;
 	double wesn[4];
 	GMT_memset (wesn, 4, double);
-	GMT_memset (grid->GMT->current.io.pad, 4, GMT_LONG);
-	*status = GMT_write_grd (grid->GMT, fileName, &grid->header, grid->value, wesn, grid->GMT->current.io.pad, FALSE);
+	GMT_memset (grid->GMT->current.io.pad, 4, int);
+	*status = GMT_write_grd (grid->GMT, fileName, &grid->header, grid->value, wesn, grid->GMT->current.io.pad, false);
 }
 
 static void dispose (Grid *_grid)

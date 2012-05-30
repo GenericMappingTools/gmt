@@ -42,29 +42,29 @@
 
 struct SPECTRUM1D_CTRL {
 	struct C {	/* -C[<xycnpago>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char col[SPECTRUM1D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} C;
 	struct D {	/* -D<inc> */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc;
 	} D;
 	struct N {	/* -N[+]<namestem> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		char *name;
 	} N;
 	struct S {	/* -S<segment_size> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM size;
+		bool active;
+		unsigned int size;
 	} S;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
+		bool active;
 	} W;
 };
 
 struct SPECTRUM1D_INFO {	/* Control structure for spectrum1d */
-	GMT_LONG y_given, n_spec, window, window_2;
+	int y_given, n_spec, window, window_2;
 	float *datac;
 	double dt, x_variance, y_variance, d_n_windows, y_pow;
 	struct SPEC {
@@ -88,7 +88,7 @@ void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C)
 
 void detrend_and_hanning (struct SPECTRUM1D_INFO *C)
 {
-	GMT_LONG i, t;
+	int i, t;
 	double sumx, sumtx, sumy, sumty, sumt2, x_slope, x_mean, y_slope, y_mean;
 	double t_factor, h_period, h_scale, hc, hw, tt;
 	sumx = sumtx = sumy = sumty = sumt2 = 0.0;
@@ -147,9 +147,9 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C)
 	}
 }
 
-void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, COUNTER_LARGE n_data)
+void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data)
 {
-	GMT_LONG n_windows, w, i, t_start, t_stop, t, f;
+	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
 	double xreal, ximag, yreal, yimag, xpower, ypower, co_spec, quad_spec;
 	char format[GMT_BUFSIZ];
@@ -255,9 +255,9 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 	}
 }
 
-GMT_LONG write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, GMT_LONG n_outputs, GMT_LONG write_wavelength, char *namestem)
+int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, char *namestem)
 {	/* Writes separate files for each output type.  Does NOT use GMT_Put_* functions */
-	GMT_LONG i, j;
+	int i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
 	char fname[GMT_TEXT_LEN256];
 	FILE *fpout = NULL;
@@ -406,9 +406,9 @@ GMT_LONG write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C,
 	return (0);
 }
 
-void write_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, GMT_LONG n_outputs, GMT_LONG write_wavelength, double *out[])
+void write_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[])
 {	/* Fills out the 2-D table array given */
-	GMT_LONG i, j, k;
+	int i, j, k;
 	double delta_f, eps_pow, tmp, *f_or_w;
 
 	delta_f = 1.0 / (C->window * C->dt);
@@ -480,7 +480,7 @@ void *New_spectrum1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	C = GMT_memory (GMT, NULL, 1, struct SPECTRUM1D_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.inc = 1.0;
 	C->C.col[0] = 'x';
 	C->C.col[1] = 'y';
@@ -500,7 +500,7 @@ void Free_spectrum1d_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -530,7 +530,7 @@ GMT_LONG GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to spectrum1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -538,8 +538,8 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG sval;
-	COUNTER_MEDIUM n_errors = 0, j, window_test = 2;
+	int sval;
+	unsigned int n_errors = 0, j, window_test = 2;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -552,7 +552,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;	/* Stay with the default order of output */
 				GMT_memset (Ctrl->C.col, SPECTRUM1D_N_OUTPUT_CHOICES, char);	/* Reset and read options */
 				for (j = 0; opt->arg[j]; j++) {
@@ -570,11 +570,11 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 				}
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.inc = atof (opt->arg);
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				if (opt->arg[0]) {
 					free (Ctrl->N.name);
 					if (opt->arg[0] == '+') Ctrl->N.mode = 1;
@@ -582,7 +582,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
 				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -S option: segment size must be positive\n");
 				Ctrl->S.size = sval;
@@ -591,7 +591,7 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 				}
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -610,12 +610,12 @@ GMT_LONG GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_spectrum1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_spectrum1d (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, one_table;
-	COUNTER_MEDIUM tbl, k, n_outputs;
+	bool error = false, one_table;
+	unsigned int tbl, k, n_outputs;
 	
-	COUNTER_LARGE seg;
+	uint64_t seg;
 
 	struct SPECTRUM1D_INFO C;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
@@ -653,7 +653,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!Ctrl->C.active) {		/* ensure x-power output */
 		Ctrl->C.col[0] = 'x';
 		n_outputs = 1;
-		Ctrl->C.active = TRUE;
+		Ctrl->C.active = true;
 	}
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
@@ -675,7 +675,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, FALSE);
+			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, false);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
@@ -685,7 +685,7 @@ GMT_LONG GMT_spectrum1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (one_table) {
 				Sout = Tout->segment[seg];	/* Current output segment */
-				GMT_alloc_segment (GMT, Sout, C.window, Din->n_columns, TRUE);
+				GMT_alloc_segment (GMT, Sout, C.window, Din->n_columns, true);
 				write_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
 			}
 			else {

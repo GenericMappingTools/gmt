@@ -49,7 +49,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 	}
 	else {	/* Gave x, y, Z [reg] */
 		double *r = NULL, *x = NULL, *y = NULL;
-		GMT_LONG col, row, error = 0;
+		int col, row, error = 0;
 		x = mxGetData (prhs[0]);
 		y = mxGetData (prhs[1]);
 		z = mxGetData (prhs[2]);
@@ -82,7 +82,7 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 
 void GMTMEX_grdxy (struct GMTAPI_CTRL *API, mxArray *plhs[], struct GMT_GRID *G, int px, int py)
 {	/* Return x,y arrays also */
-	GMT_LONG row, col;
+	int row, col;
 	double *xg = NULL, *yg = NULL;
 	plhs[px] = mxCreateDoubleMatrix (1, G->header->nx, mxREAL);
 	plhs[py] = mxCreateDoubleMatrix (1, G->header->ny, mxREAL);
@@ -98,8 +98,8 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 	if (mxIsChar(prhs[0]))		/* Gave a file name */
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {				/* Input via two or more column vectors */
-		GMT_LONG col, in_ID;
-		COUNTER_LARGE dim[1] = {n_cols};
+		int col, in_ID;
+		uint64_t dim[1] = {n_cols};
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc (GMT_BUFSIZ);
 		if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
@@ -148,14 +148,14 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 	if (nrhs == 2)		/* Gave a file name */
 		i_string = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
  	else {			/* Input via matrix and either info array or x,y arrays */
-		GMT_LONG row, col, in_ID;
-		COUNTER_LARGE gmt_ij;
+		int row, col, in_ID;
+		uint64_t gmt_ij;
 		double *z = NULL;
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc(GMT_BUFSIZ);
 
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Failure to create grid\n");
-		GMT_grd_init (API->GMT, G->header, NULL, FALSE);
+		GMT_grd_init (API->GMT, G->header, NULL, false);
 		
 		/*  Get the Z array and fill in the header info */
 		z = GMTMEX_info2grdheader (API, prhs, nrhs, G);
@@ -174,7 +174,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 	return (i_string);
 }
 
-char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, GMT_LONG *out_ID, int nlhs, char *options)
+char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, int *out_ID, int nlhs, char *options)
 {	/* Associate output grid with Matlab grid */
 	char buffer[GMTAPI_STRLEN], *o_string = NULL;
 	if ((*out_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
@@ -194,11 +194,11 @@ char *GMTMEX_dest_grid_init (struct GMTAPI_CTRL *API, GMT_LONG *out_ID, int nlhs
 	return (o_string);
 }
 
-char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct GMT_VECTOR **V, int nlhs, char *options)
+char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, int n_cols, struct GMT_VECTOR **V, int nlhs, char *options)
 {	/* Associate output data with Matlab/Octave vectors */
 	char *o_string = NULL;
-	GMT_LONG out_ID, col;
-	COUNTER_LARGE dim[1] = n_cols;
+	int out_ID, col;
+	uint64_t dim[1] = n_cols;
 	//char buffer[GMTAPI_STRLEN];
 
 	o_string = mxMalloc(GMTAPI_STRLEN);
@@ -225,8 +225,8 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, GMT_LONG n_cols, struct 
 
 void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_GRID *G)
 {	/* Turn a GMT grid into a 2-D Z matrix (and possibly x,y arrays) for passing back to Matlab/Octave */
-	GMT_LONG px = -1, py = -1, pz = -1, pi = -1, row, col;
-	COUNTER_LARGE gmt_ij;
+	int px = -1, py = -1, pz = -1, pi = -1, row, col;
+	uint64_t gmt_ij;
 	float *z = NULL;
 	
 	pz = (nlhs >= 3) ? 2 : 0;
@@ -250,7 +250,7 @@ void GMTMEX_prep_mexgrd (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, str
 
 void GMTMEX_prep_mextbl (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, struct GMT_VECTOR *V)
 {	/* We must duplicate output vectors since Matlab won't allow mixing of allocated arrays from outside Matlab */
-	GMT_LONG row, p;
+	int row, p;
 	double *z = NULL;
 	for (p = 0; p < nlhs; p++) {
 		plhs[p] = mxCreateNumericMatrix (V->n_rows, 1, mxDOUBLE_CLASS, mxREAL);
@@ -268,9 +268,9 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 	options = mxArrayToString (prhs[nrhs-1]);
 
 	if ((s = strstr (options, "-V"))) {	/* User gave -V[level] among the options */
-		GMT_LONG level;
+		int level;
 		s += 2;	/* Skip to char after -V */
-		level = (isdigit ((int)s[0]) && s[0] >= '0' && s[0] <= '4') ? (GMT_LONG)(s[0] - '0') : GMT_MSG_NORMAL;
+		level = (isdigit ((int)s[0]) && s[0] >= '0' && s[0] <= '4') ? (int)(s[0] - '0') : GMT_MSG_NORMAL;
 		API->GMT->current.setting.verbose = level;
 	}
 	while (options[k] && !(options[k] == '>' && options[k-1] == ' ')) k++;		/* Test if ... */
@@ -299,7 +299,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 	return (options);
 }
 
-char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char *dest, GMT_LONG mode)
+char *GMTMEX_build_cmd (struct GMTAPI_CTRL *API, char *src, char *options, char *dest, int mode)
 {	/* Create the command based on options, src, and dist, which depends slightly on output type */
 	char *cmd;
 	cmd = mxMalloc (GMT_BUFSIZ);
@@ -357,17 +357,17 @@ void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
 #define GMT_MEX_EXPLICIT	-2
 #define GMT_MEX_IMPLICIT	-1
 
-GMT_LONG gmtmex_find_option (char option, char *key[], GMT_LONG n_keys) {
+int gmtmex_find_option (char option, char *key[], int n_keys) {
 	/* gmtmex_find_option determines if the given option is among the special options that might take $ as filename */
-	GMT_LONG pos = -1, k;
+	int pos = -1, k;
 	for (k = 0; pos == -1 && k < n_keys; k++) if (key[k][0] == option) pos = k;
 	return (pos);	/* -1 if not found, otherwise the position in the key array */
 }
 
-GMT_LONG gmtmex_get_arg_pos (char *arg)
+int gmtmex_get_arg_pos (char *arg)
 {	/* Look for a $ in the arg; if found return position, else return -1. Skips $ inside quoted texts */
-	GMT_LONG pos, k;
-	GMT_BOOLEAN mute = FALSE;
+	int pos, k;
+	bool mute = false;
 	for (k = 0, pos = -1; pos == -1 && k < strlen (arg); k++) {
 		if (arg[k] == '\"' || arg[k] == '\'') mute = !mute;	/* Do not consider $ inside quotes */
 		if (!mute && arg[k] == '$') pos = k;	/* Found a $ sign */
@@ -375,7 +375,7 @@ GMT_LONG gmtmex_get_arg_pos (char *arg)
 	return (pos);	/* Either -1 (not found) or in the 0-(strlen(arg)-1) range [position of $] */
 }
 
-void gmtmex_get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head, GMT_LONG def[])
+void gmtmex_get_key_pos (char *key[], int n_keys, struct GMT_OPTIONS *head, int def[])
 {	/* Must determine if default input and output have been set via program options or if they should be added explicitly.
  	 * As an example, consider the GMT command grdfilter in.nc -Fg200k -Gfilt.nc.  In Matlab this might be
 	 * filt = GMT_grdfilter ('$ -Fg200k -G$', in);
@@ -384,7 +384,7 @@ void gmtmex_get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head,
 	 * In that case we need to know that -G is the default way to specify the output grid and if -G is not given we
 	 * must associate -G with the first left-hand-side item (here filt).
 	 */
-	GMT_LONG pos, k;
+	int pos, k;
 	struct GMT_OPTIONS *opt = NULL;
 	def[GMT_IN] = def[GMT_OUT] = GMT_MEX_IMPLICIT;	/* Initialize to setting the i/o implicitly */
 	
@@ -403,9 +403,9 @@ void gmtmex_get_key_pos (char *key[], GMT_LONG n_keys, struct GMT_OPTIONS *head,
 	}
 }
 
-GMT_LONG gmtmex_get_arg_dir (char option, char *key[], GMT_LONG n_keys, GMT_LONG *data_type, GMT_LONG *geometry)
+int gmtmex_get_arg_dir (char option, char *key[], int n_keys, int *data_type, int *geometry)
 {
-	GMT_LONG item;
+	int item;
 	
 	/* 1. First determine if this option is one of the choices in key */
 	
@@ -453,7 +453,7 @@ GMT_LONG gmtmex_get_arg_dir (char option, char *key[], GMT_LONG n_keys, GMT_LONG
 	return ((key[item][2] == 'i') ? GMT_IN : GMT_OUT);
 }
 
-GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, const mxArray *prhs[], int nrhs, char **key, GMT_LONG n_keys, struct GMT_OPTIONS **head)
+int GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, const mxArray *prhs[], int nrhs, char **key, int n_keys, struct GMT_OPTIONS **head)
 {
 	/* API controls all things within GMT.
 	 * plhs (and nlhs) are the outputs specified on the left side of the equal sign in Matlab.
@@ -462,11 +462,11 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 	 * opt is the linked list of GMT options passed in.
 	 */
 	
-	GMT_LONG lr_pos[2] = {0, 0};	/* These position keeps track where we are in the L and R pointer arrays */
-	GMT_LONG direction;		/* Either GMT_IN or GMT_OUT */
-	GMT_LONG data_type;		/* Either GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
-	GMT_LONG geometry;		/* Either GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, or GMT_IS_SURFACE */
-	GMT_LONG def[2];		/* Either GMT_MEX_EXPLICIT or the item number in the keys array */
+	int lr_pos[2] = {0, 0};	/* These position keeps track where we are in the L and R pointer arrays */
+	int direction;		/* Either GMT_IN or GMT_OUT */
+	int data_type;		/* Either GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
+	int geometry;		/* Either GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, or GMT_IS_SURFACE */
+	int def[2];		/* Either GMT_MEX_EXPLICIT or the item number in the keys array */
 	char name[GMTAPI_STRLEN];	/* Used to hold the GMT API embedded file name, e.g., @GMTAPI@-###### */
 	char buffer[GMT_BUFSIZ];	/* Temp buffer */
 	struct GMT_OPTIONS *opt;	/* Pointer to a GMT option structure */
@@ -482,7 +482,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		if ((ID = GMT_Register_IO (API, data_type, GMT_IS_REF + GMT_VIA_MEX, geometry, direction, NULL, ptr)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("GMTMEX_parser: Failure to register GMT source or destination\n");
 		}
-		lr_pos[direction]++;		/* Advance COUNTER_LARGE for next time */
+		lr_pos[direction]++;		/* Advance uint64_t for next time */
 		if (GMT_Encode_ID (API, name, ID) != GMT_OK) {	/* Make filename with embedded object ID */
 			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
 		}
@@ -504,7 +504,7 @@ GMT_LONG GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, cons
 		if (GMT_Encode_ID (API, name, ID) != GMT_OK) {	/* Make filename with embedded object ID */
 			mexErrMsgTxt ("GMTMEX_parser: Failure to encode string\n");
 		}
-		lr_pos[direction]++;		/* Advance COUNTER_LARGE for next time */
+		lr_pos[direction]++;		/* Advance uint64_t for next time */
 		
 		/* Replace the option argument with the embedded file */
 		opt->arg[pos] = '\0';	/* Chop off the stuff starting at the $ sign */

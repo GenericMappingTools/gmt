@@ -37,33 +37,33 @@
 #define PM_DIST		7
 
 struct GRDROTATER_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct E {	/* -Erotfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} E;
 	struct F {	/* -Fpolfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} F;
 	struct G {	/* -Goutfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct S {	/* -Sa|d|r|w|x|y|X|Y */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} S;
 	struct T {	/* -T<fixtime> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} T;
 };
@@ -73,7 +73,7 @@ void *New_grdpmodeler_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDROTATER_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	return (C);
 }
@@ -88,7 +88,7 @@ void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/
 }
 
 
-GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -121,7 +121,7 @@ GMT_LONG GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 }
 
-GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdpmodeler and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -129,7 +129,7 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -137,33 +137,33 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Supplemental parameters */
 			
 			case 'E':	/* File with stage poles */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.file  = strdup (opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* Plate spreading azimuth */
 						Ctrl->S.mode = PM_AZIM;
@@ -195,7 +195,7 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 				}
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.value = atof (opt->arg);
 				break;
 				
@@ -222,13 +222,13 @@ GMT_LONG GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *C
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdpmodeler_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM col, row, inside, stage, n_stages, registration;
-	GMT_LONG retval;
-	GMT_BOOLEAN error = FALSE;
+	unsigned int col, row, inside, stage, n_stages, registration;
+	int retval;
+	bool error = false;
 	
-	COUNTER_LARGE node, seg;
+	uint64_t node, seg;
 	
 	double lon, lat, d, value = 0.0, t_max, age, wesn[4], inc[2], *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 	
@@ -291,7 +291,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, FALSE, FALSE, 0, &t_max);
+	n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, false, 0, &t_max);
 	for (stage = 0; stage < n_stages; stage++) {
 		if (p[stage].omega < 0.0) {	/* Ensure all stages have positive rotation angles */
 			p[stage].omega = -p[stage].omega;
@@ -307,7 +307,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, G_mod->header, options, FALSE);
+	GMT_grd_init (GMT, G_mod->header, options, false);
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_mod, GMT->common.R.wesn, inc, registration), Ctrl->G.file);
@@ -348,7 +348,7 @@ GMT_LONG GMT_grdpmodeler (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				value = sind (d) * p[stage].omega * GMT->current.proj.DIST_KM_PR_DEG;	/* km/Myr or mm/yr */
 				break;
 			case PM_AZIM:	/* Compute plate motion direction at this point in time/space */
-				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, FALSE) - 90.0;
+				value = GMT_az_backaz (GMT, grd_x[col], grd_yc[row], p[stage].lon, p[stage].lat, false) - 90.0;
 				GMT_lon_range_adjust (GMT->current.io.geo.range, &value);
 				break;
 			case PM_OMEGA:	/* Compute plate rotation rate omega */

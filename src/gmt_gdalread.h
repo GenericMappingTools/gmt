@@ -105,8 +105,8 @@ struct GDALREAD_CTRL {
 /* Structure to hold metadata info in a per bands basis read */
 struct GDAL_BAND_FNAMES {
 	char		*DataType;
-	GMT_LONG	XSize;
-	GMT_LONG	YSize;
+	int	XSize;
+	int	YSize;
 	double		nodata;
 	double		MinMax[2];
 	double		ScaleOffset[2];
@@ -114,7 +114,7 @@ struct GDAL_BAND_FNAMES {
 
 /* Structure with the output data transmited by GMT_gdalread */
 struct GD_CTRL {
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct UInt8 {			/* Declare byte pointer */
 		int active;
 		unsigned char *data;

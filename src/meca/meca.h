@@ -9,11 +9,11 @@
 
 #define EPSIL 0.0001
 
-#ifndef TRUE
-#define TRUE 1
+#ifndef true
+#define true 1
 #endif
-#ifndef FALSE
-#define FALSE 0
+#ifndef false
+#define false 0
 #endif
 
 #ifndef M_PI_4
@@ -29,13 +29,13 @@ struct AXIS {
 	double str;
 	double dip;
 	double val;
-	GMT_LONG e;
+	int e;
 };
 /* val in 10**e dynes-cm */
 
 struct MOMENT {
 	double mant;
-	GMT_LONG exponent;
+	int exponent;
 };
 
 struct nodal_plane {
@@ -52,7 +52,7 @@ struct MECHANISM {
 };
 
 struct M_TENSOR {
-	GMT_LONG expo;
+	int expo;
 	double f[6];
 };
 /* mrr mtt mff mrt mrf mtf in 10**expo dynes-cm */

@@ -35,50 +35,50 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-GMT_LONG gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 #endif
 
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A<azimuth> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} A;
 	struct C {	/* -C<center> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} C;
 	struct G {	/* -G[+|-|=]<fill> */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<azimuth> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} I;
 	struct S {	/* -S[x]<lon0>/<lat0>/<length>/<units> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN cartesian;
+		bool active;
+		bool cartesian;
 		double lon, lat, length;
 		char *label;
 	} S;
 	struct T {	/* -T<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<scale> */
-		GMT_BOOLEAN active;
+		bool active;
 		double scale;
 		char unit;
 	} Z;
 };
 
-void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, COUNTER_LARGE n_in, double zscale, double start_az, double stop_az, GMT_LONG fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, GMT_LONG paint_wiggle, GMT_LONG negative, GMT_LONG outline, GMT_LONG track)
+void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double *y, double *z, uint64_t n_in, double zscale, double start_az, double stop_az, int fixed, double fix_az, struct GMT_FILL *fill, struct GMT_PEN *pen_o, struct GMT_PEN *pen_t, int paint_wiggle, int negative, int outline, int track)
 {
-	COUNTER_LARGE n = 0;
+	uint64_t n = 0;
 	int64_t i, np = n_in;
 	double dx, dy, len, az = 0.0, s = 0.0, c = 0.0, x_inc, y_inc;
 
@@ -130,7 +130,7 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 
 	if (paint_wiggle) { /* First shade wiggles */
 		PSL_comment (PSL, "%s wiggle\n", negative ? "Negative" : "Positive");
-		GMT_setfill (GMT, fill, FALSE);
+		GMT_setfill (GMT, fill, false);
 		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, n);
 	}
 
@@ -147,9 +147,9 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 	}
 }
 
-void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double length, double zscale, GMT_LONG gave_xy, char *units)
+void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double length, double zscale, int gave_xy, char *units)
 {	/* Draws a basic vertical scale bar at (x0,y0) and labels it as specified */
-	GMT_LONG form;
+	int form;
 	double dy, off, xx[4], yy[4];
 	char txt[GMT_TEXT_LEN256];
 
@@ -181,7 +181,7 @@ void *New_pswiggle_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSWIGGLE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->T.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &C->G.fill[0], GMT->current.setting.map_frame_pen.rgb[0], GMT->current.setting.map_frame_pen.rgb[1], GMT->current.setting.map_frame_pen.rgb[2]);
 	C->G.fill[1] = C->G.fill[0];
@@ -195,7 +195,7 @@ void Free_pswiggle_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_pswiggle_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -237,7 +237,7 @@ GMT_LONG GMT_pswiggle_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pswiggle and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -246,9 +246,9 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM j, k, wantx, wanty, n_errors = 0;
+	unsigned int j, k, wantx, wanty, n_errors = 0;
 #ifdef GMT_COMPAT
-	GMT_BOOLEAN N_active = FALSE;
+	bool N_active = false;
 #endif
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -264,17 +264,17 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				Ctrl->A.value = atof (opt->arg);
 				break;
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg);
 				break;
 #ifdef GMT_COMPAT
 			case 'D':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
-				GMT->common.g.active = TRUE;
+				GMT->common.g.active = true;
 				if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 					sprintf (txt_a, "d%s", &opt->arg[1]);
 				else if (GMT_is_geographic (GMT, GMT_IN))	
@@ -291,7 +291,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 					case '-': j = 1, k = 1; break;
 					default : j = 0, k = 0; break;
 				}
-				Ctrl->G.active[k] = TRUE;
+				Ctrl->G.active[k] = true;
 				if (GMT_getfill (GMT, &opt->arg[j], &Ctrl->G.fill[k])) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
@@ -300,18 +300,18 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 				break;
 			case 'I':
 				Ctrl->I.value = atof (opt->arg);
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 #ifdef GMT_COMPAT
 			case 'N':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
-				N_active = TRUE;
+				N_active = true;
 				break;
 #endif
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				j = 0;
-				if (opt->arg[0] == 'x') Ctrl->S.cartesian = TRUE, j = 1;
+				if (opt->arg[0] == 'x') Ctrl->S.cartesian = true, j = 1;
 				k = sscanf (&opt->arg[j], "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->S.length);
 				wantx = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LON;
 				wanty = (Ctrl->S.cartesian) ? GMT_IS_FLOAT : GMT_IS_LAT;
@@ -324,21 +324,21 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 				n_errors += GMT_check_condition (GMT, k != 3, "Syntax error -S option: Correct syntax:\n\t-S[x]<x0>/<y0>/<length>[/<units>]\n");
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
 					GMT_pen_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
 					n_errors++;
 				}
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				j = strlen (opt->arg) - 1;
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j])) Ctrl->Z.unit = opt->arg[j];
 				Ctrl->Z.scale = atof (opt->arg);
@@ -353,7 +353,7 @@ GMT_LONG GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, 
 #ifdef GMT_COMPAT
 	if (N_active) {
 		Ctrl->G.active[1] = Ctrl->G.active[0];
-		Ctrl->G.active[0] = FALSE;
+		Ctrl->G.active[0] = false;
 		Ctrl->G.fill[1] = Ctrl->G.fill[0];
 	}
 #endif
@@ -378,13 +378,13 @@ void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **y
 	*zz = GMT_memory (GMT, *zz, *n_alloc, double);
 }
 
-GMT_LONG GMT_pswiggle (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_pswiggle (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, negative;
+	bool error = false, negative;
 	
-	COUNTER_MEDIUM tbl;
+	unsigned int tbl;
 	
-	COUNTER_LARGE row, seg, j;
+	uint64_t row, seg, j;
 	size_t n_alloc = GMT_CHUNK;
 
 	double x_2, y_2, start_az, stop_az, fix_az, dz;

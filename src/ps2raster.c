@@ -41,7 +41,7 @@ void GMT_str_toupper (char *string);
 #	include <windows.h>
 #	include <process.h>
 #	define getpid _getpid
-	GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
+	int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
 #endif
 
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
@@ -68,65 +68,65 @@ void GMT_str_toupper (char *string);
 
 struct PS2RASTER_CTRL {
 	struct In {	/* Input file info */
-		COUNTER_MEDIUM n_files;
+		unsigned int n_files;
 	} In;
 	struct A {	/* -A[u][-] [Adjust boundingbox] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN strip;	/* Remove the -U time-stamp */
-		GMT_BOOLEAN reset;	/* The -A- turns -A off, overriding any automode in effect */
+		bool active;
+		bool strip;	/* Remove the -U time-stamp */
+		bool reset;	/* The -A- turns -A off, overriding any automode in effect */
 		double margin[4];
 	} A;
 	struct C {	/* -C<option> */
-		GMT_BOOLEAN active;
+		bool active;
 		char arg[GMT_BUFSIZ];
 	} C;
 	struct D {	/* -D<dir> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *dir;
 	} D;
 	struct E {	/* -E<resolution> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM dpi;
+		bool active;
+		unsigned int dpi;
 	} E;
 	struct F {	/* -F<out_name> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} F;
 	struct G {	/* -G<GSpath> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 	} I;
 	struct L {	/* -L<listfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} L;
 	struct P2 {	/* -P */
-		GMT_BOOLEAN active;
+		bool active;
 	} P;
 	struct Q {	/* -Q[g|t]<bits> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN on[2];	/* [0] for graphics, [1] for text antialiasing */
-		COUNTER_MEDIUM bits[2];
+		bool active;
+		bool on[2];	/* [0] for graphics, [1] for text antialiasing */
+		unsigned int bits[2];
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
-		GMT_LONG eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
-		GMT_LONG device;	/* May be negative */
+		bool active;
+		int eps;	/* 1 if we want to make EPS, -1 with /PageSize (possibly in addition to another format) */
+		int device;	/* May be negative */
 	} T;
 	struct W {	/* -W -- for world file production */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN folder;
-		GMT_BOOLEAN warp;
-		GMT_BOOLEAN kml;
-		COUNTER_MEDIUM mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
-		GMT_LONG min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
-		GMT_LONG min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
+		bool active;
+		bool folder;
+		bool warp;
+		bool kml;
+		unsigned int mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
+		int min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
+		int min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
 		char *doctitle;		/* Name of KML document */
 		char *overlayname;	/* Name of the image overlay */
 		char *URL;		/* URL of remote site */
@@ -135,15 +135,15 @@ struct PS2RASTER_CTRL {
 	} W;
 };
 
-GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C)
+int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C)
 {
 	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
 	
-	GMT_BOOLEAN error = FALSE;
-	COUNTER_MEDIUM pos = 0;
+	bool error = false;
+	unsigned int pos = 0;
 	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
-	C->W.active = TRUE;
+	C->W.active = true;
 	strcpy (txt, arg);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
@@ -177,10 +177,10 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				sscanf (&p[1], "%d/%d", &C->W.min_fade, &C->W.max_fade);
 				break;
 			case 'g':	/* Use gdal to make geotiff */
-				C->W.warp = TRUE;
+				C->W.warp = true;
 				break;
 			case 'k':	/* Produce a KML file */
-				C->W.kml = TRUE;
+				C->W.kml = true;
 				break;
 			case 'l':	/* Set KML level of detail for image */
 				sscanf (&p[1], "%d/%d", &C->W.min_lod, &C->W.max_lod);
@@ -190,7 +190,7 @@ GMT_LONG parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CT
 				C->W.overlayname = strdup (&p[1]);
 				break;
 			case 'o':	/* Produce a KML overlay as a folder subset */
-				C->W.folder = TRUE;
+				C->W.folder = true;
 				C->W.foldername = strdup (&p[1]);
 				break;
 			case 't':	/* Set KML document title */
@@ -215,7 +215,7 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = GMT_memory (GMT, NULL, 1, struct PS2RASTER_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
 	if ( ghostbuster(GMT, C) != GMT_OK ) { /* Try first to find the gspath from registry */
 		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
@@ -245,7 +245,7 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_ps2raster_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -362,7 +362,7 @@ GMT_LONG GMT_ps2raster_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to ps2raster and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -370,9 +370,9 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM k, n_errors = 0, mode;
-	GMT_LONG j;
-	GMT_BOOLEAN grayscale;
+	unsigned int k, n_errors = 0, mode;
+	int j;
+	bool grayscale;
 	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -387,11 +387,11 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adjust BoundingBox: -A[u][<margins>] or -A- */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				k = 0;
-				if (opt->arg[k] == 'u') {Ctrl->A.strip = TRUE; k++;}
+				if (opt->arg[k] == 'u') {Ctrl->A.strip = true; k++;}
 				if (opt->arg[strlen(opt->arg)-1] == '-')
-					Ctrl->A.reset = TRUE;
+					Ctrl->A.reset = true;
 				else if (opt->arg[k]) {	/* Also specified margin(s) */
 					j = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					switch (j) {
@@ -419,35 +419,35 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.dir = strdup (opt->arg);
 				break;
 			case 'E':	/* Set output dpi */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				GMT_chop_ext (Ctrl->F.file);	/* Make sure file name has no extension */
 				break;
 			case 'G':	/* Set GS path */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				free (Ctrl->G.file);
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Do not use the ICC profile when converting gray shades */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Give list of files to convert */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'P':	/* Force Portrait mode */
-				Ctrl->P.active = TRUE;
+				Ctrl->P.active = true;
 				break;
 			case 'Q':	/* Anti-aliasing settings */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'g') {
 					mode = 0;
 					anti = "-dGraphicsAlphaBits=";
@@ -462,17 +462,17 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 					continue;
 
 				}
-				Ctrl->Q.on[mode] = TRUE;
+				Ctrl->Q.on[mode] = true;
 				Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
 				sprintf (text, "%s%d", anti, Ctrl->Q.bits[mode]);
 				add_to_list (Ctrl->C.arg, text);	/* Append to list of extra GS options */
 				break;
 			case 'S':	/* Write the GS command to STDOUT */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
-				Ctrl->T.active = TRUE;
-				grayscale = ((j = (GMT_LONG)strlen(opt->arg)) > 3 && opt->arg[j-1] == '-');
+				Ctrl->T.active = true;
+				grayscale = ((j = (int)strlen(opt->arg)) > 3 && opt->arg[j-1] == '-');
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'e':	/* EPS */
@@ -548,13 +548,13 @@ GMT_LONG GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_ps2raster_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM i, j, k, pix_w = 0, pix_h = 0;
-	GMT_LONG sys_retval = 0, r, pos_file, pos_ext;
+	unsigned int i, j, k, pix_w = 0, pix_h = 0;
+	int sys_retval = 0, r, pos_file, pos_ext;
 	size_t len;
-	GMT_BOOLEAN got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
-	GMT_BOOLEAN excessK, setup, error = FALSE, found_proj = FALSE, isGMT_PS = FALSE;
+	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	bool excessK, setup, error = false, found_proj = false, isGMT_PS = false;
 
 	double xt, yt, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
@@ -608,12 +608,12 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
-		Ctrl->F.active = FALSE;
+		Ctrl->F.active = false;
 	}
 
 	if (Ctrl->F.active && Ctrl->In.n_files > 1 && Ctrl->T.device != -GS_DEV_PDF) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
-		Ctrl->F.active = FALSE;
+		Ctrl->F.active = false;
 	}
 
 	/* Parameters for all the formats available */
@@ -629,8 +629,8 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
-		Ctrl->P.active = Ctrl->A.active = TRUE;
-		if (Ctrl->A.reset) Ctrl->A.active = FALSE;
+		Ctrl->P.active = Ctrl->A.active = true;
+		if (Ctrl->A.reset) Ctrl->A.active = false;
 	}
 
 	/* Use default DPI if not already set */
@@ -719,7 +719,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Loop over all input files */
 
 	for (k = 0; k < Ctrl->In.n_files; k++) {
-		excessK = FALSE;
+		excessK = false;
 		*out_file = '\0'; /* truncate string */
 		strcpy (ps_file, ps_names[k]);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
@@ -730,7 +730,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s...", ps_file);
 
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff */
-			GMT_LONG dump = TRUE;
+			int dump = true;
 			GMT_report (GMT, GMT_MSG_VERBOSE, " Strip GMT time-stamp...");
 			sprintf (no_U_file, "%s/ps2raster_%db.eps", Ctrl->D.dir, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
@@ -739,18 +739,18 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
-					dump = FALSE;
+					dump = false;
 				if (dump)
 					fprintf (fp2, "%s\n", line);
 				if (!dump && !strncmp (line, "% End GMT time-stamp", 20))
-					dump = TRUE;
+					dump = true;
 			}
 			fclose (fp);	/* Close original PS file */
 			rewind (fp2);	/* Rewind new file without timestamp */
 			fp = fp2;	/* Set original file pointer to this file instead */
 		}
 
-		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = setup = FALSE;
+		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = setup = false;
 
 		len = strlen (ps_file);
 		j = len - 1;
@@ -807,7 +807,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 						continue;
 					}
-					got_BB = got_HRBB = TRUE;
+					got_BB = got_HRBB = true;
 				}
 			}
 			fclose (fpb);
@@ -854,32 +854,32 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						x0 = atoi (c1);		y0 = atoi (c2);
 						x1 = atoi (c3);		y1 = atoi (c4);
 					}
-					got_BB = TRUE;
+					got_BB = true;
 				}
 				else
 					got_BBatend++;
 			}
 			else if ((strstr (line, "%%HiResBoundingBox:"))) {
-				file_has_HRBB = TRUE;
+				file_has_HRBB = true;
 				if (!got_HRBB) {
 					sscanf (&line[19], "%s %s %s %s",c1,c2,c3,c4);
 					if (strncmp (c1, "(atend)", 7)) {	/* Got actual numbers */
 						x0 = atof (c1);		y0 = atof (c2);
 						x1 = atof (c3);		y1 = atof (c4);
-						got_HRBB = got_BB = TRUE;
+						got_HRBB = got_BB = true;
 					}
 				}
 			}
 			else if ((strstr (line, "%%Creator:"))) {
 				if (!strncmp (&line[11], "GMT", 3))
-					isGMT_PS = TRUE;
+					isGMT_PS = true;
 			}
 			else if ((strstr (line, "%%Orientation:"))) {
 				if (!strncmp (&line[15], "Landscape", 9))
-					landscape = TRUE;
+					landscape = true;
 			}
 			else if ((strstr (line, "%%EndComments")))
-				got_end = TRUE;
+				got_end = true;
 			if (got_BBatend == 1 && (got_end || i == 19)) {	/* Now is the time to look at the end of the file */
 				got_BBatend++;			/* Avoid jumping more than once to the end */
 				if (!fseek (fp, (off_t)-256, SEEK_END)) i = -30;
@@ -922,7 +922,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT->common.R.wesn[XHI] -= 360.0;
 					}
 					GMT->common.R.wesn[YLO] = south = atof (yy1);	GMT->common.R.wesn[YHI] = north = atof (yy2);
-					found_proj = TRUE;
+					found_proj = true;
 					if ((ptmp = strstr (&line[2], "+proj")) != NULL) {  /* Search for the +proj in the comment line */
 						proj4_cmd = strdup (&line[(int)(ptmp - &line[0])]);
 						GMT_chop (proj4_cmd);		/* Remove the new line char */
@@ -955,29 +955,29 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
 				if (got_BB)
 					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w)), lrint (ceil(h)));
-				got_BB = FALSE;
+				got_BB = false;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
 				if (got_HRBB)
 					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w, h);
-				got_HRBB = FALSE;
+				got_HRBB = false;
 				continue;
 			}
 			else if (!strncmp (line, "%%HiResBoundingBox:", 19)) {
 				if (got_HRBB)
 					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %g %g\n", w, h);
-				got_HRBB = FALSE;
+				got_HRBB = false;
 				continue;
 			}
 			else if (Ctrl->P.active && landscape && !strncmp (line, "%%Orientation:", 14)) {
 				fprintf (fpo, "%%%%Orientation: Portrait\n");
-				landscape = FALSE;
+				landscape = false;
 				continue;
 			}
 			else if (!strncmp (line, "%%BeginSetup", 12))
-				setup = TRUE;
+				setup = true;
 			else if (!strncmp (line, "%%EndSetup", 10)) {
-				setup = FALSE;
+				setup = false;
 				if (Ctrl->T.eps != 1)	/* Write out /PageSize command */
 					fprintf (fpo, "<< /PageSize [%g %g] >> setpagedevice\n", w, h);
 				if (r != 0)
@@ -1006,7 +1006,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* Allocate new control structures */
 				to_gdalread = GMT_memory (GMT, NULL, 1, struct GDALREAD_CTRL);
 				from_gdalread = GMT_memory (GMT, NULL, 1, struct GD_CTRL);
-				to_gdalread->W.active = TRUE;
+				to_gdalread->W.active = true;
 				from_gdalread->ProjectionRefPROJ4 = proj4_cmd;
 				GMT_gdalread (GMT, NULL, to_gdalread, from_gdalread);
 				if (from_gdalread->ProjectionRefWKT != NULL) {
@@ -1068,7 +1068,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		while ( GMT_fgets (GMT, line, BUFSIZ, fp) );
 		if ( strncmp (line, "%%EOF", 5) )
 			/* Possibly a non-closed GMT PS file. To be confirmed later */
-			excessK = TRUE;
+			excessK = true;
 
 		fclose (fpo);
 		fclose (fp);
@@ -1149,7 +1149,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			if (Ctrl->D.active) sprintf (world_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the world one */
-				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {
+				for (i = (int)strlen(out_file) - 1; i > 0; i--) {
 					if (out_file[i] == '.') { 	/* Beginning of file extension */
 						pos_ext = i;
 						break;
@@ -1182,7 +1182,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->W.warp && proj4_cmd && proj4_cmd[1] == 'p') {	/* We got a usable Proj4 string. Run it (if gdal is around) */
 				/* The true geotiff file will have the same base name plus a .tiff extension.
 				   We will reuse the world_file variable because all it is need is to replace the extension */
-				for (i = (GMT_LONG)strlen(world_file) - 1; i > 0; i--) {
+				for (i = (int)strlen(world_file) - 1; i > 0; i--) {
 					if (world_file[i] == '.') { 	/* Beginning of file extension */
 						pos_ext = i;
 						break;
@@ -1220,7 +1220,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->D.active)
 				sprintf (kml_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (Ctrl->F.active) {		/* Must rip the raster file extension before adding the kml one */
-				for (i = (GMT_LONG)strlen(out_file) - 1; i > 0; i--) {
+				for (i = (int)strlen(out_file) - 1; i > 0; i--) {
 					if (out_file[i] == '.') { 	/* Beginning of file extension */
 						pos_ext = i;
 						break;
@@ -1303,7 +1303,7 @@ GMT_LONG GMT_ps2raster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 }
 
 #ifdef WIN32
-GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
+int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	/* Search the Windows registry for the directory containing the gswinXXc.exe
 	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
 	   Things are further complicated because Win64 has TWO registries: one 32 and the other 64 bits.
@@ -1320,21 +1320,21 @@ GMT_LONG ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	unsigned long datatype;
 	long RegO, rc = 0;
 	int n = 0;
-	GMT_BOOLEAN bits64 = TRUE;
+	bool bits64 = true;
 	float maxVersion = 0;		/* In case more than one GS, hold the number of the highest version */
 
 #ifdef _WIN64
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 64 bits Reg */
 	if (RegO != ERROR_SUCCESS) {		/* Try the 32 bits registry */
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_32KEY, &hkey);
-		bits64 = FALSE;
+		bits64 = false;
 	}
 #else
 	RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ, &hkey);	/* Read 32 bits Reg */
 	if (RegO != ERROR_SUCCESS)			/* Failed. Try the 64 bits registry */
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\GPL Ghostscript", 0, KEY_READ|KEY_WOW64_64KEY, &hkey);
 	else {
-		bits64 = FALSE;
+		bits64 = false;
 	}
 #endif
 

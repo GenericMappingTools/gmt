@@ -29,11 +29,11 @@
 
 struct X2SYS_MERGE_CTRL {
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} A;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} M;
 };
@@ -43,7 +43,7 @@ void *New_x2sys_merge_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_MERGE_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -54,7 +54,7 @@ void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "x2sys_merge - Merge an updated COEs table (smaller) into the main table (bigger)\n\n");
@@ -71,7 +71,7 @@ GMT_LONG GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -79,7 +79,7 @@ GMT_LONG GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -118,11 +118,11 @@ GMT_LONG GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_merge_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_merge (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_LARGE  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
-	COUNTER_LARGE *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
-	GMT_LONG error;
+	uint64_t  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
+	uint64_t *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
+	int error;
 	size_t n_alloc;
 	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
@@ -158,12 +158,12 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	n_alloc = GMT_CHUNK;
-	map_base_start = GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
-	map_base_end =   GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
+	map_base_start = GMT_memory (GMT, NULL, n_alloc, uint64_t);
+	map_base_end =   GMT_memory (GMT, NULL, n_alloc, uint64_t);
 	pairs_base =     GMT_memory (GMT, NULL, n_alloc, char *);
 
-	map_merge_start = GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
-	map_merge_end =   GMT_memory (GMT, NULL, n_alloc, COUNTER_LARGE);
+	map_merge_start = GMT_memory (GMT, NULL, n_alloc, uint64_t);
+	map_merge_end =   GMT_memory (GMT, NULL, n_alloc, uint64_t);
 	pairs_merge =     GMT_memory (GMT, NULL, n_alloc, char *);
 
 	/* Read in the main COEs dbase and store the pair track names */
@@ -177,8 +177,8 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_base++;
 			if (n_base == n_alloc) {
 				n_alloc <<= 1;
-				map_base_start = GMT_memory (GMT, map_base_start, n_alloc, COUNTER_LARGE);
-				map_base_end =   GMT_memory (GMT, map_base_end, n_alloc, COUNTER_LARGE);
+				map_base_start = GMT_memory (GMT, map_base_start, n_alloc, uint64_t);
+				map_base_end =   GMT_memory (GMT, map_base_end, n_alloc, uint64_t);
 				pairs_base =     GMT_memory (GMT, pairs_base, n_alloc, char *);
 			}
 		}
@@ -200,8 +200,8 @@ GMT_LONG GMT_x2sys_merge (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			n_merge++;
 			if (n_merge == n_alloc) {
 				n_alloc <<= 1;
-				map_merge_start = GMT_memory (GMT, map_merge_start, n_alloc, COUNTER_LARGE);
-				map_merge_end   = GMT_memory (GMT, map_merge_end, n_alloc, COUNTER_LARGE);
+				map_merge_start = GMT_memory (GMT, map_merge_start, n_alloc, uint64_t);
+				map_merge_end   = GMT_memory (GMT, map_merge_end, n_alloc, uint64_t);
 				pairs_merge     = GMT_memory (GMT, pairs_merge, n_alloc, char *);
 			}
 		}

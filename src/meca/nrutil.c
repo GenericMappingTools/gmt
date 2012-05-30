@@ -8,9 +8,6 @@
 #include <stdint.h>
 #define NR_END 1
 #define FREE_ARG char*
-#ifndef GMT_LONG
-typedef int GMT_LONG;
-#endif
 
 void nrerror (char error_text[])
 /* Numerical Recipes standard error handler */
@@ -21,7 +18,7 @@ void nrerror (char error_text[])
 	exit (EXIT_FAILURE);
 }
 
-float *vector(GMT_LONG nl, GMT_LONG nh)
+float *vector(int nl, int nh)
 /* allocate a float vector with subscript range v[nl..nh] */
 {
 	float *v;
@@ -31,17 +28,17 @@ float *vector(GMT_LONG nl, GMT_LONG nh)
 	return v-nl+NR_END;
 }
 
-GMT_LONG *ivector(GMT_LONG nl, GMT_LONG nh)
-/* allocate an GMT_LONG vector with subscript range v[nl..nh] */
+int *ivector(int nl, int nh)
+/* allocate an int vector with subscript range v[nl..nh] */
 {
-	GMT_LONG *v;
+	int *v;
 
-	v=(GMT_LONG *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(GMT_LONG)));
+	v=(int *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(int)));
 	if (!v) nrerror("allocation failure in ivector()");
 	return v-nl+NR_END;
 }
 
-unsigned char *cvector(GMT_LONG nl, GMT_LONG nh)
+unsigned char *cvector(int nl, int nh)
 /* allocate an unsigned char vector with subscript range v[nl..nh] */
 {
 	unsigned char *v;
@@ -51,7 +48,7 @@ unsigned char *cvector(GMT_LONG nl, GMT_LONG nh)
 	return v-nl+NR_END;
 }
 
-int64_t *lvector(GMT_LONG nl, GMT_LONG nh)
+int64_t *lvector(int nl, int nh)
 /* allocate an int64_t vector with subscript range v[nl..nh] */
 {
 	int64_t *v;
@@ -61,7 +58,7 @@ int64_t *lvector(GMT_LONG nl, GMT_LONG nh)
 	return v-nl+NR_END;
 }
 
-double *dvector(GMT_LONG nl, GMT_LONG nh)
+double *dvector(int nl, int nh)
 /* allocate a double vector with subscript range v[nl..nh] */
 {
 	double *v;
@@ -71,10 +68,10 @@ double *dvector(GMT_LONG nl, GMT_LONG nh)
 	return v-nl+NR_END;
 }
 
-float **matrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+float **matrix(int nrl, int nrh, int ncl, int nch)
 /* allocate a float matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
-	GMT_LONG i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
+	int i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
 	float **m;
 
 	/* allocate pointers to rows */
@@ -95,10 +92,10 @@ float **matrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
 	return m;
 }
 
-double **dmatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+double **dmatrix(int nrl, int nrh, int ncl, int nch)
 /* allocate a double matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
-	GMT_LONG i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
+	int i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
 	double **m;
 
 	/* allocate pointers to rows */
@@ -119,21 +116,21 @@ double **dmatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
 	return m;
 }
 
-GMT_LONG **imatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
-/* allocate a GMT_LONG matrix with subscript range m[nrl..nrh][ncl..nch] */
+int **imatrix(int nrl, int nrh, int ncl, int nch)
+/* allocate a int matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
-	GMT_LONG i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
-	GMT_LONG **m;
+	int i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
+	int **m;
 
 	/* allocate pointers to rows */
-	m=(GMT_LONG **) malloc((size_t)((nrow+NR_END)*sizeof(GMT_LONG*)));
+	m=(int **) malloc((size_t)((nrow+NR_END)*sizeof(int*)));
 	if (!m) nrerror("allocation failure 1 in matrix()");
 	m += NR_END;
 	m -= nrl;
 
 
 	/* allocate rows and set pointers to them */
-	m[nrl]=(GMT_LONG *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(GMT_LONG)));
+	m[nrl]=(int *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(int)));
 	if (!m[nrl]) nrerror("allocation failure 2 in matrix()");
 	m[nrl] += NR_END;
 	m[nrl] -= ncl;
@@ -144,11 +141,11 @@ GMT_LONG **imatrix(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
 	return m;
 }
 
-float **submatrix(float **a, GMT_LONG oldrl, GMT_LONG oldrh, GMT_LONG oldcl,
-	GMT_LONG newrl, GMT_LONG newcl)
+float **submatrix(float **a, int oldrl, int oldrh, int oldcl,
+	int newrl, int newcl)
 /* point a submatrix [newrl..][newcl..] to a[oldrl..oldrh][oldcl..oldch] */
 {
-	GMT_LONG i,j,nrow=oldrh-oldrl+1,ncol=oldcl-newcl;
+	int i,j,nrow=oldrh-oldrl+1,ncol=oldcl-newcl;
 	float **m;
 
 	/* allocate array of pointers to rows */
@@ -164,13 +161,13 @@ float **submatrix(float **a, GMT_LONG oldrl, GMT_LONG oldrh, GMT_LONG oldcl,
 	return m;
 }
 
-float **convert_matrix(float *a, GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch)
+float **convert_matrix(float *a, int nrl, int nrh, int ncl, int nch)
 /* allocate a float matrix m[nrl..nrh][ncl..nch] that points to the matrix
 declared in the standard C manner as a[nrow][ncol], where nrow=nrh-nrl+1
 and ncol=nch-ncl+1. The routine should be called with the address
 &a[0][0] as the first argument. */
 {
-	GMT_LONG i,j,nrow=nrh-nrl+1,ncol=nch-ncl+1;
+	int i,j,nrow=nrh-nrl+1,ncol=nch-ncl+1;
 	float **m;
 
 	/* allocate pointers to rows */
@@ -186,10 +183,10 @@ and ncol=nch-ncl+1. The routine should be called with the address
 	return m;
 }
 
-float ***f3tensor(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch, GMT_LONG ndl, GMT_LONG ndh)
+float ***f3tensor(int nrl, int nrh, int ncl, int nch, int ndl, int ndh)
 /* allocate a float 3tensor with range t[nrl..nrh][ncl..nch][ndl..ndh] */
 {
-	GMT_LONG i,j,nrow=nrh-nrl+1,ncol=nch-ncl+1,ndep=ndh-ndl+1;
+	int i,j,nrow=nrh-nrl+1,ncol=nch-ncl+1,ndep=ndh-ndl+1;
 	float ***t;
 
 	/* allocate pointers to pointers to rows */
@@ -221,70 +218,70 @@ float ***f3tensor(GMT_LONG nrl, GMT_LONG nrh, GMT_LONG ncl, GMT_LONG nch, GMT_LO
 	return t;
 }
 
-void free_vector(float *v, GMT_LONG nl)
+void free_vector(float *v, int nl)
 /* free a float vector allocated with vector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_ivector(GMT_LONG *v, GMT_LONG nl)
-/* free an GMT_LONG vector allocated with ivector() */
+void free_ivector(int *v, int nl)
+/* free an int vector allocated with ivector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_cvector(unsigned char *v, GMT_LONG nl)
+void free_cvector(unsigned char *v, int nl)
 /* free an unsigned char vector allocated with cvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_lvector(int64_t *v, GMT_LONG nl)
+void free_lvector(int64_t *v, int nl)
 /* free an int64_t vector allocated with lvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_dvector(double *v, GMT_LONG nl)
+void free_dvector(double *v, int nl)
 /* free a double vector allocated with dvector() */
 {
 	free((FREE_ARG) (v+nl-NR_END));
 }
 
-void free_matrix(float **m, GMT_LONG nrl, GMT_LONG ncl)
+void free_matrix(float **m, int nrl, int ncl)
 /* free a float matrix allocated by matrix() */
 {
 	free((FREE_ARG) (m[nrl]+ncl-NR_END));
 	free((FREE_ARG) (m+nrl-NR_END));
 }
 
-void free_dmatrix(double **m, GMT_LONG nrl, GMT_LONG ncl)
+void free_dmatrix(double **m, int nrl, int ncl)
 /* free a double matrix allocated by dmatrix() */
 {
 	free((FREE_ARG) (m[nrl]+ncl-NR_END));
 	free((FREE_ARG) (m+nrl-NR_END));
 }
 
-void free_imatrix(GMT_LONG **m, GMT_LONG nrl, GMT_LONG ncl)
-/* free an GMT_LONG matrix allocated by imatrix() */
+void free_imatrix(int **m, int nrl, int ncl)
+/* free an int matrix allocated by imatrix() */
 {
 	free((FREE_ARG) (m[nrl]+ncl-NR_END));
 	free((FREE_ARG) (m+nrl-NR_END));
 }
 
-void free_submatrix(float **b, GMT_LONG nrl)
+void free_submatrix(float **b, int nrl)
 /* free a submatrix allocated by submatrix() */
 {
 	free((FREE_ARG) (b+nrl-NR_END));
 }
 
-void free_convert_matrix(float **b, GMT_LONG nrl)
+void free_convert_matrix(float **b, int nrl)
 /* free a matrix allocated by convert_matrix() */
 {
 	free((FREE_ARG) (b+nrl-NR_END));
 }
 
-void free_f3tensor(float ***t, GMT_LONG nrl, GMT_LONG ncl, GMT_LONG ndl)
+void free_f3tensor(float ***t, int nrl, int ncl, int ndl)
 /* free a float f3tensor allocated by f3tensor() */
 {
 	free((FREE_ARG) (t[nrl][ncl]+ndl-NR_END));

@@ -29,7 +29,7 @@
  * all floating point values except for grids which are held in single
  * precision floats.  All integer values are standard int (presumably
  * 32-bit) except for quantities that may be very large, such as
- * counters of data records, which will be declared as COUNTER_LARGE, and
+ * counters of data records, which will be declared as uint64_t, and
  * variables that holds allocated number of bytes and similar, which
  * will be declared as size_t.  Occasionally, arrays of integer values
  * will be stored in smaller memory containers such as short int of
@@ -111,21 +111,21 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 struct GMT_MAP {		/* Holds all map-related parameters */
 	struct GMT_PLOT_FRAME frame;		/* Everything about the frame parameters */
-	GMT_LONG this_x_status;			/* Tells us what quadrant old and new points are in (-4/4) */
-	GMT_LONG this_y_status;
-	GMT_LONG prev_x_status;
-	GMT_LONG prev_y_status;
-	GMT_LONG corner;			/* Tells us which corner 1-4 or -1 if not a corner */
-	GMT_BOOLEAN on_border_is_outside;		/* TRUE if a point exactly on the map border shoud be considered outside the map */
-	GMT_BOOLEAN is_world;			/* TRUE if map has 360 degrees of longitude range */
-	GMT_BOOLEAN is_world_tm;			/* TRUE if GMT_TM map is global? */
-	GMT_BOOLEAN lon_wrap;			/* TRUE when longitude wrapping over 360 degrees is allowed */
-	GMT_BOOLEAN meridian_straight;		/* TRUE if meridians plot as straight lines */
-	GMT_BOOLEAN parallel_straight;		/* TRUE if parallels plot as straight lines */
-	GMT_BOOLEAN z_periodic;			/* TRUE if grid values are 0-360 degrees (phases etc) */
-	COUNTER_MEDIUM n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
-	COUNTER_MEDIUM n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
-	COUNTER_MEDIUM path_mode;		/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
+	int this_x_status;			/* Tells us what quadrant old and new points are in (-4/4) */
+	int this_y_status;
+	int prev_x_status;
+	int prev_y_status;
+	int corner;			/* Tells us which corner 1-4 or -1 if not a corner */
+	bool on_border_is_outside;		/* true if a point exactly on the map border shoud be considered outside the map */
+	bool is_world;			/* true if map has 360 degrees of longitude range */
+	bool is_world_tm;			/* true if GMT_TM map is global? */
+	bool lon_wrap;			/* true when longitude wrapping over 360 degrees is allowed */
+	bool meridian_straight;		/* true if meridians plot as straight lines */
+	bool parallel_straight;		/* true if parallels plot as straight lines */
+	bool z_periodic;			/* true if grid values are 0-360 degrees (phases etc) */
+	unsigned int n_lon_nodes;		/* Somewhat arbitrary # of nodes for lines in longitude (may be reset in gmt_map.c) */
+	unsigned int n_lat_nodes;		/* Somewhat arbitrary # of nodes for lines in latitude (may be reset in gmt_map.c) */
+	unsigned int path_mode;		/* 0 if we should call GMT_fix_up_path to resample across gaps > path_step, 1 to leave alone */
 	double width;				/* Full width in inches of this world map */
 	double height;				/* Full height in inches of this world map */
 	double half_width;			/* Half width in inches of this world map */
@@ -133,20 +133,20 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double dlon;				/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
 	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 	double path_step;			/* Sampling interval if resampling of paths should be done */
-	GMT_BOOLEAN (*outside) (struct GMT_CTRL *, double, double);	/* Pointer to function checking if a lon/lat point is outside map */
-	GMT_BOOLEAN (*overlap) (struct GMT_CTRL *, double, double, double, double);	/* Pointer to function checking for overlap between 2 regions */
-	GMT_BOOLEAN (*will_it_wrap) (struct GMT_CTRL *, double *, double *, COUNTER_LARGE, COUNTER_LARGE *);	/* TRUE if consecutive points indicate wrap */
-	GMT_LONG (*jump) (struct GMT_CTRL *, double, double, double, double);	/* TRUE if we jump in x or y */
-	COUNTER_MEDIUM (*crossing) (struct GMT_CTRL *, double, double, double, double, double *, double *, double *, double *, COUNTER_MEDIUM *);	/* Pointer to functions returning crossover point at boundary */
-	COUNTER_LARGE (*clip) (struct GMT_CTRL *, double *, double *, COUNTER_LARGE, double **, double **, COUNTER_LARGE *);	/* Pointer to functions that clip a polygon to fit inside map */
+	bool (*outside) (struct GMT_CTRL *, double, double);	/* Pointer to function checking if a lon/lat point is outside map */
+	bool (*overlap) (struct GMT_CTRL *, double, double, double, double);	/* Pointer to function checking for overlap between 2 regions */
+	bool (*will_it_wrap) (struct GMT_CTRL *, double *, double *, uint64_t, uint64_t *);	/* true if consecutive points indicate wrap */
+	int (*jump) (struct GMT_CTRL *, double, double, double, double);	/* true if we jump in x or y */
+	unsigned int (*crossing) (struct GMT_CTRL *, double, double, double, double, double *, double *, double *, double *, unsigned int *);	/* Pointer to functions returning crossover point at boundary */
+	uint64_t (*clip) (struct GMT_CTRL *, double *, double *, uint64_t, double **, double **, uint64_t *);	/* Pointer to functions that clip a polygon to fit inside map */
 	double (*left_edge) (struct GMT_CTRL *, double);	/* Pointers to functions that return left edge of map */
 	double (*right_edge) (struct GMT_CTRL *, double);	/* Pointers to functions that return right edge of map */
 	struct GMT_DIST dist[3];		/* struct with pointers to functions/scales returning distance between two points points */
-	GMT_BOOLEAN (*near_lines_func) (struct GMT_CTRL *, double, double, struct GMT_TABLE *, COUNTER_MEDIUM, double *, double *, double *);	/* Pointer to function returning distance to nearest line among a set of lines */
-	GMT_BOOLEAN (*near_a_line_func) (struct GMT_CTRL *, double, double, COUNTER_LARGE, struct GMT_LINE_SEGMENT *, COUNTER_MEDIUM, double *, double *, double *);	/* Pointer to function returning distance to line */
-	GMT_BOOLEAN (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_TABLE *, double);	/* Pointer to function returning distance to nearest point */	
-	COUNTER_MEDIUM (*wrap_around_check) (struct GMT_CTRL *, double *, double, double, double, double, double *, double *, COUNTER_MEDIUM *);	/* Does x or y wrap checks */
-	double (*azimuth_func) (struct GMT_CTRL *, double, double, double, double, GMT_BOOLEAN);	/* Pointer to function returning azimuth between two points points */
+	bool (*near_lines_func) (struct GMT_CTRL *, double, double, struct GMT_TABLE *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to nearest line among a set of lines */
+	bool (*near_a_line_func) (struct GMT_CTRL *, double, double, uint64_t, struct GMT_LINE_SEGMENT *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to line */
+	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_TABLE *, double);	/* Pointer to function returning distance to nearest point */	
+	unsigned int (*wrap_around_check) (struct GMT_CTRL *, double *, double, double, double, double, double *, double *, unsigned int *);	/* Does x or y wrap checks */
+	double (*azimuth_func) (struct GMT_CTRL *, double, double, double, double, bool);	/* Pointer to function returning azimuth between two points points */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */
 };
 
@@ -157,7 +157,7 @@ struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 };
 
 struct GMT_INIT {		/* Holds misc run-time parameters */
-	COUNTER_MEDIUM n_custom_symbols;
+	unsigned int n_custom_symbols;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	char *progname;					/* Name of current GMT program */
 	char *runtime_bindir;				/* Directory that contains the main exe at run-time */
@@ -168,11 +168,11 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 };
 
 struct GMT_PLOT {		/* Holds all plotting-related parameters */
-	COUNTER_LARGE n;			/* Number of such points */
+	uint64_t n;			/* Number of such points */
 	size_t n_alloc;			/* Size of allocated plot arrays */
-	GMT_BOOLEAN r_theta_annot;		/* TRUE for special r-theta map annotation (see GMT_get_annot_label) */
-	COUNTER_MEDIUM mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
-	COUNTER_MEDIUM *pen;		/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
+	bool r_theta_annot;		/* true for special r-theta map annotation (see GMT_get_annot_label) */
+	unsigned int mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
+	unsigned int *pen;		/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
 	struct GMT_PLOT_CALCLOCK calclock;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
@@ -196,12 +196,12 @@ struct GMT_INTERNAL {
 	/* These are internal parameters that need to be passed around between
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
-	COUNTER_MEDIUM func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
+	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */
 	double scale, offset, nan;
-	COUNTER_MEDIUM id;
+	unsigned int id;
 	char *suffix;
 };
 	
@@ -209,10 +209,10 @@ struct GMT_SESSION {
 	/* These are parameters that is set once at the start of a GMT session and
 	 * are essentially read-only constants for the duration of the session */
 	FILE *std[3];			/* Pointers for standard input, output, and error */
-	void * (*input_ascii) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM *, GMT_LONG *);	/* Pointer to function reading ascii tables only */
-	GMT_LONG (*output_ascii) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);	/* Pointer to function writing ascii tables only */
-	COUNTER_MEDIUM n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
-	COUNTER_MEDIUM n_user_media;	/* Total number of user media returned by gmt_load_user_media */
+	void * (*input_ascii) (struct GMT_CTRL *, FILE *, unsigned int *, int *);	/* Pointer to function reading ascii tables only */
+	int (*output_ascii) (struct GMT_CTRL *, FILE *, unsigned int, double *);	/* Pointer to function writing ascii tables only */
+	unsigned int n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
+	unsigned int n_user_media;	/* Total number of user media returned by gmt_load_user_media */
 	size_t min_meminc;		/* DEBUG, sets min/max memory increments */
 	size_t max_meminc;
 	float f_NaN;			/* Holds the IEEE NaN for floats */
@@ -221,16 +221,16 @@ struct GMT_SESSION {
 	double u2u[4][4];		/* u2u is the 4x4 conversion matrix for cm, inch, m, pt */
 	char unit_name[4][8];		/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
-	COUNTER_MEDIUM n_shorthands;			/* Length of arrray with shorthand information */
-	COUNTER_MEDIUM grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
+	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
+	unsigned int grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
-	GMT_LONG (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid read header functions */
-	GMT_LONG (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid update header functions */
-	GMT_LONG (*writeinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid write header functions */
-	GMT_LONG (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, COUNTER_MEDIUM *, COUNTER_MEDIUM);	/* Pointers to grid read functions */
-	GMT_LONG (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, COUNTER_MEDIUM *, COUNTER_MEDIUM);	/* Pointers to grid read functions */
-	GMT_LONG (*fft1d[N_GMT_FFT]) (struct GMT_CTRL *, float *, COUNTER_MEDIUM, GMT_LONG, COUNTER_MEDIUM);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
-	GMT_LONG (*fft2d[N_GMT_FFT]) (struct GMT_CTRL *, float *, COUNTER_MEDIUM, COUNTER_MEDIUM, GMT_LONG, COUNTER_MEDIUM);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
+	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid read header functions */
+	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid update header functions */
+	int (*writeinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid write header functions */
+	int (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
+	int (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
+	int (*fft1d[N_GMT_FFT]) (struct GMT_CTRL *, float *, unsigned int, int, unsigned int);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
+	int (*fft2d[N_GMT_FFT]) (struct GMT_CTRL *, float *, unsigned int, unsigned int, int, unsigned int);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */
 	char *GSHHGDIR;			/* Path to the GSHHG directory */
 	char *SHAREDIR;			/* Path to the GMT share directory */

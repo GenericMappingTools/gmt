@@ -37,9 +37,9 @@
 
 struct GMT_CUSTOM_SYMBOL_ITEM {
 	double x, y, p[3], const_val[2];
-	GMT_LONG action, operator, var;
-	COUNTER_MEDIUM conditional;
-	GMT_BOOLEAN negate;
+	int action, operator, var;
+	unsigned int conditional;
+	bool negate;
 	struct GMT_FILL *fill;
 	struct GMT_PEN *pen;
 	struct GMT_CUSTOM_SYMBOL_ITEM *next;
@@ -48,10 +48,10 @@ struct GMT_CUSTOM_SYMBOL_ITEM {
 
 struct GMT_CUSTOM_SYMBOL {
 	char name[GMT_TEXT_LEN64];
-	char *PS_macro;		/* Contains all the PS commands if PS is TRUE */
-	COUNTER_MEDIUM n_required;	/* Number of additional columns necessary to decode chosen symbol */
-	GMT_BOOLEAN PS;		/* TRUE if a PSL symbol */
-	COUNTER_MEDIUM *type;	/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
+	char *PS_macro;		/* Contains all the PS commands if PS is true */
+	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	bool PS;		/* true if a PSL symbol */
+	unsigned int *type;	/* Array with type of each parameter [0 = dimensionless, 1 = dimension, 2 = geographic angle (convert via projection)] */
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
@@ -61,13 +61,13 @@ struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	double scale_lon;	/* Point where scale should apply */
 	double scale_lat;	/* Point where scale should apply */
 	double length;		/* How long the scale is in measure units */
-	GMT_BOOLEAN boxdraw;	/* TRUE if we want to plot a rectangle behind the scale */
-	GMT_BOOLEAN boxfill;	/* TRUE if we want to paint/fill a rectangle behind the scale */
-	GMT_BOOLEAN plot;		/* TRUE if we want to draw the scale */
-	GMT_BOOLEAN fancy;		/* TRUE for a fancy map scale */
-	GMT_BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
-	GMT_BOOLEAN unit;		/* TRUE if we should append distance unit to all annotations along the scale */
-	GMT_BOOLEAN do_label;	/* TRUE if we should plot a label for the scale */
+	bool boxdraw;	/* true if we want to plot a rectangle behind the scale */
+	bool boxfill;	/* true if we want to paint/fill a rectangle behind the scale */
+	bool plot;		/* true if we want to draw the scale */
+	bool fancy;		/* true for a fancy map scale */
+	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	bool unit;		/* true if we should append distance unit to all annotations along the scale */
+	bool do_label;	/* true if we should plot a label for the scale */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
 	char label[GMT_TEXT_LEN64];	/* Alternative user-specified label */
@@ -83,10 +83,10 @@ struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and ps
 	double a_int[2];	/* Annotation interval for geographic and magnetic directions */
 	double f_int[2];	/* Tick (large) interval for geographic and magnetic directions */
 	double g_int[2];	/* Tick (small) interval for geographic and magnetic directions */
-	GMT_BOOLEAN plot;		/* TRUE if we want to draw the rose */
-	GMT_BOOLEAN gave_xy;	/* TRUE if x0, y0 was given in cartesian map coordinates and not lon/lat */
-	COUNTER_MEDIUM type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
-	COUNTER_MEDIUM kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
+	bool plot;		/* true if we want to draw the rose */
+	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
+	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
+	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
 	char label[4][GMT_TEXT_LEN64];	/* User-changable labels for W, E, S, N point */
 	char dlabel[GMT_TEXT_LEN256];	/* Magnetic declination label */
 };

@@ -32,43 +32,43 @@ extern void x2sys_set_home (struct GMT_CTRL *GMT);
 
 struct X2SYS_INIT_CTRL {
 	struct In {	/*  */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} In;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 		char *string;
 	} C;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 		char *string;
 	} E;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 	} F;
 	struct G {	/* -G */
-		GMT_BOOLEAN active;
+		bool active;
 		char *string;
 	} G;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 		char *string;
 	} I;
 	struct m {	/* -m */
-		GMT_BOOLEAN active;
+		bool active;
 		char *string;
 	} m;
 	struct N {	/* -N */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		char *string[2];
 	} N;
 	struct W {	/* -W */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		char *string[2];
 	} W;
 };
@@ -78,7 +78,7 @@ void *New_x2sys_init_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_INIT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -98,7 +98,7 @@ void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "x2sys_init %s - Initialize a new x2sys track database\n\n", X2SYS_VERSION);
@@ -141,7 +141,7 @@ GMT_LONG GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -149,7 +149,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, k, n_tags = 0;
+	unsigned int n_errors = 0, k, n_tags = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	/* We are just checking the options for syntax here, not parsing is actually needed */
@@ -167,7 +167,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 			/* Processes program-specific parameters */
 			
 			case 'C':	/* Distance calculation flag */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (!strchr ("cefg", (int)opt->arg[0])) {
 					GMT_report (GMT, GMT_MSG_FATAL, "ERROR -C: Flag must be c, f, g, or e\n");
 					n_errors++;
@@ -175,27 +175,27 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 				if (!n_errors) Ctrl->C.string = strdup (opt->arg);
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Geographical coordinates, set discontinuity */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.string = strdup (opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (opt->arg[0]) GMT_getinc (GMT, opt->arg, Ctrl->I.inc);
 				Ctrl->I.string = strdup (opt->arg);
 				break;
 			case 'm':
-				Ctrl->m.active = TRUE;
+				Ctrl->m.active = true;
 				Ctrl->m.string = strdup (opt->arg);
 				break;
 			case 'N':	/* Distance and speed unit selection */
@@ -214,7 +214,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 						break;
 				}
 				if (!n_errors) {
-					Ctrl->N.active[k] = TRUE;
+					Ctrl->N.active[k] = true;
 					Ctrl->N.string[k] = strdup (opt->arg);
 				}
 				break;
@@ -230,7 +230,7 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 						break;
 				}
 				if (!n_errors) {
-					Ctrl->W.active[k] = TRUE;
+					Ctrl->W.active[k] = true;
 					Ctrl->W.string[k] = strdup (opt->arg);
 				}
 				break;
@@ -251,13 +251,13 @@ GMT_LONG GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_init_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_init (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_init (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	time_t right_now;
 	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
 	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
 
-	GMT_BOOLEAN error = FALSE;
+	bool error = false;
 
 	FILE *fp = NULL, *fp_def = NULL;
 

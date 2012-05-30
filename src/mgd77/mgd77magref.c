@@ -18,38 +18,38 @@
 #include "mgd77.h"
 
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct MGD77_CM4 *CM4;
-	GMT_BOOLEAN copy_input;
-	GMT_BOOLEAN do_IGRF;
-	GMT_BOOLEAN do_CM4;
-	GMT_BOOLEAN joint_IGRF_CM4;
+	bool copy_input;
+	bool do_IGRF;
+	bool do_CM4;
+	bool joint_IGRF_CM4;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN fixed_alt;
-		GMT_BOOLEAN fixed_time;
-		GMT_LONG years;
-		GMT_LONG t_col;
+		bool active;
+		bool fixed_alt;
+		bool fixed_time;
+		int years;
+		int t_col;
 		double altitude;
 		double time;
 	} A;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 	} F;
 	struct G {	/* -G */
-		GMT_BOOLEAN active;
+		bool active;
 	} G;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 };
 
@@ -59,9 +59,9 @@ void *New_mgd77magref_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C = GMT_memory (GMT, NULL, 1, struct MGD77MAGREF_CTRL);
 	C->CM4 = calloc (1U, sizeof (struct MGD77_CM4));
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->do_CM4 = TRUE;
+	C->do_CM4 = true;
 	return (C);
 }
 
@@ -70,7 +70,7 @@ void Free_mgd77magref_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -145,7 +145,7 @@ GMT_LONG GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77magref and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -153,8 +153,8 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
-	GMT_LONG j;
+	unsigned int n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
+	int j;
 	char p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -168,21 +168,21 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				pos = 0;
 				while ((GMT_strtok (opt->arg, "+", &pos, p))) {
 					switch (p[0]) {
 						case 'a':
-							Ctrl->A.fixed_alt = TRUE;
+							Ctrl->A.fixed_alt = true;
 							Ctrl->A.altitude = atof (&p[1]);
 							break;
 						case 't':
-							Ctrl->A.fixed_time = TRUE;
+							Ctrl->A.fixed_time = true;
 							Ctrl->A.time = atof (&p[1]);
 							GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
 							break;
 						case 'y':
-							Ctrl->A.years = TRUE;
+							Ctrl->A.years = true;
 							GMT->current.io.col_type[GMT_IN][2] = GMT->current.io.col_type[GMT_OUT][2] = 
 												GMT->current.io.col_type[GMT_IN][3] = 
 												GMT->current.io.col_type[GMT_OUT][3] = 
@@ -194,7 +194,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 				}
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				free (Ctrl->CM4->CM4_M.path);
 				Ctrl->CM4->CM4_M.path = strdup (opt->arg);
 				break;
@@ -203,27 +203,27 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 				if (opt->arg[j] == '-') j++;
 				if ((opt->arg[j] > 47) && (opt->arg[j] < 58)) {	/* arg is numeric -> Dst Index */
 					Ctrl->CM4->CM4_D.dst[0] = atof (&opt->arg[j]);
-					Ctrl->CM4->CM4_D.index = FALSE;
+					Ctrl->CM4->CM4_D.index = false;
 				}
 				else {
 					free (Ctrl->CM4->CM4_D.path);
 					Ctrl->CM4->CM4_D.path = strdup (opt->arg);
-					Ctrl->CM4->CM4_D.load = TRUE;
+					Ctrl->CM4->CM4_D.load = true;
 				}
 				break;
 			case 'E':
 				if ((opt->arg[0] > 47) && (opt->arg[0] < 58)) {	/* arg is numeric -> Dst Index */
 					Ctrl->CM4->CM4_I.F107 = atof (opt->arg);
-					Ctrl->CM4->CM4_I.index = FALSE;
+					Ctrl->CM4->CM4_I.index = false;
 				}
 				else {
 					free (Ctrl->CM4->CM4_I.path);
 					Ctrl->CM4->CM4_I.path = strdup (opt->arg);
-					Ctrl->CM4->CM4_I.load = TRUE;
+					Ctrl->CM4->CM4_I.load = true;
 				}
 				break;
 			case 'F':
-				Ctrl->CM4->CM4_F.active = TRUE;
+				Ctrl->CM4->CM4_F.active = true;
 
 				pos_slash = 0;
 				for (j = 0; opt->arg[j]; j++) {
@@ -233,7 +233,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 					}
 					switch (opt->arg[j]) {
 						case 'r':		/* Echo input record */
-							Ctrl->copy_input = TRUE;
+							Ctrl->copy_input = true;
 							break;
 						case 't':		/* Total field is requested */
 							Ctrl->CM4->CM4_F.field_components[nval++] = 0;
@@ -264,9 +264,9 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 					for (j = pos_slash; opt->arg[j]; j++) {
 						switch (opt->arg[j]) {
 							case '0':		/* IGRF */
-								Ctrl->do_IGRF = TRUE;
-								Ctrl->do_CM4  = FALSE;
-								Ctrl->joint_IGRF_CM4 = FALSE;
+								Ctrl->do_IGRF = true;
+								Ctrl->do_CM4  = false;
+								Ctrl->joint_IGRF_CM4 = false;
 								break;
 							case '1':		/* Main field 1 */
 								Ctrl->CM4->CM4_F.field_sources[nfval++] = 0;
@@ -290,9 +290,9 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 								Ctrl->CM4->CM4_F.field_sources[nfval++] = 6;
 								break;
 							case '9':		/* Main field is computed with the IGRF */
-								Ctrl->do_IGRF = FALSE;/* No contradiction, the way will be through joint_IGRF_CM4 */
-								Ctrl->do_CM4  = TRUE;	/* Well maybe, if some other source is selected also */
-								Ctrl->joint_IGRF_CM4 = TRUE;
+								Ctrl->do_IGRF = false;/* No contradiction, the way will be through joint_IGRF_CM4 */
+								Ctrl->do_CM4  = true;	/* Well maybe, if some other source is selected also */
+								Ctrl->joint_IGRF_CM4 = true;
 								break;
 						}
 					}
@@ -300,10 +300,10 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 				}
 				break;
 			case 'G':
-				Ctrl->CM4->CM4_G.geodetic = FALSE;
+				Ctrl->CM4->CM4_G.geodetic = false;
 				break;
 			case 'L':
-				Ctrl->CM4->CM4_L.curr = TRUE;
+				Ctrl->CM4->CM4_L.curr = true;
 
 				pos_slash = 0;
 				for (j = 0; opt->arg[j]; j++) {
@@ -313,7 +313,7 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 					}
 					switch (opt->arg[j]) {
 						case 'r':		/* Echo input record */
-							Ctrl->copy_input = TRUE;
+							Ctrl->copy_input = true;
 							break;
 						case 't':		/* Total field is requested */
 							Ctrl->CM4->CM4_L.curr_components[lval++] = 0;
@@ -386,12 +386,12 @@ GMT_LONG GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_mgd77magref (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM j, nval = 0, nfval = 0, error = 0;
-	COUNTER_MEDIUM lval = 0, lfval = 0, n_field_components, tbl;
-	COUNTER_MEDIUM n_out = 0, t_col = 3;
-	GMT_BOOLEAN cm4_igrf_T = FALSE;
+	unsigned int j, nval = 0, nfval = 0, error = 0;
+	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
+	unsigned int n_out = 0, t_col = 3;
+	bool cm4_igrf_T = false;
 	
 	size_t i, s, need = 0, n_alloc = 0;
 
@@ -438,15 +438,15 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* ------------- Test, and take measures, if mix mode IGRF/CM4 is to be used -------------------------- */
 	if (Ctrl->joint_IGRF_CM4) {
 		if (nfval == 0) {	/* It means we had a -F.../9 which is exactly iqual to -F.../0 */
-			Ctrl->do_IGRF = TRUE;
-			Ctrl->do_CM4  = FALSE;
-			Ctrl->joint_IGRF_CM4 = FALSE;
+			Ctrl->do_IGRF = true;
+			Ctrl->do_CM4  = false;
+			Ctrl->joint_IGRF_CM4 = false;
 		}
 		else {
-			cm4_igrf_T = FALSE;
+			cm4_igrf_T = false;
 			if ( (nval == 1) && (Ctrl->CM4->CM4_F.field_components[0] == 0) ) {
 				for (i = 0; i < 3; i++) Ctrl->CM4->CM4_F.field_components[i] = (int)i+2;	/* Force the x,y,z request */
-				cm4_igrf_T = TRUE;
+				cm4_igrf_T = true;
 			}
 			else if ( !((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && 
 						(Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
@@ -462,12 +462,12 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (error) Return (EXIT_FAILURE);
 
-	if (!Ctrl->CM4->CM4_F.active && !Ctrl->CM4->CM4_L.curr) Ctrl->CM4->CM4_F.active = TRUE;
+	if (!Ctrl->CM4->CM4_F.active && !Ctrl->CM4->CM4_L.curr) Ctrl->CM4->CM4_F.active = true;
 
 	/* Sort the order in which the parameters appear */
 	if (Ctrl->CM4->CM4_F.active) {
 		if (nval == 0) {		/* No components selected, default used */
-			Ctrl->copy_input = TRUE;
+			Ctrl->copy_input = true;
 			Ctrl->CM4->CM4_F.n_field_components = 7;
 			for (i = 0; i < 7; i++) Ctrl->CM4->CM4_F.field_components[i] = (int)i;
 		}
@@ -479,7 +479,7 @@ GMT_LONG GMT_mgd77magref (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		if (lval == 0) {		/* Nothing selected, default used */
-			Ctrl->copy_input = TRUE;
+			Ctrl->copy_input = true;
 			Ctrl->CM4->CM4_L.n_curr_components = 1;
 			Ctrl->CM4->CM4_L.curr_components[0] = 0;
 		}

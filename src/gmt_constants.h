@@ -37,11 +37,11 @@
  *			GMT CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#ifndef TRUE
-#define TRUE 1
+#ifndef true
+#define true 1
 #endif
-#ifndef FALSE
-#define FALSE 0
+#ifndef false
+#define false 0
 #endif
 #ifndef TWO_PI
 #define TWO_PI        6.28318530717958647692
@@ -167,10 +167,10 @@ enum GMT_enum_alloc {GMT_ALLOCATED = 0,	/* Item was allocated so GMT_* modules s
 
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN
-#define GMT_BIGENDIAN	TRUE
+#define GMT_BIGENDIAN	true
 #define GMT_ENDIAN		'B'
 #else
-#define GMT_BIGENDIAN	FALSE
+#define GMT_BIGENDIAN	false
 #define GMT_ENDIAN		'L'
 #endif
 

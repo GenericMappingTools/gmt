@@ -27,21 +27,21 @@
 
 struct grd2sph_CTRL {
 	struct D {	/* -D<degree> */
-		GMT_BOOLEAN active;
+		bool active;
 		int max_degree;
 	} D;
 	struct N {	/* -Ng|m|s */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
+		bool active;
 	} Q;
 };
 
 int main (int argc, char **argv)
 {
-	GMT_BOOLEAN error = FALSE;
+	bool error = false;
 
 	int i, d, o, nm, f_arg = -1, n_files = 0;
 
@@ -73,19 +73,19 @@ int main (int argc, char **argv)
 				/* Supplemental options */
 
 				case 'D':
-					Ctrl->D.active = TRUE;
+					Ctrl->D.active = true;
 					if (argv[i][2]) Ctrl->D.max_degree = atoi (&argv[i][2]);
 					break;
 				case 'N':
-					Ctrl->N.active = TRUE;
+					Ctrl->N.active = true;
 					Ctrl->N.mode = argv[i][2];
 					break;
 				case 'Q':
-					Ctrl->Q.active = TRUE;
+					Ctrl->Q.active = true;
 					break;
 
 				default:
-					error = TRUE;
+					error = true;
 					GMT_default_error (argv[i][1]);
 					break;
 			}
@@ -142,7 +142,7 @@ int main (int argc, char **argv)
 	GMT_setmode (GMT, GMT_OUT);
 #endif
 
-	GMT_grd_init (&header, 0, NULL, FALSE);
+	GMT_grd_init (&header, 0, NULL, false);
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
 	if (!(GMT_grd_is_global (&header) && GMT_180_RANGE (header.y_min, header.y_max))) {
@@ -156,7 +156,7 @@ int main (int argc, char **argv)
 
 	grd = GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
 
-	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), argv[f_arg]);
+	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, false), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */
 	
 	/* Write out coefficients in the form degree order cos sin */
@@ -190,7 +190,7 @@ void *New_grd2sph_Ctrl () {	/* Allocate and initialize a new control structure *
 	
 	C = (struct grd2sph_CTRL *) GMT_memory (VNULL, 1, sizeof (struct grd2sph_CTRL), "New_grd2sph_Ctrl");
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->N.mode = 'm';
 		

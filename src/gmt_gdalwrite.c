@@ -37,7 +37,7 @@
 #define GDAL_TILE_SIZE 256 /* default tile size when creating tiled GTiff */
 
 int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs) {
-	int	bStrict = FALSE;
+	int	bStrict = false;
 	char **papszOptions = NULL, *projWKT = NULL;
 	char *pszFormat = "GTiff"; 
 	double adfGeoTransform[6] = {0,1,0,0,0,1}; 
@@ -131,7 +131,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 
 		if( OSRImportFromProj4( hSRS_2, prhs->P.ProjectionRefPROJ4) == CE_None ) {
 			char	*pszPrettyWkt = NULL;
-			OSRExportToPrettyWkt( hSRS_2, &pszPrettyWkt, FALSE );
+			OSRExportToPrettyWkt( hSRS_2, &pszPrettyWkt, false );
 			projWKT = pszPrettyWkt;
 		}
 		else {
@@ -185,7 +185,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 		hSRS = OSRNewSpatialReference( NULL );
 		if (is_geog && !projWKT)	/* Only thing we know is that it is Geog */
 			OSRSetFromUserInput( hSRS, "+proj=latlong +datum=WGS84" );
-		else				/* Even if is_geog == TRUE, use the WKT string */ 
+		else				/* Even if is_geog == true, use the WKT string */ 
 			OSRSetFromUserInput( hSRS, projWKT );
 		OSRExportToWkt( hSRS, &pszSRS_WKT );
 		OSRDestroySpatialReference( hSRS );
@@ -244,7 +244,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	if (GMT_strlcmp(pszFormat,"netCDF")) {
 		/* Change some attributes written by GDAL (not finished) */
 		int ncid;
-		GMT_LONG err;
+		int err;
 		GMT_err_trap (nc_open (fname, NC_WRITE, &ncid));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(prhs->command), prhs->command));
 		GMT_err_trap (nc_close (ncid));

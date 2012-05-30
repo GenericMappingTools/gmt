@@ -42,9 +42,9 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job)
+int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job)
 {
-	GMT_LONG err;	/* Implicity by GMT_err_trap */
+	int err;	/* Implicity by GMT_err_trap */
 	int i, nm[2];
 	double dummy[2];
 	char text[GRD_COMMAND_LEN320+GRD_REMARK_LEN160];
@@ -106,7 +106,7 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	if (job == 'u') GMT_err_trap (nc_redef (ncid));
 
 	if (job == 'r') {
-		GMT_LONG reg;
+		int reg;
 		GMT_err_trap (nc_get_att_text (ncid, x_range_id, "units", header->x_units));
 		GMT_err_trap (nc_get_att_text (ncid, y_range_id, "units", header->y_units));
 		GMT_err_trap (nc_get_att_text (ncid, z_range_id, "units", header->z_units));
@@ -138,7 +138,7 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 		header->y_order = -1;
 	}
 	else {
-		GMT_LONG reg;
+		int reg;
 		strcpy (text, header->command);
 		strcpy (&text[GRD_COMMAND_LEN320], header->remark);
 		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GRD_UNIT_LEN80, header->x_units));
@@ -179,10 +179,10 @@ GMT_LONG gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *head
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	int ncid;
-	GMT_LONG err;
+	int err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
 	GMT_err_trap (gmt_cdf_grd_info (C, ncid, header, 'r'));
@@ -190,10 +190,10 @@ GMT_LONG GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	int ncid, old_fill_mode;
-	GMT_LONG err;
+	int err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_open (header->name, NC_WRITE, &ncid));
 	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
@@ -202,10 +202,10 @@ GMT_LONG GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	int ncid, old_fill_mode;
-	GMT_LONG err;
+	int err;
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
 	GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
@@ -214,7 +214,7 @@ GMT_LONG GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -230,12 +230,12 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	 
 	int  ncid;
 	size_t start[1], edge[1];
-	GMT_BOOLEAN check;
-	GMT_LONG j, err;
-	GMT_LONG first_col, last_col, first_row, last_row;
-	COUNTER_MEDIUM i, width_in, height_in, i_0_out, inc, off;
-	COUNTER_MEDIUM width_out, *actual_col = NULL;
-	COUNTER_LARGE ij, kk;
+	bool check;
+	int j, err;
+	int first_col, last_col, first_row, last_row;
+	unsigned int i, width_in, height_in, i_0_out, inc, off;
+	unsigned int width_out, *actual_col = NULL;
+	uint64_t ij, kk;
 	float *tmp = NULL;
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
@@ -245,7 +245,7 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
 
-	width_out *= inc;			/* Possibly twice is complex is TRUE */
+	width_out *= inc;			/* Possibly twice is complex is true */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Open the NetCDF file */
@@ -288,7 +288,7 @@ GMT_LONG GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float 
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -300,11 +300,11 @@ GMT_LONG GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 
 	size_t start[1], edge[1];
 	int ncid, old_fill_mode, *tmp_i = NULL;
-	GMT_LONG err;
-	COUNTER_MEDIUM i, *actual_col = NULL;
-	COUNTER_MEDIUM j, width_out, height_out, width_in, inc = 1, off = 0;
-	GMT_LONG first_col, last_col, first_row, last_row;
-	COUNTER_LARGE ij, nr_oor = 0; 
+	int err;
+	unsigned int i, *actual_col = NULL;
+	unsigned int j, width_out, height_out, width_in, inc = 1, off = 0;
+	int first_col, last_col, first_row, last_row;
+	uint64_t ij, nr_oor = 0; 
 	float *tmp_f = NULL;
 	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
 	nc_type z_type;

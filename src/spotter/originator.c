@@ -107,7 +107,7 @@
 #include "spotter.h"
 
 double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
-GMT_LONG GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
+int GMT_great_circle_intersection (struct GMT_CTRL *T, double A[], double B[], double C[], double X[], double *CX_dist);
 
 #define KM_PR_RAD (R2D * GMT->current.proj.DIST_KM_PR_DEG)
 
@@ -119,51 +119,51 @@ struct HOTSPOT_ORIGINATOR {
 	double np_time;		/* Predicted time at nearest point */
 	double np_lon;		/* Longitude of nearest point on the current flowline */
 	double np_lat;		/* Latitude  of nearest point on the current flowline */
-	COUNTER_LARGE nearest;	/* Point id of current flowline node points closest to hotspot */
-	COUNTER_MEDIUM stage;	/* Stage to which seamount belongs */
+	uint64_t nearest;	/* Point id of current flowline node points closest to hotspot */
+	unsigned int stage;	/* Stage to which seamount belongs */
 };
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct D {	/* -D<factor */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;	
 	} D;
 	struct E {	/* -Erotfile */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 		char *file;
 	} E;
 	struct F {	/* -Ehotspotfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} F;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		GMT_BOOLEAN degree;	/* Report degrees */
+		bool active;
+		unsigned int mode;
+		bool degree;	/* Report degrees */
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		double t_upper;
 	} N;
 	struct Q {	/* -Q<tfix> */
-		GMT_BOOLEAN active;
+		bool active;
 		double t_fix, r_fix;
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n;
+		bool active;
+		unsigned int n;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 	struct W {	/* -W<max_dist> */
-		GMT_BOOLEAN active;
+		bool active;
 		double dist;
 	} W;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
@@ -172,7 +172,7 @@ void *New_originator_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	C = GMT_memory (GMT, NULL, 1, struct ORIGINATOR_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->D.value = 5.0;
 	C->N.t_upper = 180.0;
@@ -199,7 +199,7 @@ int comp_hs (const void *p1, const void *p2)
 	return (0);
 }
 
-GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_originator_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -235,7 +235,7 @@ GMT_LONG GMT_originator_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to originator and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -243,8 +243,8 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_input;
-	GMT_LONG k;
+	unsigned int n_errors = 0, n_input;
+	int k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -261,23 +261,23 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 				break;
 #endif
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.value = atof (opt->arg);
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;	k = 0;
-				if (opt->arg[0] == '+') { Ctrl->E.mode = TRUE; k = 1;}
+				Ctrl->E.active = true;	k = 0;
+				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				Ctrl->E.file  = strdup (&opt->arg[k]);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'L':
-						Ctrl->L.degree = TRUE;
+						Ctrl->L.degree = true;
 					case 'l':
 						Ctrl->L.mode = 3;
 						break;
@@ -286,7 +286,7 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 						Ctrl->L.mode = 2;
 						break;
 					case 'T':
-						Ctrl->L.degree = TRUE;
+						Ctrl->L.degree = true;
 					case 't':
 						Ctrl->L.mode = 1;
 						break;
@@ -296,28 +296,28 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				sscanf (opt->arg, "%lg/%lg", &Ctrl->Q.r_fix, &Ctrl->Q.t_fix);
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				k = atoi (opt->arg);
 				n_errors += GMT_check_condition (GMT, k < 1, "Syntax error -S: Must specify a positive number of hotspots\n");
 				Ctrl->S.n = k;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				Ctrl->W.dist = atof (opt->arg);
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -340,12 +340,12 @@ GMT_LONG GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_originator_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM n_max_spots, n_input, n_expected_fields, n_out;
-	COUNTER_MEDIUM spot, k, smt, kk, n_stages, n_hotspots, np, n_read, n_skipped = 0;
+	unsigned int n_max_spots, n_input, n_expected_fields, n_out;
+	unsigned int spot, k, smt, kk, n_stages, n_hotspots, np, n_read, n_skipped = 0;
 	
-	GMT_BOOLEAN error = FALSE, better;
+	bool error = false, better;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];
@@ -380,7 +380,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
 
-	n_hotspots = spotter_hotspot_init (GMT, Ctrl->F.file, TRUE, &orig_hotspot);	/* Get geocentric hotspot locations */
+	n_hotspots = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (Ctrl->S.n > n_hotspots) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
 		Return (EXIT_FAILURE);
@@ -393,7 +393,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		hotspot[spot].np_dist = 1.0e100;
 	}
 	
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, TRUE, FALSE, Ctrl->E.mode, &Ctrl->N.t_upper);
+	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);
 
 	hot = GMT_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 
@@ -495,40 +495,40 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (spot = 0; spot < n_hotspots; spot++) {
 
-			GMT_geo_to_cart (GMT, hot[spot].h->lat, hot[spot].h->lon, H, TRUE);	/* 3-D Cartesian vector of this hotspot */
+			GMT_geo_to_cart (GMT, hot[spot].h->lat, hot[spot].h->lon, H, true);	/* 3-D Cartesian vector of this hotspot */
 
 			/* Fine-tune the nearest point by considering intermediate points along greatcircle between knot points */
 
 			k = 3 * hot[spot].nearest + 1;			/* Corresponding index for x into the (x,y,t) array c */
-			GMT_geo_to_cart (GMT, c[k+1], c[k], N, FALSE);	/* 3-D vector of nearest node to this hotspot */
-			better = FALSE;
+			GMT_geo_to_cart (GMT, c[k+1], c[k], N, false);	/* 3-D vector of nearest node to this hotspot */
+			better = false;
 			if (hot[spot].nearest > 0) {	/* There is a point along the flowline before the nearest node */
-				GMT_geo_to_cart (GMT, c[k-2], c[k-3], A, FALSE);	/* 3-D vector of end of this segment */
+				GMT_geo_to_cart (GMT, c[k-2], c[k-3], A, false);	/* 3-D vector of end of this segment */
 				if (GMT_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
-						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, TRUE);
+						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
 						hot[spot].np_dist = hx_dist_km;
 						dist_NA = d_acos (fabs (GMT_dot3v (GMT, A, N))) * KM_PR_RAD;
 						dist_NX = d_acos (fabs (GMT_dot3v (GMT, X, N))) * KM_PR_RAD;
 						del_dist = dist_NA - dist_NX;
 						dt = (del_dist > 0.0) ? (c[k+2] - c[k-1]) * dist_NX / del_dist : 0.0;
-						better = TRUE;
+						better = true;
 					}
 				}
 			}
 			if (hot[spot].nearest < (np-1) ) {	/* There is a point along the flowline after the nearest node */
-				GMT_geo_to_cart (GMT, c[k+4], c[k+3], A, FALSE);	/* 3-D vector of end of this segment */
+				GMT_geo_to_cart (GMT, c[k+4], c[k+3], A, false);	/* 3-D vector of end of this segment */
 				if (GMT_great_circle_intersection (GMT, A, N, H, X, &hx_dist) == 0) {	/* X is between A and N */
 					hx_dist_km = d_acos (hx_dist) * KM_PR_RAD;
 					if (hx_dist_km < hot[spot].np_dist) {	/* This intermediate point is even closer */
-						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, TRUE);
+						GMT_cart_to_geo (GMT, &hot[spot].np_lat, &hot[spot].np_lon, X, true);
 						hot[spot].np_dist = hx_dist_km;
 						dist_NA = d_acos (fabs (GMT_dot3v (GMT, A, N))) * KM_PR_RAD;
 						dist_NX = d_acos (fabs (GMT_dot3v (GMT, X, N))) * KM_PR_RAD;
 						del_dist = dist_NA - dist_NX;
 						dt = (del_dist > 0.0) ? (c[k+5] - c[k+2]) * dist_NX / del_dist : 0.0;
-						better = TRUE;
+						better = true;
 					}
 				}
 			}
@@ -600,7 +600,7 @@ GMT_LONG GMT_originator (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_free (GMT, c);
 		smt++;
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

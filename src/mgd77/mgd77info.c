@@ -31,28 +31,28 @@
 #define HIST_HEADER		4
 
 struct MGD77INFO_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} C;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} E;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n;
+		bool active;
+		unsigned int n;
 		char code[3];
 	} I;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} L;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM flag;
+		bool active;
+		unsigned int mode;
+		unsigned int flag;
 	} M;
 };
 
@@ -61,7 +61,7 @@ void *New_mgd77info_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C = GMT_memory (GMT, NULL, 1, struct MGD77INFO_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->C.mode = 3;	
 	C->L.mode = 1;
@@ -72,7 +72,7 @@ void Free_mgd77info_Ctrl (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD77INFO_CTRL *Ctrl)
+int GMT_mgd77info_usage (struct GMTAPI_CTRL *C, int level, struct MGD77INFO_CTRL *Ctrl)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 	struct MGD77_CONTROL M;
@@ -109,7 +109,7 @@ GMT_LONG GMT_mgd77info_usage (struct GMTAPI_CTRL *C, GMT_LONG level, struct MGD7
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M)
+int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M)
 {
 	/* This parses the options provided to mgd77info and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -117,8 +117,8 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
-	GMT_LONG sval;
+	unsigned int n_errors = 0;
+	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -132,7 +132,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Get the short list [Default] */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'm':
 					case 'M':
@@ -149,7 +149,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 				break;
 
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
 					sval = MGD77_Select_Header_Item (GMT, M, &opt->arg[1]);
@@ -172,7 +172,7 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 				break;
 
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
@@ -204,11 +204,11 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 						GMT_report (GMT, GMT_MSG_FATAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
 						n_errors++;
 				}
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 
 			case 'L':	/* Get the list of institutions and vessels  */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
 						Ctrl->L.mode = 1;
@@ -238,16 +238,16 @@ GMT_LONG GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77info_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_mgd77info (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG i, id, id_col, t_col, x_col, y_col;
+	int i, id, id_col, t_col, x_col, y_col;
 	
 	int64_t rata_die;
 	size_t length;
 	
-	COUNTER_LARGE rec, argno, n_paths, counter[MGD77_MAX_COLS];
-	COUNTER_MEDIUM saved_range, quad_no, n_quad, use, k;
-	GMT_BOOLEAN error = FALSE, first = TRUE, read_file, quad[4] = {FALSE, FALSE, FALSE, FALSE};
+	uint64_t rec, argno, n_paths, counter[MGD77_MAX_COLS];
+	unsigned int saved_range, quad_no, n_quad, use, k;
+	bool error = false, first = true, read_file, quad[4] = {false, false, false, false};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;
@@ -375,12 +375,12 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		
 		if (Ctrl->C.active) {	/* Just list names and info for any extra columns */
-			for (i = k = 0, first = TRUE; k < M.n_out_columns; i++, k++) {
+			for (i = k = 0, first = true; k < M.n_out_columns; i++, k++) {
 				if (i == id_col || i == t_col || i == x_col || i == y_col) continue;
 				if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				if (((Ctrl->C.mode & 1) && M.order[k].set == 0) || ((Ctrl->C.mode & 2) && M.order[k].set == 1)) {
 					fprintf (GMT->session.std[GMT_OUT], "%s", D->H.info[M.order[k].set].col[M.order[k].item].abbrev);
-					first = FALSE;
+					first = false;
 				}
 			}
 			if (first) fprintf (GMT->session.std[GMT_OUT], "No columns matching selection found!");
@@ -417,8 +417,8 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		xmax1 = xmax2 = -360.0;
 		ymin = 180.0;
 		ymax = -180.0;
-		GMT_memset (quad, 4, GMT_BOOLEAN);	/* Set all to FALSE */
-		GMT_memset (counter, MGD77_MAX_COLS, COUNTER_LARGE);
+		GMT_memset (quad, 4, bool);	/* Set all to false */
+		GMT_memset (counter, MGD77_MAX_COLS, uint64_t);
 	
 		for (i = 0; i < MGD77_MAX_COLS; i++) {
 			dvalue[i] = D->values[i];
@@ -447,7 +447,7 @@ GMT_LONG GMT_mgd77info (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			xmax1 = MAX (this_lon, xmax1);
 			quad_no = lrint (floor (this_lon/90.0));	/* Yields quadrants 0-3 */
 			if (quad_no == 4) quad_no = 0;		/* When this_lon == 360.0 */
-			quad[quad_no] = TRUE;
+			quad[quad_no] = true;
 			if (lon_w > 180.0) this_lon -= 360.0;	/* For -180/+180 range */
 			xmin2 = MIN (this_lon, xmin2);
 			xmax2 = MAX (this_lon, xmax2);

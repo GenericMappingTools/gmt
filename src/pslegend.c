@@ -34,18 +34,18 @@
 
 struct PSLEGEND_CTRL {
 	struct C {	/* -C<dx>/<dy> */
-		GMT_BOOLEAN active;
+		bool active;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[x]<x0>/<y0>/w/h/just[/xoff/yoff] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN cartesian;
+		bool active;
+		bool cartesian;
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
 	struct F {	/* -F+r[<radius>][+p<pen>][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<fill>]] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
+		bool active;
+		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade */
 		double radius;			/* Radius for rounded corner */
 		double dx, dy;			/* Offset for background shaded rectangle (+s) */
 		double gap;			/* Space bewteen main and secondary frame */
@@ -53,11 +53,11 @@ struct PSLEGEND_CTRL {
 		struct GMT_FILL fill;		/* Background shade */
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<spacing> */
-		GMT_BOOLEAN active;
+		bool active;
 		double spacing;
 	} L;
 };
@@ -67,7 +67,7 @@ void *New_pslegend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 
 	C = GMT_memory (GMT, NULL, 1, struct PSLEGEND_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->C.dx = C->C.dy = GMT->session.u2u[GMT_PT][GMT_INCH] * FRAME_CLEARANCE;	/* 4 pt */
 	C->D.width = C->D.height = 1.0;
@@ -87,7 +87,7 @@ void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_pslegend_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -126,7 +126,7 @@ GMT_LONG GMT_pslegend_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pslegend and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -135,8 +135,8 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM k, n_errors = 0, pos;
-	COUNTER_MEDIUM n;
+	unsigned int k, n_errors = 0, pos;
+	unsigned int n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], txt_f[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -151,15 +151,15 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Sets the clearance between frame and internal items */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 				Ctrl->C.dx = GMT_to_inch (GMT, txt_a);
 				Ctrl->C.dy = GMT_to_inch (GMT, txt_b);
 				break;
 			case 'D':	/* Sets position and size of legend */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (opt->arg[0] == 'x') {	/* Gave location directly in projected units (inches, cm, etc) */
-					Ctrl->D.cartesian = TRUE;
+					Ctrl->D.cartesian = true;
 					k = 1;
 				}
 				else				/* Gave lon, lat */
@@ -182,7 +182,7 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				}
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				pos = 0;
 				while (GMT_getmodopt (GMT, opt->arg, "iprs", &pos, p)) {	/* Looking for +i, +p, +r, +s */
 					switch (p[0]) {
@@ -227,14 +227,14 @@ GMT_LONG GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, 
 				}
 				break;
 			case 'G':	/* Inside legend box fill */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {	/* We check syntax here */
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'L':			/* Sets linespacing in units of fontsize [1.1] */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.spacing = atof (opt->arg);
 				break;
 
@@ -281,12 +281,12 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 #define PAR 2
 #define N_CMD 3
 
-GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the pslegend task */
-	GMT_LONG i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
-	GMT_LONG status = 0, object_ID;
-	GMT_BOOLEAN flush_paragraph = FALSE, draw_vertical_line = FALSE, gave_label, gave_mapscale_options, did_old = FALSE;
-	COUNTER_LARGE dim[4] = {1, 1, 0, 2};
+	int i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
+	int status = 0, object_ID;
+	bool flush_paragraph = false, draw_vertical_line = false, gave_label, gave_mapscale_options, did_old = false;
+	uint64_t dim[4] = {1, 1, 0, 2};
 	 
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256];
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
@@ -299,7 +299,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char save_EOF;
 #endif
 #ifdef DEBUG
-	GMT_LONG guide = 0;
+	int guide = 0;
 #endif
 
 	unsigned char *dummy = NULL;
@@ -355,8 +355,8 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
 		GMT_memset (wesn, 4, double);
-		GMT->common.R.active = TRUE;
-		GMT->common.J.active = FALSE;
+		GMT->common.R.active = true;
+		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "x1i");
 		wesn[XHI] = Ctrl->D.width;	wesn[YHI] = Ctrl->D.height;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
@@ -399,17 +399,17 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		sdim[1] = Ctrl->D.height;
 		sdim[2] = Ctrl->F.radius;
 		if (Ctrl->F.mode & 4) {	/* Draw offset background shade */
-			GMT_setfill (GMT, &Ctrl->F.fill, FALSE);
+			GMT_setfill (GMT, &Ctrl->F.fill, false);
 			PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width + Ctrl->F.dx, Ctrl->D.lat + 0.5 * Ctrl->D.height + Ctrl->F.dy, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		}
 		GMT_setpen (GMT, &Ctrl->F.pen1);	/* Always draw frame outline, with or without fill */
-		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, TRUE);
+		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, true);
 		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		if (Ctrl->F.mode & 1) {	/* Also draw secondary frame on the inside */
 			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.gap;
 			sdim[1] = Ctrl->D.height- 2.0 * Ctrl->F.gap;
 			GMT_setpen (GMT, &Ctrl->F.pen2);
-			GMT_setfill (GMT, NULL, TRUE);	/* No fill for inner frame */
+			GMT_setfill (GMT, NULL, true);	/* No fill for inner frame */
 			PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		}
 	}
@@ -454,7 +454,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Data record to process */
 
 		if (line[0] != 'T' && flush_paragraph) {	/* Flush contents of pending paragraph [Call GMT_pstext] */
-			flush_paragraph = FALSE;
+			flush_paragraph = false;
 			column_number = 0;
 		}
 
@@ -471,7 +471,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 				column_number = 0;
-				API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psscale */
+				API->io_enabled[GMT_IN] = true;	/* UNDOING SETTING BY psscale */
 				break;
 
 			case 'C':	/* Color change */
@@ -561,20 +561,20 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			case 'M':	/* Map scale record M lon0|- lat0 length[n|m|k][+opts] f|p  [-R -J] */
 				n_scan = sscanf (&line[2], "%s %s %s %s %s %s", txt_a, txt_b, txt_c, txt_d, txt_e, txt_f);
 				k = (txt_d[0] != 'f') ? 1 : 0;	/* Determines if we start -L with f or not */
-				for (i = 0, gave_mapscale_options = FALSE; txt_c[i] && !gave_mapscale_options; i++) if (txt_c[i] == '+') gave_mapscale_options = TRUE;
+				for (i = 0, gave_mapscale_options = false; txt_c[i] && !gave_mapscale_options; i++) if (txt_c[i] == '+') gave_mapscale_options = true;
 				/* Default assumes label is added on top */
 				just = 't';
-				gave_label = TRUE;
+				gave_label = true;
 				d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 
 				if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
-					COUNTER_MEDIUM pos = 0;
+					unsigned int pos = 0;
 					strcpy (txt_cpy, opt);
 					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'u':	/* Label put behind annotation */
-								gave_label = FALSE;
+								gave_label = false;
 								break;
 							case 'j':	/* Justification */
 								just = p[1];
@@ -629,7 +629,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
 				if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[0].id);
 				sprintf (tmp, "%s,%s,", size, font);
-				did_old = TRUE;
+				did_old = true;
 #endif
 			case 'P':	/* Paragraph text header */
 				if (!did_old) {
@@ -640,7 +640,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
-				did_old = FALSE;
+				did_old = false;
 #ifdef DEBUG
 				if (guide) drawbase (GMT, PSL, Ctrl->D.lon, Ctrl->D.lon + Ctrl->D.width, y0);
 #endif
@@ -656,7 +656,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				S[PAR] = D[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 				S[PAR]->record[S[PAR]->n_rows++] = strdup (buffer);
 				if (S[PAR]->n_rows == S[PAR]->n_alloc) S[PAR]->record = GMT_memory (GMT, S[PAR]->record, S[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
-				flush_paragraph = TRUE;
+				flush_paragraph = true;
 				column_number = 0;
 				break;
 
@@ -698,7 +698,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_report (GMT, GMT_MSG_FATAL, "GMT_psxy returned error %d.\n", status);
 						Return (EXIT_FAILURE);
 					}
-					API->io_enabled[GMT_IN] = TRUE;	/* UNDOING SETTING BY psxy */
+					API->io_enabled[GMT_IN] = true;	/* UNDOING SETTING BY psxy */
 				}
 				else {	/* Regular symbols */
 					if (symbol[0] == 'k')
@@ -773,7 +773,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sscanf (&line[2], "%[^\n]", text);
 				S[PAR]->record[S[PAR]->n_rows++] = strdup (text);
 				if (S[PAR]->n_rows == S[PAR]->n_alloc) S[PAR]->record = GMT_memory (GMT, S[PAR]->record, S[PAR]->n_alloc += GMT_SMALL_CHUNK, char *);
-				flush_paragraph = TRUE;
+				flush_paragraph = true;
 				column_number = 0;
 				break;
 
@@ -790,10 +790,10 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						x_off = Ctrl->D.lon + i * Ctrl->D.width / n_columns;
 						PSL_plotsegment (PSL, x_off, y_start-V+quarter_line_spacing, x_off, y0+V-quarter_line_spacing);
 					}
-					draw_vertical_line = FALSE;
+					draw_vertical_line = false;
 				}
 				else {
-					draw_vertical_line = TRUE;
+					draw_vertical_line = true;
 					y_start = y0;
 				}
 				column_number = 0;
@@ -807,7 +807,7 @@ GMT_LONG GMT_pslegend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				Return (GMT_RUNTIME_ERROR);
 			break;
 		}
-	} while (TRUE);
+	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

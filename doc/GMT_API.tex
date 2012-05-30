@@ -219,11 +219,11 @@ of variable.  Unlike the other objects, images can only be read and not written.
 \centering
 \begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
-\texttt{	int id;}		&       /* \emph{An identification number} */ \\
+\texttt{	unsigned int id;}	&       /* \emph{An identification number} */ \\
+\texttt{	unsigned int n\_columns;}	&       /* \emph{Number of vectors}  */\\
 \texttt{	uint64_t n\_rows;}	&       /* \emph{Number of rows in each vector} */ \\
-\texttt{	long n\_columns;}	&       /* \emph{Number of vectors}  */\\
-\texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
-\texttt{	long *type;}		&       /* \emph{Array with data type for each vector}  */\\
+\texttt{	enum GMT_enum_alloc alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
+\texttt{	enum GMT_enum_type *type;}		&       /* \emph{Array with data type for each vector}  */\\
 \texttt{	union GMT\_UNIVECTOR *data;}	&       /* \emph{Array with unions for each column}  */\\
 \texttt{\};}	&        \\  \hline
 \end{tabular}
@@ -250,15 +250,16 @@ read the data properly.
 \centering
 \begin{tabular}{ll} \hline
 \multicolumn{2}{l}{\texttt{struct GMT\_MATRIX \{}} \\ 
-\texttt{	long id;}		&       /* \emph{An identification number} */ \\
-\texttt{	long n\_rows;}		&       /* \emph{Number of rows in the matrix} */ \\
-\texttt{	long n\_columns;}	&       /* \emph{Number of columns in the matrix}  */\\
-\texttt{	long n\_layers;}	&       /* \emph{Number of layers in a 3-D matrix}  */\\
-\texttt{	long registration;}	&       /* \emph{0 for gridline and 1 for pixel registration}  */\\
-\texttt{	long shape;}		&       /* \emph{0 = C (rows) and 1 = Fortran (cols)}  */\\
-\texttt{	long dim;}		&       /* \emph{Length of dimension for row (C) or column (Fortran)}  */\\
-\texttt{	long alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
-\texttt{	long type;}		&       /* \emph{The matrix data type}  */\\
+\texttt{	unsigned int id;}		&       /* \emph{An identification number} */ \\
+\texttt{	unsigned int n\_rows;}		&       /* \emph{Number of rows in the matrix} */ \\
+\texttt{	unsigned int n\_columns;}	&       /* \emph{Number of columns in the matrix}  */\\
+\texttt{	unsigned int n\_layers;}	&       /* \emph{Number of layers in a 3-D matrix}  */\\
+\texttt{	unsigned int shape;}		&       /* \emph{0 = C (rows) and 1 = Fortran (cols)}  */\\
+\texttt{	unsigned int registration;}	&       /* \emph{0 for gridline and 1 for pixel registration}  */\\
+\texttt{	size_t dim;}		&       /* \emph{Length of dimension for row (C) or column (Fortran)}  */\\
+\texttt{	size_t size;}		&       /* \emph{Byte length of data}  */\\
+\texttt{	enum GMT_enum_alloc alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
+\texttt{	enum GMT_enum_type type;}		&       /* \emph{The matrix data type}  */\\
 \texttt{	double limit[6];}	&       /* \emph{The min and max limits on x-, y-, and z-ranges}  */\\
 \texttt{	union GMT\_UNIVECTOR data;}	&       /* \emph{Union with pointers a data matrix of any type}  */\\
 \texttt{\};}	&        \\  \hline
@@ -343,11 +344,11 @@ function prototype is
 \index{GMT\_Create\_Session}
 
 \begin{verbatim}
-struct GMTAPI_CTRL * GMT_Create_Session (char *tag, int mode)
+struct GMTAPI_CTRL * GMT_Create_Session (char *tag, unsigned int mode)
 \end{verbatim}
 and you will typically call it thus:
 \begin{verbatim}
-int mode = GMTAPI_GMT;
+unsigned int mode = GMTAPI_GMT;
 struct GMTAPI_CTRL *API = NULL;
 API = GMT_Create_Session ("Session name", mode);
 \end{verbatim}
@@ -381,8 +382,8 @@ The basic registration machinery involves a direct or indirect call to
 \index{GMT\_Register\_IO}
 
 \begin{verbatim}
-long GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
-   long geometry, long direction, double wesn[], void *ptr)
+int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, \
+   unsigned int geometry, unsigned int direction, double wesn[], void *ptr)
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
 (see Table \ref{tbl:family} for list of all families), \texttt{method} specifies
@@ -407,7 +408,7 @@ function
 \index{GMT\_Encode\_ID}
 
 \begin{verbatim}
-long GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, long ID)
+int GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, int ID)
 \end{verbatim}
 which accepts the unique \texttt{ID} and writes the \texttt{filename} that
 you can use as argument to a program option.  \texttt{filename} must have enough space to hold 16 bytes.
@@ -508,8 +509,8 @@ The prototype for this function is
 \index{GMT\_Init\_IO}
 
 \begin{verbatim}
-long GMT_Init_IO (struct GMTAPI_CTRL *API, long family, long geometry, \
-    long direction, long mode, struct GMT_OPTION *head)
+int GMT_Init_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, \
+    unsigned int direction, unsigned int mode, unsigned int n_args, void *args)
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered,
 \texttt{geometry} specifies the geometry of the data,
@@ -523,7 +524,7 @@ registered. The choices are
 	\item [8] (or GMT\_REG\_STD\_ALWAYS) means ``always add std* even if resources have been registered''.
 \end{description}
 The standard behavior is 5 (or GMT\_REG\_DEFAULT).
-Finally, \texttt{head} is the first element of the option structure list.
+Next, \texttt{n_args} is 0 if \texttt{args} is the head of a linked list of options, otherwise \texttt{args} is an array of \texttt{n_args} strings (i.e., char *argv[])
 
 Many programs will register an export location to hold the results of a \GMT\ function (say,
 a filtered grid), but then wish to use that location as an \emph{input} resource in the next
@@ -573,7 +574,7 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 \index{GMT\_Create\_Data}.
 
 \begin{verbatim}
-void * GMT_Create_Data (struct GMTAPI_CTRL *API, int family, int64_t par[])
+void * GMT_Create_Data (struct GMTAPI_CTRL *API, unsigned int family, uint64_t par[])
 \end{verbatim}
 which returns a pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
@@ -637,7 +638,7 @@ function enables dataset and text set record-by-record import and prepares the r
 The prototype is
 
 \begin{verbatim}
-int GMT_Begin_IO (struct GMTAPI_CTRL *API, int family, int direction)
+int GMT_Begin_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction)
 \end{verbatim}
 where \texttt{family} specifies what kind of resources is about to be read or written (see Table \ref{tbl:family}
 for list of all families; only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are available for record-by-record handling).
@@ -666,8 +667,8 @@ an generic form that covers all of them.
 \index{GMT\_Read\_Data}
 To read an entire data set from a file, a stream, or file handle, use
 \begin{verbatim}
-void * GMT_Read_Data (struct GMTAPI_CTRL *API, int family, int method, \
-    int geometry, int mode, double wesn[], char *input, void *data)
+void * GMT_Read_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, \
+    unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data)
 \end{verbatim}
 where \texttt{data} is usually NULL except when reading grids in two steps
 (i.e., first get a grid structure with a header, then read the data).
@@ -720,7 +721,7 @@ pass the unique ID number of the resource.  The function is described as follows
 \index{GMT\_Get\_Data}
 
 \begin{verbatim}
-void * GMT_Get_Data (struct GMTAPI_CTRL *API, int ID, int mode, \
+void * GMT_Get_Data (struct GMTAPI_CTRL *API, int ID, unsigned int mode, \
 	void *data)
 \end{verbatim}
 The \texttt{ID} is the unique object ID you received when registering the resource earlier,
@@ -760,7 +761,7 @@ enable this input mechanism with \texttt{GMT\_Begin\_IO} and then use the
 \index{GMT\_Get\_Record}
 
 \begin{verbatim}
-void * GMT_Get_Record (struct GMTAPI_CTRL *API, int mode, int *nfields)
+void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *nfields)
 \end{verbatim}
 where the returned value is either a pointer to a double array with the current row
 or a pointer to a character string with the current row, depending on \texttt{mode}.
@@ -839,7 +840,7 @@ reading from occurring (due to poor program structure, bugs, etc.).  We do so by
 function disables further record-by-record data import; its prototype is
 
 \begin{verbatim}
-int GMT_End_IO (struct GMTAPI_CTRL *API, int direction, int mode)
+int GMT_End_IO (struct GMTAPI_CTRL *API, unsigned int direction, unsigned int mode)
 \end{verbatim}
 
 \noindent
@@ -1170,8 +1171,8 @@ very similar to the \texttt{GMT\_Read\_Data} and \texttt{GMT\_Get\_Data} functio
 The prototype for writing to a file (via name, stream, or file handle) is
 
 \begin{verbatim}
-int GMT_Write_Data (struct GMTAPI_CTRL *API, int family, int method, \
-    int geometry, int mode, double wesn[], void *output, void *data)
+int GMT_Write_Data (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, \
+    unsigned int geometry, unsigned int mode, double wesn[], void *output, void *data)
 \end{verbatim}
 where \texttt{data} is a pointer to any of the four structures
 discussed previously.  Again, the \texttt{mode} parameter is specific to
@@ -1229,7 +1230,7 @@ If writing to a memory destination you will want to first register that destinat
 \texttt{GMT\_Put\_Data} instead:
 
 \begin{verbatim}
-int GMT_Put_Data (struct GMTAPI_CTRL *API, int ID, int mode, \
+int GMT_Put_Data (struct GMTAPI_CTRL *API, int ID, unsigned int mode, \
 	void *data)
 \end{verbatim}
 where \texttt{ID} is the unique ID of the registered destination, \texttt{mode}
@@ -1250,7 +1251,7 @@ the prototype is
 \index{GMT\_Put\_Record}
 
 \begin{verbatim}
-int GMT_Put_Record (struct GMTAPI_CTRL *API, int mode, void *rec)
+int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *rec)
 \end{verbatim}
 where \texttt{rec} is a pointer to either (a) a double-precision array with the current row.
 Then, \texttt{rec} is expected to hold at least as many items as the current setting of
@@ -1300,7 +1301,7 @@ This is done with the \texttt{GMT\_Destroy\_Data} function, whose prototype is
 \index{GMT\_Destroy\_Data}
 
 \begin{verbatim}
-int GMT_Destroy_Data (struct GMTAPI_CTRL *API, int mode, void *data)
+int GMT_Destroy_Data (struct GMTAPI_CTRL *API, unsigned int mode, void *data)
 \end{verbatim}
 where \texttt{data} is the address of the pointer to a data container.
 Pass \texttt{mode} either as GMT\_ALLOCATED or GMT\_REFERENCE.  The former
@@ -1371,7 +1372,7 @@ function GMT_Destroy_Session ()
 function GMT_Register_IO (family, method, geometry, direction, \
     wesn, resource)
 function GMT_Encode_ID (filename, ID)
-function GMT_Init_IO (family, geometry, direction, head)
+function GMT_Init_IO (family, geometry, direction, n_args, args)
 function GMT_Begin_IO (family, geometry, direction)
 function GMT_Create_Data (family, geometry, ipar)
 function GMT_Read_Data (family, method, geometry, mode, wesn, \
@@ -1387,7 +1388,8 @@ function GMT_End_IO (direction, mode)
 function GMT_Destroy_Data (mode, ptr)
 function GMT_Report_Error (error)
 \end{verbatim}
-where \texttt{method}, \texttt{geometry}, \texttt{direction}, \texttt{ID} and \texttt{error} are integers,
+where \texttt{family}, \texttt{method}, \texttt{geometry}, \texttt{mode} and \texttt{direction}
+are unsigned ints, \texttt{ID} and \texttt{error} are (signed) integers,
 \texttt{ipar} is an integer parameter array, \texttt{wesn} is a real (double precision) array,
 and \texttt{resource} are source or destination addresses.
 

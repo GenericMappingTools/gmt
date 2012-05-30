@@ -27,9 +27,9 @@
 #include "gmt.h"
 
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 };
 
@@ -38,7 +38,7 @@ void *New_gmtwhich_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	C = GMT_memory (GMT, NULL, 1, struct GMTWHICH_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 		
 	return (C);
 }
@@ -47,7 +47,7 @@ void Free_gmtwhich_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -62,7 +62,7 @@ GMT_LONG GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtwhich and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -70,7 +70,7 @@ GMT_LONG GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -84,7 +84,7 @@ GMT_LONG GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Want Yes/No response instead */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -101,9 +101,9 @@ GMT_LONG GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtwhich_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtwhich (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtwhich (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = 0;
+	int error = 0;
 	
 	char path[GMT_BUFSIZ], *Yes = "Y", *No = "N";
 	

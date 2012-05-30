@@ -39,49 +39,49 @@
 
 struct SEGY2GRD_CTRL {
 	struct In {	/* -In */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		int mode;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} C;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		char *text;
 	} D;
 	struct G {	/* -G */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 		int value;
 	} L;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM value;
+		bool active;
+		unsigned int value;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		double d_value;
 		float f_value;
 	} N;
 	struct Q {	/* -Qx|y */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		double value[2];
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		int value;
 	} S;
 };
@@ -109,7 +109,7 @@ void Free_segy2grd_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_segy2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -144,7 +144,7 @@ GMT_LONG GMT_segy2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to segy2grd and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -153,7 +153,7 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -262,15 +262,15 @@ GMT_LONG GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_segy2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_segy2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN  error = FALSE, read_cont = FALSE, swap_bytes = !GMT_BIGENDIAN;
+	bool  error = false, read_cont = false, swap_bytes = !GMT_BIGENDIAN;
 	
-	COUNTER_MEDIUM n_samp = 0, ij0;
-	COUNTER_MEDIUM ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
-	COUNTER_MEDIUM n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
+	unsigned int n_samp = 0, ij0;
+	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
+	unsigned int n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
 
-	COUNTER_LARGE ij;
+	uint64_t ij;
 	
 	double idy, x0, yval;
 
@@ -321,7 +321,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
-	flag = GMT_memory (GMT, NULL, Grid->header->size, COUNTER_MEDIUM);
+	flag = GMT_memory (GMT, NULL, Grid->header->size, unsigned int);
 
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
 
@@ -427,7 +427,7 @@ GMT_LONG GMT_segy2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 
-			for (ij = ij0; ij < (COUNTER_LARGE)n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
+			for (ij = ij0; ij < (uint64_t)n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 

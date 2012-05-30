@@ -30,42 +30,42 @@
 
 struct PSIMAGE_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct C {	/* -C<xpos>/<ypos>[/<justify>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double x, y;
 		char justify[3];
 	} C;
 	struct E {	/* -E<dpi> */
-		GMT_BOOLEAN active;
+		bool active;
 		double dpi;
 	} E;
 	struct F {	/* -F<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} F;
 	struct G {	/* -G[f|b|t]<rgb> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 0 for f|b, 1 for t */
+		bool active;
+		unsigned int mode;	/* 0 for f|b, 1 for t */
 		double f_rgb[4];
 		double b_rgb[4];
 		double t_rgb[4];
 	} G;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 	} I;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N<nx>/<ny> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM nx, ny;
+		bool active;
+		unsigned int nx, ny;
 	} N;
 	struct W {	/* -W[-]<width>[/<height>] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN interpolate;
+		bool active;
+		bool interpolate;
 		double width, height;
 	} W;
 };
@@ -75,7 +75,7 @@ void *New_psimage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSIMAGE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.pen = GMT->current.setting.map_default_pen;
 	strcpy (C->C.justify, "LB");
 	C->G.f_rgb[0] = C->G.b_rgb[0] = C->G.t_rgb[0] = -2;
@@ -89,7 +89,7 @@ void Free_psimage_Ctrl (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_psimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_psimage_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -127,7 +127,7 @@ GMT_LONG GMT_psimage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psimage and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -136,8 +136,8 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG n;
+	unsigned int n_errors = 0, n_files = 0;
+	int n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], letter;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -153,7 +153,7 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Image placement */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, Ctrl->C.justify);
 				n_errors += GMT_check_condition (GMT, n < 2 || n > 3, "Error: Syntax is -C<xpos>/<ypos>[/<justify>]\n");
 				Ctrl->C.x = GMT_to_inch (GMT, txt_a);
@@ -161,18 +161,18 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 				if (n == 2) strcpy (Ctrl->C.justify, "LB");	/* Default positioning */
 				break;
 			case 'E':	/* Specify image dpi */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Specify frame pen */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->F.pen)) {
 					GMT_pen_syntax (GMT, 'F', " ");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Background/foreground color for 1-bit images */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				letter = (GMT_colorname2index (GMT, opt->arg) >= 0) ? 'x' : opt->arg[0];	/* If we have -G<colorname>, the x is used to bypass the case F|f|B|b switching below */
 				switch (letter) {
 					case 'f':
@@ -212,25 +212,25 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 				}
 				break;
 			case 'I':	/* Invert 1-bit images */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'M':	/* Monochrome image */
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Replicate image */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.nx, &Ctrl->N.ny);
 				if (n == 1) Ctrl->N.ny = Ctrl->N.nx;
 				n_errors += GMT_check_condition (GMT, n < 1, "Syntax error -N option: Must values for replication\n");
 				break;
 			case 'W':	/* Image width */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 				Ctrl->W.width = GMT_to_inch (GMT, txt_a);
 				if (n == 2) Ctrl->W.height = GMT_to_inch (GMT, txt_b);
 				if (Ctrl->W.width < 0.0) {
 					Ctrl->W.width = -Ctrl->W.width;
-					Ctrl->W.interpolate = TRUE;
+					Ctrl->W.interpolate = true;
 				}
 				break;
 
@@ -257,7 +257,7 @@ GMT_LONG GMT_psimage_parse (struct GMTAPI_CTRL *C, struct PSIMAGE_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
+int file_is_known (struct GMT_CTRL *GMT, char *file)
 {	/* Returns 1 if it is an EPS file, 2 if a Sun rasterfile; 0 for any other file.
        Returns -1 on read error */
 	FILE *fp = NULL;
@@ -287,11 +287,11 @@ GMT_LONG file_is_known (struct GMT_CTRL *GMT, char *file)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
-	COUNTER_MEDIUM row, col;
-	GMT_BOOLEAN error = FALSE, free_GMT = FALSE;
+	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
+	unsigned int row, col;
+	bool error = false, free_GMT = false;
 
 	double x, y, wesn[4];
 
@@ -416,7 +416,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		PSL_free (picture);
 #endif
 		picture = buffer;
-		free_GMT = TRUE;
+		free_GMT = true;
 	}
 	else
 		GMT_report (GMT, GMT_MSG_FATAL, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
@@ -431,8 +431,8 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_memset (wesn, 4, double);
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
-		GMT->common.R.active = TRUE;
-		GMT->common.J.active = FALSE;
+		GMT->common.R.active = true;
+		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
@@ -443,10 +443,10 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
-		GMT->common.J.active = FALSE;
+		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', "X1i");
 		wesn[XHI] = Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width;	wesn[YHI] = Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height;
-		GMT->common.R.active = GMT->common.J.active = TRUE;
+		GMT->common.R.active = GMT->common.J.active = true;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
 	}
 
@@ -474,7 +474,7 @@ GMT_LONG GMT_psimage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
  	if (Ctrl->F.active) {	/* Draw frame */
- 		GMT_setfill (GMT, NULL, TRUE);
+ 		GMT_setfill (GMT, NULL, true);
 		GMT_setpen (GMT, &Ctrl->F.pen);
  		PSL_plotbox (PSL, Ctrl->C.x, Ctrl->C.y, Ctrl->C.x + Ctrl->N.nx * Ctrl->W.width, Ctrl->C.y + Ctrl->N.ny * Ctrl->W.height);
  	}

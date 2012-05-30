@@ -26,48 +26,48 @@
 
 #include "gmt.h"
 
-GMT_LONG gmt_geo_C_format (struct GMT_CTRL *C);
-GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+int gmt_geo_C_format (struct GMT_CTRL *C);
+int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1
 #define REPORT_PER_SEGMENT	2
 
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
+		bool active;
+		unsigned int mode;	/* 0 reports range for all tables, 1 is per table, 2 is per segment */
 	} A;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct E {	/* -E<L|l|H|h><col> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN abs;
-		GMT_LONG mode;	/* -1, 0, +1 */
-		COUNTER_MEDIUM col;
+		bool active;
+		bool abs;
+		int mode;	/* -1, 0, +1 */
+		unsigned int col;
 	} E;
 	struct I {	/* -Idx[/dy[/<dz>..]] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM ncol;
+		bool active;
+		unsigned int ncol;
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN xbar, ybar;
+		bool active;
+		bool xbar, ybar;
 	} S;
 	struct T {	/* -T<dz>[/<col>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc;
-		COUNTER_MEDIUM col;
+		unsigned int col;
 	} T;
 };
 
-GMT_LONG strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, GMT_LONG col)
+int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col)
 {	/* Alternative to GMT_ascii_output_col that strips off leading blanks first */
 
-	GMT_LONG k;
+	int k;
 
 	GMT_ascii_format_col (GMT, text, x, col);
 	for (k = 0; text[k] && text[k] == ' '; k++);
@@ -79,7 +79,7 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	
 	C = GMT_memory (GMT, NULL, 1, struct MINMAX_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.col = UINT_MAX;	/* Meaning not set */
 	return (C);
 }
@@ -88,7 +88,7 @@ void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -124,7 +124,7 @@ GMT_LONG GMT_minmax_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to minmax and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -132,9 +132,9 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j;
-	COUNTER_MEDIUM n_errors = 0, k;
-	GMT_BOOLEAN special = FALSE;
+	int j;
+	unsigned int n_errors = 0, k;
+	bool special = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -147,7 +147,7 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Reporting unit */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
 						Ctrl->A.mode = REPORT_PER_DATASET;
@@ -165,18 +165,18 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 				}
 				break;
 			case 'C':	/* Column output */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'E':	/* Extrema reporting */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'L':
-						Ctrl->E.abs = TRUE;
+						Ctrl->E.abs = true;
 					case 'l':
 						Ctrl->E.mode = -1;
 						break;
 					case 'H':
-						Ctrl->E.abs = TRUE;
+						Ctrl->E.abs = true;
 					case 'h':
 						Ctrl->E.mode = +1;
 						break;
@@ -188,23 +188,23 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
 				break;
 			case 'I':	/* Granularity */
-				Ctrl->I.active = TRUE;
-				if (opt->arg[0] == 'p') special = TRUE;
+				Ctrl->I.active = true;
+				if (opt->arg[0] == 'p') special = true;
 				j = (special) ? 1 : 0;
 				Ctrl->I.ncol = GMT_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
 			case 'S':	/* Error bar output */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				j = 0;
 				while (opt->arg[j]) {
-					if (opt->arg[j] == 'x') Ctrl->S.xbar = TRUE;
-					if (opt->arg[j] == 'y') Ctrl->S.ybar = TRUE;
+					if (opt->arg[j] == 'x') Ctrl->S.xbar = true;
+					if (opt->arg[j] == 'y') Ctrl->S.ybar = true;
 					j++;
 				}
-				if (j == 2) Ctrl->S.xbar = Ctrl->S.ybar = TRUE;
+				if (j == 2) Ctrl->S.xbar = Ctrl->S.ybar = true;
 				break;
 			case 'T':	/* makecpt range/inc string */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
 				if (j == 1) Ctrl->T.col = 0;
 				break;
@@ -233,13 +233,13 @@ GMT_LONG GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, got_stuff = FALSE, first_data_record, give_r_string = FALSE;
-	GMT_BOOLEAN brackets = FALSE, work_on_abs_value, do_report, save_range, done;
-	GMT_LONG i, j;
-	COUNTER_MEDIUM col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
-	COUNTER_LARGE n = 0;
+	bool error = false, got_stuff = false, first_data_record, give_r_string = false;
+	bool brackets = false, work_on_abs_value, do_report, save_range, done;
+	int i, j;
+	unsigned int col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
+	uint64_t n = 0;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 
@@ -306,17 +306,17 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->C.active) {	/* Must set output column types since each input col will take up two output cols. */
-		GMT_LONG col_type[GMT_MAX_COLUMNS];
-		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_IN], GMT_MAX_COLUMNS, GMT_LONG);	/* Duplicate input col types */
+		int col_type[GMT_MAX_COLUMNS];
+		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_IN], GMT_MAX_COLUMNS, int);	/* Duplicate input col types */
 		for (col = 0; col < GMT_MAX_COLUMNS/2; col++) GMT->current.io.col_type[GMT_OUT][2*col] = GMT->current.io.col_type[GMT_OUT][2*col+1] = col_type[col];
 	}
 		
 	save_range = GMT->current.io.geo.range;
-	first_data_record = TRUE;
-	done = FALSE;
+	first_data_record = true;
+	done = false;
 	while (!done) {	/* Keep returning records until we reach EOF of last file */
 		in = GMT_Get_Record (API, GMT_READ_DOUBLE | GMT_FILE_BREAK, NULL);
-		do_report = FALSE;
+		do_report = false;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
 		if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
@@ -325,14 +325,14 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_REC_IS_SEG_HEADER (GMT) || (GMT_REC_IS_FILE_BREAK (GMT) && Ctrl->A.mode == REPORT_PER_TABLE) || GMT_REC_IS_EOF (GMT)) {	/* Time to report */
 			if (GMT_REC_IS_SEG_HEADER (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
 			if (GMT_REC_IS_EOF (GMT)) {	/* We are done after this since we hit EOF */
-				done = TRUE;
+				done = true;
 				GMT->current.io.seg_no++;	/* Must manually increment since we are not reading any futher */
 			}
 			if (n == 0) continue;			/* This segment, table, or data set had no data records, skip */
 			
 			/* Here we must issue a report */
 			
-			do_report = TRUE;
+			do_report = true;
  			for (col = 0; col < ncol; col++) if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) {	/* Must finalize longitudes first */
 				j = GMT_quad_finalize (GMT, &Q[col]);
 				GMT->current.io.geo.range = Q[col].range[j];		/* Override this setting explicitly */
@@ -415,7 +415,7 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				strcat (record, "\n");
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write text record to output destination */
 			}
-			got_stuff = TRUE;		/* We have at least reported something */
+			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;
@@ -461,8 +461,8 @@ GMT_LONG GMT_minmax (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				xyzmax[col] = -DBL_MAX;
 			}
 			n = 0;
-			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = FALSE;
-			first_data_record = FALSE;
+			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
+			first_data_record = false;
 			if (Ctrl->C.active && (error = GMT_set_cols (GMT, GMT_OUT, 2*ncol))) Return (error);
 		}
 

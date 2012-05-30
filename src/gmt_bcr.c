@@ -80,7 +80,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-COUNTER_MEDIUM gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
+unsigned int gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
 
@@ -98,10 +98,10 @@ COUNTER_MEDIUM gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 	return (0);	/* Good to use */
 }
 
-COUNTER_LARGE gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
+uint64_t gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
 {
-	GMT_LONG col, row;
-	COUNTER_LARGE ij;
+	int col, row;
+	uint64_t ij;
 	double x, y, wp, wq, w, xi, yj;
 
 	/* Compute the normalized real indices (x,y) of the point (xx,yy) within the grid.
@@ -215,8 +215,8 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. */
 
-	COUNTER_MEDIUM i, j;
-	COUNTER_LARGE ij, node;
+	unsigned int i, j;
+	uint64_t ij, node;
 	double retval, wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
@@ -244,14 +244,14 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 	return ( ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) ? retval / wsum : C->session.d_NaN);
 }
 
-GMT_LONG GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z)
+int GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z)
 {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
 	   B-spline or bicubic) at xx, yy. 8-bit components is assumed per band.  */
 
-	COUNTER_MEDIUM i, j, b, nb = G->header->n_bands;
-	COUNTER_LARGE ij;
+	unsigned int i, j, b, nb = G->header->n_bands;
+	uint64_t ij;
 	double retval[4], wsum, wx[4], wy[4], w;
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */

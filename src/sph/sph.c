@@ -55,7 +55,7 @@ typedef uint32_t logical;
 #include "stripack.c"
 #include "ssrfpack.c"
 
-void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *y, double *z, struct STRIPACK *T)
+void stripack_lists (struct GMT_CTRL *C, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T)
 {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
@@ -67,7 +67,7 @@ void stripack_lists (struct GMT_CTRL *C, COUNTER_LARGE n_in, double *x, double *
 	 * NOTE: All indeces returned are C (0->) adjusted from FORTRAN (1->).
 	 */
 
-	COUNTER_LARGE kk;
+	uint64_t kk;
 	int64_t *iwk = NULL, *list = NULL, *lptr = NULL, *lend = NULL;
 	int64_t n = n_in, n_out, k, ierror, lnew, nrow = TRI_NROW;	/* Since the Fortran funcs expect signed ints */
 	size_t n_alloc;
@@ -179,13 +179,13 @@ double stripack_areas (double *V1, double *V2, double *V3)
 	return (areas_ (V1, V2, V3));
 }
 
-void cart_to_geo (struct GMT_CTRL *C, COUNTER_LARGE n, double *x, double *y, double *z, double *lon, double *lat)
+void cart_to_geo (struct GMT_CTRL *C, uint64_t n, double *x, double *y, double *z, double *lon, double *lat)
 {	/* Convert Cartesian vectors back to lon, lat vectors */
-	COUNTER_LARGE k;
+	uint64_t k;
 	double V[3];
 	for (k = 0; k < n; k++) {
 		V[0] = x[k];	V[1] = y[k];	V[2] = z[k];
-		GMT_cart_to_geo (C, &lat[k], &lon[k], V, TRUE);
+		GMT_cart_to_geo (C, &lat[k], &lon[k], V, true);
 	}
 }
 
@@ -203,11 +203,11 @@ int compare_arc (const void *p1, const void *p2)
 
 /* Functions for spherical surface interpolation */
 
-void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, COUNTER_LARGE n_in, COUNTER_MEDIUM mode, double *par, GMT_BOOLEAN vartens, struct GRD_HEADER *h, double *f)
+void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GRD_HEADER *h, double *f)
 {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
 	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
-	COUNTER_MEDIUM row, col;
+	unsigned int row, col;
 	double *sigma = NULL, *grad = NULL, *plon = NULL, *plat = NULL, tol = 0.01, dsm, dgmx;
 	struct STRIPACK P;
 	
@@ -237,7 +237,7 @@ void ssrfpack_grid (struct GMT_CTRL *C, double *x, double *y, double *z, double 
 		ist = 1;
 		for (row = 0; row < h->ny; row++) {
 			for (col = 0; col < h->nx; col++) {
-				ij = (COUNTER_LARGE)col * (COUNTER_LARGE)h->ny + (COUNTER_LARGE)(h->ny - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
+				ij = (uint64_t)col * (uint64_t)h->ny + (uint64_t)(h->ny - row -1); /* Use Fortran indexing since calling program will transpose to GMT order */
 				intrc0_ (&n, &plat[row], &plon[col], x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &ist, &f[ij], &ierror);
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {

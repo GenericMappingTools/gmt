@@ -47,7 +47,7 @@
 #define sqr(x) ((x)*(x))
 #define D2R (M_PI/180.0)
 #define F (D2R * 0.5 * 1.0e-6)
-#define FALSE 0
+#define false 0
 
 void *get_memory (void *prev_addr, size_t n, size_t size, char *progname)
 {
@@ -75,7 +75,7 @@ int main (int argc, char **argv)
 	FILE *fp_in = NULL, *fp_out = NULL;
 	size_t n_read;
 	unsigned k, n;
-	int n_id, n_out, verbose = FALSE, *index;
+	int n_id, n_out, verbose = false, *index;
 	int n_tot_in, n_tot_out, n_use, flip, version;
 	int *x = NULL, *y = NULL;
 	double redux, redux2, tolerance = 0.0;

@@ -28,11 +28,11 @@
 
 struct GRDPASTE_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file[2];
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 };
@@ -42,7 +42,7 @@ void *New_grdpaste_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDPASTE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 			
 	return (C);
 }
@@ -55,7 +55,7 @@ void Free_grdpaste_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdpaste_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdpaste_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -75,7 +75,7 @@ GMT_LONG GMT_grdpaste_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdpaste and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -83,7 +83,7 @@ GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_in = 0;
+	unsigned int n_errors = 0, n_in = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -104,7 +104,7 @@ GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
  			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 
@@ -123,11 +123,11 @@ GMT_LONG GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdpaste_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE;
-	GMT_LONG way;
-	COUNTER_MEDIUM one_or_zero;
+	bool error = false;
+	int way;
+	unsigned int one_or_zero;
 
 	char format[GMT_BUFSIZ];
 
@@ -158,7 +158,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Try to find a common side to join on  */
 
 	if ((C = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, C->header, options, FALSE);
+	GMT_grd_init (GMT, C->header, options, false);
 	
 	if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
@@ -293,7 +293,7 @@ GMT_LONG GMT_grdpaste (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	C->data = GMT_memory (GMT, NULL, C->header->size, float);
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
-	A->header->no_BC = B->header->no_BC = TRUE;	/* We must disable the BC machinery */
+	A->header->no_BC = B->header->no_BC = true;	/* We must disable the BC machinery */
 
 	switch (way) {      /* How A and B are positioned relative to each other */
 		case 1:         /* B is on top of A */

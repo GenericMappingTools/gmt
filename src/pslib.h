@@ -39,9 +39,6 @@ extern "C" {
 
 #include <stdio.h>
 
-typedef int PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
-#define PSL_LL "l"
-
 /* Number of PostScript points in one inch */
 
 #define PSL_POINTS_PER_INCH	72.0
@@ -50,27 +47,27 @@ typedef int PSL_LONG;		/* A signed 4 (or 8-byte for 64-bit) integer */
 
 /* PSL codes for geometric symbols as expected by PSL_plotsymbol */
 
-#define PSL_STAR		((PSL_LONG)'a')
-#define PSL_CIRCLE		((PSL_LONG)'c')
-#define PSL_DIAMOND		((PSL_LONG)'d')
-#define PSL_ELLIPSE		((PSL_LONG)'e')
-#define PSL_HEXAGON		((PSL_LONG)'h')
-#define PSL_OCTAGON		((PSL_LONG)'g')
-#define PSL_INVTRIANGLE		((PSL_LONG)'i')
-#define PSL_ROTRECT		((PSL_LONG)'j')
-#define PSL_MARC		((PSL_LONG)'m')
-#define PSL_PENTAGON		((PSL_LONG)'n')
-#define PSL_DOT			((PSL_LONG)'p')
-#define PSL_RECT		((PSL_LONG)'r')
-#define PSL_RNDRECT		((PSL_LONG)'R')
-#define PSL_SQUARE		((PSL_LONG)'s')
-#define PSL_TRIANGLE		((PSL_LONG)'t')
-#define PSL_VECTOR		((PSL_LONG)'v')
-#define PSL_WEDGE		((PSL_LONG)'w')
-#define PSL_CROSS		((PSL_LONG)'x')
-#define PSL_YDASH		((PSL_LONG)'y')
-#define PSL_PLUS		((PSL_LONG)'+')
-#define PSL_XDASH		((PSL_LONG)'-')
+#define PSL_STAR		((int)'a')
+#define PSL_CIRCLE		((int)'c')
+#define PSL_DIAMOND		((int)'d')
+#define PSL_ELLIPSE		((int)'e')
+#define PSL_HEXAGON		((int)'h')
+#define PSL_OCTAGON		((int)'g')
+#define PSL_INVTRIANGLE		((int)'i')
+#define PSL_ROTRECT		((int)'j')
+#define PSL_MARC		((int)'m')
+#define PSL_PENTAGON		((int)'n')
+#define PSL_DOT			((int)'p')
+#define PSL_RECT		((int)'r')
+#define PSL_RNDRECT		((int)'R')
+#define PSL_SQUARE		((int)'s')
+#define PSL_TRIANGLE		((int)'t')
+#define PSL_VECTOR		((int)'v')
+#define PSL_WEDGE		((int)'w')
+#define PSL_CROSS		((int)'x')
+#define PSL_YDASH		((int)'y')
+#define PSL_PLUS		((int)'+')
+#define PSL_XDASH		((int)'-')
 
 /* PSL codes for vector attributes - mirroring similar codes and macros in GMT */
 
@@ -207,8 +204,8 @@ struct PSL_CTRL {
 		FILE *err;			/* Error stream (NULL means stderr)		*/
 		char *encoding;			/* The encoding name. e.g. ISO-8859-1		*/
 		char *session;			/* The session name (NULL)			*/
-		PSL_LONG unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
-		PSL_LONG copies;		/* Number of copies for this plot		*/
+		int unit;			/* 0 = cm, 1 = inch, 2 = meter			*/
+		int copies;		/* Number of copies for this plot		*/
 		double page_rgb[4];		/* RGB color for background paper [white]	*/
 		double page_size[2];		/* Width and height of paper used in points	*/
 		double magnify[2];		/* Global scale values [1/1]			*/
@@ -225,9 +222,9 @@ struct PSL_CTRL {
 		double rgb[3][4];		/* Current stroke, fill, and fs fill rgb	*/
 		double offset;			/* Current setdash offset			*/
 		double fontsize;		/* Current font size				*/
-		PSL_LONG nclip;			/* Clip depth 					*/
-		PSL_LONG font_no;		/* Current font number				*/
-		PSL_LONG outline;		/* Current outline				*/
+		int nclip;			/* Clip depth 					*/
+		int font_no;		/* Current font number				*/
+		int outline;		/* Current outline				*/
 	} current;
 	struct INTERNAL {	/* Variables used internally only */
 		char *SHAREDIR;			/* Pointer to path of directory with pslib subdirectory */
@@ -245,32 +242,32 @@ struct PSL_CTRL {
 		double axis_limit[4];		/* The current xmin, xmax, ymin, ymax settings for axes */
 		double axis_pos[2];		/* Lower left placement for axes		*/
 		double axis_dim[2];		/* Lengths of axes 				*/
-		PSL_LONG verbose;		/* Verbosity level (0-4): see PSL_MSG_*	*/
-		PSL_LONG comments;		/* TRUE for writing comments to output, FALSE strips all comments */
-		PSL_LONG overlay;		/* TRUE if overlay (-O)				*/
-		PSL_LONG landscape;		/* TRUE = Landscape, FALSE = Portrait		*/
-		PSL_LONG text_init;		/* TRUE after PSL_text.ps has been loaded	*/
-		PSL_LONG image_format;		/* 0 writes images in ascii, 2 uses binary	*/
-		PSL_LONG N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
-		PSL_LONG compress;		/* Compresses images with (1) RLE or (2) LZW or (0) None */
-		PSL_LONG color_mode;		/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
-		PSL_LONG line_cap;		/* 0, 1, or 2 for butt, round, or square [butt]	*/
-		PSL_LONG line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
-		PSL_LONG miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
-		PSL_LONG ix, iy;		/* Absolute coordinates of last point		*/
-		PSL_LONG length;		/* Image row output byte counter		*/
-		PSL_LONG n_userimages;		/* Number of specified custom patterns		*/
-		PSL_LONG x0, y0;		/* x,y PS offsets				*/
+		int verbose;		/* Verbosity level (0-4): see PSL_MSG_*	*/
+		int comments;		/* true for writing comments to output, false strips all comments */
+		int overlay;		/* true if overlay (-O)				*/
+		int landscape;		/* true = Landscape, false = Portrait		*/
+		int text_init;		/* true after PSL_text.ps has been loaded	*/
+		int image_format;		/* 0 writes images in ascii, 2 uses binary	*/
+		int N_FONTS;		/* Total no of fonts;  To add more, modify the file CUSTOM_font_info.d */
+		int compress;		/* Compresses images with (1) RLE or (2) LZW or (0) None */
+		int color_mode;		/* 0 = rgb, 1 = cmyk, 2 = hsv (only 1-2 for images)	*/
+		int line_cap;		/* 0, 1, or 2 for butt, round, or square [butt]	*/
+		int line_join;		/* 0, 1, or 2 for miter, arc, or bevel [miter]	*/
+		int miter_limit;		/* Acute angle threshold 0-180; 0 means PS default [0] */
+		int ix, iy;		/* Absolute coordinates of last point		*/
+		int length;		/* Image row output byte counter		*/
+		int n_userimages;		/* Number of specified custom patterns		*/
+		int x0, y0;		/* x,y PS offsets				*/
 		FILE *fp;			/* PS output file pointer. NULL = stdout	*/
 		struct PSL_FONT {
 			double height;		/* Height of A for unit fontsize */
 			char *name;		/* Name of this font */
-			PSL_LONG encoded;	/* TRUE if we never should reencode this font (e.g. symbols) */
-						/* This is also changed to TRUE after we do reencode a font */
+			int encoded;	/* true if we never should reencode this font (e.g. symbols) */
+						/* This is also changed to true after we do reencode a font */
 		} *font;	/* Pointer to array of font structures 		*/
 		struct PSL_PATTERN {
-			PSL_LONG nx, ny;
-			PSL_LONG status, depth, dpi;
+			int nx, ny;
+			int status, depth, dpi;
 			double f_rgb[4], b_rgb[4];
 		} pattern[PSL_N_PATTERNS*2];
 	} internal;
@@ -303,62 +300,62 @@ struct imageinfo {
 /* Public functions */
 
 EXTERN_MSC struct PSL_CTRL *New_PSL_Ctrl (char *session);
-EXTERN_MSC PSL_LONG PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
-EXTERN_MSC PSL_LONG PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, PSL_LONG n, double rgb[], PSL_LONG flag);
-EXTERN_MSC PSL_LONG PSL_beginplot (struct PSL_CTRL *P, FILE *fp, PSL_LONG orientation, PSL_LONG overlay, PSL_LONG color_mode, char origin[], double offset[], double page_size[], char *title, PSL_LONG font_no[]);
-EXTERN_MSC PSL_LONG PSL_beginsession (struct PSL_CTRL *PSL);
-EXTERN_MSC PSL_LONG PSL_endaxes (struct PSL_CTRL *PSL);
-EXTERN_MSC PSL_LONG PSL_endclipping (struct PSL_CTRL *P, PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_endplot (struct PSL_CTRL *P, PSL_LONG lastpage);
-EXTERN_MSC PSL_LONG PSL_endsession (struct PSL_CTRL *P);
-EXTERN_MSC PSL_LONG PSL_plotarc (struct PSL_CTRL *P, double x, double y, double radius, double az1, double az2, PSL_LONG type);
-EXTERN_MSC PSL_LONG PSL_plotaxis (struct PSL_CTRL *P, double annotation_int, char *label, double annotfontsize, PSL_LONG side);
-EXTERN_MSC PSL_LONG PSL_plotbitimage (struct PSL_CTRL *P, double x, double y, double xsize, double ysize, PSL_LONG justify, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, double f_rgb[], double b_rgb[]);
-EXTERN_MSC PSL_LONG PSL_plotcolorimage (struct PSL_CTRL *P, double x, double y, double xsize, double ysize, PSL_LONG justify, unsigned char *buffer, PSL_LONG nx, PSL_LONG ny, PSL_LONG nbits);
-EXTERN_MSC PSL_LONG PSL_plotepsimage (struct PSL_CTRL *P, double x, double y, double xsize, double ysize, PSL_LONG justify, unsigned char *buffer, PSL_LONG size, PSL_LONG nx, PSL_LONG ny, PSL_LONG ox, PSL_LONG oy);
-EXTERN_MSC PSL_LONG PSL_plotline (struct PSL_CTRL *P, double *x, double *y, PSL_LONG n, PSL_LONG type);
-EXTERN_MSC PSL_LONG PSL_plotparagraph (struct PSL_CTRL *P, double x, double y, double fontsize, char *paragraph, double angle, PSL_LONG justify);
-EXTERN_MSC PSL_LONG PSL_plotparagraphbox (struct PSL_CTRL *P, double x, double y, double fontsize, char *paragraph, double angle, PSL_LONG justify, double offset[], PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_plotpoint (struct PSL_CTRL *P, double x, double y, PSL_LONG pen);
-EXTERN_MSC PSL_LONG PSL_plotbox (struct PSL_CTRL *P, double x0, double y0, double x1, double y1);
-EXTERN_MSC PSL_LONG PSL_plotpolygon (struct PSL_CTRL *P, double *x, double *y, PSL_LONG n);
-EXTERN_MSC PSL_LONG PSL_plotsegment (struct PSL_CTRL *P, double x0, double y0, double x1, double y1);
-EXTERN_MSC PSL_LONG PSL_plotsymbol (struct PSL_CTRL *P, double x, double y, double param[], PSL_LONG symbol);
-EXTERN_MSC PSL_LONG PSL_plottext (struct PSL_CTRL *P, double x, double y, double fontsize, char *text, double angle, PSL_LONG justify, PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_plottextbox (struct PSL_CTRL *P, double x, double y, double fontsize, char *text, double angle, PSL_LONG justify, double offset[], PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_plottextclip (struct PSL_CTRL *P, double x[], double y[], PSL_LONG m, double fontsize, char *label[], double angle[], PSL_LONG justify, double offset[], PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_plottextpath (struct PSL_CTRL *P, double x[], double y[], PSL_LONG n, PSL_LONG node[], double fontsize, char *label[], PSL_LONG m, double angle[], PSL_LONG justify, double offset[], PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_loadimage (struct PSL_CTRL *P, char *file, struct imageinfo *header, unsigned char **image);
-EXTERN_MSC PSL_LONG PSL_setcolor (struct PSL_CTRL *P, double rgb[], PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_setdefaults (struct PSL_CTRL *P, double xyscales[], double page_rgb[], char *encoding);
-EXTERN_MSC PSL_LONG PSL_setdash (struct PSL_CTRL *P, char *pattern, double offset);
-EXTERN_MSC PSL_LONG PSL_setfill (struct PSL_CTRL *P, double rgb[], PSL_LONG outline);
-EXTERN_MSC PSL_LONG PSL_setfont (struct PSL_CTRL *P, PSL_LONG font_no);
-EXTERN_MSC PSL_LONG PSL_setformat (struct PSL_CTRL *P, PSL_LONG n_decimals);
-EXTERN_MSC PSL_LONG PSL_setlinecap (struct PSL_CTRL *P, PSL_LONG cap);
-EXTERN_MSC PSL_LONG PSL_setlinejoin (struct PSL_CTRL *P, PSL_LONG join);
-EXTERN_MSC PSL_LONG PSL_setlinewidth (struct PSL_CTRL *P, double linewidth);
-EXTERN_MSC PSL_LONG PSL_setmiterlimit (struct PSL_CTRL *P, PSL_LONG limit);
-EXTERN_MSC PSL_LONG PSL_setorigin (struct PSL_CTRL *P, double x, double y, double angle, PSL_LONG mode);
-EXTERN_MSC PSL_LONG PSL_setparagraph (struct PSL_CTRL *P, double line_space, double par_width, PSL_LONG par_just);
-EXTERN_MSC PSL_LONG PSL_setpattern (struct PSL_CTRL *P, PSL_LONG image_no, char *imagefile, PSL_LONG image_dpi, double f_rgb[], double b_rgb[]);
-EXTERN_MSC PSL_LONG PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
-EXTERN_MSC PSL_LONG PSL_definteger (struct PSL_CTRL *P, const char *param, PSL_LONG value);
-EXTERN_MSC PSL_LONG PSL_defpen (struct PSL_CTRL *P, const char *param, double width, char *style, double offset, double rgb[]);
-EXTERN_MSC PSL_LONG PSL_defpoints (struct PSL_CTRL *P, const char *param, double fontsize);
-EXTERN_MSC PSL_LONG PSL_defcolor (struct PSL_CTRL *P, const char *param, double rgb[]);
-EXTERN_MSC PSL_LONG PSL_deftextdim (struct PSL_CTRL *P, const char *dim, double fontsize, char *text);
-EXTERN_MSC PSL_LONG PSL_defunits (struct PSL_CTRL *P, const char *param, double value);
-EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, PSL_LONG *nbytes, unsigned char *input);
+EXTERN_MSC int PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
+EXTERN_MSC int PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, int n, double rgb[], int flag);
+EXTERN_MSC int PSL_beginplot (struct PSL_CTRL *P, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]);
+EXTERN_MSC int PSL_beginsession (struct PSL_CTRL *PSL);
+EXTERN_MSC int PSL_endaxes (struct PSL_CTRL *PSL);
+EXTERN_MSC int PSL_endclipping (struct PSL_CTRL *P, int mode);
+EXTERN_MSC int PSL_endplot (struct PSL_CTRL *P, int lastpage);
+EXTERN_MSC int PSL_endsession (struct PSL_CTRL *P);
+EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *P, double x, double y, double radius, double az1, double az2, int type);
+EXTERN_MSC int PSL_plotaxis (struct PSL_CTRL *P, double annotation_int, char *label, double annotfontsize, int side);
+EXTERN_MSC int PSL_plotbitimage (struct PSL_CTRL *P, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, double f_rgb[], double b_rgb[]);
+EXTERN_MSC int PSL_plotcolorimage (struct PSL_CTRL *P, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, int nbits);
+EXTERN_MSC int PSL_plotepsimage (struct PSL_CTRL *P, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int size, int nx, int ny, int ox, int oy);
+EXTERN_MSC int PSL_plotline (struct PSL_CTRL *P, double *x, double *y, int n, int type);
+EXTERN_MSC int PSL_plotparagraph (struct PSL_CTRL *P, double x, double y, double fontsize, char *paragraph, double angle, int justify);
+EXTERN_MSC int PSL_plotparagraphbox (struct PSL_CTRL *P, double x, double y, double fontsize, char *paragraph, double angle, int justify, double offset[], int mode);
+EXTERN_MSC int PSL_plotpoint (struct PSL_CTRL *P, double x, double y, int pen);
+EXTERN_MSC int PSL_plotbox (struct PSL_CTRL *P, double x0, double y0, double x1, double y1);
+EXTERN_MSC int PSL_plotpolygon (struct PSL_CTRL *P, double *x, double *y, int n);
+EXTERN_MSC int PSL_plotsegment (struct PSL_CTRL *P, double x0, double y0, double x1, double y1);
+EXTERN_MSC int PSL_plotsymbol (struct PSL_CTRL *P, double x, double y, double param[], int symbol);
+EXTERN_MSC int PSL_plottext (struct PSL_CTRL *P, double x, double y, double fontsize, char *text, double angle, int justify, int mode);
+EXTERN_MSC int PSL_plottextbox (struct PSL_CTRL *P, double x, double y, double fontsize, char *text, double angle, int justify, double offset[], int mode);
+EXTERN_MSC int PSL_plottextclip (struct PSL_CTRL *P, double x[], double y[], int m, double fontsize, char *label[], double angle[], int justify, double offset[], int mode);
+EXTERN_MSC int PSL_plottextpath (struct PSL_CTRL *P, double x[], double y[], int n, int node[], double fontsize, char *label[], int m, double angle[], int justify, double offset[], int mode);
+EXTERN_MSC int PSL_loadimage (struct PSL_CTRL *P, char *file, struct imageinfo *header, unsigned char **image);
+EXTERN_MSC int PSL_setcolor (struct PSL_CTRL *P, double rgb[], int mode);
+EXTERN_MSC int PSL_setdefaults (struct PSL_CTRL *P, double xyscales[], double page_rgb[], char *encoding);
+EXTERN_MSC int PSL_setdash (struct PSL_CTRL *P, char *pattern, double offset);
+EXTERN_MSC int PSL_setfill (struct PSL_CTRL *P, double rgb[], int outline);
+EXTERN_MSC int PSL_setfont (struct PSL_CTRL *P, int font_no);
+EXTERN_MSC int PSL_setformat (struct PSL_CTRL *P, int n_decimals);
+EXTERN_MSC int PSL_setlinecap (struct PSL_CTRL *P, int cap);
+EXTERN_MSC int PSL_setlinejoin (struct PSL_CTRL *P, int join);
+EXTERN_MSC int PSL_setlinewidth (struct PSL_CTRL *P, double linewidth);
+EXTERN_MSC int PSL_setmiterlimit (struct PSL_CTRL *P, int limit);
+EXTERN_MSC int PSL_setorigin (struct PSL_CTRL *P, double x, double y, double angle, int mode);
+EXTERN_MSC int PSL_setparagraph (struct PSL_CTRL *P, double line_space, double par_width, int par_just);
+EXTERN_MSC int PSL_setpattern (struct PSL_CTRL *P, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[]);
+EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
+EXTERN_MSC int PSL_definteger (struct PSL_CTRL *P, const char *param, int value);
+EXTERN_MSC int PSL_defpen (struct PSL_CTRL *P, const char *param, double width, char *style, double offset, double rgb[]);
+EXTERN_MSC int PSL_defpoints (struct PSL_CTRL *P, const char *param, double fontsize);
+EXTERN_MSC int PSL_defcolor (struct PSL_CTRL *P, const char *param, double rgb[]);
+EXTERN_MSC int PSL_deftextdim (struct PSL_CTRL *P, const char *dim, double fontsize, char *text);
+EXTERN_MSC int PSL_defunits (struct PSL_CTRL *P, const char *param, double value);
+EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 
 /* Other deep level routines that could be useful */
-EXTERN_MSC PSL_LONG psl_ix (struct PSL_CTRL *P, double value);
-EXTERN_MSC PSL_LONG psl_iy (struct PSL_CTRL *P, double value);
-EXTERN_MSC PSL_LONG psl_iz (struct PSL_CTRL *P, double value);
-EXTERN_MSC PSL_LONG psl_ip (struct PSL_CTRL *P, double value);
+EXTERN_MSC int psl_ix (struct PSL_CTRL *P, double value);
+EXTERN_MSC int psl_iy (struct PSL_CTRL *P, double value);
+EXTERN_MSC int psl_iz (struct PSL_CTRL *P, double value);
+EXTERN_MSC int psl_ip (struct PSL_CTRL *P, double value);
 
 /* Used indirectly by macro PSL_free and FORTRAN wrapper PSL_free_ . */
-EXTERN_MSC PSL_LONG PSL_free_nonmacro (void *addr);
+EXTERN_MSC int PSL_free_nonmacro (void *addr);
 
 /* Definition for printing a message. When DEBUG is on, also print source file and line number.
  * Use this for various progress statements, debugging to see certain variables, and even fatal
@@ -367,7 +364,7 @@ EXTERN_MSC PSL_LONG PSL_free_nonmacro (void *addr);
 EXTERN_MSC int PSL_command (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_comment (struct PSL_CTRL *C, const char *format, ...);
 EXTERN_MSC int PSL_initerr (struct PSL_CTRL *C, const char *format, ...);
-EXTERN_MSC int PSL_message (struct PSL_CTRL *C, PSL_LONG level, const char *format, ...);
+EXTERN_MSC int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...);
 EXTERN_MSC FILE *PSL_fopen (char *file, char *mode);
 
 #define PSL_free(ptr) (PSL_free_nonmacro(ptr),(ptr)=NULL) /* Cleanly set the freed pointer to NULL */

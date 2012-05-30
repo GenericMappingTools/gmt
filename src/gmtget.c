@@ -31,10 +31,10 @@
 
 struct GMTGET_CTRL {
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct G {	/* -Gfilename */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 };
@@ -52,7 +52,7 @@ void Free_gmtget_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_gmtget_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtget_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -71,7 +71,7 @@ GMT_LONG GMT_gmtget_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtget_parse (struct GMTAPI_CTRL *C, struct GMTGET_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtget_parse (struct GMTAPI_CTRL *C, struct GMTGET_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtget and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -79,7 +79,7 @@ GMT_LONG GMT_gmtget_parse (struct GMTAPI_CTRL *C, struct GMTGET_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -93,11 +93,11 @@ GMT_LONG GMT_gmtget_parse (struct GMTAPI_CTRL *C, struct GMTGET_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Optional defaults file on input and output */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'L':	/* One per line */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -113,9 +113,9 @@ GMT_LONG GMT_gmtget_parse (struct GMTAPI_CTRL *C, struct GMTGET_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtget_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtget (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtget (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = 0;
+	int error = 0;
 	
 	struct GMTGET_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

@@ -7,6 +7,11 @@
 #define Max(a,b) ((a)>(b)?(a):(b))
 
 #include <stddef.h>
+#ifdef HAVE_STDBOOL_H_
+#       include <stdbool.h>
+#else
+#       include "compat/stdbool.h"
+#endif
 
 #include "xgrid_utility.h"
 
@@ -184,7 +189,7 @@ PannerClassRecCustom pannerClassRecCustom = {
     /* widget_size		*/	sizeof(PannerRec),
     /* class_initialize		*/	NULL,
     /* class_part_initialize	*/	NULL,
-    /* class_inited		*/	FALSE,
+    /* class_inited		*/	false,
     /* initialize		*/	PannerInitialize,
     /* initialize_hook		*/	NULL,
     /* realize			*/	XtInheritRealize,
@@ -193,10 +198,10 @@ PannerClassRecCustom pannerClassRecCustom = {
     /* resources		*/	resources,
     /* num_resources		*/	XtNumber(resources),
     /* xrm_class		*/	NULLQUARK,
-    /* compress_motion		*/	TRUE,
-    /* compress_exposure	*/	TRUE,
-    /* compress_enterleave	*/	TRUE,
-    /* visible_interest		*/	FALSE,
+    /* compress_motion		*/	true,
+    /* compress_exposure	*/	true,
+    /* compress_enterleave	*/	true,
+    /* visible_interest		*/	false,
     /* destroy			*/	NULL,
     /* resize			*/	PannerResize,
     /* expose			*/	NULL,

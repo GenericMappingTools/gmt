@@ -58,45 +58,45 @@
 
 struct IMG2GRD_CTRL {
 	struct In {	/* Input file name */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;	/* Input file name */
 	} In;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct D {	/* -D[<minlat>/<maxlat>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double min, max;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 	} E;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -I<minutes> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} I;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N<ave> */
-		GMT_BOOLEAN active;
+		bool active;
 		int value;
 	} N;
 	struct S {	/* -S<scale> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double value;
 	} S;
 	struct T {	/* -T<type> */
-		GMT_BOOLEAN active;
+		bool active;
 		int value;
 	} T;
 	struct W {	/* -W<maxlon> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} W;
 };
@@ -106,7 +106,7 @@ void *New_img2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct IMG2GRD_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.min = GMT_IMG_MINLAT;
 	C->D.max = GMT_IMG_MAXLAT;
 	C->N.value = 1;		/* No averaging */
@@ -123,7 +123,7 @@ void Free_img2grd_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_img2grd_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "img2grd %s [API] - Extract a subset from an img file in Mercator or Geographic format\n\n", GMT_VERSION);
@@ -161,7 +161,7 @@ GMT_LONG GMT_img2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -169,7 +169,7 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -186,10 +186,10 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
@@ -200,10 +200,10 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				}
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 #ifdef GMT_COMPAT
@@ -211,35 +211,35 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
 #endif
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -I requires a positive value.\n");
 				}
 				break;
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->N.value)) != 1 || Ctrl->N.value < 1) {
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -N requires an integer > 1.\n");
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (sscanf (opt->arg, "%lf", &Ctrl->S.value) != 1) Ctrl->S.mode = 1;
 				break;				
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -W requires a longitude >= 360.0.\n");
@@ -269,14 +269,14 @@ GMT_LONG GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_img2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE;
-	COUNTER_MEDIUM navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	COUNTER_MEDIUM iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
-	GMT_LONG in_ID, out_ID = GMTAPI_NOTSET, jin, iinstart, iinstop;
+	bool error = false;
+	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
+	unsigned int iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
+	int in_ID, out_ID = GMTAPI_NOTSET, jin, iinstart, iinstop;
 
-	COUNTER_LARGE ij;
+	uint64_t ij;
 	int16_t tempint;
 	
 	size_t n_expected;	/* Expected items per row */
@@ -338,7 +338,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (! (Ctrl->I.active || Ctrl->D.active)) {
-		GMT_LONG min;
+		int min;
 		double lat = 0.0;
 		struct stat buf;
 		if (stat (infile, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
@@ -411,7 +411,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Merc->header, options, FALSE);
+	GMT_grd_init (GMT, Merc->header, options, false);
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 	if (Ctrl->M.active) {
@@ -477,7 +477,7 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Set up header with Mercatorized dimensions assuming -Jm1  */
 	if (Ctrl->C.active) {
-		GMT_LONG equator;
+		int equator;
 		equator = lrint (GMT_img_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
 		wesn[XHI] = wesn[XLO] + Merc->header->nx * inc[GMT_X];
@@ -512,10 +512,10 @@ GMT_LONG GMT_img2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Now malloc some space for float grd array, integer pixel index, and int16_t data buffer.  */
 
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, TRUE), Ctrl->G.file);
+	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, true), Ctrl->G.file);
 	Merc->data = GMT_memory (GMT, NULL, Merc->header->size, float);
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
-	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, COUNTER_MEDIUM);
+	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
 
 	/* Load ix with the index to the correct column, for each output desired.  This helps for Greenwich, 
 	   also faster averaging of the file, etc.  Note for averaging each n by n block is looped in turn. */

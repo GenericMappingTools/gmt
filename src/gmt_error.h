@@ -93,7 +93,7 @@ enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
 /* Definition for an error trap */
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 
-EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
+EXTERN_MSC const char * GMT_strerror (int err);
 
 #define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
 
@@ -117,11 +117,11 @@ EXTERN_MSC const char * GMT_strerror (GMT_LONG err);
 #endif
 
 #ifdef DEBUG
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,FALSE,file,__FILENAME,__LINE__)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,TRUE,file,__FILENAME,__LINE__)
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__FILENAME,__LINE__)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__FILENAME,__LINE__)
 #else
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,FALSE,file,__func__,0)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,TRUE,file,__func__,0)
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__func__,0)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__func__,0)
 #endif
 
 /* Convenience functions to GMT_report_func */

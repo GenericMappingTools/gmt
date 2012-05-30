@@ -59,9 +59,9 @@ struct GRD_HEADER {
 	int type;			/* Grid format */
 	unsigned int bits;		/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	unsigned int complex_mode;	/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
-	COUNTER_MEDIUM mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
-	COUNTER_LARGE nm;		/* Number of data items in this grid (nx * ny) [padding is excluded] */
-	COUNTER_LARGE size;		/* Actual number of items required to hold this grid (= mx * my) */
+	unsigned int mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
+	uint64_t nm;		/* Number of data items in this grid (nx * ny) [padding is excluded] */
+	uint64_t size;		/* Actual number of items required to hold this grid (= mx * my) */
 	unsigned int n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
 	unsigned int pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
 	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
@@ -80,11 +80,11 @@ struct GRD_HEADER {
 	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
 	unsigned int bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
 	unsigned int bcr_n;		/* Width of the interpolation function */
-	COUNTER_MEDIUM nxp;		/* if X periodic, nxp > 0 is the period in pixels  */
-	COUNTER_MEDIUM nyp;		/* if Y periodic, nxp > 0 is the period in pixels  */
-	GMT_BOOLEAN no_BC;			/* If TRUE we skip BC stuff entirely */
-	GMT_BOOLEAN gn;			/* TRUE if top    edge will be set as N pole  */
-	GMT_BOOLEAN gs;			/* TRUE if bottom edge will be set as S pole  */
+	unsigned int nxp;		/* if X periodic, nxp > 0 is the period in pixels  */
+	unsigned int nyp;		/* if Y periodic, nxp > 0 is the period in pixels  */
+	bool no_BC;			/* If true we skip BC stuff entirely */
+	bool gn;			/* true if top    edge will be set as N pole  */
+	bool gs;			/* true if bottom edge will be set as S pole  */
 	
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];			/* Min/max x and y coordinates */
@@ -165,8 +165,8 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 
 /* 64-bit-safe macros to return the number of points in the grid given its dimensions */
 
-#define GMT_get_nm(C,nx,ny) (((COUNTER_LARGE)(nx)) * ((COUNTER_LARGE)(ny)))
-#define gmt_grd_get_nm(h) (((COUNTER_LARGE)(h->nx)) * ((COUNTER_LARGE)(h->ny)))
+#define GMT_get_nm(C,nx,ny) (((uint64_t)(nx)) * ((uint64_t)(ny)))
+#define gmt_grd_get_nm(h) (((uint64_t)(h->nx)) * ((uint64_t)(h->ny)))
 
 /* GMT_grd_setpad copies the given pad into the header */
 
@@ -181,14 +181,14 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
  * we pass the column dimension as padding is added by the macro. */
 
 /* New IJP macro using h and the pad info */
-#define GMT_IJP(h,row,col) (((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO])
+#define GMT_IJP(h,row,col) (((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx)+(uint64_t)(col)+(uint64_t)h->pad[XLO])
 /* New IJPR|C macros using h and the pad info to get the real or imag component of a complex array*/
-#define GMT_IJPR(h,row,col) (2*(((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO]))
+#define GMT_IJPR(h,row,col) (2*(((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx)+(uint64_t)(col)+(uint64_t)h->pad[XLO]))
 #define GMT_IJPC(h,row,col) (GMT_IJPR(h,row,col)+1)
 /* New IJ0 macro using h but ignores the pad info */
-#define GMT_IJ0(h,row,col) (((COUNTER_LARGE)(row))*((COUNTER_LARGE)h->nx)+(COUNTER_LARGE)(col))
+#define GMT_IJ0(h,row,col) (((uint64_t)(row))*((uint64_t)h->nx)+(uint64_t)(col))
 /* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
-#define GMT_IJPGI(h,row,col) (((COUNTER_LARGE)(row)+(COUNTER_LARGE)h->pad[YHI])*((COUNTER_LARGE)h->mx*(COUNTER_LARGE)h->n_bands)+(COUNTER_LARGE)(col)+(COUNTER_LARGE)h->pad[XLO]*(COUNTER_LARGE)h->n_bands)
+#define GMT_IJPGI(h,row,col) (((uint64_t)(row)+(uint64_t)h->pad[YHI])*((uint64_t)h->mx*(uint64_t)h->n_bands)+(uint64_t)(col)+(uint64_t)h->pad[XLO]*(uint64_t)h->n_bands)
 
 /* Obtain row and col from index */
 #define GMT_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
@@ -211,18 +211,18 @@ enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
 /* The usage could be:
 	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
 */
-/* The GMT_y_is_outside macro returns TRUE if y is outside the given domain.
+/* The GMT_y_is_outside macro returns true if y is outside the given domain.
  * For GMT_x_is_outside, see the function in gmt_support.c since we must also deal with longitude periodicity.
  */
 
-/* GMT_is_subset is TRUE if wesn is set and wesn cuts through the grid region */
+/* GMT_is_subset is true if wesn is set and wesn cuts through the grid region */
 #define GMT_is_subset(C,h,R) (R[XHI] > R[XLO] && R[YHI] > R[YLO] && (R[XLO] > h->wesn[XLO] || R[XHI] < h->wesn[XHI] || R[YLO] > h->wesn[YLO] || R[YHI] < h->wesn[YHI]))
-/* GMT_grd_same_region is TRUE if two grids have the exact same regions */
+/* GMT_grd_same_region is true if two grids have the exact same regions */
 #define GMT_grd_same_region(C,G1,G2) (G1->header->wesn[XLO] == G2->header->wesn[XLO] && G1->header->wesn[XHI] == G2->header->wesn[XHI] && G1->header->wesn[YLO] == G2->header->wesn[YLO] && G1->header->wesn[YHI] == G2->header->wesn[YHI])
-/* GMT_y_is_outside is TRUE if y is outside the given range */
-#define GMT_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? TRUE : FALSE)
+/* GMT_y_is_outside is true if y is outside the given range */
+#define GMT_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
 
-/* GMT_grd_duplicate_column is TRUE for geographical global grid where first and last data columns are identical */
+/* GMT_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
 #define GMT_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRIDLINE_REG)
 
 #endif /* _GMT_GRD_H */

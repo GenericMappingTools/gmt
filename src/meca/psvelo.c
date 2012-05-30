@@ -50,37 +50,37 @@ PostScript code is written to stdout.
 
 struct PSVELO_CTRL {
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_SYMBOL S;
 	} A;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		double scale;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct S {	/* -r<fill> */
-		GMT_BOOLEAN active;
-		GMT_LONG symbol;
-		COUNTER_MEDIUM readmode;
+		bool active;
+		int symbol;
+		unsigned int readmode;
 		double scale, wedge_amp, conrad;
 		double fontsize, confidence;
 		struct GMT_FILL fill;
 	} S;
 	struct W {	/* -W<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} W;
 };
@@ -90,7 +90,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct PSVELO_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 	C->A.S.v.h_length = (float)C->A.S.size_x;	/* 9p */
@@ -115,7 +115,7 @@ void Free_psvelo_Ctrl (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_psvelo_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -157,7 +157,7 @@ GMT_LONG GMT_psvelo_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psvelo and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -166,9 +166,9 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
-	GMT_LONG n;
-	GMT_BOOLEAN no_size_needed, n_set, got_A = FALSE;
+	unsigned int n_errors = 0;
+	int n;
+	bool no_size_needed, n_set, got_A = false;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 #ifdef GMT_COMPAT
 	char txt_c[GMT_TEXT_LEN256];
@@ -186,7 +186,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change size of arrow head */
-				got_A = TRUE;
+				got_A = true;
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
 					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
@@ -212,22 +212,22 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 #endif
 				break;
 			case 'D':	/* Rescale Sigmas */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				sscanf (opt->arg, "%lf",&Ctrl->D.scale);
 				break;
 			case 'E':	/* Set color for error ellipse  */
 				GMT_getfill (GMT, opt->arg, &Ctrl->E.fill);
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 			case 'G':	/* Set Gray shade for polygon */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				GMT_getfill (GMT, opt->arg, &Ctrl->G.fill);
 				break;
 			case 'L':	/* Draw the outline */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Do not skip points outside border */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
  				txt_b[0] = '\0';
@@ -274,7 +274,7 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 				}
 				break;
 			case 'W':	/* Set line attributes */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
 					n_errors++;
@@ -302,10 +302,10 @@ GMT_LONG GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psvelo_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_psvelo (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG ix = 0, iy = 1, n_rec = 0, justify;
-	GMT_LONG des_ellipse = TRUE, des_arrow = TRUE, error = FALSE;
+	int ix = 0, iy = 1, n_rec = 0, justify;
+	int des_ellipse = true, des_arrow = true, error = false;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
 	double eps1 = 0.0, eps2 = 0.0, spin = 0.0, spinsig = 0.0, theta = 0.0;
@@ -345,7 +345,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
-	if (Ctrl->E.active) Ctrl->L.active = TRUE;
+	if (Ctrl->E.active) Ctrl->L.active = true;
 
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	GMT_init_vector_param (GMT, &Ctrl->A.S);
@@ -404,9 +404,9 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sigma_y = Ctrl->D.scale * sigma_y;
 			}
 			if (fabs (sigma_x) < EPSIL && fabs (sigma_y) < EPSIL)
-				des_ellipse = FALSE;
+				des_ellipse = false;
 			else {
-				des_ellipse = TRUE;
+				des_ellipse = true;
 				ellipse_convert (sigma_x, sigma_y, corr_xy, Ctrl->S.conrad, &small_axis, &great_axis, &direction);
 
 				/* convert to degrees */
@@ -420,9 +420,9 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			small_axis = Ctrl->S.conrad*atof (col[5]);
 			direction = atof (col[6]);
 			if (fabs (great_axis) < EPSIL && fabs (small_axis) < EPSIL)
-				des_ellipse = FALSE;
+				des_ellipse = false;
 			else
-				des_ellipse = TRUE;
+				des_ellipse = true;
 		}
 		else if (Ctrl->S.readmode == READ_ANISOTROPY) {
 			vxy[ix] = atof (col[2]);
@@ -440,13 +440,13 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
-		if (GMT_abs (GMT->current.map.this_x_status) > 1 || GMT_abs (GMT->current.map.this_y_status) > 1) continue;
+		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 
 		GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 
 		switch (Ctrl->S.symbol) {
 			case CINE:
-				des_arrow = hypot (vxy[0], vxy[1]) < 1.e-8 ? FALSE : TRUE;
+				des_arrow = hypot (vxy[0], vxy[1]) < 1.e-8 ? false : true;
 				trace_arrow (GMT, xy[GMT_X], xy[GMT_Y], vxy[0], vxy[1], Ctrl->S.scale, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
 				if (des_ellipse) {
@@ -509,7 +509,7 @@ GMT_LONG GMT_psvelo (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					Ctrl->G.active, Ctrl->G.fill.rgb, Ctrl->E.active, Ctrl->E.fill.rgb, Ctrl->L.active);
 				break;
 		}
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

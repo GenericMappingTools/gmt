@@ -32,47 +32,47 @@
 
 struct X2SYS_LIST_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} A;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 		char *col;
 	} C;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 		char *flags;
 	} F;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM min;
+		bool active;
+		unsigned int min;
 	} N;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} W;
 };
@@ -82,7 +82,7 @@ void *New_x2sys_list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_LIST_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.value = 1.0;
 	return (C);
@@ -100,7 +100,7 @@ void Free_x2sys_list_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "x2sys_list %s - Extract subset from crossover data base\n\n", X2SYS_VERSION);
@@ -149,7 +149,7 @@ GMT_LONG GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -157,8 +157,8 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, i, n_files = 0;
-	GMT_BOOLEAN mixed = FALSE;
+	unsigned int n_errors = 0, i, n_files = 0;
+	bool mixed = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -174,45 +174,45 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 			/* Processes program-specific parameters */
 			
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				Ctrl->A.value = atof (opt->arg);
 				break;
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'L':	/* Crossover correction table */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.min = atoi (opt->arg);
 				break;
 			case 'Q':	/* Specify internal or external only */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				Ctrl->W.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -232,41 +232,41 @@ GMT_LONG GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ct
 			GMT_report (GMT, GMT_MSG_FATAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
-		if (Ctrl->F.flags[i] == 'n') mixed = TRUE;		/* Both numbers and text - cannot use binary output */
+		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
 	}
 	n_errors += GMT_check_condition (GMT, mixed && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -Fn with binary output\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, GMT_LONG col, GMT_LONG n, GMT_BOOLEAN first)
+void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool first)
 {	/* Short-hand to dump n = 1 or 2 numerical values in chosen format.
-	 * col is used to set the format, and first is TRUE for first item per record.
+	 * col is used to set the format, and first is true for first item per record.
 	 */
-	GMT_LONG i;
+	int i;
 	for (i = 0; i < n; i++) {
 		if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 		GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], val[i], col);
-		first = FALSE;
+		first = false;
 	}
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_list_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL, **weight_name = NULL, *tofrom[2] = {"stdin", "stdout"}, *from = NULL;
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
-	GMT_BOOLEAN error = FALSE, mixed = FALSE, check_for_NaN = FALSE, both, first;
-	GMT_BOOLEAN internal = TRUE;	/* FALSE if only external xovers are needed */
-	GMT_BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
-	COUNTER_LARGE i, j, k, one, two, n_items, n_out, n_tracks;
-	COUNTER_LARGE p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	COUNTER_MEDIUM n_weights = 0, coe_kind;
-	GMT_LONG id;
+	bool error = false, mixed = false, check_for_NaN = false, both, first;
+	bool internal = true;	/* false if only external xovers are needed */
+	bool external = true;	/* false if only internal xovers are needed */
+	uint64_t i, j, k, one, two, n_items, n_out, n_tracks;
+	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
+	unsigned int n_weights = 0, coe_kind;
+	int id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
@@ -292,12 +292,12 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 
 	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
-		if (Ctrl->F.flags[i] == 'c' || Ctrl->F.flags[i] == 'z') check_for_NaN = TRUE; /* Do not output records where the crossover or values are NaN */
-		if (Ctrl->F.flags[i] == 'n') mixed = TRUE;		/* Both numbers and text */
+		if (Ctrl->F.flags[i] == 'c' || Ctrl->F.flags[i] == 'z') check_for_NaN = true; /* Do not output records where the crossover or values are NaN */
+		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text */
 	}
 	if (Ctrl->Q.active) {
-		if (Ctrl->Q.mode == 1) internal = FALSE;
-		if (Ctrl->Q.mode == 2) external = FALSE;
+		if (Ctrl->Q.mode == 1) internal = false;
+		if (Ctrl->Q.mode == 2) external = false;
 	}
 	
 	sec_2_unit = GMT->current.setting.time_system.i_scale;	/* Save conversion from secs to TIME_UNIT before MGD77_Init switches to UNIX time system (seconds) */
@@ -340,7 +340,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	/* Must count to see total number of COE per track */
 	
-	trk_nx = GMT_memory (GMT, NULL, n_tracks, COUNTER_LARGE);
+	trk_nx = GMT_memory (GMT, NULL, n_tracks, uint64_t);
 	trk_name = GMT_memory (GMT, NULL, n_tracks, char *);
 	for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 		for (k = 0; k < 2; k++) {
@@ -415,7 +415,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->L.active && !check_for_NaN) {	/* Correction table would not be needed for output */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
-		Ctrl->L.active = FALSE;
+		Ctrl->L.active = false;
 	}
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
@@ -423,9 +423,9 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->A.active) {
-		GMT_LONG *x_side[2] = {NULL, NULL}, half;
+		int *x_side[2] = {NULL, NULL}, half;
 		double mid[2];
-		for (j = 0; j < 2; j++) x_side[j] = GMT_memory (GMT, NULL, n_tracks, GMT_LONG);
+		for (j = 0; j < 2; j++) x_side[j] = GMT_memory (GMT, NULL, n_tracks, int);
 		trk_symm = GMT_memory (GMT, NULL, n_tracks, double);
 		for (p = 0; p < np; p++) {	/* For each pair of tracks that generated crossovers */
 			for (j = 0; j < 2; j++) {	/* Set mid-point for these two tracks */
@@ -529,7 +529,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* First check if this record has a non-NaN COE */
 			if (check_for_NaN && (GMT_is_dnan (P[p].COE[k].data[one][COE_Z]) || GMT_is_dnan (P[p].COE[k].data[two][COE_Z]))) continue;
 			
-			for (i = j = 0, first = TRUE; i < n_items; i++, j++) {
+			for (i = j = 0, first = true; i < n_items; i++, j++) {
 				switch (Ctrl->F.flags[i]) {	/* acdhintTvwxyz */
 					case 'a':	/* Angle between tracks */
 						val[0] = fabs (P[p].COE[k].data[0][COE_H] - P[p].COE[k].data[1][COE_H]);
@@ -630,7 +630,7 @@ GMT_LONG GMT_x2sys_list (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (mixed) dump_ascii_cols (GMT, val, GMT_Z, n_out, first);
 						break;
 				}
-				first = FALSE;
+				first = false;
 			}
 			if (mixed)
 				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);

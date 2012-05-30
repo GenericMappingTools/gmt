@@ -32,7 +32,7 @@
 
 struct GMTDEFAULTS_CTRL {
 	struct D {	/* -D[s|u] */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} D;
 };
@@ -48,7 +48,7 @@ void Free_gmtdefaults_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_gmtdefaults_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -64,7 +64,7 @@ GMT_LONG GMT_gmtdefaults_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtdefaults and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -72,7 +72,7 @@ GMT_LONG GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -86,7 +86,7 @@ GMT_LONG GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Get GMT system-wide defaults settings */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				break;
 #ifdef GMT_COMPAT
@@ -110,9 +110,9 @@ GMT_LONG GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtdefaults_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtdefaults (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtdefaults (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error;
+	int error;
 	
 	char path[GMT_TEXT_LEN256];
 	

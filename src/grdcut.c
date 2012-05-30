@@ -32,16 +32,16 @@
 
 struct GRDCUT_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct Z {	/* -Z[min/max] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 1 means NaN */
+		bool active;
+		unsigned int mode;	/* 1 means NaN */
 		double min, max;
 	} Z;
 };
@@ -54,7 +54,7 @@ void *New_grdcut_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct GRDCUT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	return (C);
@@ -67,7 +67,7 @@ void Free_grdcut_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdcut_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -91,7 +91,7 @@ GMT_LONG GMT_grdcut_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -99,7 +99,7 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k, n_files = 0;
 	char za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -108,18 +108,18 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 			
  			case 'G':	/* Output file */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
  			case 'Z':	/* Detect region via z-range */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				k = 0;
 				if (opt->arg[k] == 'n') {
 					Ctrl->Z.mode = NAN_IS_OUTSIDE;
@@ -147,9 +147,9 @@ GMT_LONG GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdcut_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = 0;
+	int error = 0;
 	unsigned int nx_old, ny_old;
 
 	double wesn_new[4], wesn_old[4];
@@ -178,21 +178,21 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
-		COUNTER_MEDIUM row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
-		COUNTER_LARGE ij;
-		GMT_BOOLEAN go;
+		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
+		uint64_t ij;
+		bool go;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get entire grid */
 		}
 		
-		for (row = 0, go = TRUE; go && row < G->header->nx; row++) {	/* Scan from xmin towards xmax */
+		for (row = 0, go = true; go && row < G->header->nx; row++) {	/* Scan from xmin towards xmax */
 			for (col = 0, ij = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, ij += G->header->mx) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_OUTSIDE) go = FALSE;	/* Must stop since this NaN value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_OUTSIDE) go = false;	/* Must stop since this NaN value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					go = FALSE;
+					go = false;
 				if (!go) row0 = row;	/* Found starting column */
 			}
 		}
@@ -200,33 +200,33 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "The sub-region implied by -Z is empty!\n");
 			Return (EXIT_FAILURE);
 		}
-		for (row = G->header->nx-1, go = TRUE; go && row > row0; row--) {	/* Scan from xmax towards xmin */
+		for (row = G->header->nx-1, go = true; go && row > row0; row--) {	/* Scan from xmax towards xmin */
 			for (col = 0, ij = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, ij += G->header->mx) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = FALSE;	/* Must stop since this value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = false;	/* Must stop since this value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					go = FALSE;
+					go = false;
 				if (!go) row1 = row;	/* Found stopping column */
 			}
 		}
-		for (col = 0, go = TRUE; go && col < G->header->ny; col++) {	/* Scan from ymin towards ymax */
+		for (col = 0, go = true; go && col < G->header->ny; col++) {	/* Scan from ymin towards ymax */
 			for (row = row0, ij = GMT_IJP (G->header, col, row0); go && row < row1; row++, ij++) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = FALSE;	/* Must stop since this value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = false;	/* Must stop since this value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					go = FALSE;
+					go = false;
 				if (!go) col0 = col;	/* Found starting row */
 			}
 		}
-		for (col = G->header->ny-1, go = TRUE; go && col >= col0; col--) {	/* Scan from ymax towards ymin */
+		for (col = G->header->ny-1, go = true; go && col >= col0; col--) {	/* Scan from ymax towards ymin */
 			for (row = row0, ij = GMT_IJP (G->header, col, row0); go && row < row1; row++, ij++) {
 				if (GMT_is_fnan (G->data[ij])) {
-					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = FALSE;	/* Must stop since this value defines the inner box */
+					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = false;	/* Must stop since this value defines the inner box */
 				}
 				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
-					go = FALSE;
+					go = false;
 				if (!go) col1 = col;	/* Found starting row */
 			}
 		}
@@ -298,7 +298,7 @@ GMT_LONG GMT_grdcut (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	GMT_grd_init (GMT, G->header, options, TRUE);
+	GMT_grd_init (GMT, G->header, options, true);
 
 	GMT_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->nx;		ny_old = G->header->ny;

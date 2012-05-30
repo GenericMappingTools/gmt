@@ -34,16 +34,16 @@
 
 struct GRDCLIP_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct S {	/* -Sa<high/above> or -Sb<low/below> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		float high, above;
 		float low, below;
 	} S;
@@ -54,7 +54,7 @@ void *New_grdclip_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDCLIP_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 			
 	return (C);
 }
@@ -66,7 +66,7 @@ void Free_grdclip_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdclip_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdclip %s [API] - Clip the range of grids\n\n", GMT_VERSION);
@@ -88,7 +88,7 @@ GMT_LONG GMT_grdclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -96,8 +96,8 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG n;
+	unsigned int n_errors = 0, n_files = 0;
+	int n;
 	char txt[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -107,18 +107,18 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output filename */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (&opt->arg[0]);
 				break;
 			case 'S':	/* Set limits */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 				case 'a':
 					Ctrl->S.mode |= 1;
@@ -162,11 +162,11 @@ GMT_LONG GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdclip_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
-	COUNTER_MEDIUM row, col;
-	GMT_BOOLEAN error, new_grid;
+int GMT_grdclip (struct GMTAPI_CTRL *API, int mode, void *args) {
+	unsigned int row, col;
+	bool error, new_grid;
 	
-	COUNTER_LARGE ij, n_above = 0, n_below = 0;
+	uint64_t ij, n_above = 0, n_below = 0;
 	
 	double wesn[4];
 	
@@ -202,7 +202,7 @@ GMT_LONG GMT_grdclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		Return (API->error);	/* Get subset */
 	}
 
-	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* TRUE if input is a read-only array */
+	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* true if input is a read-only array */
 
 	GMT_grd_loop (GMT, G, row, col, ij) {	/* Checking if extremes are exceeded (need not check NaN) */
 		if (Ctrl->S.mode & 1 && G->data[ij] > Ctrl->S.high) {

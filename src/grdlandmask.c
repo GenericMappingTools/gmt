@@ -31,31 +31,31 @@
 #define GRDLANDMASK_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 
 struct GRDLANDMASK_CTRL {	/* All control options for this program (except common args) */
-	/* ctive is TRUE if the option has been activated */
+	/* ctive is true if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct D {	/* -D<resolution> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
+		bool active;
+		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		bool active;
+		unsigned int inside;	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct G {	/* -G<maskfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<maskvalues>[o] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		bool active;
+		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		double mask[GRDLANDMASK_N_CLASSES];	/* values for each level */
 	} N;
 };
@@ -65,7 +65,7 @@ void *New_grdlandmask_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDLANDMASK_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
@@ -82,7 +82,7 @@ void Free_grdlandmask_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -115,7 +115,7 @@ GMT_LONG GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdlandmask and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -123,7 +123,7 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, j, pos, n_files = 0;
+	unsigned int n_errors = 0, j, pos, n_files = 0;
 	char line[GMT_TEXT_LEN256], ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -138,20 +138,20 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Restrict GSHHS features */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				GMT_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'E':	/* On-boundary setting */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* OUtput filename */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Grid spacings */
@@ -159,15 +159,15 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'N':	/* Mask values */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				strcpy (line, opt->arg);
 #ifdef GMT_COMPAT
 				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
-					Ctrl->E.active = TRUE;
+					Ctrl->E.active = true;
 					Ctrl->E.inside = GMT_INSIDE;
 					line[strlen(line)-1] = 0;
 				}
@@ -203,13 +203,13 @@ GMT_LONG GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdlandmask_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, temp_shift = FALSE, wrap, used_polygons;
-	COUNTER_MEDIUM base = 3, k, bin, np, side, np_new;
-	GMT_LONG row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1;
+	bool error = false, temp_shift = false, wrap, used_polygons;
+	unsigned int base = 3, k, bin, np, side, np_new;
+	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1;
 	
-	COUNTER_LARGE ij;
+	uint64_t ij;
 
 	char line[GMT_TEXT_LEN256];
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
@@ -243,13 +243,13 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 
 	if (Grid->header->wesn[XLO] < 0.0 && Grid->header->wesn[XHI] < 0.0) {	/* Shift longitudes */
-		temp_shift = TRUE;
+		temp_shift = true;
 		Grid->header->wesn[XLO] += 360.0;
 		Grid->header->wesn[XHI] += 360.0;
 	}
@@ -323,23 +323,23 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Use polygons, if any.  Go in both directions to cover both land and sea */
 
-		used_polygons = FALSE;
+		used_polygons = false;
 
 		for (direction = -1; c.ns > 0 && direction < 2; direction += 2) {
 
 			/* Assemble one or more segments into polygons */
 
-			np = GMT_assemble_shore (GMT, &c, direction, TRUE, west_border, east_border, &p);
+			np = GMT_assemble_shore (GMT, &c, direction, true, west_border, east_border, &p);
 
 			/* Get clipped polygons in x,y inches that can be processed */
 
-			np_new = GMT_prep_shore_polygons (GMT, &p, np, FALSE, 0.0, -1);
+			np_new = GMT_prep_shore_polygons (GMT, &p, np, false, 0.0, -1);
 
 			for (k = 0; k < np_new; k++) {
 
 				if (p[k].n == 0) continue;
 
-				used_polygons = TRUE;	/* At least som points made it to here */
+				used_polygons = true;	/* At least som points made it to here */
 
 				/* Find min/max of polygon in inches */
 
@@ -430,7 +430,7 @@ GMT_LONG GMT_grdlandmask (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (wrap && Grid->header->registration == GMT_GRIDLINE_REG) { /* Copy over values to the repeating right column */
-		COUNTER_MEDIUM row_l;
+		unsigned int row_l;
 		for (row_l = 0, ij = GMT_IJP (Grid->header, row_l, 0); row_l < Grid->header->ny; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}
 	

@@ -55,11 +55,11 @@ enum GMT_enum_img {GMT_IMG_NLON_1M 	= 21600U,	/* At 1 min resolution */
 
 struct GMT_GRD_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
 	struct GRD_HEADER grd;	/* Header of grid file passed via -R */
-	GMT_BOOLEAN active;		/* TRUE if initialized via -R */
+	bool active;		/* true if initialized via -R */
 };
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
-	COUNTER_MEDIUM id;			/* The internal number of the grid */
+	unsigned int id;			/* The internal number of the grid */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	struct GRD_HEADER *header;	/* Pointer to full GMT header for the grid */
 	float *data;			/* Pointer to the float grid */
@@ -68,9 +68,9 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 struct GMT_GRDFILE {
 	size_t size;		/* Bytes per item */
 	size_t n_byte;		/* Number of bytes for row */
-	COUNTER_MEDIUM row;	/* Current row */
-	GMT_BOOLEAN check;		/* TRUE if we must replace NaNs with another representation on i/o */
-	GMT_BOOLEAN auto_advance;	/* TRUE if we want to read file sequentially */
+	unsigned int row;	/* Current row */
+	bool check;		/* true if we must replace NaNs with another representation on i/o */
+	bool auto_advance;	/* true if we want to read file sequentially */
 
 	int fid;		/* NetCDF file number */
 	size_t edge[2];		/* Dimension arrays for netCDF files */

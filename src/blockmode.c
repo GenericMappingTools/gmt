@@ -32,7 +32,7 @@
 #include "gmt.h"
 #include "block_subs.h"
 
-GMT_LONG GMT_blockmode_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -65,7 +65,7 @@ GMT_LONG GMT_blockmode_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to blockmode and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -73,7 +73,7 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -86,10 +86,10 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Report center of block instead */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;		/* Extended report with standard deviation, min, and max in cols 4-6 */
+				Ctrl->E.active = true;		/* Extended report with standard deviation, min, and max in cols 4-6 */
 				if (opt->arg[0] == 'r')
 					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number of median */
 				else if (opt->arg[0] == '\0')
@@ -98,24 +98,24 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 					n_errors++;
 				break;
 			case 'I':	/* Get block dimensions */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'Q':	/* Quick mode for modal z */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				break;
 			case 'W':	/* Use in|out weights */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				switch (opt->arg[0]) {
 					case '\0':
-						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = TRUE; break;
+						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true; break;
 					case 'i': case 'I':
-						Ctrl->W.weighted[GMT_IN] = TRUE; break;
+						Ctrl->W.weighted[GMT_IN] = true; break;
 					case 'o': case 'O':
-						Ctrl->W.weighted[GMT_OUT] = TRUE; break;
+						Ctrl->W.weighted[GMT_OUT] = true; break;
 					default:
 						n_errors++; break;
 				}
@@ -136,7 +136,7 @@ GMT_LONG GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-double weighted_mode (struct BLK_DATA *d, double wsum, COUNTER_MEDIUM emode, COUNTER_LARGE n, COUNTER_LARGE k, COUNTER_LARGE *index)
+double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint64_t n, uint64_t k, uint64_t *index)
 {
 	/* Estimate mode by finding a maximum in the estimated
 	   pdf of weighted data.  Estimate the pdf as the finite
@@ -205,16 +205,16 @@ double weighted_mode (struct BLK_DATA *d, double wsum, COUNTER_MEDIUM emode, COU
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, mode_xy, do_extra;
+	bool error = false, mode_xy, do_extra;
 	
 	int way;
 	
-	COUNTER_MEDIUM row, col, w_col, i_col, emode = 0, n_output;
+	unsigned int row, col, w_col, i_col, emode = 0, n_output;
 
-	COUNTER_LARGE node, first_in_cell, first_in_new_cell, n_lost, n_read;
-	COUNTER_LARGE n_cells_filled, n_in_cell, nz, n_pitched, rec_no;
+	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
+	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, rec_no;
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 
@@ -246,12 +246,12 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->C.active && Ctrl->Q.active) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -C overrides -Q\n");
-		Ctrl->Q.active = FALSE;
+		Ctrl->Q.active = false;
 	}
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
@@ -272,7 +272,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;
 	if (Ctrl->E.mode & BLK_DO_EXTEND3) {
 		n_output += 3;
-		do_extra = TRUE;
+		do_extra = true;
 	}
 	if (Ctrl->E.mode & BLK_DO_INDEX_LO || Ctrl->E.mode & BLK_DO_INDEX_HI) {	/* Add index */
 		n_output++;
@@ -338,7 +338,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		data[n_pitched].a[BLK_W] = (Ctrl->W.weighted[GMT_IN]) ? in[3] : 1.0;
 
 		n_pitched++;
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -496,7 +496,7 @@ GMT_LONG GMT_blockmode (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as a i/o resource */
+	GMT_free_grid (GMT, &Grid, false);	/* Free directly since not registered as a i/o resource */
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);
 

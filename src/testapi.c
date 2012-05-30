@@ -30,18 +30,18 @@
 
 struct TESTAPI_CTRL {
 	struct T {	/* -T sets data type */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} T;
 	struct I {	/* -I sets input method */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM via;
+		bool active;
+		unsigned int mode;
+		unsigned int via;
 	} I;
 	struct W {	/* -W sets output method */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM via;
+		bool active;
+		unsigned int mode;
+		unsigned int via;
 	} W;
 };
 
@@ -50,7 +50,7 @@ void *New_testapi_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct TESTAPI_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -59,7 +59,7 @@ void Free_testapi_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_testapi_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "testapi %s [API] - test API i/o methods for any data type\n\n", GMT_VERSION);
@@ -97,7 +97,7 @@ GMT_LONG GMT_testapi_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -105,7 +105,7 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -115,7 +115,7 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'I':	/* Input */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				switch (opt->arg[0]) {
 					case 'f': Ctrl->I.mode = GMT_IS_FILE; break;
 					case 's': Ctrl->I.mode = GMT_IS_STREAM; break;
@@ -127,7 +127,7 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 				if (opt->arg[1] == '/' && opt->arg[2] == 'm') Ctrl->I.via = GMT_VIA_MATRIX;
 				break;
 			case 'T':	/* Type */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'd': Ctrl->T.mode = GMT_IS_DATASET; break;
 					case 't': Ctrl->T.mode = GMT_IS_TEXTSET; break;
@@ -140,7 +140,7 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 				break;
 
 			case 'W':	/* Output */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				switch (opt->arg[0]) {
 					case 'f': Ctrl->W.mode = GMT_IS_FILE; break;
 					case 's': Ctrl->W.mode = GMT_IS_STREAM; break;
@@ -167,12 +167,12 @@ GMT_LONG GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = 0, in_ID, out_ID, via[2] = {0, 0};
-	GMT_LONG geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
-	COUNTER_LARGE k;
-	COUNTER_LARGE par[1] = {2};
+	int error = 0, in_ID, out_ID, via[2] = {0, 0};
+	int geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
+	uint64_t k;
+	uint64_t par[1] = {2};
 	
 	float *fdata = NULL;
 	double *ddata = NULL;
@@ -217,7 +217,7 @@ GMT_LONG GMT_testapi (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
 			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
-			for (k = 0; k < (COUNTER_LARGE)M->n_rows; k++) {
+			for (k = 0; k < (uint64_t)M->n_rows; k++) {
 				fdata[2*k] = (float)k;	fdata[2*k+1] = (float)k*10;
 			}
 			fdata[0] = fdata[1] = fdata[8] = fdata[9] = GMT->session.f_NaN;

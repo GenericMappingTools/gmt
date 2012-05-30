@@ -37,38 +37,38 @@
 
 struct BLOCK_CTRL {	/* All control options for this program (except common args) */
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 #if !defined(BLOCKMEAN)		/* Blockmedian has -Eb and blockmedian & blockmode has -Er[-] option */
-		COUNTER_MEDIUM mode;
+		unsigned int mode;
 #endif
 	} E;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
+		bool active;
 	} Q;
 #endif
 #if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
 	struct T {	/* -T<quantile> */
-		GMT_BOOLEAN active;
+		bool active;
 		double quantile;
 	} T;
 #endif
 #if defined(BLOCKMEAN)		/* Only blockmean has a -S option */
 	struct S {	/* -S[m|w|z] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} S;
 #endif
 	struct W {	/* -W[i][o] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN weighted[2];
+		bool active;
+		bool weighted[2];
 	} W;
 };
 
@@ -96,9 +96,9 @@ enum GMT_enum_blks {BLK_Z	= 2,
 		BLK_W		= 3};
 struct BLK_DATA {
 	double a[4];		/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
-	COUNTER_LARGE ij;	/* Grid index for data value */
+	uint64_t ij;	/* Grid index for data value */
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
-	COUNTER_LARGE rec_no;	/* Data record on input */
+	uint64_t rec_no;	/* Data record on input */
 #endif
 };
 #endif
@@ -110,7 +110,7 @@ void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control s
 	
 	C = GMT_memory (G, NULL, 1, struct  BLOCK_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 #if defined(BLOCKMEDIAN)	/* Initialize default to 0.5, i.e., the median */
 	C->T.quantile = 0.5;
 #endif

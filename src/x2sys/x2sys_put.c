@@ -33,20 +33,20 @@
 
 struct X2SYS_PUT_CTRL {
 	struct In {	/* -In */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 	} F;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 };
@@ -56,7 +56,7 @@ void *New_x2sys_put_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_PUT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -67,7 +67,7 @@ void Free_x2sys_put_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "x2sys_put %s - Update track index database from track bin file\n\n", X2SYS_VERSION);
@@ -86,7 +86,7 @@ GMT_LONG GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -94,7 +94,7 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -104,7 +104,7 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files == 0) Ctrl->In.file = strdup (opt->arg);
 				n_files++;
 				break;
@@ -112,17 +112,17 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Remove all traces of these tracks from the database */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				break;
 			case 'F':	/* Force update of existing tracks if new data are found */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
+				Ctrl->S.active = true;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				break;
 				
 			default:	/* Report bad options */
@@ -134,7 +134,7 @@ GMT_LONG GMT_x2sys_put_parse (struct GMTAPI_CTRL *C, struct X2SYS_PUT_CTRL *Ctrl
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->F.active, "Syntax error: Only specify one of -D and -F\n");
 	
-	if (Ctrl->F.active) Ctrl->D.active = TRUE;	/* Ironic, given previous if-test, but that is how the logic below in the main */
+	if (Ctrl->F.active) Ctrl->D.active = true;	/* Ironic, given previous if-test, but that is how the logic below in the main */
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -144,7 +144,7 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SY
 	/* Remove all traces of the track with id track_id from structure tree for all bins */
 
 	struct X2SYS_BIX_TRACK *track = NULL, *skip_track = NULL;
-	COUNTER_LARGE bin;
+	uint64_t bin;
 
 	for (bin = 0; bin < B->nm_bin; bin++) {
 		if (B->base[bin].n_tracks == 0) continue;	/* No tracks crossed this bin */
@@ -164,9 +164,9 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SY
 	return (track_id);
 }
 
-struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_BOOLEAN *found_it, struct X2SYS_BIX *B)
-{	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to TRUE.
-	 * I.e., the track is actually this_info->next_info.  If not found set found_it to FALSE and return pointer where
+struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, bool *found_it, struct X2SYS_BIX *B)
+{	/* Looks for given track in data base and if found returns pointer to the track before it and sets found_it to true.
+	 * I.e., the track is actually this_info->next_info.  If not found set found_it to false and return pointer where
 	 * this track should be inserted */
 	
 	struct X2SYS_BIX_TRACK_INFO *this_info;
@@ -178,7 +178,7 @@ struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, GMT_BOOLEAN *fo
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_put_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
@@ -190,7 +190,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
 	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 
-	GMT_BOOLEAN error = FALSE, found_it, skip;
+	bool error = false, found_it, skip;
 
 	FILE *fp = NULL, *fbin = NULL, *ftrack = NULL;
 
@@ -240,7 +240,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	for (i = max_flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) max_flag |= bit;
 
-	x2sys_bix_init (GMT, &B, FALSE);
+	x2sys_bix_init (GMT, &B, false);
 
 	/* Read existing track-information from <ID>_tracks.d file */
 
@@ -265,7 +265,7 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		/* Determine if this track is already in the data base */
 		
-		this_info = x2sys_bix_find_track (track, &found_it, &B);	/* Returns found_it = TRUE if found */
+		this_info = x2sys_bix_find_track (track, &found_it, &B);	/* Returns found_it = true if found */
 		
 		/* In either case, this_info now points to the previous track so that this_info->next is the found track OR
 		 * it is the point after which a new track should be inserted */
@@ -281,15 +281,15 @@ GMT_LONG GMT_x2sys_put (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			else {	/* Refuse to process tracks already in the database without the delete[and replace] options set */
 				GMT_report (GMT, GMT_MSG_NORMAL, "Track already in database (skipped): %s\n", track);
-				skip = TRUE;
+				skip = true;
 			}
 		}
 		else if (Ctrl->D.active) {	/* Here we did not found the track: Give message and go back and read next track information */
 			GMT_report (GMT, GMT_MSG_NORMAL, "track %s was not found in the database!\n", track);
-			skip = TRUE;
+			skip = true;
 		}
 		else	/* Get here when we wish to add a new track not in the database */
-			skip = FALSE;
+			skip = false;
 
 		if (skip) {	/* Just wind past this segment */
 			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {

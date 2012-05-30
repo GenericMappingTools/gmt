@@ -33,28 +33,28 @@
 
 struct GMTSTITCH_CTRL {
 	struct Out {	/* -> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct C {	/* -C[<file>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} C;
 	struct D {	/* -D[<file>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char *format;
 	} D;
 	struct L {	/* -L[<file>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} L;
 	struct Q {	/* -Q[<file>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Q;
 	struct T {	/* -T<cutoff[unit][/<nn_dist]> */
-		GMT_BOOLEAN active[2];
-		GMT_LONG mode;
+		bool active[2];
+		int mode;
 		double dist[2];
 		char unit;
 	} T;
@@ -69,19 +69,19 @@ struct GMTSTITCH_CTRL {
 #define OPEN	1
 
 struct BUDDY {
-	COUNTER_LARGE id;
-	COUNTER_LARGE orig_id;
-	COUNTER_MEDIUM end_order;
+	uint64_t id;
+	uint64_t orig_id;
+	unsigned int end_order;
 	double dist, next_dist;
 };
 
 struct LINK {
-	COUNTER_LARGE id;
-	COUNTER_LARGE orig_id;
-	COUNTER_LARGE pos;
-	COUNTER_LARGE n;
-	COUNTER_MEDIUM group;
-	GMT_BOOLEAN used;
+	uint64_t id;
+	uint64_t orig_id;
+	uint64_t pos;
+	uint64_t n;
+	unsigned int group;
+	bool used;
 	double x_end[2];
 	double y_end[2];
 	struct BUDDY buddy[2];
@@ -105,7 +105,7 @@ static void Free_gmtstitch_Ctrl (struct GMT_CTRL *GMT, struct GMTSTITCH_CTRL *C)
 	GMT_free (GMT, C);
 }
 
-static GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+static int GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -138,7 +138,7 @@ static GMT_LONG GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTRL *Ctrl, struct GMT_OPTION *options)
+static int GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtstitch and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -146,8 +146,8 @@ static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTR
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG n = 0;
+	unsigned int n_errors = 0, n_files = 0;
+	int n = 0;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -164,28 +164,28 @@ static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTR
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Separate closed from open segments  */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
-				Ctrl->T.active[0] = TRUE;
+				Ctrl->T.active[0] = true;
 				n = sscanf (opt->arg, "%[^/]/%s", A, B);
 				Ctrl->T.mode = GMT_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 				if (n == 2) {
 					Ctrl->T.dist[1] = atof (B);
-					Ctrl->T.active[1] = TRUE;
+					Ctrl->T.active[1] = true;
 				}
 				break;
 			default:	/* Report bad options */
@@ -206,22 +206,22 @@ static GMT_LONG GMT_gmtstitch_parse (struct GMTAPI_CTRL *C, struct GMTSTITCH_CTR
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-static GMT_LONG connect (struct LINK *S, COUNTER_LARGE id, GMT_LONG order, double cutoff, GMT_BOOLEAN nn_check, double nn_dist)
-{	/* Checks if OK to connect this segment to its nearest neighbor and returns TRUE if OK */
+static int connect (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist)
+{	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
-	if (S[S[id].buddy[order].id].used) return (FALSE);		/* Segment has been used already */
-	if (S[id].buddy[order].dist > cutoff) return (FALSE);		/* Exceeds minimum gap */
-	if (!nn_check) return (TRUE);					/* Passed all requirements */
-	if (S[id].buddy[order].next_dist > nn_dist) return (TRUE);	/* Next neighboor is far enough away */
-	return (FALSE);							/* Failed all tests */
+	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
+	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
+	if (!nn_check) return (true);					/* Passed all requirements */
+	if (S[id].buddy[order].next_dist > nn_dist) return (true);	/* Next neighboor is far enough away */
+	return (false);							/* Failed all tests */
 }
 
-static COUNTER_LARGE Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, COUNTER_LARGE out_start, COUNTER_LARGE in_start, COUNTER_LARGE in_end)
+static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
 {
-	COUNTER_LARGE row_in, row_out;
-	COUNTER_MEDIUM col;
-	GMT_LONG inc;
-	GMT_BOOLEAN done = FALSE;
+	uint64_t row_in, row_out;
+	unsigned int col;
+	int inc;
+	bool done = false;
 
 	/* We will copy the records from the out segment from rows in_start up to and including in_end.
 	 * If in_start > in_end then we will end up reversing the order of the records.
@@ -239,21 +239,21 @@ static COUNTER_LARGE Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtstitch_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG nearest_end[2][2], ii, end, end_order, error = 0, d_mode = 0;
-	GMT_LONG io_mode = GMT_WRITE_SET, q_mode = 0;
+	int nearest_end[2][2], ii, end, end_order, error = 0, d_mode = 0;
+	int io_mode = GMT_WRITE_SET, q_mode = 0;
 	
-	GMT_BOOLEAN save_type = FALSE, first, wrap_up = FALSE, done, *skip = NULL;
+	bool save_type = false, first, wrap_up = false, done, *skip = NULL;
 	
-	COUNTER_MEDIUM j, tbl, n_columns, n_qfiles = 0, G;
+	unsigned int j, tbl, n_columns, n_qfiles = 0, G;
 	
-	COUNTER_LARGE dim_tscr[4] = {1, 1, 0, 0};
+	uint64_t dim_tscr[4] = {1, 1, 0, 0};
 	
 	size_t n_id_alloc = GMT_CHUNK, n_seg_alloc[2] = {0, 0}, n_alloc_pts;
 	
-	COUNTER_LARGE n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg, n_steps, n_seg_length;
-	COUNTER_LARGE n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L;
+	uint64_t n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg, n_steps, n_seg_length;
+	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L;
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;
@@ -291,7 +291,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active) {	/* We want to output to go to individual files for each segment */
 		io_mode = GMT_WRITE_SEGMENTS;
 		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtstitch_segment_%ld.txt");
-		if (strstr (Ctrl->D.format, "%c")) save_type = TRUE;
+		if (strstr (Ctrl->D.format, "%c")) save_type = true;
 		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");
 			dim_tscr[0] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
@@ -387,7 +387,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				/* Allocate space for this segment */
 				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;
-				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, TRUE);
+				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, true);
 
 				if (D[GMT_IN]->table[tbl]->segment[seg]->header) T[CLOSED][out_seg]->header = strdup (D[GMT_IN]->table[tbl]->segment[seg]->header);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[tbl]->segment[seg], T[CLOSED][out_seg], 0, 0, np-1);
@@ -399,7 +399,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else if (Ctrl->C.active) {	/* Copy open segment to separate output dataset */
 				/* Allocate space for this segment */
 				T[OPEN][n_open] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Allocate segment structure */
-				GMT_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, TRUE);
+				GMT_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, true);
 				if (D[GMT_IN]->table[tbl]->segment[seg]->header) T[OPEN][n_open]->header = strdup (D[GMT_IN]->table[tbl]->segment[seg]->header);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[tbl]->segment[seg], T[OPEN][n_open], 0, 0, np-1);
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
@@ -441,7 +441,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = 1;
 	}
-	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (wrap_up) {	/* Write out results and return */
 		if (wrap_up == 2) {	/* Write n_open segments to D[OUT] and n_closed to C */
 			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_LINE_SEGMENT *);
@@ -463,13 +463,13 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (GMT_OK);
 	}
 
-	/* Below here, Ctrl->C.active is FALSE since those cases have already been dealt with.  Also T[OPEN] = T[CLOSED] and we already have found out_seg segments. */
+	/* Below here, Ctrl->C.active is false since those cases have already been dealt with.  Also T[OPEN] = T[CLOSED] and we already have found out_seg segments. */
 
 	/* Here we need to do the stitching work.  We already have n_closed polygons in D[GMT_OUT] at this point */
 
 	ns = id;
 	if (ns < n_id_alloc) segment = GMT_memory (GMT, segment, ns, struct LINK);
-	skip = GMT_memory (GMT, NULL, ns, GMT_BOOLEAN);
+	skip = GMT_memory (GMT, NULL, ns, bool);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " closed polygons\n", n_islands);
 
@@ -492,7 +492,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					match = (match == segment[iseg].n) ? 1 : 0;
 					if (match) {
 						GMT_report (GMT, GMT_MSG_NORMAL, "Segments %" PRIu64 " and %" PRIu64 "are duplicates - Segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
-						skip[jseg] = TRUE;
+						skip[jseg] = true;
 					}
 				}
 			}
@@ -566,7 +566,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		sprintf (fmt, "%%s%s%%s%s%%c%s%s%s%s%s%%s%s%%c%s%s%s%%d", s, s, s, GMT->current.setting.format_float_out, s, GMT->current.setting.format_float_out, s, s, s, GMT->current.setting.format_float_out, s);
 
-		GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on table headers on output */
+		GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 		sprintf (buffer, "# segid%sbegin_id%sb_pt%sb_dist%sb_nndist%send_id%se_pt%se_dist%se_nndist", s, s, s, s, s, s, s, s);
 		LNK->table[0]->n_headers = 1;
 		LNK->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
@@ -601,7 +601,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	start_id = n_closed = 0;
-	done = FALSE;
+	done = false;
 	p_dummy_x = p_dummy_y = DBL_MAX;
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Assemble new segments\n");
@@ -612,7 +612,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		 * until we either reappear at the starting point (a closed loop) or we reach an end (i.e.,
 		 * the nearest next endpoint is beyond the separation threshold. */
 
-		done = FALSE;
+		done = false;
 		id = start_id;
 		end_order = n_steps = n_alloc_pts = 0;
 #ifdef DEBUG2
@@ -624,9 +624,9 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", segment[id2].orig_id);
 #endif
 			if (id2 == start_id)	/* Closed polygon, start here */
-				done = TRUE;
+				done = true;
 			if (id2 == id || n_steps > ns) {	/* Not good... */
-				done = TRUE;
+				done = true;
 				n_trouble++;
 			}
 			else {	/* Trace the connection to the next segment */
@@ -641,7 +641,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
 		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Get a new segment structure */
-		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, TRUE);
+		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);
 
 		sprintf (buffer, "Possibly a composite segment; see comments for individual segment headers");
 		T[OPEN][out_seg]->header = strdup (buffer);
@@ -659,8 +659,8 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		p_first_x = p_last_x = p_dummy_x;
 		p_first_y = p_last_y = p_dummy_y;
 		k = out_p = n_seg_length = 0;
-		done = FALSE;
-		first = TRUE;
+		done = false;
+		first = true;
 		do {
 			G = segment[id].group;
 			L = segment[id].pos;
@@ -676,7 +676,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				n_seg_length += n;
 				GMT_report (GMT, GMT_MSG_DEBUG, "Forward Segment no %d-%" PRIu64 " ", G, L);
-				if (n_seg_length > n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts << 1, n_columns, FALSE);
+				if (n_seg_length > n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts << 1, n_columns, false);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, j, np-1);
 				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1];
 				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];
@@ -693,15 +693,15 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				n_seg_length += n;
 				GMT_report (GMT, GMT_MSG_DEBUG, "Reverse Segment %d-%" PRIu64 " ", G, L);
-				if (n_seg_length > n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts << 1, n_columns, FALSE);
+				if (n_seg_length > n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts << 1, n_columns, false);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, np-1-j, 0);
 				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0];
 				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0];
 				if (first) p_first_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1], p_first_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];
 			}
-			first = FALSE;
+			first = false;
 			end_order = !end_order;
-			segment[id].used = TRUE;
+			segment[id].used = true;
 			if (segment[id].buddy[end_order].dist <= Ctrl->T.dist[0] && !segment[segment[id].buddy[end_order].id].used) {
 				/* Not done, trace into the next connecting segment */
 				id2 = segment[id].buddy[end_order].id;
@@ -710,12 +710,12 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				id = id2;
 			}
 			else	/* End of the D[GMT_IN]->table for this segment */
-				done = TRUE;
+				done = true;
 			k++;
 		} while (!done);
 		GMT_report (GMT, GMT_MSG_DEBUG, "\n");
 		GMT_report (GMT, GMT_MSG_NORMAL, "Segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
-		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, FALSE);
+		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, false);
 
 		if (p_first_x == p_last_x && p_first_y == p_last_y) {
 			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename with the C type */
@@ -740,7 +740,7 @@ GMT_LONG GMT_gmtstitch (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		done = (start_id == ns);	/* No more unused segments */
 	}
 
-	if (out_seg > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+	if (out_seg > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);

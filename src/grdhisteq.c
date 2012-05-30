@@ -28,33 +28,33 @@
 
 struct GRDHISTEQ_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct C {	/* -C<n_cells>*/
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM value;
+		bool active;
+		unsigned int value;
 	} C;
 	struct D {	/* -D[<file>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct G {	/* -G<file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct N {	/* -N[<norm>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double norm;
 	} N;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
+		bool active;
 	} Q;
 };
 
 struct	INDEXED_DATA {
 	float x;
-	GMT_LONG i;
+	int i;
 };
 
 struct	CELL {
@@ -67,7 +67,7 @@ void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
@@ -79,7 +79,7 @@ void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -101,7 +101,7 @@ GMT_LONG GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdhisteq and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -110,8 +110,8 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG sval;
+	unsigned int n_errors = 0, n_files = 0;
+	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -119,32 +119,32 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Get # of cells */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				sval = atoi (opt->arg);
 				n_errors += GMT_check_condition (GMT, sval <= 0, "Syntax error -C option: n_cells must be positive\n");
 				Ctrl->C.value = sval;
 				break;
 			case 'D':	/* Dump info to file or stdout */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* Output file for equalized grid */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'N':	/* Get normalized scores */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.norm = atof (opt->arg);
 				break;
 			case 'Q':	/* Use quadratic scaling */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -161,9 +161,9 @@ GMT_LONG GMT_grdhisteq_parse (struct GMTAPI_CTRL *C, struct GRDHISTEQ_CTRL *Ctrl
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-float get_cell (float x, struct CELL *cell, COUNTER_MEDIUM n_cells_m1, COUNTER_MEDIUM last_cell)
+float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned int last_cell)
 {
-	COUNTER_MEDIUM low, high, i;
+	unsigned int low, high, i;
 
 	low = 0;
 	high = n_cells_m1;
@@ -188,14 +188,14 @@ float get_cell (float x, struct CELL *cell, COUNTER_MEDIUM n_cells_m1, COUNTER_M
 			low = i;
 			i = (low + high) / 2;
 		}
-	} while (TRUE);
+	} while (true);
 	return (0.0);	/* Cannot get here - just used to quiet compiler */
 }
 
-GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, COUNTER_MEDIUM n_cells, GMT_BOOLEAN quadratic, GMT_BOOLEAN dump_intervals)
+int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals)
 {	/* Do basic histogram equalization */
-	COUNTER_LARGE i, j, nxy;
-	COUNTER_MEDIUM last_cell, n_cells_m1 = 0, current_cell, pad[4];
+	uint64_t i, j, nxy;
+	unsigned int last_cell, n_cells_m1 = 0, current_cell, pad[4];
 	double delta_cell, target, out[3];
 	struct CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
@@ -204,9 +204,9 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 
 	/* Sort the data and find the division points */
 
-	GMT_memcpy (pad, Grid->header->pad, 4, GMT_LONG);	/* Save the original pad */
+	GMT_memcpy (pad, Grid->header->pad, 4, int);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
-	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, TRUE); /* Must keep original if readonly */
+	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, true); /* Must keep original if readonly */
 	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMTAPI_FLOAT);
 	
 	nxy = Grid->header->nm;
@@ -246,7 +246,7 @@ GMT_LONG do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char
 	
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
-		GMT_free_grid (GMT, &Orig, TRUE);
+		GMT_free_grid (GMT, &Orig, true);
 	}
 
 	GMT_grd_pad_on (GMT, Grid, pad);	/* Reinstate the original pad */
@@ -268,10 +268,10 @@ int compare_indices (const void *point_1, const void *point_2)
 	return (0);
 }
 
-GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
+int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm)
 {	/* Make an output grid file with standard normal scores */
-	COUNTER_MEDIUM row, col;
-	COUNTER_LARGE i = 0, j = 0, ij, nxy;
+	unsigned int row, col;
+	uint64_t i = 0, j = 0, ij, nxy;
 	double dnxy;
 	struct INDEXED_DATA *indexed_data = NULL;
 
@@ -318,9 +318,9 @@ GMT_LONG do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdhisteq_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdhisteq (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE;
+	bool error = false;
 
 	double wesn[4];
 	
@@ -354,14 +354,14 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-	(void)GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array */
-	GMT_grd_init (GMT, Out->header, options, TRUE);
+	(void)GMT_set_outgrid (GMT, Grid, &Out);	/* true if input is a read-only array */
+	GMT_grd_init (GMT, Out->header, options, true);
 
 	if (Ctrl->N.active)
 		error = do_gaussian_scores (GMT, Out, Ctrl->N.norm);
 	else {
 		if (Ctrl->D.active) {	/* Initialize file/stdout for table output */
-			GMT_LONG out_ID;
+			int out_ID;
 			if (Ctrl->D.file && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->D.file)) == GMTAPI_NOTSET) {
 				Return (EXIT_FAILURE);
 			}
@@ -376,7 +376,7 @@ GMT_LONG GMT_grdhisteq (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		if ((error = do_hist_equalization (GMT, Out, Ctrl->G.file, Ctrl->C.value, Ctrl->Q.active, Ctrl->D.active))) Return (EXIT_FAILURE);	/* Read error */
-		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was TRUE */
+		/* do_hist_equalization will also call GMT_End_IO if Ctrl->D.active was true */
 	}
 	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);

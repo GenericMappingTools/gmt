@@ -35,35 +35,35 @@
 
 struct SAMPLE1D_CTRL {
 	struct Out {	/* -> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct A {	/* -A[m|p] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} A;
 	struct F {	/* -Fl|a|c */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} F;
 	struct I {	/* -I<inc>[d|e|k||M|n|c|C] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double inc;
 		char unit;
 	} I;
 	struct N {	/* -N<knotfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} N;
 	struct S {	/* -S<xstart>[/<xstop>] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double start, stop;
 	} S;
 	struct T {	/* -T<time_col> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM col;
+		bool active;
+		unsigned int col;
 	} T;
 };
 
@@ -72,7 +72,7 @@ void *New_sample1d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	C = GMT_memory (GMT, NULL, 1, struct SAMPLE1D_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.mode = GMT->current.setting.interpolant;
 		
 	return (C);
@@ -85,7 +85,7 @@ void Free_sample1d_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 {
 	char type[3] = {'l', 'a', 'c'};
 	struct GMT_CTRL *GMT = C->GMT;
@@ -124,7 +124,7 @@ GMT_LONG GMT_sample1d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sample1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -132,8 +132,8 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG col;
+	unsigned int n_errors = 0, n_files = 0;
+	int col;
 	size_t len;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
@@ -151,14 +151,14 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change spherical sampling mode (but cannot turn it off) */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'm': Ctrl->A.mode = 1; break;
 					case 'p': Ctrl->A.mode = 2; break;
 				}
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
 						Ctrl->F.mode = 0;
@@ -178,7 +178,7 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				Ctrl->I.inc = atof (opt->arg);
 				len = strlen (opt->arg) - 1;
 				if (strchr ("defkMn", opt->arg[len])) {
@@ -188,10 +188,10 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 				break;
 			case 'N':
 				Ctrl->N.file = strdup (opt->arg);
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (strchr (opt->arg, '/')) {	/* Got start/stop */
 					Ctrl->S.mode = 1;
 					sscanf (opt->arg, "%[^/]/%s", A, B);
@@ -202,7 +202,7 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 					GMT_scanf_arg (GMT, opt->arg, GMT_IS_UNKNOWN, &Ctrl->S.start);
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				col = atoi (opt->arg);
 				n_errors += GMT_check_condition (GMT, col < 0, "Syntax error -T option: Column number cannot be negative\n");
 				Ctrl->T.col = col;
@@ -227,16 +227,16 @@ GMT_LONG GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sample1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM tbl, col;
-	GMT_BOOLEAN error = FALSE, spatial = FALSE;
-	GMT_LONG result;
+	unsigned int tbl, col;
+	bool error = false, spatial = false;
+	int result;
 	
 	unsigned char *nan_flag = NULL;
 	
 	size_t m_alloc;
-	COUNTER_LARGE k, row, seg, m = 0, m_supplied = 0;
+	uint64_t k, row, seg, m = 0, m_supplied = 0;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double tt, low_t, high_t, last_t, inc_degrees = 0.0, *lon = NULL, *lat = NULL;
@@ -266,8 +266,8 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
 	GMT->current.setting.interpolant = Ctrl->F.mode;
-	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = FALSE;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
-	GMT->current.io.skip_if_NaN[Ctrl->T.col] = TRUE;				/* ... But disallow NaN in "time" column */
+	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
+	GMT->current.io.skip_if_NaN[Ctrl->T.col] = true;				/* ... But disallow NaN in "time" column */
 	
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
@@ -298,7 +298,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->I.mode) GMT_init_distaz (GMT, Ctrl->I.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 
 	if (Ctrl->I.active && Ctrl->I.mode == INT_2D) {
-		spatial = TRUE;
+		spatial = true;
 		inc_degrees = (Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Convert increment to spherical degrees */
 	}
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
@@ -312,12 +312,12 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, unsigned char);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
-		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, FALSE);
+		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			GMT_memset (nan_flag, Din->n_columns, unsigned char);
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
-			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = TRUE;
+			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = true;
 			if (spatial) {	/* Need distance for spatial interpolation */
 				dist_in = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, 1.0, 2);
 				lon = GMT_memory (GMT, NULL, S->n_rows, double);
@@ -373,7 +373,7 @@ GMT_LONG GMT_sample1d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (fabs (t_out[m-1]-last_t) < GMT_SMALL) t_out[m-1] = last_t;	/* Fix roundoff */
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
-			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, FALSE);	/* Readjust the row allocation */
+			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
 			if (spatial) {	/* Use resampled path coordinates */
 				GMT_memcpy (Sout->coord[GMT_X], lon, m, double);
 				GMT_memcpy (Sout->coord[GMT_Y], lat, m, double);

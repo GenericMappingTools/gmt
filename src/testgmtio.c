@@ -27,7 +27,7 @@
 #include "gmt.h"
 
 int main (int argc, char *argv[]) {
-	GMT_LONG n_fields = 0, mode = 0,  error = 0;
+	int n_fields = 0, mode = 0,  error = 0;
 	double *in = NULL;
 	struct GMT_OPTION *options = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
@@ -98,7 +98,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stdout, "D: ");
 		}
 		GMT_Put_Record (API, mode, in);
-	} while (TRUE);
+	} while (true);
 	
 	fprintf (stdout, "B: --- End of All Files ---\n");
 	if ((error = GMT_End_IO (API, GMT_IN,  0)) != GMT_OK) exit (error);				/* Disables further data input */

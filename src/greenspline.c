@@ -48,56 +48,56 @@ double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, 
 
 struct GREENSPLINE_CTRL {
 	struct A {	/* -A<gradientfile> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
+		bool active;
+		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
 	struct C {	/* -C<cutoff> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 		char *file;
 	} C;
 	struct D {	/* -D<distflag> */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;	/* Can be negative */
+		bool active;
+		int mode;	/* Can be negative */
 	} D;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy[/dz]] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[3];
 	} I;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct N {	/* -N<outputnode_file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} N;
 	struct Q {	/* -Qdaz */
-		GMT_BOOLEAN active;
+		bool active;
 		double az;
 		double dir[3];
 	} Q;
 	struct R3 {	/* -Rxmin/xmax[/ymin/ymax[/zmin/zmaz]] | -Ggridfile */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;		/* TRUE if settings came from a grid file */
-		COUNTER_MEDIUM dimension;	/* 1, 2, or 3 */
-		COUNTER_MEDIUM offset;	/* 0 or 1 */
+		bool active;
+		bool mode;		/* true if settings came from a grid file */
+		unsigned int dimension;	/* 1, 2, or 3 */
+		unsigned int offset;	/* 0 or 1 */
 		double range[6];	/* Min/max for each dimension */
 		double inc[2];		/* xinc/yinc when -Rgridfile was given*/
 	} R3;
 	struct S {	/* -S<mode>[/args] */
-		GMT_BOOLEAN active, fast;
-		COUNTER_MEDIUM mode;
+		bool active, fast;
+		unsigned int mode;
 		double value[2];
 		double rval[2];
 		char *arg;
 	} S;
 	struct T {	/* -T<mask_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} T;
 };
@@ -131,12 +131,12 @@ struct GREENSPLINE_CTRL {
 #define N_X 	100001
 
 struct ZGRID {
-	COUNTER_MEDIUM nz;
+	unsigned int nz;
 	double z_min, z_max, z_inc;
 };
 
 #ifdef DEBUG
-GMT_BOOLEAN TEST = FALSE;	/* Global variable used for undocumented testing [under -DDEBUG only] */
+bool TEST = false;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 #endif
 
 void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -144,7 +144,7 @@ void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct GREENSPLINE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->S.mode = SANDWELL_1987_2D;
 	C->S.rval[0] = -1.0;	C->S.rval[1] = 1.0;
 	return (C);
@@ -161,7 +161,7 @@ void Free_greenspline_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_greenspline_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -233,7 +233,7 @@ GMT_LONG GMT_greenspline_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to greenspline and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -241,8 +241,8 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_items;
-	COUNTER_MEDIUM n_errors = 0, dimension, k;
+	int n_items;
+	unsigned int n_errors = 0, dimension, k;
 	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -254,7 +254,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				break;
 
 			case 'R':	/* Normally processed internally but must be handled separately since it can take 1,2,3 dimensions */
-				GMT->common.R.active = TRUE;
+				GMT->common.R.active = true;
 				Ctrl->R3.dimension = 1;	/* At least */
 
 				if (opt->arg[0] == 'g' && opt->arg[1] == '\0') {	/* Got -Rg */
@@ -277,7 +277,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 					Ctrl->R3.inc[GMT_X] = G->header->inc[GMT_X];	Ctrl->R3.inc[GMT_Y] = G->header->inc[GMT_Y];
 					Ctrl->R3.offset = G->header->registration;
 					Ctrl->R3.dimension = 2;
-					Ctrl->R3.mode = TRUE;
+					Ctrl->R3.mode = true;
 					if (GMT_Destroy_Data (C, GMT_ALLOCATED, &G) != GMT_OK) {
 						return (C->error);
 					}
@@ -306,16 +306,16 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Gradient data */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				k = 0;
 				if (strchr (opt->arg, ',')) {	/* Specified a particular format with -A<mode>,<file> */
-					Ctrl->A.mode = (GMT_LONG)(opt->arg[0] - '0');
+					Ctrl->A.mode = (int)(opt->arg[0] - '0');
 					k = 2;
 				}
 				Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Solve by SVD */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (strchr (opt->arg, '/')) {
 					char tmp[GMT_BUFSIZ];
 					sscanf (opt->arg, "%lf/%s", &Ctrl->C.value, tmp);
@@ -325,15 +325,15 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 					Ctrl->C.value = atof (opt->arg);
 				break;
 			case 'D':	/* Distance mode */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now it is -1 */
 				break;
 			case 'G':	/* Output file */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Table or grid spacings */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				k = GMT_getincn (GMT, opt->arg, Ctrl->I.inc, 3);
 				if (k < 1) {
 					GMT_inc_syntax (GMT, 'I', 1);
@@ -343,14 +343,14 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				if (Ctrl->I.inc[GMT_Z] == 0.0) Ctrl->I.inc[GMT_Z] = Ctrl->I.inc[GMT_X];
 				break;
 			case 'L':	/* Leave trend alone */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Output locations */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Directional derivative */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
 					if (n_items != 3) {
@@ -391,7 +391,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 						break;
 					case 'Q':
 						Ctrl->S.mode = WESSEL_BECKER_2008;
-						Ctrl->S.fast = TRUE; 
+						Ctrl->S.fast = true; 
 						if (strchr (opt->arg, '/')) {
 							n_items = sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1], &Ctrl->S.rval[0], &Ctrl->S.rval[1]);
 							if (n_items == 2) {
@@ -418,12 +418,12 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 				}
 				break;
 			case 'T':	/* Input mask grid */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.file = strdup (opt->arg);
 				break;
 #ifdef DEBUG
 			case '+':	/* Turn on TEST mode */
-				TEST = TRUE;
+				TEST = true;
 				break;
 #endif
 			default:	/* Report bad options */
@@ -439,7 +439,7 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 		if (!Ctrl->I.active) {	/* -I was not set separately; set indirectly */
 			Ctrl->I.inc[GMT_X] = Ctrl->R3.inc[GMT_X];
 			Ctrl->I.inc[GMT_Y] = Ctrl->R3.inc[GMT_Y];
-			Ctrl->I.active = TRUE;
+			Ctrl->I.active = true;
 		}
 		/* Here, -r means toggle the grids registration */
 		GMT->common.r.active = (GMT->common.r.active) ? !Ctrl->R3.offset : Ctrl->R3.offset;
@@ -465,9 +465,9 @@ GMT_LONG GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, GMT_LONG N, double *zz, double *gg)
+void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, int N, double *zz, double *gg)
 {
-	GMT_LONG i;
+	int i;
 	double x, dx, dy, y, t, ry, rdy;
 	double min_y, max_y, min_dy, max_dy;
 	
@@ -702,7 +702,7 @@ double gradspline2d_Parker (struct GMT_CTRL *GMT, double x, double par[], double
 
 double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) normalized to 0-1 */
-	COUNTER_MEDIUM n;
+	unsigned int n;
 	double z[2], pq[4];
 
 	if (doubleAlmostEqual(x, 1.0))
@@ -725,7 +725,7 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], dou
 
 double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], double *G)
 {	/* g = -M_PI * (v+1)*[x*Pv(-x)+Pv+1(-x)]/(sin (v*x)*sin(theta)) - 1/(1-x), normalized to 0-1 */
-	COUNTER_MEDIUM n;
+	unsigned int n;
 	double z[2], v1[2], pq[4], s;
 	
 	if (x == +1.0 || x == -1.0) return (0.0);
@@ -759,7 +759,7 @@ double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[],
 
 double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], double *y)
 {
-	GMT_LONG k;
+	int k;
 	double f, f0, df;
 	
 	f = (x - par[10]) * par[9];	/* Floating point index */
@@ -780,13 +780,13 @@ double gradspline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double
 	return (spline2d_lookup (GMT, x, par, y));
 }
 
-void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z, double *g, GMT_LONG grad)
+void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z, double *g, int grad)
 {
-	GMT_LONG i, nx;
+	int i, nx;
 	double x;
 #ifdef DUMP
 	FILE *fp = NULL;
-	COUNTER_LARGE n_out;
+	uint64_t n_out;
 	double out[3];
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (grad) ? 3 : 2;
@@ -887,10 +887,10 @@ double gradspline3d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
  * coeff[6]:	The normalizing scale for the detrended data
  */
 
-void do_normalization_1d (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *coeff)
+void do_normalization_1d (double **X, double *obs, uint64_t n, unsigned int mode, double *coeff)
 {	/* mode == 1 norm w; mode == 2: also remove linear trend, norm & 4: also normalize result by range */
 
-	COUNTER_LARGE i;
+	uint64_t i;
 	double d;
 	
 	GMT_memset (coeff, 5, double);
@@ -934,10 +934,10 @@ void do_normalization_1d (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDI
 
 }
 
-void do_normalization (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM mode, double *coeff)
+void do_normalization (double **X, double *obs, uint64_t n, unsigned int mode, double *coeff)
 {	/* mode == 1 norm z; mode == 2: also remove plane, norm & 4: also normalize result by range */
 
-	COUNTER_LARGE i;
+	uint64_t i;
 	double d;
 	
 	GMT_memset (coeff, 5, double);
@@ -994,7 +994,7 @@ void do_normalization (double **X, double *obs, COUNTER_LARGE n, COUNTER_MEDIUM 
 
 }
 
-double undo_normalization (double *X, double w_norm, COUNTER_MEDIUM mode, double *coeff)
+double undo_normalization (double *X, double w_norm, unsigned int mode, double *coeff)
 {
 	double w;
 	w = w_norm;
@@ -1004,7 +1004,7 @@ double undo_normalization (double *X, double w_norm, COUNTER_MEDIUM mode, double
 	return (w);
 }
 
-double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, COUNTER_MEDIUM dim)
+double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, unsigned int dim)
 {
 	double r = 0.0;
 	/* Get distance between the two points */
@@ -1023,14 +1023,14 @@ double get_radius (struct GMT_CTRL *GMT, double *X0, double *X1, COUNTER_MEDIUM 
 	return (r);
 }
 
-double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, COUNTER_MEDIUM dim, GMT_BOOLEAN baz)
+double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, unsigned int dim, bool baz)
 {
 	/* D, the directional cosines of the observed gradient:
 	 * X0: Observation point.
 	 * X1: Prediction point.
 	 * Compute N, the direction cosine of X1-X2, then C = D dot N.
 	 */
-	GMT_LONG ii;
+	int ii;
 	double az, C = 0.0, N[3];
 	
 	switch (dim) {
@@ -1055,13 +1055,13 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, C
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_greenspline_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_LARGE row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii;
-	COUNTER_MEDIUM dimension = 0, normalize = 1, unit = 0;
+	uint64_t row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii;
+	unsigned int dimension = 0, normalize = 1, unit = 0;
 	size_t old_n_alloc, n_alloc;
-	GMT_LONG error, out_ID, way;
-	GMT_BOOLEAN new_grid = FALSE;
+	int error, out_ID, way;
+	bool new_grid = false;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1201,7 +1201,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, X[k], dimension, double);
 			obs = GMT_memory (GMT, obs, n_alloc, double);
 		}
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -1330,7 +1330,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; otherwise Out is just a pointer to Grid */
+		new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
 		nxy = n_ok = Grid->header->size;
 		for (ij = 0; ij < nxy; ij++) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 	}
@@ -1458,7 +1458,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			par[2] = (M_PI / par[4]) - M_LOG_2;
 			par[6] = 1.0 / (par[3] - par[2]);
 			if (Ctrl->S.fast) {
-				GMT_LONG nx;
+				int nx;
 				par[7] = Ctrl->S.value[1];
 				par[8] = (Ctrl->S.rval[1] - Ctrl->S.rval[0]) / (par[7] - 1.0);
 				par[9] = 1.0 / par[8];
@@ -1522,24 +1522,24 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					/* Get D, the directional cosine between the two points */
 					/* Then get C = GMT_dot3v (GMT, D, dataD); */
 					/* A[ji] = dGdr (r, par, WB_g) * C; */
-					C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, FALSE);
+					C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
 					grad = dGdr (GMT, r, par, WB_g);
 					A[ji] = grad * C;
 				}
 			}
 			else if (i > n) {	/* Remaining gradient constraints */
 				if (ij == ji) continue;	/* Diagonal gradient terms are zero */
-				C = get_dircosine (GMT, D[j-n], X[i], X[j], dimension, TRUE);
+				C = get_dircosine (GMT, D[j-n], X[i], X[j], dimension, true);
 				grad = dGdr (GMT, r, par, WB_g);
 				A[ij] = grad * C;
-				C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, FALSE);
+				C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
 				A[ji] = grad * C;
 			}
 		}
 	}
 
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
-		GMT_LONG n_use, error;
+		int n_use, error;
 		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0;
 		
 		GMT_report (GMT, GMT_MSG_NORMAL, "Solve linear equations by SVD ");
@@ -1576,7 +1576,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, b);
 	}
 	else {				/* Gauss-Jordan elimination */
-		GMT_LONG error;
+		int error;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Solve linear equations by Gauss-Jordan elimination\n");
 		if ((error = GMT_gaussjordan (GMT, A, nm, nm, obs, 1, 1))) Return (error);
 	}
@@ -1606,7 +1606,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (r < Ctrl->S.rval[0]) Ctrl->S.rval[0] = r;
 					if (r > Ctrl->S.rval[1]) Ctrl->S.rval[1] = r;
 					if (Ctrl->Q.active) {
-						C = get_dircosine (GMT, Ctrl->Q.dir, out, X[p], dimension, FALSE);
+						C = get_dircosine (GMT, Ctrl->Q.dir, out, X[p], dimension, false);
 						part = dGdr (GMT, r, par, WB_z) * C;
 					}
 					else
@@ -1626,8 +1626,8 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_fclose (GMT, fp);
 	}
 	else {
-		COUNTER_LARGE nz_off, nxy;
-		COUNTER_MEDIUM col, row, layer;
+		uint64_t nz_off, nxy;
+		unsigned int col, row, layer;
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
@@ -1665,7 +1665,7 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if (r < Ctrl->S.rval[0]) Ctrl->S.rval[0] = r;
 						if (r > Ctrl->S.rval[1]) Ctrl->S.rval[1] = r;
 						if (Ctrl->Q.active) {
-							C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, FALSE);
+							C = get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
 							part = dGdr (GMT, r, par, WB_z) * C;
 						}
 						else
@@ -1681,14 +1681,14 @@ GMT_LONG GMT_greenspline (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 		}
 		if (dimension == 2) {
-			GMT_grd_init (GMT, Out->header, options, TRUE);
+			GMT_grd_init (GMT, Out->header, options, true);
 			sprintf (Out->header->remark, "Method: %s (%s)", method[Ctrl->S.mode], Ctrl->S.arg);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 		else
-			GMT_free_grid (GMT, &Grid, FALSE);
+			GMT_free_grid (GMT, &Grid, false);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}

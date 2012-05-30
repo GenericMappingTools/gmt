@@ -65,32 +65,32 @@
 #include "spotter.h"
 
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct E {	/* -E[<value>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} E;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;	/* out mode (TRUE if total reconstruction rotations) */
+		bool active;
+		bool mode;	/* out mode (true if total reconstruction rotations) */
 	} F;
 	struct G {	/* -G */
-		GMT_BOOLEAN active;
+		bool active;
 	} G;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 };
 
@@ -99,10 +99,10 @@ void *New_rotconverter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	
 	C = GMT_memory (GMT, NULL, 1, struct ROTCONVERTER_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->E.value = 0.5;	/* To get half-angles */
-	C->F.mode = TRUE;	/* Default format is total reconstruction rotation poles for both input and output */
+	C->F.mode = true;	/* Default format is total reconstruction rotation poles for both input and output */
 	return (C);
 }
 
@@ -111,7 +111,7 @@ void Free_rotconverter_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) 
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_rotconverter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_rotconverter_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -140,7 +140,7 @@ GMT_LONG GMT_rotconverter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to rotconverter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -148,7 +148,7 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -161,19 +161,19 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 			/* Supplemental parameters */
 			
 			case 'A':	/* Angle, not time */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'D':	/* Dateline */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				break;
 
 			case 'E':	/* Convert to total reconstruction rotation poles instead */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				if (opt->arg[0]) Ctrl->E.value = atof (opt->arg);
 				break;
 
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Must specify -F<out>\n");
 					n_errors++;
@@ -185,10 +185,10 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
 #endif
 					case 't':
-						Ctrl->F.mode = TRUE;
+						Ctrl->F.mode = true;
 						break;
 					case 's':
-						Ctrl->F.mode = FALSE;
+						Ctrl->F.mode = false;
 						break;
 					default:
 						GMT_report (GMT, GMT_MSG_FATAL, "Error: Must specify t|s\n");
@@ -198,19 +198,19 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 				break;
 
 			case 'G':	/* GPlates output format */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				break;
 
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 
 			case 'S':	/* Ensure all poles reported are in southern hemisphere */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 
 			case 'T':	/* Transpose the final result (i.e., change sign of rotation) */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6':
@@ -233,19 +233,19 @@ GMT_LONG GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_rotconverter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_rotconverter (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct EULER *a = NULL, *b = NULL;	/* Pointer to arrays of stage poles */
 
-	COUNTER_MEDIUM col, k, stage;	/* Misc. counters */
-	COUNTER_MEDIUM n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
-	GMT_LONG last_sign;
-	GMT_BOOLEAN confusion = FALSE, online_stage = FALSE;
-	GMT_BOOLEAN error = FALSE;		/* Set to TRUE if arguments are inconsistent */
-	GMT_BOOLEAN first = TRUE;		/* TRUE for first input file */
-	GMT_BOOLEAN online_rot = FALSE;	/* TRUE if we gave a rotation on the commandline rather than file name */
-	GMT_BOOLEAN no_time = FALSE;	/* TRUE if we gave a rotation on the commandline as lon/lat/angle only */
+	unsigned int col, k, stage;	/* Misc. counters */
+	unsigned int n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
+	int last_sign;
+	bool confusion = false, online_stage = false;
+	bool error = false;		/* Set to true if arguments are inconsistent */
+	bool first = true;		/* true for first input file */
+	bool online_rot = false;	/* true if we gave a rotation on the commandline rather than file name */
+	bool no_time = false;	/* true if we gave a rotation on the commandline as lon/lat/angle only */
 
 	double zero = 0.0;		/* Needed to pass to spotter_init */
 	double lon = 0.0, lat = 0.0;	/* Pole location for online rotations */
@@ -286,7 +286,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			case GMTAPI_OPT_SYNOPSIS:
 				opt->arg = strdup ("-");
 				opt->option = GMTAPI_OPT_INFILE;
-				confusion = TRUE;	/* Since we don't know if just a single - was given */
+				confusion = true;	/* Since we don't know if just a single - was given */
 				break;
 			default:	/* Do nothing */
 				break;
@@ -328,7 +328,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (spotter_GPlates_pair (opt->arg)) {	/* A GPlates plate pair to look up in the rotation table */
-			online_rot = FALSE;
+			online_rot = false;
 		}
 		else if (GMT_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
@@ -340,7 +340,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				k = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &lon, &lat, &t0, &t1, &angle);
 				if (k == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
-				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = TRUE;	/* Quick lon/lat/angle total reconstruction rotation, no time */
+				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = true;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
 					Return (EXIT_FAILURE);
@@ -349,12 +349,12 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: Online rotation has zero opening angle\n");
 					Return (EXIT_FAILURE);
 				}
-				online_rot = TRUE;
+				online_rot = true;
 				online_stage = (k == 5);
 			}
 		}
 		else
-			online_rot = FALSE;
+			online_rot = false;
 
 		if (first) {	/* First time loading a rotation model */
 			if (online_rot) {
@@ -364,10 +364,10 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				a[0].t_start = t0;	a[0].t_stop = t1;
 				a[0].duration = t0 - t1;
 				a[0].omega = angle / a[0].duration;
-				if (online_stage) spotter_stages_to_total (GMT, a, n_a, TRUE, TRUE);
+				if (online_stage) spotter_stages_to_total (GMT, a, n_a, true, true);
 			}
 			else
-				n_a = spotter_init (GMT, opt->arg, &a, FALSE, TRUE, FALSE, &zero);	/* Return total reconstruction rotations */
+				n_a = spotter_init (GMT, opt->arg, &a, false, true, false, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
 			if (last_sign == -1) {	/* Leading - sign, simply reverse the rotation angles */
 				for (stage = 0; stage < n_a; stage++) {
@@ -376,7 +376,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				last_sign = +1;
 			}
-			first = FALSE;
+			first = false;
 		}
 		else {			/* For additional times, load a second model and add/subtract them */
 			if (online_rot) {
@@ -386,10 +386,10 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				b[0].t_start = t0;	b[0].t_stop = t1;
 				b[0].duration = t0 - t1;
 				b[0].omega = angle / b[0].duration;
-				if (online_stage) spotter_stages_to_total (GMT, b, n_b, TRUE, TRUE);
+				if (online_stage) spotter_stages_to_total (GMT, b, n_b, true, true);
 			}
 			else
-				n_b = spotter_init (GMT, opt->arg, &b, FALSE, TRUE, FALSE, &zero);	/* Return total reconstruction rotations */
+				n_b = spotter_init (GMT, opt->arg, &b, false, true, false, &zero);	/* Return total reconstruction rotations */
 			zero = 0.0;
 			spotter_add_rotations (GMT, a, n_a, b, last_sign * n_b, &p, &n_p);		/* Add the two total reconstruction rotations sets, returns total reconstruction rotations in p */
 			GMT_free (GMT, a);
@@ -424,7 +424,7 @@ GMT_LONG GMT_rotconverter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	else if (Ctrl->F.mode)		/* Easy, simply output what we've got without a header */
 		k = 0;	/* Do nothing here really */
 	else {	/* Convert total reconstruction to stages before output */
-		spotter_total_to_stages (GMT, a, n_a, TRUE, TRUE);				/* To ensure we have the right kind of poles for output */
+		spotter_total_to_stages (GMT, a, n_a, true, true);				/* To ensure we have the right kind of poles for output */
 		printf (record, "#longitude%slatitude%s%s%s%s%sangle(deg)\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, start_text[Ctrl->A.active], GMT->current.setting.io_col_separator, end_text[Ctrl->A.active], GMT->current.setting.io_col_separator);
 	}
 	if (GMT->current.io.io_header[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TEXT, record);

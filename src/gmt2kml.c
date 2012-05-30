@@ -28,8 +28,8 @@
  
 #include "gmt.h"
 
-GMT_LONG gmt_parse_R_option (struct GMT_CTRL *C, char *item);
-void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, double value, double *rgb);
+int gmt_parse_R_option (struct GMT_CTRL *C, char *item);
+void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, double value, double *rgb);
 
 #define POINT			0
 #define EVENT			1
@@ -65,67 +65,67 @@ struct EXT_COL {
 struct GMT2KML_CTRL {
 	double t_transp;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN get_alt;
-		COUNTER_MEDIUM mode;
+		bool active;
+		bool get_alt;
+		unsigned int mode;
 		double scale;
 		double altitude;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} C;
 	struct D {	/* -D<descriptfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 	} E;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		struct GMT_FILL fill[2];
 	} G;
 	struct I {	/* -I<icon> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n_cols;
+		bool active;
+		unsigned int n_cols;
 		struct EXT_COL *ext;
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		char *fmt;
 	} N;
 	struct R2 {	/* -R */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN automatic;
+		bool active;
+		bool automatic;
 	} R2;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		double scale[2];
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *title;
 		char *folder;
 	} T;
 	struct W {	/* -W<pen> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN invisible;
-		GMT_BOOLEAN open;
+		bool active;
+		bool invisible;
+		bool open;
 		double min[3], max[3];
 	} Z;
 };
@@ -135,7 +135,7 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct GMT2KML_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.mode = KML_GROUND;
 	C->A.scale = 1.0;
@@ -163,7 +163,7 @@ void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -236,7 +236,7 @@ GMT_LONG GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmt2kml and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -245,7 +245,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, pos = 0, k, n_files = 0;
+	unsigned int n_errors = 0, pos = 0, k, n_files = 0;
 	size_t n_alloc = 0;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ], T[4][GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -262,13 +262,13 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Altitude mode */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				switch (opt->arg[1]) {
 					case 'x':
 						Ctrl->A.scale = atof (&opt->arg[2]);
-						Ctrl->A.get_alt = TRUE;
+						Ctrl->A.get_alt = true;
 					case '\0':
-						Ctrl->A.get_alt = TRUE;
+						Ctrl->A.get_alt = true;
 						break;
 					default:
 						Ctrl->A.altitude = atof (&opt->arg[1]);
@@ -291,18 +291,18 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				}
 				break;
 			case 'C':	/* Color table */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Description file */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Extrude feature down to the ground*/
-			 	Ctrl->E.active = TRUE;
+			 	Ctrl->E.active = true;
 				break;
 			case 'F':	/* Feature type */
-		 		Ctrl->F.active = TRUE;
+		 		Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 's':
 						Ctrl->F.mode = POINT;
@@ -329,14 +329,14 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				switch (opt->arg[0]) {
 					case 'f':	/* Symbol/polygon color fill */
 						if (opt->arg[1] == '-')
-				 			Ctrl->G.active[F_ID] = TRUE;
+				 			Ctrl->G.active[F_ID] = true;
 						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[F_ID])) {
 							GMT_fill_syntax (GMT, 'G', "(-Gf or -Gn)");
 							n_errors++;
 						}
 						break;
 					case 'n':	/* Label name color */
-		 				Ctrl->G.active[N_ID] = TRUE;
+		 				Ctrl->G.active[N_ID] = true;
 						if (opt->arg[1] == '-')
 							Ctrl->t_transp = 0.0;
 						else if (!opt->arg[1] || GMT_getfill (GMT, &opt->arg[1], &Ctrl->G.fill[N_ID])) {
@@ -351,7 +351,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				}
 				break;
 			case 'I':	/* Custom icon */
-	 			Ctrl->I.active = TRUE;
+	 			Ctrl->I.active = true;
 				free (Ctrl->I.file);
 				if (opt->arg[0] == '+')
 					sprintf (buffer, "http://maps.google.com/mapfiles/kml/%s", &opt->arg[1]);
@@ -360,7 +360,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				Ctrl->I.file = strdup (buffer);
 				break;
 			case 'L':	/* Extended data */
- 				Ctrl->L.active = TRUE;
+ 				Ctrl->L.active = true;
 				pos = Ctrl->L.n_cols = 0;
 				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
 					for (k = 0; p[k] && p[k] != ':'; k++);	/* Find position of colon */
@@ -371,7 +371,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				}
 				break;
 			case 'N':	/* Feature label */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				if (opt->arg[0] == '+') {	/* Special ASCII labelled input file */
 					Ctrl->N.mode = GET_LABEL;
 				}
@@ -385,14 +385,14 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				}
 				break;
 			case 'R':	/* Region setting */
-				Ctrl->R2.active = TRUE;
+				Ctrl->R2.active = true;
 				if (opt->arg[0] == 'a')	/* Get args from data domain */
-					Ctrl->R2.automatic = TRUE;
+					Ctrl->R2.automatic = true;
 				else if (opt->arg[0])
 					n_errors += gmt_parse_R_option (GMT, opt->arg);
 				break;
 			case 'S':	/* Scale for symbol or text */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (opt->arg[0] == 'f')
 					Ctrl->S.scale[F_ID] = atof (&opt->arg[1]);
 				else if (opt->arg[0] == 'n')
@@ -403,7 +403,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				}
 				break;
 			case 'T':	/* Title [and folder] */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if ((c = strchr (opt->arg, '/'))) {	/* Got both title and folder */
 					if (c[1]) Ctrl->T.folder = strdup (&c[1]);
 					*c = '\0';
@@ -413,7 +413,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				else if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
 				break;
 			case 'W':	/* Pen attributes */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				k = 0;
 				if (opt->arg[k] == '-') {Ctrl->W.mode = 1; k++;}
 				if (opt->arg[k] == '+') {Ctrl->W.mode = 2; k++;}
@@ -425,7 +425,7 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 				}
 				break;
 			case 'Z':	/* Visibility control */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				pos = 0;
 				while ((GMT_strtok (&opt->arg[1], "+", &pos, p))) {
 				switch (p[0]) {
@@ -451,10 +451,10 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 						Ctrl->Z.min[FADE] = atof (T[0]);	Ctrl->Z.max[FADE] = atof (T[1]);
 						break;
 					case 'v':
-						Ctrl->Z.invisible = TRUE;
+						Ctrl->Z.invisible = true;
 						break;
 					case 'o':
-						Ctrl->Z.open = TRUE;
+						Ctrl->Z.open = true;
 						break;
 					default:
 						GMT_message (GMT, "-Z unrecognized modifier +%c\n", p[0]);
@@ -481,21 +481,21 @@ GMT_LONG GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
+int check_lon_lat (struct GMT_CTRL *GMT, double *lon, double *lat)
 {
-	if (*lat < GMT->common.R.wesn[YLO] || *lat > GMT->common.R.wesn[YHI]) return (TRUE);
+	if (*lat < GMT->common.R.wesn[YLO] || *lat > GMT->common.R.wesn[YHI]) return (true);
 	if (*lon < GMT->common.R.wesn[XLO]) *lon += 360.0;
 	if (*lon > GMT->common.R.wesn[XHI]) *lon -= 360.0;
-	if (*lon < GMT->common.R.wesn[XLO]) return (TRUE);
-	return (FALSE);
+	if (*lon < GMT->common.R.wesn[XLO]) return (true);
+	return (false);
 }
 
-void tabs (GMT_LONG ntabs)
+void tabs (int ntabs)
 {	/* Outputs the n leading tabs for this KML line */
 	while (ntabs--) putchar ('\t');
 }
 
-void print_altmode (GMT_LONG extrude, GMT_LONG fmode, GMT_LONG altmode, GMT_LONG ntabs)
+void print_altmode (int extrude, int fmode, int altmode, int ntabs)
 {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) tabs (ntabs), printf ("<extrude>1</extrude>\n"); 
@@ -504,7 +504,7 @@ void print_altmode (GMT_LONG extrude, GMT_LONG fmode, GMT_LONG altmode, GMT_LONG
 	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) tabs (ntabs), printf ("<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
 }
 
-GMT_LONG ascii_output_one (struct GMT_CTRL *GMT, double x, GMT_LONG col)
+int ascii_output_one (struct GMT_CTRL *GMT, double x, int col)
 {	/* Used instead of GMT_ascii_output_col since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
 	char text[GMT_TEXT_LEN256];
 
@@ -512,7 +512,7 @@ GMT_LONG ascii_output_one (struct GMT_CTRL *GMT, double x, GMT_LONG col)
 	return (printf ("%s", text));
 }
 
-void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double south, double north, double min[], double max[], GMT_LONG N)
+void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double south, double north, double min[], double max[], int N)
 {
 	if (GMT_360_RANGE (west, east)) { west = -180.0; east = +180.0;}
 	tabs (N++); printf ("<Region>\n");
@@ -539,7 +539,7 @@ void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double so
 	tabs (--N); printf ("</Region>\n");
 }
 
-void set_iconstyle (double *rgb, double scale, char *iconfile, GMT_LONG N)
+void set_iconstyle (double *rgb, double scale, char *iconfile, int N)
 {	/* No icon = no symbol */
 	tabs (N++); printf ("<IconStyle>\n");
 	tabs (N++); printf ("<Icon>\n");
@@ -552,7 +552,7 @@ void set_iconstyle (double *rgb, double scale, char *iconfile, GMT_LONG N)
 	tabs (--N); printf ("</IconStyle>\n");
 }
 
-void set_linestyle (struct GMT_PEN *pen, double *rgb, GMT_LONG N)
+void set_linestyle (struct GMT_PEN *pen, double *rgb, int N)
 {
 	tabs (N++); printf ("<LineStyle>\n");
 	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
@@ -560,7 +560,7 @@ void set_linestyle (struct GMT_PEN *pen, double *rgb, GMT_LONG N)
 	tabs (--N); printf ("</LineStyle>\n");
 }
 
-void set_polystyle (double *rgb, GMT_LONG outline, GMT_LONG active, GMT_LONG N)
+void set_polystyle (double *rgb, int outline, int active, int N)
 {
 	tabs (N++); printf ("<PolyStyle>\n");
 	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
@@ -569,7 +569,7 @@ void set_polystyle (double *rgb, GMT_LONG outline, GMT_LONG active, GMT_LONG N)
 	tabs (--N); printf ("</PolyStyle>\n");
 }
 
-void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, double *rgb)
+void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, double *rgb)
 {	/* Special version of GMT_get_rgb_lookup since no interpolation can take place */
 
 	if (index < 0) {	/* NaN, Foreground, Background */
@@ -578,11 +578,11 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, 
 	}
 	else if (P->range[index].skip) {		/* Set to page color for now */
 		GMT_rgb_copy (rgb, C->current.setting.ps_page_rgb);
-		P->skip = TRUE;
+		P->skip = true;
 	}
 	else {	/* Return low color */
 		GMT_memcpy (rgb, P->range[index].rgb_low, 4, double);
-		P->skip = FALSE;
+		P->skip = false;
 	}
 }
 
@@ -590,11 +590,11 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, GMT_LONG index, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmt2kml_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN first = TRUE, get_z = FALSE, error = FALSE, use_folder = FALSE, do_description;
-	COUNTER_MEDIUM n_coord = 0, t1_col, t2_col, pnt_nr = 0;
-	GMT_LONG set_nr = 0, index = -4, N = 1;
+	bool first = true, get_z = false, error = false, use_folder = false, do_description;
+	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0;
+	int set_nr = 0, index = -4, N = 1;
 	
 	char buffer[GMT_BUFSIZ], description[GMT_BUFSIZ], *Document[2] = {"Document", "Folder"};
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
@@ -658,7 +658,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		sprintf (buffer, "%s Features", name[Ctrl->F.mode]);
 		Ctrl->T.folder = strdup (buffer);
 	}
-	if (GMT->common.O.active || GMT->common.K.active) use_folder = TRUE;	/* When at least one or -O, -K is used */
+	if (GMT->common.O.active || GMT->common.K.active) use_folder = true;	/* When at least one or -O, -K is used */
 	if (GMT->common.O.active) {
 		N++;	/* Due to the extra folder tag */
 		tabs (N++); printf ("<%s>\n", Document[KML_FOLDER]);
@@ -694,7 +694,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	tabs (--N); printf ("</LabelStyle>\n");
 	tabs (--N); printf ("</Style>\n");
 
-	for (index = -3; Ctrl->C.active && index < (GMT_LONG)P->n_colors; index++) {	/* Place styles for each color in CPT file */
+	for (index = -3; Ctrl->C.active && index < (int)P->n_colors; index++) {	/* Place styles for each color in CPT file */
 		get_rgb_lookup (GMT, P, index, rgb);
 		tabs (N++); printf ("<Style id=\"GMT%d\">\n", index);
 		if (Ctrl->F.mode < LINE)	/* Set icon style (applies to symbols only */
@@ -703,18 +703,18 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			set_linestyle (&Ctrl->W.pen, rgb, N);
 		else {	/* Polygons */
 			if (!Ctrl->W.active) {	/* Only fill, no outline */
-				set_polystyle (rgb, FALSE, Ctrl->G.active[F_ID], N);
+				set_polystyle (rgb, false, Ctrl->G.active[F_ID], N);
 			}
 			else if (Ctrl->W.mode == 0) { /* Use -C for fill, -W for outline */
-				set_polystyle (rgb, TRUE, Ctrl->G.active[F_ID], N);
+				set_polystyle (rgb, true, Ctrl->G.active[F_ID], N);
 				set_linestyle (&Ctrl->W.pen, Ctrl->W.pen.rgb, N);
 			}
 			else if (Ctrl->W.mode == 1) { /* Use -G for fill, -C for outline */
-				set_polystyle (Ctrl->G.fill[F_ID].rgb, TRUE, Ctrl->G.active[F_ID], N);
+				set_polystyle (Ctrl->G.fill[F_ID].rgb, true, Ctrl->G.active[F_ID], N);
 				set_linestyle (&Ctrl->W.pen, rgb, N);
 			}
 			else if (Ctrl->W.mode == 2) { /* Use -C for fill and outline */
-				set_polystyle (rgb, TRUE, Ctrl->G.active[F_ID], N);
+				set_polystyle (rgb, true, Ctrl->G.active[F_ID], N);
 				set_linestyle (&Ctrl->W.pen, rgb, N);
 			}
 		}
@@ -737,8 +737,8 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->N.mode == GET_LABEL) { /* Special ASCII table processing */
-		COUNTER_MEDIUM ix, iy;
-		COUNTER_LARGE n_rec = 0;
+		unsigned int ix, iy;
+		uint64_t n_rec = 0;
 		char *record = NULL, C[5][GMT_TEXT_LEN64];
 
 		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
@@ -812,7 +812,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
 				place_region_tag (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->Z.min, Ctrl->Z.max, N);
-				first = FALSE;
+				first = false;
 			}
 			tabs (N++); printf ("<Placemark>\n");
 			tabs (N); printf ("<name>%s</name>\n", label);
@@ -829,7 +829,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
 			tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-			print_altmode (Ctrl->E.active, FALSE, Ctrl->A.mode, N);
+			print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
 			tabs (N); printf ("<coordinates>");
 			ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
 			ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
@@ -839,15 +839,15 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			tabs (--N); printf ("</Placemark>\n");
 			n_rec++;
 			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %ld points\n", n_rec);
-		} while (TRUE);
+		} while (true);
 		
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}
 	}
 	else {	/* Read regular data table */
-		COUNTER_MEDIUM tbl, col;
-		COUNTER_LARGE row, seg;
+		unsigned int tbl, col;
+		uint64_t row, seg;
 		struct GMT_DATASET *Din = NULL;
 		struct GMT_TABLE *T = NULL;
 #ifdef GMT_COMPAT
@@ -863,7 +863,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
 			place_region_tag (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->Z.min, Ctrl->Z.max, N);
-			first = FALSE;
+			first = false;
 		}
 		else if (Ctrl->R2.automatic) {	/* Issue Region tag */
 			place_region_tag (GMT, Din->min[GMT_X], Din->max[GMT_X], Din->min[GMT_Y], Din->max[GMT_Y], Ctrl->Z.min, Ctrl->Z.max, N);
@@ -903,15 +903,15 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					else
 						tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
 					description[0] = 0;
-					do_description = FALSE;
+					do_description = false;
 					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
-						do_description = TRUE;
+						do_description = true;
 						strcat (description, buffer);
 					}
 					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, buffer)) { 
 						if (do_description) strcat (description, " ");
 						strcat (description, buffer);
-						do_description = TRUE;
+						do_description = true;
 					}
 					if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
 					tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
@@ -986,7 +986,7 @@ GMT_LONG GMT_gmt2kml (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						}
 						tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
 						tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-						print_altmode (Ctrl->E.active, FALSE, Ctrl->A.mode, N);
+						print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
 						tabs (N); printf ("<coordinates>");
 						ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
 						ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
