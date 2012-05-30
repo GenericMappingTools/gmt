@@ -2095,6 +2095,8 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 		if (c == '\n') continue;	/* Comment or blank */
 		check_headers = false;	/* First non-comment record signals the end of headers */
 
+		GMT_chop(line);			/* Chop '\r\n' */
+
 		T1[0] = T2[0] = T3[0] = T4[0] = T5[0] = T6[0] = T7[0] = T8[0] = T9[0] = 0;
 		switch (c) {
 			case 'B':
@@ -2173,14 +2175,14 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 
 		/* Determine if psscale need to label these steps by looking for the optional L|U|B character at the end */
 
-		c = line[strlen(line)-2];
+		c = line[strlen(line)-1];
 		if (c == 'L')
 			X->range[n].annot = 1;
 		else if (c == 'U')
 			X->range[n].annot = 2;
 		else if (c == 'B')
 			X->range[n].annot = 3;
-		if (X->range[n].annot) line[strlen(line)-2] = '\0';	/* Chop off this information so it does not affect our column count below */
+		if (X->range[n].annot) line[strlen(line)-1] = '\0';	/* Chop off this information so it does not affect our column count below */
 
 		nread = sscanf (line, "%s %s %s %s %s %s %s %s %s %s", T0, T1, T2, T3, T4, T5, T6, T7, T8, T9);	/* Hope to read 4, 8, or 10 fields */
 
