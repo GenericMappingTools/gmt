@@ -19,17 +19,17 @@
 #include "mgd77.h"
 
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 	} A;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n;
+		bool active;
+		unsigned int n;
 		char code[3];
 	} I;
 };
@@ -39,7 +39,7 @@ void *New_mgd77path_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C = GMT_memory (GMT, NULL, 1, struct MGD77PATH_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	return (C);
 }
@@ -48,7 +48,7 @@ void Free_mgd77path_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_mgd77path_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_mgd77path_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -68,7 +68,7 @@ GMT_LONG GMT_mgd77path_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77path and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -76,7 +76,7 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -94,16 +94,16 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -P is deprecated; use -A instead.\n");
 #endif
 			case 'A':	/* Show list of paths to MGD77 files */
-				Ctrl->A.active = TRUE;
-				if (opt->arg[0] == '-') Ctrl->A.mode = TRUE;
+				Ctrl->A.active = true;
+				if (opt->arg[0] == '-') Ctrl->A.mode = true;
 				break;
 				
 			case 'D':	/* Show list of directories with MGD77 files */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				break;
 
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
@@ -131,10 +131,10 @@ GMT_LONG GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77path_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77path (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_mgd77path (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM i, n_cruises = 0, n_paths;
-	GMT_BOOLEAN error = FALSE;
+	unsigned int i, n_cruises = 0, n_paths;
+	bool error = false;
 	
 	char path[GMT_BUFSIZ], **list = NULL;
 	

@@ -85,24 +85,24 @@
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct D {	/* -D<diffgrid> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct N {	/* -N[r]<n_model> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN robust;
-		COUNTER_MEDIUM value;
+		bool active;
+		bool robust;
+		unsigned int value;
 	} N;
 	struct T {	/* -T<trend.grd> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} T;
 	struct W {	/* -W<weight.grd> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} W;
 };
@@ -112,7 +112,7 @@ void *New_grdtrend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDTREND_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 		
 	return (C);
 }
@@ -126,7 +126,7 @@ void Free_grdtrend_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdtrend_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -146,14 +146,14 @@ GMT_LONG GMT_grdtrend_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-T Supply filename to write grid file of trend.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
-	GMT_message (GMT, "\t   If <weightgrid> can be read at run, and if robust = FALSE, weighted problem will be solved.\n");
-	GMT_message (GMT, "\t   If robust = TRUE, weights used for robust fit will be written to <weightgrid>.\n");
+	GMT_message (GMT, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
+	GMT_message (GMT, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
 	GMT_explain_options (GMT, ".");
 	
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdtrend and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -162,7 +162,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0, j;
+	unsigned int n_errors = 0, n_files = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -171,14 +171,14 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				if (opt->arg[0])
 					Ctrl->D.file = strdup (opt->arg);
 				else {
@@ -188,13 +188,13 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 				break;
 			case 'N':
 				/* Must check for both -N[r]<n_model> and -N<n_model>[r] due to confusion */
-				Ctrl->N.active = TRUE;
-				if (strchr (opt->arg, 'r')) Ctrl->N.robust = TRUE;
+				Ctrl->N.active = true;
+				if (strchr (opt->arg, 'r')) Ctrl->N.robust = true;
 				j = (opt->arg[0] == 'r') ? 1 : 0;
 				if (opt->arg[j]) Ctrl->N.value = atoi(&opt->arg[j]);
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
@@ -203,7 +203,7 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 				}
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if (opt->arg[0])
 					Ctrl->W.file = strdup (opt->arg);
 				else {
@@ -225,9 +225,9 @@ GMT_LONG GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void set_up_vals (double *val, COUNTER_MEDIUM nval, double vmin, double vmax, double dv, COUNTER_MEDIUM pixel_reg)
+void set_up_vals (double *val, unsigned int nval, double vmin, double vmax, double dv, unsigned int pixel_reg)
 {	/* Store x[i], y[j] once for all to save time  */
-	COUNTER_MEDIUM i;
+	unsigned int i;
 	double v, middle, drange, true_min, true_max;
 
 	true_min = (pixel_reg) ? vmin + 0.5 * dv : vmin;
@@ -245,7 +245,7 @@ void set_up_vals (double *val, COUNTER_MEDIUM nval, double vmin, double vmax, do
 	return;
 }
 
-void load_pstuff (double *pstuff, COUNTER_MEDIUM n_model, double x, double y, COUNTER_MEDIUM newx, COUNTER_MEDIUM newy)
+void load_pstuff (double *pstuff, unsigned int n_model, double x, double y, unsigned int newx, unsigned int newy)
 {	/* Compute Legendre polynomials of x[i],y[j] as needed  */
 	/* If either x or y has changed, compute new Legendre polynomials as needed  */
 
@@ -268,10 +268,10 @@ void load_pstuff (double *pstuff, COUNTER_MEDIUM n_model, double x, double y, CO
 	return;
 }
 
-void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, COUNTER_MEDIUM n_model, double *pstuff)
+void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, double *yval, double *gtd, unsigned int n_model, double *pstuff)
 {	/* Find trend from a model  */
-	COUNTER_MEDIUM row, col, k;
-	COUNTER_LARGE ij;
+	unsigned int row, col, k;
+	uint64_t ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
@@ -282,21 +282,21 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 
 void compute_resid (struct GMT_CTRL *GMT, struct GMT_GRID *D, struct GMT_GRID *T, struct GMT_GRID *R)
 {	/* Find residuals from a trend  */
-	COUNTER_MEDIUM row, col;
-	COUNTER_LARGE ij;
+	unsigned int row, col;
+	uint64_t ij;
 
 	GMT_grd_loop (GMT, T, row, col, ij) R->data[ij] = D->data[ij] - T->data[ij];
 }
 
-void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, COUNTER_MEDIUM n_model)
+void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *gtd, unsigned int n_model)
 {
 	/* Routine to fit up elementary polynomial model of grd data, 
 	model = gtd[0] + gtd[1]*x + gtd[2]*y + gtd[3] * x * y,
 	where x,y are normalized to range [-1,1] and there are no
 	NaNs in grid file, and problem is unweighted least squares.  */
 
-	COUNTER_MEDIUM row, col;
-	COUNTER_LARGE ij;
+	unsigned int row, col;
+	uint64_t ij;
 	double x2, y2, sumx2 = 0.0, sumy2 = 0.0, sumx2y2 = 0.0;
 
 	/* First zero the model parameters to use for sums */
@@ -331,8 +331,8 @@ void grd_trivial_model (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, 
 
 double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W, double scale)
 {	/* Find Chi-Squared from weighted residuals  */
-	COUNTER_MEDIUM row, col;
-	COUNTER_LARGE ij;
+	unsigned int row, col;
+	uint64_t ij;
 	double tmp, chisq = 0.0;
 
 	GMT_grd_loop (GMT, R, row, col, ij) {
@@ -348,8 +348,8 @@ double compute_chisq (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID 
 
 double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct GMT_GRID *W)
 {	/* Find weights from residuals  */
-	COUNTER_MEDIUM row, col;
-	COUNTER_LARGE j = 0, j2, ij;
+	unsigned int row, col;
+	uint64_t j = 0, j2, ij;
 	double r, mad, scale;
 
 	GMT_grd_loop (GMT, R, row, col, ij) {
@@ -380,9 +380,9 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 	return (scale);
 }
 
-void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, COUNTER_MEDIUM n_model)
+void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, unsigned int n_model)
 {	/* Do reports if gmtdefs.verbose = NORMAL or above  */
-	COUNTER_MEDIUM i;
+	unsigned int i;
 	char pbasis[10][16], format[GMT_BUFSIZ];
 
 	sprintf (pbasis[0], "Mean");
@@ -402,7 +402,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, COUNTER_MEDIUM n
 	return;
 }
 
-void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, COUNTER_MEDIUM n_model, struct GMT_GRID *W, GMT_BOOLEAN weighted)
+void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, unsigned int n_model, struct GMT_GRID *W, bool weighted)
 {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
 	for the normal equations.  Routine uses indices i,j to refer
@@ -412,8 +412,8 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 	loading only lower triangular part of gtg and then filling
 	by symmetry after i,j loop.  */
 
-	COUNTER_MEDIUM row, col, k, l, n_used = 0;
-	COUNTER_LARGE ij;
+	unsigned int row, col, k, l, n_used = 0;
+	uint64_t ij;
 
 	/* First zero things out to start */
 
@@ -467,14 +467,14 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdtrend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
-	GMT_BOOLEAN trivial, weighted,iterations, set_ones = TRUE;
-	GMT_LONG error = 0;
-	COUNTER_MEDIUM row, col;
+	bool trivial, weighted,iterations, set_ones = true;
+	int error = 0;
+	unsigned int row, col;
 	
-	COUNTER_LARGE ij;
+	uint64_t ij;
 	
 	char format[GMT_BUFSIZ];
 
@@ -521,13 +521,13 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	/* Check for NaNs (we include the pad for simplicity)  */
 	ij = 0;
-	while (trivial && ij < G->header->size) if (GMT_is_fnan (G->data[ij++])) trivial = FALSE;
+	while (trivial && ij < G->header->size) if (GMT_is_fnan (G->data[ij++])) trivial = false;
 
 	/* Allocate other required arrays */
 
 	if ((T = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing fitted surface  */
 	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
-	GMT_grd_init (GMT, T->header, options, TRUE);
+	GMT_grd_init (GMT, T->header, options, true);
 	T->data = GMT_memory (GMT, NULL, G->header->size, float);
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		if ((R = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
@@ -545,7 +545,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	/* If a weight array is needed, get one */
 
 	if ((W = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing data weights  */
-	GMT_grd_init (GMT, W->header, options, TRUE);
+	GMT_grd_init (GMT, W->header, options, true);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
@@ -557,7 +557,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
 					Return (API->error);
 				}
-				set_ones = FALSE;
+				set_ones = false;
 			}
 		}
 		if (set_ones) {
@@ -584,9 +584,9 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		if (Ctrl->D.active) compute_resid (GMT, G, T, R);
 	}
 	else {	/* Problem is not trivial  !!  */
-		GMT_LONG ierror;
+		int ierror;
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
+		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, true);
 		if (ierror) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %d\n", ierror);
 			return (EXIT_FAILURE);
@@ -603,7 +603,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				GMT_memcpy (old, gtd, Ctrl->N.value, double);
 				scale = compute_robust_weight (GMT, R, W);
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, TRUE);
+				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, true);
 				if (ierror) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %d\n", ierror);
 					return (EXIT_FAILURE);
@@ -635,7 +635,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else
-		GMT_free_grid (GMT, &T, TRUE);	/* Not written out */
+		GMT_free_grid (GMT, &T, true);	/* Not written out */
 	if (Ctrl->D.file) {
 		strcpy (R->header->title, "trend residuals");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, R) != GMT_OK) {
@@ -643,7 +643,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust)
-		GMT_free_grid (GMT, &R, TRUE);
+		GMT_free_grid (GMT, &R, true);
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		strcpy (W->header->title, "trend weights");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->W.file, W) != GMT_OK) {
@@ -651,7 +651,7 @@ GMT_LONG GMT_grdtrend (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else if (set_ones)
-		GMT_free_grid (GMT, &W, TRUE);
+		GMT_free_grid (GMT, &W, true);
 
 	/* That's all, folks!  */
 

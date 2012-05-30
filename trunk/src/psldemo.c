@@ -21,8 +21,8 @@ int main (int argc, char **argv) {
 		{-3.0, -3.0, -3.0, 0.0}, {0.9, 0.9, 9.0, 0.0}, {0.5, 0.7, 0.1, 0.5}};
 	double offset[2] = {0.1, 0.1}, scales[2] = {1.0, 1.0};
 	double x[6] = {35.0, 50.0, 60., 90.0, 110.0, 132.0}, y[6] = {25.0, 10.0, 50.0, 87.0, 65.0, 75.0};
-	PSL_LONG outline[3] = {PSL_OUTLINE, PSL_NONE, PSL_OUTLINE};
-	PSL_LONG type[14] = {PSL_CROSS, PSL_XDASH, PSL_YDASH, PSL_PLUS, PSL_DOT, PSL_CIRCLE, PSL_DIAMOND,
+	int outline[3] = {PSL_OUTLINE, PSL_NONE, PSL_OUTLINE};
+	int type[14] = {PSL_CROSS, PSL_XDASH, PSL_YDASH, PSL_PLUS, PSL_DOT, PSL_CIRCLE, PSL_DIAMOND,
 		PSL_HEXAGON, PSL_INVTRIANGLE, PSL_OCTAGON, PSL_PENTAGON, PSL_SQUARE, PSL_STAR, PSL_TRIANGLE};
 	char *para = "\t@%5%PSL@%% was created to make the generation of @%6%PostScript@%% page description code easier.  \
 @%6%PostScript@%% is a page description language that was developed by @;255/0/0;Adobe@;; for specifying how a printer should render a \

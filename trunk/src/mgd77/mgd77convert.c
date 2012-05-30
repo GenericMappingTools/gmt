@@ -27,24 +27,24 @@
 void MGD77_select_high_resolution (struct GMT_CTRL *C);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM dest;
+		bool active;
+		unsigned int mode;
+		unsigned int dest;
 	} L;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		GMT_LONG format;
+		bool active;
+		unsigned int mode;
+		int format;
 	} F;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		GMT_LONG format;
+		bool active;
+		unsigned int mode;
+		int format;
 	} T;
 };
 
@@ -53,7 +53,7 @@ void *New_mgd77convert_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	
 	C = GMT_memory (GMT, NULL, 1, struct MGD77CONVERT_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->F.format = C->T.format = MGD77_NOT_SET;
 	
@@ -64,7 +64,7 @@ void Free_mgd77convert_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) 
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -89,7 +89,7 @@ GMT_LONG GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77convert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -97,7 +97,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, code_pos, i;
+	unsigned int n_errors = 0, code_pos, i;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -111,7 +111,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 			/* Processes program-specific parameters */
 
 			case 'L':	/* Determine level of error/warning checking and log destination */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				for (i = 0; opt->arg[i]; i++) {
 					if (opt->arg[i] == 'e') Ctrl->L.mode |= 2;
 					if (opt->arg[i] == 'w') Ctrl->L.mode |= 1;
@@ -119,13 +119,13 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 				}
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				switch (opt->arg[0]) {									
 					case 'a':		/* Standard ASCII MGD77 file */
 						Ctrl->F.format = MGD77_FORMAT_M77;
 						break;
 					case 'C':		/* Enhanced MGD77+ netCDF file */
-						Ctrl->F.mode = TRUE;	/* Overlook revisions */
+						Ctrl->F.mode = true;	/* Overlook revisions */
 					case 'c':
 						Ctrl->F.format = MGD77_FORMAT_CDF;
 						break;
@@ -142,9 +142,9 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 				}
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				code_pos = 0;
-				if (opt->arg[code_pos] == '+') Ctrl->T.mode = TRUE, code_pos++;	/* Force overwriting existing files */
+				if (opt->arg[code_pos] == '+') Ctrl->T.mode = true, code_pos++;	/* Force overwriting existing files */
 				switch (opt->arg[code_pos]) {									
 					case 'a':		/* Standard ascii MGD77 file */
 						Ctrl->T.format = MGD77_FORMAT_M77;
@@ -169,7 +169,7 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead.\n");
 #endif
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -186,10 +186,10 @@ GMT_LONG GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77convert_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_mgd77convert (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG i, argno, n_cruises = 0, n_paths;
-	GMT_BOOLEAN error = FALSE;
+	int i, argno, n_cruises = 0, n_paths;
+	bool error = false;
 	
 	char file[GMT_BUFSIZ], **list = NULL, *fcode = "actm";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};
@@ -249,7 +249,7 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		M.format = Ctrl->F.format;	/* Set input file's format and read everything into memory */
 		M.original = Ctrl->F.mode;
-		if (Ctrl->F.mode) M.use_corrections[MGD77_M77_SET] = M.use_corrections[MGD77_CDF_SET] = FALSE;	/* Turn off E77 corrections */
+		if (Ctrl->F.mode) M.use_corrections[MGD77_M77_SET] = M.use_corrections[MGD77_CDF_SET] = false;	/* Turn off E77 corrections */
 		MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
 		for (i = 0; i < MGD77_N_FORMATS; i++) if (i != M.format) MGD77_Ignore_Format (GMT, i);		/* ...only allow the specified input format */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
@@ -298,8 +298,8 @@ GMT_LONG GMT_mgd77convert (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* OK, ready to write out converted file */
 		
 		M.format = Ctrl->T.format;				/* Change the format to the desired output format and write new file in current directory */
-		M.original = TRUE;					/* Always write to original attributes */
-		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified output format */
+		M.original = true;					/* Always write to original attributes */
+		for (i = 0; i < MGD77_N_FORMATS; i++) MGD77_format_allowed[i] = (M.format == i) ? true : false;	/* Only allow the specified output format */
 		if (D->H.author) GMT_free (GMT, D->H.author);	/* Make sure author is blank so it is reset below */
 		D->H.author = GMT_memory (GMT, NULL, strlen (M.user)+1, char);	/* Allocate space for author */
 		strcpy (D->H.author, M.user);									/* Pass current user login id as author */

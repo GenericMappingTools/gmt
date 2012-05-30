@@ -31,27 +31,27 @@
 
 struct GRD2RGB_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct C {	/* -C<cptfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} C;
 	struct G {	/* -G<nametemplate> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *name;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<layer> */
-		GMT_BOOLEAN active;
+		bool active;
 		char layer;
 	} L;
 	struct W {	/* -W<width/height>[/<n_bytes>] */
-		GMT_BOOLEAN active;
+		bool active;
 		unsigned int nx, ny;	/* Dimension of image */
 		unsigned int size;	/* Number of bytes per pixels */
 	} W;
@@ -62,7 +62,7 @@ void *New_grd2rgb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRD2RGB_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->G.name = strdup ("grd2rgb_%c.nc");
 	C->W.size = 3;	/* 3 bytes per pixel */
@@ -78,11 +78,11 @@ void Free_grd2rgb_Ctrl (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GMT_LONG byte_per_pixel, GMT_LONG nx, GMT_LONG ny, unsigned char **P) {
+int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byte_per_pixel, int nx, int ny, unsigned char **P) {
 	/* loadraw reads a raw binary grb or rgba rasterfile of depth 24, or 32 into memory */
 
-	COUNTER_MEDIUM k;
-	COUNTER_LARGE j, i;
+	unsigned int k;
+	uint64_t j, i;
 	size_t nm;
 	unsigned char *buffer = NULL;
 
@@ -121,9 +121,9 @@ GMT_LONG loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, GM
 	return (0);
 }
 
-GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_pixel, COUNTER_MEDIUM *raw_nx, COUNTER_MEDIUM *raw_ny) {
-	GMT_LONG inc, even;
-	COUNTER_MEDIUM k = 0, j, i, l, n_pix;
+int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, unsigned int *raw_nx, unsigned int *raw_ny) {
+	int inc, even;
+	unsigned int k = 0, j, i, l, n_pix;
 	unsigned char *buffer = NULL;
 	size_t img_size;
 	float *work = NULL, *datac = NULL, *img_pow = NULL, pow_max = -FLT_MAX, pm;
@@ -139,7 +139,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_
 	img_size = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
 
-	n_pix = (COUNTER_MEDIUM) (img_size / byte_per_pixel);
+	n_pix = (unsigned int) (img_size / byte_per_pixel);
 
 	buffer  = GMT_memory (GMT, NULL, img_size, unsigned char);
 	datac   = GMT_memory (GMT, NULL, 2*n_pix, float);
@@ -224,7 +224,7 @@ GMT_LONG guess_width (struct GMT_CTRL *GMT, char *file, COUNTER_MEDIUM byte_per_
 	return (0);
 }
 
-GMT_LONG GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grd2rgb %s [API] - Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile\n\n", GMT_VERSION);
@@ -261,7 +261,7 @@ GMT_LONG GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -269,8 +269,8 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos, entry;
-	GMT_BOOLEAN guess = FALSE;
+	unsigned int n_errors = 0, n_files = 0, pos, entry;
+	bool guess = false;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -279,7 +279,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
@@ -287,7 +287,7 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 
 			case 'C':	/* Use cpt table */
 				Ctrl->C.file = strdup (opt->arg);
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'G':	/* Output file template */
 				Ctrl->G.name = strdup (opt->arg);
@@ -297,22 +297,22 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Select one layer */
 				Ctrl->L.layer = opt->arg[0];
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 			case 'W':	/* Give raw size */
-				Ctrl->W.active = TRUE;
-				guess = TRUE;
+				Ctrl->W.active = true;
+				guess = true;
 				entry = pos = 0;
 				while ((GMT_strtok (opt->arg, "/", &pos, ptr))) {
 					if (ptr[0] != '=') {
 						switch (entry) {
 							case 0:
 								Ctrl->W.nx = atoi (ptr);
-								guess = FALSE; break;
+								guess = false; break;
 							case 1:
 								Ctrl->W.ny = atoi (ptr); break;
 							case 2:
@@ -355,12 +355,12 @@ GMT_LONG GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grd2rgb_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grd2rgb (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM channel, row, col;
-	GMT_LONG error = 0;
+	unsigned int channel, row, col;
+	int error = 0;
 	
-	COUNTER_LARGE ij, k, k3;
+	uint64_t ij, k, k3;
 	
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
 	char buffer[GMT_BUFSIZ], *grdfile = NULL;
@@ -398,7 +398,7 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* No command line files or std** to add via GMT_Init_IO */
 	
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
-		GMT_BOOLEAN new_grid = FALSE;
+		bool new_grid = false;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
@@ -410,9 +410,9 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);
 			}
-			GMT_grd_init (GMT, Grid->header, options, FALSE);
+			GMT_grd_init (GMT, Grid->header, options, false);
 
-			new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* TRUE if input is a read-only array; else Out == Grid */
+			new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* true if input is a read-only array; else Out == Grid */
 				
 			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);
@@ -461,17 +461,17 @@ GMT_LONG GMT_grd2rgb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Grid->header, options, FALSE);
+		GMT_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = (int)GMT->common.r.active;
 		if (!Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Assign default dx = dy = 1\n");
-			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;	Ctrl->I.active = TRUE;
+			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;	Ctrl->I.active = true;
 		}
 		if (!GMT->common.R.active) {	/* R not given, provide default */
 			GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
 			GMT->common.R.wesn[XHI] = header.width  - 1 + Grid->header->registration;
 			GMT->common.R.wesn[YHI] = header.height - 1 + Grid->header->registration;
-			GMT->common.R.active = TRUE;
+			GMT->common.R.active = true;
 			GMT_report (GMT, GMT_MSG_NORMAL, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 

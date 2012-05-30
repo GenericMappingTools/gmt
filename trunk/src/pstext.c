@@ -29,8 +29,8 @@
 #include "pslib.h"
 #include "gmt.h"
 
-void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, GMT_LONG size);
-GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
+void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, int size);
+int GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or comment */
 
 #define PSTEXT_CLIP		1
 #define PSTEXT_PLOT		2
@@ -38,69 +38,69 @@ GMT_LONG GMT_is_a_blank_line (char *line);	/* Checks if line is a blank line or 
 
 struct PSTEXT_CTRL {
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct C {	/* -C<dx>/<dy> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN percent;
+		bool active;
+		bool percent;
 		double dx, dy;
 	} C;
 	struct D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN line;
-		GMT_LONG justify;
+		bool active;
+		bool line;
+		int justify;
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
 	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FONT font;
 		double angle;
-		GMT_LONG justify, nread;
+		int justify, nread;
 		char read[3];	/* Contains f, a, and/or j in order required to be read from input */
 	} F;
 	struct G {	/* -G<fill> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct Q {	/* -Q<case> */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
+		bool active;
+		int mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
 #ifdef GMT_COMPAT
 	struct S {	/* -S<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} S;
 #endif
 	struct T {	/* -To|O|c|C */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} T;
 	struct W {	/* -W[<pen>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<z_level> */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
 struct PSTEXT_INFO {
-	GMT_LONG text_justify;
-	GMT_LONG block_justify;
-	GMT_LONG boxflag;
-	GMT_LONG space_flag;
+	int text_justify;
+	int block_justify;
+	int boxflag;
+	int space_flag;
 	double x_offset, y_offset;	/* Offset from reference point */
 	double line_spacing;
 	double paragraph_width;
@@ -117,11 +117,11 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct PSTEXT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	C->C.dx = C->C.dy = 15.0;	/* 15% of font size is default clearance */
-	C->C.percent = TRUE;
+	C->C.percent = true;
 	C->F.justify = 6;	/* CM */
 	C->F.font = GMT->current.setting.font_annot[0];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
@@ -160,7 +160,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 	}
 	x += T->x_offset;	y += T->y_offset;	/* Move to the actual reference point */
 	if (T->boxflag) {	/* Need to lay down the box first, then place text */
-		GMT_LONG mode = 0;
+		int mode = 0;
 		if (T->boxflag & 1) GMT_setpen (GMT, &(T->boxpen));			/* Change current pen */
 		if (T->boxflag & 2) GMT_setfill (GMT, &(T->boxfill), T->boxflag & 1);	/* Change curent fill */
 		if (T->boxflag & 1) mode = PSL_RECT_STRAIGHT;	/* Set the correct box shape */
@@ -207,45 +207,45 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 }
 
 #ifdef GMT_COMPAT
-GMT_BOOLEAN check_for_old_format (struct GMT_CTRL *C, char *buffer, GMT_LONG mode)
+bool check_for_old_format (struct GMT_CTRL *C, char *buffer, int mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
 	
-	GMT_LONG n, k;
+	int n, k;
 	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], just[GMT_TEXT_LEN256], txt[GMT_BUFSIZ];
 	char spacing[GMT_TEXT_LEN256], width[GMT_TEXT_LEN256], pjust[GMT_TEXT_LEN256];
 	
 	if (mode) {	/* Paragraph control record */
 		n = sscanf (buffer, "%s %s %s %s %s %s %s\n", size, angle, font, just, spacing, width, pjust);
-		if (n < 7) return (FALSE);	/* Clearly not the old format since missing items */
+		if (n < 7) return (false);	/* Clearly not the old format since missing items */
 	}
 	else {		/* Regular text record */
 		n = sscanf (buffer, "%s %s %s %s %[^\n]", size, angle, font, just, txt);
-		if (n < 5) return (FALSE);	/* Clearly not the old format since missing items */
+		if (n < 5) return (false);	/* Clearly not the old format since missing items */
 	}
-	if (GMT_not_numeric (C, angle)) return (FALSE);	/* Since angle is not a number */
+	if (GMT_not_numeric (C, angle)) return (false);	/* Since angle is not a number */
 	k = strlen (size) - 1;
 	if (size[k] == 'c' || size[k] == 'i' || size[k] == 'm' || size[k] == 'p') size[k] = '\0';	/* Chop of unit */
-	if (GMT_not_numeric (C, size)) return (FALSE);	/* Since size is not a number */
-	if (GMT_just_decode (C, just, 12) == -99) return (FALSE);	/* Since justify not in correct format */
+	if (GMT_not_numeric (C, size)) return (false);	/* Since size is not a number */
+	if (GMT_just_decode (C, just, 12) == -99) return (false);	/* Since justify not in correct format */
 	if (mode) {	/* A few more checks for paragraph mode */
 		k = strlen (spacing) - 1;
 		if (spacing[k] == 'c' || spacing[k] == 'i' || spacing[k] == 'm' || spacing[k] == 'p') spacing[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (C, spacing)) return (FALSE);	/* Since spacing is not a number */
+		if (GMT_not_numeric (C, spacing)) return (false);	/* Since spacing is not a number */
 		k = strlen (width) - 1;
 		if (width[k] == 'c' || width[k] == 'i' || width[k] == 'm' || width[k] == 'p') width[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (C, width)) return (FALSE);		/* Since width is not a number */
-		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (C, pjust, 0) == -99) return (FALSE);
+		if (GMT_not_numeric (C, width)) return (false);		/* Since width is not a number */
+		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (C, pjust, 0) == -99) return (false);
 	}
 
 	/* Well, seems like the old format so far */
 	GMT_report (C, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
-	return (TRUE);
+	return (true);
 }
 #endif
 
-GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_fonts)
+int GMT_pstext_usage (struct GMTAPI_CTRL *C, int level, int show_fonts)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -276,7 +276,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	GMT_message (GMT, "\t(See manual page for more information).\n");
 
 	if (show_fonts) {	/* List fonts */
-		COUNTER_MEDIUM i;
+		unsigned int i;
 		GMT_message (GMT, "\n\tFont #	Font Name\n");
 		GMT_message (GMT, "\t------------------------------------\n");
 		for (i = 0; i < GMT->session.n_fonts; i++)
@@ -330,7 +330,7 @@ GMT_LONG GMT_pstext_usage (struct GMTAPI_CTRL *C, GMT_LONG level, GMT_LONG show_
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pstext and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -339,8 +339,8 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j, k;
-	COUNTER_MEDIUM pos, n_errors = 0;
+	int j, k;
+	unsigned int pos, n_errors = 0;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -355,12 +355,12 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Getting azimuths rather than directions, must convert via map projection */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (opt->arg[0]) {	/* Replace default settings with user settings */
-					Ctrl->C.percent = (strchr (opt->arg, '%')) ? TRUE : FALSE;
+					Ctrl->C.percent = (strchr (opt->arg, '%')) ? true : false;
 					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 					for (j = 0; txt_a[j]; j++) if (txt_a[j] == '%') txt_a[j] = '\0';	/* Remove % signs before processing values */
 					for (j = 0; k == 2 && txt_b[j]; j++) if (txt_b[j] == '%') txt_b[j] = '\0';
@@ -369,13 +369,13 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				}
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				k = 0;
 				if (opt->arg[k] == 'j') { Ctrl->D.justify = 1, k++; }
 				else if (opt->arg[k] == 'J') { Ctrl->D.justify = 2, k++; }
 				for (j = k; opt->arg[j] && opt->arg[j] != 'v'; j++);
 				if (opt->arg[j] == 'v') {
-					Ctrl->D.line = TRUE;
+					Ctrl->D.line = true;
 					n_errors += GMT_check_condition (GMT, opt->arg[j+1] && GMT_getpen (GMT, &opt->arg[j+1], &Ctrl->D.pen), "Syntax error -D option: Give pen after c\n");
 					opt->arg[j] = 0;
 				}
@@ -384,7 +384,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				Ctrl->D.dy = (j == 2) ? GMT_to_inch (GMT, txt_b) : Ctrl->D.dx;
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				pos = 0;
 				
 				while (GMT_getmodopt (GMT, opt->arg, "afj", &pos, p) && Ctrl->F.nread < 3) {	/* Looking for +f, +a, +j */
@@ -408,31 +408,31 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				}
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
-					Ctrl->G.mode = TRUE;
+					Ctrl->G.mode = true;
 				else if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 #endif
 			case 'M':	/* Paragraph mode */
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not clip at border */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 #ifdef GMT_COMPAT
 			case 'S':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
 					GMT_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]");
 					n_errors++;
@@ -440,17 +440,17 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				break;
 #endif
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'l') Ctrl->Q.mode = -1;
 				if (opt->arg[0] == 'u') Ctrl->Q.mode = +1;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.mode = opt->arg[0];
 				n_errors += GMT_check_condition (GMT, !strchr("oOcC", Ctrl->T.mode), "Syntax error -T option: must add o, O, c, or C\n");
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', "draws a box around the text with the specified pen [Default pen is %s]");
 					n_errors++;
@@ -460,11 +460,11 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 				/* For backward compatibility we will see -Z+ as the current -Z
 				 * and -Z<level> as an alternative to -p<az>/<el>/<level> */
 				if (opt->arg[0] == '+' && !opt->arg[1])
-					Ctrl->Z.active = TRUE;
+					Ctrl->Z.active = true;
 				else if (opt->arg[0])
 					GMT->current.proj.z_level = atof(opt->arg);
 				else
-					Ctrl->Z.active = TRUE;
+					Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -481,7 +481,7 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx == 0.0 && Ctrl->C.dy == 0.0 && Ctrl->T.mode && Ctrl->T.mode != 'o', "Warning: non-rectangular text boxes require a non-zero -C\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->G.active && !Ctrl->W.active, "Warning: -T requires -W and/or -G\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.dx == 0.0 && Ctrl->D.dy == 0.0 && Ctrl->D.line, "Warning: -D<x/y>v requires one nonzero <x/y>\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && GMT_abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && abs (Ctrl->Q.mode) > 1, "Syntax error -Q option: Use l or u for lower/upper-case.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Syntax error -Gc option: Cannot be used with -W.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Syntax error -Gc option: Cannot be used with -D...v<pen>.\n");
@@ -489,9 +489,9 @@ GMT_LONG GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG rec_no, char *record, char buffer[])
+int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *record, char buffer[])
 {	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
-	COUNTER_MEDIUM ix, iy, nscan;
+	unsigned int ix, iy, nscan;
 	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
 
 	if (has_z) {	/* Expect z in 3rd column */
@@ -520,14 +520,14 @@ GMT_LONG validate_coord_and_text (struct GMT_CTRL *GMT, GMT_LONG has_z, GMT_LONG
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pstext_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	GMT_LONG k, fmode, nscan;
-	GMT_BOOLEAN error = FALSE, master_record = FALSE, skip_text_records = FALSE, old_is_world;
+	int k, fmode, nscan;
+	bool error = false, master_record = false, skip_text_records = false, old_is_world;
 	
-	COUNTER_MEDIUM length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
-	COUNTER_MEDIUM n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
+	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
+	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;
 	
 	size_t n_alloc = 0;
 
@@ -538,7 +538,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 #ifdef GMT_COMPAT
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
-	GMT_LONG is_old_format = GMTAPI_NOTSET;
+	int is_old_format = GMTAPI_NOTSET;
 #endif
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
@@ -551,8 +551,8 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pstext_usage (API, GMTAPI_USAGE, FALSE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, FALSE));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pstext_usage (API, GMTAPI_USAGE, false));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, false));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -560,7 +560,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT_Parse_Common (API, "-VJRf:", "BKOPUXxYyachpt>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pstext_parse (API, Ctrl, options))) Return (error);
-	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, TRUE));	/* Return the synopsis with font listing */
+	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, true));	/* Return the synopsis with font listing */
 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
@@ -591,7 +591,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	text_col = n_expected_cols - 1;
 
 	old_is_world = GMT->current.map.is_world;
-	GMT->current.map.is_world = TRUE;
+	GMT->current.map.is_world = true;
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
@@ -623,7 +623,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (Ctrl->M.active) {	/* Paragraph mode */
 			if (GMT_REC_IS_SEG_HEADER (GMT)) {
 				line = GMT->current.io.segment_header;
-				skip_text_records = FALSE;
+				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
 					GMT_putwords (GMT, PSL, plot_x, plot_y, paragraph, &T);
 					n_processed = length = 0;
@@ -683,16 +683,16 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad justification info (set to LB)\n", n_read);
 					T.block_justify = 1;
 				}
-				if (nscan != (GMT_LONG)n_expected_cols) {
+				if (nscan != (int)n_expected_cols) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
 				if (!Ctrl->N.active) {
-					skip_text_records = TRUE;	/* If this record should be skipped we must skip the whole paragraph */
+					skip_text_records = true;	/* If this record should be skipped we must skip the whole paragraph */
 					GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
-					if (GMT_abs (GMT->current.map.this_x_status) > 1 || GMT_abs (GMT->current.map.this_y_status) > 1) continue;
-					skip_text_records = FALSE;	/* Since we got here we do not want to skip */
+					if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
+					skip_text_records = false;	/* Since we got here we do not want to skip */
 				}
 				if (Ctrl->A.active) {
 					save_angle = T.paragraph_angle;	/* Since we might overwrite the default */
@@ -700,7 +700,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					T.paragraph_angle = fmod (tmp + 360.0 + 90.0, 180.0) - 90.0;	/* Ensure usable angles for text plotting */
 					if (fabs (T.paragraph_angle - tmp) > 179.0) T.block_justify = 4 * (T.block_justify/4) + 2 - (T.block_justify%4 - 2);	/* Flip any L/R code */
 				}
-				master_record = TRUE;
+				master_record = true;
 			}
 			else {	/* Text block record */
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
@@ -787,7 +787,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
-			if (nscan != (GMT_LONG)n_expected_cols) {
+			if (nscan != (int)n_expected_cols) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Record %d is incomplete (skipped)\n", n_read);
 				continue;
 			}
@@ -805,7 +805,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			xx[0] = plot_x;	yy[0] = plot_y;
 			if (!Ctrl->N.active) {
 				GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
-				if (GMT_abs (GMT->current.map.this_x_status) > 1 || GMT_abs (GMT->current.map.this_y_status) > 1) continue;
+				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 			}
 
 			if (Ctrl->A.active) {
@@ -865,7 +865,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 		}
 
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -879,7 +879,7 @@ GMT_LONG GMT_pstext (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	 	GMT_free (GMT, paragraph);
 	}
 	if (Ctrl->G.mode && m) {
-		GMT_LONG form;
+		int form;
 		GMT_textpath_init (GMT, &Ctrl->W.pen, Ctrl->W.pen.rgb, &Ctrl->W.pen, Ctrl->G.fill.rgb);
 		form = (T.boxflag & 4) ? 16 : 0;
 		if (Ctrl->C.percent) {	/* Meant % of fontsize */

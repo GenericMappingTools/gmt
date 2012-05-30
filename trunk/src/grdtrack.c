@@ -45,52 +45,52 @@ enum grdtrack_enum_opt {STACK_ADD_VAL = 0,	/* +a: Append stacked value(s) at end
 
 struct GRD_CONTAINER {	/* Keep all the grid and sample parameters together */
 	struct GMT_GRID *G;
-	GMT_LONG type;	/* 0 = regular grid, 1 = img grid */
+	int type;	/* 0 = regular grid, 1 = img grid */
 };
 
 struct GRDTRACK_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct Out {	/* -> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct A {	/* -A[m|p] */
-		GMT_BOOLEAN active;
+		bool active;
 		int mode;
 	} A;
 	struct C {	/* -C<length>/<ds>[/<spacing>] */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;	/* May be negative */
+		bool active;
+		int mode;	/* May be negative */
 		char unit;
 		double ds, spacing, length;
 	} C;
 	struct D {	/* -Dresampfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct G {	/* -G<grdfile> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n_grids;
+		bool active;
+		unsigned int n_grids;
 		char *file[MAX_GRIDS];
 		double scale[MAX_GRIDS], lat[MAX_GRIDS];
-		GMT_LONG mode[MAX_GRIDS];
-		GMT_LONG type[MAX_GRIDS];	/*HIDDEN */
+		int mode[MAX_GRIDS];
+		int type[MAX_GRIDS];	/*HIDDEN */
 	} G;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct S {	/* -S[<mode>][<modifiers>] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN selected[STACK_N_OPT];	/* For +a +d +e +r +s */
-		COUNTER_MEDIUM mode;		/* Type of stack a|m|p|l|L|u|U */
+		bool active;
+		bool selected[STACK_N_OPT];	/* For +a +d +e +r +s */
+		unsigned int mode;		/* Type of stack a|m|p|l|L|u|U */
 		double factor;			/* Set via +c<factor> */
 		char *file;			/* Output file for stack */
 	} S;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
@@ -99,13 +99,13 @@ void *New_grdtrack_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a ne
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDTRACK_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->S.factor = 2.0;	/* +/- 2*sigma */
 	return (C);
 }
 
 void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deallocate control structure */
-	COUNTER_MEDIUM g;
+	unsigned int g;
 	if (!C) return;
 	if (C->In.file) free (C->In.file);
 	if (C->D.file) free (C->D.file);
@@ -115,7 +115,7 @@ void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grdtrack %s [API] - Sample grids at specified (x,y) locations\n\n", GMT_VERSION);
@@ -166,7 +166,7 @@ GMT_LONG GMT_grdtrack_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -174,8 +174,8 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG j;
-	COUNTER_MEDIUM pos, n_errors = 0, ng = 0, n_files = 0;
+	int j;
+	unsigned int pos, n_errors = 0, ng = 0, n_files = 0;
 	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -194,21 +194,21 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change spherical sampling mode */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'm': Ctrl->A.mode = 1; break;
 					case 'p': Ctrl->A.mode = 2; break;
 				}
 				break;
 			case 'C':	/* Create cross profiles */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
 				Ctrl->C.mode = GMT_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
 				Ctrl->C.mode = GMT_get_distance (GMT, tb, &(Ctrl->C.ds), &(Ctrl->C.unit));
 				if (j == 3) Ctrl->C.mode = GMT_get_distance (GMT, tc, &(Ctrl->C.spacing), &(Ctrl->C.unit));
 				break;
 			case 'D':	/* Dump resampled lines */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'G':	/* Input grid file */
@@ -217,7 +217,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 					n_errors++;
 				}
 				else {
-					Ctrl->G.active = TRUE;
+					Ctrl->G.active = true;
 					Ctrl->G.scale[ng] = 1.0;
 					if (strchr (opt->arg, ',') && !strchr (opt->arg, '?')) {	/* IMG grid file with required parameters */
 						if ((j = sscanf (opt->arg, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
@@ -252,7 +252,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 #endif
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'S':
 #ifdef GMT_COMPAT
@@ -262,7 +262,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 					break;
 				}
 #endif
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->S.mode = STACK_MEAN;   break;
 					case 'm': Ctrl->S.mode = STACK_MEDIAN; break;
@@ -279,11 +279,11 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				pos = 0;
 				while (GMT_strtok (&opt->arg[1], "+", &pos, p)) {
 					switch (p[0]) {
-						case 'a': Ctrl->S.selected[STACK_ADD_VAL] = TRUE; break;	/* Gave +a to add stacked value to all output profiles */
-						case 'd': Ctrl->S.selected[STACK_ADD_DEV] = TRUE; break;	/* Gave +d to add stacked deviations to all output profiles */
-						case 'r': Ctrl->S.selected[STACK_ADD_RES] = TRUE; break;	/* Gave +r to add residual values (data - stack) to all output profiles */
+						case 'a': Ctrl->S.selected[STACK_ADD_VAL] = true; break;	/* Gave +a to add stacked value to all output profiles */
+						case 'd': Ctrl->S.selected[STACK_ADD_DEV] = true; break;	/* Gave +d to add stacked deviations to all output profiles */
+						case 'r': Ctrl->S.selected[STACK_ADD_RES] = true; break;	/* Gave +r to add residual values (data - stack) to all output profiles */
 						case 'c': Ctrl->S.factor = atof (&p[1]); break;			/* Gave +c to scale deviations for use in making envelopes [2] */
-						case 's': Ctrl->S.selected[STACK_ADD_TBL] = TRUE;		/* Gave +s to write stacked profile to given table */
+						case 's': Ctrl->S.selected[STACK_ADD_TBL] = true;		/* Gave +s to write stacked profile to given table */
 							Ctrl->S.file = (p[1]) ? strdup (&p[1]) : strdup ("stacked_profile.txt");
 							break;
 						default:
@@ -294,7 +294,7 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 				}
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -315,9 +315,9 @@ GMT_LONG GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, COUNTER_MEDIUM n_grids, GMT_BOOLEAN img, double x_in, double y_in, double value[])
+int sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, unsigned int n_grids, bool img, double x_in, double y_in, double value[])
 {
-	COUNTER_MEDIUM g, n_in, n_set;
+	unsigned int g, n_in, n_set;
 	double x, y, x0 = 0.0, y0 = 0.0;
 	
 	if (img) GMT_geo_to_xy (GMT, x_in, y_in, &x0, &y0);	/* At least one Mercator IMG grid in use - get Mercator coordinates x,y */
@@ -363,13 +363,13 @@ GMT_LONG sample_all_grids (struct GMT_CTRL *GMT, struct GRD_CONTAINER *GC, COUNT
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdtrack_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 	/* High-level function that implements the grdtrack task */
 
-	GMT_LONG status, error, ks;
-	COUNTER_LARGE n_points = 0, n_read = 0;
-	COUNTER_MEDIUM g, k;
-	GMT_BOOLEAN img_conv_needed = FALSE;
+	int status, error, ks;
+	uint64_t n_points = 0, n_read = 0;
+	unsigned int g, k;
+	bool img_conv_needed = false;
 	
 	char line[GMT_BUFSIZ];
 
@@ -431,14 +431,14 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 		else {	/* Sandwell/Smith Mercator grids */
 			if ((GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], TRUE);
-			img_conv_needed = TRUE;
+			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], true);
+			img_conv_needed = true;
 		}
 	}
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
-		COUNTER_MEDIUM tbl, col, n_cols = Ctrl->G.n_grids;
-		COUNTER_LARGE row, seg;
+		unsigned int tbl, col, n_cols = Ctrl->G.n_grids;
+		uint64_t row, seg;
 		struct GMT_DATASET *Din = NULL, *Dout = NULL, *Dtmp = NULL;
 		struct GMT_TABLE *T = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;
@@ -496,15 +496,15 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				}
 			}
 		}
-		if (Dout->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+		if (Dout->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		
 		if (Ctrl->S.active) {	/* Compute the stacked profiles */
 			struct GMT_DATASET *Stack = NULL;
 			struct GMT_LINE_SEGMENT *M = NULL;
-			COUNTER_LARGE dim[4], n_rows;
-			COUNTER_MEDIUM n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
-			COUNTER_MEDIUM colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
-			COUNTER_MEDIUM GMT_mode_selection = 0, GMT_n_multiples = 0;
+			uint64_t dim[4], n_rows;
+			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
+			unsigned int colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
+			unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0;
 			double **stack = NULL, *stacked_val = NULL, *stacked_dev = NULL, *stacked_hi = NULL, *stacked_lo = NULL, *dev = NULL;
 			dim[0] = 1;				/* One table */
 			dim[1] = Dout->n_tables;		/* Number of stacks */
@@ -591,11 +591,11 @@ GMT_LONG GMT_grdtrack (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else {	/* Standard resampling point case */
-		GMT_BOOLEAN pure_ascii = FALSE;
-		GMT_LONG ix, iy, n_fields, rmode;
+		bool pure_ascii = false;
+		int ix, iy, n_fields, rmode;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
-GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols);
+int gmt_skip_output (struct GMT_CTRL *C, double *cols, int n_cols);
 		
 		pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->common.o.active);
 
@@ -668,7 +668,7 @@ GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols);
 			}
 
 			n_points++;
-		} while (TRUE);
+		} while (true);
 		
 		if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
@@ -687,7 +687,7 @@ GMT_LONG gmt_skip_output (struct GMT_CTRL *C, double *cols, GMT_LONG n_cols);
 			Return (API->error);
 		}
 		else
-			GMT_free_grid (GMT, &GC[g].G, TRUE);
+			GMT_free_grid (GMT, &GC[g].G, true);
 	}
 	GMT_free (GMT, value);
 	GMT_free (GMT, GC);

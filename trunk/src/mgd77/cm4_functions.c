@@ -630,7 +630,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					nsto = 3;
 					ntay = 1;
 					rtay = rtay_dw;
-					omdl = FALSE;
+					omdl = false;
 					mmdl = 1;
 				} else {
 					pbto = peto = 0;
@@ -638,7 +638,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 					nsto = 3;
 					ntay = 1;
 					rtay = rtay_dk;
-					omdl = FALSE;
+					omdl = false;
 					mmdl = 2;
 				}
 			} else {
@@ -648,7 +648,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				nsto = 5;
 				ntay = 1;
 				rtay = rtay_or;
-				omdl = TRUE;
+				omdl = true;
 				mmdl = 1;
 			}
 			bfield(1, 60, 0, 1, 1, 12, 0, 0, 0, 0, 1, 3, 0, 0, epch, re, rp, rm,

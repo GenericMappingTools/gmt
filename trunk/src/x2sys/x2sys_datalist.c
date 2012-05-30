@@ -30,27 +30,27 @@
 
 struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 		char *flags;
 	} F;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} L;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 };
 
 struct X2SYS_ADJUST {
-	GMT_LONG n;
+	int n;
 	double *d, *c;
 };
 
@@ -59,7 +59,7 @@ void *New_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_DATALIST_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -71,7 +71,7 @@ void Free_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL 
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "x2sys_datalist %s - Extract content of track data files\n\n", X2SYS_VERSION);
@@ -96,7 +96,7 @@ GMT_LONG GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -104,7 +104,7 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -119,21 +119,21 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 			/* Processes program-specific parameters */
 			
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'L':	/* Crossover correction table */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -147,10 +147,10 @@ GMT_LONG GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-GMT_BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
+bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	COUNTER_MEDIUM n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
-	GMT_LONG n_fields;
+	unsigned int n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	int n_fields;
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 	char file[GMT_BUFSIZ];
@@ -158,12 +158,12 @@ GMT_BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, 
 	struct X2SYS_ADJUST *adj = NULL;
 	
 	sprintf (file, "%s/%s/%s.%s.adj", DIR, TAG, track, column);
-	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) return FALSE;	/* Nuthin' to read */
+	if ((fp = GMT_fopen (GMT, file, "r")) == NULL) return false;	/* Nuthin' to read */
 	
 	adj = GMT_memory (GMT, NULL, 1, struct X2SYS_ADJUST);
 	adj->d = GMT_memory (GMT, NULL, n_alloc, double);
 	adj->c = GMT_memory (GMT, NULL, n_alloc, double);
-	for (k = 0; k < 2; k++) l_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
+	for (k = 0; k < 2; k++) uint_swap (type[k], GMT->current.io.col_type[GMT_IN][k]);	/* Save original input type setting */
 	while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) != NULL && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		adj->d[n] = in[0];
 		adj->c[n] = in[1];
@@ -179,21 +179,21 @@ GMT_BOOLEAN x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, 
 	adj->c = GMT_memory (GMT, adj->c, n, double);
 	adj->n = n;
 	*A = adj;
-	for (k = 0; k < 2; k++) l_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
-	return (TRUE);
+	for (k = 0; k < 2; k++) uint_swap (GMT->current.io.col_type[GMT_IN][k], type[k]);	/* Restore original input type setting */
+	return (true);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_datalist_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL;
 
-	GMT_LONG is, this_col;
-	GMT_BOOLEAN error = FALSE,  cmdline_files, special_formatting = FALSE, *adj_col = NULL;
-	COUNTER_MEDIUM bad, trk_no, n_tracks, n_data_col_out = 0, k;
-	COUNTER_LARGE i, j;
+	int is, this_col;
+	bool error = false,  cmdline_files, special_formatting = false, *adj_col = NULL;
+	unsigned int bad, trk_no, n_tracks, n_data_col_out = 0, k;
+	uint64_t i, j;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;
@@ -204,9 +204,9 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct MGD77_CORRTABLE **CORR = NULL;
 	struct MGD77_AUX_INFO aux[N_MGD77_AUX];
 	struct MGD77_AUXLIST auxlist[N_GENERIC_AUX] = {
-		{ "dist",    MGD77_AUX_DS, FALSE, FALSE, "d(km)"},
-		{ "azim",    MGD77_AUX_AZ, FALSE, FALSE, "azimuth"},
-		{ "vel",     MGD77_AUX_SP, FALSE, FALSE, "v(m/s)"}
+		{ "dist",    MGD77_AUX_DS, false, false, "d(km)"},
+		{ "azim",    MGD77_AUX_AZ, false, false, "azimuth"},
+		{ "vel",     MGD77_AUX_SP, false, false, "v(m/s)"}
 	};
 	struct X2SYS_ADJUST **A = NULL;
 	struct X2SYS_DATALIST_CTRL *Ctrl = NULL;
@@ -247,7 +247,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		/* Supply dummy linear proj */
 		GMT->current.proj.projection = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
 		GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
-		GMT->common.J.active = TRUE;
+		GMT->common.J.active = true;
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {
 			GMT->common.R.wesn[XLO] += 360.0;
 			GMT->common.R.wesn[XHI] += 360.0;
@@ -267,9 +267,9 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
 
-		if (s->info[s->out_order[i]].format[0] != '-') special_formatting = TRUE;
+		if (s->info[s->out_order[i]].format[0] != '-') special_formatting = true;
 	}
-	if (GMT->common.b.active[GMT_OUT]) special_formatting = FALSE;
+	if (GMT->common.b.active[GMT_OUT]) special_formatting = false;
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (i = n_data_col_out = 0; i < s->n_out_columns; i++) {
@@ -352,7 +352,7 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	if (Ctrl->A.active) {
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
-		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, GMT_BOOLEAN);
+		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {
@@ -384,9 +384,9 @@ GMT_LONG GMT_x2sys_datalist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (auxlist[MGD77_AUX_AZ].requested) {
 				if (j == 0)	/* Look forward at first point to get an azimuth */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[s->x_col][1], data[s->y_col][1], data[s->x_col][0], data[s->y_col][0], FALSE);
+					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[s->x_col][1], data[s->y_col][1], data[s->x_col][0], data[s->y_col][0], false);
 				else		/* else go from previous to this point */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[s->x_col][j], data[s->y_col][j], data[s->x_col][j-1], data[s->y_col][j-1], FALSE);
+					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[s->x_col][j], data[s->y_col][j], data[s->x_col][j-1], data[s->y_col][j-1], false);
 			}
 			if (auxlist[MGD77_AUX_DS].requested) {
 				ds = (j == 0) ? 0.0 : dist_scale * GMT_distance (GMT, data[s->x_col][j], data[s->y_col][j], data[s->x_col][j-1], data[s->y_col][j-1]);

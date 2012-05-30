@@ -59,7 +59,7 @@ double  GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord)
 	return( R2D * GMT_img_gud_fwd( (coord->nytop - ypix) / coord->radius) );
 }
 
-GMT_LONG GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c)
+int GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c)
 {
 	/* Given the RANGE info, set up the COORD values.  Return (-1) on failure;
 	 * 0 on success.  */

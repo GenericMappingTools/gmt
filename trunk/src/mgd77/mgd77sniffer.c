@@ -43,7 +43,7 @@
 #define POS 1
 #define NEG 0
 
-GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -153,7 +153,7 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	GMT_message (GMT, "\t-g: Img files must be of Sandwell/Smith signed two-byte integer (i2) type with no header.\n");
 	GMT_message (GMT, "\t-G: Grid files can be any type of GMT grid file (native or netCDF) with header\n");
 	GMT_message (GMT, "\tA correctly formatted grid file can be generated as follows:\n");
-	GMT_message (GMT, "\t   e.g., gmtset GRIDFILE_SHORTHAND TRUE\n");
+	GMT_message (GMT, "\t   e.g., gmtset GRIDFILE_SHORTHAND true\n");
 	GMT_message (GMT, "\t\tCreate/edit .gmt_io file to include the following rows:\n");
 	GMT_message (GMT, "\t\t\t# GMT I/O shorthand file\n");
 	GMT_message (GMT, "\t\t\t# suffix   format_id scale offset       NaN\n");
@@ -209,18 +209,18 @@ GMT_LONG GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 
-GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_mgd77sniffer (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
-	GMT_BOOLEAN error = FALSE, nautical = FALSE, custom_max_speed = FALSE, simulate = FALSE;
-	GMT_BOOLEAN bad_sections = FALSE, custom_min_speed = FALSE, do_regression = TRUE, dist_to_coast = FALSE;
-	GMT_BOOLEAN custom_warn = FALSE, warn[MGD77_N_WARN_TYPES], report_raw = FALSE;
-	GMT_BOOLEAN decimateData = TRUE, forced = FALSE, adjustData = FALSE, flip_flags = FALSE;
+	bool error = false, nautical = false, custom_max_speed = false, simulate = false;
+	bool bad_sections = false, custom_min_speed = false, do_regression = true, dist_to_coast = false;
+	bool custom_warn = false, warn[MGD77_N_WARN_TYPES], report_raw = false;
+	bool decimateData = true, forced = false, adjustData = false, flip_flags = false;
 	
-	COUNTER_MEDIUM argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
-	COUNTER_MEDIUM dtc_index = 0, pos = 0;
+	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
+	unsigned int dtc_index = 0, pos = 0;
 
-	COUNTER_MEDIUM MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
+	unsigned int MGD77_this_bit[32], n_types[N_ERROR_CLASSES], n_bad_sections = 0;
 
 	double time_factor = 1.0, distance_factor = 1.0, maxTime, west=0.0, east=0.0, north=0.0, south=0.0, adjustDC[32];
 	double test_slope[5] = {0.1, 10.0, MGD77_METERS_PER_FATHOM, MGD77_FATHOMS_PER_METER}, adjustScale[32];
@@ -244,9 +244,9 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* THESE VARIABLES VARY FOR EACH CRUISE AND REQUIRE EXTRA CARE (RESET FOR EACH CRUISE) */
 	int type, field, bccCode, col, *iMaxDiff = NULL;
 	int j, noTimeStart, timeErrorStart, distanceErrorStart, overLandStart, last_day, utc_offset;
-	COUNTER_MEDIUM i, k, ju, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_wrap;
-	COUNTER_MEDIUM noTimeCount, timeErrorCount, overLandCount, extreme, spike_amplitude, distanceErrorCount;
-	COUNTER_MEDIUM duplicates[MGD77_N_NUMBER_FIELDS], n_bad, grav_formula;
+	unsigned int i, k, ju, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_wrap;
+	unsigned int noTimeCount, timeErrorCount, overLandCount, extreme, spike_amplitude, distanceErrorCount;
+	unsigned int duplicates[MGD77_N_NUMBER_FIELDS], n_bad, grav_formula;
 	size_t n_alloc = GMT_CHUNK;
 	unsigned int lowPrecision, lowPrecision5, MGD77_sign_bit[32];
 
@@ -257,10 +257,10 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstats[MGD77_N_STATS][GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
 
-	GMT_BOOLEAN *prevOffsetSign, prevFlag, prevType, decimated = FALSE;
-	GMT_BOOLEAN gotTime, landcruise, *offsetSign, newScale = FALSE, mtf1, nav_error;
+	bool *prevOffsetSign, prevFlag, prevType, decimated = false;
+	bool gotTime, landcruise, *offsetSign, newScale = false, mtf1, nav_error;
 #ifdef FIX
-	GMT_BOOLEAN deleteRecord = FALSE;
+	bool deleteRecord = false;
 #endif
 
 	/* INITIALIZE MEMORY FOR MGD77 DATA STRUCTURES */
@@ -310,7 +310,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_types[E77_SLOPE] = N_DEFAULT_TYPES;
 
 	/* TURN ON MGD77SNIFFER ERROR MESSAGES */
-	for (i = 0; i<MGD77_N_WARN_TYPES; i++) warn[i] = TRUE;
+	for (i = 0; i<MGD77_N_WARN_TYPES; i++) warn[i] = true;
 
 	/* SET PROGRAM DEFAULTS */
 	arguments[0] = 0;
@@ -343,7 +343,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			case 'A':	/* adjust slope and intercept */
 				if (!error && sscanf (opt->arg, "%[^,]", abbrev) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Give field abbreviation, slope and intercept\n");
-					error = TRUE;
+					error = true;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
 				col = 0;
@@ -351,35 +351,35 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: invalid field abbreviation\n");
-					error = TRUE;
+					error = true;
 				}
 				if (!error && sscanf (opt->arg, "%[^,],%lf,%lf", abbrev, &adjustScale[col], &adjustDC[col]) != 3) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Give field abbreviation,slope,intercept\n");
-					error = TRUE;
+					error = true;
 				}
-				adjustData = TRUE;
+				adjustData = true;
 				break;
 			case 'B':	/* set nav on land threshold */
 				nav_on_land_threshold =  atof (opt->arg);
 				break;
 			case 'C':	/* set max speed */
 				max_speed = atof (opt->arg);
-				custom_max_speed = TRUE;
+				custom_max_speed = true;
 				break;
 			case 'D':
-				do_regression = FALSE;
-				if (opt->arg[1] == 'r') report_raw = TRUE;
+				do_regression = false;
+				if (opt->arg[1] == 'r') report_raw = true;
 				if (opt->arg[0] == 'd') { /* cruise - grid differences */
 					display = "DIFFS";
 					n_out_columns = 6;
 				}
 				else if (opt->arg[0] == 'e') { /* E77 error output */
-					do_regression = TRUE;
+					do_regression = true;
 					display = "E77";
 					n_out_columns = 6;
 				}
 				else if (opt->arg[0] == 'E') { /* E77 error output with minimal checking */
-					do_regression = FALSE;
+					do_regression = false;
 					display = "E77";
 					n_out_columns = 6;
 				}
@@ -410,33 +410,33 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n",\
 					opt->option, opt->arg);
-					error = TRUE;
+					error = true;
 				}
 				/* Silence all warning messages for data dumps */
-				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = FALSE;
+				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = false;
 				M.verbose_dest = 2;		/* 1 = stdout, 2 = stderr */
 				break;
 #ifdef DEBUG
 			case 'F':	/* fake mode (specify field and constant z value in -G - no grid reading */
-				simulate = TRUE;
+				simulate = true;
 				break;
 #endif
 			case 'g':	/* Get grid filename and geophysical field name to compare with grid */
 				this_grid[n_grids].format = 1; 	/* Mercator grid */
 				if (sscanf (opt->arg, "%[^,],%[^,],%lf,%d,%lf", this_grid[n_grids].abbrev, this_grid[n_grids].fname, &this_grid[n_grids].scale, &this_grid[n_grids].mode, &this_grid[n_grids].max_lat) < 4) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -g option: Give field abbreviation, grid file, scale, mode [, and optionally max lat]\n");
-					error = TRUE;
+					error = true;
 				}
 			case 'G':	/* Get grid filename and geophysical field name to compare with grid */
 				if (!error && this_grid[n_grids].format == 0 && sscanf (opt->arg, "%[^,],%s", this_grid[n_grids].abbrev, this_grid[n_grids].fname) != 2) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give field abbreviation and grid file\n");
-					error = TRUE;
+					error = true;
 				}
 				else {
 					/* Find what column number this field corresponds to (i.e. depth == 11) */
 					this_grid[n_grids].col = 0;
 					if (! strcmp (this_grid[n_grids].abbrev, "nav")) {
-						dist_to_coast = TRUE;
+						dist_to_coast = true;
 						dtc_index = n_grids;
 						n_grids++;
 						break;
@@ -445,7 +445,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						this_grid[n_grids].col++;
 					if (this_grid[n_grids].col == MGD77_N_NUMBER_FIELDS) {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: invalid field abbreviation\n");
-						error = TRUE;
+						error = true;
 					}
 					if (!strcmp (this_grid[n_grids].abbrev,"depth")) this_grid[n_grids].sign = -1;
 					else this_grid[n_grids].sign = 1;
@@ -453,23 +453,23 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				break;
 			case 'H':	/* Force to decimate or not during grid comparison */
-				forced = TRUE;
+				forced = true;
 				if (opt->arg[0] == 'd')
-					decimateData = FALSE;
+					decimateData = false;
 				else if (opt->arg[0] == 'f')
-					decimateData = TRUE;
+					decimateData = true;
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'b')
-					forced = FALSE;
+					forced = false;
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n", opt->option,\
 					opt->arg);
-					error = TRUE;
+					error = true;
 				}
 				break;
 			case 'I':	/* Pass ranges of data records to ignore for output to E77 */
 				if (!error && sscanf (opt->arg, "%[^,],%d,%d", BadSection[n_bad_sections].abbrev, &BadSection[n_bad_sections].start, &BadSection[n_bad_sections].stop) != 3) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Give field abbreviation,rec1,recN\n");
-					error = TRUE;
+					error = true;
 				}
 				/* Find what column number this field corresponds to (i.e. depth == 11) */
 				col = 0;
@@ -477,24 +477,24 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					col++;
 				if (col == MGD77_N_NUMBER_FIELDS) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: invalid field abbreviation\n");
-					error = TRUE;
+					error = true;
 				}
-				bad_sections = TRUE;
+				bad_sections = true;
 				BadSection[n_bad_sections].col = col;
 				n_bad_sections++;
 				if (n_bad_sections == MAX_BAD_SECTIONS) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Max number of sections (%d) reached\n", MAX_BAD_SECTIONS);
-					error = TRUE;
+					error = true;
 				}
 				break;
 			case 'K':	/* Reverse navigation flags */
-				flip_flags = TRUE;
+				flip_flags = true;
 				break;
 			case 'L':	/* Overwrite default sniffer limits */
 				custom_limit_file = opt->arg;
 				break;
 			case 'N':	/* Change to nautical units instead of metric */
-				nautical = TRUE;
+				nautical = true;
 				speed_units = "knots";
 				break;
 			case 'P':	/* Specify percent limits for all regression tests */
@@ -516,41 +516,41 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
-					error = TRUE;
+					error = true;
 				}
 				break;
 			case 'T':	/* Specify maximum gap between records */
 				maxGap = atof (opt->arg);
 				if (maxGap < 0) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -M option: max gap cannot be negative\n");
-					error = TRUE;
+					error = true;
 				}
 				break;
 			case 'W':	/* Choose which warning types to go to stdout (default - all) */
-				do_regression = FALSE;
-				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = FALSE;
+				do_regression = false;
+				for (j = 0; j<MGD77_N_WARN_TYPES; j++) warn[j] = false;
 				while (GMT_strtok (opt->arg, ",", &pos, &c)) {
 					if (c == 'v')
-						warn[VALUE_WARN] = TRUE;
+						warn[VALUE_WARN] = true;
 					else if (c == 'g')
-						warn[SLOPE_WARN] = TRUE;
+						warn[SLOPE_WARN] = true;
 					else if (c == 'o')
-						warn[GRID_WARN] = TRUE;
+						warn[GRID_WARN] = true;
 					else if (c == 't')
-						warn[TIME_WARN] = TRUE;
+						warn[TIME_WARN] = true;
 					else if (c == 's')
-						warn[SPEED_WARN] = TRUE;
+						warn[SPEED_WARN] = true;
 					else if (c == 'c')
-						warn[TYPE_WARN] = TRUE;
+						warn[TYPE_WARN] = true;
 					else if (c == 'x') {
-						do_regression = TRUE;
-						warn[SUMMARY_WARN] = TRUE;
+						do_regression = true;
+						warn[SUMMARY_WARN] = true;
 					} else {
 						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Unrecognized option -%c%s\n", opt->option, opt->arg);
-						error = TRUE;
+						error = true;
 					}
 				}
-				custom_warn = TRUE;
+				custom_warn = true;
 				break;
 			default:
 				error += GMT_default_error (GMT, opt->option);
@@ -806,7 +806,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		D = GMT_memory (GMT, NULL, n_alloc, struct MGD77_DATA_RECORD);
 
 		/* READ DATA RECORDS */
-		gotTime = FALSE;
+		gotTime = false;
 		nvalues = n_nan = M.bit_pattern[0] = 0;
 		lowPrecision = lowPrecision5 = 0;
 		while (!MGD77_Read_Data_Record_asc (GMT, &M, &D[nvalues])) {
@@ -817,7 +817,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			if (GMT_is_dnan(D[nvalues].time)) n_nan++;
 			M.bit_pattern[0] |= D[nvalues].bit_pattern;
-			D[nvalues].keep_nav = TRUE;
+			D[nvalues].keep_nav = true;
 			nvalues++;
 		}
 
@@ -863,7 +863,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		/* Check for time stamps */
-		if (n_nan < nvalues) gotTime = TRUE;
+		if (n_nan < nvalues) gotTime = true;
 		if (n_nan > 0 && n_nan < nvalues) { /* Mixed case */
 			if (!strcmp(display,"E77"))
 				fprintf (fpout, "%c-%c-%s-time-%.02d: %d of %d records contain invalid time\n",\
@@ -882,25 +882,25 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		/* Re-set variables for this cruise */
-		landcruise = FALSE;
-		nav_error = TRUE;
+		landcruise = false;
+		nav_error = true;
 		overLandCount = overLandStart = n_bad = utc_offset = 0;
 		timeErrorStart = noTimeStart = distanceErrorStart = -1;
 		noTimeCount = timeErrorCount = distanceErrorCount = bccCode = 0;
 		n_nan = n_wrap = 0;
 		offsetArea = GMT_memory (GMT, NULL, n_grids, double);
-		offsetStart = GMT_memory (GMT, NULL, n_grids, GMT_LONG);
+		offsetStart = GMT_memory (GMT, NULL, n_grids, int);
 		offsetLength = GMT_memory (GMT, NULL, n_grids, double);
-		offsetSign = GMT_memory (GMT, NULL, n_grids, GMT_BOOLEAN);
-		prevOffsetSign = GMT_memory (GMT, NULL, n_grids, GMT_BOOLEAN);
+		offsetSign = GMT_memory (GMT, NULL, n_grids, bool);
+		prevOffsetSign = GMT_memory (GMT, NULL, n_grids, bool);
 		range = range2 = date = n_days = 0.0;
 		wrapsum = 0.0;
-		prevFlag = FALSE;
-		mtf1 = TRUE;
+		prevFlag = false;
+		mtf1 = true;
 		for (i = 0; i<n_grids; i++) {
 			offsetArea[i] = offsetLength[i] = 0.0;
 			offsetStart[i] = 0;
-			offsetSign[i] = prevOffsetSign[i] = FALSE;
+			offsetSign[i] = prevOffsetSign[i] = false;
 		}
 		for (i = MGD77_LATITUDE; i<MGD77_N_NUMBER_FIELDS; i++) {
 			MGD77_sign_bit[i] = 0;
@@ -933,7 +933,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						noTimeStart = (int)curr;
 					noTimeCount++;
 					E[curr].flags[E77_NAV] |= NAV_UNDEF;
-					D[curr].keep_nav = FALSE;
+					D[curr].keep_nav = false;
 				}
 				if (!D[curr].keep_nav) continue;
 				if (curr > 0) {
@@ -979,7 +979,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			spike_amplitude = NEG; /* For non-increasing time check - must be set to NEG */
 			while (nav_error) {
 				prev_speed = 0;
-				nav_error = FALSE;
+				nav_error = false;
 				for (curr = 0; curr < nvalues; curr++) {
 					if (!D[curr].keep_nav) continue;
 					if (curr > 0) {
@@ -996,8 +996,8 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						if ((spike_amplitude == NEG && (D[curr].time-E[curr].utc_offset <= D[j].time-E[j].utc_offset && D[curr].time-E[curr].utc_offset <= D[k].time-E[k].utc_offset)) || \
 						    (spike_amplitude == POS && (D[curr].time-E[curr].utc_offset >= D[j].time-E[j].utc_offset && D[curr].time-E[curr].utc_offset >= D[k].time-E[k].utc_offset))) {
 							E[curr].flags[E77_NAV] |= NAV_TIME_NONINC;
-							D[curr].keep_nav=FALSE;
-							nav_error = TRUE;
+							D[curr].keep_nav=false;
+							nav_error = true;
 							n_bad++;
 							if (warn[TIME_WARN]) {
 								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
@@ -1014,25 +1014,25 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 				}
 				/* Switch to positive amplitude time spikes after first run through */
-				if (nav_error == FALSE && spike_amplitude == NEG) {
-					nav_error = TRUE;
+				if (nav_error == false && spike_amplitude == NEG) {
+					nav_error = true;
 					spike_amplitude = POS;
 				}
 			}
-			nav_error = TRUE;
+			nav_error = true;
 			while (nav_error) {
 				prev_speed = 0;
-				nav_error = FALSE;
+				nav_error = false;
 				for (curr = 0; curr < nvalues; curr++) {
-					if (D[curr].keep_nav == FALSE) continue;
+					if (D[curr].keep_nav == false) continue;
 					if (curr > 0) {
-						for (j=curr-1; D[j].keep_nav==FALSE && j >= 0; j--) continue; /* Find previous good record */
-						if (D[j].keep_nav == FALSE) continue; /* No valid previous fix */
+						for (j=curr-1; D[j].keep_nav==false && j >= 0; j--) continue; /* Find previous good record */
+						if (D[j].keep_nav == false) continue; /* No valid previous fix */
 						/* Check for excessive speed */
 						speed = (GMT_great_circle_dist_meter(GMT, D[j].number[MGD77_LONGITUDE],D[j].number[MGD77_LATITUDE],D[curr].number[MGD77_LONGITUDE],D[curr].number[MGD77_LATITUDE]) \
 								*distance_factor)/(((D[curr].time-E[curr].utc_offset)-(D[j].time-E[j].utc_offset))*time_factor);
 						if (fabs(speed)>max_speed) {
-							nav_error = TRUE;
+							nav_error = true;
 							if (warn[SPEED_WARN]) {
 								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
@@ -1043,10 +1043,10 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							if (fabs(prev_speed) <= max_speed) { /* Bad nav in current record */
 								n_bad++;
 								E[curr].flags[E77_NAV] |= NAV_HISPD;
-								D[curr].keep_nav = FALSE;
+								D[curr].keep_nav = false;
 							} else { /* Bad nav in previous record */
 								E[j].flags[E77_NAV] |= NAV_HISPD;
-								D[j].keep_nav = FALSE;
+								D[j].keep_nav = false;
 							}
 						} else
 							prev_speed = speed;
@@ -1054,7 +1054,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			if (flip_flags) {
-				for (curr = 0; curr < nvalues; curr++) D[curr].keep_nav = (D[curr].keep_nav == FALSE);
+				for (curr = 0; curr < nvalues; curr++) D[curr].keep_nav = (D[curr].keep_nav == false);
 				if (!strcmp(display,"E77"))
 					fprintf (fpout, "%c-%c-%s-nav-%.2d: Warning: navigation quality flags reversed by user\n",E77_APPLY,E77_WARN,\
 					list[argno],E77_HDR_NAV);
@@ -1108,9 +1108,9 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 								n_bad++;
 								if (!landcruise)
 									overLandStart = curr;
-								landcruise = TRUE;
+								landcruise = true;
 								overLandCount++;
-								D[k].keep_nav = FALSE;
+								D[k].keep_nav = false;
 							}
 						}
 					}
@@ -1142,7 +1142,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				/* Initialize variables */
 				for (k=0; k<MGD77_N_STATS; k++) { stats[k] = stats2[k] = 0.0; for (j=0; j<GMT_TEXT_LEN64; j++) fstats[k][j]='\0'; }
 				tcrit = se = 0;
-				newScale = FALSE;
+				newScale = false;
 				MaxDiff[i] = 0.0;
 
 				if (this_grid[i].g_pts < 2) {
@@ -1189,7 +1189,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						GMT_report (GMT, GMT_MSG_NORMAL, "Comparing %s and %s using RLS regression\n",this_grid[i].abbrev,this_grid[i].fname);
 						if (!decimateData && forced) {
 							regress_rls (GMT, grid_val, ship_val, nvalues-this_grid[i].n_nan, stats, this_grid[i].col);
-							decimated = FALSE;
+							decimated = false;
 							tcrit = GMT_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
 							npts=(nvalues - this_grid[i].n_nan);
 						}
@@ -1204,25 +1204,25 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							}
 							if (decimateData && forced) {
 								regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
-								decimated = TRUE;
+								decimated = true;
 								tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 							}
 							else {
 								if (npts < 3) {
 									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats, this_grid[i].col);
-									decimated = FALSE;
+									decimated = false;
 									tcrit = GMT_tcrit (GMT, 0.975, (double)(nvalues - this_grid[i].n_nan) - 2.0);
 									GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to insufficient bins\n");
 								} else {
 									regress_rls (GMT, decimated_new, decimated_orig, npts, stats, this_grid[i].col);
-									decimated = TRUE;
+									decimated = true;
 									regress_rls (GMT, grid_val, ship_val, (nvalues - this_grid[i].n_nan), stats2, this_grid[i].col);
 									if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
 										(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
 										GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to better correlation\n");
 										for (j=0; j<MGD77_N_STATS; j++) stats[j] = stats2[j];
 										npts=(nvalues - this_grid[i].n_nan);
-										decimated = FALSE;
+										decimated = false;
 									}
 									tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 								}
@@ -1294,7 +1294,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 											list[argno],this_grid[i].abbrev, text);
 										}
 		#endif
-										newScale = TRUE;
+										newScale = true;
 									}
 									/* If not depth comparison skip fathom check */
 									if (j == 1 && this_grid[i].col != MGD77_DEPTH) break;
@@ -1505,7 +1505,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				else GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported with recomputed (gobs - IGF80 + eot) faa using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
-					decimated = FALSE;
+					decimated = false;
 					tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 					npts=n;
 				}
@@ -1519,25 +1519,25 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					if (decimateData && forced) {
 						regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
-						decimated = TRUE;
+						decimated = true;
 						tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 					}
 					else {
 						if (npts < 3) {
 							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_FAA);
-							decimated = FALSE;
+							decimated = false;
 							tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 							GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to insufficient bins\n");
 						} else {
 							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_FAA);
-							decimated = TRUE;
+							decimated = true;
 							regress_rls (GMT, new_anom, old_anom, n, stats2, MGD77_FAA);
 							if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
 								(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to better correlation\n");
 								for (k=0; k<MGD77_N_STATS; k++) stats[k] = stats2[k];
 								npts=n;
-								decimated = FALSE;
+								decimated = false;
 							}
 							tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 						}
@@ -1691,7 +1691,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* CHECK MAG REFERENCE MODEL */
 		if (do_regression && ((M.bit_pattern[0] & (1 << MGD77_MTF1)) || (M.bit_pattern[0] & (1 << MGD77_MTF2))) &&  M.bit_pattern[0] & (1 << MGD77_MAG)) {
-			if (M.bit_pattern[0] & (1 << MGD77_MTF2)) mtf1 = FALSE;
+			if (M.bit_pattern[0] & (1 << MGD77_MTF2)) mtf1 = false;
 			n_alloc = GMT_CHUNK;
 			new_anom = GMT_memory (GMT, NULL, n_alloc, double);
 			old_anom = GMT_memory (GMT, NULL, n_alloc, double);
@@ -1718,7 +1718,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "Comparing reported and recomputed mag using RLS regression\n");
 				if (!decimateData && forced) {
 					regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
-					decimated = FALSE;
+					decimated = false;
 					tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 					npts=n;
 				}
@@ -1732,25 +1732,25 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					}
 					if (decimateData && forced) {
 						regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
-						decimated = TRUE;
+						decimated = true;
 						tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 					}
 					else {
 						if (npts < 3) {
 							regress_rls (GMT, new_anom, old_anom, n, stats, MGD77_MAG);
-							decimated = FALSE;
+							decimated = false;
 							tcrit = GMT_tcrit (GMT, 0.975, (double)n - 2.0);
 							GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to insufficient bins\n");
 						} else {
 							regress_rls (GMT, decimated_new, decimated_orig, npts, stats, MGD77_MAG);
-							decimated = TRUE;
+							decimated = true;
 							regress_rls (GMT, new_anom, old_anom, n, stats2, MGD77_MAG);
 							if ((stats[MGD77_RLS_CORR] < stats2[MGD77_RLS_CORR] && stats2[MGD77_RLS_SIG] == 1.0) || \
 								(stats[MGD77_RLS_SIG] == 0.0 && stats2[MGD77_RLS_SIG] == 1.0)) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "Regression on undecimated data due to better correlation\n");
 								for (k=0; k<MGD77_N_STATS; k++) stats[k] = stats2[k];
 								npts=n;
-								decimated = FALSE;
+								decimated = false;
 							}
 							tcrit = GMT_tcrit (GMT, 0.975, (double)npts - 2.0);
 						}
@@ -2352,7 +2352,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 #ifdef FIX
 		/* Turn off fields if errors found */
 		for (rec = 0; rec < curr; rec++) {
-			deleteRecord = FALSE;
+			deleteRecord = false;
 			for (type = 0; type < N_ERROR_CLASSES; type++) {
 				if (E[rec].flags[type]) { /*Error in this category */
 					thisLon = D[rec].number[MGD77_LONGITUDE];
@@ -2361,7 +2361,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 						case E77_NAV:
 							/* 9-fill records with nav errors */
 							for (i=MGD77_PTC; i<MGD77_N_NUMBER_FIELDS; i++) D[rec].number[i] = MGD77_NaN;
-							deleteRecord = TRUE;
+							deleteRecord = true;
 							break;
 						default:
 							for (field = MGD77_PTC; field < n_types[type]; field++) {
@@ -2528,7 +2528,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					sprintf (placeStr, "%c%s%s%s%s%s%d%s",E77_REVIEW,GMT->current.setting.io_col_separator,list[argno],GMT->current.setting.io_col_separator,\
 					timeStr,GMT->current.setting.io_col_separator,rec+1,GMT->current.setting.io_col_separator);
 				fprintf (fpout, "%s%s%s",placeStr,errorStr,GMT->current.setting.io_col_separator);
-				prevType = FALSE;
+				prevType = false;
 				for (type = 0; type < N_ERROR_CLASSES; type++) {
 					if (E[rec].flags[type] OR_TRUE) { /*Error in this category */
 						fprintf (fpout, " ");
@@ -2574,10 +2574,10 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 										fprintf (fpout, "%s",mgd77defs[field].abbrev);
 										break;
 								}
-								prevFlag = TRUE;
+								prevFlag = true;
 							}
 						}
-						prevFlag = FALSE;
+						prevFlag = false;
 						switch (type) {
 							case E77_VALUE:
 								fprintf (fpout, " invalid");
@@ -2588,7 +2588,7 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 							default:
 								break;
 						}
-						prevType = TRUE;
+						prevType = true;
 					}
 				}
 				fprintf (fpout, "\n");
@@ -2684,9 +2684,9 @@ GMT_LONG GMT_mgd77sniffer (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	bailout (GMT_OK);
 }
 
-void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, COUNTER_MEDIUM nvalues, double *stats, COUNTER_MEDIUM col)
+void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
 {
-	COUNTER_MEDIUM i, n;
+	unsigned int i, n;
 	double y_hat, threshold, s_0, res, *xx = NULL, *yy = NULL, corr=0.0;
 
 	regress_lms (GMT, x, y, nvalues, stats, col);
@@ -2722,9 +2722,9 @@ void regress_rls (struct GMT_CTRL *GMT, double *x, double *y, COUNTER_MEDIUM nva
 	GMT_free (GMT, yy);
 }
 
-void regress_ls (double *x, double *y, COUNTER_MEDIUM n, double *stats, COUNTER_MEDIUM col)
+void regress_ls (double *x, double *y, unsigned int n, double *stats, unsigned int col)
 {
-	COUNTER_MEDIUM i;
+	unsigned int i;
 	double sum_x, sum_y, sum_x2, sum_y2, sum_xy, d, ss;
 	double mean_x, mean_y, S_xx, S_xy, S_yy, y_discrepancy;
 
@@ -2767,7 +2767,7 @@ void regress_ls (double *x, double *y, COUNTER_MEDIUM n, double *stats, COUNTER_
 	stats[MGD77_RLS_SUMX2] = sum_x2;                             /* Sum of x^2 */
 }
 
-void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, COUNTER_MEDIUM nvalues, double *stats, COUNTER_MEDIUM col)
+void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalues, double *stats, unsigned int col)
 {
 
 	double d_angle, limit, a, old_error, d_error, angle_0, angle_1;
@@ -2791,10 +2791,10 @@ void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, COUNTER_MEDIUM nva
 	}
 }
 
-void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, COUNTER_MEDIUM nvalues, COUNTER_MEDIUM n_angle, double *stats, COUNTER_MEDIUM col)
+void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, double angle1, unsigned int nvalues, unsigned int n_angle, double *stats, unsigned int col)
 {
 	double da, *slp = NULL, *icept = NULL, *z = NULL, *sq_misfit = NULL, *angle = NULL, *e = NULL, emin = DBL_MAX, d;
-	COUNTER_MEDIUM i, j = 0;
+	unsigned int i, j = 0;
 
 	slp = GMT_memory (GMT, NULL, n_angle, double);
 	icept = GMT_memory (GMT, NULL, n_angle, double);
@@ -2844,16 +2844,16 @@ void regresslms_sub (struct GMT_CTRL *GMT, double *x, double *y, double angle0, 
 	GMT_free (GMT, sq_misfit);
 }
 
-double lms (struct GMT_CTRL *GMT, double *x, COUNTER_MEDIUM n)
+double lms (struct GMT_CTRL *GMT, double *x, unsigned int n)
 {
 	double mode;
-	COUNTER_MEDIUM GMT_n_multiples = 0;
+	unsigned int GMT_n_multiples = 0;
 
 	GMT_mode (GMT, x, n, n/2, 1, 0, &GMT_n_multiples, &mode);
 	return mode;
 }
 
-double median (struct GMT_CTRL *GMT, double *x, COUNTER_MEDIUM n)
+double median (struct GMT_CTRL *GMT, double *x, unsigned int n)
 {
 	double *sorted = NULL, med;
 
@@ -2866,7 +2866,7 @@ double median (struct GMT_CTRL *GMT, double *x, COUNTER_MEDIUM n)
 }
 
 /* Read Grid Header (from Smith & Wessel grdtrack.c) */
-void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], COUNTER_MEDIUM interpolant, double threshold) {
+void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[], unsigned int interpolant, double threshold) {
 
 	if (strlen (info->fname) == 0) return;	/* No name */
 
@@ -2886,15 +2886,15 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 	}
 	else {	/* Read a Mercator grid Sandwell/Smith style */
 		if ((info->G = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
-		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, TRUE);
+		GMT_read_img (GMT, info->fname, info->G, wesn, info->scale, info->mode, info->max_lat, true);
 	}
 	info->mx = info->G->header->nx + 4;
 }
 
 /* Sample Grid at Cruise Locations (from Smith & Wessel grdtrack.c) */
-COUNTER_MEDIUM sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, COUNTER_MEDIUM n_grid, COUNTER_MEDIUM n) {
+unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, struct MGD77_DATA_RECORD *D, double **g, unsigned int n_grid, unsigned int n) {
 
-	COUNTER_MEDIUM rec, pts = 0;
+	unsigned int rec, pts = 0;
 	double MGD77_NaN = GMT->session.d_NaN, x, y;
 
 	/* Get grid values at cruise locations */
@@ -2938,9 +2938,9 @@ COUNTER_MEDIUM sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, 
 /* intervals for any ship grid comparisons by reducing excessive */
 /* number of degrees of freedom */
 /* Then create arrays for passing to RLS */
-GMT_LONG decimate (struct GMT_CTRL *GMT, double *new, double *orig, COUNTER_MEDIUM nclean, double min, double max, double delta, double **dec_new, double **dec_orig, COUNTER_MEDIUM *extreme, char *fieldTest) {
+int decimate (struct GMT_CTRL *GMT, double *new, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest) {
 
-	COUNTER_MEDIUM n, j, k, npts, ship_bin, grid_bin;
+	unsigned int n, j, k, npts, ship_bin, grid_bin;
 	int **bin2d = NULL;
 	double *dorig, *dnew = NULL;
 #ifdef DUMP_DECIMATE

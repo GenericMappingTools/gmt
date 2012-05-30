@@ -66,57 +66,57 @@
 
 struct XYZOKB_CTRL {
 	struct XYZOKB_C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 		double rho;
 	} C;
 	struct XYZOKB_D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		double dir;
 	} D;
 	struct XYZOKB_I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct XYZOKB_F {	/* -F<grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} F;
 	struct XYZOKB_G {	/* -G<grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct XYZOKB_H {	/* -H */
-		GMT_BOOLEAN active;
+		bool active;
 		double	t_dec, t_dip, m_int, m_dec, m_dip;
 	} H;
 	struct XYZOKB_L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 		double zobs;
 	} L;
 	struct XYZOKB_E {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		double dz;
 	} E;
 	struct XYZOKB_S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		double radius;
 	} S;
 	struct XYZOKB_Z {	/* -Z */
 		double z0;
 	} Z;
 	struct XYZOKB_T {	/* -T */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN triangulate;
-		GMT_BOOLEAN raw;
-		GMT_BOOLEAN stl;
-		GMT_BOOLEAN m_var, m_var1, m_var2, m_var3, m_var4;
+		bool active;
+		bool triangulate;
+		bool raw;
+		bool stl;
+		bool m_var, m_var1, m_var2, m_var3, m_var4;
 		char *xyz_file;
 		char *t_file;
 		char *raw_file;
 		char *stl_file;
 	} T;
 	struct XYZOKB_box {	/* No option, just a container */
-		GMT_BOOLEAN is_geog;
+		bool is_geog;
 		double	d_to_m, *mag_int, lon_0, lat_0;
 	} box;
 };
@@ -130,7 +130,7 @@ struct TRIANG {
 } *triang;
 
 struct  VERT {
-	COUNTER_MEDIUM  a, b, c;
+	unsigned int  a, b, c;
 } *vert;
 
 struct  TRI_CENTER {
@@ -158,7 +158,7 @@ void *New_xyzokb_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct XYZOKB_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.zobs = 0;
 	C->D.dir = -1;
 	C->S.radius = 50000;
@@ -171,17 +171,17 @@ void Free_xyzokb_Ctrl (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0);
-GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname);
-GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
-GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
-GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy);
-void set_center (COUNTER_MEDIUM n_triang);
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN bat);
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN geo);
-GMT_LONG check_triang_cw (COUNTER_MEDIUM n, COUNTER_MEDIUM type);
+int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0);
+int read_t (struct GMT_CTRL *GMT, char *fname);
+int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir);
+int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir);
+int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy);
+void set_center (unsigned int n_triang);
+int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat);
+int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo);
+int check_triang_cw (unsigned int n, unsigned int type);
 
-GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_xyzokb_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 	GMT_message (GMT, "xyzokb - Compute the gravity/magnetic anomaly of a body by the method of Okabe\n\n");
@@ -200,7 +200,7 @@ GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	GMT_message (GMT, "\t-G name of the output grdfile.\n");
 	GMT_message (GMT, "\t-I sets the grid spacing for the grid.  Append m for minutes, c for seconds\n");
 	GMT_message (GMT, "\t-L sets level of observation [Default = 0]\n");
-	GMT_message (GMT, "\t-M Map units TRUE; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
+	GMT_message (GMT, "\t-M Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
 	GMT_message (GMT, "\t-E give layer thickness in m [Default = 0 m]\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S search radius in km\n");
@@ -215,7 +215,7 @@ GMT_LONG GMT_xyzokb_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to redpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -224,7 +224,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM j, pos = 0, n_errors = 0, n_files = 0;
+	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
 	char	ptr[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
@@ -245,35 +245,35 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
-				Ctrl->H.active = TRUE;
-				Ctrl->C.active = FALSE;
+				Ctrl->H.active = true;
+				Ctrl->C.active = false;
 				break;
 			case 'C':
 				Ctrl->C.rho = atof (opt->arg) * 6.674e-6;
-				Ctrl->C.active = TRUE;
-				Ctrl->H.active = FALSE;
+				Ctrl->C.active = true;
+				Ctrl->H.active = false;
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.dir = 1;
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 #ifdef GMT_COMPAT
@@ -284,11 +284,11 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	 		case 'P':		/* For backward compat of pre GMT version */
 	 		case 'E':
 				Ctrl->E.dz = atof (opt->arg);
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 	 		case 'S':
 				Ctrl->S.radius = atof (opt->arg) * 1000;
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 	 		case 't':		/* For backward compat of pre GMT version */
 			case 'T': 		/* Selected input mesh format */
@@ -304,13 +304,13 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 									Ctrl->T.t_file = strdup(ptr);
 									break;
 								case 2:
-									Ctrl->T.m_var = TRUE;
-									Ctrl->H.active = TRUE;
-									Ctrl->C.active = FALSE;
-									if (ptr[1] == '2') Ctrl->T.m_var2 = TRUE;
-									else if (ptr[1] == '3') Ctrl->T.m_var3 = TRUE;
-									else if (ptr[1] == '4') Ctrl->T.m_var4 = TRUE;
-									else Ctrl->T.m_var1 = TRUE;
+									Ctrl->T.m_var = true;
+									Ctrl->H.active = true;
+									Ctrl->C.active = false;
+									if (ptr[1] == '2') Ctrl->T.m_var2 = true;
+									else if (ptr[1] == '3') Ctrl->T.m_var3 = true;
+									else if (ptr[1] == '4') Ctrl->T.m_var4 = true;
+									else Ctrl->T.m_var1 = true;
 									break;
 								default:
 									break;
@@ -321,15 +321,15 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Must give names for data points and vertex files\n");
 							n_errors++;
 						}
-						Ctrl->T.triangulate = TRUE;
+						Ctrl->T.triangulate = true;
 						break;
 					case 'r':	/* Closed volume in RAW format */
  						Ctrl->T.raw_file = strdup(&opt->arg[1]);
-						Ctrl->T.raw = TRUE;
+						Ctrl->T.raw = true;
 						break;
 					case 's':	/* Closed volume in STL1format */
  						Ctrl->T.stl_file = strdup(&opt->arg[1]);
-						Ctrl->T.stl = TRUE;
+						Ctrl->T.stl = true;
 						break;
 					default:
 						n_errors++;
@@ -355,7 +355,7 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	GMT_check_condition (GMT, Ctrl->G.active && Ctrl->F.active, "Warning: -F overrides -G\n");
 	if (GMT_check_condition (GMT, Ctrl->T.raw && Ctrl->S.active, "Warning: -Tr overrides -S\n"))
-		Ctrl->S.active = FALSE;
+		Ctrl->S.active = false;
 
 	/*n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");*/
 
@@ -365,14 +365,14 @@ GMT_LONG GMT_xyzokb_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_xyzokb_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_xyzokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 
-	GMT_BOOLEAN error = FALSE, bat = TRUE, switch_xy = FALSE, DO = TRUE;
-	COUNTER_MEDIUM row, col, i, j, k, kk, ndata_r = 0;
-	COUNTER_MEDIUM ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
-	COUNTER_MEDIUM z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
-	GMT_LONG retval;
-	COUNTER_LARGE ij;
+	bool error = false, bat = true, switch_xy = false, DO = true;
+	unsigned int row, col, i, j, k, kk, ndata_r = 0;
+	unsigned int ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
+	unsigned int z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
+	int retval;
+	uint64_t ij;
 	size_t nm;
 	int km, pm;		/* index of current body facet (for mag only) */
 	float	*g = NULL, one_100;
@@ -412,7 +412,7 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	
 	/*---------------------------- This is the xyzokb main code ----------------------------*/
 	
-	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = TRUE;
+	if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->box.is_geog = true;
 
 	if (!Ctrl->box.is_geog)
 		Ctrl->box.d_to_m = 1;
@@ -471,9 +471,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Gout->header, options, FALSE);
+		GMT_grd_init (GMT, Gout->header, options, false);
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, FALSE), Ctrl->G.file);
+		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, false), Ctrl->G.file);
 	
 		GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
@@ -508,12 +508,12 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	if (Ctrl->T.triangulate) {
 		n_triang = ndata_t;
 		body_desc.n_f = 5;		/* Number of prism facets */
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, COUNTER_MEDIUM);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, unsigned int);
 		body_desc.n_v[0] = 3;	body_desc.n_v[1] = 3;
 		body_desc.n_v[2] = 4;	body_desc.n_v[3] = 4;
 		body_desc.n_v[4] = 4;
 		body_desc.ind = GMT_memory (GMT, NULL, (body_desc.n_v[0] + body_desc.n_v[1] +
-			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), COUNTER_MEDIUM);
+			body_desc.n_v[2] + body_desc.n_v[3] + body_desc.n_v[4]), unsigned int);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;	/* top triang */
 		body_desc.ind[3] = 3;	body_desc.ind[4] = 5; 	body_desc.ind[5] = 4;	/* bot triang */
 		body_desc.ind[6] = 1;	body_desc.ind[7] = 4; 	body_desc.ind[8] = 5;	body_desc.ind[9] = 2;
@@ -528,9 +528,9 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	else if (Ctrl->T.raw || Ctrl->T.stl) {
 		n_triang = (Ctrl->T.raw) ? ndata_r : ndata_s;
 		body_desc.n_f = 1;
-		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, COUNTER_MEDIUM);
+		body_desc.n_v = GMT_memory (GMT, NULL, body_desc.n_f, unsigned int);
 		body_desc.n_v[0] = 3;
-		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], COUNTER_MEDIUM);
+		body_desc.ind = GMT_memory (GMT, NULL, body_desc.n_v[0], unsigned int);
 		body_desc.ind[0] = 0;	body_desc.ind[1] = 1; 	body_desc.ind[2] = 2;
 	}
 	else {
@@ -715,10 +715,10 @@ GMT_LONG GMT_xyzokb (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 }
 
 /* -------------------------------------------------------------------------*/
-GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
+int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
 
-	COUNTER_MEDIUM ndata_xyz;
+	unsigned int ndata_xyz;
 	size_t n_alloc;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
@@ -813,9 +813,9 @@ GMT_LONG read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, 
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
+int read_t (struct GMT_CTRL *GMT, char *fname) {
 	/* read file with vertex indexes of triangles */
-	COUNTER_MEDIUM ndata_t;
+	unsigned int ndata_t;
 	size_t n_alloc;
 	int in[3];
 	char line[GMT_TEXT_LEN256];
@@ -848,9 +848,9 @@ GMT_LONG read_t (struct GMT_CTRL *GMT, char *fname) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
+int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the raw format and returns nb of triangles */
-	COUNTER_MEDIUM ndata_r;
+	unsigned int ndata_r;
 	size_t n_alloc;
 	double in[9];
 	char line[GMT_TEXT_LEN256];
@@ -886,9 +886,9 @@ GMT_LONG read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
+int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	/* read a file with triagles in the stl format and returns nb of triangles */
-	COUNTER_MEDIUM ndata_s;
+	unsigned int ndata_s;
 	size_t n_alloc;
 	double in[3];
 	char line[GMT_TEXT_LEN256], text[128], ver_txt[128];
@@ -935,9 +935,9 @@ GMT_LONG read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy) {
+int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 	/* Read file with xy points where anomaly is going to be computed*/
-	COUNTER_MEDIUM ndata, ix = 0, iy = 1;
+	unsigned int ndata, ix = 0, iy = 1;
 	size_t n_alloc;
 	double in[2];
 	char line[GMT_TEXT_LEN256];
@@ -967,7 +967,7 @@ GMT_LONG read_poly (struct GMT_CTRL *GMT, char *fname, GMT_BOOLEAN switch_xy) {
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN bat) {
+int facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool bat) {
 	/* Sets coodinates for the facet whose effect is beeing calculated */
 	double x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1034,7 +1034,7 @@ GMT_LONG facet_triangulate (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_ve
 }
 
 /* -----------------------------------------------------------------*/
-GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COUNTER_MEDIUM i, GMT_BOOLEAN geo) {
+int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned int i, bool geo) {
 	/* Sets coodinates for the facet in the RAW format */
 	double cos_a, cos_b, cos_c, x_a, x_b, x_c, y_a, y_b, y_c, z_a, z_b, z_c;
 
@@ -1058,9 +1058,9 @@ GMT_LONG facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, COU
 }
 
 /* ---------------------------------------------------------------------- */
-void set_center (COUNTER_MEDIUM n_triang) {
+void set_center (unsigned int n_triang) {
 	/* Calculates triangle center by an aproximate (iterative) formula */
-	COUNTER_MEDIUM i, j, k = 5;
+	unsigned int i, j, k = 5;
 	double x, y, z, xa[6], ya[6], xb[6], yb[6], xc[6], yc[6];
 
 	for (i = 0; i < n_triang; i++) {
@@ -1088,9 +1088,9 @@ void set_center (COUNTER_MEDIUM n_triang) {
 }
 
 #if 0
-void triang_norm (GMT_LONG n_triang) {
+void triang_norm (int n_triang) {
 	/* Computes the unit normal to trianglular facet */
-	GMT_LONG i;
+	int i;
 	double v1[3], v2[3], v3[3], mod, n[3];
 
 	for (i = 0; i < n_triang; i++) {
@@ -1114,7 +1114,7 @@ void triang_norm (GMT_LONG n_triang) {
 }
 #endif
 
-GMT_LONG check_triang_cw (COUNTER_MEDIUM n, COUNTER_MEDIUM type) {
+int check_triang_cw (unsigned int n, unsigned int type) {
 	/* Checks that triangles are given in the correct clock-wise order.
 	If not swap them. This is a tricky issue. In the case of "classic"
 	trihedron (x positive right; y positive "north" and z positive up),
@@ -1124,7 +1124,7 @@ GMT_LONG check_triang_cw (COUNTER_MEDIUM n, COUNTER_MEDIUM type) {
 	x->north; y->east; z->down)), counter clockwise order follows if
 	determinant is negative. */
 
-	COUNTER_MEDIUM i, n_swaped = 0, tmp;
+	unsigned int i, n_swaped = 0, tmp;
 	double x1 = 0, x2 = 0, x3 = 0, y1 = 0, y2 = 0, y3 = 0, det, d_tmp[3];
 
 	if (type > 0)	/* Not yet implemented || 28-4-2010. Dont't undersand why but seams true !!!! */

@@ -38,7 +38,7 @@ static void gmt_swap_long (void *ptr)
 	tmp[2] = a;
 }
 
-GMT_LONG gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header)
+int gmt_swap_mgg_header (MGG_GRID_HEADER_2 *header)
 {
 	int i, version;
 	/* Determine if swapping is needed */
@@ -98,7 +98,7 @@ static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
 	*sec = (int)(degrees * SEC_PER_MIN);
 }
 
-GMT_LONG gmt_GMTtoMGG2 (struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
+int gmt_GMTtoMGG2 (struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 {
 	double f;
 	GMT_memset (mgg, 1, MGG_GRID_HEADER_2);
@@ -148,7 +148,7 @@ GMT_LONG gmt_GMTtoMGG2 (struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 
 static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 {
-	GMT_LONG one_or_zero;
+	int one_or_zero;
 	
 	/* Do not memset the gmt header since it has the file name set */
 	
@@ -171,11 +171,11 @@ static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 	gmt->z_add_offset = 0.0;
 }
 
-GMT_LONG GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
-	GMT_LONG ok;
+	int ok;
 
 	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = GMT_fopen (C, header->name, C->current.io.r_mode)) == NULL) return (GMT_GRDIO_OPEN_FAILED);
@@ -192,11 +192,11 @@ GMT_LONG GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (header->type);
 }
 
-GMT_LONG GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
-	GMT_LONG ok;
+	int ok;
 
 	if (!strcmp (header->name, "="))
 		fp = C->session.std[GMT_IN];
@@ -227,11 +227,11 @@ GMT_LONG GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
-	GMT_LONG err;
+	int err;
 	
 	if (!strcmp (header->name, "="))
 		fp = C->session.std[GMT_OUT];
@@ -247,7 +247,7 @@ GMT_LONG GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	FILE *fp = NULL;
@@ -255,11 +255,11 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	short *tShort = NULL;
 	char *tChar = NULL;
 	float *tFloat = NULL;
-	GMT_BOOLEAN piping = FALSE, swap_all = FALSE, is_float = FALSE;
-	GMT_LONG j, first_col, last_col, first_row, last_row;
-	COUNTER_MEDIUM width_in, height_in, i_0_out, inc, off;
-	COUNTER_MEDIUM i, width_out, *actual_col = NULL;
-	COUNTER_LARGE kk, ij, j2;
+	bool piping = false, swap_all = false, is_float = false;
+	int j, first_col, last_col, first_row, last_row;
+	unsigned int width_in, height_in, i_0_out, inc, off;
+	unsigned int i, width_out, *actual_col = NULL;
+	uint64_t kk, ij, j2;
 	off_t long_offset;	/* For fseek only */
 	size_t n_expected;	/* Items in one row */
 	size_t size;		/* Item size */
@@ -267,7 +267,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
 	if (!strcmp (header->name, "=")) {
 		fp = C->session.std[GMT_IN];
-		piping = TRUE;
+		piping = true;
 	}
 	else if ((fp = GMT_fopen (C, header->name, C->current.io.r_mode)) != NULL) {
 		if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
@@ -286,7 +286,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;			/* Possibly doubled if complex_mode is TRUE */
+	width_out *= inc;			/* Possibly doubled if complex_mode is true */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	n_expected = header->nx;
@@ -338,7 +338,7 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		}
 	}
 	if (piping)	{ /* Skip data by reading it */
-		GMT_LONG ny = header->ny;
+		int ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 		
@@ -354,14 +354,14 @@ GMT_LONG GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
-	GMT_BOOLEAN is_float = FALSE, check;
-	GMT_LONG i, j, err;
-	COUNTER_MEDIUM i2, ju, iu, width_out, height_out, inc, off, width_in, *actual_col = NULL;
-	GMT_LONG first_col, last_col, first_row, last_row;
-	COUNTER_LARGE ij, kk, j2;
+	bool is_float = false, check;
+	int i, j, err;
+	unsigned int i2, ju, iu, width_out, height_out, inc, off, width_in, *actual_col = NULL;
+	int first_col, last_col, first_row, last_row;
+	uint64_t ij, kk, j2;
 	size_t size;
 	
 	int *tLong = NULL;

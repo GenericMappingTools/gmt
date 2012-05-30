@@ -32,7 +32,7 @@
 #include "gmt.h"
 #include "block_subs.h"
 
-GMT_LONG GMT_blockmedian_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_blockmedian_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -67,7 +67,7 @@ GMT_LONG GMT_blockmedian_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to blockmedian and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -75,7 +75,7 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -88,10 +88,10 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Report center of block instead */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'E':	/* Report extended statistics */
-				Ctrl->E.active = TRUE;			/* Report standard deviation, min, and max in cols 4-6 */
+				Ctrl->E.active = true;			/* Report standard deviation, min, and max in cols 4-6 */
 				if (opt->arg[0] == 'b')
 					Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
 				else if (opt->arg[0] == 'r')
@@ -102,28 +102,28 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 					n_errors++;
 				break;
 			case 'I':	/* Get block dimensions */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'Q':	/* Quick mode for median z */
-				Ctrl->Q.active = TRUE;		/* Get median z and (x,y) of that point */
+				Ctrl->Q.active = true;		/* Get median z and (x,y) of that point */
 				break;
 			case 'T':	/* Select a particular quantile [0.5 (median)] */
-				Ctrl->T.active = TRUE;		
+				Ctrl->T.active = true;		
 				Ctrl->T.quantile = atof (opt->arg);
 				break;
 			case 'W':	/* Use in|out weights */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				switch (opt->arg[0]) {
 					case '\0':
-						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = TRUE; break;
+						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true; break;
 					case 'i': case 'I':
-						Ctrl->W.weighted[GMT_IN] = TRUE; break;
+						Ctrl->W.weighted[GMT_IN] = true; break;
 					case 'o': case 'O':
-						Ctrl->W.weighted[GMT_OUT] = TRUE; break;
+						Ctrl->W.weighted[GMT_OUT] = true; break;
 					default:
 						n_errors++; break;
 				}
@@ -147,13 +147,13 @@ GMT_LONG GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE first_in_cell, COUNTER_LARGE first_in_new_cell, double weight_sum, double *out, double *extra,
-	COUNTER_MEDIUM go_quickly, COUNTER_MEDIUM emode, double *quantile, COUNTER_MEDIUM n_quantiles, struct BLK_DATA *data)
+void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, uint64_t first_in_cell, uint64_t first_in_new_cell, double weight_sum, double *out, double *extra,
+	unsigned int go_quickly, unsigned int emode, double *quantile, unsigned int n_quantiles, struct BLK_DATA *data)
 {
 	double weight_half, weight_count;
-	COUNTER_LARGE node, n_in_cell, node1;
-	COUNTER_MEDIUM k, k_for_xy;
-	GMT_LONG way;
+	uint64_t node, n_in_cell, node1;
+	unsigned int k, k_for_xy;
+	int way;
 
 	/* Remember: Data are already sorted on z for each cell */
 
@@ -198,7 +198,7 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE fi
 	if (go_quickly == 1) return;	/* Already have everything requested so we return */
 
 	if (go_quickly == 2) {	/* Return center of block instead of computing a representative location */
-		COUNTER_MEDIUM row, col;
+		unsigned int row, col;
 		row = GMT_row (h, data[node].ij);
 		col = GMT_col (h, data[node].ij);
 		out[GMT_X] = GMT_grd_col_to_x (GMT, col, h);
@@ -227,15 +227,15 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, COUNTER_LARGE fi
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_blockmedian_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_LARGE n_lost, node, first_in_cell, first_in_new_cell;
-	COUNTER_LARGE n_read, nz, n_pitched, n_cells_filled;
+	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
+	uint64_t n_read, nz, n_pitched, n_cells_filled;
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 	
-	GMT_BOOLEAN error = FALSE, do_extra;
-	COUNTER_MEDIUM row, col, w_col, i_col, emode = 0, n_output, n_quantiles = 1, go_quickly = 0;
+	bool error = false, do_extra;
+	unsigned int row, col, w_col, i_col, emode = 0, n_output, n_quantiles = 1, go_quickly = 0;
 	
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, *in = NULL, *z_tmp = NULL;
 
@@ -266,7 +266,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
@@ -281,12 +281,12 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->E.active) {					/* One or more -E settings */
 		if (Ctrl->E.mode & BLK_DO_EXTEND3) {	/* Add s,l,h cols */
 			n_output += 3;
-			do_extra = TRUE;
+			do_extra = true;
 		}
 		else if (Ctrl->E.mode & BLK_DO_EXTEND4) {	/* Add l, 25%, 75%, h cols */
 			n_output += 4;
 			n_quantiles = 3;
-			do_extra = TRUE;
+			do_extra = true;
 		}
 		if (Ctrl->E.mode & BLK_DO_INDEX_LO || Ctrl->E.mode & BLK_DO_INDEX_HI) {	/* Add index */
 			n_output++;
@@ -366,7 +366,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		data[n_pitched].a[BLK_Z] = in[GMT_Z];
 
 		n_pitched++;
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -462,7 +462,7 @@ GMT_LONG GMT_blockmedian (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as a i/o resource */
+	GMT_free_grid (GMT, &Grid, false);	/* Free directly since not registered as a i/o resource */
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);
 

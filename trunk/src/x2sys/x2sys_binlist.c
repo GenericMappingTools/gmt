@@ -34,13 +34,13 @@
 
 struct X2SYS_BINLIST_CTRL {
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 	} E;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 };
@@ -54,7 +54,7 @@ void *New_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_BINLIST_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -64,7 +64,7 @@ void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "x2sys_binlist %s - Create bin index listing from track data files\n\n", X2SYS_VERSION);
@@ -82,7 +82,7 @@ GMT_LONG GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_binlist_parse (struct GMTAPI_CTRL *C, struct X2SYS_BINLIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_binlist_parse (struct GMTAPI_CTRL *C, struct X2SYS_BINLIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -90,7 +90,7 @@ GMT_LONG GMT_x2sys_binlist_parse (struct GMTAPI_CTRL *C, struct X2SYS_BINLIST_CT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -105,13 +105,13 @@ GMT_LONG GMT_x2sys_binlist_parse (struct GMTAPI_CTRL *C, struct X2SYS_BINLIST_CT
 			/* Processes program-specific parameters */
 			
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -126,7 +126,7 @@ GMT_LONG GMT_x2sys_binlist_parse (struct GMTAPI_CTRL *C, struct X2SYS_BINLIST_CT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int outside (double x, double y, struct X2SYS_BIX *B, GMT_LONG geo)
+int outside (double x, double y, struct X2SYS_BIX *B, int geo)
 {
 	if (y < B->wesn[YLO] || y > B->wesn[YHI]) return (1);
 	if (geo) {	/* Geographic data with periodic longitudes */
@@ -140,7 +140,7 @@ int outside (double x, double y, struct X2SYS_BIX *B, GMT_LONG geo)
 	return (0);	/* Inside */
 }
 
-unsigned int get_data_flag (double *data[], COUNTER_LARGE j, struct X2SYS_INFO *s)
+unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s)
 {
 	unsigned int i, bit, flag;
 	for (i = flag = 0, bit = 1; i < s->n_fields; i++, bit <<= 1) {
@@ -162,18 +162,18 @@ int comp_bincross (const void *p1, const void *p2)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_binlist_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL;
 
-	COUNTER_LARGE this_bin_index, index, last_bin_index, row;
-	COUNTER_MEDIUM trk, curr_x_pt, prev_x_pt, n_tracks;
-	GMT_LONG ii_notused, jj_notused, bcol, brow, start_col, end_col, jump_180, jump_360;
-	GMT_LONG this_bin_col;	/* This col node for bin */
-	GMT_LONG this_bin_row;	/* This row node for bin */
-	GMT_LONG last_bin_col;	/* Previous col node for bin */
-	GMT_LONG last_bin_row;	/* Previous row node for bin */
-	GMT_BOOLEAN error = FALSE, gap, cmdline_files, last_not_set;
+	uint64_t this_bin_index, index, last_bin_index, row;
+	unsigned int trk, curr_x_pt, prev_x_pt, n_tracks;
+	int ii_notused, jj_notused, bcol, brow, start_col, end_col, jump_180, jump_360;
+	int this_bin_col;	/* This col node for bin */
+	int this_bin_row;	/* This row node for bin */
+	int last_bin_col;	/* Previous col node for bin */
+	int last_bin_row;	/* Previous row node for bin */
+	bool error = false, gap, cmdline_files, last_not_set;
 	size_t nx, nx_alloc = GMT_SMALL_CHUNK;
 	
 	unsigned int nav_flag;
@@ -248,7 +248,7 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		y_max = B.wesn[YHI];
 	}
 	
-	x2sys_bix_init (GMT, &B, TRUE);
+	x2sys_bix_init (GMT, &B, true);
 	nav_flag = (1 << s->x_col) + (1 << s->y_col);	/* For bins just cut by track but no points inside the bin */
 	jump_180 = lrint (180.0 / B.inc[GMT_X]);
 	jump_360 = lrint (360.0 / B.inc[GMT_X]);
@@ -276,13 +276,13 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		GMT_memset (B.binflag, B.nm_bin, unsigned int);
 		if (Ctrl->D.active) {
-			GMT_LONG signed_flag = s->dist_flag;
+			int signed_flag = s->dist_flag;
 			GMT_memset (dist_bin, B.nm_bin, double);
 			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_index = UINT_MAX;
-		last_not_set = TRUE;
+		last_not_set = true;
 		last_bin_col = last_bin_row = -1;
 		for (row = 0; row < p.n_rows; row++) {
 			if (outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
@@ -297,19 +297,19 @@ GMT_LONG GMT_x2sys_binlist (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 			if (last_not_set) {	/* Initialize last bin to this bin the first time */
 				last_bin_index = this_bin_index;
-				last_not_set = FALSE;
+				last_not_set = false;
 			}
 			
 			if (row > 0) { /* Can check for gaps starting with 1st to 2nd point */
-				gap = FALSE;
+				gap = false;
 				if (s->t_col >= 0) {	/* There is a time column in the data*/
 					if (GMT_is_dnan (data[s->t_col][row])&& (dist_km[row] - dist_km[row-1]) > B.dist_gap) /* but time = NaN, so test for gaps based on distance */
-						gap = TRUE;
+						gap = true;
 			   		else if ((data[s->t_col][row] - data[s->t_col][row-1]) > B.time_gap)	/* We have a time data gap so we skip this interval */
-						gap = TRUE;
+						gap = true;
 				}
 				else if ((dist_km[row] - dist_km[row-1]) > B.dist_gap) /* There is no time column, must test for gaps based on distance */
-					gap = TRUE;
+					gap = true;
 				
 				if (gap) {
 					last_bin_index = this_bin_index;	/* Update the last point's index info */

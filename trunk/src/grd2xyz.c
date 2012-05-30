@@ -29,17 +29,17 @@
 struct GRD2XYZ_CTRL {
 #ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN floating;
+		bool active;
+		bool floating;
 		double nodata;
 	} E;
 #endif
 	struct N {	/* -N<nodata> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} N;
 	struct W {	/* -W[<weight>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double weight;
 	} W;
 	struct GMT_PARSE_Z_IO Z;
@@ -50,7 +50,7 @@ void *New_grd2xyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRD2XYZ_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 #ifdef GMT_COMPAT
 	C->E.nodata = -9999.0;
@@ -66,7 +66,7 @@ void Free_grd2xyz_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "grd2xyz %s [API] - Convert grid file to data table\n\n", GMT_VERSION);
@@ -106,7 +106,7 @@ GMT_LONG GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
+int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -114,7 +114,7 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -131,23 +131,23 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 
 #ifdef GMT_COMPAT
 			case 'E':	/* Old ESRI option */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
-				if (opt->arg[0] == 'f') Ctrl->E.floating = TRUE;
+				if (opt->arg[0] == 'f') Ctrl->E.floating = true;
 				if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
-				GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, GMT_LONG);
+				GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 				GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
 				GMT->current.io.io_nan_ncols = 1;		/* Default is that single z column */
 				GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
 				if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = 2;
-				GMT->common.s.active = TRUE;
+				GMT->common.s.active = true;
 				break;
 #endif
 			case 'N':	/* Nan-value */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
@@ -156,11 +156,11 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 				}
 				break;
 			case 'W':	/* Add weight on output */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if (opt->arg[0]) Ctrl->W.weight = atof (opt->arg);
 				break;
 			case 'Z':	/* Control format */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				n_errors += GMT_parse_z_io (GMT, opt->arg, &Ctrl->Z);
 					break;
 
@@ -184,12 +184,12 @@ GMT_LONG GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grd2xyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, first = TRUE, ok;
-	COUNTER_MEDIUM row, col;
+	bool error = false, first = true, ok;
+	unsigned int row, col;
 	
-	COUNTER_LARGE ij, gmt_ij, n_total = 0, n_suppressed = 0;
+	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
 
 	char header[GMT_BUFSIZ];
 
@@ -224,16 +224,16 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT->common.b.active[GMT_OUT]) {
 		if (Ctrl->Z.active && !io.binary) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bo\n");
-			GMT->common.b.active[GMT_OUT] = FALSE;
+			GMT->common.b.active[GMT_OUT] = false;
 		}
 #ifdef GMT_COMPAT
 		if (Ctrl->E.active) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E overrides -bo\n");
-			GMT->common.b.active[GMT_OUT] = FALSE;
+			GMT->common.b.active[GMT_OUT] = false;
 		}
 #endif
 	}
-	else if (io.binary) GMT->common.b.active[GMT_OUT] = TRUE;
+	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
 	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 0)) != GMT_OK) Return (error);
@@ -269,14 +269,14 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, G), opt->arg);
 
 		if (Ctrl->Z.active) {	/* Write z-values only to stdout */
-			GMT_BOOLEAN previous = GMT->common.b.active[GMT_OUT], rst = FALSE;
-			GMT_LONG (*save) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);
+			bool previous = GMT->common.b.active[GMT_OUT], rst = false;
+			int (*save) (struct GMT_CTRL *, FILE *, unsigned int, double *);
 			save = GMT->current.io.output;
 			
 			GMT->current.io.output = GMT_z_output;		/* Override and use chosen output mode */
 			GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set binary as well */
 			if (GMT->current.setting.io_nan_mode && GMT->current.io.io_nan_col[0] == GMT_Z) 
-				{rst = TRUE; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
+				{rst = true; GMT->current.io.io_nan_col[0] = GMT_X;}	/* Since we dont do xy here, only z */
 			for (ij = 0; ij < io.n_expected; ij++) {
 				gmt_ij = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
 				d_value = G->data[gmt_ij];
@@ -379,7 +379,7 @@ GMT_LONG GMT_grd2xyz (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					strcat (header, "weight");
 				}
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, header);	/* Write a header record */
-				first = FALSE;
+				first = false;
 			}
 
 			GMT_grd_loop (GMT, G, row, col, ij) {

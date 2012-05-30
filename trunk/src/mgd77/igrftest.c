@@ -4,7 +4,7 @@
 
 int main (int argc, char **argv)
 {
-	GMT_LONG y, mode = 1;
+	int y, mode = 1;
 	double IGRF[7];
 	
 	if (argc > 1) mode = 2;

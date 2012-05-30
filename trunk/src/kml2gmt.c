@@ -32,11 +32,11 @@
 
 struct KML2GMT_CTRL {
 	struct In {	/* in file */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 	
@@ -45,7 +45,7 @@ void *New_kml2gmt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct KML2GMT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -55,7 +55,7 @@ void Free_kml2gmt_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -75,7 +75,7 @@ GMT_LONG GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to kml2gmt and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -84,7 +84,7 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -93,14 +93,14 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'Z':
- 				Ctrl->Z.active = TRUE;
+ 				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -118,11 +118,11 @@ GMT_LONG GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_kml2gmt_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_kml2gmt (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM i, start, fmode = POINT;
+	unsigned int i, start, fmode = POINT;
 	size_t length;
-	GMT_BOOLEAN scan = TRUE, first = TRUE, error = FALSE;
+	bool scan = true, first = true, error = false;
 	
 	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
 
@@ -153,7 +153,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-	GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	GMT_memset (header, GMT_BUFSIZ, char);
 	GMT_memset (name, GMT_BUFSIZ, char);
 	GMT_memset (description, GMT_BUFSIZ, char);
@@ -188,8 +188,8 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		if (strstr (line, "<Placemark")) scan = TRUE;
-		if (strstr (line, "</Placemark")) scan = FALSE;
+		if (strstr (line, "<Placemark")) scan = true;
+		if (strstr (line, "</Placemark")) scan = false;
 		if (!scan) continue;
 		if (strstr (line, "<Point")) fmode = POINT;
 		if (strstr (line, "<LineString")) fmode = LINE;
@@ -206,7 +206,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
 			}
-			first = FALSE;
+			first = false;
 		}
 		if (strstr (line, "<description>")) {
 			for (i = 0; i < length && line[i] != '>'; i++);	/* Find end of <description> */
@@ -219,7 +219,7 @@ GMT_LONG GMT_kml2gmt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				sprintf (buffer, "# %s\n", &line[start]);
 				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
 			}
-			first = FALSE;
+			first = false;
 		}
 		if (name[0] || description[0]) {
 			GMT->current.io.segment_header[0] = 0;

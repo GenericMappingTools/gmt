@@ -60,29 +60,29 @@
 
 struct X2SYS_SOLVE_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 		char *col;
 	} C;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} E;
 #ifdef SAVEFORLATER
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} I;
 #endif
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
+		bool active;
 	} W;
 };
 
@@ -99,7 +99,7 @@ struct X2SYS_SOLVE_CTRL {
  * Col 8:	head_2
  * Col 9:	z_1
  * Col 10:	z_2
- * The array active_col[N_COE_PARS] will be TRUE for those columns actually used
+ * The array active_col[N_COE_PARS] will be true for those columns actually used
  */
 
 /* Available basis functions.  To add more basis functions:
@@ -155,7 +155,7 @@ void *New_x2sys_solve_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_SOLVE_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -170,7 +170,7 @@ void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	GMT_message (GMT, "x2sys_solve %s - Determine least-squares systematic correction from crossovers\n\n", X2SYS_VERSION);
@@ -198,7 +198,7 @@ GMT_LONG GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -206,7 +206,7 @@ GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -216,7 +216,7 @@ GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files == 0) Ctrl->In.file = strdup (opt->arg);
 				n_files++;
 				break;
@@ -224,11 +224,11 @@ GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *
 			/* Processes program-specific parameters */
 			
 			case 'C':	/* Needed to report correctly */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'E':	/* Which model to fit */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'c':
 						Ctrl->E.mode = F_IS_CONSTANT;
@@ -252,16 +252,16 @@ GMT_LONG GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *
 				break;
 #ifdef SAVEFORLATER
 			case 'I':	/* List of track names and their start time dateTclock */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 #endif
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -327,15 +327,15 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_solve_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_list = NULL;
 	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
-	GMT_BOOLEAN error = FALSE, grow_list = FALSE, normalize = FALSE, active_col[N_COE_PARS];
+	bool error = false, grow_list = false, normalize = false, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL};
-	COUNTER_LARGE n_par = 0, n, m, t, n_tracks = 0, n_active;
-	COUNTER_LARGE i, p, j, k, r, s, off, row, n_COE = 0;
-	GMT_LONG ierror;
+	uint64_t n_par = 0, n, m, t, n_tracks = 0, n_active;
+	uint64_t i, p, j, k, r, s, off, row, n_COE = 0;
+	int ierror;
 	size_t n_alloc = GMT_CHUNK, n_alloc_t = GMT_CHUNK;
 	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, zero_test = 1.0e-08, old_mean, new_mean, sw2;
 	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx;
@@ -387,32 +387,32 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	active_col[COL_COE] = TRUE;	/* Always used */
+	active_col[COL_COE] = true;	/* Always used */
 	switch (Ctrl->E.mode) {	/* Set up pointers to basis functions and assign constants */
 		case F_IS_CONSTANT:
 			n_par = 1;
 			basis[0] = &basis_constant;
 			break;
 		case F_IS_DRIFT_T:
-			active_col[COL_T1] = active_col[COL_T2] = TRUE;
+			active_col[COL_T1] = active_col[COL_T2] = true;
 			n_par = 2;
 			basis[0] = &basis_constant;
 			basis[1] = &basis_tdrift;
 			break;
 		case F_IS_DRIFT_D:
-			active_col[COL_D1] = active_col[COL_D2] = TRUE;
+			active_col[COL_D1] = active_col[COL_D2] = true;
 			n_par = 2;
 			basis[0] = &basis_constant;
 			basis[1] = &basis_ddrift;
 			break;
 		case F_IS_GRAV1930:
-			active_col[COL_YY] = TRUE;
+			active_col[COL_YY] = true;
 			n_par = 2;
 			basis[0] = &basis_constant;
 			basis[1] = &basis_siny2;
 			break;
 		case F_IS_HEADING:
-			active_col[COL_H1] = active_col[COL_H2] = TRUE;
+			active_col[COL_H1] = active_col[COL_H2] = true;
 			n_par = 5;
 			basis[0] = &basis_constant;
 			basis[1] = &basis_cosh;
@@ -421,7 +421,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			basis[4] = &basis_sin2h;
 			break;
 		case F_IS_SCALE:
-			active_col[COL_Z1] = active_col[COL_Z2] = TRUE;
+			active_col[COL_Z1] = active_col[COL_Z2] = true;
 			n_par = 1;
 			basis[0] = &basis_z;
 			break;
@@ -448,7 +448,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (n_tracks == 0)	{	/* Create track list on the go */
-		grow_list = TRUE;
+		grow_list = true;
 		trk_list = GMT_memory (GMT, NULL, n_alloc_t, char *);
 	}
 	
@@ -456,9 +456,9 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (GMT->common.b.active[GMT_IN]) {	/* Binary input */
 		/* Here, first two cols have track IDs and we do not write track names */
 		int min_ID, max_ID;
-		GMT_LONG n_fields;
-		COUNTER_MEDIUM n_expected_fields;
-		COUNTER_LARGE n_tracks2;
+		int n_fields;
+		unsigned int n_expected_fields;
+		uint64_t n_tracks2;
 		double *in = NULL;
 		char *check = NULL;
 		
@@ -515,18 +515,18 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		n_tracks2 = max_ID - min_ID + 1;
 		if (n_tracks && n_tracks2 != n_tracks) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
-			error = TRUE;	
+			error = true;	
 		}
 		else {	/* Either no tracks read before or the two numbers did match properly */
 			/* Look for ID gaps */
 			n_tracks = n_tracks2;
 			check = GMT_memory (GMT, NULL, n_tracks, char);
-			for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) check[ID[i][k]] = TRUE;
+			for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) check[ID[i][k]] = true;
 			for (k = 0; k < n_tracks && check[k]; k++);
 			GMT_free (GMT, check);
 			if (k < n_tracks) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
-				error = TRUE;
+				error = true;
 			}
 		}
 		if (error) {	/* Delayed the cleanup until here */
@@ -699,7 +699,7 @@ GMT_LONG GMT_x2sys_solve (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Get LS solution */
 
-	if ((ierror = GMT_gauss (GMT, N, b, m, m, zero_test, TRUE))) {
+	if ((ierror = GMT_gauss (GMT, N, b, m, m, zero_test, true))) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Error %d returned form GMT_gauss!\n", ierror);
 		Return (EXIT_FAILURE);					
 	}

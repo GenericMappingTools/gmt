@@ -25,39 +25,39 @@
 #include "gmt.h"
 
 struct SPH2GRD_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 	} E;
 	struct G {	/* -G<grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<lc>/<lp>/<hp>/<hc> or -L<lo>/<hi> */
-		GMT_BOOLEAN active;
+		bool active;
 		int mode;
 		double lc, lp, hp, hc;
 	} L;
 	struct N {	/* -Ng|m|s */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} N;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
+		bool active;
 	} Q;
 };
 
 int main (int argc, char **argv)
 {
-	GMT_LONG i, j, ij, n_expected_fields, n_fields, n_files = 0, f_arg, error = 0, n_read = 0;
+	int i, j, ij, n_expected_fields, n_fields, n_files = 0, f_arg, error = 0, n_read = 0;
 	
 	float *grd;
 	
@@ -74,7 +74,7 @@ int main (int argc, char **argv)
 
 	Ctrl = (struct SPH2GRD_CTRL *) New_sph2grd_Ctrl ();		/* Allocate and initialize defaults in a new control structure */
 	
-	GMT_grd_init (&header, argc, argv, FALSE);
+	GMT_grd_init (&header, argc, argv, false);
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
@@ -90,33 +90,33 @@ int main (int argc, char **argv)
 				/* Supplemental parameters */
 
 				case 'D':	/* Evaluate derivative solutions */
-					Ctrl->D.active = TRUE;
+					Ctrl->D.active = true;
 					Ctrl->D.mode = argv[i][2];
 					break;
 				case 'E':	/* Evaluate on ellipsoid */
-					Ctrl->E.active = TRUE;
+					Ctrl->E.active = true;
 					break;
 				case 'G':
-					Ctrl->G.active = TRUE;
+					Ctrl->G.active = true;
 					Ctrl->G.file = strdup (&argv[i][2]);
 					break;
 				case 'I':
-					Ctrl->I.active = TRUE;
+					Ctrl->I.active = true;
 					if (GMT_getinc (&argv[i][2], Ctrl->I.inc)) {
 						GMT_inc_syntax ('I', 1);
 						error++;
 					}
 					break;
  				case 'L':	/* Bandpass or Gaussian filter */
-					Ctrl->L.active = TRUE;
+					Ctrl->L.active = true;
 					sscanf (&argv[i][2], "%lg/%lg/%lg/%lg", &Ctrl->L.lc, &Ctrl->L.lp, &Ctrl->L.hp, &Ctrl->L.hc);
 					break;
 				case 'N':
-					Ctrl->N.active = TRUE;
+					Ctrl->N.active = true;
 					Ctrl->N.mode = argv[i][2];
 					break;
 				case 'Q':
-					Ctrl->Q.active = TRUE;
+					Ctrl->Q.active = true;
 					break;
 				default:
 					error++;
@@ -235,7 +235,7 @@ int main (int argc, char **argv)
 		for (i = 0; i < header.nx; i++, ij++) grd[ij] = 0.0;
 	}
 	
-	GMT_err_fail (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, FALSE), Ctrl->G.file);
+	GMT_err_fail (GMT_write_grd (Ctrl->G.file, &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, false), Ctrl->G.file);
 	
 	GMT_free (grd);
 	GMT_free (lon);

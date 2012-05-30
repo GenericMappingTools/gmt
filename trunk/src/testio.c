@@ -30,12 +30,12 @@
 #include "gmt.h"
 
 /* TODO: remove this func declaration and include gmt_module.h when implemented: */
-EXTERN_MSC GMT_LONG GMT_mapproject (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args);
+EXTERN_MSC int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args);
 
 int main (int argc, char *argv[]) {
 
-	GMT_LONG status = 0, xrow, in_ID, out_ID;
-	COUNTER_LARGE row, col, ij;
+	int status = 0, xrow, in_ID, out_ID;
+	uint64_t row, col, ij;
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 	float x[4] = {1.0, 2.0, 3.0, 4.0}, y[4] = {0.5, 1.5, 2.5, 3.5}, z[4] = {3.3f, 8.1f, 2.9f, 4.4f};
 	char i_string[GMTAPI_STRLEN], o_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ];
@@ -93,12 +93,12 @@ int main (int argc, char *argv[]) {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
-	GMT_free_vector (API->GMT, &Vo, TRUE);
+	GMT_free_vector (API->GMT, &Vo, true);
 	
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
 	GMT_grd_loop (API->GMT, G, xrow, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
-	GMT_free_grid (API->GMT, &G, TRUE);
+	GMT_free_grid (API->GMT, &G, true);
 
 	/* 6. Create command options for GMT_gmtselect */
 
@@ -118,13 +118,13 @@ int main (int argc, char *argv[]) {
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
-	GMT_free_vector (API->GMT, &Vi, FALSE);
+	GMT_free_vector (API->GMT, &Vi, false);
 	for (row = 0; row < Vo->n_rows; row++) {
 		for (col = 0; col < Vo->n_columns; col++) printf ("%g\t", Vo->data[col].f8[row]);
 		printf ("\n");
 	}
-	GMT_free_vector (API->GMT, &Vo, TRUE);
-	GMT_free_vector (API->GMT, &Vi, FALSE);
+	GMT_free_vector (API->GMT, &Vo, true);
+	GMT_free_vector (API->GMT, &Vi, false);
 
 	/* 8. Destroy GMT session */
 	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);

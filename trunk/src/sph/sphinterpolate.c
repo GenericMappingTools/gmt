@@ -38,23 +38,23 @@
 
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct Q {	/* -Q<interpolation> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double value[2];
 	} Q;
 	struct T {	/* -T for variable tension */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 	struct Z {	/* -Z to scale data */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
@@ -71,9 +71,9 @@ void Free_sphinterpolate_Ctrl (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL 
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
+int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 {
-	GMT_LONG m;
+	int m;
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	if (m < 1) {
@@ -86,7 +86,7 @@ GMT_LONG get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 	return (m);
 }
 
-GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -124,7 +124,7 @@ GMT_LONG GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sphinterpolate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -132,8 +132,8 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
-	GMT_LONG m;
+	unsigned int n_errors = 0;
+	int m;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -146,18 +146,18 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 			/* Processes program-specific parameters */
 
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case '0':	/* Linear */
 						Ctrl->Q.mode = 0;	break;
@@ -182,10 +182,10 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 				}
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -207,13 +207,13 @@ GMT_LONG GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sphinterpolate_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_sphinterpolate (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM row, col;
-	GMT_BOOLEAN error = FALSE;
+	unsigned int row, col;
+	bool error = false;
 
 	size_t n_alloc = 0;
-	COUNTER_LARGE i, n = 0, ij, ij_f;
+	uint64_t i, n = 0, ij, ij_f;
 	
 	double w_min, w_max, sf = 1.0, X[3];
 	double *xx = NULL, *yy = NULL, *zz = NULL, *ww = NULL, *surfd = NULL, *in = NULL;
@@ -242,7 +242,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	if (!GMT->common.R.active) {	/* Default is global region */
 		Grid->header->wesn[XLO] = 0.0;	Grid->header->wesn[XHI] = 360.0;	Grid->header->wesn[YLO] = -90.0;	Grid->header->wesn[YHI] = 90.0;
@@ -276,14 +276,14 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		/* Data record to process */
 
-		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);	/* Get unit vector */
+		GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);	/* Get unit vector */
 		xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];	ww[n] = in[GMT_Z];
 		if (Ctrl->Z.active) {
 			if (ww[n] < w_min) w_min = ww[n];
 			if (ww[n] > w_max) w_max = ww[n];
 		}
 		if (++n == n_alloc) GMT_malloc4 (GMT, xx, yy, zz, ww, n, &n_alloc, double);
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -317,7 +317,7 @@ GMT_LONG GMT_sphinterpolate (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	sf = (w_max - w_min);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
-		ij_f = (COUNTER_LARGE)col * (COUNTER_LARGE)Grid->header->ny + (COUNTER_LARGE)row;	/* Fortran index */
+		ij_f = (uint64_t)col * (uint64_t)Grid->header->ny + (uint64_t)row;	/* Fortran index */
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */
 		if (Ctrl->Z.active) Grid->data[ij] *= (float)sf;
 	}

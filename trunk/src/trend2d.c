@@ -37,27 +37,27 @@
 #define TREND2D_N_OUTPUT_CHOICES 6
 
 struct TREND2D_CTRL {
-	COUNTER_MEDIUM n_outputs;
-	GMT_BOOLEAN weighted_output;
+	unsigned int n_outputs;
+	bool weighted_output;
 	struct C {	/* -C<condition_#> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} C;
 	struct F {	/* -F<xymrw> */
-		GMT_BOOLEAN active;
+		bool active;
 		char col[TREND2D_N_OUTPUT_CHOICES];	/* Character codes for desired output in the right order */
 	} F;
 	struct I {	/* -I[<confidence>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} I;
 	struct N {	/* -N<n_model>[r] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN robust;
-		COUNTER_MEDIUM value;
+		bool active;
+		bool robust;
+		unsigned int value;
 	} N;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
+		bool active;
 	} W;
 };
 
@@ -70,9 +70,9 @@ struct TREND2D_DATA {
 	double	w;
 };
 
-GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, COUNTER_LARGE *n_data, double *xmin, double *xmax, double *ymin, double *ymax, GMT_LONG weighted_input, double **work)
+int read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, uint64_t *n_data, double *xmin, double *xmax, double *ymin, double *ymax, int weighted_input, double **work)
 {
-	COUNTER_LARGE i;
+	uint64_t i;
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 
@@ -113,14 +113,14 @@ GMT_LONG read_data_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA **data, CO
 			n_alloc <<= 1;
 			*data = GMT_memory (GMT, *data, n_alloc, struct TREND2D_DATA);
 		}
-	} while (TRUE);
+	} while (true);
 	*data = GMT_memory (GMT, *data, i, struct TREND2D_DATA);
 	*work = GMT_memory (GMT, NULL, i, double);
 	*n_data = i;
 	return (0);
 }
 
-void allocate_the_memory_2d (struct GMT_CTRL *GMT, COUNTER_LARGE np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
+void allocate_the_memory_2d (struct GMT_CTRL *GMT, uint64_t np, double **gtg, double **v, double **gtd, double **lambda, double **workb, double **workz, double **c_model, double **o_model, double **w_model)
 {
 	*gtg = GMT_memory (GMT, NULL, np*np, double);
 	*v = GMT_memory (GMT, NULL, np*np, double);
@@ -133,10 +133,10 @@ void allocate_the_memory_2d (struct GMT_CTRL *GMT, COUNTER_LARGE np, double **gt
 	*w_model = GMT_memory (GMT, NULL, np, double);
 }
 
-void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, char *output_choice, COUNTER_MEDIUM n_outputs)
+void write_output_trend2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, char *output_choice, unsigned int n_outputs)
 {
-	COUNTER_LARGE i;
-	COUNTER_MEDIUM j;
+	uint64_t i;
+	unsigned int j;
 	double out[6];
 
 	for (i = 0; i < n_data; i++) {
@@ -181,9 +181,9 @@ void free_the_memory_2d (struct GMT_CTRL *GMT, double *gtg, double *v, double *g
 	GMT_free (GMT, gtg);
 }
 
-void transform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double xmin, double xmax, double ymin, double ymax)
+void transform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax)
 {
-	COUNTER_LARGE i;
+	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
 
@@ -198,9 +198,9 @@ void transform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double xmi
 	}
 }
 
-void untransform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double xmin, double xmax, double ymin, double ymax)
+void untransform_x_2d (struct TREND2D_DATA *data, uint64_t n_data, double xmin, double xmax, double ymin, double ymax)
 {
-	COUNTER_LARGE i;
+	uint64_t i;
 	double offsetx, scalex;
 	double offsety, scaley;
 
@@ -215,9 +215,9 @@ void untransform_x_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double x
 	}
 }
 
-double get_chisq_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, COUNTER_MEDIUM n_model)
+double get_chisq_2d (struct TREND2D_DATA *data, uint64_t n_data, unsigned int n_model)
 {
-	COUNTER_LARGE i, nu;
+	uint64_t i, nu;
 	double chi = 0.0;
 
 	for (i = 0; i < n_data; i++) {	/* Weight is already squared  */
@@ -231,9 +231,9 @@ double get_chisq_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, COUNTER_ME
 	return (chi);
 }
 
-void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *work, double *scale)
+void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *work, double *scale)
 {
-	COUNTER_LARGE i;
+	uint64_t i;
 	double k, ksq, rr;
 
 	/* First find median { fabs(data[].r) },
@@ -257,7 +257,7 @@ void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUN
 	}
 }
 
-void load_g_row_2d (double x, double y, COUNTER_MEDIUM n, double *gr)
+void load_g_row_2d (double x, double y, unsigned int n, double *gr)
 {
 	/* Current data position, appropriately normalized.  */
 	/* Number of model parameters, and elements of gr[]  */
@@ -266,7 +266,7 @@ void load_g_row_2d (double x, double y, COUNTER_MEDIUM n, double *gr)
 	   G matrix (Menke notation), where x,y is the ith datum's
 	   location.  */
 
-	COUNTER_MEDIUM j;
+	unsigned int j;
 
 	j = 0;
 	while (j < n) {
@@ -306,13 +306,13 @@ void load_g_row_2d (double x, double y, COUNTER_MEDIUM n, double *gr)
 	}
 }
 
-void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *model, COUNTER_MEDIUM n_model, double *grow)
+void calc_m_and_r_2d (struct TREND2D_DATA *data, uint64_t n_data, double *model, unsigned int n_model, double *grow)
 {
 	/*	model[n_model] holds solved coefficients of m_type model.
 		grow[n_model] is a vector for a row of G matrix.  */
 
-	COUNTER_LARGE i;
-	COUNTER_MEDIUM j;
+	uint64_t i;
+	unsigned int j;
 	for (i = 0; i < n_data; i++) {
 		load_g_row_2d (data[i].x, data[i].y, n_model, grow);
 		data[i].m = 0.0;
@@ -321,18 +321,18 @@ void calc_m_and_r_2d (struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *m
 	}
 }
 
-void move_model_a_to_b_2d (double *model_a, double *model_b, COUNTER_MEDIUM n_model, double *chisq_a, double *chisq_b)
+void move_model_a_to_b_2d (double *model_a, double *model_b, unsigned int n_model, double *chisq_a, double *chisq_b)
 {
-	COUNTER_MEDIUM i;
+	unsigned int i;
 	for (i = 0; i < n_model; i++) model_b[i] = model_a[i];
 	*chisq_b = *chisq_a;
 }
 
-void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNTER_LARGE n_data, double *gtg, double *gtd, double *grow, COUNTER_MEDIUM n_model, COUNTER_MEDIUM mp)
+void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint64_t n_data, double *gtg, double *gtd, double *grow, unsigned int n_model, unsigned int mp)
 {	/* mp is row dimension of gtg  */
 
-	COUNTER_LARGE i;
-	COUNTER_MEDIUM j, k;
+	uint64_t i;
+	unsigned int j, k;
 	double wz;
 
 	/* First zero the contents for summing */
@@ -361,10 +361,10 @@ void load_gtg_and_gtd_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, COUNT
 	}
 }
 
-void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, COUNTER_MEDIUM n_model, COUNTER_MEDIUM mp, double *lambda, double *v, double *b, double *z, double c_no, COUNTER_MEDIUM *ir)
+void solve_system_2d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *model, unsigned int n_model, unsigned int mp, double *lambda, double *v, double *b, double *z, double c_no, unsigned int *ir)
 {
 
-	COUNTER_MEDIUM i, j, k, rank = 0, nrots;
+	unsigned int i, j, k, rank = 0, nrots;
 	double c_test, temp_inverse_ij;
 
 	if (n_model == 1) {
@@ -396,7 +396,7 @@ void *New_trend2d_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct TREND2D_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->C.value = 1.0e06;		/* Condition number for matrix solution  */	
 	C->I.value = 0.51;		/* Confidence interval for significance test  */
 	return (C);
@@ -406,7 +406,7 @@ void Free_trend2d_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_trend2d_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -437,7 +437,7 @@ GMT_LONG GMT_trend2d_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to trend2d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -445,7 +445,7 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, j;
+	unsigned int n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -458,11 +458,11 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					if (j < TREND2D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
@@ -473,17 +473,17 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.value = atof (opt->arg);
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
-				if (strchr (opt->arg, 'r')) Ctrl->N.robust = TRUE;
+				Ctrl->N.active = true;
+				if (strchr (opt->arg, 'r')) Ctrl->N.robust = true;
 				j = (opt->arg[0] == 'r') ? 1 : 0;
 				Ctrl->N.value = (opt->arg[j]) ? atoi (&opt->arg[j]) : 0;
 				break;
 			case 'W':
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -503,7 +503,7 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
-			Ctrl->weighted_output = TRUE;
+			Ctrl->weighted_output = true;
 
 		Ctrl->n_outputs++;
 	}
@@ -516,12 +516,12 @@ GMT_LONG GMT_trend2d_parse (struct GMTAPI_CTRL *C, struct TREND2D_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_trend2d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_trend2d (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM i, n_model, rank, np;
-	GMT_BOOLEAN error = FALSE, significant;
+	unsigned int i, n_model, rank, np;
+	bool error = false, significant;
 	
-	COUNTER_LARGE n_data;
+	uint64_t n_data;
 
 	double *gtg = NULL, *v = NULL, *gtd = NULL, *lambda = NULL, *workb = NULL;
 	double *workz = NULL, *c_model = NULL, *o_model = NULL, *w_model = NULL, *work = NULL;
@@ -586,7 +586,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read any data.\n");
 		Return (EXIT_FAILURE);
 	}
-	if (n_data < (COUNTER_LARGE)Ctrl->N.value) {
+	if (n_data < (uint64_t)Ctrl->N.value) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
 	}
 
@@ -626,7 +626,7 @@ GMT_LONG GMT_trend2d (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		/* First [robust] model has been found  */
 
-		significant = TRUE;
+		significant = true;
 		while (n_model < Ctrl->N.value && significant) {
 			move_model_a_to_b_2d (c_model, o_model, n_model, &c_chisq, &o_chisq);
 			n_model++;

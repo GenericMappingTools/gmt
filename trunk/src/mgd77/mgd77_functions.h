@@ -17,7 +17,7 @@ struct MGD77_HEADER_LOOKUP {	/* Book-keeping for one header parameter  */
         size_t length;		/* Number of bytes to use */
         unsigned int record;	/* Header record number where it occurs (1-24) */
         unsigned int item;	/* Sequential item order in this record (1->) */
-        GMT_BOOLEAN check;	/* TRUE if we actually do a test on this item */
+        bool check;	/* true if we actually do a test on this item */
         unsigned int revised;	/* 1 if read/write in via the _REVISED attribute */
         char *ptr[2];		/* Pointers to the corresponding named variable in struct MGD77_HEADER_PARAMS (orig and revised) */
 };
@@ -129,7 +129,7 @@ void MGD77_Read_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, stru
 void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);
 void MGD77_Reset_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F);
 void MGD77_Init_Ptr (struct GMT_CTRL *C, struct MGD77_HEADER_LOOKUP *H, struct MGD77_HEADER_PARAMS **P);
-int MGD77_Param_Key (struct GMT_CTRL *C, GMT_LONG record, int item);
+int MGD77_Param_Key (struct GMT_CTRL *C, int record, int item);
 
 #define MGD77_N_HEADER_PARAMS 72U
 

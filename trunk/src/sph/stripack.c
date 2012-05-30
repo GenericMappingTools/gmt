@@ -1246,7 +1246,7 @@ logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4,
 
 /*   This function decides whether or not to replace a */
 /* diagonal arc in a quadrilateral with the other diagonal. */
-/* The decision will be to swap (SWPTST = TRUE) if and only */
+/* The decision will be to swap (SWPTST = true) if and only */
 /* if N4 lies above the plane (in the half-space not contain- */
 /* ing the origin) defined by (N1,N2,N3), or equivalently, if */
 /* the projection of N4 onto this plane is interior to the */
@@ -1261,7 +1261,7 @@ logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4,
 /*                     and (N1,N2,N3) in counterclockwise */
 /*                     order.  The arc connecting N1 to N2 */
 /*                     should be replaced by an arc connec- */
-/*                     ting N3 to N4 if SWPTST = TRUE.  Refer */
+/*                     ting N3 to N4 if SWPTST = true.  Refer */
 /*                     to Subroutine SWAP. */
 
 /*       X,Y,Z = Arrays of length N containing the Cartesian */
@@ -1272,7 +1272,7 @@ logical swptst_(integer *n1, integer *n2, integer *n3, integer *n4,
 
 /* On output: */
 
-/*       SWPTST = TRUE if and only if the arc connecting N1 */
+/*       SWPTST = true if and only if the arc connecting N1 */
 /*                and N2 should be swapped for an arc con- */
 /*                necting N3 and N4. */
 
@@ -2134,7 +2134,7 @@ L4:
 /* NM2 =       N-2 */
 /* NN =        Local copy of N */
 /* NT =        Number of pseudo-triangles:  NB-2 */
-/* SWP =       Logical variable set to TRUE in each optimiza- */
+/* SWP =       Logical variable set to true in each optimiza- */
 /*               tion loop (loop on pseudo-arcs) iff a swap */
 /*               is performed */
 /* V1,V2,V3 =  Vertices of triangle KT = (N1,N2,N3) sent to */
@@ -2930,14 +2930,14 @@ logical left_(doublereal *x1, doublereal *y1, doublereal *z1, doublereal *x2,
 
 /* On output: */
 
-/*       LEFT = TRUE if and only if N0 is in the closed */
+/*       LEFT = true if and only if N0 is in the closed */
 /*              left hemisphere. */
 
 /* Modules required by LEFT:  None */
 
 /* *********************************************************** */
 
-/* LEFT = TRUE iff <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
+/* LEFT = true iff <N0,N1 X N2> = det(N0,N1,N2) .GE. 0. */
 
     ret_val = *x0 * (*y1 * *z2 - *y2 * *z1) - *y0 * (*x1 * *z2 - *x2 * *z1) + 
 	    *z0 * (*x1 * *y2 - *x2 * *y1) >= 0.;
@@ -3116,7 +3116,7 @@ L2:
 /* N1,N2 =   Nodes opposite IO1->IO2 and IO2->IO1, */
 /*             respectively */
 /* NNA =     Local copy of NA */
-/* SWP =     Flag set to TRUE iff a swap occurs in the */
+/* SWP =     Flag set to true iff a swap occurs in the */
 /*             optimization loop */
 
     /* Parameter adjustments */
@@ -3143,7 +3143,7 @@ L2:
     }
 
 /* Top of loop -- */
-/*   SWP = TRUE iff a swap occurred in the current iteration. */
+/*   SWP = true iff a swap occurred in the current iteration. */
 
 L1:
     if (iter == maxit) {
@@ -3379,7 +3379,7 @@ L9:
 
 /* Local parameters: */
 
-/* BDRY =    Logical variable with value TRUE iff N1 is a */
+/* BDRY =    Logical variable with value true iff N1 is a */
 /*             boundary node */
 /* I,J =     DO-loop indexes */
 /* IERR =    Error flag returned by OPTIM */
@@ -3412,7 +3412,7 @@ L9:
 /*   one if N1 is a boundary node), and test for errors.  LPF */
 /*   and LPL are LIST indexes of the first and last neighbors */
 /*   of N1, IWL is the number of IWK columns containing arcs, */
-/*   and BDRY is TRUE iff N1 is a boundary node. */
+/*   and BDRY is true iff N1 is a boundary node. */
 
     /* Parameter adjustments */
     iwk -= 3;
@@ -3578,7 +3578,7 @@ L2:
 /*   containing the origin -- its removal reverses the effect */
 /*   of a call to COVSPH, and all its neighbors become */
 /*   boundary nodes.  This is achieved by treating it as if */
-/*   it were a boundary node (setting BDRY to TRUE, changing */
+/*   it were a boundary node (setting BDRY to true, changing */
 /*   a sign in LIST, and incrementing NNB). */
 
 L3:
@@ -4592,7 +4592,7 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 
 /*   This function locates a point P relative to a polygonal */
 /* region R on the surface of the unit sphere, returning */
-/* INSIDE = TRUE if and only if P is contained in R.  R is */
+/* INSIDE = true if and only if P is contained in R.  R is */
 /* defined by a cyclically ordered sequence of vertices which */
 /* form a positively-oriented simple closed curve.  Adjacent */
 /* vertices need not be distinct but the curve must not be */
@@ -4647,8 +4647,8 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 
 /* On output: */
 
-/*       INSIDE = TRUE if and only if P lies inside R unless */
-/*                IER .NE. 0, in which case INSIDE = FALSE */
+/*       INSIDE = true if and only if P lies inside R unless */
+/*                IER .NE. 0, in which case INSIDE = false */
 
 /*       IER = Error indicator: */
 /*             IER = 0 if no errors were encountered. */
@@ -4687,7 +4687,7 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 /*               orthogonal distance to (the midpoint of) */
 /*               boundary edge V1->V2 is approximately EPS/ */
 /*               (2*Cos(A/2)), where <V1,V2> = Cos(A). */
-/* EVEN =      TRUE iff an even number of intersection points */
+/* EVEN =      true iff an even number of intersection points */
 /*               lie between P and Q (on the shorter arc) */
 /* I1,I2 =     Indexes (LISTV elements) of a pair of adjacent */
 /*               boundary vertices (endpoints of a boundary */
@@ -4699,12 +4699,12 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 /* K0 =        LISTV index of the first endpoint of the */
 /*               boundary edge used to compute Q */
 /* LFT1,LFT2 = Logical variables associated with I1 and I2 in */
-/*               the boundary traversal:  TRUE iff the vertex */
+/*               the boundary traversal:  true iff the vertex */
 /*               is strictly to the left of Q->P (<V,CN> > 0) */
 /* N =         Local copy of NV */
 /* NI =        Number of intersections (between the boundary */
 /*               curve and the great circle P-Q) encountered */
-/* PINR =      TRUE iff P is to the left of the directed */
+/* PINR =      true iff P is to the left of the directed */
 /*               boundary edge associated with the closest */
 /*               intersection point to P that lies between P */
 /*               and Q (a left-to-right intersection as */
@@ -4715,7 +4715,7 @@ logical inside_(doublereal *p, integer *lv, doublereal *xv, doublereal *yv,
 /* Q =         (V1 + V2 + EPS*VN/VNRM)/QNRM, where V1->V2 is */
 /*               the boundary edge indexed by LISTV(K0) -> */
 /*               LISTV(K0+1) */
-/* QINR =      TRUE iff Q is to the left of the directed */
+/* QINR =      true iff Q is to the left of the directed */
 /*               boundary edge associated with the closest */
 /*               intersection point to Q that lies between P */
 /*               and Q (a right-to-left intersection as */
@@ -4867,7 +4867,7 @@ L2:
     }
 
 /* Test for consistency:  NI must be even and QINR must be */
-/*   TRUE. */
+/*   true. */
 
     if (ni != ni / 2 << 1 || ! qinr) {
 	goto L1;
@@ -5440,7 +5440,7 @@ integer trlist_(integer *n, integer *list, integer *lptr,
 
 /* Local parameters: */
 
-/* ARCS =     Logical variable with value TRUE iff are */
+/* ARCS =     Logical variable with value true iff are */
 /*              indexes are to be stored */
 /* I,J =      LTRI row indexes (1 to 3) associated with */
 /*              triangles KT and KN, respectively */
@@ -5477,7 +5477,7 @@ if (*n < 3 || (*nrow != 6 && *nrow != 9)) {
 /* Initialize parameters for loop on triangles KT = (N1,N2, */
 /*   N3), where N1 < N2 and N1 < N3. */
 
-/*   ARCS = TRUE iff arc indexes are to be stored. */
+/*   ARCS = true iff arc indexes are to be stored. */
 /*   KA,KT = Numbers of currently stored arcs and triangles. */
 /*   NM2 = Upper bound on candidates for N1. */
 

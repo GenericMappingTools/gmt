@@ -30,55 +30,55 @@
 
 #include "gmt.h"
 
-GMT_LONG GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 
 struct MAKECPT_CTRL {
 	struct Out {	/* -> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} D;
 	struct F {	/* -F[r|R|h|c] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM model;
+		bool active;
+		unsigned int model;
 	} F;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 	} I;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct T {	/* -T<z0/z1/dz> */
-		GMT_BOOLEAN active;
+		bool active;
 		double low, high, inc;
 		char *file;
 	} T;
 	struct Q {	/* -Q[i|o] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} Q;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
+		bool active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
@@ -87,7 +87,7 @@ void *New_makecpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct MAKECPT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
@@ -99,7 +99,7 @@ void Free_makecpt_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_makecpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -138,7 +138,7 @@ GMT_LONG GMT_makecpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to makecpt and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -146,7 +146,7 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files[2] = {0, 0};
+	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -163,21 +163,21 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Sets transparency */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				if (opt->arg[0] == '+') Ctrl->A.mode = 1;
 				Ctrl->A.value = 0.01 * atof (&opt->arg[Ctrl->A.mode]);
 				break;
 			case 'C':	/* CTP table */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set BNF to match cpt ends */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
 			case 'F':	/* Sets format for color reporting */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
@@ -186,37 +186,37 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 				}
 				break;
 			case 'I':	/* Invert table */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'M':	/* Use GMT defaults for BNF colors */
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not output BNF colors */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'T':	/* Sets up color z values */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if (!access (opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_LONG n;
+					int n;
 					Ctrl->T.inc = 0.0;
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
 					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -T option: Must specify start/stop[/inc]\n");
 				}
 				break;
 			case 'Q':	/* Logarithmic scale */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
 					Ctrl->Q.mode = 1;
 				break;
 			case 'W':	/* Do not interpolate colors */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 			case 'Z':	/* Continuous colors */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -238,9 +238,9 @@ GMT_LONG GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_makecpt_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG i, nz, cpt_flags = 0, error = 0;
+	int i, nz, cpt_flags = 0, error = 0;
 
 	double *z = NULL;
 
@@ -273,7 +273,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
-		Ctrl->C.active = TRUE;
+		Ctrl->C.active = true;
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
@@ -290,7 +290,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, file, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Pin->categorical) Ctrl->W.active = TRUE;	/* Do not want to sample a categorical table */
+	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 
 	/* Set up arrays */
 
@@ -307,7 +307,7 @@ GMT_LONG GMT_makecpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->coord[GMT_X];
-		nz = (GMT_LONG)T->table[0]->segment[0]->n_rows;
+		nz = (int)T->table[0]->segment[0]->n_rows;
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {

@@ -29,44 +29,44 @@
 
 struct X2SYS_REPORT_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 		char *col;
 	} C;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} I;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
-		COUNTER_LARGE min;
+		bool active;
+		uint64_t min;
 	} N;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		char *TAG;
 	} T;
 };
 
 struct COE_REPORT {	/* Holds summary info for each track */
-	COUNTER_LARGE nx;	/* Total number of COE for this track */
+	uint64_t nx;	/* Total number of COE for this track */
 	double mean, stdev, rms;
 	double sum, sum2, W;
 	double d_max;	/* Length of track in distance units */
@@ -79,7 +79,7 @@ struct COE_ADJUST {	/* Holds adjustment spline knots */
 
 struct COE_ADJLIST {	/* Array with the growing arrays of COE_ADJUST per track */
 	struct COE_ADJUST *K;
-	COUNTER_MEDIUM n;
+	unsigned int n;
 	size_t n_alloc;
 };
 
@@ -88,7 +88,7 @@ void *New_x2sys_report_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 
 	C = GMT_memory (GMT, NULL, 1, struct X2SYS_REPORT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -103,7 +103,7 @@ void Free_x2sys_report_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *C) 
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_x2sys_report_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_x2sys_report_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "x2sys_report %s - Report statistics from crossover data base\n\n", X2SYS_VERSION);
@@ -131,7 +131,7 @@ GMT_LONG GMT_x2sys_report_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -139,7 +139,7 @@ GMT_LONG GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -149,7 +149,7 @@ GMT_LONG GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files == 0) Ctrl->In.file = strdup (opt->arg);
 				n_files++;
 				break;
@@ -157,36 +157,36 @@ GMT_LONG GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL
 			/* Processes program-specific parameters */
 			
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'L':	/* Crossover correction table */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.min = atoi (opt->arg);
 				break;
 			case 'Q':	/* Specify internal or external only */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'S':
 				Ctrl->S.file = strdup (opt->arg);
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 
@@ -215,7 +215,7 @@ int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_report_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL, *c = NULL;
 	struct X2SYS_INFO *s = NULL;
@@ -223,11 +223,11 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	struct X2SYS_COE_PAIR *P = NULL;
 	struct COE_REPORT *R = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
-	GMT_BOOLEAN error = FALSE;
-	GMT_BOOLEAN internal = FALSE;	/* FALSE if only external xovers are needed */
-	GMT_BOOLEAN external = TRUE;	/* FALSE if only internal xovers are needed */
-	COUNTER_LARGE i, k, n, coe_kind, n_use, n_tracks;
-	COUNTER_LARGE p, np, nx, Tnx = 0;
+	bool error = false;
+	bool internal = false;	/* false if only external xovers are needed */
+	bool external = true;	/* false if only internal xovers are needed */
+	uint64_t i, k, n, coe_kind, n_use, n_tracks;
+	uint64_t p, np, nx, Tnx = 0;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
 	struct GMT_OPTION *opt = NULL;
@@ -269,8 +269,8 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Select internal, external, or both */
 	
 	if (Ctrl->Q.active) {
-		if (Ctrl->Q.mode == 1) internal = FALSE;
-		if (Ctrl->Q.mode == 2) external = FALSE;
+		if (Ctrl->Q.mode == 1) internal = false;
+		if (Ctrl->Q.mode == 2) external = false;
 	}
 	coe_kind = 0;
 	if (internal) coe_kind |= 1;
@@ -353,7 +353,7 @@ GMT_LONG GMT_x2sys_report (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
-		COUNTER_MEDIUM n_out, n1;
+		unsigned int n_out, n1;
 		char file[GMT_BUFSIZ];
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;

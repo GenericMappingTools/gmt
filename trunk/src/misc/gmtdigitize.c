@@ -60,34 +60,34 @@
 #define V_ID	1
 
 struct GMTDIGITIZE_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct C {	/* Device */
-		GMT_BOOLEAN active;
+		bool active;
 		char *device;
 	} C;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		double limit;
 	} D;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 	} F;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
-		GMT_LONG LPI;
+		bool active;
+		int LPI;
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		char *name;
 	} N;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 	} Z;
 };
 
@@ -100,7 +100,7 @@ void *New_gmtdigitize_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct GMTDIGITIZE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->L.LPI = DIG_LPI;
 	return (C);
@@ -113,8 +113,8 @@ void Free_gmtdigitize_Ctrl (struct GMT_CTRL *GMT, struct GMTDIGITIZE_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG get_digitize_raw (struct GMT_CTRL *GMT, GMT_LONG digunit, double *xdig, double *ydig, struct GMTDIGITIZE_INFO *C) {
-	GMT_LONG i, n, ix, iy;
+int get_digitize_raw (struct GMT_CTRL *GMT, int digunit, double *xdig, double *ydig, struct GMTDIGITIZE_INFO *C) {
+	int i, n, ix, iy;
 	char buffer[256], button;
 	
 	n = read (digunit, buffer, 255U);
@@ -130,11 +130,11 @@ GMT_LONG get_digitize_raw (struct GMT_CTRL *GMT, GMT_LONG digunit, double *xdig,
 	*xdig = (double)(ix) * C->INV_LPI;	/* Convert from lines per inch to inches */
 	*ydig = (double)(iy) * C->INV_LPI;
 	
-	return ((GMT_LONG)(button - '0'));
+	return ((int)(button - '0'));
 }
 
-GMT_LONG get_digitize_xy (struct GMT_CTRL *GMT, GMT_LONG digunit, double *xmap, double *ymap, struct GMTDIGITIZE_INFO *C) {
-	GMT_LONG button;
+int get_digitize_xy (struct GMT_CTRL *GMT, int digunit, double *xmap, double *ymap, struct GMTDIGITIZE_INFO *C) {
+	int button;
 	double x_raw, y_raw;
 	
 	button = get_digitize_raw (GMT, digunit, &x_raw, &y_raw, C);
@@ -169,7 +169,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 	return (fp);
 }
 
-GMT_LONG GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -204,7 +204,7 @@ GMT_LONG GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 	
-GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtdigitize and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -212,7 +212,7 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -227,33 +227,33 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'C':	/* Device to use */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.device = strdup (opt->arg);
 				break;
 			case 'D':	/* Minimum distance between continuously digitized points */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.limit = GMT_to_inch (GMT, opt->arg);
 				break;
 			case 'F':
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				break;
 			case 'L':	/* Resolution of digitizer in lines per inch */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.LPI = atoi (opt->arg);
 				break;
 			case 'Z':
-				if (opt->arg[0] == 'k') Ctrl->Z.active[K_ID] = TRUE;
-				if (opt->arg[0] == 'v') Ctrl->Z.active[V_ID] = TRUE;
+				if (opt->arg[0] == 'k') Ctrl->Z.active[K_ID] = true;
+				if (opt->arg[0] == 'v') Ctrl->Z.active[V_ID] = true;
 				break;
 			case 'N':	/* Multiple line segments */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.name = strdup (opt->arg);
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -270,11 +270,11 @@ GMT_LONG GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *
 
 #define Return(code) {Free_gmtdigitize_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
 
-GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, ok, multi_files;
-	GMT_LONG i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
-	GMT_LONG val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
+	bool error = false, ok, multi_files;
+	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
+	int val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
 	
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[80], this_file[GMT_BUFSIZ];
 	char *control[4] = {"first", "second", "third", "fourth"};
@@ -350,7 +350,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	type = (GMT_is_geographic (GMT, GMT_IN)) ? 0 : 1;
 	if (Ctrl->Z.active[V_ID]) key_pos = 3;	/* z-values go in 3rd column (if chosen), key values go in the next (if chosen) */
 	
-	ok = FALSE;
+	ok = false;
 	while (!ok) {
 		double sum_dig_distance, sum_map_distance, new_x, new_y, dist;
 		
@@ -358,7 +358,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_message (GMT, "| Calibration of map scale, paper rotation, and mapping offsets.   |\n");
 		GMT_message (GMT, "| We need 4 known points on the map to solve for these parameters. |\n");
 		GMT_message (GMT, "-------------------------------------------------------------------|\n\n");
-		ok = TRUE;
+		ok = true;
 		tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 		
 		if (!GMT->common.R.oblique && !Ctrl->F.active) {	/* -R is w/e/s/n and we dont want to override */
@@ -463,7 +463,7 @@ GMT_LONG GMT_gmtdigitize (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			rms *= inch_to_unit;
 			GMT_message (GMT, "\aError: Your four points project to give a r.m.s of %g %s\n", rms, unit_name);
 			GMT_message (GMT, "Tolerance is set to %g %s.  Please redo the calibration\n", inch_to_unit * TOLERANCE, unit_name);
-			ok = FALSE;
+			ok = false;
 		}
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);

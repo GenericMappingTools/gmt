@@ -31,11 +31,11 @@
 
 int main (int argc, char *argv[]) {
 
-	GMT_LONG status = 0;				/* Status code from GMT API */
+	int status = 0;				/* Status code from GMT API */
 	struct GMT_OPTION *head = NULL, *new = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 
-	GMT_LONG in_grdcut_ID, out_grdcut_ID;
+	int in_grdcut_ID, out_grdcut_ID;
 	char *in_grid = "t.nc", *out_grid = "new.nc", string[GMTAPI_STRLEN];
 	double w = 2.0, e = 4.0, s = 1.0, n = 3.0;	/* Hardwired region for test */
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;

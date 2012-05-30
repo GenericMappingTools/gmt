@@ -33,19 +33,19 @@
 
 struct GRDSAMPLE_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct G {	/* -G<grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 };
 
@@ -54,7 +54,7 @@ void *New_grdsample_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDSAMPLE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
@@ -65,7 +65,7 @@ void Free_grdsample_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdsample_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -87,7 +87,7 @@ GMT_LONG GMT_grdsample_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -95,9 +95,9 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	GMT_LONG n_errors = 0, n_files = 0;
+	int n_errors = 0, n_files = 0;
 #ifdef GMT_COMPAT
-	GMT_LONG ii = 0, jj = 0;
+	int ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
 #endif
 	struct GMT_OPTION *opt = NULL;
@@ -107,18 +107,18 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output file */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Grid spacings */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
@@ -138,7 +138,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				break;
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
 				sprintf (format, "%d+/%d+", ii, jj);
@@ -149,7 +149,7 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 				break;
 #endif
 			case 'T':	/* Convert from pixel file <-> gridfile */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -172,12 +172,12 @@ GMT_LONG GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdsample_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 
-	GMT_LONG error = 0;
-	COUNTER_MEDIUM row, col;
+	int error = 0;
+	unsigned int row, col;
 	
-	COUNTER_LARGE ij;
+	uint64_t ij;
 	
 	char format[GMT_BUFSIZ];
 	
@@ -233,7 +233,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
-			GMT_LONG shift = 0;
+			int shift = 0;
 			if (Gin->header->wesn[XHI] < Gout->header->wesn[XLO]) shift += 360;
 			if (Gin->header->wesn[XLO] > Gout->header->wesn[XHI]) shift -= 360;
 			if (shift) {	/* Must modify header */
@@ -256,7 +256,7 @@ GMT_LONG GMT_grdsample (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 
-	GMT_grd_init (GMT, Gin->header, options, TRUE);
+	GMT_grd_init (GMT, Gin->header, options, true);
 
 	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 

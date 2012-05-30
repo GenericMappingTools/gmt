@@ -36,28 +36,28 @@
 
 struct GRDEDIT_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *information;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 	} E;
 	struct N {	/* N<xyzfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} N;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 };
 
@@ -66,7 +66,7 @@ void *New_grdedit_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDEDIT_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -79,7 +79,7 @@ void Free_grdedit_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdedit_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdedit_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -107,7 +107,7 @@ GMT_LONG GMT_grdedit_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdedit and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -116,7 +116,7 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -125,31 +125,31 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 			/* Common parameters */
 
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adjsut increments */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'D':	/* Give grid information */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 			case 'E':	/* Transpose grid */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 			case 'N':	/* Replace nodes */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'S':	/* Rotate global grid */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Toggle registration */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -179,13 +179,13 @@ GMT_LONG GMT_grdedit_parse (struct GMTAPI_CTRL *C, struct GRDEDIT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdedit_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 	/* High-level function that implements the grdedit task */
 
-	COUNTER_MEDIUM row, col;
-	GMT_LONG error;
+	unsigned int row, col;
+	int error;
 	
-	COUNTER_LARGE ij, n_data, n_use;
+	uint64_t ij, n_data, n_use;
 	
 	double shift_amount = 0.0, *in = NULL;
 
@@ -264,7 +264,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 		}
 	}
 	else if (Ctrl->N.active) {
-		GMT_LONG in_ID = 0;
+		int in_ID = 0;
 		GMT_report (GMT, GMT_MSG_NORMAL, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
@@ -310,7 +310,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 				if (col == 0) {ij = GMT_IJP (G->header, row, G->header->nx-1); G->data[ij] = (float)in[GMT_Z]; n_use++; }
 				else if (col == (G->header->nx-1)) {ij = GMT_IJP (G->header, row, 0); G->data[ij] = (float)in[GMT_Z]; n_use++; }
 			}
-		} while (TRUE);
+		} while (true);
 		
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
@@ -323,7 +323,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
 		struct GRD_HEADER *h_tr = NULL;
-		COUNTER_LARGE ij, ij_tr;
+		uint64_t ij, ij_tr;
 		float *a_tr = NULL;
 		
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->In.file, G)) {	/* Get data */
@@ -373,7 +373,7 @@ GMT_LONG GMT_grdedit (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Reset region in file %s to %g/%g/%g/%g\n", 
 				Ctrl->In.file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 			GMT_memcpy (G->header->wesn, GMT->common.R.wesn, 4, double);
-			Ctrl->A.active = TRUE;	/* Must ensure -R -I compatibility */
+			Ctrl->A.active = true;	/* Must ensure -R -I compatibility */
 		}
 		if (Ctrl->A.active) {
 			G->header->inc[GMT_X] = GMT_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);

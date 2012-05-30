@@ -30,33 +30,33 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-	GMT_LONG gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
+	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
 
 /* Control structure for colmath */
 
 struct COLMATH_CTRL {
 	struct Out {	/* -> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 	} A;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct Q {	/* -Q<segno> */
-		GMT_BOOLEAN active;
-		COUNTER_LARGE seg;
+		bool active;
+		uint64_t seg;
 	} Q;
 	struct S {	/* -S[~]\"search string\" */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN inverse;
+		bool active;
+		bool inverse;
 		char *pattern;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 };
 
@@ -65,7 +65,7 @@ void *New_colmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct COLMATH_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	return (C);
 }
@@ -77,7 +77,7 @@ void Free_colmath_Ctrl (struct GMT_CTRL *GMT, struct COLMATH_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_colmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_colmath_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -102,7 +102,7 @@ GMT_LONG GMT_colmath_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to colmath and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -110,7 +110,7 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -126,23 +126,23 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'A':	/* pAste mode */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				break;
 			case 'N':	/* Skip all-NaN records */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Only report for specified segment number */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				Ctrl->Q.seg = atol (opt->arg);
 				break;
 			case 'S':	/* Segment header pattern search */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				k = (opt->arg[0] == '\\' && strlen (opt->arg) > 3 && opt->arg[1] == '~') ? 1 : 0;	/* Special escape if pattern starts with ~ */
-				if (opt->arg[0] == '~') Ctrl->S.inverse = TRUE;
+				if (opt->arg[0] == '~') Ctrl->S.inverse = true;
 				Ctrl->S.pattern = strdup (&opt->arg[k+Ctrl->S.inverse]);
 				break;
 			case 'T':	/* Do not write segment headers */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -163,13 +163,13 @@ GMT_LONG GMT_colmath_parse (struct GMTAPI_CTRL *C, struct COLMATH_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_colmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_colmath (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = 0;
-	COUNTER_MEDIUM tbl, col, n_cols_in, n_cols_out, out_col;
-	COUNTER_MEDIUM n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
-	GMT_BOOLEAN match = FALSE, warn = FALSE;
-	COUNTER_LARGE row, last_row, n_rows, seg, out_seg = 0, n_out_seg = 0;
+	int error = 0;
+	unsigned int tbl, col, n_cols_in, n_cols_out, out_col;
+	unsigned int n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
+	bool match = false, warn = false;
+	uint64_t row, last_row, n_rows, seg, out_seg = 0, n_out_seg = 0;
 	
 	double *val = NULL;
 
@@ -197,7 +197,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the colmath main code ----------------------------*/
 
-	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, FALSE);	/* Turn off segment headers on output */
+	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */
@@ -211,8 +211,8 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	for (tbl = n_cols_in = n_cols_out = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
 		if (Ctrl->A.active) {	/* All tables must be of the same vertical shape */
-			if (tbl && D[GMT_IN]->table[tbl]->n_records  != D[GMT_IN]->table[tbl-1]->n_records)  error = TRUE;
-			if (tbl && D[GMT_IN]->table[tbl]->n_segments != D[GMT_IN]->table[tbl-1]->n_segments) error = TRUE;
+			if (tbl && D[GMT_IN]->table[tbl]->n_records  != D[GMT_IN]->table[tbl-1]->n_records)  error = true;
+			if (tbl && D[GMT_IN]->table[tbl]->n_segments != D[GMT_IN]->table[tbl-1]->n_segments) error = true;
 		}
 		n_cols_in += D[GMT_IN]->table[tbl]->n_columns;				/* This is the case for -A */
 		n_cols_out = MAX (n_cols_out, D[GMT_IN]->table[tbl]->n_columns);	/* The widest table encountered */
@@ -242,7 +242,7 @@ GMT_LONG GMT_colmath (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	for (tbl_ver = 0; tbl_ver < n_vertical_tbls; tbl_ver++) {	/* Number of tables to place vertically */
 		for (seg = 0; seg < D[GMT_IN]->table[tbl_ver]->n_segments; seg++) {	/* For each segment in the tables */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
-				match = (D[GMT_OUT]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_OUT]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* TRUE if we matched */
+				match = (D[GMT_OUT]->table[tbl_ver]->segment[seg]->header && strstr (D[GMT_OUT]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern) != NULL);		/* true if we matched */
 				if (Ctrl->S.inverse == match) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */
 			}
 			if (Ctrl->Q.active && seg != Ctrl->Q.seg) D[GMT_OUT]->table[tbl_ver]->segment[seg]->mode = GMT_WRITE_SKIP;	/* Mark segment to be skipped */

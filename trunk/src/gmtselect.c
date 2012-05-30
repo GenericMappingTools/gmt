@@ -54,73 +54,73 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 };
 
 struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_SHORE_SELECT info;
 	} A;
 	struct C {	/* [-C[-|=|+]<dist>[unit]/<ptfile>] */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
+		bool active;
+		int mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Radius of influence for each point */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with points */
 	} C;
 	struct D {	/* -D<resolution> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN force;	/* if TRUE, select next highest level if current set is not avaialble */
+		bool active;
+		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
 	struct E {	/* -E<operators> , <op> = combination or f,n */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
+		bool active;
+		unsigned int inside[2];	/* if 2, then a point exactly on a polygon boundary is considered OUTSIDE, else 1 */
 	} E;
 	struct L {	/* -L[p][-|=|+]<dist>[unit]/<lfile> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM end_mode;	/* Controls what happens beyond segment endpoints */
-		GMT_LONG mode;	/* Form of distance calculation (can be negative) */
+		bool active;
+		unsigned int end_mode;	/* Controls what happens beyond segment endpoints */
+		int mode;	/* Form of distance calculation (can be negative) */
 		double dist;	/* Distance of influence for each line */
 		char unit;	/* Unit name */
 		char *file;	/* Name of file with lines */
 	} L;
 	struct F {	/* -F<polygon> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;	/* Name of file with polygons */
 	} F;
 	struct I {	/* -Icflrsz */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
+		bool active;
+		bool pass[GMTSELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct N {	/* -N<maskvalues> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
-		GMT_BOOLEAN mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
+		bool active;
+		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
+		bool mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
 	struct Z {	/* -Z<min>/<max> */
-		GMT_BOOLEAN active;
+		bool active;
 		double min;	/* Smallest z-value to pass through */
 		double max;	/* Largest z-value to pass through */
 	} Z;
 	struct dbg {	/* -+step */
-		GMT_BOOLEAN active;
+		bool active;
 		double step;
 	} dbg;
 };
 
 void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	GMT_LONG i;
+	int i;
 	struct GMTSELECT_CTRL *C;
 	
 	C = GMT_memory (GMT, NULL, 1, struct GMTSELECT_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->A.info.high = GSHHS_MAX_LEVEL;				/* Include all GSHHS levels */
 	C->D.set = 'l';							/* Low-resolution coastline data */
 	C->E.inside[F_ITEM] = C->E.inside[N_ITEM] = GMT_ONEDGE;		/* Default is that points on a boundary are inside */
-	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = TRUE;	/* Default is to pass if we are inside */
-	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, GMT_BOOLEAN);		/* Default for "wet" areas = FALSE (outside) */
-	C->N.mask[1] = C->N.mask[3] = TRUE;				/* Default for "dry" areas = TRUE (inside) */
+	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;	/* Default is to pass if we are inside */
+	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);		/* Default for "wet" areas = false (outside) */
+	C->N.mask[1] = C->N.mask[3] = true;				/* Default for "dry" areas = true (inside) */
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	
 	return (C);
@@ -146,7 +146,7 @@ int compare_x (const void *point_1, const void *point_2)
 	return (0);
 }
 
-GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtselect_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -204,7 +204,7 @@ GMT_LONG GMT_gmtselect_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -212,12 +212,12 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, pos, j, k;
+	unsigned int n_errors = 0, pos, j, k;
 	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
-	GMT_BOOLEAN fix = FALSE;
+	bool fix = false;
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -229,16 +229,16 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Limit GSHHS features */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				GMT_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Near a point test */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 #ifdef GMT_COMPAT
 				if (opt->arg[0] == 'f') {
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
 					opt->arg[0] = '-';
-					fix = TRUE;
+					fix = true;
 				}
 #endif
 				for (j = 0; opt->arg[j] && opt->arg[j] != '/'; j++);
@@ -257,12 +257,12 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 #endif
 				break;
 			case 'D':	/* Set GSHHS resolution */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
-				if (opt->arg[1] == '+') Ctrl->D.force = TRUE;
+				if (opt->arg[1] == '+') Ctrl->D.force = true;
 				break;
 			case 'E':	/* On-boundary selection */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'f':
@@ -279,30 +279,30 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Invert these tests */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'r':
-							Ctrl->I.pass[0] = FALSE;
+							Ctrl->I.pass[0] = false;
 							break;
 						case 'c':
-							Ctrl->I.pass[1] = FALSE;
+							Ctrl->I.pass[1] = false;
 							break;
 						case 'l':
-							Ctrl->I.pass[2] = FALSE;
+							Ctrl->I.pass[2] = false;
 							break;
 						case 'f':
-							Ctrl->I.pass[3] = FALSE;
+							Ctrl->I.pass[3] = false;
 							break;
 						case 's':
-							Ctrl->I.pass[4] = FALSE;
+							Ctrl->I.pass[4] = false;
 							break;
 						case 'z':
-							Ctrl->I.pass[5] = FALSE;
+							Ctrl->I.pass[5] = false;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Expects -Icflrsz\n");
@@ -313,7 +313,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				break;
 			case 'L':	/* Near a line test */
 				if (opt->arg[0]) {	/* Set line options */
-					Ctrl->L.active = TRUE;
+					Ctrl->L.active = true;
 					k = 0;
 					if (opt->arg[k] == 'p') {	/* Disallow points beyond endpoints */
 						Ctrl->L.end_mode = 10;
@@ -333,12 +333,12 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				}
 				break;
 			case 'N':	/* Inside/outside GSHHS land */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				strcpy (buffer, opt->arg);
 #ifdef GMT_COMPAT
 				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
-					Ctrl->E.active = TRUE;
+					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
 				}
@@ -347,10 +347,10 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (buffer, "/", &pos, ptr))) {
 					switch (ptr[0]) {
 						case 's':	/* Skip points in this level */
-							Ctrl->N.mask[j] = FALSE;
+							Ctrl->N.mask[j] = false;
 							break;
 						case 'k':
-							Ctrl->N.mask[j] = TRUE;
+							Ctrl->N.mask[j] = true;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Bad modifier (use s or k)\n");
@@ -365,7 +365,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				Ctrl->N.mode = (j == 2);
 				break;
 			case 'Z':	/* Test z-range */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (j != 2) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Z option: Specify z_min and z_max\n");
@@ -376,7 +376,7 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 				break;
 #ifdef DEBUG
 			case '+':	/* Undocumented option to increase path-fix resolution */
-				Ctrl->dbg.active = TRUE;
+				Ctrl->dbg.active = true;
 				Ctrl->dbg.step = atof (opt->arg);
 				break;
 #endif
@@ -407,16 +407,16 @@ GMT_LONG GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtselect_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG err;	/* Required by GMT_err_fail */
-	COUNTER_MEDIUM base = 3, np[2] = {0, 0}, r_mode;
-	COUNTER_MEDIUM side, col, id;
-	GMT_LONG n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
-	GMT_BOOLEAN inside, error = FALSE, need_header, shuffle, just_copy_record = FALSE, pt_cartesian = FALSE;
-	GMT_BOOLEAN output_header = FALSE, do_project = FALSE, no_resample = FALSE;
+	int err;	/* Required by GMT_err_fail */
+	unsigned int base = 3, np[2] = {0, 0}, r_mode;
+	unsigned int side, col, id;
+	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX;
+	bool inside, error = false, need_header, shuffle, just_copy_record = false, pt_cartesian = false;
+	bool output_header = false, do_project = false, no_resample = false;
 
-	COUNTER_LARGE k, row, seg, n_read = 0, n_pass = 0;
+	uint64_t k, row, seg, n_read = 0, n_pass = 0;
 
 	double xx, yy, *in = NULL;
 	double west_border = 0.0, east_border = 0.0, xmin, xmax, ymin, ymax, lon;
@@ -448,13 +448,13 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
-	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = TRUE;
+	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
 
 	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
 	n_minimum = (Ctrl->Z.active) ? 3 : 2;	/* Minimum number of columns in ASCII input */
 	
 	if (!GMT->common.R.active && Ctrl->N.active) {	/* If we use coastline data or used -fg but didnt give -R we implicitly set -Rg */
-		GMT->common.R.active = TRUE;
+		GMT->common.R.active = true;
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = +90.0;
 		GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
@@ -464,10 +464,10 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Supply dummy linear proj */
 			GMT->current.proj.projection = GMT->current.proj.xyz_projection[GMT_X] = GMT->current.proj.xyz_projection[GMT_Y] = GMT_LINEAR;
 			GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
-			GMT->common.J.active = no_resample = TRUE;
+			GMT->common.J.active = no_resample = true;
 		}
 		else
-			do_project = TRUE;	/* Only TRUE when the USER selected -J, not when we supply a dummy -Jx1d */
+			do_project = true;	/* Only true when the USER selected -J, not when we supply a dummy -Jx1d */
 		Ctrl->dbg.step = 0.01;
 		if (GMT_is_geographic (GMT, GMT_IN)) {
 			while (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] < 0.0) {	/* Make all-negative longitude range positive instead */
@@ -534,7 +534,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					point->segment[seg]->coord[GMT_X][row] = xx;
 					point->segment[seg]->coord[GMT_Y][row] = yy;
 				}
-				pt_cartesian = TRUE;	/* Well, now it is */
+				pt_cartesian = true;	/* Well, now it is */
 			}
 		}
 		if (pt_cartesian) {	/* Speed up testing by sorting points on the x-coordinate first */
@@ -587,11 +587,11 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	if (Ctrl->F.active) {	/* Initialize polygon structure used in test for polygon in/out test */
-		GMT_skip_xy_duplicates (GMT, TRUE);	/* Avoid repeating x/y points in polygons */
+		GMT_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
 		if ((Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_IO_ASCII, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_skip_xy_duplicates (GMT, FALSE);	/* Reset */
+		GMT_skip_xy_duplicates (GMT, false);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
 			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
 			Return (EXIT_FAILURE);
@@ -640,7 +640,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 				break;
 			else if (GMT_REC_IS_SEG_HEADER (GMT)) {
-				output_header = TRUE;
+				output_header = true;
 				continue;
 			}
 		}
@@ -703,7 +703,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (Ctrl->N.active) {	/* Check if on land or not */
-			GMT_LONG brow, i, this_node;
+			int brow, i, this_node;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
 			brow = lrint (floor ((90.0 - in[GMT_Y]) / c.bsize));
@@ -725,7 +725,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				for (id = 0; id < 2; id++) {
 					GMT_free_shore_polygons (GMT, p[id], np[id]);
 					if (np[id]) GMT_free (GMT, p[id]);
-					np[id] = GMT_assemble_shore (GMT, &c, wd[id], TRUE, west_border, east_border, &p[id]);
+					np[id] = GMT_assemble_shore (GMT, &c, wd[id], true, west_border, east_border, &p[id]);
 					np[id] = GMT_prep_shore_polygons (GMT, &p[id], np[id], !no_resample, Ctrl->dbg.step, -1);
 				}
 			}
@@ -775,7 +775,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (output_header) {	/* First output point for this segment - write the header */
 			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
-			output_header = FALSE;
+			output_header = false;
 		}
 
 		if (just_copy_record)
@@ -783,7 +783,7 @@ GMT_LONG GMT_gmtselect (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		else
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		n_pass++;
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

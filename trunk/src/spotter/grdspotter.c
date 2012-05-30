@@ -110,71 +110,71 @@
 #define UPPER	1
 
 struct GRDSPOTTER_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A<file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} A;
 	struct D {	/* -Di<file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct E {	/* -E[+rotfile */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 		char *file;
 	} E;
 	struct G {	/* -Ggrdfile */
-		GMT_BOOLEAN active;	/* Pixel registration */
+		bool active;	/* Pixel registration */
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct L {	/* -Lfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} L;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		double t_upper;
 	} N;
 	struct PA {	/* -Dp<file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} PA;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM id;
+		bool active;
+		unsigned int mode;
+		unsigned int id;
 		char *file;
 	} Q;
 	struct S2 {	/* -S2 */
-		GMT_BOOLEAN active;
+		bool active;
 		double dist;
 	} S2;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 	struct T {	/* -T */
-		GMT_BOOLEAN active[2];
+		bool active[2];
 		double t_fix;	/* Set fixed age*/
 	} T;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n_try;
+		bool active;
+		unsigned int n_try;
 	} W;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 		double min, max, inc;
 	} Z;
 };
@@ -184,7 +184,7 @@ void *New_grdspotter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDSPOTTER_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->N.t_upper = 180.0;	/* Upper age assigned to nodes on undated seafloor */
 	C->Z.max = DBL_MAX;	/* Only deal with z-values inside this range [0/Inf] */
@@ -203,7 +203,7 @@ void Free_grdspotter_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_grdspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdspotter_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -244,7 +244,7 @@ GMT_LONG GMT_grdspotter_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdspotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -252,8 +252,8 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, k, n_files = 0;
-	GMT_LONG m, sval;
+	unsigned int n_errors = 0, k, n_files = 0;
+	int m, sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -261,14 +261,14 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
 				break;
 #ifdef GMT_COMPAT
@@ -277,22 +277,22 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 				break;
 #endif
 			case 'E':
-				Ctrl->E.active = TRUE;	k = 0;
-				if (opt->arg[0] == '+') { Ctrl->E.mode = TRUE; k = 1;}
+				Ctrl->E.active = true;	k = 0;
+				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				Ctrl->E.file  = strdup (&opt->arg[k]);
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'D':
 				switch (opt->arg[0]) {
 					case 'i':
-						Ctrl->D.active = TRUE;
+						Ctrl->D.active = true;
 						Ctrl->D.file = strdup (&opt->arg[1]);
 						break;
 					case 'p':
-						Ctrl->PA.active = TRUE;
+						Ctrl->PA.active = true;
 						Ctrl->PA.file = strdup (&opt->arg[1]);
 						break;
 					default:
@@ -301,29 +301,29 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 				}
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 's':	/* Sampling interval */
-				Ctrl->S2.active = TRUE;
+				Ctrl->S2.active = true;
 				Ctrl->S2.dist = atof (opt->arg);
 				break;
 			case 'M':
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (!access (opt->arg, R_OK)) {	/* The file exists */
 					Ctrl->Q.mode = 2;
 					Ctrl->Q.file = strdup (opt->arg);
@@ -338,14 +338,14 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 			case 'T':
 				if (opt->arg[0] == 't')
-					Ctrl->T.active[TRUNC] = TRUE;
+					Ctrl->T.active[TRUNC] = true;
 				else if (opt->arg[0] == 'u') {
 					Ctrl->T.t_fix = atof (&opt->arg[1]);
-					Ctrl->T.active[UPPER] = TRUE;
+					Ctrl->T.active[UPPER] = true;
 				}
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error -T: Either use -Tt or -Tu<age>\n");
@@ -354,13 +354,13 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 				break;
 			case 'W':
 				Ctrl->W.n_try = atoi (opt->arg);
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				m = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.min, &Ctrl->Z.max, &Ctrl->Z.inc);
 				if (m == 1) Ctrl->Z.max = 1.0e300;	/* Max not specified */
-				if (m == 3) Ctrl->Z.mode = TRUE;	/* Want several slices */
+				if (m == 3) Ctrl->Z.mode = true;	/* Want several slices */
 				break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -380,7 +380,7 @@ GMT_LONG GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ct
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-COUNTER_MEDIUM get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, COUNTER_MEDIUM n_stages, double d_km, COUNTER_MEDIUM step, COUNTER_MEDIUM flag, double wesn[], double **flow)
+unsigned int get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow)
 {
 	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;
@@ -435,7 +435,7 @@ COUNTER_MEDIUM get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double 
 	return (np);
 }
 
-GMT_BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, COUNTER_LARGE node, double upper_age, GMT_BOOLEAN truncate)
+bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t node, double upper_age, bool truncate)
 {
 	/* Returns the age of this node based on either a given seafloor age grid
 	 * or the upper age, truncated if necessary */
@@ -449,18 +449,18 @@ GMT_BOOLEAN set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, CO
 				*t_smt = upper_age;
 			else {			/* Consider this an error or just skip */
 				GMT_report (GMT, GMT_MSG_NORMAL, "Node %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
-				return (FALSE);
+				return (false);
 			}
 		}
 	}
-	return (TRUE);	/* We are returning a useful age */
+	return (true);	/* We are returning a useful age */
 }
 
 void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
 {	/* Determines the grid's min/max z-values and normalizes the grid
 	 * so that zmax is 100% */
-	COUNTER_MEDIUM row, col;
-	COUNTER_LARGE node;
+	unsigned int row, col;
+	uint64_t node;
 	double CVA_scale;	/* Used to normalize CVAs to percent */
 	
 	G->header->z_min = +DBL_MAX;
@@ -481,23 +481,23 @@ void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdspotter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM n_stages;	/* Number of stage rotations (poles) */
-	COUNTER_MEDIUM try;		/* Number of current bootstrap estimate */
-	COUNTER_MEDIUM row, row2, col, col2, k_step;
-	COUNTER_MEDIUM forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
-	GMT_BOOLEAN error = FALSE;		/* TRUE when arguments are wrong */
-	GMT_BOOLEAN keep_flowlines = FALSE;	/* TRUE if Ctrl->D.active, Ctrl->PA.active, or bootstrap is TRUE */
-	GMT_LONG i, j;			/* Signed row,col variables */
-	GMT_LONG *ID = NULL;		/* Optional array with IDs for each node */
+	unsigned int n_stages;	/* Number of stage rotations (poles) */
+	unsigned int try;		/* Number of current bootstrap estimate */
+	unsigned int row, row2, col, col2, k_step;
+	unsigned int forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
+	bool error = false;		/* true when arguments are wrong */
+	bool keep_flowlines = false;	/* true if Ctrl->D.active, Ctrl->PA.active, or bootstrap is true */
+	int i, j;			/* Signed row,col variables */
+	int *ID = NULL;		/* Optional array with IDs for each node */
 	
-	COUNTER_LARGE ij, k, node, m, np, max_ij = 0, n_flow, n_unique_nodes = 0;
-	COUNTER_LARGE n_nodes;		/* Number of nodes processed */
+	uint64_t ij, k, node, m, np, max_ij = 0, n_flow, n_unique_nodes = 0;
+	uint64_t n_nodes;		/* Number of nodes processed */
 
 	size_t n_alloc = 0, inc_alloc = BIG_CHUNK, mem = 0;
 
-	char *processed_node = NULL;	/* Pointer to array with TRUE/FALSE values for each grid node */
+	char *processed_node = NULL;	/* Pointer to array with true/false values for each grid node */
 	
 	unsigned short pa = 0;		/* Placeholder for PA along track */
 
@@ -529,8 +529,8 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	struct ID {			/* Information regarding one chain ID */
 		double wesn[4];		/* Do not calculate flowlines outside this box */
-		GMT_BOOLEAN ok;		/* TRUE if we want to calculate this CVA */
-		GMT_BOOLEAN check_region;	/* TRUE if w, e, s, n is more restrictive than command line -R */
+		bool ok;		/* true if we want to calculate this CVA */
+		bool check_region;	/* true if w, e, s, n is more restrictive than command line -R */
 	} *ID_info = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct GRDSPOTTER_CTRL *Ctrl = NULL;
@@ -558,7 +558,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Initialize the CVA grid and structure */
 
 	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, G->header, options, FALSE);	/* Initialize grid structure */
+	GMT_grd_init (GMT, G->header, options, false);	/* Initialize grid structure */
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
@@ -570,7 +570,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Load in the Euler stage poles */
 
-	n_stages = spotter_init (GMT, Ctrl->E.file, &p, TRUE, FALSE, Ctrl->E.mode, &Ctrl->N.t_upper);
+	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 
@@ -646,18 +646,18 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			Return (API->error);
 		}
 		
-		/* Store IDs in a GMT_LONG array instead */
-		ID = GMT_memory (GMT, NULL, L->header->size, GMT_LONG);
+		/* Store IDs in a int array instead */
+		ID = GMT_memory (GMT, NULL, L->header->size, int);
 		for (ij = 0; ij < L->header->size; ij++) ID[ij] = lrint ((double)L->data[ij]);
 		GMT_free (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);
 		if (Ctrl->Q.mode == 1) {	/* Only doing one CVA with no extra restrictions */
-			ID_info[Ctrl->Q.id].ok = TRUE;	/* Every other info in struct array is NULL or 0 */
+			ID_info[Ctrl->Q.id].ok = true;	/* Every other info in struct array is NULL or 0 */
 		}
 		else {	/* Must read from file */
 			FILE *fp = NULL;
-			GMT_LONG Qid;
+			int Qid;
 			double wq, eq, sq, nq;
 			char line[GMT_BUFSIZ];
 			
@@ -668,9 +668,9 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			while (fgets (line, GMT_BUFSIZ, fp)) {
 				if (line[0] == '#' || line[0] == '\n') continue;
 				k = sscanf (line, "%*s %d %lf %lf %lf %lf", &Qid, &wq, &eq, &sq, &nq);
-				ID_info[Ctrl->Q.id].ok = TRUE;
+				ID_info[Ctrl->Q.id].ok = true;
 				if (k == 5) {	/* Got restricted wesn also */
-					ID_info[Qid].check_region = TRUE;
+					ID_info[Qid].check_region = true;
  					sq = GMT_lat_swap (GMT, sq, GMT_LATSWAP_G2O);	/* Go geocentric */
  					nq = GMT_lat_swap (GMT, nq, GMT_LATSWAP_G2O);	/* Go geocentric */
 					ID_info[Qid].wesn[XLO] = wq * D2R;
@@ -681,11 +681,11 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			fclose (fp);
 		}
-		Ctrl->Q.mode = TRUE;
+		Ctrl->Q.mode = true;
 	}
 
 	if (Ctrl->M.active) {
-		keep_flowlines = FALSE;	/* Do it the hard way to save memory */
+		keep_flowlines = false;	/* Do it the hard way to save memory */
 		k_step = 2;		/* Reset back to 3 if needed later */
 		forth_flag = 10;	/* The 10 is used to limit the flowline calculation to only resample track within the rectangular box of interest */
 	}
@@ -728,7 +728,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memset (processed_node, G->header->size, char);	/* Fresh start for this flowline convolution */
 		
 		if (keep_flowlines) {
-			flowline[n_nodes].node = GMT_memory (GMT, NULL, np, COUNTER_LARGE);
+			flowline[n_nodes].node = GMT_memory (GMT, NULL, np, uint64_t);
 			if (Ctrl->PA.active) flowline[n_nodes].PA = GMT_memory (GMT, NULL, np, unsigned short);
 		}
 		
@@ -758,7 +758,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (node != UINTMAX_MAX) {
 				if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */
 					G->data[node] += (float)cva_contribution;
-					processed_node[node] = TRUE;		/* Now we have visited this node */
+					processed_node[node] = true;		/* Now we have visited this node */
 					n_unique_nodes++;
 #ifdef DEBUG2
 					printf ("%g\t%g\n", x_cva[col2], y_cva[row2]);
@@ -770,7 +770,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (keep_flowlines) {
 			flowline[n_nodes].n = np;	/* Number of points in flowline */
 			flowline[n_nodes].ij = ij;	/* Originating node in topo grid */
-			mem += sizeof (struct FLOWLINE) + np * sizeof (COUNTER_LARGE) + ((Ctrl->PA.active) ? np * sizeof (unsigned short) : 0);
+			mem += sizeof (struct FLOWLINE) + np * sizeof (uint64_t) + ((Ctrl->PA.active) ? np * sizeof (unsigned short) : 0);
 		}
 
 		GMT_free (GMT, c);	/* Free the flowline vector */
@@ -806,7 +806,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (Ctrl->Z.mode) {	/* Do CVA calculations for each z-slice using stored flowlines */
-		COUNTER_MEDIUM layer, nz;
+		unsigned int layer, nz;
 		size_t len;
 		char file[GMT_BUFSIZ], format[GMT_BUFSIZ];
 		double z0, z1;
@@ -836,7 +836,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					node = flowline[m].node[k];
 					if (node != UINTMAX_MAX && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
 						CVA_inc[node] += (float)cva_contribution;
-						processed_node[node] = TRUE;		/* Now we have visited this node */
+						processed_node[node] = true;		/* Now we have visited this node */
 					}
 				}
 				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
@@ -863,7 +863,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	if (Ctrl->D.active || Ctrl->PA.active) {	/* Must determine max CVA along each flowline */
 		if (Ctrl->D.active) {
 			if ((DI = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_grd_init (GMT, DI->header, options, FALSE);
+			GMT_grd_init (GMT, DI->header, options, false);
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, DI, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->D.file);
@@ -871,7 +871,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		if (Ctrl->PA.active) {
 			if ((PA = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_grd_init (GMT, PA->header, options, FALSE);
+			GMT_grd_init (GMT, PA->header, options, false);
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, PA, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->PA.file);
@@ -991,7 +991,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					node = flowline[ij].node[k];
 					if (node != UINTMAX_MAX && !processed_node[node]) {	/* Have not added to the CVA at this node yet */
 						G->data[node] += zz;
-						processed_node[node] = TRUE;		/* Now we have visited this node; flag it */
+						processed_node[node] = true;		/* Now we have visited this node; flag it */
 					}
 				}
 				if (!(m%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %5ld flowlines\r", m);
@@ -1034,7 +1034,7 @@ GMT_LONG GMT_grdspotter (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_free (GMT, lat_area);
 	if (keep_flowlines) GMT_free (GMT, flowline);
 	if (Ctrl->Q.mode) GMT_free (GMT, ID_info);
-	GMT_free_grid (GMT, &G_rad, FALSE);
+	GMT_free_grid (GMT, &G_rad, false);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
 

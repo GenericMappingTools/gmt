@@ -33,14 +33,14 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
 
 struct GMTSET_CTRL {
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct D {	/* -D[s|u] */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} D;
 	struct G {	/* -Gfilename */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 };
@@ -58,7 +58,7 @@ void Free_gmtset_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_gmtset_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtset_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -84,7 +84,7 @@ GMT_LONG GMT_gmtset_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtset and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -92,7 +92,7 @@ GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -106,14 +106,14 @@ GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Get GMT system-wide defaults settings */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'G':	/* Optional defaults file on input and output */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 
@@ -129,9 +129,9 @@ GMT_LONG GMT_gmtset_parse (struct GMTAPI_CTRL *C, struct GMTSET_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtset_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtset (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtset (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_LONG error = 0;
+	int error = 0;
 
 	char path[GMT_TEXT_LEN256];
 	char* gmtconf_file;

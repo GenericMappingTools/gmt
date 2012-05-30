@@ -37,8 +37,8 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	double *z = NULL;
 	char *fileout = NULL, *title = NULL;
 	struct GMT_GRID *G = NULL;
-	GMT_LONG row, col, error = 0, k;
-	COUNTER_LARGE gmt_ij;
+	int row, col, error = 0, k;
+	uint64_t gmt_ij;
 
 	if (nrhs < 3 || nrhs > 6) {
 		GMT5MEX_banner;
@@ -52,7 +52,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
 	/* 2. Prepare the GMT grid */
 	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Allocation failure\n");
-	GMT_grd_init (API->GMT, G->header, NULL, FALSE);
+	GMT_grd_init (API->GMT, G->header, NULL, false);
 
 	/* 3. Load the file name and title (if given) into char strings */
 	k = (nrhs >= 5) ? 3 : 2;

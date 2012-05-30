@@ -33,7 +33,7 @@
 struct ELLIPSOID {	/* Information about a particular ellipsoid */
 	/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
 	char name[GMT_TEXT_LEN64];
-	GMT_LONG date;
+	int date;
 	double eq_radius;
 	double flattening;
 };
@@ -47,12 +47,12 @@ struct DATUM {	/* Information about a particular datum */
 
 struct gmt_encoding {
 	char name[GMT_TEXT_LEN64];
-	GMT_LONG code[5]; /* Codes for symbols we print. */
+	int code[5]; /* Codes for symbols we print. */
 };
 
 struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default parameters */
 	/* COLOR group [sorted by type to optimize storage] */
-	COUNTER_MEDIUM color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
+	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
 	double color_patch[3][4];		/* Color of background, foreground, nan [black,white,127.5] */
 	double color_hsv_min_s;			/* For smallest or most negative intensity [1.0] */
@@ -79,21 +79,21 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_logo[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
-	COUNTER_MEDIUM interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
-	COUNTER_MEDIUM triangulate;		/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
-	COUNTER_MEDIUM verbose;			/* Level of verbosity 0-4 [1] */
-	GMT_LONG fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
-	GMT_BOOLEAN history;			/* TRUE to pass information via gmt.conf files */
+	unsigned int interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
+	unsigned int triangulate;		/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
+	unsigned int verbose;			/* Level of verbosity 0-4 [1] */
+	int fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
+	bool history;			/* true to pass information via gmt.conf files */
 	/* IO group */
-	COUNTER_MEDIUM io_n_header_items;	/* number of header records [0] */
-	COUNTER_MEDIUM io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
-	COUNTER_MEDIUM io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
-	GMT_BOOLEAN io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [FALSE] */
-	GMT_BOOLEAN io_header[2];			/* Input & Output data has header records [FALSE, FALSE] */
-	GMT_BOOLEAN io_nan_records;			/* Determines what NaNs in input records should mean (beyond skipping the record) */
-	GMT_BOOLEAN io_lonlat_toggle[2];		/* TRUE means read/write I/O as lat/lon instead of lon/lat [FALSE,FALSE] */
-	GMT_BOOLEAN io_blankline[2];		/* TRUE means blank lines should be treated as segment breaks [FALSE,FALSE] */
-	GMT_BOOLEAN io_nanline[2];			/* TRUE means lines with all NaNs should be treated as segment breaks [FALSE,FALSE] */
+	unsigned int io_n_header_items;	/* number of header records [0] */
+	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */
+	unsigned int io_nc4_deflation_level;	/* NetCDF deflation level on output [0] */
+	bool io_gridfile_shorthand;		/* Use shorthand suffix notation for embedded grid file formats [false] */
+	bool io_header[2];			/* Input & Output data has header records [false, false] */
+	bool io_nan_records;			/* Determines what NaNs in input records should mean (beyond skipping the record) */
+	bool io_lonlat_toggle[2];		/* true means read/write I/O as lat/lon instead of lon/lat [false,false] */
+	bool io_blankline[2];		/* true means blank lines should be treated as segment breaks [false,false] */
+	bool io_nanline[2];			/* true means lines with all NaNs should be treated as segment breaks [false,false] */
 	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
 	char io_gridfile_format[GMT_TEXT_LEN64];	/* Default grid file format */
 	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
@@ -112,10 +112,10 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double map_tick_length[4];			/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
-	COUNTER_MEDIUM map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */
-	COUNTER_MEDIUM map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
-	COUNTER_MEDIUM map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
-	GMT_BOOLEAN map_logo;			/* Plot time and map projection on map [FALSE] */
+	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [0] */
+	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
+	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
+	bool map_logo;			/* Plot time and map projection on map [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
@@ -125,8 +125,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
-	COUNTER_MEDIUM proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
-	COUNTER_MEDIUM proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
+	unsigned int proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
+	unsigned int proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
 	struct DATUM proj_datum[GMT_N_DATUMS];	/* Datum parameters */
 	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	/* PS group [These are arguments to pass to PSL_beginsession and PSL_setdefaults] */
@@ -135,21 +135,21 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double ps_page_rgb[4];			/* Default paper color [white] */
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_transparency;			/* Later transparency [0] */
-	COUNTER_MEDIUM ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
+	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
 #ifdef GMT_COMPAT
-	COUNTER_MEDIUM ps_copies;		/* How man copies of each plot [>=1] */
+	unsigned int ps_copies;		/* How man copies of each plot [>=1] */
 #endif
-	GMT_LONG ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
-	GMT_BOOLEAN ps_orientation;			/* Orientation of page [FALSE = Landscape, TRUE = Portrait] */
-	GMT_BOOLEAN ps_comments;			/* TRUE if we write comments in the PS file */
+	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
+	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
+	bool ps_comments;			/* true if we write comments in the PS file */
 	char ps_transpmode[16];			/* Transparency mode for PDF only */
 	struct gmt_encoding ps_encoding;
 	/* TIME group */
 	double time_interval_fraction;		/* How much of a partial interval is needed in order to annotate it */
-	GMT_BOOLEAN time_is_interval;		/* Does a time given as a month (or year or day) mean the middle of the interval? */
-	GMT_BOOLEAN time_leap_seconds;		/* Do we need to worry about leap seconds? */
-	COUNTER_MEDIUM time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
-	COUNTER_MEDIUM time_Y2K_offset_year;	/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
+	bool time_is_interval;		/* Does a time given as a month (or year or day) mean the middle of the interval? */
+	bool time_leap_seconds;		/* Do we need to worry about leap seconds? */
+	unsigned int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
+	unsigned int time_Y2K_offset_year;	/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	struct GMT_TIME_SYSTEM time_system;	/* All the information about the selected time system */
 	char time_language[GMT_TEXT_LEN64];	/* Language file for time support */
 	/* Related parameters */

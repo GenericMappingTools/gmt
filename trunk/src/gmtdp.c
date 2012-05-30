@@ -44,12 +44,12 @@
 
 struct GMTDP_CTRL {
 	struct Out {	/* ->[<outfile>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct T {	/* 	-T[-|=|+]<tolerance>[d|s|m|e|f|k|M|n] */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;	/* Can be negative */
+		bool active;
+		int mode;	/* Can be negative */
 		double tolerance;
 		char unit;
 	} T;
@@ -69,7 +69,7 @@ void Free_gmtdp_Ctrl (struct GMT_CTRL *GMT, struct GMTDP_CTRL *C) {	/* Deallocat
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_gmtdp_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtdp_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 	GMT_message (GMT, "gmtdp %s [API] - Line reduction using the Douglas-Peucker algorithm\n\n", GMT_VERSION);
@@ -89,7 +89,7 @@ GMT_LONG GMT_gmtdp_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtdp and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -97,7 +97,7 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -107,14 +107,14 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 			case '<':	/* Skip input files */
 				break;
 			case '>':	/* Write to named output file instead of stdout */
-				Ctrl->Out.active = TRUE;
+				Ctrl->Out.active = true;
 				if (n_files++ == 0 && opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 			
 			case 'T':	/* Set tolerance distance */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->T.tolerance), &(Ctrl->T.unit));
 				break;
 
@@ -139,14 +139,14 @@ GMT_LONG GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct
 /* Stack-based Douglas Peucker line simplification routine */
 /* returned value is the number of output points */
 
-COUNTER_LARGE Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], COUNTER_LARGE n_source, double band, GMT_LONG geo, COUNTER_LARGE index[]) {
+uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y_source[], uint64_t n_source, double band, int geo, uint64_t index[]) {
 /* x/y_source	Input coordinates, n_source of them.  These are not changed */
 /* band;	tolerance in Cartesian user units or degrees */
-/* geo:		TRUE if data is lon/lat */
+/* geo:		true if data is lon/lat */
 /* index[]	output co-ordinates indices */
 
-	COUNTER_LARGE n_stack, n_dest, start, end, i, sig;
-	COUNTER_LARGE *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */
+	uint64_t n_stack, n_dest, start, end, i, sig;
+	uint64_t *sig_start = NULL, *sig_end = NULL;	/* indices of start&end of working section */
 
 	double dev_sqr, max_dev_sqr, band_sqr;
 	double x12, y12, d12, x13, y13, d13, x23, y23, d23;
@@ -160,8 +160,8 @@ COUNTER_LARGE Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], dou
 
 	/* more complex case. initialise stack */
 
-	sig_start = GMT_memory (GMT, NULL, n_source, COUNTER_LARGE);
-	sig_end   = GMT_memory (GMT, NULL, n_source, COUNTER_LARGE);
+	sig_start = GMT_memory (GMT, NULL, n_source, uint64_t);
+	sig_end   = GMT_memory (GMT, NULL, n_source, uint64_t);
 
 	/* All calculations uses the original units, either Cartesian or FlatEarth */
 	/* The tolerance (band) must be in the same units as the data */
@@ -260,12 +260,12 @@ COUNTER_LARGE Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], dou
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtdp_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtdp (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM tbl, col;
-	GMT_LONG error;
-	GMT_BOOLEAN geo;
-	COUNTER_LARGE row, seg, np_out, *index = NULL;
+	unsigned int tbl, col;
+	int error;
+	bool geo;
+	uint64_t row, seg, np_out, *index = NULL;
 	
 	double tolerance;
 	
@@ -309,8 +309,8 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 	D[GMT_OUT] = GMT_alloc_dataset (GMT, D[GMT_IN], 0, 0, GMT_ALLOC_NORMAL);	/* Allocate identical output tables; we reallocate memory below */
 
-	geo = GMT_is_geographic (GMT, GMT_IN);					/* TRUE for lon/lat coordinates */
-	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = TRUE;	/* Used units but did not set -fg; implicitly set -fg via geo */
+	geo = GMT_is_geographic (GMT, GMT_IN);					/* true for lon/lat coordinates */
+	if (!geo && strchr (GMT_LEN_UNITS, (int)Ctrl->T.unit)) geo = true;	/* Used units but did not set -fg; implicitly set -fg via geo */
 
 	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);	/* Initialize distance scalings according to unit selected */
 	
@@ -341,10 +341,10 @@ GMT_LONG GMT_gmtdp (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {
 			S[GMT_IN]  = D[GMT_IN]->table[tbl]->segment[seg];
 			S[GMT_OUT] = D[GMT_OUT]->table[tbl]->segment[seg];
-			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, COUNTER_LARGE);
+			index = GMT_memory (GMT, NULL, S[GMT_IN]->n_rows, uint64_t);
 			np_out = Douglas_Peucker_geog (GMT, S[GMT_IN]->coord[GMT_X], S[GMT_IN]->coord[GMT_Y], S[GMT_IN]->n_rows, tolerance, geo, index);
 
-			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, FALSE);	/* Reallocate to get correct n_rows */
+			GMT_alloc_segment (GMT, S[GMT_OUT], np_out, S[GMT_OUT]->n_columns, false);	/* Reallocate to get correct n_rows */
 			for (row = 0; row < np_out; row++) for (col = 0; col < S[GMT_IN]->n_columns; col++) {
 				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
 			}

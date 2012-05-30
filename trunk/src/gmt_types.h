@@ -31,21 +31,15 @@
 #	include "compat/stdbool.h"
 #endif
 #include <stdint.h>
-/* Two types for counting, depending on expected range of unsigned integers we need */
-#define COUNTER_LARGE	uint64_t
-#define COUNTER_MEDIUM	unsigned
-/* Type for TRUE [!0] or FALSE [0] only */
-#define GMT_BOOLEAN	bool
 
 /*--------------------------------------------------------------------
  *			GMT TYPEDEF DEFINITIONS
  *--------------------------------------------------------------------*/
 
-typedef int GMT_LONG;		/* plain signed integer */
 struct GMT_CTRL;		 /* forward declaration of GMT_CTRL */
 
 /* p_to_io_func is used as a pointer to functions such as GMT_read_d in assignments
  * and is used to declare GMT_get_io_ptr in gmt_io.c and gmt_prototypes.h */
-typedef GMT_LONG (*p_to_io_func) (struct GMT_CTRL *, FILE *, unsigned, double *);
+typedef int (*p_to_io_func) (struct GMT_CTRL *, FILE *, unsigned, double *);
 
 #endif  /* _GMT_TYPES_H */

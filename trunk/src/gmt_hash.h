@@ -32,7 +32,7 @@
 
 struct GMT_HASH {	/* Used to relate keywords to gmt.conf entry */
 	struct GMT_HASH *next;
-	COUNTER_MEDIUM id;
+	unsigned int id;
 	char *key;
 };
 

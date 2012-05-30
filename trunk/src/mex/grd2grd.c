@@ -21,12 +21,12 @@
  
 #include "gmt_mex.h"
 
-/*GMT_LONG FUNC (struct GMTAPI_CTRL *API, GMT_LONG argc, char **cmd); */
+/*int FUNC (struct GMTAPI_CTRL *API, int argc, char **cmd); */
 
 /* Matlab Gateway routine for this grd??? prog */
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
-	GMT_LONG status, ID;
+	int status, ID;
 	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct GMT_GRID *Gout = NULL;
 	char *input = NULL, *output = NULL, *options = NULL, *cmd = NULL; 

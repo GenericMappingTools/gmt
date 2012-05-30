@@ -37,32 +37,32 @@ void GMT_str_toupper (char *string);
 
 struct GRDRASTER_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct T {	/* -T<output_table> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} T;
 };
 
 struct GRDRASTER_INFO {
 	struct GRD_HEADER h;
-	COUNTER_MEDIUM id;	/* File number  */
-	GMT_LONG nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
-	GMT_LONG nanflag;
-	GMT_BOOLEAN nanset;		/* True if raster uses nanflag to signal NaN  */
+	unsigned int id;	/* File number  */
+	int nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
+	int nanflag;
+	bool nanset;		/* True if raster uses nanflag to signal NaN  */
 	off_t skip;		/* Skip this number of header bytes when opening file  */
-	GMT_BOOLEAN swap_me;	/* TRUE if data set need to be swapped */
-	GMT_BOOLEAN geo;		/* TRUE if we believe x/y is lon/lat, FALSE otherwise */
+	bool swap_me;	/* true if data set need to be swapped */
+	bool geo;		/* true if we believe x/y is lon/lat, false otherwise */
 	char type;
 };
 
@@ -169,7 +169,7 @@ static inline void convert_l_row (struct GMT_CTRL *GMT, struct GRDRASTER_INFO ra
 	return;
 }
 
-COUNTER_MEDIUM get_byte_size (struct GMT_CTRL *GMT, char type) {
+unsigned int get_byte_size (struct GMT_CTRL *GMT, char type) {
 	/* Return byte size of each item, or 0 if bits */
 	int ksize;
 	switch (type) {
@@ -192,7 +192,7 @@ COUNTER_MEDIUM get_byte_size (struct GMT_CTRL *GMT, char type) {
 	return (ksize);
 }
 
-GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian)
+int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian)
 {
 	/* Read the file grdraster.info
 		Store the i'th row of the file in rasinfo[i].h.command.
@@ -207,7 +207,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 
 	Return 0 if cannot read files correctly, or nrasters if successful.  */
 
-	GMT_LONG i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, delta;
+	int i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, delta;
 	double global_lon, lon_tol;
 	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
@@ -342,7 +342,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
 		}
 
-		GMT->common.R.active = FALSE;	/* Forget that -R was used before */
+		GMT->common.R.active = false;	/* Forget that -R was used before */
 		if (GMT_parse_common_options (GMT, "R", 'R', buf)) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Skipping record in grdraster.info (-R string conversion error).\n");
 			continue;
@@ -351,7 +351,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		rasinfo[nfound].h.wesn[XHI] = GMT->common.R.wesn[XHI];
 		rasinfo[nfound].h.wesn[YLO] = GMT->common.R.wesn[YLO];
 		rasinfo[nfound].h.wesn[YHI] = GMT->common.R.wesn[YHI];
-		rasinfo[nfound].geo = (fabs (rasinfo[nfound].h.wesn[XLO]) > 360.0 || fabs (rasinfo[nfound].h.wesn[XHI]) > 360.0 || fabs (rasinfo[nfound].h.wesn[YLO]) > 90.0 || fabs (rasinfo[nfound].h.wesn[YHI]) > 90.0) ? FALSE : TRUE;
+		rasinfo[nfound].geo = (fabs (rasinfo[nfound].h.wesn[XLO]) > 360.0 || fabs (rasinfo[nfound].h.wesn[XHI]) > 360.0 || fabs (rasinfo[nfound].h.wesn[YLO]) > 90.0 || fabs (rasinfo[nfound].h.wesn[YHI]) > 90.0) ? false : true;
 		/* Now find the -I string */
 		i = j+1;
 		while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
@@ -385,11 +385,11 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 		/* Check if we have optional G (geographic) or C (Cartesian) that should override the auto test above */
 
 		if (rasinfo[nfound].h.command[i+1] == 'G') {	/* Explicit geographic grid */
-			rasinfo[nfound].geo = TRUE;
+			rasinfo[nfound].geo = true;
 			i++;
 		}
 		else if (rasinfo[nfound].h.command[i+1] == 'C') {	/* Explicit Cartesian grid */
-			rasinfo[nfound].geo = FALSE;
+			rasinfo[nfound].geo = false;
 			i++;
 		}
 
@@ -594,7 +594,7 @@ GMT_LONG load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char e
 			n_alloc <<= 1;
 			rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
 		}
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		GMT_report (GMT, GMT_MSG_FATAL, "Error closing grdraster.info file. Error code = %ld.\n", GMT->parent->error);
@@ -626,10 +626,10 @@ void Free_grdraster_Ctrl (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_grdraster_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	struct GRDRASTER_INFO *rasinfo = NULL;
-	GMT_LONG i, nrasters;
+	int i, nrasters;
 
 	GMT_message (GMT, "grdraster %s [API] - Extract subregion from a binary raster and save as a GMT grid\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: grdraster <file number>|<text> %s [-G<outgrid>] [%s]\n", GMT_Rgeo_OPT, GMT_Id_OPT);
@@ -669,7 +669,7 @@ GMT_LONG GMT_grdraster_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdraster and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -677,7 +677,7 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -686,24 +686,24 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 		switch (opt->option) {
 			case '<':	/* Input text as data description */
 			case '#':	/* Input ID number as data set selection */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -729,15 +729,15 @@ GMT_LONG GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
-	COUNTER_MEDIUM ijras, jseek, jras2, iras2;
-	COUNTER_LARGE n_nan;
-	GMT_LONG jrasstart, irasstart, iras, jras;
-	GMT_BOOLEAN error = FALSE, firstread;
+	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
+	unsigned int ijras, jseek, jras2, iras2;
+	uint64_t n_nan;
+	int jrasstart, irasstart, iras, jras;
+	bool error = false, firstread;
 	
-	COUNTER_LARGE ij;
+	uint64_t ij;
 	
 	size_t nmask = 0, n_expected;
 
@@ -782,7 +782,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
 
 	r_opt = GMT_Find_Option (GMT->parent, 'R', options);
-	GMT->common.R.active = FALSE;	/* Forget that -R was used before */
+	GMT->common.R.active = false;	/* Forget that -R was used before */
 	if (GMT_parse_common_options (GMT, "R", 'R', r_opt->arg)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Error reprocessing -R?.\n");
 		Return (EXIT_FAILURE);
@@ -834,7 +834,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 #ifdef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
-	if (!Ctrl->G.active) Ctrl->T.active = TRUE;
+	if (!Ctrl->G.active) Ctrl->T.active = true;
 #endif
 
 	if (error) Return (EXIT_FAILURE);
@@ -842,7 +842,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* OK, here we have a recognized dataset ID */
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	GMT_memcpy (Grid->header->wesn, GMT->common.R.wesn, 4, double);
 
@@ -877,7 +877,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Grid->header->wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y];
 
 		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && rint (Grid->header->inc[GMT_X] * 60.0) == (Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
-			GMT_LONG w, e, s, n, wm, em, sm, nm;
+			int w, e, s, n, wm, em, sm, nm;
 
 			w = lrint (floor (Grid->header->wesn[XLO]));	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
 			e = lrint (floor (Grid->header->wesn[XHI]));	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
@@ -905,7 +905,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Grid->header->ny = lrint ((Grid->header->wesn[YHI] - Grid->header->wesn[YLO]) / Grid->header->inc[GMT_Y]);
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your -R option does not create a region divisible by inc[GMT_X], inc[GMT_Y].\n");
 		if (doubleAlmostEqualZero (rint (Grid->header->inc[GMT_X] * 60.0), Grid->header->inc[GMT_X] * 60.0)) {	/* Spacing in even minutes */
-			GMT_LONG w, e, s, n, wm, em, sm, nm;
+			int w, e, s, n, wm, em, sm, nm;
 			w = lrint (floor (Grid->header->wesn[XLO]));	wm = lrint ((Grid->header->wesn[XLO] - w) * 60.0);
 			e = lrint (floor (Grid->header->wesn[XHI]));	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
 			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
@@ -958,7 +958,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
-		COUNTER_MEDIUM col;
+		unsigned int col;
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) x[col] = GMT_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
@@ -1041,7 +1041,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_free (GMT, ubuffer);
 	}
 	else {
-		firstread = TRUE;
+		firstread = true;
 		n_expected = myras.h.nx;
 		for (row = 0, jras = jrasstart; row < Grid->header->ny; row++, jras += jmult) {
 			y = GMT_row_to_y (GMT, row, Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->inc[GMT_Y], Grid->header->xy_off, Grid->header->ny);
@@ -1054,7 +1054,7 @@ GMT_LONG GMT_grdraster (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else {
 				if (firstread) {
 					jseek = (jras != 0) ? jras : 0;
-					firstread = FALSE;
+					firstread = false;
 				}
 				else if (jmult > 1)
 					jseek = jmult - 1;

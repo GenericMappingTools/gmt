@@ -43,87 +43,87 @@ PostScript code is written to stdout.
 
 struct PSMECA_CTRL {
 	struct C {	/* -C[<pen>][P<pointsize>] */
-		GMT_BOOLEAN active;
+		bool active;
 		double size;
 		struct GMT_PEN pen;
 	} C;
  	struct D {	/* -D<min/max> */
-		GMT_BOOLEAN active;
+		bool active;
 		double depmin, depmax;
 	} D;
  	struct E {	/* -E<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} E;
  	struct G {	/* -G<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} G;
 	struct L {	/* -L<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} L;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct S {	/* -S<format><scale>[/fontsize[/justify/offset/angle/form]] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN no_label;
-		COUNTER_MEDIUM readmode;
-		COUNTER_MEDIUM plotmode;
-		COUNTER_MEDIUM justify;
+		bool active;
+		bool no_label;
+		unsigned int readmode;
+		unsigned int plotmode;
+		unsigned int justify;
 		double scale;
 		double fontsize, offset;
 		struct GMT_FILL fill;
 	} S;
 	struct T {	/* -Tnplane[/<pen>] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM n_plane;
+		bool active;
+		unsigned int n_plane;
 		struct GMT_PEN pen;
 	} T;
 	struct Z2 {	/* -z<pen>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} Z2;
 	struct W {	/* -W<pen> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} W;
 	struct Z {	/* -Z<cptfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Z;
 	struct A2 {	/* -a[size][/Psymbol[Tsymbol]] */
-		GMT_BOOLEAN active;
+		bool active;
 		char P_sym_type, T_sym_type;
 		char P_symbol, T_symbol;
 		double size;
 	} A2;
  	struct E2 {	/* -e<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} E2;
  	struct G2 {	/* -g<fill> */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} G2;
  	struct P2 {	/* -p[<pen>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} P2;
 	struct R2 {	/* -r[<fill>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_FILL fill;
 	} R2;
  	struct T2 {	/* -t[<pen>] */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_PEN pen;
 	} T2;
  	struct O2 {	/* -o */
-		GMT_BOOLEAN active;
+		bool active;
 	} O2;
 };
 
@@ -132,14 +132,14 @@ void *New_psmeca_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = GMT_memory (GMT, NULL, 1, struct PSMECA_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->C.size = GMT_DOT_SIZE;
 	C->C.pen = C->L.pen = C->T.pen = C->T2.pen = C->P2.pen = C->Z2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->C.pen.width = C->L.pen.width = C->T.pen.width = C->T2.pen.width = C->P2.pen.width = C->Z2.pen.width = -1.0;
 	C->D.depmax = 900.0;
-	C->L.active = TRUE;
+	C->L.active = true;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
 	GMT_init_fill (GMT, &C->R2.fill, 1.0, 1.0, 1.0);
@@ -157,7 +157,7 @@ void Free_psmeca_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -247,7 +247,7 @@ GMT_LONG GMT_psmeca_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psmeca and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -256,8 +256,8 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
-	GMT_BOOLEAN no_size_needed;
+	unsigned int n_errors = 0;
+	bool no_size_needed;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -272,7 +272,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Change position [set line attributes] */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;
 				strcpy (txt, opt->arg);
 				if ((p = strchr (txt, 'P'))) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
@@ -285,45 +285,45 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				}
 				break;
 			case 'D':	/* Plot events between depmin and depmax deep */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->D.depmin, &Ctrl->D.depmax);
 				break;
 			case 'E':	/* Set color for extensive parts  */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'G':	/* Set color for compressive parts */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->G.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
 				break;
 			case 'L':	/* Draw outline [set outline attributes] */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					GMT_pen_syntax (GMT, 'L', " ");
 					n_errors++;
 				}
 				break;
 			case 'M':	/* Same size for any magnitude */
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not skip points outside border */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
 				txt[0] = txt_b[0] = txt_c[0] = '\0';
 				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 				if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
 				if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
-				if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = TRUE;
+				if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
 
 				switch (opt->arg[0]) {
 					case 'c':
@@ -363,7 +363,7 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				}
 				break;
 			case 'T':
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
 				if (strlen (opt->arg) > 2 && GMT_getpen (GMT, &opt->arg[2], &Ctrl->T.pen)) {	/* Set transparent attributes */
 					GMT_pen_syntax (GMT, 'T', " ");
@@ -371,18 +371,18 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				}
 				break;
 			case 'W':	/* Set line attributes */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', " ");
 					n_errors++;
 				}
 				break;
 			case 'Z':	/* Vary symbol color with z */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
 			case 'a':	/* plot axis */
-				Ctrl->A2.active = TRUE;
+				Ctrl->A2.active = true;
 				strcpy (txt, &opt->arg[1]);
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
@@ -397,45 +397,45 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 				}
 				break;
 			case 'e':	/* Set color for T axis symbol */
-				Ctrl->E2.active = TRUE;
+				Ctrl->E2.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
 					GMT_fill_syntax (GMT, 'e', " ");
 					n_errors++;
 				}
 				break;
 			case 'g':	/* Set color for P axis symbol */
-				Ctrl->G2.active = TRUE;
+				Ctrl->G2.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
 					GMT_fill_syntax (GMT, 'g', " ");
 					n_errors++;
 				}
 				break;
 			case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
-				Ctrl->P2.active = TRUE;
+				Ctrl->P2.active = true;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->P2.pen)) {
 					GMT_pen_syntax (GMT, 'p', " ");
 					n_errors++;
 				}
 				break;
 			case 'r':	/* draw box around text */
-				Ctrl->R2.active = TRUE;
+				Ctrl->R2.active = true;
 				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->R2.fill)) {
 					GMT_fill_syntax (GMT, 'r', " ");
 					n_errors++;
 				}
 				break;
 			case 't':	/* Draw outline of T axis symbol [set outline attributes] */
-				Ctrl->T2.active = TRUE;
+				Ctrl->T2.active = true;
 				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->T2.pen)) {
 					GMT_pen_syntax (GMT, 't', " ");
 					n_errors++;
 				}
 				break;
 			case 'o':	/* use psvelomeca format (without depth in 3rd column) */
-				Ctrl->O2.active = TRUE;
+				Ctrl->O2.active = true;
 				break;
 			case 'z':	/* overlay zerotrace moment tensor */
-				Ctrl->Z2.active = TRUE;
+				Ctrl->Z2.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->Z2.pen)) { /* Set pen attributes */
 					GMT_pen_syntax (GMT, 'z', " ");
 					n_errors++;
@@ -475,11 +475,11 @@ GMT_LONG GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psmeca_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_psmeca (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the psmeca task */
-	GMT_LONG i, n, ix = 0, iy = 1, last = 0, form = 0, new;
-	GMT_LONG n_rec = 0, n_plane_old = 0, error;
-	GMT_BOOLEAN transparence_old = FALSE, not_defined = FALSE;
+	int i, n, ix = 0, iy = 1, last = 0, form = 0, new;
+	int n_rec = 0, n_plane_old = 0, error;
+	bool transparence_old = false, not_defined = false;
 
 	double plot_x, plot_y, plot_xnew, plot_ynew, delaz;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
@@ -597,7 +597,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (!Ctrl->N.active) {
 			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
-			if (GMT_abs (GMT->current.map.this_x_status) > 1 || GMT_abs (GMT->current.map.this_y_status) > 1) continue;
+			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 		}
 
 		/* In new (psmeca) input format, third column is depth.
@@ -643,10 +643,10 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			meca.moment.exponent = 0;
 			meca.NP2.dip = computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 			if (meca.NP2.dip == 1000.0) {
-				not_defined = TRUE;
+				not_defined = true;
 				transparence_old = Ctrl->T.active;
 				n_plane_old = Ctrl->T.n_plane;
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.;
 				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
@@ -716,7 +716,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
 				GMT_setpen (GMT, &Ctrl->C.pen);
 				GMT_geo_to_xy (GMT, xynew[0], xynew[1], &plot_xnew, &plot_ynew);
-				GMT_setfill (GMT, &Ctrl->G.fill, TRUE);
+				GMT_setfill (GMT, &Ctrl->G.fill, true);
 				PSL_plotsymbol (PSL, plot_x, plot_y, &Ctrl->C.size, GMT_SYMBOL_CIRCLE);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_xnew, plot_ynew);
 				plot_x = plot_xnew;
@@ -753,7 +753,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 		if (Ctrl->Z2.active) {
 			GMT_setpen (GMT, &Ctrl->Z2.pen);
-			ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, TRUE, TRUE);
+			ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true);
 		}
 
 		if (Ctrl->T.active) {
@@ -762,7 +762,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_setpen (GMT, &Ctrl->T.pen);
 			ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
 			if (not_defined) {
-				not_defined = FALSE;
+				not_defined = false;
 				Ctrl->T.active = transparence_old;
 				Ctrl->T.n_plane = n_plane_old;
 			}
@@ -777,7 +777,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if (!Ctrl->S.no_label) {
 			GMT_setpen (GMT, &Ctrl->W.pen);
 			i = (Ctrl->S.justify == PSL_BC ? 1 : -1);
-			PSL_setfill (PSL, Ctrl->R2.fill.rgb, FALSE);
+			PSL_setfill (PSL, Ctrl->R2.fill.rgb, false);
 			if (Ctrl->R2.active) PSL_plotbox (PSL, plot_x - size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset + Ctrl->S.fontsize / PSL_POINTS_PER_INCH), plot_x + size * 0.5, plot_y + i * (size * 0.5 + Ctrl->S.offset));
 			PSL_plottext (PSL, plot_x, plot_y + i * (size * 0.5 + Ctrl->S.offset), Ctrl->S.fontsize, event_title, angle, 
 				Ctrl->S.justify, form);
@@ -794,7 +794,7 @@ GMT_LONG GMT_psmeca (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
 		}
 		event_title[0] = string[0] = '\0';		/* Reset these two in case next record misses "string" */
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

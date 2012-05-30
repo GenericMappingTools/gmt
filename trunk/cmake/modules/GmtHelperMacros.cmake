@@ -98,7 +98,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		string (TOUPPER ${GMT_SUPPL_STRING} GMT_SUPPL_STRING_UPPER)
 		set (GMT_API_FUNCTION_LIST) # reset list
 		foreach (_function ${_functions})
-			set (_api_function "EXTERN_MSC GMT_LONG GMT_${_function} (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)")
+			set (_api_function "EXTERN_MSC int GMT_${_function} (struct GMTAPI_CTRL *API, int mode, void *args)")
 			list (APPEND GMT_API_FUNCTION_LIST ${_api_function})
 		endforeach (_function)
 		string (REPLACE ";" ";\n" GMT_API_FUNCTION_LIST "${GMT_API_FUNCTION_LIST}")

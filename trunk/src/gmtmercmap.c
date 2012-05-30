@@ -35,19 +35,19 @@ enum GMT_enum_script {GMT_BASH_MODE = 0,	/* Write Bash script */
 
 struct GMTMERCMAP_CTRL {
 	struct C {	/* -C<cptfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} C;
 	struct D {	/* -D[b|c|d] */
-		GMT_BOOLEAN active;
-		GMT_LONG mode;
+		bool active;
+		int mode;
 	} D;
 	struct W {	/* -W<width> */
-		GMT_BOOLEAN active;
+		bool active;
 		double width;
 	} W;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 	} S;
 };
 
@@ -66,7 +66,7 @@ void Free_gmtmercmap_Ctrl (struct GMT_CTRL *GMT, struct GMTMERCMAP_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -88,7 +88,7 @@ GMT_LONG GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtmercmap and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -97,7 +97,7 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -107,12 +107,12 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 			/* Processes program-specific parameters */
 
 			case 'C':	/* CPT file */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Just issue equivalent GMT commands in a script */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'b':  Ctrl->D.mode = GMT_BASH_MODE; break;
 					case 'c':  Ctrl->D.mode = GMT_CSH_MODE;  break;
@@ -121,11 +121,11 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 				}
 				break;
 			case 'W':	/* Map width */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				Ctrl->W.width = GMT_to_inch (GMT, opt->arg);
 				break;
 			case 'S':	/* Draw scale beneath map */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -144,7 +144,7 @@ GMT_LONG GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ct
 
 int main (int argc, char **argv)
 {
-	GMT_LONG error, min, z_ID, i_ID, c_ID, t_ID;
+	int error, min, z_ID, i_ID, c_ID, t_ID;
 	
 	double area, z, z_min, z_max;
 	
@@ -183,7 +183,7 @@ int main (int argc, char **argv)
 	if (!GMT->common.R.active) {	/* Set default world region */
 		GMT->common.R.wesn[XLO] = -180.0;	GMT->common.R.wesn[XHI] = +180.0;
 		GMT->common.R.wesn[YLO] =  -75.0;	GMT->common.R.wesn[YHI] =  +75.0;
-		GMT->common.R.active = TRUE;
+		GMT->common.R.active = true;
 	}
 	
 	/* 2. Determine map area in degrees squared, and use it to select which ETOPO?m.nc grid to use */

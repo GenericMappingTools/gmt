@@ -2,6 +2,11 @@
 #include <X11/StringDefs.h>
 
 #include "xgrid_CanvasP.h"
+#ifdef HAVE_STDBOOL_H_
+#       include <stdbool.h>
+#else
+#       include "compat/stdbool.h"
+#endif
 
 static XtResource resources[] = {
 #define offset(field) XtOffset(CanvasWidget, canvas.field)
@@ -71,7 +76,7 @@ CanvasClassRec canvasClassRec = {
     /* widget_size		*/	sizeof(CanvasRec),
     /* class_initialize		*/	NULL,
     /* class_part_initialize	*/	NULL,
-    /* class_inited		*/	FALSE,
+    /* class_inited		*/	false,
     /* initialize		*/	NULL,
     /* initialize_hook		*/	NULL,
     /* realize			*/	CanvasRealize, /* XtInheritRealize, */
@@ -80,10 +85,10 @@ CanvasClassRec canvasClassRec = {
     /* resources		*/	resources,
     /* num_resources		*/	XtNumber(resources),
     /* xrm_class		*/	NULLQUARK,
-    /* compress_motion		*/	TRUE,
+    /* compress_motion		*/	true,
     /* compress_exposure	*/	XtExposeCompressSeries | XtExposeGraphicsExpose,
-    /* compress_enterleave	*/	TRUE,
-    /* visible_interest		*/	FALSE,
+    /* compress_enterleave	*/	true,
+    /* visible_interest		*/	false,
     /* destroy			*/	NULL,
     /* resize			*/	CanvasResize,
     /* expose			*/	CanvasExpose,

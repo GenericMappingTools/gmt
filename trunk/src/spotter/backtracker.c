@@ -73,53 +73,53 @@
 #include "spotter.h"
 
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A[young/old] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
+		bool active;
+		unsigned int mode;	/* 1 specific limits for all input points, 2 if limits are in cols 4 + 5  */
 		double t_low, t_high;
 	} A;
 	struct D {	/* -Df|b */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
+		bool active;
+		unsigned int mode;		/* 1 we go FROM hotspot to seamount, 0 is reverse */
 	} D;
 	struct E {	/* -E[+]rotfile */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;
+		bool active;
+		bool mode;
 		char *file;
 	} E;
 	struct e {	/* -e<lon/lat/angle> */
-		GMT_BOOLEAN active;
+		bool active;
 		double lon, lat, w;
 	} e;
 	struct F {	/* -Fdriftfile */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} F;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN mode;		/* FALSE = hotspot tracks, TRUE = flowlines */
-		GMT_BOOLEAN stage_id;	/* 1 returns stage id instead of ages */
+		bool active;
+		bool mode;		/* false = hotspot tracks, true = flowlines */
+		bool stage_id;	/* 1 returns stage id instead of ages */
 		double d_km;	/* Resampling spacing */
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		double t_upper;
 	} N;
 	struct Q {	/* -Q<tfix> */
-		GMT_BOOLEAN active;
+		bool active;
 		double t_fix;	/* Set fixed age*/
 	} Q;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} S;
 	struct T {	/* -T<tzero> */
-		GMT_BOOLEAN active;
+		bool active;
 		double t_zero;	/* Set zero age*/
 	} T;
 	struct W {	/* -W<flag> */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} W;
 };
@@ -129,7 +129,7 @@ void *New_backtracker_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct BACKTRACKER_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	return (C);
 }
@@ -142,7 +142,7 @@ void Free_backtracker_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_backtracker_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_backtracker_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -188,7 +188,7 @@ GMT_LONG GMT_backtracker_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to backtracker and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -196,8 +196,8 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
-	GMT_LONG k;
+	unsigned int n_errors = 0;
+	int k;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -211,7 +211,7 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 			/* Supplemental parameters */
 
 			case 'A':	/* Output only an age-limited segment of the track */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				if (opt->arg[0]) {	/* Gave specific limits for all input points */
 					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 					if (k == 2) {
@@ -235,15 +235,15 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 				break;
 #endif
 			case 'D':	/* Specify in which direction we should project */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'B':	/* Go FROM hotspot TO seamount */
 					case 'b':
-						Ctrl->D.mode = FALSE;
+						Ctrl->D.mode = false;
 						break;
 					case 'F':	/* Go FROM seamount TO hotspot */
 					case 'f':
-						Ctrl->D.mode = TRUE;
+						Ctrl->D.mode = true;
 						break;
 					default:
 						n_errors++;
@@ -253,35 +253,35 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 				break;
 
 			case 'E':	/* File with stage poles */
-				Ctrl->E.active = TRUE;	k = 0;
-				if (opt->arg[0] == '+') { Ctrl->E.mode = TRUE; k = 1;}
+				Ctrl->E.active = true;	k = 0;
+				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				Ctrl->E.file  = strdup (&opt->arg[k]);
 				break;
 
 			case 'e':	/* Apply a fixed total reconstruction rotation to all input points  */
-				Ctrl->e.active  = TRUE;
+				Ctrl->e.active  = true;
 				sscanf (opt->arg, "%[^/]/%[^/]/%lg", txt_a, txt_b, &Ctrl->e.w);
 				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
 				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
 				break;
 
 			case 'F':	/* File with hotspot motion history */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				Ctrl->F.file  = strdup (opt->arg);
 				break;
 
 			case 'L':	/* Specify what kind of track to project */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'F':	/* Calculate flowlines */
-						Ctrl->L.stage_id = TRUE;
+						Ctrl->L.stage_id = true;
 					case 'f':
-						Ctrl->L.mode = TRUE;
+						Ctrl->L.mode = true;
 						break;
 					case 'B':	/* Calculate hotspot tracks */
-						Ctrl->L.stage_id = TRUE;
+						Ctrl->L.stage_id = true;
 					case 'b':
-						Ctrl->L.mode = FALSE;
+						Ctrl->L.mode = false;
 						break;
 					default:
 						n_errors++;
@@ -292,15 +292,15 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 				break;
 
 			case 'Q':	/* Fixed age for all points */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				Ctrl->Q.t_fix = atof (opt->arg);
 				break;
 
 			case 'S':	/* Set file stem for individual output files */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (opt->arg[0]) {
 					Ctrl->S.file = strdup (opt->arg);
-					Ctrl->S.active = TRUE;
+					Ctrl->S.active = true;
 				}
 				else {
 					GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -S: Append a file stem\n");
@@ -309,17 +309,17 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 				break;
 
 			case 'T':	/* Current age [0 Ma] */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				Ctrl->T.t_zero = atof (opt->arg);
 				break;
 
 			case 'W':	/* Report confidence ellipses */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				Ctrl->W.mode = opt->arg[0];
 				break;
 
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -340,9 +340,9 @@ GMT_LONG GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *
 #define SPOTTER_BACK -1
 #define SPOTTER_FWD  +1
 
-GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double yp[], double tp[], COUNTER_MEDIUM np, struct EULER p[], COUNTER_MEDIUM ns, double d_km, double t_zero, COUNTER_MEDIUM time_flag, double wesn[], double **c)
+int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int time_flag, double wesn[], double **c)
 {
-	GMT_LONG n = -1;
+	int n = -1;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
 	
 	switch (way) {
@@ -363,22 +363,22 @@ GMT_LONG spotter_track (struct GMT_CTRL *GMT, GMT_LONG way, double xp[], double 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_backtracker_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 
-	COUNTER_LARGE n_points;			/* Number of data points read */
-	COUNTER_LARGE n_track;			/* Number of points in a track segment */
-	COUNTER_LARGE n_segments;		/* Number of path segments written out */
-	COUNTER_LARGE n_skipped = 0;		/* Number of points skipped because t < 0 */
-	COUNTER_LARGE n_read = 0;		/* Number of records read */
-	COUNTER_LARGE row;
-	COUNTER_LARGE i, j;
-	COUNTER_MEDIUM n_stages = 0;		/* Number of stage poles */
-	COUNTER_MEDIUM n_out, n_expected_fields, col;
-	GMT_BOOLEAN make_path = FALSE;		/* TRUE means create continuous path, FALSE works on discrete points */
-	GMT_LONG n_fields, error;		/* Misc. signed counters */
-	GMT_LONG spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
+	uint64_t n_points;			/* Number of data points read */
+	uint64_t n_track;			/* Number of points in a track segment */
+	uint64_t n_segments;		/* Number of path segments written out */
+	uint64_t n_skipped = 0;		/* Number of points skipped because t < 0 */
+	uint64_t n_read = 0;		/* Number of records read */
+	uint64_t row;
+	uint64_t i, j;
+	unsigned int n_stages = 0;		/* Number of stage poles */
+	unsigned int n_out, n_expected_fields, col;
+	bool make_path = false;		/* true means create continuous path, false works on discrete points */
+	int n_fields, error;		/* Misc. signed counters */
+	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
 	
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
@@ -427,8 +427,8 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		spotter_way = ((Ctrl->L.mode + Ctrl->D.mode) == 1) ? SPOTTER_FWD : SPOTTER_BACK;
 
 		if (fabs (Ctrl->L.d_km) > GMT_SMALL) {		/* User wants to interpolate tracks rather than project individual points */
-			make_path = TRUE;
-			GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+			make_path = true;
+			GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			(Ctrl->L.mode) ? sprintf (type, "Flowline") : sprintf (type, "Hotspot track");
 			(Ctrl->D.mode) ? sprintf (dir, "from") : sprintf (dir, "to");
 		}
@@ -497,9 +497,9 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	
 		if (Ctrl->e.active) {	/* Simple reconstruction, then exit */
 			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, TRUE);		/* Get x-vector */
+			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
 			spotter_matrix_vect_mult (GMT, R, x, y);			/* Rotate the x-vector */
-			GMT_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, TRUE);	/* Recover lon lat representation; TRUE to get degrees */
+			GMT_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, true);	/* Recover lon lat representation; true to get degrees */
 			out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			GMT_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
@@ -624,7 +624,7 @@ GMT_LONG GMT_backtracker (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		n_points++;
-	} while (TRUE);
+	} while (true);
 
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);

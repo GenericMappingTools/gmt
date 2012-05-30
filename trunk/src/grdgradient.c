@@ -33,35 +33,35 @@
 
 struct GRDGRADIENT_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A<azim>[/<azim2>] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN two;
+		bool active;
+		bool two;
 		double azimuth[2];
 	} A;
 	struct D {	/* -D[a][o][n] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} D;
 	struct E {	/* -E[s|p]<azim>/<elev[ambient/diffuse/specular/shine]> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double azimuth, elevation;
 		double ambient, diffuse, specular, shine;
 	} E;
 	struct G {	/* -G<file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct N {	/* -N[t_or_e][<amp>[/<sigma>[/<offset>]]] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;	/* 1 = atan, 2 = exp */
+		bool active;
+		unsigned int mode;	/* 1 = atan, 2 = exp */
 		double norm, sigma, offset;
 	} N;
 	struct S {	/* -S<slopefile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} S;
 };
@@ -71,7 +71,7 @@ void *New_grdgradient_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct GRDGRADIENT_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.ambient = 0.55;
 	C->E.diffuse = 0.6;
 	C->E.specular = 0.4;
@@ -106,7 +106,7 @@ double specular (double nx, double ny, double nz, double *s) {
 	return (MAX(0, 2 * (s[0]*nx + s[1]*ny + s[2]*nz) * nz - s[2]));
 }
 
-GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grdgradient_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -150,7 +150,7 @@ GMT_LONG GMT_grdgradient_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdgradient and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -159,8 +159,8 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0, j, entry, pos;
-	GMT_LONG n_opt_args = 0;
+	unsigned int n_errors = 0, n_files = 0, j, entry, pos;
+	int n_opt_args = 0;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -169,19 +169,19 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Set azimuth */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				j = sscanf(opt->arg, "%lf/%lf", &Ctrl->A.azimuth[0], &Ctrl->A.azimuth[1]);
 				Ctrl->A.two = (j == 2);
 				break;
 			case 'D':	/* Find direction of grad|z| */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				j = 0;
 				while (opt->arg[j]) {
 					switch (opt->arg[j]) {
@@ -197,7 +197,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 				}
 				break;
 			case 'E':	/* Lambertian family radiance */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'p':	/* Peucker */
 						Ctrl->E.mode = 1;
@@ -241,7 +241,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 				}
 				break;
 			case 'G':	/* Output grid */
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 #ifdef GMT_COMPAT
@@ -265,7 +265,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 #endif
 				break;
 			case 'N':	/* Normalization */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				j = 0;
 				if (opt->arg[j]) {
 					if (opt->arg[j] == 't' || opt->arg[j] == 'T') {
@@ -280,7 +280,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 				}
 				break;
 			case 'S':	/* Slope grid */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				break;
 
@@ -299,7 +299,7 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E option overrides -A, -D or -S\n");
-		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = FALSE;
+		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -308,12 +308,12 @@ GMT_LONG GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdgradient_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grdgradient (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, sigma_set = FALSE, offset_set = FALSE, bad, new_grid = FALSE;
-	GMT_LONG p[4], mx;
-	COUNTER_MEDIUM row, col, n;
-	COUNTER_LARGE ij, ij0, index, n_used = 0;
+	bool error = false, sigma_set = false, offset_set = false, bad, new_grid = false;
+	int p[4], mx;
+	unsigned int row, col, n;
+	uint64_t ij, ij0, index, n_used = 0;
 	
 	char format[GMT_BUFSIZ];
 	
@@ -347,8 +347,8 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_memset (s, 3, double);
 
-	if (Ctrl->N.active && Ctrl->N.sigma  != 0.0) sigma_set  = TRUE;
-	if (Ctrl->N.active && Ctrl->N.offset != 0.0) offset_set = TRUE;
+	if (Ctrl->N.active && Ctrl->N.sigma  != 0.0) sigma_set  = true;
+	if (Ctrl->N.active && Ctrl->N.offset != 0.0) offset_set = true;
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
 		while (Ctrl->A.azimuth[0] < 0.0) Ctrl->A.azimuth[0] += 360.0;
 		while (Ctrl->A.azimuth[0] > 360.0) Ctrl->A.azimuth[0] -= 360.0;
@@ -382,7 +382,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (API->error);
 	}
 	if (GMT_is_subset (GMT, Surf->header, wesn)) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, Surf->header), "");	/* Subset requested; make sure wesn matches header spacing */
-	GMT_grd_init (GMT, Surf->header, options, TRUE);
+	GMT_grd_init (GMT, Surf->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Surf) == NULL) {	/* Get subset */
 		Return (API->error);
@@ -393,7 +393,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		GMT_memcpy (Slope->header, Surf->header, 1, struct GRD_HEADER);
 		Slope->data = GMT_memory (GMT, NULL, Surf->header->size, float);
 	}
-	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* TRUE if input is a read-only array */
+	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* true if input is a read-only array */
 	
 	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);
@@ -442,7 +442,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 		for (col = 0; col < Surf->header->nx; col++, ij0++) {
 			ij = GMT_IJP (Surf->header, row, col);	/* Index into padded grid */
-			for (n = 0, bad = FALSE; !bad && n < 4; n++) if (GMT_is_fnan (Surf->data[ij+p[n]])) bad = TRUE;
+			for (n = 0, bad = false; !bad && n < 4; n++) if (GMT_is_fnan (Surf->data[ij+p[n]])) bad = true;
 			if (bad) {	/* One of star corners = NaN; assign NaN answers and skip to next node */
 				index = (new_grid) ? ij : ij0;
 				Out->data[index] = GMT->session.f_NaN;
@@ -507,7 +507,7 @@ GMT_LONG GMT_grdgradient (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 
 	if (!new_grid)	{	/* We got away with using the input grid by ignoring the pad.  Now we must put the pad back in */
-		GMT_memset (Out->header->pad, 4, GMT_LONG);	/* Must set pad to zero first otherwise we cannot add the pad in */
+		GMT_memset (Out->header->pad, 4, int);	/* Must set pad to zero first otherwise we cannot add the pad in */
 		Out->header->mx = Out->header->nx;	Out->header->my = Out->header->ny;	/* Since there is no pad */
 		GMT_grd_pad_on (GMT, Out, GMT->current.io.pad);	/* Now reinstate the pad */
 	}

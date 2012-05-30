@@ -33,38 +33,38 @@ void GMT_str_tolower (char *string);
 
 struct XYZ2GRD_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct A {	/* -A[f|l|n|m|r|s|u|z] */
-		GMT_BOOLEAN active;
+		bool active;
 		char mode;
 	} A;
 	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *information;
 	} D;
 #ifdef GMT_COMPAT
 	struct E {	/* -E[<nodata>] */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN set;
+		bool active;
+		bool set;
 		double nodata;
 	} E;
 #endif
 	struct G {	/* -G<output_grdfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct N {	/* -N<nodata> */
-		GMT_BOOLEAN active;
+		bool active;
 		double value;
 	} N;
 	struct S {	/* -S */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} S;
 	struct GMT_PARSE_Z_IO Z;
@@ -75,7 +75,7 @@ void *New_xyz2grd_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	C = GMT_memory (GMT, NULL, 1, struct XYZ2GRD_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	C->N.value = GMT->session.d_NaN;
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
@@ -91,7 +91,7 @@ void Free_xyz2grd_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -154,7 +154,7 @@ GMT_LONG GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options)
+int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to xyz2grd and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -162,8 +162,8 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_BOOLEAN do_grid, b_only = FALSE;
+	unsigned int n_errors = 0, n_files = 0;
+	bool do_grid, b_only = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -180,7 +180,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 #ifdef GMT_COMPAT
 				if (!opt->arg[0]) {	/* In GMT4, just -A implied -Az */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -Az instead.\n");
-					Ctrl->A.active = TRUE;
+					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
 				}
 				else
@@ -190,37 +190,37 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 					n_errors++;
 				}
 				else {
-					Ctrl->A.active = TRUE;
+					Ctrl->A.active = true;
 					Ctrl->A.mode = opt->arg[0];
 				}
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 #ifdef GMT_COMPAT
 			case 'E':
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				if (opt->arg[0]) {
 					Ctrl->E.nodata = atof (opt->arg);
-					Ctrl->E.set = TRUE;
+					Ctrl->E.set = true;
 				}
 				break;
 #endif
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
@@ -229,17 +229,17 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 				}
 				break;
 			case 'S':
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				n_errors += GMT_parse_z_io (GMT, opt->arg, &Ctrl->Z);
 				break;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
-				if (opt->option == 'b') b_only = TRUE;
+				if (opt->option == 'b') b_only = true;
 				break;
 		}
 	}
@@ -262,7 +262,7 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 		GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
 		if (b_only) {
-			GMT->common.b.active[GMT_IN] = FALSE;
+			GMT->common.b.active[GMT_IN] = false;
 			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bi\n");
 		}
 	}
@@ -285,20 +285,20 @@ GMT_LONG GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_xyz2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, previous = FALSE;
-	GMT_LONG scol, srow;
-	COUNTER_MEDIUM zcol, row, col, i, *flag = NULL;
-	COUNTER_LARGE n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
-	COUNTER_LARGE ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
+	bool error = false, previous = false;
+	int scol, srow;
+	unsigned int zcol, row, col, i, *flag = NULL;
+	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
+	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
 	
 	double *in = NULL, wesn[4];
 
 	float no_data_f;
 
-	void * (*save_i) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM *, GMT_LONG *) = NULL;
-	GMT_LONG (*save_o) (struct GMT_CTRL *, FILE *, COUNTER_MEDIUM, double *);
+	void * (*save_i) (struct GMT_CTRL *, FILE *, unsigned int *, int *) = NULL;
+	int (*save_o) (struct GMT_CTRL *, FILE *, unsigned int, double *);
 	
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_Z_IO io;
@@ -326,7 +326,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/*---------------------------- This is the xyz2grd main code ----------------------------*/
 
 	if (Ctrl->S.active) {	/* Just swap data and bail */
-		GMT_LONG in_ID;
+		int in_ID;
 		
 		save_i = GMT->current.io.input;			/* Save previous input parameters */
 		previous = GMT->common.b.active[GMT_IN];
@@ -335,7 +335,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping data bytes only\n");
-		if (Ctrl->S.active) io.swab = TRUE;	/* Need to pass swabbing down to the gut level */
+		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
 		if (!Ctrl->S.file) {
 			if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->S.file)) == GMTAPI_NOTSET) {
@@ -365,7 +365,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			/* Data record to process */
 
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
-		} while (TRUE);
+		} while (true);
 
 		GMT->current.io.output = save_o;		/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
@@ -376,11 +376,11 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	/* Here we will need a grid */
 	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
-		COUNTER_LARGE n_left;
+		uint64_t n_left;
 		float value;
 		char line[GMT_BUFSIZ];
 		FILE *fp = GMT->session.std[GMT_IN];
@@ -488,7 +488,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
-	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = FALSE;	/* No point testing */
+	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = false;	/* No point testing */
 
 	if (Ctrl->Z.active) {	/* Need to override input method */
 		zcol = GMT_X;
@@ -501,9 +501,9 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {
 		zcol = GMT_Z;
-		flag = GMT_memory (GMT, NULL, Grid->header->nm, COUNTER_MEDIUM);	/* No padding needed for flag array */
-		GMT_memset (Grid->header->pad, 4, COUNTER_MEDIUM);	/* Algorithm below expects no padding; we repad at the end */
-		GMT->current.setting.io_nan_records = FALSE;	/* Cannot have x,y as NaNs here */
+		flag = GMT_memory (GMT, NULL, Grid->header->nm, unsigned int);	/* No padding needed for flag array */
+		GMT_memset (Grid->header->pad, 4, unsigned int);	/* Algorithm below expects no padding; we repad at the end */
+		GMT->current.setting.io_nan_records = false;	/* Cannot have x,y as NaNs here */
 	}
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, Ctrl->Z.active ? 1 : Ctrl->A.mode == 'n' ? 2 : 3)) != GMT_OK) {
@@ -596,7 +596,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			n_used++;
 		}
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -613,8 +613,8 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else {	/* xyz data could have resulted in duplicates */
 		if (GMT_grd_duplicate_column (GMT, Grid->header, GMT_IN)) {	/* Make sure longitudes got replicated */
-			COUNTER_LARGE ij_west, ij_east;
-			GMT_BOOLEAN first_bad = TRUE;
+			uint64_t ij_west, ij_east;
+			bool first_bad = true;
 
 			for (row = 0; row < Grid->header->ny; row++) {	/* For each row, look at west and east bin */
 				ij_west = GMT_IJ0 (Grid->header, row, 0);
@@ -632,7 +632,7 @@ GMT_LONG GMT_xyz2grd (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					if (Amode == 'f' || Amode == 's') {	/* Trouble since we did not store when we added these points */
 						if (first_bad) {
 							GMT_report (GMT, GMT_MSG_NORMAL, "Using -Af|s with replicated longitude bins may give inaccurate values");
-							first_bad = FALSE;
+							first_bad = false;
 						}
 					}
 					else if (Amode == 'l') {

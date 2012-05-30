@@ -33,11 +33,11 @@
 
 struct PSBASEMAP_CTRL {
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_MAP_SCALE item;
 	} L;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 		struct GMT_MAP_ROSE item;
 	} T;
 };
@@ -47,7 +47,7 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	C = GMT_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
@@ -58,7 +58,7 @@ void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_psbasemap_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -83,7 +83,7 @@ GMT_LONG GMT_psbasemap_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psbasemap and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -92,7 +92,7 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -105,7 +105,7 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 #ifdef GMT_COMPAT
 			case 'G':	/* Set canvas color */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
-				GMT->current.map.frame.paint = TRUE;
+				GMT->current.map.frame.paint = true;
 				if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
@@ -113,11 +113,11 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 				break;
 #endif
 			case 'L':	/* Draw map scale */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				n_errors += GMT_getscale (GMT, opt->arg, &Ctrl->L.item);
 				break;
 			case 'T':	/* Draw map rose */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				n_errors += GMT_getrose (GMT, opt->arg, &Ctrl->T.item);
 				break;
 
@@ -138,9 +138,9 @@ GMT_LONG GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psbasemap_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
-GMT_LONG GMT_psbasemap (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_psbasemap (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the psbasemap task */
-	GMT_LONG error;
+	int error;
 	
 	struct PSBASEMAP_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */

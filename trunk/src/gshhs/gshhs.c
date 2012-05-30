@@ -47,35 +47,35 @@
 
 struct GSHHS_CTRL {
 	struct In {	/* <file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct Out {	/* > <file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
+		bool active;
 		double min;	/* Cutoff area in km^2 */
 	} A;
 	struct L {	/* -L */
-		GMT_BOOLEAN active;
+		bool active;
 	} L;
 	struct G {	/* -G */
-		GMT_BOOLEAN active;
+		bool active;
 	} G;
 	struct I {	/* -I[<id>|c] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM id;
+		bool active;
+		unsigned int mode;
+		unsigned int id;
 	} I;
 	struct N {	/* -N<level> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM level;
+		bool active;
+		unsigned int level;
 	} N;
 	struct Q {	/* -Qe|i */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} Q;
 };
 
@@ -94,7 +94,7 @@ void Free_gshhs_Ctrl (struct GMT_CTRL *GMT, struct GSHHS_CTRL *C) {	/* Deallocat
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gshhs_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -117,7 +117,7 @@ GMT_LONG GMT_gshhs_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 	
-GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gshhs and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -125,8 +125,8 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
-	GMT_LONG sval;
+	unsigned int n_errors = 0, n_files = 0;
+	int sval;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -145,17 +145,17 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case 'A':
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				Ctrl->A.min = atof (opt->arg);
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (opt->arg[0] == 'c')
 					Ctrl->I.mode = 1;
 				else {
@@ -165,13 +165,13 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				sval = atoi (opt->arg);
 				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N: Level cannot be negative!\n");
 				Ctrl->N.level = sval;
 				break;
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e')
 					Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i')
@@ -199,14 +199,14 @@ GMT_LONG GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct
 #define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #endif
 
-GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_MEDIUM row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
-	GMT_LONG error, gmode, version, greenwich, is_river, src;
+	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
+	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
-	GMT_BOOLEAN must_swab, OK, first = TRUE;
+	bool must_swab, OK, first = true;
 	
-	COUNTER_LARGE dim[4] = {1, 0, 2, 0};
+	uint64_t dim[4] = {1, 0, 2, 0};
 	
 	size_t n_alloc = 0;
 
@@ -256,13 +256,13 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_set_segmentheader (GMT, GMT_OUT, TRUE);	/* Turn on segment headers on output */
+	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (Ctrl->G.active) {
 		marker = GMT->current.setting.io_seg_marker[GMT_OUT];
 		GMT->current.setting.io_seg_marker[GMT_OUT] = '%';
 	}
 	else
-		GMT->current.io.io_header[GMT_OUT] = TRUE;	/* Turn on -ho explicitly */
+		GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
@@ -307,7 +307,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
 		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %d in file %s\n", version, Ctrl->In.file);
-		first = FALSE;
+		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
 		is_river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
@@ -328,7 +328,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		this_id = h.id;
 		
 		OK = ((!Ctrl->I.active || ((!Ctrl->I.mode && this_id == Ctrl->I.id) || (Ctrl->I.mode && this_id <= 5))) && area >= Ctrl->A.min);	/* Skip if not the one (-I) or too small (-A) */
-		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = FALSE;	/* Skip if riverlake/not riverlake (-Q) */
+		if (OK && Ctrl->Q.active && ((is_river && Ctrl->Q.mode == 1) || (!is_river && Ctrl->Q.mode == 2))) OK = false;	/* Skip if riverlake/not riverlake (-Q) */
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
@@ -380,7 +380,7 @@ GMT_LONG GMT_gshhs (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			else
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			/* Allocate h.n number of data records */
-			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], TRUE);
+			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);

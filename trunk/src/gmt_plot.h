@@ -26,49 +26,49 @@
 /* GMT symbol identifiers. Mostly the same as PSL_<symbol> but with
    extensions for custom symbols, psxy and psxyz */
 
-#define GMT_SYMBOL_STAR		((GMT_LONG)'a')
-#define GMT_SYMBOL_BARX		((GMT_LONG)'B')
-#define GMT_SYMBOL_BARY		((GMT_LONG)'b')
-#define GMT_SYMBOL_CIRCLE	((GMT_LONG)'c')
-#define GMT_SYMBOL_DIAMOND	((GMT_LONG)'d')
-#define GMT_SYMBOL_ELLIPSE	((GMT_LONG)'e')
-#define GMT_SYMBOL_FRONT	((GMT_LONG)'f')
-#define GMT_SYMBOL_OCTAGON	((GMT_LONG)'g')
-#define GMT_SYMBOL_HEXAGON	((GMT_LONG)'h')
-#define GMT_SYMBOL_INVTRIANGLE	((GMT_LONG)'i')
-#define GMT_SYMBOL_ROTRECT	((GMT_LONG)'j')
-#define GMT_SYMBOL_CUSTOM	((GMT_LONG)'k')
-#define GMT_SYMBOL_TEXT		((GMT_LONG)'l')
-#define GMT_SYMBOL_MARC		((GMT_LONG)'m')
-#define GMT_SYMBOL_PENTAGON	((GMT_LONG)'n')
-#define GMT_SYMBOL_COLUMN	((GMT_LONG)'o')
-#define GMT_SYMBOL_DOT		((GMT_LONG)'p')
-#define GMT_SYMBOL_QUOTED_LINE	((GMT_LONG)'q')
-#define GMT_SYMBOL_RECT		((GMT_LONG)'r')
-#define GMT_SYMBOL_RNDRECT	((GMT_LONG)'R')
-#define GMT_SYMBOL_SQUARE	((GMT_LONG)'s')
-#define GMT_SYMBOL_TRIANGLE	((GMT_LONG)'t')
-#define GMT_SYMBOL_CUBE		((GMT_LONG)'u')
-#define GMT_SYMBOL_VECTOR	((GMT_LONG)'v')
-#define GMT_SYMBOL_WEDGE	((GMT_LONG)'w')
-#define GMT_SYMBOL_CROSS	((GMT_LONG)'x')
-#define GMT_SYMBOL_YDASH	((GMT_LONG)'y')
-#define GMT_SYMBOL_ZDASH	((GMT_LONG)'z')
-#define GMT_SYMBOL_PLUS		((GMT_LONG)'+')
-#define GMT_SYMBOL_XDASH	((GMT_LONG)'-')
+#define GMT_SYMBOL_STAR		((int)'a')
+#define GMT_SYMBOL_BARX		((int)'B')
+#define GMT_SYMBOL_BARY		((int)'b')
+#define GMT_SYMBOL_CIRCLE	((int)'c')
+#define GMT_SYMBOL_DIAMOND	((int)'d')
+#define GMT_SYMBOL_ELLIPSE	((int)'e')
+#define GMT_SYMBOL_FRONT	((int)'f')
+#define GMT_SYMBOL_OCTAGON	((int)'g')
+#define GMT_SYMBOL_HEXAGON	((int)'h')
+#define GMT_SYMBOL_INVTRIANGLE	((int)'i')
+#define GMT_SYMBOL_ROTRECT	((int)'j')
+#define GMT_SYMBOL_CUSTOM	((int)'k')
+#define GMT_SYMBOL_TEXT		((int)'l')
+#define GMT_SYMBOL_MARC		((int)'m')
+#define GMT_SYMBOL_PENTAGON	((int)'n')
+#define GMT_SYMBOL_COLUMN	((int)'o')
+#define GMT_SYMBOL_DOT		((int)'p')
+#define GMT_SYMBOL_QUOTED_LINE	((int)'q')
+#define GMT_SYMBOL_RECT		((int)'r')
+#define GMT_SYMBOL_RNDRECT	((int)'R')
+#define GMT_SYMBOL_SQUARE	((int)'s')
+#define GMT_SYMBOL_TRIANGLE	((int)'t')
+#define GMT_SYMBOL_CUBE		((int)'u')
+#define GMT_SYMBOL_VECTOR	((int)'v')
+#define GMT_SYMBOL_WEDGE	((int)'w')
+#define GMT_SYMBOL_CROSS	((int)'x')
+#define GMT_SYMBOL_YDASH	((int)'y')
+#define GMT_SYMBOL_ZDASH	((int)'z')
+#define GMT_SYMBOL_PLUS		((int)'+')
+#define GMT_SYMBOL_XDASH	((int)'-')
 
-#define GMT_SYMBOL_MOVE		((GMT_LONG)'M')
-#define GMT_SYMBOL_DRAW		((GMT_LONG)'D')
-#define GMT_SYMBOL_STROKE	((GMT_LONG)'S')
-#define GMT_SYMBOL_ARC		((GMT_LONG)'A')
-#define GMT_SYMBOL_ROTATE	((GMT_LONG)'R')
-#define GMT_SYMBOL_VARROTATE	((GMT_LONG)'V')
-#define GMT_SYMBOL_TEXTURE	((GMT_LONG)'T')
-#define GMT_SYMBOL_GEOVECTOR	((GMT_LONG)'=')
+#define GMT_SYMBOL_MOVE		((int)'M')
+#define GMT_SYMBOL_DRAW		((int)'D')
+#define GMT_SYMBOL_STROKE	((int)'S')
+#define GMT_SYMBOL_ARC		((int)'A')
+#define GMT_SYMBOL_ROTATE	((int)'R')
+#define GMT_SYMBOL_VARROTATE	((int)'V')
+#define GMT_SYMBOL_TEXTURE	((int)'T')
+#define GMT_SYMBOL_GEOVECTOR	((int)'=')
 
 #define GMT_SYMBOL_LINE		0
-#define GMT_SYMBOL_NONE		((GMT_LONG)' ')
-#define GMT_SYMBOL_NOT_SET	((GMT_LONG)'*')
+#define GMT_SYMBOL_NONE		((int)' ')
+#define GMT_SYMBOL_NOT_SET	((int)'*')
 
 #define GMT_DOT_SIZE 0.005	/* Size of a "dot" on a GMT PS map [in inches] */
 
@@ -90,8 +90,8 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	double f_gap;		/* Gap between front symbols in inches */
 	double f_len;		/* Length of front symbols in inches */
 	double f_off;		/* Offset of first symbol from start of front in inches */
-	GMT_LONG f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
-	GMT_LONG f_symbol;	/* Which symbol to draw along the front line */
+	int f_sense;	/* Draw symbols to left (+1), centered (0), or right (-1) of line */
+	int f_symbol;	/* Which symbol to draw along the front line */
 };
 
 enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head */
@@ -114,7 +114,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
-	COUNTER_MEDIUM status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_width;		/* Width of vector stem in inches */
@@ -129,28 +129,28 @@ struct GMT_SYMBOL {
 		   in non-debug binaries compiled with VS2010 */
 	char string[GMT_TEXT_LEN64];	/* Character code to plot (could be octal) */
 
-	GMT_LONG symbol;	/* Symbol id */
-	COUNTER_MEDIUM n_required;	/* Number of additional columns necessary to decode chosen symbol */
-	COUNTER_MEDIUM u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
-	GMT_BOOLEAN u_set;		/* TRUE if u was set */
+	int symbol;	/* Symbol id */
+	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
+	bool u_set;		/* true if u was set */
 	double size_x;		/* Current symbol size in x */
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
-	GMT_BOOLEAN read_size;	/* TRUE when we must read symbol size from file */
-	GMT_BOOLEAN shade3D;	/* TRUE when we should simulate shading of 3D symbols cube and column */
+	bool read_size;	/* true when we must read symbol size from file */
+	bool shade3D;	/* true when we should simulate shading of 3D symbols cube and column */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
-	COUNTER_MEDIUM convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
-	COUNTER_MEDIUM n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
-	COUNTER_MEDIUM nondim_col[6];	/* Which columns has angles or km for this symbol */
-	COUNTER_MEDIUM convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
+	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
+	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */
+	unsigned int nondim_col[6];	/* Which columns has angles or km for this symbol */
+	unsigned int convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
 	double scale, origin;	/* Used to convert size = (given_size - origin) * scale */
 
 	/* These apply to bar symbols */
 
 	double base;		/* From what level to draw the bar */
-	GMT_BOOLEAN user_unit;	/* if TRUE */
-	GMT_BOOLEAN base_set;	/* TRUE if user provided a custom base [otherwise default to bottom axis */
+	bool user_unit;	/* if true */
+	bool base_set;	/* true if user provided a custom base [otherwise default to bottom axis */
 
 	/* These apply to vectors */
 

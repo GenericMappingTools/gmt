@@ -23,7 +23,7 @@
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 
 #ifdef GMT_COMPAT
-	GMT_LONG backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+	int backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
 #endif
 
 #define N_PAR		7
@@ -63,35 +63,35 @@
 #define set_bit(k) (1 << (k))
 
 struct MGD77MANAGE_CTRL {	/* All control options for this program (except common args) */
-	/* active is TRUE if the option has been activated */
+	/* active is true if the option has been activated */
 	struct A {	/* -A */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN replace;
-		GMT_BOOLEAN interpolate;
-		GMT_BOOLEAN ignore_verify;
-		COUNTER_MEDIUM mode;
-		COUNTER_MEDIUM kind;
-		GMT_BOOLEAN e77_skip_mode[N_E77_MODES];
+		bool active;
+		bool replace;
+		bool interpolate;
+		bool ignore_verify;
+		unsigned int mode;
+		unsigned int kind;
+		bool e77_skip_mode[N_E77_MODES];
 		char *file;
 		double parameters[N_PAR];
 	} A;
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} C;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 		char value;
 	} E;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
+		bool active;
 	} F;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 		char c_abbrev[GMT_TEXT_LEN64];
 		char c_units[GMT_TEXT_LEN64];
 		char c_name[MGD77_COL_NAME_LEN];
@@ -99,7 +99,7 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 		char c_size;
 	} I;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		char code[2];
 	} N;
 };
@@ -109,7 +109,7 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	
 	C = GMT_memory (GMT, NULL, 1, struct MGD77MANAGE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	
 	C->A.kind = GMT_IS_FLOAT;
 	C->A.parameters[COL_SCALE] = 1.0;	/* Output column scaling */
@@ -125,7 +125,7 @@ void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -218,9 +218,9 @@ GMT_LONG GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 
 /* Help functions to decode the -A and -I options */
 
-GMT_LONG decode_A_options (GMT_LONG mode, char *line, char *file, double parameters[])
+int decode_A_options (int mode, char *line, char *file, double parameters[])
 {
-	GMT_LONG error = 0, n;
+	int error = 0, n;
 	
 	if (mode == 1) {	/* For *.img files since we need to know data scale and grid mode */
 		/* -A[+]i<filename>,<scale>/<mode>[/<lat>] */
@@ -235,9 +235,9 @@ GMT_LONG decode_A_options (GMT_LONG mode, char *line, char *file, double paramet
 	return (error);
 }
 
-GMT_LONG decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
+int decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
 {	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
-	COUNTER_MEDIUM i = 0, k, error, pos = 0;
+	unsigned int i = 0, k, error, pos = 0;
 	char p[GMT_BUFSIZ];
 	
 	while (i < 7 && GMT_strtok (line, "/", &pos, p)) {	/* Process the 7 items */
@@ -254,7 +254,7 @@ GMT_LONG decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *n
 				}
 				if (error) {
 					fprintf (C->session.std[GMT_ERR], "%s: Abbreviation name should only contain lower case letters, digits, and underscores\n", C->init.progname);
-					return (TRUE);
+					return (true);
 				}
 				break;
 			case 1:
@@ -306,9 +306,9 @@ GMT_LONG decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *n
 	return ((lrint (parameters[COL_TYPE]) == MGD77_NOT_SET) || (i != 7));
 }
 
-GMT_LONG skip_if_missing (struct GMT_CTRL *C, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D)
+int skip_if_missing (struct GMT_CTRL *C, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D)
 {	/* Used when a needed column is not present and we must free memory and goto next file */
-	GMT_LONG id;
+	int id;
 
 	if ((id = MGD77_Get_Column (C, name, F)) == MGD77_NOT_SET) {
 		fprintf (C->session.std[GMT_ERR], "%s: Cruise %s is missing column %s which is required for selected operation - skipping\n", C->init.progname, file, name);
@@ -317,9 +317,9 @@ GMT_LONG skip_if_missing (struct GMT_CTRL *C, char *name, char *file, struct MGD
 	return (id);
 }
 
-GMT_LONG got_default_answer (char *line, char *answer)
+int got_default_answer (char *line, char *answer)
 {
-	GMT_LONG i, k, len;
+	int i, k, len;
 	
 	len = strlen (line) - 1;
 	GMT_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
@@ -330,7 +330,7 @@ GMT_LONG got_default_answer (char *line, char *answer)
 	return (answer[0] != '\0');
 }
 
-GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77manage and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -338,8 +338,8 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, k, n_cruises = 0;
-	GMT_BOOLEAN got_table, got_grid, strings;
+	unsigned int n_errors = 0, k, n_cruises = 0;
+	bool got_table, got_grid, strings;
 	nc_type c_nc_type;
 	char file[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
@@ -358,10 +358,10 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adding a new column */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				k = 0;
 				if (opt->arg[k] == '+') {
-					Ctrl->A.replace = TRUE;
+					Ctrl->A.replace = true;
 					k++;
 				}
 				switch (opt->arg[k]) {
@@ -374,31 +374,31 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'D':	/* dist,val data file - interpolate to get values at all records */
-						Ctrl->A.interpolate = TRUE;
+						Ctrl->A.interpolate = true;
 					case 'd':	/* dist,val data file - only update records with matching distances */
 						Ctrl->A.mode = MODE_d;
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'E':	/* Plain E77 error flag file from mgd77sniffer */
-						Ctrl->A.ignore_verify = TRUE;	/* Process raw e77 files that have not been verified */
+						Ctrl->A.ignore_verify = true;	/* Process raw e77 files that have not been verified */
 					case 'e':	/* Plain E77 error flag file from mgd77sniffer */
 						Ctrl->A.mode = MODE_e;
 						while (opt->arg[++k]) {
 							switch (opt->arg[k]) {
 								case 'h':	/* Ignore all header recommendations regardless of Y/N prefix */
-									Ctrl->A.e77_skip_mode[E77_HEADER_MODE] = TRUE;
+									Ctrl->A.e77_skip_mode[E77_HEADER_MODE] = true;
 									break;
 								case 'f':	/* Ignore all systematic trend recommendations regardless of Y/N prefix */
-									Ctrl->A.e77_skip_mode[E77_TREND_MODE] = TRUE;
+									Ctrl->A.e77_skip_mode[E77_TREND_MODE] = true;
 									break;
 								case 'n':	/* Ignore all NAV flags */
-									Ctrl->A.e77_skip_mode[E77_NAV_MODE] = TRUE;
+									Ctrl->A.e77_skip_mode[E77_NAV_MODE] = true;
 									break;
 								case 'v':	/* Ignore all VALUE flags */
-									Ctrl->A.e77_skip_mode[E77_VALUES_MODE] = TRUE;
+									Ctrl->A.e77_skip_mode[E77_VALUES_MODE] = true;
 									break;
 								case 's':	/* Ignore all SLOPE flags */
-									Ctrl->A.e77_skip_mode[E77_SLOPES_MODE] = TRUE;
+									Ctrl->A.e77_skip_mode[E77_SLOPES_MODE] = true;
 									break;
 								default:
 									GMT_report (GMT, GMT_MSG_FATAL, "Error: -Ae modifiers must be combination of hfnvs\n");
@@ -420,7 +420,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					case 'T':	/* abstime,val data file - interpolate to get values at all records */
-						Ctrl->A.interpolate = TRUE;
+						Ctrl->A.interpolate = true;
 					case 't':	/* abstime,val data file - only update records with matching times */
 						Ctrl->A.mode = MODE_t;
 						Ctrl->A.kind = GMT_IS_ABSTIME;
@@ -435,7 +435,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 				break;
 
 			case 'C':	/* Distance calculation method */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
@@ -445,25 +445,25 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 				}
 				break;
 			case 'D':	/* Columns to delete */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				
 			case 'E':	/* character to generate no-string value */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				Ctrl->E.value = opt->arg[0];
 				break;
 
 			case 'F':	/* Force mode */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				break;
 
 			case 'I':	/* Column attribute information */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				n_errors += decode_I_options (GMT, opt->arg, Ctrl->I.c_abbrev, Ctrl->I.c_name, Ctrl->I.c_units, &Ctrl->I.c_size, Ctrl->I.c_comment, Ctrl->A.parameters);
 				break;
 				
 			case 'N':	/* Set distance units */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.code[0] = opt->arg[0];
 #ifdef GMT_COMPAT
 				if (Ctrl->N.code[0] == 'm') {
@@ -491,7 +491,7 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 	got_table = (Ctrl->A.mode == MODE_a || Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);	/* Got a table to read */
 	got_grid = (Ctrl->A.mode == MODE_g || Ctrl->A.mode == MODE_i);					/* Got a grid to read */
 	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
-	strings = (c_nc_type == NC_CHAR);				/* TRUE if our new column contains strings */
+	strings = (c_nc_type == NC_CHAR);				/* true if our new column contains strings */
 	
 	n_errors += GMT_check_condition (GMT, (got_table + got_grid) > 1, "Syntax error: You must select one, and only one, of the -A options\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->A.interpolate + strings) > 1, "Syntax error: Cannot interpolate column if data are strings\n");
@@ -508,18 +508,18 @@ GMT_LONG GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77manage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 	
-	GMT_LONG i, k = 0, column, result, set, check;
-	GMT_LONG width, GF_version = MGD77_NOT_SET, n_fields = 0;
-	GMT_BOOLEAN error = FALSE, transform, verified, strings = FALSE, got_grid, got_table;
-	GMT_BOOLEAN two_cols = FALSE, constant, ok_to_read = TRUE, interpolate = FALSE;
+	int i, k = 0, column, result, set, check;
+	int width, GF_version = MGD77_NOT_SET, n_fields = 0;
+	bool error = false, transform, verified, strings = false, got_grid, got_table;
+	bool two_cols = false, constant, ok_to_read = true, interpolate = false;
 	
-	COUNTER_MEDIUM MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;
-	COUNTER_LARGE argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
+	unsigned int MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;
+	uint64_t argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
 	size_t n_alloc = GMT_CHUNK;
 	
 	time_t now;
@@ -569,7 +569,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	got_table = (Ctrl->A.mode == MODE_a || Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t);	/* Got a table to read */
 	got_grid = (Ctrl->A.mode == MODE_g || Ctrl->A.mode == MODE_i);					/* Got a grid to read */
 	c_nc_type = (nc_type) lrint (Ctrl->A.parameters[COL_TYPE]);		/* NC data type */
-	strings = (c_nc_type == NC_CHAR);				/* TRUE if our new column contains strings */
+	strings = (c_nc_type == NC_CHAR);				/* true if our new column contains strings */
 	
 	n_paths = MGD77_Path_Expand (GMT, &In, options, &list);	/* Get list of requested IDs */
 
@@ -589,7 +589,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	fp_err = (In.verbose_dest == 1) ? GMT->session.std[GMT_OUT] : GMT->session.std[GMT_ERR];
 	
 	if (Ctrl->A.mode == MODE_c) {	/* Calculate values to be stored */
-		GMT_LONG version = MGD77_NOT_SET, mfield = 1;
+		int version = MGD77_NOT_SET, mfield = 1;
 		/* "file" is here either m, c, or g[1-4] */
 		if (Ctrl->A.file[0] == 'm' && Ctrl->A.file[1] == '\0') {
 			c_kind = ADD_IGRF;
@@ -627,8 +627,8 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 	}
 	else if (Ctrl->A.mode == MODE_e) {	/* Do E77 work by ignoring previous E77 settings */
-		In.use_flags[MGD77_M77_SET] = In.use_flags[MGD77_CDF_SET] = FALSE;		/* Turn use of flag bits OFF */
-		In.use_corrections[MGD77_M77_SET] = In.use_corrections[MGD77_CDF_SET] = FALSE;	/* Turn use of systematic corrections OFF */
+		In.use_flags[MGD77_M77_SET] = In.use_flags[MGD77_CDF_SET] = false;		/* Turn use of flag bits OFF */
+		In.use_corrections[MGD77_M77_SET] = In.use_corrections[MGD77_CDF_SET] = false;	/* Turn use of systematic corrections OFF */
 	}
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
 
@@ -639,11 +639,11 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], TRUE);
+		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], true);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
-		COUNTER_LARGE n_ave = 0;
+		uint64_t n_ave = 0;
 		double last_dnt = -DBL_MAX, sum_z = 0.0;
 		
 		if (Ctrl->A.file[0] == '-') {   /* Just read from standard input */
@@ -660,7 +660,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (GMT->current.io.io_header[GMT_IN]) {	/* Skip any header records */
-			for (i = 0; i < (GMT_LONG)GMT->current.io.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+			for (i = 0; i < (int)GMT->current.io.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Read error for headers\n");
 				Return (EXIT_FAILURE);
 			}
@@ -676,7 +676,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT->current.io.col_type[GMT_IN][GMT_X] = Ctrl->A.kind;
 		}
 		if (strings && !two_cols) {	/* Must read strings directly from file since GMT->current.io.input would barf */
-			ok_to_read = FALSE;
+			ok_to_read = false;
 			tmp_string = GMT_memory (GMT, NULL, n_alloc, char *);
 			while (GMT_fgets (GMT, word, GMT_BUFSIZ, fp)) {
 				if (word[0] == '#') continue;
@@ -786,7 +786,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (Ctrl->D.active) {	/* Must create a new file with everything except the fields to be deleted */
-			GMT_LONG id, c;
+			int id, c;
 			char oldfile[GMT_BUFSIZ];
 			
 			if (column != MGD77_NOT_SET) {	/* Get info about this existing column to see if it is compatible with new data */
@@ -809,7 +809,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				D->H.info[c].col[id].abbrev[0] = D->H.info[c].col[id].name[0] = D->H.info[c].col[id].units[0] = D->H.info[c].col[id].comment[0] = '\0';
 				D->H.info[c].col[id].pos = D->H.info[c].col[id].var_id = MGD77_NOT_SET;
 				D->H.info[c].bit_pattern = 0;
-				D->H.info[c].col[id].present = FALSE;
+				D->H.info[c].col[id].present = false;
 				D->H.info[c].n_col--;
 				D->H.n_fields--;
 				D->n_fields--;
@@ -869,7 +869,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 
 		if (c_kind == ADD_IGRF) {	/* Append IGRF column */
-			GMT_LONG ix, iy, it;
+			int ix, iy, it;
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, IGRF[7];
 			
 			if ((ix = skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -890,7 +890,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #ifdef USE_CM4	
 		else if (c_kind == ADD_CM4) {	/* Append CM4 column */
-			GMT_LONG ix, iy, it;
+			int ix, iy, it;
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL;
 			struct MGD77_CM4 CM4;
 			
@@ -906,14 +906,14 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			
 			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
 				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
-				colvalue[rec] = MGD77_Calc_CM4 (GMT, date, xvar[rec], yvar[rec], FALSE, &CM4);
+				colvalue[rec] = MGD77_Calc_CM4 (GMT, date, xvar[rec], yvar[rec], false, &CM4);
 				n_sampled++;
 			}
 			MGD77_CM4_end (GMT, &CM4);
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated CM4 at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_RMAG4) {	/* Append recomputed residual mag column */
-			GMT_LONG ix, iy, it, im;
+			int ix, iy, it, im;
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, *mvar = NULL, IGRF[7];
 			char field[5];
 			
@@ -939,7 +939,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		}
 #endif
 		else if (c_kind == ADD_GRAV) {	/* Append IGF column */
-			GMT_LONG ix, iy, use;
+			int ix, iy, use;
 			double *xvar = NULL, *yvar = NULL;
 			
 			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -961,7 +961,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_CARTER) {	/* Append Carter correction column */
-			GMT_LONG ix, iy, it;
+			int ix, iy, it;
 			double *xvar = NULL, *yvar = NULL, *tvar = NULL;
 			
 			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -977,7 +977,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_RMAG) {	/* Append recomputed residual mag column */
-			GMT_LONG ix, iy, it, im;
+			int ix, iy, it, im;
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, *mvar = NULL, IGRF[7];
 			char field[5];
 			
@@ -1002,7 +1002,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (got_grid) {	/* Sample grid along track (or Mercator-projected) track */
-			GMT_LONG ix, iy;
+			int ix, iy;
 			double *xvar = NULL, *yvar = NULL;
 			
 			if ((ix = skip_if_missing (GMT, "lon", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -1051,7 +1051,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
 		}
 		else if (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t) {	/* Got either (time,data) or (dist,data) */
-			GMT_LONG ix, iy, it;
+			int ix, iy, it;
 			double *x = NULL, *y = NULL, *d = NULL;
 			size_t LEN_size = LEN;
 			colvalue = GMT_memory (GMT, colvalue, D->H.n_records, double);
@@ -1122,12 +1122,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
 			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
-			GMT_LONG number, type, it, id, key, n_E77_flags, day, month, year, item;
-			GMT_LONG n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
-			COUNTER_LARGE n_recs, rec, from, to;
+			int number, type, it, id, key, n_E77_flags, day, month, year, item;
+			int n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
+			uint64_t n_recs, rec, from, to;
 			unsigned int *flags = NULL, pattern;
 			size_t length;
-			GMT_BOOLEAN has_time;
+			bool has_time;
 			struct MGD77_HEADER_PARAMS *P = NULL;
 			double rec_time, del_t, value, *tvar = NULL;
 			
@@ -1177,11 +1177,11 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s: n_recs = %d versus %d = aborting\n", efile, n_recs, D->H.n_records);
 				e_error++;
 			}
-			verified = FALSE;
+			verified = false;
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e) && strncmp (line, "# Errata: Header", 14U)) {	/* Read until we get to Header record section */
 				if (line[0] == '#') continue;	/* Skip comments */
 				GMT_chop (line);		/* Rid the world of CR/LF */
-				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = TRUE;
+				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = true;
 			}
 			if (!verified && !Ctrl->A.ignore_verify) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 file %s not yet verified.  E77 not applied\n", efile);
@@ -1359,12 +1359,12 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				}
 			}
 			/* Now start on data record section */
-			has_time = TRUE;
+			has_time = true;
 			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET)
-				has_time = FALSE;
+				has_time = false;
 			else {	/* See if we really have time or if they are all NaN */
 				tvar = D->values[it];
-				for (rec = 0, has_time = FALSE; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = TRUE;
+				for (rec = 0, has_time = false; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = true;
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
@@ -1378,7 +1378,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 					GMT_message (GMT, "%s UNDECIDED: %s\n", list[argno], line);
 					continue;
 				}
-				/* Here, YorN is 'Y' (or '?' if Ctrl->A.ignore_verify is TRUE) */
+				/* Here, YorN is 'Y' (or '?' if Ctrl->A.ignore_verify is true) */
 				rec--;	/* E77 starts with rec = 1 for first data record */
 				if (has_time) {
 					if (!strcmp(timestamp,"NaN")) {
@@ -1468,7 +1468,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			strcpy (D->H.E77, E77);
 			MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "E77", length, D->H.E77));
 		
-			old_flags =  (nc_inq_varid (In.nc_id, "MGD77_flags", &cdf_var_id) == NC_NOERR);	/* TRUE if flag variable exists already */
+			old_flags =  (nc_inq_varid (In.nc_id, "MGD77_flags", &cdf_var_id) == NC_NOERR);	/* true if flag variable exists already */
 			
 			if (n_E77_flags) {	/* Add flags to netCDF file */
 				if (old_flags) {	/* Flag variable exists already - simply replace existing flags with the new ones */
@@ -1516,25 +1516,25 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			if (LEN) {
 				if (OLDLEN != LEN) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Revised text column %s differs in width (%d) from the old values (%d).\n", Ctrl->I.c_abbrev, (int)LEN, (int)OLDLEN);
-					error = TRUE;
+					error = true;
 				}
 				if (constant && n_dims == 2) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Revised text column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
-					error = TRUE;
+					error = true;
 				}
 				if (!constant && n_dims == 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Revised text column %s is an array whereas old values is a constant\n", Ctrl->I.c_abbrev);
-					error = TRUE;
+					error = true;
 				}
 			}
 			else {
 				if (constant && n_dims == 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Revised data column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
-					error = TRUE;
+					error = true;
 				}
 				if (!constant && n_dims == 0) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Revised data column %s is an array whereas old values is a constant\n", Ctrl->I.c_abbrev);
-					error = TRUE;
+					error = true;
 				}
 			}
 			if (error) {
@@ -1594,7 +1594,7 @@ GMT_LONG GMT_mgd77manage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		
 		MGD77_nc_status (GMT, nc_enddef (In.nc_id));	/* End define mode.  Now we can write/update data */
 
-		transform = (! (Ctrl->A.parameters[COL_SCALE] == 1.0 && Ctrl->A.parameters[COL_OFFSET] == 0.0));	/* TRUE if we must transform before writing */
+		transform = (! (Ctrl->A.parameters[COL_SCALE] == 1.0 && Ctrl->A.parameters[COL_OFFSET] == 0.0));	/* true if we must transform before writing */
 		n_bad = 0;
 		if (constant) {	/* Simply store one value */
 			if (LEN)

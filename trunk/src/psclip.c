@@ -34,14 +34,14 @@
 
 struct PSCLIP_CTRL {
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
-		GMT_LONG n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
+		bool active;
+		int n;	/* Number of levels to undo [1], or CLIP_STEXT, or CLIP_CTEXT */
 	} C;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct T {	/* -T */
-		GMT_BOOLEAN active;
+		bool active;
 	} T;
 };
 
@@ -58,7 +58,7 @@ void Free_psclip_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_psclip_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -90,7 +90,7 @@ GMT_LONG GMT_psclip_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psclip and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -99,7 +99,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -114,7 +114,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Turn clipping off */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.n = 1;
 				switch (opt->arg[0]) {
 					case 's': Ctrl->C.n = CLIP_STEXT; break;
@@ -132,10 +132,10 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 				}
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'T':	/* Select map clip */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -148,12 +148,12 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
-	if (Ctrl->T.active) Ctrl->N.active = TRUE;	/* -T implies -N */
+	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
 	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
-		GMT->current.map.frame.draw = FALSE;
+		GMT->current.map.frame.draw = false;
 	}
 
 	n_errors += GMT_check_binary_io (GMT, 2);
@@ -161,7 +161,7 @@ GMT_LONG GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG n)
+void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 {
 	switch (n) {
 		case CLIP_STEXT:
@@ -188,9 +188,9 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, GMT_LONG 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psclip_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_psclip (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE;
+	bool error = false;
 
 	double x0, y0;
 
@@ -241,9 +241,9 @@ GMT_LONG GMT_psclip (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	GMT_map_basemap (GMT);
 
 	if (!Ctrl->C.active) {	/* Start new clip_path */
-		COUNTER_MEDIUM tbl;
-		GMT_BOOLEAN first = !Ctrl->N.active;
-		COUNTER_LARGE row, seg;
+		unsigned int tbl;
+		bool first = !Ctrl->N.active;
+		uint64_t row, seg;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;
 		struct GMT_LINE_SEGMENT *S = NULL;

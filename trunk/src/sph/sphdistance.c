@@ -40,32 +40,32 @@
 
 struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
-		GMT_BOOLEAN active;
+		bool active;
 	} C;
 	struct D {	/* -D */
-		GMT_BOOLEAN active;
+		bool active;
 	} D;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
+		bool active;
 	} E;
 	struct G {	/* -G<maskfile> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} G;
 	struct I {	/* -Idx[/dy] */
-		GMT_BOOLEAN active;
+		bool active;
 		double inc[2];
 	} I;
 	struct L {	/* -L<unit>] */
-		GMT_BOOLEAN active;
+		bool active;
 		char unit;
 	} L;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} N;
 	struct Q {	/* -Q */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Q;
 };
@@ -74,7 +74,7 @@ void prepare_polygon (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *P)
 {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
-	COUNTER_LARGE row;
+	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 	
 	GMT_set_seg_minmax (C, P);	/* Set the domain of the segment */
@@ -117,7 +117,7 @@ void Free_sphdistance_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -151,7 +151,7 @@ GMT_LONG GMT_sphdistance_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sphdistance and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -159,7 +159,7 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -172,27 +172,27 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 			/* Processes program-specific parameters */
 
 			case 'C':
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'D':
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				break;
 			case 'E':
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
@@ -201,11 +201,11 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 					Ctrl->L.unit = opt->arg[0];
 				break;
 			case 'N':
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'Q':
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				Ctrl->Q.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -229,14 +229,14 @@ GMT_LONG GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_sphdistance_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE, first = FALSE, periodic;
-	GMT_LONG s_row, south_row, north_row, w_col, e_col;
+	bool error = false, first = false, periodic;
+	int s_row, south_row, north_row, w_col, e_col;
 
-	COUNTER_MEDIUM row, col, p_col, west_col, east_col;
-	COUNTER_LARGE nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;
-	COUNTER_LARGE vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
+	unsigned int row, col, p_col, west_col, east_col;
+	uint64_t nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;
+	uint64_t vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
 	size_t n_alloc, p_alloc = 0;
 
@@ -273,7 +273,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_memset (&T, 1, struct STRIPACK);
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 
@@ -307,7 +307,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				GMT_report (GMT, GMT_MSG_FATAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Table->n_segments != (COUNTER_LARGE)NTable->n_records) {
+			if (Table->n_segments != (uint64_t)NTable->n_records) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -350,7 +350,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 					break;
 				else if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Parse segment headers */
-					first = TRUE;
+					first = true;
 					continue;
 				}
 			}
@@ -368,7 +368,7 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 			}
 			
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
-			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, TRUE);
+			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
 			if (!Ctrl->C.active) {
 				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
@@ -378,8 +378,8 @@ GMT_LONG GMT_sphdistance (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 				if (!Ctrl->C.active) { size_t n_tmp = n_alloc; GMT_malloc2 (GMT, lon, lat, n, &n_tmp, double); }
 				GMT_malloc3 (GMT, xx, yy, zz, n, &n_alloc, double);
 			}
-			first = FALSE;
-		} while (TRUE);
+			first = false;
+		} while (true);
 
 		n_alloc = n;
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);

@@ -27,7 +27,7 @@ enum GMT_enum_inside {
 
 /* Here are definition of MATH_MACRO and some functions used by grdmath and gmtmath */
 struct MATH_MACRO {
-	COUNTER_MEDIUM n_arg;	/* How many commands this macro represents */
+	unsigned int n_arg;	/* How many commands this macro represents */
 	char *name;	/* The macro name */
 	char **arg;	/* List of those commands */
 };
@@ -62,7 +62,7 @@ struct MATH_MACRO {
 
 struct MEMORY_ITEM {
 	size_t size;	/* Size of memory allocated */
-	COUNTER_MEDIUM line;	/* Line number where things were initially allocated */
+	unsigned int line;	/* Line number where things were initially allocated */
 	void *ptr;	/* Memory pointer */
 #ifdef NEW_DEBUG
 	char *name;	/* File name */
@@ -73,12 +73,12 @@ struct MEMORY_ITEM {
 };
 
 struct MEMORY_TRACKER {
-	GMT_BOOLEAN active;	/* Normally TRUE but can be changed to focus on just some allocations */
-	GMT_BOOLEAN search;	/* Normally TRUE but can be changed to skip searching when we know we add a new item */
-	COUNTER_LARGE n_ptr;		/* Number of unique pointers to allocated memory */
-	COUNTER_LARGE n_allocated;	/* Number of items allocated by GMT_memory */
-	COUNTER_LARGE n_reallocated;	/* Number of items reallocated by GMT_memory */
-	COUNTER_LARGE n_freed;	/* Number of items freed by GMT_free */
+	bool active;	/* Normally true but can be changed to focus on just some allocations */
+	bool search;	/* Normally true but can be changed to skip searching when we know we add a new item */
+	uint64_t n_ptr;		/* Number of unique pointers to allocated memory */
+	uint64_t n_allocated;	/* Number of items allocated by GMT_memory */
+	uint64_t n_reallocated;	/* Number of items reallocated by GMT_memory */
+	uint64_t n_freed;	/* Number of items freed by GMT_free */
 	size_t current;		/* Memory allocated at current time */
 	size_t maximum;		/* Highest memory count during execution */
 	size_t largest;		/* Highest memory allocation to a single variable */

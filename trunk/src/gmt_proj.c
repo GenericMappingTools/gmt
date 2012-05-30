@@ -540,7 +540,7 @@ void GMT_lamb (struct GMT_CTRL *C, double lon, double lat, double *x, double *y)
 
 void GMT_ilamb (struct GMT_CTRL *C, double *lon, double *lat, double x, double y)
 {
-	GMT_LONG i;
+	int i;
 	double theta, rho, t, tphi, phi, dy, r;
 
 	dy = C->current.proj.l_rho0 - y;
@@ -620,7 +620,7 @@ void GMT_obl (struct GMT_CTRL *C, double lon, double lat, double *olon, double *
 {	/* Convert a longitude/latitude point to Oblique lon/lat (all in rads) */
 	double p_cross_x[3], X[3];
 
-	GMT_geo_to_cart (C, lat, lon, X, FALSE);
+	GMT_geo_to_cart (C, lat, lon, X, false);
 
 	*olat = d_asin (GMT_dot3v (C, X, C->current.proj.o_FP));
 
@@ -634,7 +634,7 @@ void GMT_iobl (struct GMT_CTRL *C, double *lon, double *lat, double olon, double
 {	/* Convert a longitude/latitude point from Oblique lon/lat  (all in rads) */
 	double p_cross_x[3], X[3];
 
-	GMT_geo_to_cart (C, olat, olon, X, FALSE);
+	GMT_geo_to_cart (C, olat, olon, X, false);
 	*lat = d_asin (GMT_dot3v (C, X, C->current.proj.o_IP));
 
 	GMT_cross3v (C, C->current.proj.o_IP, X, p_cross_x);
@@ -1017,8 +1017,8 @@ void gmt_genper_tolatlong (struct GMT_CTRL *C, double x, double y, double h, dou
 	double e2, R, one_m_e2;
 	double cphi1, sphi1;
 
-	GMT_LONG niter;
-	GMT_LONG set_exit = 0;
+	int niter;
+	int set_exit = 0;
 
 	h *= 1e3;
 
@@ -1165,7 +1165,7 @@ void gmt_genper_setup (struct GMT_CTRL *C, double h0, double altitude, double la
 	double sphi1, cphi1, sphig, cphig;
 	double a, e2, phig;
 
-	GMT_LONG niter;
+	int niter;
 
 	a = C->current.proj.EQ_RAD;
 	e2 = C->current.proj.ECC2;
@@ -1291,7 +1291,7 @@ void GMT_vgenper (struct GMT_CTRL *C, double lon0, double lat0, double altitude,
 	double sin_lat0, cos_lat0, sin_lat1, cos_lat1, dlong;
 	double lat0_save;
 	double vp_lat, vp_long;
-	GMT_LONG az;
+	int az;
 
 	C->current.proj.central_meridian = lon0;
 
@@ -1590,11 +1590,11 @@ void GMT_genper (struct GMT_CTRL *C, double lon, double lat, double *xt, double 
 	cosc = C->current.proj.sinp * sin_lat + C->current.proj.cosp * cos_lat * cos_dlon;
 	sinc = d_sqrt(1.0 - cosc * cosc);
 
-	C->current.proj.g_outside = FALSE;
+	C->current.proj.g_outside = false;
 
 	angle = M_PI - dlon;
 	if (cosc < C->current.proj.g_P_inverse) { /* over the horizon */
-		C->current.proj.g_outside = TRUE;
+		C->current.proj.g_outside = true;
 
 		if (C->current.proj.polar)
 			angle = M_PI - dlon;
@@ -1663,7 +1663,7 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 
 	rho = hypot(x, y);
 
-	C->current.proj.g_outside = FALSE;
+	C->current.proj.g_outside = false;
 
 	if (rho < GMT_SMALL) {
 		*lat = C->current.proj.pole;
@@ -1674,7 +1674,7 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 		x *= C->current.proj.g_rmax/rho;
 		y *= C->current.proj.g_rmax/rho;
 		rho = C->current.proj.g_rmax;
-		C->current.proj.g_outside = TRUE;
+		C->current.proj.g_outside = true;
 	}
 
 	con = P - 1.0;
@@ -1692,9 +1692,9 @@ void GMT_igenper (struct GMT_CTRL *C, double *lon, double *lat, double xt, doubl
 	return;
 }
 
-GMT_LONG GMT_genper_map_clip_path (struct GMT_CTRL *C, COUNTER_LARGE np, double *work_x, double *work_y)
+int GMT_genper_map_clip_path (struct GMT_CTRL *C, uint64_t np, double *work_x, double *work_y)
 {
-	COUNTER_LARGE i;
+	uint64_t i;
 	double da, angle;
 	double x, y, xt, yt;
 
@@ -1834,7 +1834,7 @@ void GMT_azeqdist (struct GMT_CTRL *C, double lon, double lat, double *x, double
 
 	t = clat * clon;
 	cc = C->current.proj.sinp * slat + C->current.proj.cosp * t;
-	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase COUNTER_LARGE */
+	if (cc <= -1.0) {	/* Antipode is a circle, so flag x,y as NaN and increase uint64_t */
 		*x = *y = C->session.d_NaN;
 		C->current.proj.n_antipoles++;
 	}
@@ -1880,7 +1880,7 @@ void GMT_vmollweide (struct GMT_CTRL *C, double lon0, double scale)
 
 void GMT_mollweide (struct GMT_CTRL *C, double lon, double lat, double *x, double *y)
 {	/* Convert lon/lat to Mollweide Equal-Area x/y */
-	GMT_LONG i;
+	int i;
 	double phi, delta, psin_lat, c, s;
 
 	if (doubleAlmostEqual (fabs (lat), 90.0)) {	/* Special case */
@@ -2101,7 +2101,7 @@ void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 	 * Ipbuker, 2002, Cartography & Geographical Information Science, 20, 1, 37-42.
 	 */
 
-	GMT_LONG n_iter = 0;
+	int n_iter = 0;
 	double phi0, lambda0, sp, cp, s2p, sl, cl, sl2, cl2, C, D, sq_C, C_32;
 	double f1, f2, df1dp, df1dl, df2dp, df2dl, denom, delta;
 
@@ -2144,7 +2144,7 @@ void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 
 void gmt_iwinkel_sub (struct GMT_CTRL *C, double y, double *phi)
 {	/* Valid only along meridian 180 degree from central meridian.  Used in left/right_winkel only */
-	GMT_LONG n_iter = 0;
+	int n_iter = 0;
 	double c, phi0, delta, sp, cp;
 
 	c = 2.0 * y * C->current.proj.i_EQ_RAD;
@@ -2197,7 +2197,7 @@ void GMT_veckert4 (struct GMT_CTRL *C, double lon0)
 
 void GMT_eckert4 (struct GMT_CTRL *C, double lon, double lat, double *x, double *y)
 {	/* Convert lon/lat to Eckert IV x/y */
-	GMT_LONG n_iter = 0;
+	int n_iter = 0;
 	double phi, delta, s_lat, s, c;
 
 	GMT_WIND_LON (C, lon)	/* Remove central meridian and place lon in -180/+180 range */
@@ -2268,7 +2268,7 @@ void GMT_veckert6 (struct GMT_CTRL *C, double lon0)
 
 void GMT_eckert6 (struct GMT_CTRL *C, double lon, double lat, double *x, double *y)
 {	/* Convert lon/lat to Eckert VI x/y */
-	GMT_LONG n_iter = 0;
+	int n_iter = 0;
 	double phi, delta, s_lat, s, c;
 
 	GMT_WIND_LON (C, lon)	/* Remove central meridian and place lon in -180/+180 range */
@@ -2329,7 +2329,7 @@ double GMT_right_eckert6 (struct GMT_CTRL *C, double y)
 
 void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 {	/* Set up Robinson projection */
-	GMT_LONG err_flag = 0;
+	int err_flag = 0;
 
 	if (C->current.setting.interpolant == 0) {	/* Must reset and warn */
 		GMT_message (C, "Warning: -JN requires Akima or Cubic spline interpolant, set to Akima\n");
@@ -2377,7 +2377,7 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 double gmt_robinson_spline (struct GMT_CTRL *C, double xp, double *x, double *y, double *c)
 {	/* Compute the interpolated values from the Robinson coefficients */
 
-	GMT_LONG j = 0, j1;
+	int j = 0, j1;
 	double yp, a, b, h, ih, dx;
 
 	if (xp < x[0] || xp > x[GMT_N_ROBINSON-1])	/* Desired point outside data range */
@@ -2712,7 +2712,7 @@ void GMT_albers (struct GMT_CTRL *C, double lon, double lat, double *x, double *
 void GMT_ialbers (struct GMT_CTRL *C, double *lon, double *lat, double x, double y)
 {	/* Convert Albers x/y to lon/lat */
 
-	GMT_LONG n_iter;
+	int n_iter;
 	double theta, rho, q, phi, phi0, s, c, s2, ex_1, delta, r;
 
 	theta = (C->current.proj.a_n < 0.0) ? d_atan2 (-x, y - C->current.proj.a_rho0) : d_atan2 (x, C->current.proj.a_rho0 - y);
@@ -2849,7 +2849,7 @@ void GMT_ipolyconic (struct GMT_CTRL *C, double *lon, double *lat, double x, dou
 {	/* Convert Polyconic x/y to lon/lat */
 
 	double B, phi, phi0, tanp, delta;
-	GMT_LONG n_iter = 0;
+	int n_iter = 0;
 
 	x *= C->current.proj.i_EQ_RAD;
 	y *= C->current.proj.i_EQ_RAD;
@@ -2878,7 +2878,7 @@ void GMT_ipolyconic (struct GMT_CTRL *C, double *lon, double *lat, double x, dou
 void gmt_ipolyconic_sub (struct GMT_CTRL *C, double y, double lon, double *x)
 {	/* Used in left/right_polyconic only */
 	double E, sp, cp, phi0, phi, delta;
-	GMT_LONG n_iter = 0;
+	int n_iter = 0;
 
 	*x = lon;
 	GMT_WIND_LON (C, *x);

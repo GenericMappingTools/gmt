@@ -24,7 +24,7 @@
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	GMT_LONG status;
+	int status;
 	struct	GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	char	*options = NULL, *cmd = NULL; 
 

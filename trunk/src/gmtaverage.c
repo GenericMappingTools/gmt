@@ -32,12 +32,12 @@
 
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} E;
 	struct T {	/* -T<quantile> */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN median;
+		bool active;
+		bool median;
 		double quantile;
 	} T;
 };
@@ -47,7 +47,7 @@ void * New_gmtaverage_Ctrl (struct GMT_CTRL *G) {	/* Allocate and initialize a n
 	
 	C = GMT_memory (G, NULL, 1, struct  GMTAVERAGE_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
@@ -55,7 +55,7 @@ void Free_gmtaverage_Ctrl (struct GMT_CTRL *G, struct  GMTAVERAGE_CTRL *C) {	/* 
 	GMT_free (G, C);	
 }
 
-GMT_LONG GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -97,7 +97,7 @@ GMT_LONG GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtaverage and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -105,7 +105,7 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -125,14 +125,14 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 			/* Processes gmtaverage-specific parameters */
 
 			case 'E':	/* Report extended statistics, where blockmedian has an extra modifier */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				if (opt->arg[0] == 'b') Ctrl->E.mode = 1;
 				break;	
 			case 'T':	/* Select a particular output value operator */
-				Ctrl->T.active = TRUE;		
+				Ctrl->T.active = true;		
 				switch (opt->arg[0]) {
 					case 'e':	/* Report medians [blockmedian] */
-						Ctrl->T.median = TRUE;
+						Ctrl->T.median = true;
 						break;
 					case 'm':	/* Report means [blockmean] */
 					case 'n':	/* Report number of points [blockmean] */
@@ -144,10 +144,10 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 					case '1':
 					case '.':
 						Ctrl->T.quantile = atof (opt->arg);
-						Ctrl->T.median = TRUE;
+						Ctrl->T.median = true;
 						break;
 					default:
-						n_errors += GMT_check_condition (GMT, TRUE, "Syntax error: Bad modifier in -T option\n");
+						n_errors += GMT_check_condition (GMT, true, "Syntax error: Bad modifier in -T option\n");
 						n_errors++;
 						break;
 				}
@@ -171,15 +171,15 @@ GMT_LONG GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtaverage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_gmtaverage (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_gmtaverage (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	GMT_BOOLEAN error = FALSE;
+	bool error = false;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *t_ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	GMT_LONG (*func) (struct GMTAPI_CTRL *, GMT_LONG, void *) = NULL;
+	int (*func) (struct GMTAPI_CTRL *, int, void *) = NULL;
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

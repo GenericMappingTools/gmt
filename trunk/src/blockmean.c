@@ -34,7 +34,7 @@
 
 /* MEX: <DI >DO */
 
-GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_blockmean_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -73,7 +73,7 @@ GMT_LONG GMT_blockmean_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to blockmean and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -81,7 +81,7 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0;
+	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -94,20 +94,20 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Report center of block instead */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				break;
 			case 'E':	/* Extended report with standard deviation, min, and max in cols 4-6 */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				break;
 			case 'I':	/* Get block dimensions */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;
 				}
 				break;
 			case 'S':	/* Set report mode for z */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 #ifdef GMT_COMPAT
 					case '\0': case 'z':	/* Report data sums */
@@ -127,14 +127,14 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 				}
 				break;
 			case 'W':	/* Use in|out weights */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				switch (opt->arg[0]) {
 					case '\0':
-						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = TRUE; break;
+						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true; break;
 					case 'i': case 'I':
-						Ctrl->W.weighted[GMT_IN] = TRUE; break;
+						Ctrl->W.weighted[GMT_IN] = true; break;
 					case 'o': case 'O':
-						Ctrl->W.weighted[GMT_OUT] = TRUE; break;
+						Ctrl->W.weighted[GMT_OUT] = true; break;
 					default:
 						n_errors++; break;
 				}
@@ -159,12 +159,12 @@ GMT_LONG GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_free (GMT, zw); GMT_free (GMT, xy); GMT_free (GMT, np); GMT_free (GMT, slh); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
-GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_LARGE node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
-	COUNTER_MEDIUM row, col, w_col;
-	GMT_LONG error;
-	GMT_BOOLEAN use_xy, use_weight;
+	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
+	unsigned int row, col, w_col;
+	int error;
+	bool use_xy, use_weight;
 
 	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
 
@@ -196,7 +196,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, FALSE);
+	GMT_grd_init (GMT, Grid->header, options, false);
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
@@ -205,7 +205,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (Ctrl->E.active) slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH);
-	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, COUNTER_LARGE);
+	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, uint64_t);
 
 	/* Specify input and output expected columns */
 	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
@@ -230,13 +230,13 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	}
 	
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Memory reporting */
-		COUNTER_MEDIUM kind = 0;
+		unsigned int kind = 0;
 		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
 		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
 		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
 		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLH);
-		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (COUNTER_LARGE);
+		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (uint64_t);
 		mem = n_bytes_per_record * Grid->header->nm / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Using a total of %.3g %cb for all arrays.\n", mem, unit[kind]);
@@ -299,7 +299,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		zw[node].a[BLK_W] += weight;		/* Sum up the weights */
 		zw[node].a[BLK_Z] += weighted_z;	/* Sum up the weighted values */
 		n_pitched++;				/* Number of points actually used */
-	} while (TRUE);
+	} while (true);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -367,7 +367,7 @@ GMT_LONG GMT_blockmean (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	GMT_free_grid (GMT, &Grid, FALSE);	/* Free directly since not registered as an i/o resource */
+	GMT_free_grid (GMT, &Grid, false);	/* Free directly since not registered as an i/o resource */
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
 	
 	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */

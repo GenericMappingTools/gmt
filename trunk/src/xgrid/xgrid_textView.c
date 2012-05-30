@@ -382,7 +382,7 @@ static void scrollVertical (Widget	w __attribute__((unused)),
   GridPoint grid1, grid2;
 
   TextViewData *data = client_data;
-  GMT_LONG	y = (int64_t)call_data;
+  int	y = (int64_t)call_data;
 
   canvas = data->canvas;
   width  = XtWidth(canvas);

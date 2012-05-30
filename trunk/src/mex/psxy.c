@@ -24,7 +24,7 @@
 
 void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-	GMT_LONG status;
+	int status;
 	struct	GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
 	struct	GMT_VECTOR *Vi = NULL;
 	char	*input = NULL, *options = NULL, *cmd = NULL; 
@@ -57,7 +57,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 		
 	/* Free temporary local variables  */
 	GMTMEX_free (input, NULL, options, cmd);
-	GMT_free_vector (API->GMT, &Vi, FALSE);	/* FALSE since vectors came from Matlab */
+	GMT_free_vector (API->GMT, &Vi, false);	/* false since vectors came from Matlab */
 	
 	/* Destroy GMT API session */
 	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");

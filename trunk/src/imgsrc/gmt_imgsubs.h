@@ -60,10 +60,10 @@ struct GMT_IMG_RANGE {
  
 struct GMT_IMG_COORD {
 	double	radius;		/* # of pixels in 1 radian of longitude */
-	GMT_LONG	nx360;		/* # of pixels in 360 degrees of longtd */
-	GMT_LONG	nxcol;		/* # of columns in input img file  */
-	GMT_LONG	nyrow;		/* # of rows in input img file  */
-	GMT_LONG	nytop;		/* # of rows from Equator to top edge */
+	int	nx360;		/* # of pixels in 360 degrees of longtd */
+	int	nxcol;		/* # of columns in input img file  */
+	int	nyrow;		/* # of rows in input img file  */
+	int	nytop;		/* # of rows from Equator to top edge */
 };
 
 double	GMT_img_gud_fwd (double y);		/* Forward Gudermannian function */
@@ -76,4 +76,4 @@ double	GMT_img_lat_to_ypix (double lat, struct GMT_IMG_COORD *coord);
 double	GMT_img_ypix_to_lat (double ypix, struct GMT_IMG_COORD *coord);
 
 /* Function to set up the GMT_IMG_COORD based on GMT_IMG_RANGE */
-GMT_LONG     GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c);
+int     GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct GMT_IMG_COORD *c);

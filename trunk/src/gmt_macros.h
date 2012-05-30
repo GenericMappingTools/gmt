@@ -83,16 +83,18 @@
 
 /* Macros for swapping misc data types */
 
-#define l_swap(x, y) {GMT_LONG tmp; tmp = x, x = y, y = tmp;}
-#define i_swap(x, y) {int tmp; tmp = x, x = y, y = tmp;}
-#define d_swap(x, y) {double tmp; tmp = x, x = y, y = tmp;}
-#define f_swap(x, y) {float tmp; tmp = x, x = y, y = tmp;}
+#define bool_swap(x, y) {bool bool_tmp; bool_tmp = x, x = y, y = bool_tmp;}
+#define uint64_swap(x, y) {uint64_t uint64_t_tmp; uint64_t_tmp = x, x = y, y = uint64_t_tmp;}
+#define int_swap(x, y) {int int_tmp; int_tmp = x, x = y, y = int_tmp;}
+#define uint_swap(x, y) {unsigned int uint_tmp; uint_tmp = x, x = y, y = uint_tmp;}
+#define double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
+#define float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
 /* Macro to simplify call to memcpy when duplicating values and memset when zeroing out */
 #define GMT_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
 #define GMT_memset(array,n,type) memset(array, 0, (n)*sizeof(type))
 /* Macro to set all items in an array to the given value */
-#define GMT_setnval(array,n,value) {COUNTER_LARGE k; for (k = 0; k < (COUNTER_LARGE)n; k++) array[k] = value;}
+#define GMT_setnval(array,n,value) {uint64_t k; for (k = 0; k < (uint64_t)n; k++) array[k] = value;}
 /* Macro to simplify assignment of one 3-vector to another */
 #define GMT_cpy3v(to,from) memcpy(to, from, 3*sizeof(double))
 

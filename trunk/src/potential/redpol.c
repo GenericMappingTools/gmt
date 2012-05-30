@@ -35,43 +35,43 @@
 
 struct REDPOL_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} In;
 	struct C {	/* -C */
-		GMT_BOOLEAN use_igrf;
-		GMT_BOOLEAN const_f;
+		bool use_igrf;
+		bool const_f;
 		double	dec;
 		double	dip;
 	} C;
 	struct E {	/* -E */
-		GMT_BOOLEAN active;
-		GMT_BOOLEAN dip_grd_only;
-		GMT_BOOLEAN dip_dec_grd;
+		bool active;
+		bool dip_grd_only;
+		bool dip_dec_grd;
 		char *decfile;
 		char *dipfile;
 	} E;
 	struct F {	/* -F */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM	ncoef_row;
-		COUNTER_MEDIUM	ncoef_col;
-		COUNTER_MEDIUM	compute_n;	/* Compute ncoef_col */
+		bool active;
+		unsigned int	ncoef_row;
+		unsigned int	ncoef_col;
+		unsigned int	compute_n;	/* Compute ncoef_col */
 		double	width;
 	} F;
 	struct G {	/* -G<file> */
-		GMT_BOOLEAN active;
+		bool active;
 		char	*file;
 	} G;
 	struct M {	/* -M */
-		GMT_BOOLEAN pad_zero;
-		GMT_BOOLEAN mirror;
+		bool pad_zero;
+		bool mirror;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct S {	/* -S, size of working grid */
-		COUNTER_MEDIUM	nx;
-		COUNTER_MEDIUM	ny;
+		unsigned int	nx;
+		unsigned int	ny;
 	} S;
 	struct T {	/* -T */
 		double	year;
@@ -80,7 +80,7 @@ struct REDPOL_CTRL {
 		double	wid;
 	} W;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 		char	*file;
 	} Z;
 };
@@ -94,10 +94,10 @@ void *New_redpol_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	
 	C = GMT_memory (GMT, NULL, 1, struct REDPOL_CTRL);
 	
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
-	C->C.use_igrf = TRUE;
-	C->M.pad_zero = TRUE;
-	C->N.active = TRUE;
+	/* Initialize values whose defaults are not 0/false/NULL */
+	C->C.use_igrf = true;
+	C->M.pad_zero = true;
+	C->N.active = true;
 	C->F.ncoef_row = 25;
 	C->F.ncoef_col = 25;
 	C->T.year = 2000;
@@ -115,11 +115,11 @@ void Free_redpol_Ctrl (struct GMT_CTRL *GMT, struct REDPOL_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-void rtp_filt_colinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double *gxi, double *gxar, 
+void rtp_filt_colinear (int i, int j, int n21, double *gxr,double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double u, 
 		double v, double alfa, double beta, double gama, struct REDPOL_CTRL *Ctrl) {
 
-	COUNTER_LARGE ij = ij_mn(Ctrl,i,j-n21+1);
+	uint64_t ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, t2, t3;
 	ro2 = u * u + v * v;    ro = sqrt(ro2);     ro3 = ro2 * ro;
@@ -150,12 +150,12 @@ void rtp_filt_colinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr,double
 }
 
 
-void rtp_filt_NOTcolinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, double *gxi, double *gxar, 
+void rtp_filt_NOTcolinear (int i, int j, int n21, double *gxr, double *gxi, double *gxar, 
 		double *gxai, double *gxbr, double *gxbi, double *gxgr, double *gxgi, double *gxtr, 
 		double *gxti, double *gxmr, double *gxmi, double *gxnr, double *gxni, double u, double v, double alfa, 
 		double beta, double gama, double tau, double mu, double nu, struct REDPOL_CTRL *Ctrl) {
 
-	COUNTER_LARGE ij = ij_mn(Ctrl,i,j-n21+1);
+	uint64_t ij = ij_mn(Ctrl,i,j-n21+1);
 	double ro, ro2, ro3, ro4, ro5, alfa_u, beta_v, gama_ro, gama_ro_2;
 	double alfa_u_beta_v, alfa_u_beta_v_2, rnr, rni, den_r, den_i1, den_i2;
 	double tau_u, mu_v, nu_ro, nu_ro_2, tau_u_mu_v, tau_u_mu_v_2, tau_u_mu_v_gama;
@@ -204,12 +204,12 @@ void rtp_filt_NOTcolinear (GMT_LONG i, GMT_LONG j, GMT_LONG n21, double *gxr, do
 	}
 }
 
-void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_data_start, struct REDPOL_CTRL *Ctrl) {
+void mirror_edges (float *grid, int nc, int i_data_start, int j_data_start, struct REDPOL_CTRL *Ctrl) {
 	/* This routine mirrors or replicates the West and East borders j_data_start times
 	   and the South and North borders by i_data_start times.
 	   nc	is the total number of columns by which the grid is extended
 	   Ctrl->S.nx & Ctrl->S.ny are the grid's original number of column/rows before extension */
-	GMT_LONG	i, j, ins, isn, iss, jww, jwe, jee, jew, upper_nx, upper_ny;
+	int	i, j, ins, isn, iss, jww, jwe, jee, jew, upper_nx, upper_ny;
 
 	/* First reflect about xmin and xmax, point symmetric about edge point */
 
@@ -251,16 +251,16 @@ void mirror_edges (float *grid, GMT_LONG nc, GMT_LONG i_data_start, GMT_LONG j_d
 	}
 }
 
-void tfpoeq(double *w, GMT_LONG m, GMT_LONG n, double *greel, double *gim, 
+void tfpoeq(double *w, int m, int n, double *greel, double *gim, 
 	    double *cosphi, double *sinphi, double *cospsi, double *sinpsi) {
     /* Initialized data */
 
-    static GMT_LONG mkeep = -9999;
-    static GMT_LONG nkeep = -9999;
+    static int mkeep = -9999;
+    static int nkeep = -9999;
 
     /* System generated locals */
-    GMT_LONG w_offset, greel_offset, gim_offset;
-    GMT_LONG i, k, l, k1, k2, m1, n1, l1, l2, ir, is, lr, ks, ky, lx, ir1, ir2, lx1, lrm, ksn;
+    int w_offset, greel_offset, gim_offset;
+    int i, k, l, k1, k2, m1, n1, l1, l2, ir, is, lr, ks, ky, lx, ir1, ir2, lx1, lrm, ksn;
     static double co1, co2, si2, si1, c1c2, c1s2, arg, c2s1, s1s2, xmn, arg1, somi, somr;
 
 /*     THIS SUBROUTINE COMPUTES THE INVERSE FOURIER TRANSFORM OF A FILTER */
@@ -846,7 +846,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	
 	if (date < 1900.0 || date > 2015.0) {
 		GMT_report (C, GMT_MSG_FATAL, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", C->init.progname, date);
-		return (TRUE);
+		return (true);
 	}
 	
 	if (date < 2010.) {
@@ -983,7 +983,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	return (GMT_OK);
 }
 
-GMT_LONG GMT_redpol_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
+int GMT_redpol_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "redpol %s - Compute the Continuous Reduction To the Pole, AKA differential RTP\n\n", GMT_VERSION);
@@ -1010,7 +1010,7 @@ GMT_LONG GMT_redpol_usage (struct GMTAPI_CTRL *C, GMT_LONG level) {
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to redpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -1020,8 +1020,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 	 */
 
 
-	COUNTER_MEDIUM n_errors = 0, n_files = 0, pos = 0;
-	GMT_LONG j;
+	unsigned int n_errors = 0, n_files = 0, pos = 0;
+	int j;
 	char	p[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
 	struct	GMT_CTRL *GMT = C->GMT;
@@ -1030,7 +1030,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
@@ -1040,8 +1040,8 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->C.dec, &Ctrl->C.dip);
 				Ctrl->C.dec *= D2R;
 				Ctrl->C.dip *= D2R;
-				Ctrl->C.const_f = TRUE;
-				Ctrl->C.use_igrf = FALSE;
+				Ctrl->C.const_f = true;
+				Ctrl->C.use_igrf = false;
 				break;
 			case 'E':
 				j = 0;
@@ -1049,12 +1049,12 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 					switch (j) {
 						case 0:
 							Ctrl->E.dipfile = strdup (p);
-							Ctrl->E.dip_grd_only = TRUE;
+							Ctrl->E.dip_grd_only = true;
 							break;
 						case 1:
 							Ctrl->E.decfile = strdup (p);
-							Ctrl->E.dip_grd_only = FALSE;
-							Ctrl->E.dip_dec_grd = TRUE;
+							Ctrl->E.dip_grd_only = false;
+							Ctrl->E.dip_dec_grd = true;
 							break;
 						default:
 							GMT_report (GMT, GMT_MSG_FATAL, "ERROR using option -E\n");
@@ -1063,12 +1063,12 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 					}
 					j++;
 				}
-				Ctrl->E.active = TRUE;
-				Ctrl->C.use_igrf = FALSE;
+				Ctrl->E.active = true;
+				Ctrl->C.use_igrf = false;
 				break;
 			case 'F':
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
-				if (j == 1) Ctrl->F.compute_n = TRUE;	/* Case of only one filter dimension was given */
+				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Error: number of filter coefficients must be odd\n");
 					n_errors++;
@@ -1079,24 +1079,24 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				}
 				break;
 			case 'G':
-				Ctrl->G.active = TRUE;
+				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'M':
-				Ctrl->M.pad_zero = FALSE;
+				Ctrl->M.pad_zero = false;
 				for (j = 0; opt->arg[j]; j++) {
 					if (opt->arg[j] == 'm')
-						Ctrl->M.mirror = TRUE;
+						Ctrl->M.mirror = true;
 					else if (opt->arg[j] == 'r')
-						Ctrl->M.mirror = FALSE;
+						Ctrl->M.mirror = false;
 					else {
 						GMT_report (GMT, GMT_MSG_FATAL, "Warning: Error using option -M (option ignored)\n");
-						Ctrl->M.pad_zero = TRUE;
+						Ctrl->M.pad_zero = true;
 					}
 				}
 				break;
 			case 'N':
-				Ctrl->N.active = FALSE;
+				Ctrl->N.active = false;
 				break;
 			case 'T':
 				sscanf (opt->arg, "%lf", &Ctrl->T.year);
@@ -1105,7 +1105,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 				sscanf (opt->arg, "%lf", &Ctrl->W.wid);
 				break;
 			case 'Z':
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
 			default:	/* Report bad options */
@@ -1119,7 +1119,7 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
 		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E option overrides -C\n");
-		Ctrl->C.const_f = FALSE;
+		Ctrl->C.const_f = false;
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -1128,12 +1128,12 @@ GMT_LONG GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, stru
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_redpol_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
+int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
 
-	GMT_BOOLEAN error = FALSE, wrote_one = FALSE;
-	COUNTER_MEDIUM i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
-        COUNTER_MEDIUM k, l, i3, n_jlon, n_jlat, n_coef;
-	COUNTER_LARGE ij, jj;
+	bool error = false, wrote_one = false;
+	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
+        unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
+	uint64_t ij, jj;
         double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
         double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;
 	double	*gxar = NULL, *gxai = NULL, *gxbr = NULL, *gxbi = NULL, *gxgr = NULL;
@@ -1196,7 +1196,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 
 	Ctrl->S.nx = nx_new;		Ctrl->S.ny = ny_new;
 
-	GMT_grd_init (GMT, Gin->header, options, TRUE);
+	GMT_grd_init (GMT, Gin->header, options, true);
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_new, Ctrl->In.file, Gin) == NULL) {	/* Get subset */
 		Return (API->error);
@@ -1301,7 +1301,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Gfilt->header, options, TRUE);
+		GMT_grd_init (GMT, Gfilt->header, options, true);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
 		strcpy (Gfilt->header->y_units, "radians");
@@ -1451,7 +1451,7 @@ GMT_LONG GMT_redpol (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args) {
 							for (j2 = 0; j2 < Ctrl->F.ncoef_col; j2++, jj++)
 								Gfilt->data[jj] = (float)fix[ij_mn(Ctrl,i2,j2)];
 
-						wrote_one = TRUE;
+						wrote_one = true;
 					}
 
 					tmp_d = 0;

@@ -31,7 +31,7 @@
 
 #include "common_byteswap.h"
 
-GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
 	char record[GMT_BUFSIZ];
@@ -118,7 +118,7 @@ GMT_LONG GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (header->type);
 }
 
-GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	/* Parse the contents of a .HDR file */
 	int nB;
@@ -200,7 +200,7 @@ GMT_LONG read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header)
+int read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header)
 {
 	int c;
 	char record[GMT_BUFSIZ];
@@ -211,7 +211,7 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	header->z_add_offset   = 0.0;
 
 	if (header->flags[0] == 'M' || header->flags[0] == 'I') {	/* We are dealing with a ESRI .hdr file */
-		GMT_LONG error;
+		int error;
 		if ((error = read_esri_info_hdr (C, header))) 		/* Continue the work someplace else */
 			return (error);
 		else
@@ -346,9 +346,9 @@ GMT_LONG read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_esri_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
-	GMT_LONG error;
+	int error;
 	FILE *fp = NULL;
 
 	if (!strcmp (header->name, "="))	/* Pipe in from stdin */
@@ -363,7 +363,7 @@ GMT_LONG GMT_esri_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header)
+int write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *header)
 {
 	char record[GMT_BUFSIZ], item[GMT_TEXT_LEN64];
 
@@ -403,7 +403,7 @@ GMT_LONG write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GRD_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {
 	FILE *fp = NULL;
 	
@@ -419,15 +419,15 @@ GMT_LONG GMT_esri_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {
-	GMT_LONG error;
-	GMT_BOOLEAN check, is_binary = FALSE, swap = FALSE;
-	COUNTER_MEDIUM inc, off, col, height_in, ii, in_nx;
-	GMT_LONG row, first_col, last_col, first_row, last_row;
-	COUNTER_MEDIUM row2, width_in, *actual_col = NULL;
-	COUNTER_MEDIUM nBits = 32, i_0_out;
-	COUNTER_LARGE ij, kk, width_out, n_left = 0;
+	int error;
+	bool check, is_binary = false, swap = false;
+	unsigned int inc, off, col, height_in, ii, in_nx;
+	int row, first_col, last_col, first_row, last_row;
+	unsigned int row2, width_in, *actual_col = NULL;
+	unsigned int nBits = 32, i_0_out;
+	uint64_t ij, kk, width_out, n_left = 0;
 	size_t n_expected;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;
@@ -438,9 +438,9 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		r_mode = "rb";
 		if (((header->flags[0] == 'M' || header->flags[0] == 'B') && !GMT_BIGENDIAN) ||
 			(header->flags[0] == 'L' && GMT_BIGENDIAN)) 
-			swap = TRUE;
+			swap = true;
 		nBits = header->bits;
-		is_binary = TRUE;
+		is_binary = true;
 	}
 	else
 		r_mode = C->current.io.r_mode;
@@ -459,7 +459,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;		/* Possibly twice if complex is TRUE */
+	width_out *= inc;		/* Possibly twice if complex is true */
 	n_expected = header->nx;
 
 	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
@@ -468,7 +468,7 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 		tmp16 = GMT_memory (C, NULL, n_expected, int16_t);
 
 	if (is_binary) {
-		GMT_LONG ny = header->ny;
+		int ny = header->ny;
 		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
 			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
@@ -561,12 +561,12 @@ GMT_LONG GMT_esri_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode, GMT_LONG floating)
+int GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating)
 {
-	COUNTER_MEDIUM inc, off, i2, j, j2, width_out, height_out, last;
-	GMT_LONG first_col, last_col, first_row, last_row;
-	COUNTER_MEDIUM i, *actual_col = NULL;
-	COUNTER_LARGE ij, width_in, kk;
+	unsigned int inc, off, i2, j, j2, width_out, height_out, last;
+	int first_col, last_col, first_row, last_row;
+	unsigned int i, *actual_col = NULL;
+	uint64_t ij, width_in, kk;
 	char item[GMT_TEXT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
 
@@ -616,12 +616,12 @@ GMT_LONG GMT_esri_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, floa
 	return (GMT_NOERROR);
 }
 
-GMT_LONG GMT_esri_writei_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_esri_writei_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* Standard integer values on output only */
-	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, FALSE));
+	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, false));
 }
 
-GMT_LONG GMT_esri_writef_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], COUNTER_MEDIUM *pad, COUNTER_MEDIUM complex_mode)
+int GMT_esri_writef_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* Write floating point on output */
-	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, TRUE));
+	return (GMT_esri_write_grd (C, header, grid, wesn, pad, complex_mode, true));
 }

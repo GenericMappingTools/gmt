@@ -37,64 +37,64 @@
 
 struct GRD2CPT_CTRL {
 	struct In {
-		GMT_BOOLEAN active;
+		bool active;
 	} In;
 	struct Out {	/* -> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} Out;
 	struct A {	/* -A+ */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 		double value;
 	} A;
 	struct C {	/* -C<cpt> */
-		GMT_BOOLEAN active;
+		bool active;
 		char *file;
 	} C;
 	struct D {	/* -D[i|o] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} D;
 	struct E {	/* -E<nlevels> */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM levels;
+		bool active;
+		unsigned int levels;
 	} E;
 	struct F {	/* -F[R|r|h|c] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM model;
+		bool active;
+		unsigned int model;
 	} F;
 	struct I {	/* -I */
-		GMT_BOOLEAN active;
+		bool active;
 	} I;
 	struct L {	/* -L<min_limit>/<max_limit> */
-		GMT_BOOLEAN active;
+		bool active;
 		double min, max;
 	} L;
 	struct M {	/* -M */
-		GMT_BOOLEAN active;
+		bool active;
 	} M;
 	struct N {	/* -N */
-		GMT_BOOLEAN active;
+		bool active;
 	} N;
 	struct Q {	/* -Q[i|o] */
-		GMT_BOOLEAN active;
-		COUNTER_MEDIUM mode;
+		bool active;
+		unsigned int mode;
 	} Q;
 	struct S {	/* -S<z_start>/<z_stop>/<z_inc> */
-		GMT_BOOLEAN active;
+		bool active;
 		double low, high, inc;
 		char *file;
 	} S;
 	struct T {	/* -T<kind> */
-		GMT_BOOLEAN active;
-		GMT_LONG kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
+		bool active;
+		int kind; /* -1 symmetric +-zmin, +1 +-zmax, -2 = +-Minx(|zmin|,|zmax|), +2 = +-Max(|zmin|,|zmax|), 0 = min to max [Default] */
 	} T;
 	struct W {	/* -W */
-		GMT_BOOLEAN active;
+		bool active;
 	} W;
 	struct Z {	/* -Z */
-		GMT_BOOLEAN active;
+		bool active;
 	} Z;
 };
 
@@ -103,7 +103,7 @@ void *New_grd2cpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 
 	C = GMT_memory (GMT, NULL, 1, struct GRD2CPT_CTRL);
 
-	/* Initialize values whose defaults are not 0/FALSE/NULL */
+	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
@@ -115,7 +115,7 @@ void Free_grd2cpt_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-GMT_LONG GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
+int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -156,7 +156,7 @@ GMT_LONG GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, GMT_LONG level)
 	return (EXIT_FAILURE);
 }
 
-GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -164,7 +164,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	COUNTER_MEDIUM n_errors = 0, n_files[2] = {0, 0};
+	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	char kind;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -173,7 +173,7 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				Ctrl->In.active = TRUE;
+				Ctrl->In.active = true;
 				n_files[GMT_IN]++;
 				break;
 			case '>':	/* Got named output file */
@@ -183,28 +183,28 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Sets transparency */
-				Ctrl->A.active = TRUE;
+				Ctrl->A.active = true;
 				if (opt->arg[0] == '+') Ctrl->A.mode = 1;
 				Ctrl->A.value = 0.01 * atof (&opt->arg[Ctrl->A.mode]);
 				break;
 			case 'C':	/* Get cpt table */
-				Ctrl->C.active = TRUE;
+				Ctrl->C.active = true;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set fore/back-ground to match end-colors */
-				Ctrl->D.active = TRUE;
+				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
 			case 'E':	/* Use n levels */
-				Ctrl->E.active = TRUE;
+				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Set color model for output */
-				Ctrl->F.active = TRUE;
+				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->F.model = GMT_RGB + GMT_NO_COLORNAMES; break;
 					case 'h': Ctrl->F.model = GMT_HSV; break;
@@ -213,37 +213,37 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 				}
 				break;
 			case 'I':	/* Reverse scale */
-				Ctrl->I.active = TRUE;
+				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Limit data range */
-				Ctrl->L.active = TRUE;
+				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: Cannot decode limits\n");
 					n_errors++;
 				}
 				break;
 			case 'M':	/* Override fore/back/NaN using GMT defaults */
-				Ctrl->M.active = TRUE;
+				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not write F/B/N colors */
-				Ctrl->N.active = TRUE;
+				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Logarithmic data */
-				Ctrl->Q.active = TRUE;
+				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
 					Ctrl->Q.mode = 1;
 				break;
 			case 'S':	/* Sets sample range */
-				Ctrl->S.active = TRUE;
+				Ctrl->S.active = true;
 				if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Cannot decode values\n");
 					n_errors++;
 				}
 				break;
 			case 'T':	/* Force symmetry */
-				Ctrl->T.active = TRUE;
+				Ctrl->T.active = true;
 				kind = '\0';
 				if (sscanf (opt->arg, "%c", &kind) != 1) {
 					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Cannot decode option\n");
@@ -261,10 +261,10 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 				}
 				break;
 			case 'W':	/* Do not interpolate colors */
-				Ctrl->W.active = TRUE;
+				Ctrl->W.active = true;
 				break;
 			case 'Z':	/* Continuous colors */
-				Ctrl->Z.active = TRUE;
+				Ctrl->Z.active = true;
 				break;
 
 			default:	/* Report bad options */
@@ -287,13 +287,13 @@ GMT_LONG GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, st
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grd2cpt_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
+int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	COUNTER_LARGE ij, k, ngrd = 0, nxyg, nfound, ngood;
-	COUNTER_MEDIUM row, col, j, cpt_flags = 0;
-	GMT_LONG signed_levels;
+	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
+	unsigned int row, col, j, cpt_flags = 0;
+	int signed_levels;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	GMT_BOOLEAN error = FALSE;
+	bool error = false;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 
@@ -332,7 +332,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}
 	else {	/* No table specified; set default rainbow table */
-		Ctrl->C.active = TRUE;
+		Ctrl->C.active = true;
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
@@ -439,7 +439,7 @@ GMT_LONG GMT_grd2cpt (struct GMTAPI_CTRL *API, GMT_LONG mode, void *args)
 
 	/* Decide how to make steps in z.  */
 	if (Ctrl->S.active) {	/* Use predefined levels and interval */
-		COUNTER_MEDIUM i, j;
+		unsigned int i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
 		Ctrl->E.levels += lrint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
