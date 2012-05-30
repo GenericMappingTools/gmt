@@ -224,7 +224,7 @@ int GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ctrl, 
 
 int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	unsigned int col, row, inside, stage, n_stages, registration;
+	unsigned int col, row, inside, stage, n_stages, registration, n_vals;
 	int retval;
 	bool error = false;
 	
@@ -356,28 +356,28 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 				break;
 			case PM_DLAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = grd_y[row] - GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 				break;
 			case PM_LAT:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = GMT_lat_swap (GMT, lat * R2D, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 				break;
 			case PM_DLON:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = grd_x[col] - lon * R2D;
 				if (fabs (value) > 180.0) value = copysign (360.0 - fabs (value), -value);
 				break;
 			case PM_LON:	/* Compute latitude where this point was formed in the model */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = lon * R2D;
 				break;
 			case PM_DIST:	/* Compute distance between node and point of origin at ridge */
 				lon = grd_x[col] * D2R;	lat = grd_yc[row] * D2R;
-				(void)spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
+				n_vals = spotter_backtrack (GMT, &lon, &lat, &age, 1, p, n_stages, 0.0, 0.0, 0, NULL, NULL);
 				value = GMT_distance (GMT, grd_x[col], grd_yc[row], lon * R2D, lat * R2D) * GMT->current.proj.DIST_KM_PR_DEG;
 				break;
 		}

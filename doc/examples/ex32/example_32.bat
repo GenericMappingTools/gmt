@@ -26,7 +26,7 @@ REM The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_A
 REM We make an gradient grid as well, which we will use to "illuminate" the flag.
 
 REM grdcut W020N90.DEM -Reuflag.nc -Gtopo.nc=ns
-grdgradient topo.nc -E315/20/0.9/0.4/0.8/20 -Gillum.nc -Ne0.6
+grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
 
 REM The color map assigns "Reflex Blue" to the lower half of the 0-255 range and "Yellow" to the upper half.
 echo 0   0/51/153   127 0/51/153   > euflag.cpt
