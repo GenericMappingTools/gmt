@@ -79,7 +79,7 @@ void GMT_chop (char *string) {
 		*p = '\0';
 }
 
-void GMT_strstrip(char *string, int strip_leading) {
+void GMT_strstrip(char *string, bool strip_leading) {
 	/* Strip leading and trailing whitespace from string */
 	char *start = string;
 	char *end;
