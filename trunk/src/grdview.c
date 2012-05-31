@@ -548,7 +548,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 
 int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool get_contours, bad, good, error = false, pen_set, begin, saddle, drape_resample = false;
+	bool get_contours, bad, good, error = false, pen_set, begin, saddle, drape_resample = false, nothing_inside = false;
 	unsigned int c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
@@ -636,7 +636,12 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Determine the wesn to be used to read the grid file */
 
-	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR)) {
+	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR))
+		nothing_inside = true;
+	else if (Ctrl->I.active && !GMT_grd_setregion (GMT, Intens->header, wesn, BCR_BILINEAR))
+		nothing_inside = true;
+	
+	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -709,7 +714,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
-		Z_orig = GMT_duplicate_grid (GMT, Z, true);	/* Original copy of grid used for contouring */
+		Z_orig = GMT_duplicate_grid (GMT, Z, true);	/* Original copy of Z grid used for contouring */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Trace and bin contours...\n");
 		for (c = 0; c < P->n_colors+1; c++) {	/* For each color change */
 
@@ -755,28 +760,22 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Remove temporary variables */
 
 		GMT_free (GMT, edge);
-		GMT_free_grid (GMT, &Z_orig, true);
 
-		/* Go back to beginning and reread since grd has been destroyed */
+		/* Destroy original grid and use the copy in Z_orig instead */
 
 		if (Ctrl->G.active) {
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Drape[0]) != GMT_OK) {
 				Return (API->error);
 			}
-			if ((Drape[0] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, Ctrl->G.file[0], NULL)) == NULL) {	/* Get drape data*/
-				Return (API->error);
-			}
-			Z = Drape[0];
+			Drape[0] = Z_orig;
 		}
 		else {
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Topo) != GMT_OK) {
 				Return (API->error);
 			}
-			if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, Ctrl->In.file, NULL)) == NULL) {
-				Return (API->error);
-			}
-			Z = Topo;
+			Topo = Z_orig;
 		}
+		Z = Z_orig;
 		GMT_change_grdreg (GMT, Z->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration, again */
 	}
 

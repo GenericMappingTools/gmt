@@ -348,7 +348,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 
 int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool error = false, done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false;
+	bool error = false, done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, nothing_inside = false;
 	unsigned int k, nx = 0, ny = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	unsigned int colormask_offset = 0, try;
 	uint64_t node_RGBA = 0;		/* uint64_t for the RGB(A) image array. */
@@ -528,7 +528,12 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* Determine the wesn to be used to read the grid file; or bail if file is outside -R */
 
-	if (!GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant)) {
+	if (!GMT_grd_setregion (GMT, header_work, wesn, need_to_project * GMT->common.n.interpolant))
+		nothing_inside = true;
+	else if (Ctrl->I.active && !GMT_grd_setregion (GMT, Intens_orig->header, wesn, need_to_project * GMT->common.n.interpolant))
+		nothing_inside = true;
+
+	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);

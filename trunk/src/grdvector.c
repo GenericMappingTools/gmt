@@ -356,7 +356,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Determine the wesn to be used to read the grid file */
 
-	if (!GMT_grd_setregion (GMT, Grid[0]->header, wesn, BCR_BILINEAR)) {
+	if (!GMT_grd_setregion (GMT, Grid[0]->header, wesn, BCR_BILINEAR) || !GMT_grd_setregion (GMT, Grid[1]->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
