@@ -34,7 +34,6 @@ fi
 LANG=C
 
 # Define variables that are needed *within* test scripts
-GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 EXTRA_FONTS_DIR="@CMAKE_CURRENT_SOURCE_DIR@/ex31/fonts"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"

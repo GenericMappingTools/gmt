@@ -24,7 +24,6 @@ shift
 LANG=C
 
 # Define variables that are needed *within* test scripts
-GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 GMT_VERSION="@GMT_PACKAGE_VERSION_WITH_SVN_REVISION@"
 GSHHG_DIR="@GSHHG_PATH@"
