@@ -5857,8 +5857,13 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 		GMT_free_table (C, T);
 		return (NULL);
 	}
-	if (T->segment[seg]->n_rows == 0)	/* Last segment was empty; we delete to avoid problems downstream in applications */
+	if (T->segment[seg]->n_rows == 0) {	/* Last segment was empty; we delete to avoid problems downstream in applications */
 		GMT_free (C, T->segment[seg]);
+		if (seg == 0) {	/* Happens when we just read 1 segment header with no data */
+			GMT_free_table (C, T);
+			return (NULL);
+		}
+	}
 	else
 		seg++;
 	T->segment = GMT_memory (C, T->segment, seg, struct GMT_LINE_SEGMENT *);
