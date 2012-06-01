@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-06-01	pwessel
+	* gmt_io.c:		Reading files with one segment header and no data caused a SEGV.
+
 2012-05-31	pwessel
 	* gmt_map.c:		With -R...r and -JE, pscoast could end up trying to paint a
 						block that is outside the rectangular region yet whose projection
