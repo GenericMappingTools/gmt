@@ -6,6 +6,9 @@
 	* gmt_map.c:		With -R...r and -JE, pscoast could end up trying to paint a
 						block that is outside the rectangular region yet whose projection
 						completely contains the region.
+	* gmt_support.c:	In GMT_crossover(), could get near-duplicate crossovers near a
+						node.  Now checks there are no such consecutive duplicates.
+
 2012-05-17	pwessel
 	* grdtrack.c:		Added option -S to stack cross-profiles generated with -C.
 

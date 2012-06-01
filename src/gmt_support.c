@@ -127,7 +127,7 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 #ifdef NEW_DEBUG
 struct MEMORY_ITEM * gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr);
 #else
-uint64_t gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr);
+int64_t gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr);
 #endif
 #endif
 
@@ -7944,6 +7944,11 @@ uint64_t GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], uint64_t *
 					}
 				}
 
+				if (nx > 1 && fabs (X->xnode[0][nx-1] - X->xnode[0][nx-2]) < GMT_CONV_LIMIT && fabs (X->xnode[1][nx-1] - X->xnode[1][nx-2]) < GMT_CONV_LIMIT) {
+					/* Two consecutive crossing of the same node or really close, skip this repeat crossover */
+					nx--;
+					GMT_report (C, GMT_MSG_DEBUG, "Warning - Two consecutive crossovers appear to be identical, the 2nd one was skipped\n");
+				}
 				if (nx == nx_alloc) {
 					nx_alloc <<= 1;
 					gmt_x_alloc (C, X, nx_alloc, false);
@@ -9267,11 +9272,12 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, char *name,
 	M->n_freed++;
 }
 
-uint64_t gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr) {
+int64_t gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *ptr) {
 	/* Brute force linear search for now - if useful we'll do linked lists or something */
 	uint64_t i = 0;
 	while (i < M->n_ptr && ptr != M->item[i].ptr) i++;	/* Loop over array of known pointers */
-	return (i == M->n_ptr ? -1 : i);
+	if (i == M->n_ptr) return (-1);
+	return (i);
 }
 
 void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Called at end of GMT_end() */
