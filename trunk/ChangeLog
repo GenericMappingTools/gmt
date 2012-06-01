@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-05-31	pwessel
+	* gmt_map.c:		With -R...r and -JE, pscoast could end up trying to paint a
+						block that is outside the rectangular region yet whose projection
+						completely contains the region.
 2012-05-17	pwessel
 	* grdtrack.c:		Added option -S to stack cross-profiles generated with -C.
 

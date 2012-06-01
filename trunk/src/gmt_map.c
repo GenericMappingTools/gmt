@@ -975,8 +975,9 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, uint64_t
 	 * and returns the number of points to be used for plotting (in x,y units) */
 
 	uint64_t i, out, n;
-	uint64_t total_nx = 0, polygon;
+	uint64_t total_nx = 0;
 	int64_t out_x, out_y, np2;
+	bool polygon;
 	double *xx = NULL, *yy = NULL;
 
 	/* First check for trivial cases:  All points outside or all points inside */
@@ -1015,6 +1016,13 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, uint64_t
 					GMT_free (C, *y);
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
+			}
+			else if (C->common.R.oblique && C->current.proj.projection == GMT_AZ_EQDIST && n <= 5 && !strcmp (C->init.module_name, "GMT_pscoast")) {
+				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
+				   This results in a rectangular closed polygon after the clipping. */
+				n = 0;
+				GMT_free (C, *x);
+				GMT_free (C, *y);
 			}
 		}
 	}
