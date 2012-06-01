@@ -336,7 +336,7 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS dbase gshhs imgsrc meca mgd77 potential segy sph spotter
+set (GMT_SUPPL_DIRS dbase gshhg imgsrc meca mgd77 potential segy sph spotter
 	x2sys)
 
 # other supplement directories (not included in gmtlib)
