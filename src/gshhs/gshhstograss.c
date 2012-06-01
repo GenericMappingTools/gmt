@@ -1,6 +1,6 @@
 /*	$Id$
 *
-* PROGRAM:   gshhstograss.c
+* PROGRAM:   gshhgtograss.c
 * AUTHOR:    Simon Cox (simon@ned.dem.csiro.au),
 *            Paul Wessel (wessel@soest.hawaii.edu),
 *			 Markus Metz (markus_metz@gmx.de)
@@ -11,12 +11,12 @@
 * VERSION:	
 *		1.2 18-MAY-1999: Explicit binary open for DOS
 * 		1.4 05-SEP-2000: Swab done automatically
-*		1.5 11-SEP-2004: Updated to work with GSHHS database v1.3
-*		1.6 02-MAY-2006: Updated to work with GSHHS database v1.4
+*		1.5 11-SEP-2004: Updated to work with GSHHG database v1.3
+*		1.6 02-MAY-2006: Updated to work with GSHHG database v1.4
 *			05-SEP-2007: Removed reliance on getop and made changes
 *				    	so it will compile under Windows
 * 		1.7 08-APR-2008: 
-*			level no longer only 1, see bug fix for gshhs 1.7
+*			level no longer only 1, see bug fix for gshhg 1.7
 *			lat lon swapped for output, was wrong
 *			added two category entries in two layers for each line
 *			layer 1: cat = level, allows creation of a short table
@@ -24,16 +24,16 @@
 *			layer 2: cat = unique polygon ID, with level nr, 
 *                   in case unique IDs for each line are wanted
 *			improved acknowledging of user-defined extends
-*		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
+*		1.8 31-MAR-2007: Updated to deal with latest GSHHG database (1.5)
 *		1.9 27-AUG-2007: Handle line data as well as polygon data
-*		1.10 15-FEB-2008: Updated to deal with latest GSHHS database (1.6)
+*		1.10 15-FEB-2008: Updated to deal with latest GSHHG database (1.6)
 *		1.11 15-JUN-2009: Now contains information on container polygon,
 *				the polygons ancestor in the full resolution, and
 *				a flag to tell if a lake is a riverlake.
-*				Updated to deal with latest GSHHS database (2.0)
+*				Updated to deal with latest GSHHG database (2.0)
 *		1.12 24-MAY-2010: Deal with 2.1 format.
 *		1.13 1-JUL-2011: Now contains improved area information (2.2.0),
-*				 and revised greenwhich flags (now 2-bit; see gshhs.h).
+*				 and revised greenwhich flags (now 2-bit; see gshhg.h).
 *
 *	This program is free software; you can redistribute it and/or modify
 *	it under the terms of the GNU Lesser General Public License as published by
@@ -45,7 +45,7 @@
 *	GNU Lesser General Public License for more details.
 */
 
-#include "gshhs.h"
+#include "gshhg.h"
 #include <string.h>
 
 #ifdef HAVE_SYS_TYPES_H_
@@ -78,7 +78,7 @@ int main (int argc, char **argv)
 	size_t n_read;
 	int max = 270000000, flip, level, version, greenwich, shorelines;
 	struct POINT p;
-	struct GSHHS h;
+	struct GSHHG h;
 	unsigned k, max_id = 0;
 	time_t tloc;
 
@@ -207,22 +207,22 @@ int main (int argc, char **argv)
 	fprintf(att2_fp,"echo \"\"\n");
 	fprintf(att2_fp,"echo \"Inserting level numbers, might take some time...\"\n");
 
-	/* read lines from binary gshhs database */
-	n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);
+	/* read lines from binary gshhg database */
+	n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);
 	version = (h.flag >> 8) & 255;
-	flip = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
+	flip = (version != GSHHG_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
 	while (n_read == 1) {
 
 		if (flip)
-			bswap_GSHHS_struct (&h);
+			bswap_GSHHG_struct (&h);
 		level = h.flag & 255;
 		version = (h.flag >> 8) & 255;
 		greenwich = (h.flag >> 16) & 3;
-		w = h.west * GSHHS_SCL;
-		e = h.east * GSHHS_SCL;
-		s = h.south * GSHHS_SCL;
-		n = h.north * GSHHS_SCL;
+		w = h.west * GSHHG_SCL;
+		e = h.east * GSHHG_SCL;
+		s = h.south * GSHHG_SCL;
+		n = h.north * GSHHG_SCL;
 
 		if( ( w <= maxx && e >= minx ) && ( s <= maxy && n >= miny ) ){
 			fprintf(ascii_fp,"L %d 2\n",h.n);
@@ -238,9 +238,9 @@ int main (int argc, char **argv)
 				}
 				if (flip)
 					bswap_POINT_struct (&p);
-				lon = p.x * GSHHS_SCL;
+				lon = p.x * GSHHG_SCL;
 				if ((greenwich & 1) && p.x > max) lon -= 360.0;
-				lat = p.y * GSHHS_SCL;
+				lat = p.y * GSHHG_SCL;
 				fprintf(ascii_fp," %f %f\n",lon,lat);
 			}
 			/* add categories in two layers
@@ -256,7 +256,7 @@ int main (int argc, char **argv)
 		}
 		max = 180000000;	/* Only Eurasia needs 270 */
 
-		n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);
+		n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);
 	}
 	
 	/* don't print level names for borders and rivers */
@@ -285,12 +285,12 @@ int main (int argc, char **argv)
 
 void help_msg (char *progname) {
 
-	fprintf (stderr,"gshhs to GRASS ASCII export tool\n\n");
-	fprintf (stderr, "  %s reads *.b files of the GSHHS database and\n  writes GRASS compatible ascii vector format files.\n\n", progname);
+	fprintf (stderr,"gshhg to GRASS ASCII export tool\n\n");
+	fprintf (stderr, "  %s reads *.b files of the GSHHG database and\n  writes GRASS compatible ascii vector format files.\n\n", progname);
 	fprintf (stderr, "  The resulting GRASS ASCII vector file is called\n  grass_[gshhs|wdb_borders|wdb_rivers]_[f|h|i|l|c].ascii\n\n");
 	fprintf (stderr, "  Scripts to import attributes to GRASS are saved as\n  grass_[gshhs|wdb_borders|wdb_rivers]_[f|h|i|l|c]_layer_[1|2].sh\n\n");
 	fprintf (stderr, "  Layer 1: cat = level\n  Attribute table has level nr and level label, not produced for\n  borders and rivers.\n");
-	fprintf (stderr, "  Layer 2: cat = polygon ID as in GSHHS database\n  Attribute table has polygon id, level nr and, for shorelines, level label.\n\n");
+	fprintf (stderr, "  Layer 2: cat = polygon ID as in GSHHG database\n  Attribute table has polygon id, level nr and, for shorelines, level label.\n\n");
 	fprintf (stderr, "  Import the *.ascii file into a GRASS database using v.in.ascii.\n");
 	fprintf (stderr, "  If the GRASS vector has a name different from\n  [gshhs|wdb_borders|wdb_rivers]_[f|h|i|l|c].b,\n  change the variable GRASS_VECTOR at the beginning of the scripts.\n");
 	fprintf (stderr, "  Set permission to execute the scripts, run script for desired layer.\n\n");
@@ -299,11 +299,11 @@ void help_msg (char *progname) {
 
 void usage_msg (char *progname) {
 
-	fprintf (stderr,"gshhs to GRASS ASCII export tool\n");
+	fprintf (stderr,"gshhg to GRASS ASCII export tool\n");
 	fprintf (stderr, "usage:  %s [-h] -i <input>.b [-x minx] [-X maxx] [-y miny] [-Y maxy]\n\n", progname);
 	fprintf (stderr, "Arguments to %s:\n", progname);
 	fprintf (stderr, " -h            print description and help\n");
-	fprintf (stderr, " -i <input>.b  input file from GSHHS database\n");
+	fprintf (stderr, " -i <input>.b  input file from GSHHG database\n");
 	fprintf (stderr, " -x minx       western limit in decimal degrees\n");
 	fprintf (stderr, " -X maxx       eastern limit in decimal degrees\n");
 	fprintf (stderr, " -y miny       southern limit in decimal degrees\n");
