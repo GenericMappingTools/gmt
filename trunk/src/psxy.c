@@ -27,8 +27,6 @@
 #include "pslib.h"
 #include "gmt.h"
 
-char * gmt_get_char_ptr (char **ptr);
-
 /* Control structure for psxy */
 
 struct PSXY_CTRL {
@@ -430,7 +428,10 @@ int GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct GMT_OP
 					j++;
 					if (opt->arg[j] == '-') {Ctrl->E.mode = 1; j++;}
 					if (opt->arg[j] == '+') {Ctrl->E.mode = 2; j++;}
-					if (opt->arg[j]) GMT_getpen (GMT, &opt->arg[j], &Ctrl->E.pen);
+					if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->E.pen)) {
+						GMT_pen_syntax (GMT, 'E', "sets error bar pen attributes");
+						n_errors++;
+					}
 				}
 				break;
 			case 'G':		/* Set fill for symbols or polygon */

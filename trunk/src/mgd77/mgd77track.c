@@ -441,15 +441,26 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
-				GMT_getfill (GMT, mc, &Ctrl->T.marker[mrk].s);
+				if (GMT_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad fill specification for -T\n");
+					GMT_fill_syntax (GMT, 'T', " ");
+					n_errors++;
+				}
 				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by GMT_getpen */
 				GMT_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
-				GMT_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f);
+				if (GMT_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
+					GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad fill specification for -T\n");
+					GMT_fill_syntax (GMT, 'T', " ");
+					n_errors++;
+				}
 				break;
 
 			case 'W':
 				Ctrl->W.active = true;
-				GMT_getpen (GMT, opt->arg, &Ctrl->W.pen);
+				if (GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
+					GMT_pen_syntax (GMT, 'W', " ");
+					n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */

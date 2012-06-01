@@ -271,7 +271,6 @@ EXTERN_MSC int GMT_getdefpath (struct GMT_CTRL *C, char get, char **path);
 EXTERN_MSC void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label);
 EXTERN_MSC void GMT_check_lattice (struct GMT_CTRL *C, double *inc, bool *pixel, bool *active);
 EXTERN_MSC int GMT_check_binary_io (struct GMT_CTRL *C, unsigned int n_req);
-EXTERN_MSC bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value);
 EXTERN_MSC char *GMT_putparameter (struct GMT_CTRL *C, char *keyword);
 EXTERN_MSC void GMT_set_pad (struct GMT_CTRL *C, unsigned int npad);
 EXTERN_MSC int GMT_get_ellipsoid (struct GMT_CTRL *C, char *name);
@@ -374,7 +373,7 @@ EXTERN_MSC uint64_t GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *Grid, uns
 EXTERN_MSC int GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefix, char *format);
 EXTERN_MSC int GMT_get_index (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value);
 EXTERN_MSC int GMT_get_rgb_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value, double *rgb);
-EXTERN_MSC int GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill);
+EXTERN_MSC bool GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill);
 EXTERN_MSC bool GMT_getinc (struct GMT_CTRL *C, char *line, double inc[]);
 EXTERN_MSC int GMT_getincn (struct GMT_CTRL *C, char *line, double inc[], unsigned int n);
 EXTERN_MSC int GMT_getfont (struct GMT_CTRL *C, char *line, struct GMT_FONT *F);

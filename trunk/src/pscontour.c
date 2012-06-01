@@ -598,9 +598,10 @@ int GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl, str
 int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int add;
-	bool two_only = false, make_plot, error = false, skip = false;
+	bool two_only = false, make_plot, error = false, skip = false, is_closed;
 	
-	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, closed, c, cont_counts[2] = {0, 0}, last_entry, last_exit, fmt[3] = {0, 0, 0};
+	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
+	unsigned int last_entry, last_exit, fmt[3] = {0, 0, 0};
 	unsigned int np, k, i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
@@ -1205,7 +1206,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 				this_c = this_c->next;
 				GMT_free (GMT, last_c);	/* Free last item */
 
-				closed = !GMT_polygon_is_open (GMT, xp, yp, n);
+				is_closed = !GMT_polygon_is_open (GMT, xp, yp, n);
 
 				if (current_contour != cont[c].val) {
 					if (make_plot) {
@@ -1227,6 +1228,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				if (Ctrl->D.active) {
 					size_t count;
+					int closed;
 					double *xtmp = NULL, *ytmp = NULL;
 					/* Must first apply inverse map transform */
 					xtmp = GMT_memory (GMT, NULL, n, double);
@@ -1234,6 +1236,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 					for (count = 0; count < n; count++) GMT_xy_to_geo (GMT, &xtmp[count], &ytmp[count], xp[count], yp[count]);
 					S = GMT_dump_contour (GMT, xtmp, ytmp, n, cont[c].val);
 					/* Select which table this segment should be added to */
+					closed = (is_closed) ? 1 : 0;
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t n_old_alloc = n_seg_alloc[tbl];
@@ -1245,15 +1248,15 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 					D->table[tbl]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLES && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, closed, cont_counts);
+						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENTS)
-						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, closed, cont_counts);
+						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cont[c].val, is_closed, cont_counts);
 					GMT_free (GMT, xtmp);
 					GMT_free (GMT, ytmp);
 				}
 
 				if (make_plot) {
-					if (cont[c].do_tick && closed) {	/* Must store the entire contour for later processing */
+					if (cont[c].do_tick && is_closed) {	/* Must store the entire contour for later processing */
 						if (n_save == n_save_alloc) save = GMT_malloc (GMT, save, n_save, &n_save_alloc, struct SAVE);
 						n_alloc = 0;
 						GMT_malloc2 (GMT, save[n_save].x, save[n_save].y, n, &n_alloc, double);
@@ -1265,7 +1268,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 						save[n_save].cval = cont[c].val;
 						n_save++;
 					}
-					GMT_hold_contour (GMT, &xp, &yp, n, cont[c].val, cont_label, cont[c].type, cont[c].angle, closed, &Ctrl->contour);
+					GMT_hold_contour (GMT, &xp, &yp, n, cont[c].val, cont_label, cont[c].type, cont[c].angle, is_closed, &Ctrl->contour);
 				}
 
 				GMT_free (GMT, xp);

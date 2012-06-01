@@ -27,8 +27,6 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options);
-
 /* Control structure for gmtset */
 
 struct GMTSET_CTRL {

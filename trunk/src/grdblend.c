@@ -40,9 +40,9 @@
 
 #include "gmt.h"
 
-int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
-int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, int magic);
-int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
+EXTERN_MSC int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, int magic);
+EXTERN_MSC int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
 
 #define BLEND_UPPER	0
 #define BLEND_LOWER	1
