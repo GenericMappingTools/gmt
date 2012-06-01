@@ -5312,7 +5312,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 	 * src/share in its destination dir. */
 
 	/* Only true, when we are running in a subdir of GMT_BINARY_DIR_SRC_DEBUG: */
-	bool running_in_bindir_src = !strncmp (C->init.runtime_bindir, GMT_BINARY_DIR_SRC_DEBUG, sizeof(GMT_BINARY_DIR_SRC_DEBUG));
+	bool running_in_bindir_src = !strncmp (C->init.runtime_bindir, GMT_BINARY_DIR_SRC_DEBUG, strlen(GMT_BINARY_DIR_SRC_DEBUG));
 #endif
 
 	/* Determine C->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
