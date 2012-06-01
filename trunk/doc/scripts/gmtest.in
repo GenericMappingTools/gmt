@@ -44,7 +44,6 @@ getrect () {
 LANG=C
 
 # Define variables that are needed *within* test scripts
-GMT_BINARY_DIR="@GMT_BINARY_DIR@"
 GMT_SOURCE_DIR="@GMT_SOURCE_DIR@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/doc/scripts"
