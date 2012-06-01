@@ -63,7 +63,6 @@ int main (int argc, char *argv[]) {
 	}
 
 	if (argc == 2 && !strcmp (argv[1], "--help")) {
-		fprintf (stderr, "Program - Purpose of Program\n\n");
 		gmt_module_show_all();
 		return EXIT_FAILURE;
 	}
