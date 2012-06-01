@@ -5217,9 +5217,8 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	GMT_memset (C->common.b.ncol, 2, int);
 
 	*Ccopy = Csave;				/* Pass back out for safe-keeping by the module until GMT_end_module is called */
-	C->init.module_name = mod_name;		/* Current module in charge */
 	C->init.progname = (C->hidden.func_level == 1) ? &mod_name[4] : mod_name;		/* Either top-level (program) or module call */
-	
+
 	return (C);
 }
 
@@ -8132,7 +8131,6 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	 * returns the GMT structure is restored to its original values.
 	 */
 
-	char *module_name = "GMT_begin";
 	char path[GMT_TEXT_LEN256];
 	struct GMT_CTRL *C = NULL;
 
@@ -8164,7 +8162,6 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 #endif
 
 	C = New_GMT_Ctrl (session);		/* Allocate and initialize a new common control structure */
-	C->init.module_name = module_name;		/* This will be reset by the GMT modules we call */
 
 	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
 		C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
@@ -8294,7 +8291,7 @@ int GMT_report_func (struct GMT_CTRL *C, unsigned int level, char *source_line, 
 			strrchr (source_line, '\\') : source_line - 1) + 1;
 #endif
 	snprintf (message, GMT_BUFSIZ, "%s, %s, %s: ",
-			C->init.progname, C->init.module_name, source_line_basename);
+			C->init.progname, C->init.module.name, source_line_basename);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */

@@ -31,7 +31,7 @@
  * Version:	5 API
  */
 
-#include "gmt_potential.h"
+#include "gmt.h"
 
 struct REDPOL_CTRL {
 	struct In {

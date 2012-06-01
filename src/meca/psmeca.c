@@ -20,7 +20,7 @@ PostScript code is written to stdout.
  */
 
 #include "pslib.h"      /* to have pslib environment */
-#include "gmt_meca.h"	/* to have gmt_meca supplements */
+#include "gmt.h"
 
 #include "meca.h"
 #include "utilmeca.h"

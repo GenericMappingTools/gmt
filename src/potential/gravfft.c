@@ -25,7 +25,7 @@
  *
  * */
 
-#include "gmt_potential.h"
+#include "gmt.h"
 
 struct GRAVFFT_CTRL {
 	unsigned int n_par;

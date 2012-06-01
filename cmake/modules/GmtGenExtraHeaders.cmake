@@ -226,8 +226,6 @@ macro (gen_gmt_dimensions_h)
 	list (LENGTH _file_lines GMT_N_GRD_FORMATS)
 	file2list (_file_lines gmt_keycases.h)
 	list (LENGTH _file_lines GMT_N_KEYS)
-	file2list (_file_lines gmt_prognames.h)
-	list (LENGTH _file_lines GMT_N_PROGRAMS)
 
 	# gmt_dimensions.h
 	configure_file (${GMT_SRC}/src/gmt_dimensions.h.in gmt_dimensions.h)

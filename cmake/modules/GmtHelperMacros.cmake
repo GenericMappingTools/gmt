@@ -22,9 +22,6 @@
 # add_depend_to_target (TARGET DEPEND [ DEPEND [ DEPEND ... ]])
 # add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 # add_file_to_cached_list (LIST [ FILE [ FILE ... ]])
-# gmt_set_api_header (API_HEADER FUNCTIONS)
-# gen_gmt_progpurpose.h (VARIABLE FILE [ FILE... ])
-# gen_gmt_prog_names_cases_h (GMT_PROGS)
 # get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
 
@@ -86,78 +83,6 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 			set (${_LIST} "" CACHE INTERNAL "Global list of files cleared")
 		endif (_files)
 	endmacro (ADD_FILE_TO_CACHED_LIST)
-
-	# gmt_set_api_header (API_HEADER FUNCTIONS)
-	# example: gmt_set_api_header(GMT_MECA_API_H "${GMT_MECA_PROGS_SRCS}")
-	macro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
-		string (REPLACE ".c" "" _functions "${_FUNCTIONS};${ARGN}")
-		if (NOT GMT_SUPPL_STRING)
-			tag_from_current_source_dir (GMT_SUPPL_STRING)
-		endif (NOT GMT_SUPPL_STRING)
-		set (${_API_HEADER} gmt_${GMT_SUPPL_STRING}.h)
-		string (TOUPPER ${GMT_SUPPL_STRING} GMT_SUPPL_STRING_UPPER)
-		set (GMT_API_FUNCTION_LIST) # reset list
-		foreach (_function ${_functions})
-			set (_api_function "EXTERN_MSC int GMT_${_function} (struct GMTAPI_CTRL *API, int mode, void *args)")
-			list (APPEND GMT_API_FUNCTION_LIST ${_api_function})
-		endforeach (_function)
-		string (REPLACE ";" ";\n" GMT_API_FUNCTION_LIST "${GMT_API_FUNCTION_LIST}")
-		# create api header file from template
-		configure_file (${GMT_SOURCE_DIR}/src/gmt_api.h.in
-			gmt_${GMT_SUPPL_STRING}.h)
-		set (GMT_SUPPL_STRING) # reset GMT_SUPPL_STRING
-	endmacro (GMT_SET_API_HEADER _API_HEADER _FUNCTIONS)
-
-	# gen_gmt_progpurpose.h (VARIABLE FILE [ FILE... ])
-  # example: gen_gmt_progpurpose_h (GMT_PROG_PURPOSE ${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS})
-	macro (gen_gmt_progpurpose_h _PURPOSES _FILE)
-		grep (
-			"%s [API] -"
-			_raw_purpose_list
-			${_FILE} ${ARGN}
-			LITERALLY
-			)
-		list_regex_replace (
-			"^[ \t]*GMT_message \\\\(GMT, ([^ ]+)[^-]*(.*#Bn)#Bn.+"
-			"\\\\1 \\\\2\""
-			_purpose_list ${_raw_purpose_list})
-		string_unescape (_purpose_list "${_purpose_list}" NOESCAPE_SEMICOLON)
-		string (REPLACE ";" "\n  " _purpose_list "${_purpose_list}")
-		set (${_PURPOSES} "${_purpose_list}")
-		configure_file (gmt_progpurpose.h.in gmt_progpurpose.h @ONLY)
-	endmacro (gen_gmt_progpurpose_h _PURPOSES _FILE)
-
-	# gen_gmt_prog_names_cases_h (GMT_PROGS)
-	# gen_gmt_prog_names_cases_h (${_allGMT_PROGS})
-	macro (gen_gmt_prog_names_cases_h GMT_PROGS)
-		# gmt_prognames.h
-		list_regex_replace (
-			"^([^# \t:]+):([^ \t]+)"
-			"{\"\\\\1\", \\\\2}"
-			_prognames ${GMT_PROGS} ${ARGN}
-			MATCHES_ONLY)
-		list (REMOVE_DUPLICATES _prognames)
-		string (REPLACE ";" ",\n" _prognames "${_prognames}")
-		file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_prognames.h "${_prognames}\n")
-
-		# gmt_progcases.h
-		list_regex_replace (
-			"^([^# \t:]+):([^ \t]+)"
-			"\t\t\tfunc = (ptr_to_gmt_module)GMT_\\\\1#S\n\t\t\t*mode = \\\\2#S\n\t\t\tbreak#S"
-			_raw_progcases ${GMT_PROGS} ${ARGN}
-			MATCHES_ONLY)
-		list (REMOVE_DUPLICATES _raw_progcases)
-		set (_progcases)
-		set (_casenum 0)
-		foreach (_case ${_raw_progcases})
-			list (APPEND _progcases "\t\tcase ${_casenum}:\n${_case}")
-			math (EXPR _casenum "${_casenum} + 1")
-		endforeach (_case ${_raw_progcases})
-		string (REPLACE ";" "\n" _progcases "${_progcases}")
-		string_unescape (_progcases "${_progcases}" NOESCAPE_SEMICOLON)
-		file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_progcases.h "${_progcases}\n")
-	endmacro (gen_gmt_prog_names_cases_h)
-
 
 	# get_subdir_var (VARIABLE VAR_NAME DIR [ DIR ... ])
 	# example: get_subdir_var (SUB_TARGETS PROGS ${SUB_DIRS})

@@ -33,7 +33,7 @@
  * Version:	5 API
  */
  
-#include "gmt_sph.h"
+#include "gmt.h"
 #include "sph.h"
 
 struct SPHINTERPOLATE_CTRL {

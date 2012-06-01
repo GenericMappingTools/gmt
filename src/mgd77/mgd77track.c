@@ -22,7 +22,7 @@
  */
  
 #include "pslib.h"
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77.h"
 
 #define MGD77TRACK_ANSIZE 0.125

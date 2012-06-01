@@ -53,7 +53,7 @@
  */
 
 #include "gmt_imgsubs.h"
-#include "gmt_imgsrc.h"
+#include "gmt.h"
 #include "common_byteswap.h"
 
 struct IMG2GRD_CTRL {

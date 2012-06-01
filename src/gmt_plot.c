@@ -3662,7 +3662,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strcpy (C->current.ps.map_logo_label, C->init.module_name);
+		strcpy (C->current.ps.map_logo_label, C->init.module.name);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;

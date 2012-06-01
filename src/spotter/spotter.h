@@ -23,8 +23,7 @@
  *
  */
 
-#include "gmt.h"		/* Requires GMT to compile and link */
-#include "gmt_spotter.h"	/* Requires to compile on Win */
+#include "gmt.h" /* Requires GMT to compile and link */
 
 #define SPOTTER_VERSION "1.2"
 #define EQ_RAD 6371.0087714

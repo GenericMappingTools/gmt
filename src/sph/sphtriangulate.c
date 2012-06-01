@@ -30,7 +30,7 @@
  *
  */
  
-#include "gmt_sph.h"
+#include "gmt.h"
 #include "sph.h"
 
 struct SPHTRIANGULATE_CTRL {

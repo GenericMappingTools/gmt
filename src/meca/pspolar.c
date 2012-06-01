@@ -20,7 +20,7 @@
  */
 
 #include "pslib.h"	/* to have pslib environment */
-#include "gmt_meca.h"	/* to have gmt_meca supplements */
+#include "gmt.h"
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 

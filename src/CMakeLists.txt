@@ -105,8 +105,7 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
 # These three lines are temporarily here for the beta release
-set (GMT_PROGS2_SRCS gmtaverage.c)
-set (GMT_PROGSPS2_SRCS testapi.c)
+set (GMT_PROGS2_SRCS gmtaverage.c testapi.c)
 set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testio.c)
 
 # source files
@@ -135,16 +134,14 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	makecpt.c mapproject.c minmax.c nearneighbor.c
 	project.c ps2raster.c sample1d.c spectrum1d.c
 	splitxyz.c surface.c trend1d.c trend2d.c
-	triangulate.c xyz2grd.c)
-list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
-
-set (GMT_PROGSPS_SRCS gmtdefaults.c gmtget.c gmtset.c
+	triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
+	gmtset.c
 	grdcontour.c grdimage.c grdvector.c grdview.c
 	psbasemap.c psclip.c pscoast.c pscontour.c
 	pshistogram.c psimage.c psmask.c psrose.c
 	psscale.c pstext.c pswiggle.c psxy.c psxyz.c
 	pslegend.c)
-list (APPEND GMT_PROGSPS_SRCS ${GMT_PROGSPS2_SRCS})
+list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
 
 # libpslib
 set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
@@ -156,16 +153,14 @@ set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
 	gmtapi_parse.c gshhg_version.c gshhg_version.h
 	common_math.c common_string.c common_runpath.c compat/qsort.c
+	gmt_module.h gmt_module.c gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
-
-set (GMT_LIB_PS_SRCS gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c
-	${GMT_PROGSPS_SRCS})
 
 # dependencies on generated files
 set (GMT_GEN_HDRS gmt_color_rgb.h gmt_colornames.h gmt_datums.h
 	gmt_ellipsoids.h gmt_grdkeys.h gmt_keycases.h
-	gmt_keywords.h gmt_progcases.h gmt_prognames.h gmtapi_errno.h
-	gmtapi_errstr.h gmt_progpurpose.h gmt_config.h
+	gmt_keywords.h gmtapi_errno.h
+	gmtapi_errstr.h gmt_config.h
 	gmtmath.h gmtmath_op.h gmtmath_explain.h
 	grdmath.h grdmath_op.h grdmath_explain.h
 	gmt_dimensions.h
@@ -178,7 +173,7 @@ set (GMT_GEN_HDRS gmt_color_rgb.h gmt_colornames.h gmt_datums.h
 set (GMT_LIBS gmtlib pslib)
 
 # manpages
-string (REPLACE ".c" ".1" GMT_MAN_1 "${GMT_PROGS_SRCS};${GMT_PROGSPS_SRCS}")
+string (REPLACE ".c" ".1" GMT_MAN_1 "${GMT_PROGS_SRCS}")
 list (APPEND GMT_MAN_1 gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 gmtswitch.1)
 set (GMT_MAN_3 pslib.3)
 set (GMT_MAN_5 gmtcolors.5 gmt.conf.5)
@@ -275,7 +270,7 @@ add_custom_command (OUTPUT gmt_dimensions.h
 	-D GMT_SRC=${GMT_SOURCE_DIR}
 	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
 	DEPENDS gmt_media_name.h gmt_pennames.h gmt_unique.h
-	gmt_datums.h gmt_prognames.h gmt_colornames.h gmt_ellipsoids.h
+	gmt_datums.h gmt_colornames.h gmt_ellipsoids.h
 	gmt_grdkeys.h gmt_keycases.h)
 	# depends on cached line numbers from these generated files:
 
@@ -369,7 +364,6 @@ endforeach (_dir)
 add_library (gmtlib
 	${GMT_GEN_HDRS}
 	${GMT_LIB_SRCS}
-	${GMT_LIB_PS_SRCS}
 	${GMT_SUPPL_LIB_SRCS})
 
 target_link_libraries (gmtlib
@@ -410,55 +404,10 @@ endif ()
 string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
 foreach (_gmtprog ${GMT_PROGS})
 	add_executable (${_gmtprog} ${GMT_PROGRAM})
-	set_target_properties (${_gmtprog} PROPERTIES
-		COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${_gmtprog}")
+	set_target_properties (${_gmtprog}
+		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${_gmtprog}")
 	target_link_libraries (${_gmtprog} gmtlib)
 endforeach (_gmtprog)
-
-# create build targets for gmt progsps
-string (REPLACE ".c" "" GMT_PROGSPS "${GMT_PROGSPS_SRCS}")
-foreach (_gmtprogps ${GMT_PROGSPS})
-	add_executable (${_gmtprogps} ${GMT_PROGRAM})
-	set_target_properties (${_gmtprogps}
-		PROPERTIES COMPILE_DEFINITIONS
-		"FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${_gmtprogps}")
-	target_link_libraries (${_gmtprogps} gmtlib)
-endforeach (_gmtprogps)
-
-# generate gmt_modules.h
-set (GMT_SUPPL_STRING "modules")
-gmt_set_api_header(GMT_MODULES_API_H ${GMT_PROGS} ${GMT_PROGSPS})
-
-# make list of main gmt and supplement targets
-get_subdir_var (_suppl_progs SUPPL_PROGS ${GMT_SUPPL_DIRS})
-get_subdir_var (_suppl_progsps SUPPL_PROGSPS ${GMT_SUPPL_DIRS})
-set (_all_progs ${GMT_PROGS} ${_suppl_progs})
-set (_all_progsps ${GMT_PROGSPS} ${_suppl_progsps})
-string (REPLACE ";" ":GMTAPI_GMT;" _all_progs "${_all_progs}:GMTAPI_GMT")
-string (REPLACE ";" ":GMTAPI_GMTPSL;" _all_progsps "${_all_progsps}:GMTAPI_GMTPSL")
-list (APPEND _all_progs ${_all_progsps})
-list (SORT _all_progs)
-
-# generate gmt_prognames.h and gmt_progcases.h
-gen_gmt_prog_names_cases_h (${_all_progs})
-
-# generate gmt_suppl_modules.h
-# TODO: this is ugly. should all go into gmt_modules.h
-get_subdir_var (_suppl_api_hdrs SUPPL_API_H ${GMT_SUPPL_DIRS})
-set (_suppl_api_includes)
-foreach (_hdrfile ${_suppl_api_hdrs})
-	list (APPEND _suppl_api_includes "#include \"${_hdrfile}\"")
-endforeach (_hdrfile ${_suppl_api_hdrs})
-string (REPLACE ";" "\n" _suppl_api_includes "${_suppl_api_includes}")
-file (WRITE ${CMAKE_CURRENT_BINARY_DIR}/gmt_suppl_modules.h
-	"${_suppl_api_includes}\n")
-
-# generate gmt_progpurpose.h
-get_subdir_var_files (_suppl_progs_srcs SUPPL_PROGS_SRCS ${GMT_SUPPL_DIRS})
-get_subdir_var_files (_suppl_progsps_srcs SUPPL_PROGSPS_SRCS ${GMT_SUPPL_DIRS})
-gen_gmt_progpurpose_h (GMT_PROG_PURPOSE
-	${GMT_PROGS_SRCS} ${GMT_PROGSPS_SRCS}
-	${_suppl_progs_srcs} ${_suppl_progsps_srcs})
 
 # build targets for demos
 string (REPLACE ".c" "" GMT_DEMOS "${GMT_DEMOS_SRCS}")
@@ -485,10 +434,10 @@ else (HAVE_GETOPT)
 endif (HAVE_GETOPT)
 
 # generate Mac debugging symbols
-create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_DEMOS})
 
 # Tests depend on GMT progs and supplements:
-add_dependencies (check ${GMT_PROGSPS} ${GMT_PROGS} ${GMT_DEMOS} psldemo
+add_dependencies (check ${GMT_PROGS} ${GMT_DEMOS} psldemo
 	gmt_suppl)
 
 # Rename gmt target on non-monolithic installs to prevent version clash
@@ -499,7 +448,7 @@ if (NOT GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_INSTALL_MONOLITHIC)
 
 # add the install targets
-install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS}
+install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_DEMOS}
 	ARCHIVE DESTINATION ${GMT_LIBDIR}
 	COMPONENT Runtime
 	LIBRARY DESTINATION ${GMT_LIBDIR}
@@ -511,11 +460,11 @@ if (WIN32 AND _debug_build)
 	# install program database files
 	set (_pdb_files)
 	if (NOT DEFINED PSL_DLL_RENAME)
-		foreach (_target libpsl libgmt ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+		foreach (_target libpsl libgmt ${GMT_PROGS} ${GMT_DEMOS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
 	else ()
-		foreach (_target lib${PSL_DLL_RENAME} lib${GMT_DLL_RENAME} ${GMT_PROGS} ${GMT_PROGSPS} ${GMT_DEMOS})
+		foreach (_target lib${PSL_DLL_RENAME} lib${GMT_DLL_RENAME} ${GMT_PROGS} ${GMT_DEMOS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
 	endif ()

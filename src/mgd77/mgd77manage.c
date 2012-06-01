@@ -18,7 +18,7 @@
  *
  */
 
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77.h"
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 

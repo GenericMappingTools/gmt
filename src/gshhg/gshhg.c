@@ -42,7 +42,7 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
-#include "gmt_gshhg.h"
+#include "gmt.h"
 #include "gshhg.h"
 
 struct GSHHG_CTRL {

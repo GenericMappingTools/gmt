@@ -21,18 +21,15 @@
 set (SUPPL_LIB_SRCS okbfuns.h okbfuns.c)
 set (SUPPL_PROGS_SRCS redpol.c xyzokb.c gravfft.c grdokb.c)
 
-# generate header file gmt_potential.h
-gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
-
 # lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
+set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 
 # create build targets
 string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
 foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 

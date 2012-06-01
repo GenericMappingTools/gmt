@@ -27,19 +27,15 @@ set (SUPPL_EXAMPLE_FILES README.spotter
 	DC85.d WK97.d euler.txt pac_hs.d seamounts.d)
 set (SUPPL_EXAMPLE_PROGS spotter.bat spotter.sh)
 
-# generate header file gmt_spotter.h
-gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
-
 # lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS}
-	${SUPPL_PROGS_SRCS} ${SUPPL_API_H})
+set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 
 # create build targets
 string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
 foreach (prog ${SUPPL_PROGS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMT;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 

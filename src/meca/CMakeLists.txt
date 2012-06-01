@@ -24,19 +24,15 @@ set (SUPPL_PROGSPS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
 # example files
 set (SUPPL_EXAMPLE_FILES README.meca)
 
-# generate header file gmt_meca.h
-gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGSPS_SRCS})
-
 # lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS}
-	${SUPPL_PROGSPS_SRCS} ${SUPPL_API_H})
+set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGSPS_SRCS})
 
 # create build targets
 string (REPLACE ".c" "" SUPPL_PROGSPS "${SUPPL_PROGSPS_SRCS}")
 foreach (prog ${SUPPL_PROGSPS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
-		PROPERTIES COMPILE_DEFINITIONS "FUNC_MODE=GMTAPI_GMTPSL;FUNC=GMT_${prog}")
+		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${prog}")
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 

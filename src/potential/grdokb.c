@@ -28,7 +28,7 @@
  *
  */
 
-#include "gmt_potential.h"
+#include "gmt.h"
 #include "okbfuns.h"
 
 struct GRDOKB_CTRL {

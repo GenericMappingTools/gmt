@@ -21,7 +21,7 @@
  *
  */
  
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77.h"
 
 void MGD77_select_high_resolution (struct GMT_CTRL *C);

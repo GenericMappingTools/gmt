@@ -23,42 +23,13 @@
  *
  */
 
-#include "pslib.h"
-#include "gmt_modules.h"
-#include "gmt_suppl_modules.h"
-
-struct GMT_PROGRAMS {		/* Struct with name and mode for each GMT 4 program */
-	char name[GMT_TEXT_LEN64];	/* Program name */
-	unsigned int mode;		/* Either GMTAPI_GMT or GMTAPI_GMTPSL */
-};
-
-typedef int (*ptr_to_gmt_module) (struct GMTAPI_CTRL *, int, void *);
-
-ptr_to_gmt_module lookup_program (char *prog, struct GMT_PROGRAMS *programs, unsigned int n_progs, unsigned int *mode)
-{
-	unsigned int k = 0;
-	int id = -1;
-	ptr_to_gmt_module func = NULL;
-
-	for (k = 0; id == -1 && k < n_progs; k++) if (!strcmp (prog, programs[k].name)) id = k;	/* Get program id */
-
-	if (id == -1) return NULL;	/* Not a GMT program */
-
-	switch (id) {	/* Assign the function pointer */
-#include "gmt_progcases.h"
-	}
-	return (func);
-}
+#include "gmt.h"
 
 int main (int argc, char *argv[]) {
-
-	int status = 0;			/* Status code from GMT API */
-	unsigned int mode = 0;		/* Mode of the selected function */
-	ptr_to_gmt_module func = NULL;		/* Pointer to the selected function */
-	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
-	struct GMT_PROGRAMS program[GMT_N_PROGRAMS] = {	/* Sorted array with program information */
-#include "gmt_prognames.h"
-	};
+	int status = EXIT_SUCCESS;           /* Status code from GMT API */
+	enum Gmt_module module_id = 0;       /* Module ID */
+	struct Gmt_moduleinfo module;        /* Name, purpose, Api_mode, and function pointer of module */
+	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
 	if (argc < 2) {
 		fprintf (stderr, "gmt - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
@@ -71,47 +42,49 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "For a brief description of GMT programs, type gmt --help\n\n");
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
-		exit (EXIT_FAILURE);
+		return EXIT_FAILURE;
 	}
 
 	/* Print version and exit */
 	if (argc == 2 && !strcmp (argv[1], "--version")) {
 		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
-		exit (0);
+		return EXIT_SUCCESS;
 	}
 
 	/* Show share directory */
 	if (argc == 2 && !strcmp (argv[1], "--show-sharedir")) {
 		/* Initializing new GMT session */
-		if ((API = GMT_Create_Session (argv[0], mode)) == NULL)
-			exit (EXIT_FAILURE);
-		fprintf (stdout, "%s\n", API->GMT->session.SHAREDIR);
-		if (GMT_Destroy_Session (&API))
-			exit (EXIT_FAILURE);
-		exit (0);
+		if ((api_ctrl = GMT_Create_Session (argv[0], k_mode_gmt)) == NULL)
+			return EXIT_FAILURE;
+		fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
+		if (GMT_Destroy_Session (&api_ctrl))
+			return EXIT_FAILURE;
+		return EXIT_SUCCESS;
 	}
 
 	if (argc == 2 && !strcmp (argv[1], "--help")) {
 		fprintf (stderr, "Program - Purpose of Program\n\n");
-#include "gmt_progpurpose.h"
-		exit (EXIT_FAILURE);
+		gmt_module_show_all();
+		return EXIT_FAILURE;
 	}
 
-	if ((func = lookup_program (argv[1], program, GMT_N_PROGRAMS, &mode)) == NULL) {
+	if ((module_id = gmt_module_lookup (argv[1])) == k_mod_notfound) {
 		fprintf (stderr, "gmt: No such program: %s\n", argv[1]);
-		exit (EXIT_FAILURE);
+		return EXIT_FAILURE;
 	}
 
 	/* OK, here we found a recognized GMT module; do the job */
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], mode)) == NULL) exit (EXIT_FAILURE);
+	if ((api_ctrl = GMT_Create_Session (argv[0], g_module[module_id].api_mode)) == NULL)
+		return EXIT_FAILURE;
 
 	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */
-	status = func (API, argc-2, argv+2);
+	status = g_module[module_id].p_func (api_ctrl, argc-2, argv+2);
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Session (&api_ctrl))
+		return EXIT_FAILURE;
 
-	exit ((int)status);		/* Return the status from FUNC */
+	return status; /* Return the status from FUNC */
 }

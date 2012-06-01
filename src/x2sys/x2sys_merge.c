@@ -25,7 +25,7 @@
  *
  */
 
-#include "gmt_x2sys.h"
+#include "gmt.h"
 
 struct X2SYS_MERGE_CTRL {
 	struct A {	/* -A */
