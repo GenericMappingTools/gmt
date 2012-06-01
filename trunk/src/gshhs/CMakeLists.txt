@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+# Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,10 +18,10 @@
 #
 
 # source files
-set (SUPPL_PROGS_SRCS gshhs.c)
-set (SUPPL_PROGS2_SRCS gshhs_dp.c gshhstograss.c)
+set (SUPPL_PROGS_SRCS gshhg.c)
+set (SUPPL_PROGS2_SRCS gshhg_dp.c gshhgtograss.c)
 
-# generate header file gmt_gshhs.h
+# generate header file gmt_gshhg.h
 gmt_set_api_header(SUPPL_API_H ${SUPPL_PROGS_SRCS})
 
 # lib sources

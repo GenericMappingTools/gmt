@@ -3,10 +3,10 @@
  *	Copyright (c) 1996-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
- * PROGRAM:	gshhs.c
+ * PROGRAM:	gshhg.c
  * AUTHOR:	Paul Wessel (pwessel@hawaii.edu)
  * CREATED:	JAN. 28, 1996
- * PURPOSE:	To extract ASCII data from the binary GSHHS shoreline data
+ * PURPOSE:	To extract ASCII data from the binary GSHHG shoreline data
  *		as described in the 1996 Wessel & Smith JGR Data Analysis Note.
  * VERSION:	1.1 (Byte flipping added)
  *		1.2 18-MAY-1999:
@@ -14,19 +14,19 @@
  *		   POSIX.1 compliant
  *		1.3 08-NOV-1999: Released under GNU GPL
  *		1.4 05-SEPT-2000: Made a GMT supplement; FLIP no longer needed
- *		1.5 14-SEPT-2004: Updated to deal with latest GSHHS database (1.3)
- *		1.6 02-MAY-2006: Updated to deal with latest GSHHS database (1.4)
+ *		1.5 14-SEPT-2004: Updated to deal with latest GSHHG database (1.3)
+ *		1.6 02-MAY-2006: Updated to deal with latest GSHHG database (1.4)
  *		1.7 11-NOV-2006: Fixed bug in computing level (&& vs &)
- *		1.8 31-MAR-2007: Updated to deal with latest GSHHS database (1.5)
+ *		1.8 31-MAR-2007: Updated to deal with latest GSHHG database (1.5)
  *		1.9 27-AUG-2007: Handle line data as well as polygon data
- *		1.10 15-FEB-2008: Updated to deal with latest GSHHS database (1.6)
+ *		1.10 15-FEB-2008: Updated to deal with latest GSHHG database (1.6)
  *		1.11 15-JUN-2009: Now contains information on container polygon,
  *				the polygons ancestor in the full resolution, and
  *				a flag to tell if a lake is a riverlake.
- *				Updated to deal with latest GSHHS database (2.0)
+ *				Updated to deal with latest GSHHG database (2.0)
  *		1.12 24-MAY-2010: Deal with 2.1 format.
  *		1.13 15-JUL-2011: Now contains improved area information (2.2.0),
- *				 and revised greenwhich flags (now 2-bit; see gshhs.h).
+ *				 and revised greenwhich flags (now 2-bit; see gshhg.h).
  *				 Also added -A and -G as suggested by José Luis García Pallero,
  *				 as well as -Qe|i to control river-lake output, and -N to
  *				 get a particular level.
@@ -42,10 +42,10 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
-#include "gmt_gshhs.h"
-#include "gshhs.h"
+#include "gmt_gshhg.h"
+#include "gshhg.h"
 
-struct GSHHS_CTRL {
+struct GSHHG_CTRL {
 	struct In {	/* <file> */
 		bool active;
 		char *file;
@@ -79,27 +79,27 @@ struct GSHHS_CTRL {
 	} Q;
 };
 
-void *New_gshhs_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GSHHS_CTRL *C;
+void *New_gshhg_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	struct GSHHG_CTRL *C;
 
-	C = GMT_memory (GMT, NULL, 1, struct GSHHS_CTRL);
+	C = GMT_memory (GMT, NULL, 1, struct GSHHG_CTRL);
 
 	return (C);
 }
 
-void Free_gshhs_Ctrl (struct GMT_CTRL *GMT, struct GSHHS_CTRL *C) {	/* Deallocate control structure */
+void Free_gshhg_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
 	if (C->Out.file) free (C->Out.file);	
 	GMT_free (GMT, C);	
 }
 
-int GMT_gshhs_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gshhg_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gshhs %s [API] - Extract data tables from binary GSHHS or WDBII data files\n\n", GSHHS_PROG_VERSION);
-	GMT_message (GMT, "usage: gshhs gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "gshhg %s [API] - Extract data tables from binary GSHHG or WDBII data files\n\n", GSHHG_PROG_VERSION);
+	GMT_message (GMT, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -117,9 +117,9 @@ int GMT_gshhs_usage (struct GMTAPI_CTRL *C, int level)
 	return (EXIT_FAILURE);
 }
 	
-int GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gshhg_parse (struct GMTAPI_CTRL *C, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options)
 {
-	/* This parses the options provided to gshhs and sets parameters in CTRL.
+	/* This parses the options provided to gshhg and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -194,12 +194,12 @@ int GMT_gshhs_parse (struct GMTAPI_CTRL *C, struct GSHHS_CTRL *Ctrl, struct GMT_
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #ifdef DEBUG
-#define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT, GMT_mem_keeper); bailout (code);}
+#define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT, GMT_mem_keeper); bailout (code);}
 #else
-#define Return(code) {Free_gshhs_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #endif
 
-int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
@@ -217,12 +217,12 @@ int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 	FILE *fp = NULL;
 
 	struct POINT p;
-	struct GSHHS h;
+	struct GSHHG h;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TEXTSET *X = NULL;
 	struct GMT_LINE_SEGMENT **T = NULL;
 	struct GMT_TEXT_SEGMENT *TX = NULL;
-	struct GSHHS_CTRL *Ctrl = NULL;
+	struct GSHHG_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 
@@ -231,21 +231,21 @@ int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gshhs_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gshhs_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gshhg_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gshhg_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
-	GMT = GMT_begin_module (API, "GMT_gshhs", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_module (API, "GMT_gshhg", &GMT_cpy);	/* Save current state */
 	if (GMT_Parse_Common (API, "-Vbfo:", "m", options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
-	Ctrl = New_gshhs_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gshhs_parse (API, Ctrl, options))) Return (error);
+	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if ((error = GMT_gshhg_parse (API, Ctrl, options))) Return (error);
 	
-	/*---------------------------- This is the gshhs main code ----------------------------*/
+	/*---------------------------- This is the gshhg main code ----------------------------*/
 
 	if (GMT_access (GMT, Ctrl->In.file, F_OK)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find file %s\n", Ctrl->In.file);
@@ -265,20 +265,20 @@ int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
-		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
+		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHS header features.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHG header features.\n");
 			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHS features.\n");
+			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHG features.\n");
 			return (API->error);
 		}
 	}
-	sprintf (header, "# Data extracted from GSHHS file %s", Ctrl->In.file);
+	sprintf (header, "# Data extracted from GSHHG file %s", Ctrl->In.file);
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		X->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		X->table[0]->header[0] = strdup (header);
@@ -289,33 +289,33 @@ int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 		D->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 		D->table[0]->header[0] = strdup (header);
 		D->table[0]->n_headers = 1;
-		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHS_MAXPOL;
+		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
-	n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);
+	n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);
 	version = (h.flag >> 8) & 255;
-	must_swab = (version != GSHHS_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
+	must_swab = (version != GSHHG_DATA_RELEASE);	/* Take as sign that byte-swabbing is needed */
 
 	while (n_read == 1) {
 		n_seg++;
 		if (must_swab) /* Must deal with different endianness */
-			bswap_GSHHS_struct (&h);
+			bswap_GSHHG_struct (&h);
 
 		/* OK, we want to return info for this feature */
 
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
-		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHS/WDBII version %d in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
 		is_river = (h.flag >> 25) & 1;			/* River is 0 (not river) or 1 (is river) */
 		m = h.flag >> 26;				/* Magnitude for area scale */
-		w = h.west  * GSHHS_SCL;			/* Convert region from microdegrees to degrees */
-		e = h.east  * GSHHS_SCL;
-		s = h.south * GSHHS_SCL;
-		n = h.north * GSHHS_SCL;
+		w = h.west  * GSHHG_SCL;			/* Convert region from microdegrees to degrees */
+		e = h.east  * GSHHG_SCL;
+		s = h.south * GSHHG_SCL;
+		n = h.north * GSHHG_SCL;
 		source = (src == 1) ? 'W' : 'C';		/* Either WVS or CIA (WDBII) pedigree */
 		if (is_river) source = (char)tolower ((int)source);	/* Lower case c means river-lake */
 		is_line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
@@ -332,7 +332,7 @@ int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (OK && Ctrl->N.active && Ctrl->N.level != level) OK = 0;		/* Skip if not the right level (-N) */
 		if (!OK) {	/* Not what we are looking for, skip to next */
 			fseek (fp, (off_t)(h.n * sizeof(struct POINT)), SEEK_CUR);
-			n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);	/* Get the next GSHHS header */
+			n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);	/* Get the next GSHHG header */
 			continue;	/* Back to top of loop */
 		}
 		
@@ -388,16 +388,16 @@ int GMT_gshhs (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				if (must_swab) /* Must deal with different endianness */
 					bswap_POINT_struct (&p);
-				T[seg_no]->coord[GMT_X][row] = p.x * GSHHS_SCL;
+				T[seg_no]->coord[GMT_X][row] = p.x * GSHHG_SCL;
 				if ((greenwich && p.x > max_east) || (h.west > 180000000)) T[seg_no]->coord[GMT_X][row] -= 360.0;
-				T[seg_no]->coord[GMT_Y][row] = p.y * GSHHS_SCL;
+				T[seg_no]->coord[GMT_Y][row] = p.y * GSHHG_SCL;
 			}
 			T[seg_no]->coord[GMT_X][row] = T[seg_no]->coord[GMT_Y][row] = GMT->session.d_NaN;
 			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
-		n_read = fread (&h, sizeof (struct GSHHS), 1U, fp);	/* Get the next GSHHS header */
+		n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);	/* Get the next GSHHG header */
 	}
 	GMT_fclose (GMT, fp);
 	
