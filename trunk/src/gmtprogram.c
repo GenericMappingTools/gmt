@@ -17,8 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * The template for all GMT5 programs that are built from their modules.
- * The Makefile will replace FUNC with the module name and FUNC_MODE with
- * either GMTAPI_GMT or GMTAPI_GMTPSL (when PSL needs to be initialized).
+ * Define MODULE_ID with the module id from enum Gmt_module.
  *
  * Version:	5
  * Created:	14-Sep-2011
@@ -28,24 +27,25 @@
 #include "pslib.h"
 #include "gmt.h"
 
-/* TODO: remove this func declaration and include gmt_module.h when implemented: */
-EXTERN_MSC int FUNC (struct GMTAPI_CTRL *API, int mode, void *args);
-
 int main (int argc, char *argv[]) {
-
-	int status = 0;                 /* Status code from GMT API */
-	struct GMTAPI_CTRL *API = NULL; /* GMT API control structure */
+	int status = EXIT_SUCCESS;           /* Status code from GMT API */
+	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
+	/* Structure containing name, purpose, Api_mode, and function pointer of this module: */
+	struct Gmt_moduleinfo this_module = g_module[MODULE_ID];
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], FUNC_MODE)) == NULL)
-		exit (EXIT_FAILURE);
+	if ((api_ctrl = GMT_Create_Session (argv[0], this_module.api_mode)) == NULL)
+		return EXIT_FAILURE;
+
+	/* Copy Gmt_moduleinfo to api_ctrl->GMT */
+	api_ctrl->GMT->init.module = this_module;
 
 	/* 2. Run GMT function, or give usage message if errors arise during parsing */
-	status = FUNC (API, argc-1, (argv+1));
+	status = this_module.p_func (api_ctrl, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (&API) != GMT_OK)
-		exit (EXIT_FAILURE);
+	if (GMT_Destroy_Session (&api_ctrl) != GMT_OK)
+		return EXIT_FAILURE;
 
-	exit (status); /* Return the status from FUNC */
+	return status; /* Return the status from FUNC */
 }

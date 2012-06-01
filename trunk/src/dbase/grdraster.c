@@ -30,7 +30,7 @@
  * grids using metadata from the grdraster.info table.
  */
 
-#include "gmt_dbase.h"
+#include "gmt.h"
 #include "common_byteswap.h"
 
 void GMT_str_toupper (char *string);

@@ -56,7 +56,7 @@ grdvector	core	k_mode_psl	Plot vector field from two component grids
 grdview	core	k_mode_psl	Create 3-D perspective image or surface mesh from a grid
 grdvolume	core	k_mode_gmt	Calculate grid volume and area constrained by a contour
 greenspline	core	k_mode_gmt	Interpolate using Green's functions for splines in 1-3 dimensions
-gshhs	gshhs	k_mode_gmt	Extract data tables from binary GSHHS or WDBII data files
+gshhg	gshhg	k_mode_gmt	Extract data tables from binary GSHHS or WDBII data files
 hotspotter	spotter	k_mode_gmt	Create CVA image from seamount locations
 img2grd	imgsrc	k_mode_gmt	Extract a subset from an img file in Mercator or Geographic format
 kml2gmt	core	k_mode_gmt	Extract GMT table data from Google Earth KML files

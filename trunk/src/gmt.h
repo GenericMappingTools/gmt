@@ -104,6 +104,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_init.h"           /* extern functions defined in gmt_init.c */
 #include "gmt_support.h"        /* extern functions defined in gmt_support.c */
 #include "gmt_vector.h"         /* extern functions defined in gmt_vector.c */
+#include "gmt_module.h"         /* Module prototypes and properties */
 
 #ifdef _OPENMP                  /* Using open MP parallelization */
 #include "omp.h"
@@ -161,7 +162,7 @@ struct GMT_INIT {		/* Holds misc run-time parameters */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	char *progname;					/* Name of current GMT program */
 	char *runtime_bindir;				/* Directory that contains the main exe at run-time */
-	char *module_name;				/* Name of current GMT module */
+	struct Gmt_moduleinfo module; /* name, purpose, Api_mode, and function pointer of module */
 	char *history[GMT_N_UNIQUE];			/* The internal .gmtcommands information */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol;	/* For custom symbol plotting in psxy[z]. */
 
@@ -243,7 +244,7 @@ struct GMT_SESSION {
 	struct GMT_MEDIA *user_media;		/* Array with custom media dimensions */
 	struct GMT_SHORTHAND *shorthand;	/* Array with info about shorthand file extension magic */
 };
-	
+
 struct GMT_CTRL {
 	/* Master structure for a GMT invokation.  All internal settings for GMT is accessed here */
 	struct GMT_SESSION session;	/* Structure with all values that do not change throughout a session */
@@ -260,8 +261,6 @@ struct GMT_CTRL {
 #include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
 #include "common_math.h"        /* Shared math functions */
 #include "common_string.h"      /* All code shared between GMT and PSL */
-
-#include "gmt_modules.h"        /* All GMT_* modules */
 
 #ifdef DEBUG
 /* Items needed if -DDEBUG is in effect */

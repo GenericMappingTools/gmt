@@ -31,7 +31,7 @@
  */
 
 #include "pslib.h"
-#include "gmt_segy.h"
+#include "gmt.h"
 #include "segy_io.h"
 
 #define B_ID	0	/* Indices into Q values */

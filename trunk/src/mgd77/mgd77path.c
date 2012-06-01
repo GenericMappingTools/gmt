@@ -15,7 +15,7 @@
  *
  */
  
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77.h"
 
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */

@@ -21,7 +21,7 @@
  *
  */
  
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77.h"
 #include "mgd77_codes.h"
 

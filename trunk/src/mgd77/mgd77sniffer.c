@@ -22,7 +22,7 @@
  * ------------------------------------------------------------------*/
 
 #include "mgd77.h"
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77sniffer.h"
 #include "gmt_internals.h"
 /*

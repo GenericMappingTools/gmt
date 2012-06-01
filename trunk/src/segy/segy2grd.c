@@ -25,7 +25,7 @@
  * Version:	3.4.1
  */
  
-#include "gmt_segy.h"
+#include "gmt.h"
 #include "segy_io.h"
 
 #define COUNT	1

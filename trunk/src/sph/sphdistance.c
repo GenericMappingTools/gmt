@@ -35,7 +35,7 @@
  *
  */
  
-#include "gmt_sph.h"
+#include "gmt.h"
 #include "sph.h"
 
 struct SPHDISTANCE_CTRL {

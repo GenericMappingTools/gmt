@@ -32,7 +32,7 @@
  *
  */
  
-#include "gmt_mgd77.h"
+#include "gmt.h"
 #include "mgd77.h"
 
 #define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
