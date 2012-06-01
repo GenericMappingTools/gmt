@@ -45,7 +45,7 @@
  *	GMT_loaddefaults		Reads the GMT global parameters from gmt.conf
  *	GMT_savedefaults		Writes the GMT global parameters to gmt.conf
  *	GMT_parse_?_option		Decode the one of the common options
- *	GMT_setparameter		Sets a default value given keyword,value-pair
+ *	gmt_setparameter		Sets a default value given keyword,value-pair
  *	gmt_setshorthand		Reads and initializes the suffix shorthands
  *	GMT_get_ellipsoid		Returns ellipsoid id based on name
  *	gmt_scanf_epoch			Get user time origin from user epoch string
@@ -125,6 +125,8 @@ static char *GMT_just_string[12] = {	/* Strings to specify justification */
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
+
+unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value);
 
 void GMT_explain_options (struct GMT_CTRL *C, char *options)
 {
@@ -1707,12 +1709,12 @@ int gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 	if ((this = strchr (text, '='))) {
 		/* Got --PAR=VALUE */
 		this[0] = '\0';	/* Temporarily remove the '=' character */
-		n = GMT_setparameter (C, text, &this[1]);
+		n = gmt_setparameter (C, text, &this[1]);
 		this[0] = '=';	/* Put it back were it was */
 	}
 	else
 		/* Got --PAR */
-		n = GMT_setparameter (C, text, "true");
+		n = gmt_setparameter (C, text, "true");
 	return (n);
 }
 
@@ -2313,7 +2315,7 @@ int GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 		keyword[0] = value[0] = '\0';	/* Initialize */
 		sscanf (line, "%s = %[^\n]", keyword, value);
 
-		error += GMT_setparameter (C, keyword, value);
+		error += gmt_setparameter (C, keyword, value);
 	}
 
 	fclose (fp);
@@ -2342,13 +2344,13 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 			p = 0;
 			while (opt->arg[p] && opt->arg[p] != '=') p++;
 			opt->arg[p] = '\0';	/* Temporarily remove the equal sign */
-			n_errors += GMT_setparameter (C, opt->arg, &opt->arg[p+1]);
+			n_errors += gmt_setparameter (C, opt->arg, &opt->arg[p+1]);
 			opt->arg[p] = '=';	/* Restore the equal sign */
 		}
 		else if (!param)			/* Keep parameter name */
 			param = opt->arg;
 		else {					/* This must be value */
-			n_errors += GMT_setparameter (C, param, opt->arg);
+			n_errors += gmt_setparameter (C, param, opt->arg);
 			param = NULL;
 		}
 	}
@@ -2633,7 +2635,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *C, char *value)
 	}
 }
 
-bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
+unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 {
 	unsigned int pos, len;
 	int i, ival, case_val, manual;
@@ -2642,7 +2644,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 	
 	double dval;
 
-	if (!value) return (true);		/* value argument missing */
+	if (!value) return (1);		/* value argument missing */
 	strncpy (lower_value, value, GMT_BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
 	len = strlen (value);
@@ -3048,7 +3050,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				i = sscanf (lower_value, "%[^/]/%s", txt_a, txt_b);
 				if (i != 2) error = true;
 				error = GMT_verify_expectations (C, GMT_IS_LAT, GMT_scanf (C, txt_a, GMT_IS_LAT, &C->current.setting.map_polar_cap[0]), txt_a);
-				error += GMT_getinc (C, txt_b, inc);
+				if (GMT_getinc (C, txt_b, inc)) error = true;
 				C->current.setting.map_polar_cap[1] = inc[GMT_X];
 			}
 			break;
@@ -3226,7 +3228,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 #endif
 		case GMTCASE_PS_IMAGE_COMPRESS:
-			if (!C->PSL) return (false);	/* Not using PSL in this session */
+			if (!C->PSL) return (0);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "none"))
 				C->PSL->internal.compress = PSL_NONE;
 			else if (!strcmp (lower_value, "rle"))
@@ -3237,7 +3239,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = true;
 			break;
 		case GMTCASE_PS_LINE_CAP:
-			if (!C->PSL) return (false);	/* Not using PSL in this session */
+			if (!C->PSL) return (0);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "butt"))
 				C->PSL->internal.line_cap = PSL_BUTT_CAP;
 			else if (!strcmp (lower_value, "round"))
@@ -3248,7 +3250,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = true;
 			break;
 		case GMTCASE_PS_LINE_JOIN:
-			if (!C->PSL) return (false);	/* Not using PSL in this session */
+			if (!C->PSL) return (0);	/* Not using PSL in this session */
 			if (!strcmp (lower_value, "miter"))
 				C->PSL->internal.line_join = PSL_MITER_JOIN;
 			else if (!strcmp (lower_value, "round"))
@@ -3259,7 +3261,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = true;
 			break;
 		case GMTCASE_PS_MITER_LIMIT:
-			if (!C->PSL) return (false);	/* Not using PSL in this session */
+			if (!C->PSL) return (0);	/* Not using PSL in this session */
 			ival = atoi (value);
 			if (ival >= 0 && ival <= 180)
 				C->PSL->internal.miter_limit = ival;
@@ -3361,7 +3363,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_PS_VERBOSE: GMT_COMPAT_CHANGE ("PS_VERBOSE");
 #endif
 		case GMTCASE_PS_COMMENTS:
-			if (!C->PSL) return (false);	/* Not using PSL in this session */
+			if (!C->PSL) return (0);	/* Not using PSL in this session */
 			error = gmt_true_false_or_error (lower_value, &tf_answer);
 			C->PSL->internal.comments = (tf_answer) ? 1 : 0;
 			break;
@@ -3702,7 +3704,7 @@ bool GMT_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 	if (len) C->current.setting.given_unit[case_val] = value[len-1];
 
 	if (error && case_val >= 0) GMT_report (C, GMT_MSG_FATAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
-	return (error);
+	return ((error) ? 1 : 0);
 }
 
 char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
@@ -5910,7 +5912,7 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 #ifdef _WIN32
 			gmt_handle_dosfile (C, out1, 1);	/* Undo any DOS files like X;/ back to X:/ */
 #endif
-			error += GMT_getfill (C, out1, &C->current.map.frame.fill);
+			if (GMT_getfill (C, out1, &C->current.map.frame.fill)) error++;
 			if (!error) {
 				C->current.map.frame.paint = true;
 				g = i;

@@ -798,9 +798,10 @@ void GMT_init_fill (struct GMT_CTRL *C, struct GMT_FILL *fill, double r, double 
 	fill->rgb[0] = r, fill->rgb[1] = g, fill->rgb[2] = b;
 }
 
-int GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
+bool GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 {
-	int n, end, pos, i, len, error = 0;
+	int n, end, pos, i, len;
+	bool error = false;
 	double fb_rgb[4];
 	char f, word[GMT_TEXT_LEN256];
 

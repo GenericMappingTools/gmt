@@ -28,8 +28,6 @@
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 
-double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, double y0, double x1, double y1);
-
 struct GRDFILTER_CTRL {
 	struct In {
 		bool active;

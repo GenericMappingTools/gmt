@@ -1566,7 +1566,8 @@ int GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *ptr)
 
 void gmt_format_geo_output (struct GMT_CTRL *C, bool is_lat, double geo, char *text)
 {
-	int k, n_items, d, m, s, m_sec, minus, h_pos = 0;
+	int k, n_items, d, m, s, m_sec, h_pos = 0;
+	bool minus;
 	char hemi[3], *f = NULL;
 
 	if (!is_lat) GMT_lon_range_adjust (C->current.io.geo.range, &geo);

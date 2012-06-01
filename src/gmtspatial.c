@@ -26,7 +26,7 @@
 
 #include "gmt.h"
 
-void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
+EXTERN_MSC void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 
 #define POL_IS_CW	1
 #define POL_IS_CCW	0
@@ -1190,7 +1190,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				else
 					S2 = S1;
-				poly_S2 = (GMT_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows));
+				poly_S2 = (GMT_polygon_is_open (GMT, S2->coord[GMT_X], S2->coord[GMT_Y], S2->n_rows)) ? 1 : 0;
 				for (tbl2 = 0; tbl2 < C->n_tables; tbl2++) GMT_memset (Info[tbl2], C->table[tbl2]->n_segments, struct DUP_INFO);
 				n_dup = GMT_is_duplicate (GMT, S2, C, &(Ctrl->D.I), Info);	/* Returns -3, -2, -1, 0, +1, +2, or +3 */
 				if (same_feature) {
@@ -1203,7 +1203,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 						I = &(Info[tbl2][seg2]);
 						if (I->mode == 0) continue;
 						/* Report on all the close/exact matches */
-						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows));
+						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
 						sprintf (src, "[ table %d segment %" PRIu64 " ]", tbl, seg);
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %d segment %" PRIu64 " ]", tbl2, seg2);
 						sprintf (record, "%c : Input %s %s is an %s duplicate of a %s %s in %s, with d = %.3f c = %.6g s = %.4g", 

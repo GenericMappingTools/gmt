@@ -43,8 +43,6 @@
 
 /* MEX: <DI DDi GGO LGi */
 
-int compare_sugs (const void *point_1, const void *point_2);	/* Sort suggestions decreasing  */
-
 struct SURFACE_CTRL {
 	struct A {	/* -A<aspect_ratio> */
 		bool active;
@@ -1392,6 +1390,14 @@ double guess_surface_time (struct GMT_CTRL *GMT, unsigned int factors[], unsigne
 	return (t_sum);
 }
 
+int compare_sugs (const void *point_1, const void *point_2)
+{
+	/* Sorts sugs into DESCENDING order!  */
+	if (((struct SURFACE_SUGGESTION *)point_1)->factor < ((struct SURFACE_SUGGESTION *)point_2)->factor) return (1);
+	if (((struct SURFACE_SUGGESTION *)point_1)->factor > ((struct SURFACE_SUGGESTION *)point_2)->factor) return(-1);
+	return (0);
+}
+
 void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny)
 {
 	/* Calls guess_surface_time for a variety of trial grid
@@ -1458,14 +1464,6 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], un
 	else
 		GMT_report (GMT, GMT_MSG_FATAL, "Cannot suggest any nx,ny better than your -R -I define.\n");
 	return;
-}
-
-int compare_sugs (const void *point_1, const void *point_2)
-{
-	/* Sorts sugs into DESCENDING order!  */
-	if (((struct SURFACE_SUGGESTION *)point_1)->factor < ((struct SURFACE_SUGGESTION *)point_2)->factor) return (1);
-	if (((struct SURFACE_SUGGESTION *)point_1)->factor > ((struct SURFACE_SUGGESTION *)point_2)->factor) return(-1);
-	return (0);
 }
 
 void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)

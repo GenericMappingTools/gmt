@@ -218,7 +218,10 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 				break;
 			case 'E':	/* Set color for station in extensive part */
 				Ctrl->E.active = true;
-				GMT_getfill (GMT, opt->arg, &Ctrl->E.fill);
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
+					GMT_fill_syntax (GMT, 'E', " ");
+					n_errors++;
+				}
 				break;
 			case 'e':	/* Outline station symbol in extensive part */
 				Ctrl->E.active = true;
@@ -226,7 +229,10 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 				break;
 			case 'F':	/* Set background color of beach ball */
 				Ctrl->F.active = true;
-				GMT_getfill (GMT, opt->arg, &Ctrl->F.fill);
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
+					GMT_fill_syntax (GMT, 'F', " ");
+					n_errors++;
+				}
 				break;
 			case 'f':	/* Outline beach ball */
 				Ctrl->F.active = true;
@@ -234,7 +240,10 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 				break;
 			case 'G':	/* Set color for station in compressive part */
 				Ctrl->C.active = true;
-				GMT_getfill (GMT, opt->arg, &Ctrl->G.fill);
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+					GMT_fill_syntax (GMT, 'G', " ");
+					n_errors++;
+				}
 				break;
 			case 'g':	/* Outline station symbol in compressive part */
 				Ctrl->G.active = true;
@@ -311,7 +320,10 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 					}
 				}
 				if (strchr (opt->arg, 'G')) {
-					GMT_getfill (GMT, strchr (opt->arg+1,'G')+1, &Ctrl->S2.fill);
+					if (GMT_getfill (GMT, strchr (opt->arg+1,'G')+1, &Ctrl->S2.fill)) {
+						GMT_fill_syntax (GMT, 's', " ");
+						n_errors++;
+					}
 					Ctrl->S2.scolor = true;
 				}
 				if (strchr (opt->arg, 'L')) Ctrl->S2.outline = true;

@@ -188,7 +188,7 @@ int64_t GMT_rd_from_gymd (struct GMT_CTRL *C, int gy, int gm, int gd) {
 	if (gm <= 2)
 		day_offset = 0;
 	else
-		day_offset = GMT_is_gleap (gy) ? -1 : -2;
+		day_offset = (GMT_is_gleap (gy)) ? -1 : -2;
 	
 	yearm1 = gy - 1;
 	rd = day_offset + gd + 365 * yearm1;
@@ -256,7 +256,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t date, struct GMT_gcal *gcal) 
 	if (date < tempdate)
 		corexn = 0;
 	else
-		corexn = GMT_is_gleap (gcal->year) ? 1 : 2;
+		corexn = (GMT_is_gleap (gcal->year)) ? 1 : 2;
 	
 	gcal->month = lrint (floor ((12*(prior_days + corexn) + 373)/367.0));
 	

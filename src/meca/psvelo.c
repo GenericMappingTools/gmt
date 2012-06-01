@@ -216,12 +216,18 @@ int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GM
 				sscanf (opt->arg, "%lf",&Ctrl->D.scale);
 				break;
 			case 'E':	/* Set color for error ellipse  */
-				GMT_getfill (GMT, opt->arg, &Ctrl->E.fill);
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
+					GMT_fill_syntax (GMT, 'E', " ");
+					n_errors++;
+				}
 				Ctrl->E.active = true;
 				break;
 			case 'G':	/* Set Gray shade for polygon */
 				Ctrl->G.active = true;
-				GMT_getfill (GMT, opt->arg, &Ctrl->G.fill);
+				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
+					GMT_fill_syntax (GMT, 'G', " ");
+					n_errors++;
+				}
 				break;
 			case 'L':	/* Draw the outline */
 				Ctrl->L.active = true;

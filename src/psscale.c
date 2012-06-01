@@ -28,8 +28,8 @@
 #include "pslib.h"
 #include "gmt.h"
 
-void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T */
 #define V_BORDER 8	/* 8p vertical border space for -T */
@@ -312,11 +312,17 @@ int GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, struct 
 							Ctrl->T.off[YHI] = atof (&p[1]);
 							break;
 						case 'g':	/* Fill */
-							GMT_getfill (GMT, &p[1], &Ctrl->T.fill);
+							if (GMT_getfill (GMT, &p[1], &Ctrl->T.fill)) {
+								GMT_fill_syntax (GMT, 'T', " ");
+								n_errors++;
+							}
 							Ctrl->T.do_fill = true;
 							break;
 						case 'p':	/* Pen */
-							GMT_getpen (GMT, &p[1], &Ctrl->T.pen);
+							if (GMT_getpen (GMT, &p[1], &Ctrl->T.pen)) {
+								GMT_pen_syntax (GMT, 'W', " ");
+								n_errors++;
+							}
 							Ctrl->T.do_pen = true;
 							break;
 					}

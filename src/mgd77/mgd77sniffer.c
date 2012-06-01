@@ -43,6 +43,8 @@
 #define POS 1
 #define NEG 0
 
+EXTERN_MSC bool GMT_is_gleap (int gyear);
+
 int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
