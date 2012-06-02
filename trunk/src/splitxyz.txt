@@ -60,8 +60,8 @@ units as x,y and angles are counter-clockwise from horizontal].
 OPT(N)IT(template)
 Write each segment to a separate output file [Default writes a multiple segment
 file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
-C format specifier that can format an long integer argument (the running segment number across all tables);
-this is usually %ld but could be %8.8ld which gives leading zeros, etc. [Default is splitxyz_segment_%ld.{txt|bin},
+C format specifier that can format an integer argument (the running segment number across all tables);
+this is usually %d but could be %08d which gives leading zeros, etc. [Default is splitxyz_segment_%d.{txt|bin},
 depending on GMT_bo_OPT].
 Alternatively, give a template with two C format specifiers and we will supply the table number and the segment
 number within the table to build the file name.
@@ -118,7 +118,7 @@ have BD(splitxyz) compute them separately.
 Suppose you have been given a binary, double-precision file containing lat, lon, gravity values from a survey, 
 and you want to split it into profiles named IT(survey)_\fI###.txt\fP (when gap exceeds 100 km).  Try this:
 .sp
-splitxyz survey.bin -Nsurvey_%3.3d.txt -V -gd100k -D100 -: -fg -bi3d
+splitxyz survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR mgd77list (1),

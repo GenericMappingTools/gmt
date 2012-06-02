@@ -68,7 +68,7 @@ To digitize lines from a mercator map made for a given region, and
 save each line segment in individual files called segment_000.xy, segment_001.xy etc, try
 .br
 .sp
-gmtdigitize OPT(R)20/50/12/25 SCALE1 OPT(m) OPT(N)segment_%3.3d.xy
+gmtdigitize OPT(R)20/50/12/25 SCALE1 OPT(m) OPT(N)segment_%03d.xy
 .br
 .sp
 To digitize seismically defined interfaces from a multichannel seismic section, with horizontal

@@ -67,7 +67,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-#define GMTAPI_MAX_ID 100000	/* Largest integer to keep in %6.6d format */
+#define GMTAPI_MAX_ID 100000	/* Largest integer to keep in %06d format */
 
 #ifdef FORTRAN_API
 static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;	/* Global structure needed for FORTRAN-77 [PW: not tested yet - is it even needed?] */
@@ -2538,9 +2538,9 @@ int GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, int object_ID)
 	
 	if (!filename) return_error (API, GMT_MEMORY_ERROR);	/* Oops, not allocated space */
 	if (object_ID == GMTAPI_NOTSET) return_error (API, GMT_NOT_A_VALID_ID);	/* ID is nont set yet */
-	if (object_ID >= GMTAPI_MAX_ID) return_error (API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %6.6d format below */
+	if (object_ID >= GMTAPI_MAX_ID) return_error (API, GMT_ID_TOO_LARGE);	/* ID is too large to fit in %06d format below */
 	
-	sprintf (filename, "@GMTAPI@-%6.6d", object_ID);	/* Place the object ID in the special GMT API format */
+	sprintf (filename, "@GMTAPI@-%06d", object_ID);	/* Place the object ID in the special GMT API format */
 	return (API->error = GMT_OK);	/* No error encountered */
 }
 

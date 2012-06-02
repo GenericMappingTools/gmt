@@ -32,7 +32,7 @@ OPT(D)[IT(template)]
 For multiple segment data, dump each segment to a separate output file [Default writes a single multiple segment
 file].  Append a format template for the individual file names; this template BD(must) contain a
 C format specifier that can format an integer argument (the segment number); this is usually %d but could
-be %8.8d which gives leading zeros, etc. Optionally, it may also contain the format %c IT(before) the
+be %08d which gives leading zeros, etc. Optionally, it may also contain the format %c IT(before) the
 integer; this will then be replaced by C (closed) or O (open) to indicate segment type.
 [Default is gmtstitch_segment_%d.txt].  Note that segment headers will be written in either case.
 For composite segments, a generic segment header will be written and the segment headers of individual
@@ -83,7 +83,7 @@ To combine the digitized segments in the multisegment file my_lines.txt (whose c
 into as few complete lines as possible, assuming the end points slop could be up to 150 m, and write
 the complete segments to separate files called Map_segment_0001.dat,  Map_segment_0002.dat, etc., run
 .sp
-gmtstitch my_lines.txt -T150e -DMap_segment_%4.4d.dat
+gmtstitch my_lines.txt -T150e -DMap_segment_%04d.dat
 .sp
 .SH BUGS
 The line connection does not work if a line only has a single point.  However, gmtstitch will correctly add

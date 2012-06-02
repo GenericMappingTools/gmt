@@ -547,7 +547,7 @@ void set_iconstyle (double *rgb, double scale, char *iconfile, int N)
 	tabs (--N); printf ("</Icon>\n");
 	if (iconfile[0] != '-') {
 		tabs (N); printf ("<scale>%g</scale>\n", scale);
-		tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+		tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	}
 	tabs (--N); printf ("</IconStyle>\n");
 }
@@ -555,7 +555,7 @@ void set_iconstyle (double *rgb, double scale, char *iconfile, int N)
 void set_linestyle (struct GMT_PEN *pen, double *rgb, int N)
 {
 	tabs (N++); printf ("<LineStyle>\n");
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	tabs (N); printf ("<width>%ld</width>\n", lrint (pen->width));
 	tabs (--N); printf ("</LineStyle>\n");
 }
@@ -563,7 +563,7 @@ void set_linestyle (struct GMT_PEN *pen, double *rgb, int N)
 void set_polystyle (double *rgb, int outline, int active, int N)
 {
 	tabs (N++); printf ("<PolyStyle>\n");
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
+	tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - rgb[3]), GMT_3u255 (rgb));
 	tabs (N); printf ("<fill>%d</fill>\n", !active);
 	tabs (N); printf ("<outline>%d</outline>\n", outline);
 	tabs (--N); printf ("</PolyStyle>\n");
@@ -690,7 +690,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Set style for labels */
 	tabs (N++); printf ("<LabelStyle>\n");
 	tabs (N); printf ("<scale>%g</scale>\n", Ctrl->S.scale[N_ID]);
-	tabs (N); printf ("<color>%2.2x%2.2x%2.2x%2.2x</color>\n", GMT_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
+	tabs (N); printf ("<color>%02x%02x%02x%02x</color>\n", GMT_u255 (1.0 - Ctrl->G.fill[N_ID].rgb[3]), GMT_3u255 (Ctrl->G.fill[N_ID].rgb));
 	tabs (--N); printf ("</LabelStyle>\n");
 	tabs (--N); printf ("</Style>\n");
 

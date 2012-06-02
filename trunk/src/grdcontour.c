@@ -177,7 +177,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If no filename template is given we write all lines to stdout.\n");
 	GMT_message (GMT, "\t   If filename has no specifiers then we write all lines to a single file.\n");
 	GMT_message (GMT, "\t   If a float format (e.g., %%6.2f) is found we substitute the contour z-value.\n");
-	GMT_message (GMT, "\t   If an integer format (e.g., %%6.6d) is found we substitute a running segment count.\n");
+	GMT_message (GMT, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count.\n");
 	GMT_message (GMT, "\t   If an char format (%%c) is found we substitute C or O for closed and open contours.\n");
 	GMT_message (GMT, "\t   The 1-3 specifiers may be combined and appear in any order to produce the\n");
 	GMT_message (GMT, "\t   the desired number of output files (e.g., just %%c gives two files, just %%f would.\n");

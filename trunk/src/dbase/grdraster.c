@@ -207,7 +207,8 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 
 	Return 0 if cannot read files correctly, or nrasters if successful.  */
 
-	int i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, expected_size, object_ID, delta;
+	int i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, object_ID, delta;
+	uint64_t expected_size;
 	double global_lon, lon_tol;
 	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
@@ -226,7 +227,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 	}
 
 	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
-		GMT_report (GMT, GMT_MSG_FATAL, "Error reading grdraster.info. Error code = %ld\n", GMT->parent->error);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error reading grdraster.info. Error code = %d\n", GMT->parent->error);
 		return (0);
 	}
 
@@ -585,7 +586,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		if (delta == GRD_HEADER_SIZE)
 			rasinfo[nfound].skip = (off_t)GRD_HEADER_SIZE;	/* Must skip GMT grd header */
 		else if (delta) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Metadata conflict: Actual size of file %s [%" PRIi64 "] differs from expected [%ld]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (int64_t)F.st_size, expected_size);
+			GMT_report (GMT, GMT_MSG_FATAL, "Metadata conflict: Actual size of file %s [%" PRIi64 "] differs from expected [%" PRIu64 "]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (int64_t)F.st_size, expected_size);
 			continue;
 		}
 		nfound++;
@@ -597,7 +598,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 	} while (true);
 	
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-		GMT_report (GMT, GMT_MSG_FATAL, "Error closing grdraster.info file. Error code = %ld.\n", GMT->parent->error);
+		GMT_report (GMT, GMT_MSG_FATAL, "Error closing grdraster.info file. Error code = %d.\n", GMT->parent->error);
 		return (GMT->parent->error);
 	}
 
@@ -777,7 +778,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the grdraster main code ----------------------------*/
 
 	if (!(nrasters = load_rasinfo (GMT, &rasinfo, GMT_ENDIAN))) Return (EXIT_FAILURE);
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %ld data sets in grdraster.info\n", nrasters);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %d data sets in grdraster.info\n", nrasters);
 
 	/* Since load_rasinfo processed -R options we need to re-parse the main -R */
 
@@ -823,7 +824,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	if (j == UINT_MAX) {
 		if (iselect != UINT_MAX)
-			GMT_report (GMT, GMT_MSG_FATAL, "No raster with file number %ld in grdraster.info\n", iselect);
+			GMT_report (GMT, GMT_MSG_FATAL, "No raster with file number %d in grdraster.info\n", iselect);
 		else
 			GMT_report (GMT, GMT_MSG_FATAL, "No raster with text %s in grdraster.info\n", tselect);
 		error++;
@@ -883,7 +884,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 			e = lrint (floor (Grid->header->wesn[XHI]));	em = lrint ((Grid->header->wesn[XHI] - e) * 60.0);
 			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = lrint (floor (Grid->header->wesn[YHI]));	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
-			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%d:%2.2d/%d:%2.2d/%d:%2.2d/%d:%2.2d\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%d:%02d/%d:%02d/%d:%02d/%d:%02d\n", r_opt->arg, w, wm, e, em, s, sm, n, nm);
 		}
 		else
 			GMT_report (GMT, GMT_MSG_NORMAL, "%s -> -R%g/%g/%g/%g\n", r_opt->arg, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI]);
@@ -911,9 +912,9 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 			s = lrint (floor (Grid->header->wesn[YLO]));	sm = lrint ((Grid->header->wesn[YLO] - s) * 60.0);
 			n = lrint (floor (Grid->header->wesn[YHI]));	nm = lrint ((Grid->header->wesn[YHI] - n) * 60.0);
 			if (!GMT->common.R.oblique)
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%d:%2.2d/%d:%2.2d/%d:%2.2d/%d:%2.2d.\n", w, wm, e, em, s, sm, n, nm);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%d:%02d/%d:%02d/%d:%02d/%d:%02d.\n", w, wm, e, em, s, sm, n, nm);
 			else
-				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%d:%2.2d/%d:%2.2d/%d:%2.2d/%d:%2.2dr\n", w, wm, s, sm, e, em, n, nm);
+				GMT_report (GMT, GMT_MSG_FATAL, "Warning: Region reset to -R%d:%02d/%d:%02d/%d:%02d/%d:%02dr\n", w, wm, s, sm, e, em, n, nm);
 		}
 		else {
 			if (!GMT->common.R.oblique)
@@ -1074,7 +1075,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 #ifdef DEBUG
-				GMT_report (GMT, GMT_MSG_NORMAL, "Doing line %6.6ld\r", j);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Doing line %06d\r", j);
 #endif
 				switch (myras.type) {
 					case 'u':
@@ -1129,7 +1130,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_free (GMT, rasinfo);
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Finished reading from %s\n", myras.h.remark);
-	GMT_report (GMT, GMT_MSG_NORMAL, "min max and # NaN found: %g %g %ld\n", Grid->header->z_min, Grid->header->z_max, n_nan);
+	GMT_report (GMT, GMT_MSG_NORMAL, "min max and # NaN found: %g %g %" PRIu64 "\n", Grid->header->z_min, Grid->header->z_max, n_nan);
 
 	if (n_nan == Grid->header->nx * Grid->header->ny) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your grid file is entirely full of NaNs.\n");
 

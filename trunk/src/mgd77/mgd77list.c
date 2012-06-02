@@ -1145,7 +1145,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				aux_dvalue[MGD77_AUX_DM] = cal.min + cal.sec / 60.0;
 				aux_dvalue[MGD77_AUX_HM] = 100.0 * cal.hour + aux_dvalue[MGD77_AUX_DM];
 				date = MGD77_cal_to_fyear (GMT, &cal);	/* Get date as decimal year */
-				if (auxlist[MGD77_AUX_DA].requested) sprintf (aux_tvalue[MGD77_AUX_DA], "%4.4d%2.2d%2.2d", cal.year, cal.month, cal.day_m);
+				if (auxlist[MGD77_AUX_DA].requested) sprintf (aux_tvalue[MGD77_AUX_DA], "%04d%02d%02d", cal.year, cal.month, cal.day_m);
 				need_date = false;
 			}
 			else

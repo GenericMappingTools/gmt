@@ -735,7 +735,7 @@ static int MGD77_Decode_Header_m77 (struct GMT_CTRL *C, struct MGD77_HEADER_PARA
 	if (dir == MGD77_TO_HEADER) {	/* Set all records to space-filled records */
 		for (k = 0; k < MGD77_N_HEADER_RECORDS; k++) {
 			memset (record[k], ' ', MGD77_HEADER_LENGTH);
-			sprintf (&record[k][78], "%2.2d", k + 1);	/* Place sequence number */
+			sprintf (&record[k][78], "%02d", k + 1);	/* Place sequence number */
 		}
 		P->Record_Type = '4';	/* Set record type */
 	}
@@ -904,14 +904,14 @@ static int MGD77_Read_Header_Sequence (struct GMT_CTRL *C, FILE *fp, char *recor
 		}
 	}
 	if (fgets (record, MGD77_HEADER_LENGTH + 3, fp) == NULL) {		/* +3 to account for an eventual '\r' and '\n\0' */
-		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %2.2d\n", seq);
+		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Failure to read header sequence %02d\n", seq);
 		return (MGD77_ERROR_READ_HEADER_ASC);
 	}
 	GMT_chop (record);
 
 	got = atoi (&record[78]);
 	if (got != seq) {
-		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Expected header sequence %2.2d says it is %2.2d\n", seq, got);
+		GMT_report (C, GMT_MSG_NORMAL, "MGD77_Read_Header: Expected header sequence %02d says it is %02d\n", seq, got);
 		return (MGD77_WRONG_HEADER_REC);
 	}
 	return (MGD77_NO_ERROR);
@@ -1506,7 +1506,7 @@ static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *C, struct MGD77_CONTRO
 	line[0] = 0;
 	place_text (0);				strcat (line, "\t");
 	place_int (MGD77_TZ, "%d");		strcat (line, "\t");
-	place_int (MGD77_YEAR, "%4.4d"); place_int (MGD77_MONTH, "%2.2d");	place_int (MGD77_DAY, "%2.2d");	strcat (line, "\t");
+	place_int (MGD77_YEAR, "%04d"); place_int (MGD77_MONTH, "%02d");	place_int (MGD77_DAY, "%02d");	strcat (line, "\t");
 	r_time = 100.0 * MGD77Record->number[MGD77_HOUR] + MGD77Record->number[MGD77_MIN];
 	if (!GMT_is_dnan (r_time)) { sprintf (buffer, "%.8g", r_time); fputs (buffer, F->fp); }	strcat (line, "\t");
 	place_float (MGD77_LATITUDE, "%.8g");	strcat (line, "\t");
@@ -3050,7 +3050,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 		if (P->Parameters_Surveyed_Code[i] == '1'  AND_FALSE) continue;
 		if (P->Parameters_Surveyed_Code[i] == '3'  AND_FALSE) continue;
 		if (P->Parameters_Surveyed_Code[i] == '5'  AND_FALSE) continue;
-		if (F->verbose_level) fprintf (fp_err, "?-E-%s-H01-%2.2d: Invalid Parameter Survey Code (%s): (%c) [ ]\n", F->NGDC_id, 5 + i, pscode[i], P->Parameters_Surveyed_Code[i]);
+		if (F->verbose_level) fprintf (fp_err, "?-E-%s-H01-%02d: Invalid Parameter Survey Code (%s): (%c) [ ]\n", F->NGDC_id, 5 + i, pscode[i], P->Parameters_Surveyed_Code[i]);
 		H->errors[ERR]++;
 	}
 	if ((P->File_Creation_Year[0] && ((i = atoi (P->File_Creation_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year))) OR_TRUE) {
@@ -3077,7 +3077,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 
 	if ((P->Survey_Departure_Year[0] && ((i = atoi (P->Survey_Departure_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year) || (H->meta.Departure[0] && i != H->meta.Departure[0]))) OR_TRUE) {
 		if (H->meta.Departure[0])
-			sprintf (text, "%4.4d", H->meta.Departure[0]);
+			sprintf (text, "%04d", H->meta.Departure[0]);
 		else
 			strcpy (text, "    ");
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-01: Invalid Survey Departure Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Year, text);
@@ -3085,7 +3085,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	}
 	if ((P->Survey_Departure_Month[0] && ((i = atoi (P->Survey_Departure_Month)) < 1 || i > 12 || (H->meta.Departure[1] && i != H->meta.Departure[1]))) OR_TRUE) {
 		if (H->meta.Departure[1])
-			sprintf (text, "%2.2d", H->meta.Departure[1]);
+			sprintf (text, "%02d", H->meta.Departure[1]);
 		else
 			strcpy (text, "  ");
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-02: Invalid Survey Departure Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Month, text);
@@ -3093,7 +3093,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	}
 	if ((P->Survey_Departure_Day[0] && ((i = atoi (P->Survey_Departure_Day)) < 1 || i > 31 || (H->meta.Departure[2] && i != H->meta.Departure[2]))) OR_TRUE) {
 		if (H->meta.Departure[2])
-			sprintf (text, "%2.2d", H->meta.Departure[2]);
+			sprintf (text, "%02d", H->meta.Departure[2]);
 		else
 			strcpy (text, "  ");
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-03: Invalid Survey Departure Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Departure_Day, text);
@@ -3101,7 +3101,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	}
 	if ((P->Survey_Arrival_Year[0] && ((i = atoi (P->Survey_Arrival_Year)) < (1900 + MGD77_OLDEST_YY) || i > (1900 + T->tm_year) || (H->meta.Arrival[0] && i != H->meta.Arrival[0]))) OR_TRUE) {
 		if (H->meta.Arrival[0])
-			sprintf (text, "%4.4d", H->meta.Arrival[0]);
+			sprintf (text, "%04d", H->meta.Arrival[0]);
 		else
 			strcpy (text, "    ");
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-04: Invalid Survey Arrival Year: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Year, text);
@@ -3109,7 +3109,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	}
 	if ((P->Survey_Arrival_Month[0] && ((i = atoi (P->Survey_Arrival_Month)) < 1 || i > 12 || (H->meta.Arrival[1] && i != H->meta.Arrival[1]))) OR_TRUE) {
 		if (H->meta.Arrival[1])
-			sprintf (text, "%2.2d", H->meta.Arrival[1]);
+			sprintf (text, "%02d", H->meta.Arrival[1]);
 		else
 			strcpy (text, "  ");
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-05: Invalid Survey Arrival Month: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Month, text);
@@ -3117,7 +3117,7 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 	}
 	if ((P->Survey_Arrival_Day[0] && ((i = atoi (P->Survey_Arrival_Day)) < 1 || i > 31 || (H->meta.Arrival[2] && i != H->meta.Arrival[2]))) OR_TRUE) {
 		if (H->meta.Arrival[2])
-			sprintf (text, "%2.2d", H->meta.Arrival[2]);
+			sprintf (text, "%02d", H->meta.Arrival[2]);
 		else
 			strcpy (text, "  ");
 		if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H04-06: Invalid Survey Arrival Day: (%s) [%s]\n", F->NGDC_id, P->Survey_Arrival_Day, text);
@@ -3410,18 +3410,18 @@ void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MG
 		if (!strcmp (p, "    ")) continue;
 		k = 0;
 		if ((!(p[0] == '1' || p[0] == '3' || p[0] == '5' || p[0] == '7')) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-03-%2.2d: Invalid Ten Degree Identifier quadrant: (%s)\n", F->NGDC_id, n_block+1, p);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-03-%02d: Invalid Ten Degree Identifier quadrant: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
 		if ((!(p[1] >= '0' && p[1] <= '9')) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-04-%2.2d: Invalid Ten Degree Identifier latitude: (%s)\n", F->NGDC_id, n_block+1, p);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-04-%02d: Invalid Ten Degree Identifier latitude: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
 		if (((ix = MGD77_atoi (&p[2])) < 0 || ix > 18) OR_TRUE) {
-			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-05-%2.2d: Invalid Ten Degree Identifier longitude: (%s)\n", F->NGDC_id, n_block+1, p);
+			if (F->verbose_level | 2) fprintf (fp_err, "?-E-%s-H16-05-%02d: Invalid Ten Degree Identifier longitude: (%s)\n", F->NGDC_id, n_block+1, p);
 			k++;
 		}
-		if (k && (F->verbose_level | 2)) fprintf (fp_err, "?-E-%s-H16-06-%2.2d: Invalid Ten Degree Identifier: (%s)\n", F->NGDC_id, n_block+1, p);
+		if (k && (F->verbose_level | 2)) fprintf (fp_err, "?-E-%s-H16-06-%02d: Invalid Ten Degree Identifier: (%s)\n", F->NGDC_id, n_block+1, p);
 		H->errors[ERR] += k;
 		n_block++;
 		if (p[0] == '1' || p[0] == '3') ix += 19;
@@ -3713,7 +3713,7 @@ int MGD77_Read_Data_Sequence (struct GMT_CTRL *C, FILE *fp, char *record)
 
 void MGD77_Write_Sequence (struct GMT_CTRL *C, FILE *fp, int seq)
 {
-	if (seq > 0) fprintf (fp, "%2.2d", seq);
+	if (seq > 0) fprintf (fp, "%02d", seq);
 	fprintf (fp, "\n");
 }
 
