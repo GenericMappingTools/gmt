@@ -43,7 +43,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_GRID *G = NULL;
 	
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", k_mode_gmt)) == NULL) exit (EXIT_FAILURE);
 
 	Vi = GMT_create_vector (API->GMT, 3);
 	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMTAPI_FLOAT;

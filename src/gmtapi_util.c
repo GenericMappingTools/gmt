@@ -2436,8 +2436,8 @@ struct GMTAPI_CTRL * GMT_Create_Session (char *session, unsigned int mode)
 	 * sessions as needed. [Note: There is of yet no thread support built into the GMT API
 	 * but you could still manage many sessions at once].
 	 * The mode argument controls if we want to initialize PSL (for PostScript plotting) or not:
-	 *   mode = GMTAPI_GMT		: Initialize GMT only
-	 *   mode = GMTAPI_GMTPSL	: Initialize both GMT and PSL (needed to plot things)
+	 *   mode = k_mode_gmt: Initialize GMT only
+	 *   mode = k_mode_psl: Initialize both GMT and PSL (needed to plot things)
 	 * The session argument is a textstring used when reporting errors or messages from activity
 	 *   originating within this session.
 	 * We return the pointer to the allocated API structure.

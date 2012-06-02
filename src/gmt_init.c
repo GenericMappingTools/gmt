@@ -8165,7 +8165,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 
 	C = New_GMT_Ctrl (session);		/* Allocate and initialize a new common control structure */
 
-	if (mode == GMTAPI_GMTPSL) {			/* The application will need PSL */
+	if (mode == k_mode_psl) {			/* The application will need PSL */
 		C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
 		if (!C->PSL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");

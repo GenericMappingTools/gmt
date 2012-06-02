@@ -41,7 +41,7 @@ int main (int argc, char *argv[]) {
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMT)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", k_mode_gmt)) == NULL) exit (EXIT_FAILURE);
 
 	/* 2. READING IN A GRID */
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, in_grid, NULL)) == NULL) exit (EXIT_FAILURE);

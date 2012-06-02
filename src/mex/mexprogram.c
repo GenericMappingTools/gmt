@@ -18,7 +18,7 @@
 /*
  * The template for all GMT5 mex programs that call their GMT module.
  * The Makefile will replace FUNC with the module name and FUNC_MODE with
- * either GMTAPI_GMT or GMTAPI_GMTPSL (when PSL needs to be initialized).
+ * either k_mode_gmt or k_mode_psl (when PSL needs to be initialized).
  * We also need to feed in the correct KEY and N_KEYS settings, somehow.
  * Version:	5
  * Created:	10-Jul-2011
