@@ -10,7 +10,7 @@ ps=example_04.ps
 echo '-10  255   0  255' > zero.cpt
 echo '  0  100  10  100' >> zero.cpt
 grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P \
-	-X1.25i -Y1.25i -U/-0.5i/-1i/"Example 4 in Cookbook" > $ps
+	-X1.25i -Y1.25i -UL/-0.5i/-1i/"Example 4 in Cookbook" > $ps
 pscoast -R -J -p -B2/2NEsw -Gblack -O -K -T209/19.5/1i >> $ps
 grdview HI_topo4.nc -R195/210/18/25/-6/4 -J -Jz0.34i -p -Czero.cpt -O -K \
 	-N-6/lightgray -Qsm -B2/2/2:"Topo (km)":neswZ -Y2.2i >> $ps
@@ -22,7 +22,7 @@ ps=example_04c.ps
 grdgradient HI_geoid4.nc -A0 -Gg_intens.nc -Nt0.75 -fg
 grdgradient HI_topo4.nc -A0 -Gt_intens.nc -Nt0.75 -fg
 grdimage HI_geoid4.nc -Ig_intens.nc -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 -K -P \
-	-X1.25i -Y1.25i -U/-0.5i/-1i/"Example 4c in Cookbook" > $ps
+	-X1.25i -Y1.25i -UL/-0.5i/-1i/"Example 4c in Cookbook" > $ps
 pscoast -R -J -p -B2/2NEsw -Gblack -O -K >> $ps
 psbasemap -R -J -p -O -K -T209/19.5/1i --COLOR_BACKGROUND=red --MAP_TICK_PEN_PRIMARY=thinner,red \
 	--FONT=red >> $ps

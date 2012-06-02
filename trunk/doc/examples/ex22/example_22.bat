@@ -46,7 +46,7 @@ echo 300	blue	10000	blue >> neis.cpt
 
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -U/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > %ps%
+pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -UL/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > %ps%
 gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> %ps%
 
 REM Create legend input file for NEIS quake plot
