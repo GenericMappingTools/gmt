@@ -42,6 +42,10 @@ struct GMTMERCMAP_CTRL {
 		bool active;
 		int mode;
 	} D;
+	struct E {	/* -E[1|2|5] */
+		bool active;
+		int mode;
+	} E;
 	struct W {	/* -W<width> */
 		bool active;
 		double width;
@@ -71,7 +75,8 @@ int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	GMT_message (GMT, "gmtmercmap %s [API] - Make a Mercator color map from ETOPO[1|2|5] global relief grids\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D[b|c|d]] [-K] [-O] [-P] [-R<w/e/s/n>] [-S] [-W<width>]\n");
+	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D[b|c|d]] [-E1|2|5] [-K] [-O] [-P] [%s] [-S] [%s] [%s] [-W<width>]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -79,11 +84,12 @@ int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-C Color palette to use [relief].\n");
 	GMT_message (GMT, "\t-D Dry-run: Only print equivalent GMT commands instead; no map is made.\n");
 	GMT_message (GMT, "\t   Append b, c, or d for Bourne shell, C-shell, or DOS syntax [Default is Bourne].\n");
+	GMT_message (GMT, "\t-E Force the ETOPO resolution chosen [auto].\n");
 	GMT_explain_options (GMT, "KOP");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
 	GMT_message (GMT, "\t-W Specify the width of your map [6i].\n");
-	GMT_explain_options (GMT, "UVXcfnpt.");
+	GMT_explain_options (GMT, "UVXcnpt.");
 
 	return (EXIT_FAILURE);
 }
@@ -118,6 +124,15 @@ int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, s
 					case 'c':  Ctrl->D.mode = GMT_CSH_MODE;  break;
 					case 'd':  Ctrl->D.mode = GMT_DOS_MODE;  break;
 					default:   Ctrl->D.mode = GMT_BASH_MODE; break;
+				}
+				break;
+			case 'E':	/* Just issue equivalent GMT commands in a script */
+				Ctrl->E.active = true;
+				switch (opt->arg[0]) {
+					case '1':  Ctrl->E.mode = 1; break;
+					case '2':  Ctrl->E.mode = 2;  break;
+					case '5':  Ctrl->E.mode = 5;  break;
+					default:   n_errors++; break;
 				}
 				break;
 			case 'W':	/* Map width */
@@ -172,7 +187,7 @@ int main (int argc, char **argv)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "GMT_gmtmercmap", &GMT_cpy);		/* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "KOPUXxYycnpt>", options)) Return ((int)API->error);
+	if (GMT_Parse_Common (API, "-VR", "BKOPUXxYycnpt>", options)) Return ((int)API->error);
 	Ctrl = New_gmtmercmap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmercmap_parse (API, Ctrl, options))) Return ((int)error);
 
@@ -186,10 +201,14 @@ int main (int argc, char **argv)
 		GMT->common.R.active = true;
 	}
 	
-	/* 2. Determine map area in degrees squared, and use it to select which ETOPO?m.nc grid to use */
+	/* 2. Unless -E, determine map area in degrees squared, and use it to select which ETOPO?m.nc grid to use */
 	
-	area = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) * (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
-	min = (area < ETOPO1M_LIMIT) ? 1 : ((area < ETOPO2M_LIMIT) ? 2 : 5);	/* Use etopo[1,2,5]m_grd.nc depending on area */
+	if (Ctrl->E.active)
+		min = Ctrl->E.mode;
+	else {
+		area = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) * (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
+		min = (area < ETOPO1M_LIMIT) ? 1 : ((area < ETOPO2M_LIMIT) ? 2 : 5);	/* Use etopo[1,2,5]m_grd.nc depending on area */
+	}
 	
 	/* 3. Load in the subset from the selected etopo?m.nc grid */
 	
@@ -234,7 +253,13 @@ int main (int argc, char **argv)
 		}
 		if (Ctrl->D.mode != GMT_DOS_MODE) printf ("makecpt -C%s $T_opt -Z > %s_color.cpt\n", Ctrl->C.file, prefix);
 		printf ("%s Make the color map:\n", comment[Ctrl->D.mode]);
-		printf ("grdimage %s_topo.nc -I%s_int.nc -C%s_color.cpt -JM%gi -BaWSne", prefix, prefix, prefix, Ctrl->W.width);
+		printf ("grdimage %s_topo.nc -I%s_int.nc -C%s_color.cpt -JM%gi", prefix, prefix, prefix, Ctrl->W.width);
+		if (GMT->common.B.active[0] || GMT->common.B.active[1]) {	/* Specified a custom -B option */
+			if (GMT->common.B.active[0]) printf (" -B%s", GMT->common.B.string[0]);
+			if (GMT->common.B.active[1]) printf (" -B%s", GMT->common.B.string[1]);
+		}
+		else
+			printf (" -BaWSne");	/* Add default frame annotation */
 		if (GMT->common.O.active) printf (" -O");	/* Add optional user options */
 		if (GMT->common.P.active) printf (" -P");	/* Add optional user options */
 		if (Ctrl->S.active || GMT->common.K.active) printf (" -K");	/* Either gave -K or implicit via -S */

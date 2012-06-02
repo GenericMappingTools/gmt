@@ -1228,7 +1228,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				if (Ctrl->D.active) {
 					size_t count;
-					int closed;
+					unsigned int closed;
 					double *xtmp = NULL, *ytmp = NULL;
 					/* Must first apply inverse map transform */
 					xtmp = GMT_memory (GMT, NULL, n, double);

@@ -2361,27 +2361,6 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %d conversion errors\n", n_errors);
 }
 
-void GMT_pickdefaults (struct GMT_CTRL *C, bool lines, struct GMT_OPTION *options)
-{
-	int n = 0;
-	struct GMT_OPTION *opt = NULL;
-
-	/* Set up hash table */
-
-	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
-
-	for (opt = options; opt; opt = opt->next) {
-		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
-		if (!lines && n) fprintf (C->session.std[GMT_OUT], " ");	/* Separate by spaces */
-		fprintf (C->session.std[GMT_OUT], "%s", GMT_putparameter (C, opt->arg));		
-		if (lines) fprintf (C->session.std[GMT_OUT], "\n");	/* Separate lines */
-		n++;
-	}
-	if (!lines && n) fprintf (C->session.std[GMT_OUT], "\n");	/* Single lines */
-
-	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
-}
-
 bool gmt_true_false_or_error (char *value, bool *answer)
 {
 	/* Assigns 0 or 1 to answer, depending on whether value is false or true.
@@ -4452,6 +4431,27 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 	return (value);
 }
 
+void GMT_pickdefaults (struct GMT_CTRL *C, bool lines, struct GMT_OPTION *options)
+{
+	int n = 0;
+	struct GMT_OPTION *opt = NULL;
+
+	/* Set up hash table */
+
+	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
+
+	for (opt = options; opt; opt = opt->next) {
+		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
+		if (!lines && n) fprintf (C->session.std[GMT_OUT], " ");	/* Separate by spaces */
+		fprintf (C->session.std[GMT_OUT], "%s", GMT_putparameter (C, opt->arg));		
+		if (lines) fprintf (C->session.std[GMT_OUT], "\n");	/* Separate lines */
+		n++;
+	}
+	if (!lines && n) fprintf (C->session.std[GMT_OUT], "\n");	/* Single lines */
+
+	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
+}
+
 int GMT_savedefaults (struct GMT_CTRL *C, char *file)
 {
 	unsigned int error = 0, rec = 0;
@@ -5884,6 +5884,8 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		default:
 			C->current.map.frame.primary = true; k = 0; break;
 	}
+	i = (C->current.map.frame.primary) ? 0 : 1;
+	strncpy (C->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
 
 	/* C->current.map.frame.side[] may be set already when parsing gmt.conf flags */
 
