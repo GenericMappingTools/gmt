@@ -40,7 +40,7 @@ while [ ${frame} -le ${n_frames} ]; do
 	#	Plot red dot at current angle and annotate
 	sin=`gmtmath -Q ${angle} SIND =`
 	psxy -R -J -O -K -Sc0.1i -Gred >> $$.ps <<< "${angle} ${sin}"
-	printf "0 1.6 a = %3.3d" ${angle} | pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K \
+	printf "0 1.6 a = %3.03d" ${angle} | pstext -R -J -F+f14p,Helvetica-Bold+jTL -O -K \
 		-N -Dj0.1i/0.05i >> $$.ps
 	psxy -R -J -O -T >> $$.ps
 	if [ $# -eq 0 ]; then
