@@ -27,7 +27,7 @@
 
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */
-	enum Gmt_module module_id = 0;       /* Module ID */
+	enum Gmt_module_id module_id = 0;    /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
 	if (argc < 2) {

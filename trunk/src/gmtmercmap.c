@@ -177,7 +177,7 @@ int main (int argc, char **argv)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	/* Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", GMTAPI_GMTPSL)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("TEST", k_mode_psl)) == NULL) exit (EXIT_FAILURE);
 	options = GMT_Prep_Options (API, argc-1, argv+1);	if (API->error) return (API->error);	/* Set or get option list */
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
 		exit ((int)GMT_gmtmercmap_usage (API, GMTAPI_USAGE));	/* Return the usage message */

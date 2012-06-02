@@ -25,8 +25,6 @@ enum GMT_enum_api {
 	GMTAPI_ORDER_COL	= 1,	/* Fortran-style array order: as index increase we move down columns */
 	GMTAPI_USAGE		= 0,	/* Want to report full program usage message */
 	GMTAPI_SYNOPSIS		= 1,	/* Just want the synopsis of usage */
-	GMTAPI_GMT		= 0,	/* Want GMT but not PSL initialized */
-	GMTAPI_GMTPSL		= 1,	/* Want GMT and PSL initialized */
 	GMTAPI_N_GRID_ARGS	= 4,	/* Minimum size of information array used to specify grid parameters */
 	GMTAPI_N_ARRAY_ARGS	= 8,	/* Minimum size of information array used to specify array parameters */
 	GMTAPI_STRLEN		= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
