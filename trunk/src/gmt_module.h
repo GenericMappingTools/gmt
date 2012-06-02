@@ -14,7 +14,7 @@
 #ifndef _GMT_MODULE_H
 #define _GMT_MODULE_H
 
-#ifdef __cplusplus      /* Basic C++ support */
+#ifdef __cplusplus /* Basic C++ support */
 extern "C" {
 #endif
 

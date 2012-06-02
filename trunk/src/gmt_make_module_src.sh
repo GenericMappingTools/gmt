@@ -22,7 +22,7 @@ COPY_YEAR=$(date +%Y)
 #
 
 cat << EOF > ${FILE_GMT_MODULE_H}
-/* \$Id:\$
+/* \$Id\$
  *
  * Copyright (c) ${COPY_YEAR}
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
@@ -38,7 +38,7 @@ cat << EOF > ${FILE_GMT_MODULE_H}
 #ifndef _GMT_MODULE_H
 #define _GMT_MODULE_H
 
-#ifdef __cplusplus      /* Basic C++ support */
+#ifdef __cplusplus /* Basic C++ support */
 extern "C" {
 #endif
 
@@ -131,7 +131,7 @@ EOF
 #
 
 cat << EOF > ${FILE_GMT_MODULE_C}
-/* \$Id:\$
+/* \$Id\$
  *
  * Copyright (c) ${COPY_YEAR}
  * by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
