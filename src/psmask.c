@@ -360,7 +360,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append filename template which may contain a C-format specifier.\n");
 	GMT_message (GMT, "\t   If no filename template is given we write all polygons to stdout.\n");
 	GMT_message (GMT, "\t   If filename has no specifiers then we write all polygons to a single file.\n");
-	GMT_message (GMT, "\t   If an integer format (e.g., %%6.6d) is found we substitute a running segment count\n");
+	GMT_message (GMT, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
 	GMT_message (GMT, "\t   and write all polygons to individual files; see manual page for more examples.\n");
 	GMT_message (GMT, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
 	GMT_fill_syntax (GMT, 'G', "Select fill color/pattern [Default is no fill].");
@@ -554,7 +554,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			k = 0;
 			while (Ctrl->D.file[k]) {
 				if (Ctrl->D.file[k++] == '%') {	/* Start of format */
-					while (Ctrl->D.file[k] && !strchr ("d", Ctrl->D.file[k])) k++;	/* Scan past any format modifiers, like in %4.4d */
+					while (Ctrl->D.file[k] && !strchr ("d", Ctrl->D.file[k])) k++;	/* Scan past any format modifiers, like in %04d */
 					if (Ctrl->D.file[k] == 'd') fmt[1] = k;
 					k++;
 				}

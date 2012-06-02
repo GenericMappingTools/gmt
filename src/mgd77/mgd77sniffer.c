@@ -850,7 +850,7 @@ int GMT_mgd77sniffer (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* Output beginning of E77 header */
 		if (!strcmp(display,"E77")) {
-			fprintf (fpout, "# Cruise %s ID %s MGD77 FILE VERSION: %.4d%2.2d%2.2d N_RECS: %d\n",list[argno],D[0].word[0],\
+			fprintf (fpout, "# Cruise %s ID %s MGD77 FILE VERSION: %04d%02d%02d N_RECS: %d\n",list[argno],D[0].word[0],\
 			atoi(H.mgd77[MGD77_ORIG]->File_Creation_Year),atoi(H.mgd77[MGD77_ORIG]->File_Creation_Month),atoi(H.mgd77[MGD77_ORIG]->File_Creation_Day),nvalues);
 			sprintf(timeStr,"%s",ctime(&clock));
 			timeStr[strlen(ctime(&clock))-1] = '\0';

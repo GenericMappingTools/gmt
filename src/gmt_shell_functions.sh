@@ -82,7 +82,7 @@ gmt_set_psfile() {
 # For animations: Create a lexically increasing file namestem (no extension) based on prefix and frame number
 # i.e., prefix_######
 gmt_set_framename() {
-	echo $1 $2 | awk '{printf "%s_%6.6d\n", $1, $2}'
+	echo $1 $2 | awk '{printf "%s_%06d\n", $1, $2}'
 }
 
 # For animations: Increment frame counter by one

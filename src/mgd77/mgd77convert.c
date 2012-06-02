@@ -309,7 +309,7 @@ int GMT_mgd77convert (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "Converted cruise %s to %s format", list[argno], format_name[Ctrl->T.format]);
-		if (D->H.errors[0]) GMT_report (GMT, GMT_MSG_NORMAL, " [%2.2d header problems (%d warnings + %d errors)]", D->H.errors[0], D->H.errors[1], D->H.errors[2]);
+		if (D->H.errors[0]) GMT_report (GMT, GMT_MSG_NORMAL, " [%02d header problems (%d warnings + %d errors)]", D->H.errors[0], D->H.errors[1], D->H.errors[2]);
 		if (D->errors) GMT_report (GMT, GMT_MSG_NORMAL, " [%d data errors]", D->errors);
 		GMT_report (GMT, GMT_MSG_NORMAL, "\n");
 
