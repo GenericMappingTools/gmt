@@ -31,7 +31,7 @@ grdgradient USEast_Coast.nc -A90 -Nt1 -G$${_int}.nc
 makecpt -Cglobe -Z > $$.cpt
 while read lon lat dist; do
 	file=`gmt_set_framename ${name} ${frame}`
-	ID=`echo ${frame} | awk '{printf "%4.4d\n", $1}'`
+	ID=`echo ${frame} | awk '{printf "%04d\n", $1}'`
 	grdimage -JG${lon}/${lat}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+ \
 		${REGION} -P -Y0.1i -X0.1i USEast_Coast.nc -I$${_int}.nc -C$$.cpt \
 		--PS_MEDIA=${px}ix${py}i -K > $$.ps
