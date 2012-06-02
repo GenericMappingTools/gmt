@@ -173,7 +173,7 @@
 		/* Suppress Visual Studio deprecation warnings */
 #		pragma warning( disable : 4996 )
 		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
-#		pragma warning( once : 4244 )
+#		pragma warning( once : 4244 4267 )
 		/* Visual Studio does not understand C99 restrict keyword */
 #		define restrict
 

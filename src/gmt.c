@@ -28,7 +28,6 @@
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */
 	enum Gmt_module module_id = 0;       /* Module ID */
-	struct Gmt_moduleinfo module;        /* Name, purpose, Api_mode, and function pointer of module */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
 	if (argc < 2) {
