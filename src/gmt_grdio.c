@@ -1412,7 +1412,6 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 	else	/* Use specified subset */
 		GMT_memcpy (wesn, in_wesn, 4, double);
 
-
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_report (C, GMT_MSG_NORMAL, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n", imgfile, scale, mode, lat);

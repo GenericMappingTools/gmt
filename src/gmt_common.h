@@ -51,6 +51,7 @@ struct GMT_COMMON {
 	} synopsis;
 	struct B {	/* -B<params> */
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
+		char string[2][GMT_TEXT_LEN256];
 	} B;	
 	struct J {	/* -J<params> */
 		bool active, zactive;
