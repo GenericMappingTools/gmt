@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "gmt_version.h"
 #include "gmt_module.h"
+#include "gmt_version.h"
 
 /* sorted array with program paramerters for all GMT modules */
 struct Gmt_moduleinfo g_module[] = {
