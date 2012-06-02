@@ -473,7 +473,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_map_basemap (GMT);
 
-	if (GMT->current.proj.z_pars[0] == 0.0 && !Ctrl->N.active) {
+	if (GMT->current.proj.z_pars[0] == 0.0 && (!Ctrl->N.active || (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])))) {
 		GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 		clip_set = true;
 	}

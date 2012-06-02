@@ -679,6 +679,12 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 			clip_set = true;
 		}
 	}
+	else if (!not_line && GMT_IS_CONICAL(GMT) && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
+		if (!S.G.delay) {
+			GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
+			clip_set = true;
+		}
+	}
 	if (S.symbol == GMT_SYMBOL_TEXT && Ctrl->G.active && !Ctrl->W.active) PSL_setcolor (PSL, current_fill.rgb, PSL_IS_FILL);
 	if (S.symbol == GMT_SYMBOL_TEXT) GMT_setfont (GMT, &S.font);	/* Set the required font */
 	if (S.symbol == GMT_SYMBOL_ELLIPSE) Ctrl->N.active = true;	/* So we can see ellipses that have centers outside -R */
