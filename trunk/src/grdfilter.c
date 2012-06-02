@@ -627,7 +627,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Set up the distance scalings for lon and lat, and assign pointer to distance function  */
 #ifdef _OPENMP
-#pragma omp parallel shared(fast_way,x_shift,i_origin) private(F,par,x_width,y_width,i,j,effort_level,tid,weight,work_array,work_data) firstprivate(x_scale,y_scale,filter_type,spherical,visit_check,go_on,max_lat,merc_range,slow,slower,x_fix,y_fix) reduction(+:n_nan)
+#pragma omp parallel shared(fast_way,x_shift,i_origin) private(F,par,x_width,y_width,effort_level,tid,weight,work_array,work_data) firstprivate(x_scale,y_scale,filter_type,spherical,visit_check,go_on,max_lat,merc_range,slow,slower,x_fix,y_fix) reduction(+:n_nan)
 {
 	tid = omp_get_thread_num ();
 #endif
