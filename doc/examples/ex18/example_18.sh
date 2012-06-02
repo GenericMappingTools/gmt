@@ -31,7 +31,7 @@ $AWK '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> 
 # Then draw 10 mGal contours and overlay 50 mGal contour in green
 
 grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i \
-	-U/-1.25i/-0.75i/"Example 18 in Cookbook" >> $ps
+	-UL/-1.25i/-0.75i/"Example 18 in Cookbook" >> $ps
 # Save 50 mGal contours to individual files, then plot them
 grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%d_%c.txt
 psxy -R -J -O -K -Wthin,green sm_*.txt >> $ps

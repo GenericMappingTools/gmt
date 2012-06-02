@@ -36,7 +36,7 @@ echo -0.5	gray	0.5	gray >> key.cpt
 echo 0.5	red	1.5	red >> key.cpt
 REM Create the final plot and overlay coastlines
 gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
-grdimage key.nc -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > %ps%
+grdimage key.nc -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i -UL/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > %ps%
 pscoast -R -J -O -K -Wthinnest -Dc -A500 >> %ps%
 REM Place an explanatory legend below
 call script0.bat
