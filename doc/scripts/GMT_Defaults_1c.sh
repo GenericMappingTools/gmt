@@ -3,7 +3,7 @@
 #
 gmtset MAP_FRAME_TYPE plain FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh FONT_ANNOT_PRIMARY +8p
 psbasemap -R2001-9-11T/2001-9-13T/0.01/100 -JX2.25T/2.25l -Bpa6Hf1hg6h:"x-axis label":/a1g3p:"y-axis label":WSne \
-	-X2i -Bsa1D/ -P -K -U/-0.75i/-0.85i/"Dazed and Confused" --TIME_LANGUAGE=pt \
+	-X2i -Bsa1D/ -P -K -UL/-0.75i/-0.85i/"Dazed and Confused" --TIME_LANGUAGE=pt \
 	--FORMAT_TIME_LOGO="2011 Jun 13 22:10:02" > GMT_Defaults_1c.ps
 pstext -R0/2.25/0/2.25 -Jx1i -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_Defaults_1c.ps
 0.6    2.4 RB X_AXIS_LENGTH
