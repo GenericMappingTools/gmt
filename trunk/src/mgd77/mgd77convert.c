@@ -21,6 +21,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_mgd77convert /* I am mgd77convert */
+
 #include "gmt.h"
 #include "mgd77.h"
 
@@ -68,7 +70,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mgd77convert %s [API] - Convert MGD77 data to other file formats\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-D] [-L[e][w][+]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -210,7 +212,7 @@ int GMT_mgd77convert (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_mgd77convert", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return (error);

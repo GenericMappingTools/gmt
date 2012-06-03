@@ -23,6 +23,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_pshistogram /* I am pshistogram */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -313,7 +315,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "pshistogram %s [API] - Calculate and plot histograms\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-K] [-L<pen>] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -483,7 +485,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_pshistogram", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRbf", "BKOPUXxYychips>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_pshistogram_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pshistogram_parse (API, Ctrl, options))) Return (error);

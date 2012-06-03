@@ -36,6 +36,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_psmask /* I am psmask */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -342,7 +344,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "psmask %s [API] - Use data tables to clip or mask map areas with no coverage\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psmask <table> %s %s %s\n", GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [-C] [-D<template>] [-G<fill>] [%s] [-K] [-N] [-O] [-P] [-Q<min>]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-S%s] [-T] [%s] [%s] [%s]\n", GMT_RADIUS_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
@@ -529,7 +531,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psmask", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmask_parse (API, Ctrl, options))) Return (error);

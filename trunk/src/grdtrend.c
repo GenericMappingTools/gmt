@@ -81,6 +81,8 @@
  * are conveniently sized near 0 or 1.
  */
 
+#define THIS_MODULE k_mod_grdtrend /* I am grdtrend */
+
 #include "gmt.h"
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
@@ -130,7 +132,7 @@ int GMT_grdtrend_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdtrend %s [API] - Fit trend surface to grids and compute residuals\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>]\n");
 	GMT_message (GMT, "\t[%s] [-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
@@ -500,7 +502,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdtrend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdtrend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
-	GMT = GMT_begin_module (API, "GMT_grdtrend", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
 	Ctrl = New_grdtrend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrend_parse (API, Ctrl, options))) Return (error);

@@ -71,6 +71,8 @@
  * all these reasons I use Chebyshev polynomials.
  */
 
+#define THIS_MODULE k_mod_trend1d /* I am trend1d */
+
 #include "gmt.h"
 
 #define TREND1D_N_OUTPUT_CHOICES 5
@@ -472,7 +474,7 @@ int GMT_trend1d_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "trend1d %s [API] - Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: trend1d [<table>] -F<xymrw|p> -N[f]<n_model>[r] [-C<condition_#>]\n");
 	GMT_message (GMT, "\t[-I[<confidence>]] [%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -620,7 +622,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_trend1d", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "his>" GMT_OPT("H"), options)) Return (API->error);
 	Ctrl = New_trend1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_trend1d_parse (API, Ctrl, options))) Return (error);

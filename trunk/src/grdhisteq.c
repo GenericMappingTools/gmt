@@ -24,6 +24,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_grdhisteq /* I am grdhisteq */
+
 #include "gmt.h"
 
 struct GRDHISTEQ_CTRL {
@@ -83,7 +85,7 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdhisteq %s [API] - Perform histogram equalization for a grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -339,7 +341,7 @@ int GMT_grdhisteq (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdhisteq", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
 	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdhisteq_parse (API, Ctrl, options))) Return (error);

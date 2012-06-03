@@ -26,6 +26,8 @@
 */
 
 #define GMT_WITH_NO_PS
+#define THIS_MODULE k_mod_grdfilter /* I am grdfilter */
+
 #include "gmt.h"
 
 struct GRDFILTER_CTRL {
@@ -299,7 +301,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdfilter %s [API] %s - Filter a grid in the space (or time) domain\n\n", GMT_VERSION, GMT_MP);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdfilter <ingrid> -D<distance_flag> -F<type>[-]<filter_width>[/<width2>][<mode>] -G<outgrid>\n");
 	GMT_message (GMT, "\t[%s] [-Ni|p|r] [%s]\n\t[-T] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
@@ -531,7 +533,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdfilter", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
 	Ctrl = New_grdfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfilter_parse (API, Ctrl, options))) Return (error);

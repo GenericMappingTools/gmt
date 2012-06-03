@@ -31,6 +31,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_redpol /* I am redpol */
+
 #include "gmt.h"
 
 struct REDPOL_CTRL {
@@ -986,7 +988,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 int GMT_redpol_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "redpol %s - Compute the Continuous Reduction To the Pole, AKA differential RTP\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: redpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>]\n");
 	GMT_message (GMT, "       [-E<dip_grd>/<dec_grd>] [-F<m>/<n>] [-M<m|r>] [-N] [-W<win_width>]\n");
 	GMT_message (GMT, "       [%s] [-T<year>] [-Z<filter>] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
@@ -1163,7 +1165,7 @@ int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_redpol", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
 	Ctrl = New_redpol_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_redpol_parse (API, Ctrl, options))) Return (error);

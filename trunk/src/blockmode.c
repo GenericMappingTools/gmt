@@ -29,6 +29,8 @@
 
 #define BLOCKMODE	/* Since mean, median, mode share near-similar macros we require this setting */
 
+#define THIS_MODULE k_mod_blockmode /* I am blockmode */
+
 #include "gmt.h"
 #include "block_subs.h"
 
@@ -36,7 +38,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "blockmode %s [API] - Block average (x,y,z) data tables by mode estimation\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-C] [-E] [-Er[-]] [-Q] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
@@ -237,7 +239,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_blockmode", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "ghior>" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_blockmode_parse (API, Ctrl, options))) Return (error);

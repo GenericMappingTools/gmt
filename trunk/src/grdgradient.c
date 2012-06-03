@@ -29,6 +29,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_grdgradient /* I am grdgradient */
+
 #include "gmt.h"
 
 struct GRDGRADIENT_CTRL {
@@ -110,7 +112,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdgradient %s [API] - Compute directional gradients from a grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
 	GMT_message (GMT, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
 	GMT_message (GMT, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
@@ -338,7 +340,7 @@ int GMT_grdgradient (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdgradient", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
 	Ctrl = New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdgradient_parse (API, Ctrl, options))) Return (error);

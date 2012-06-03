@@ -25,6 +25,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_psscale /* I am psscale */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -121,7 +123,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psscale synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psscale %s [API] - Plot a gray-scale or color-scale on maps\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>] [-E[b|f][<length>][+n[<txt>]]]\n");
 	GMT_message (GMT, "\t[%s] [-I[<max_intens>|<low_i>/<high_i>] [%s] [%s] [-K] [-L[i][<gap>[<unit>]]]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-M] [-O] [-P] [-Q] [-S] [-T[+p<pen>][+g<fill>][+l|r|b|t<off>]]\n\t[%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
@@ -1067,7 +1069,7 @@ int GMT_psscale (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psscale", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options)) Return (API->error);

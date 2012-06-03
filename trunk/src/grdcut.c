@@ -26,6 +26,8 @@
  * to a new file.
  */
  
+#define THIS_MODULE k_mod_grdcut /* I am grdcut */
+
 #include "gmt.h"
 
 /* Control structure for grdcontour */
@@ -71,7 +73,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdcut %s [API] - Extract subregion from a grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-Z[n][min/max]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -170,7 +172,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdcut", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
 	Ctrl = New_grdcut_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdcut_parse (API, Ctrl, options))) Return (error);

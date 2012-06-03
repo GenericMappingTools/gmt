@@ -25,6 +25,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_x2sys_list /* I am x2sys_list */
+
 #include "x2sys.h"
 
 #define GMT_T	3	/* Just used to indicate abs time formatting */
@@ -103,7 +105,7 @@ void Free_x2sys_list_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/*
 int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "x2sys_list %s - Extract subset from crossover data base\n\n", X2SYS_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-F<flags>] [-I<ignorelist>] [-L[<corrtable.txt>]]\n");
 	GMT_message (GMT, "\t [-N<nx_min>] [-Qe|i] [-S<track>] [%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
@@ -284,7 +286,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_x2sys_list", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRb", ">", options)) Return (API->error);
 	Ctrl = New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_list_parse (API, Ctrl, options))) Return (error);

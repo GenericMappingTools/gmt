@@ -30,6 +30,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_psrose /* I am psrose */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -126,7 +128,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psrose synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psrose %s [API] - Plot a polar histogram (rose, sector, windrose diagrams)\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S<scale>[n]] [-T] [%s]\n", GMT_U_OPT);
@@ -371,7 +373,7 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psrose", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psrose_parse (API, Ctrl, options))) Return (error);

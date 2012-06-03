@@ -38,6 +38,8 @@
 * solution here.
 */
 
+#define THIS_MODULE k_mod_gmtdp /* I am gmtdp */
+
 #include "gmt.h"
 
 /* Control structure for gmtdp */
@@ -72,7 +74,7 @@ void Free_gmtdp_Ctrl (struct GMT_CTRL *GMT, struct GMTDP_CTRL *C) {	/* Deallocat
 int GMT_gmtdp_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
-	GMT_message (GMT, "gmtdp %s [API] - Line reduction using the Douglas-Peucker algorithm\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtdp [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -285,7 +287,7 @@ int GMT_gmtdp (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtdp", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghio>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtdp_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtdp_parse (API, Ctrl, options))) Return (error);

@@ -25,6 +25,8 @@
  */
  
 #define GMT_WITH_NO_PS
+#define THIS_MODULE k_mod_gmtget /* I am gmtget */
+
 #include "gmt.h"
 
 /* Control structure for gmtget */
@@ -56,7 +58,7 @@ int GMT_gmtget_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtget %s [API] - Get individual GMT default parameters\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtget [-L] [-G<defaultsfile>] PARAMETER1 PARAMETER2 PARAMETER3 ...\n");
 	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
 
@@ -133,7 +135,7 @@ int GMT_gmtget (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtget", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtget_parse (API, Ctrl, options))) Return (error);

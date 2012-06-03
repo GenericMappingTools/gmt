@@ -52,6 +52,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_img2grd /* I am img2grd */
+
 #include "gmt_imgsubs.h"
 #include "gmt.h"
 #include "common_byteswap.h"
@@ -126,7 +128,7 @@ void Free_img2grd_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deall
 int GMT_img2grd_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "img2grd %s [API] - Extract a subset from an img file in Mercator or Geographic format\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [-V] [-W<maxlon>] [%s]\n\n", GMT_n_OPT);
 
@@ -314,7 +316,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_img2grd", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf", GMT_OPT("m"), options))
 		Return (API->error);
 	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */

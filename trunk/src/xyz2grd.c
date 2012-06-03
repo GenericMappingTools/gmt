@@ -25,6 +25,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_xyz2grd /* I am xyz2grd */
+
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
@@ -95,7 +97,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "xyz2grd %s [API] - Convert data table to a grid file\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: xyz2grd [<table>] -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-A[f|l|m|n|r|s|u|z]] [%s]\n", GMT_GRDEDIT);
 	GMT_message (GMT, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
@@ -318,7 +320,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_xyz2grd", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "hirs" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_xyz2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_xyz2grd_parse (API, Ctrl, &io, options))) Return (error);

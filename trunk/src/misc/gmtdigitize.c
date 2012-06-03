@@ -309,7 +309,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	if (GMT_Parse_Common (API, "-VJRbf:", "h>" GMT_OPT("HMm"), options)) Return (API->error);
-	GMT = GMT_begin_module (API, "GMT_gmtdigitize", &GMT_cpy);				/* Save current state */
+	GMT = GMT_begin_module (API, "gmtdigitize", &GMT_cpy);				/* Save current state */
 	Ctrl = New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtdigitize_parse (API, Ctrl, options))) Return (error);
 	

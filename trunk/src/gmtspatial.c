@@ -24,6 +24,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_gmtspatial /* I am gmtspatial */
+
 #include "gmt.h"
 
 EXTERN_MSC void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
@@ -530,7 +532,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtspatial %s [API] - Do geospatial operations on lines and polygons\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 #ifdef PW_TESTING
 	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-Q[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else
@@ -773,7 +775,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtspatial", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "ghios" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtspatial_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtspatial_parse (API, Ctrl, options))) Return (error);

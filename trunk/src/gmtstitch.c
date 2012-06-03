@@ -27,6 +27,8 @@
  * between segment endpoints exceeds a specified threshold.
  */
 
+#define THIS_MODULE k_mod_gmtstitch /* I am gmtstitch */
+
 #include "gmt.h"
 
 /* Control structure for gmtstitch */
@@ -109,7 +111,7 @@ static int GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtstitch %s [API] - Join individual lines whose end points match within tolerance\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtstitch [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<list>]\n");
 	GMT_message (GMT, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_i_OPT, GMT_colon_OPT);
@@ -279,7 +281,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtstitch", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtstitch_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtstitch_parse (API, Ctrl, options))) Return (error);

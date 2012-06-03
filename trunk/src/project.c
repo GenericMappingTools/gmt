@@ -26,6 +26,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_project /* I am project */
+
 #include "gmt.h"
 
 #define PROJECT_N_FARGS	7
@@ -326,7 +328,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "project %s [API] - Project table data onto lines or great circles, generate tracks, or translate coordinates\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
 	GMT_message (GMT, "\t[-F<flags>] [-G<dist>[/<colat>][+]] [-L[w][<l_min>/<l_max>]]\n");
 	GMT_message (GMT, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
@@ -646,7 +648,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_project", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_project_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_project_parse (API, Ctrl, options))) Return (error);

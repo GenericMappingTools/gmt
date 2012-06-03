@@ -25,6 +25,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_grdimage /* I am grdimage */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -99,7 +101,7 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdimage %s [API] - Project grids or images and plot them on maps\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 #ifdef USE_GDAL
 	GMT_message (GMT, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", 
 			GMT_J_OPT, GMT_B_OPT);
@@ -387,7 +389,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdimage", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycnpt>" GMT_OPT("S"), options)) Return (API->error);
 	Ctrl = New_grdimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdimage_parse (API, Ctrl, options))) Return (error);

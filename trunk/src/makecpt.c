@@ -28,6 +28,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_makecpt /* I am makecpt */
+
 #include "gmt.h"
 
 EXTERN_MSC unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
@@ -103,7 +105,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "makecpt %s [API] - Make GMT color palette tables\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
 	GMT_message (GMT, "	[-T<z0>/<z1>/<dz> | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
 
@@ -262,7 +264,7 @@ int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_makecpt", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-V", ">", options)) Return (API->error);
 	Ctrl = New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_makecpt_parse (API, Ctrl, options))) Return (error);

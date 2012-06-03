@@ -24,6 +24,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_gmtwhich /* I am gmtwhich */
+
 #include "gmt.h"
 
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
@@ -51,7 +53,7 @@ int GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtwhich %s [API] - Find full path to specified files\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtwhich [files] [-C] [%s]\n", GMT_V_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -122,7 +124,7 @@ int GMT_gmtwhich (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtwhich", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_gmtwhich_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtwhich_parse (API, Ctrl, options))) Return (error);

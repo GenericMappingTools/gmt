@@ -26,6 +26,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_grd2rgb /* I am grd2rgb */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -227,7 +229,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 int GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grd2rgb %s [API] - Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grd2rgb <infile> [-C<cpt>] [-G<template>] [%s]\n", GMT_Id_OPT);
 	GMT_message (GMT, "\t[-L<layer>] [%s] [%s] [-W<width>/<height>[/<n_bytes>]]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT);
 
@@ -387,7 +389,7 @@ int GMT_grd2rgb (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grd2rgb", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options)) Return (API->error);
 	Ctrl = New_grd2rgb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2rgb_parse (API, Ctrl, options))) Return (error);

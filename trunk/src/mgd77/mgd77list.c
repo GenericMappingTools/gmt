@@ -32,6 +32,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_mgd77list /* I am mgd77list */
+
 #include "gmt.h"
 #include "mgd77.h"
 
@@ -151,7 +153,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mgd77list %s [API] - Extract data from MGD77 files\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[code]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
 	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-H] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][e|k|n|M]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Sa<startdist>[unit]] [-Sb<stopdist>[unit]] [-T[m|e]] [-V] [-W<Weight>] [-Z[+|-] [%s]\n\n", GMT_bo_OPT);
@@ -749,7 +751,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_mgd77list", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRb", "hm", options)) Return (API->error);
 	Ctrl = New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return (error);

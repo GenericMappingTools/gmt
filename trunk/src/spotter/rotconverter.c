@@ -62,6 +62,8 @@
  * 265.37800	 55.69932	150.0000	 82.9957
  */
 
+#define THIS_MODULE k_mod_rotconverter /* I am rotconverter */
+
 #include "spotter.h"
 
 struct ROTCONVERTER_CTRL {	/* All control options for this program (except common args) */
@@ -115,7 +117,7 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "rotconverter %s - Manipulate total reconstruction and stage rotations\n\n", SPOTTER_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]] [-F<out>]\n");
 	GMT_message (GMT, "\t[-G] [-N] [-S] [-T] [%s] [%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
@@ -297,7 +299,7 @@ int GMT_rotconverter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_rotconverter", &GMT_cpy);				/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vf:", "h>", options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_rotconverter_Ctrl (GMT);	/* Allocate and initialize a new control structure */

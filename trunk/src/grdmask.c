@@ -26,6 +26,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_grdmask /* I am grdmask */
+
 #include "gmt.h"
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
@@ -77,7 +79,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdmask %s [API] - Create mask grid from polygons or point coverage\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A[m|p]] [-N[i|I|p|P][<values>]]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
@@ -235,7 +237,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdmask", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "aghirs" GMT_OPT("FHMm"), options)) Return (API->error);
 	Ctrl = New_grdmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdmask_parse (API, Ctrl, options))) Return (error);

@@ -28,6 +28,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_grdokb /* I am grdokb */
+
 #include "gmt.h"
 #include "okbfuns.h"
 
@@ -122,7 +124,7 @@ int GMT_grdokb_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdokb %s - Computes the gravity effect of one (or two) grids by the method of Okabe\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdokb grdfile_up [grdfile_low] [-C<density>] [-D] [-F<xy_file>] [-fg] \n");
 	GMT_message (GMT, "\t[-G<outfile>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
@@ -320,7 +322,7 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdokb", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
 	Ctrl = New_grdokb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdokb_parse (API, Ctrl, options))) Return (error);

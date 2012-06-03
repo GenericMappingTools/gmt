@@ -33,6 +33,8 @@
  * under the terms of the GNU public license, see http://www.gnu.org
  */
 
+#define THIS_MODULE k_mod_pssegyz /* I am pssegyz */
+
 #include "pslib.h"
 #include "gmt.h"
 #include "segy_io.h"
@@ -130,7 +132,7 @@ int GMT_pssegyz_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "pssegyz %s - Plot a SEGY file in PostScript\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: pssegyz [<segyfile>] -D<dev> -F<color> | -W %s %s \n", GMT_Jx_OPT, GMT_Rx_OPT);
 	GMT_message (GMT, "\t[-A] [-C<clip>] [-E<slop>] [-I] [-K] [-L<nsamp>] [-M<ntraces>] [-N]\n");
 	GMT_message (GMT, "\t[-O] [-P] [-Q<mode><value>] [-S<header>] [-T<tracefile>] [%s]\n", GMT_U_OPT);
@@ -600,7 +602,7 @@ int GMT_pssegyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_pssegyz", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options)) Return (API->error);
 	Ctrl = New_pssegyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pssegyz_parse (API, Ctrl, options))) Return (error);

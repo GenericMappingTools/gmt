@@ -42,6 +42,8 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
+#define THIS_MODULE k_mod_gshhg /* I am gshhg */
+
 #include "gmt.h"
 #include "gshhg.h"
 
@@ -98,7 +100,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gshhg %s [API] - Extract data tables from binary GSHHG or WDBII data files\n\n", GSHHG_PROG_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -239,7 +241,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef DEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
-	GMT = GMT_begin_module (API, "GMT_gshhg", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbfo:", "m", options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */

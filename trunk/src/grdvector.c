@@ -26,6 +26,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_grdvector /* I am grdvector */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -98,7 +100,7 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdvector %s [API] - Plot vector field from two component grids\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdvector <gridx> <gridy> %s %s [-A]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-C<cpt>] [-G<fill>] [-I<dx>/<dy>] [-K] [-N] [-O] [-P] [-Q<params>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-S[l]<scale>[<unit>]] [-T] [%s] [%s] [-W<pen>]\n\t[%s] [%s] [-Z] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -315,7 +317,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdvector", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>", options)) Return (API->error);
 	Ctrl = New_grdvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdvector_parse (API, Ctrl, options))) Return (error);

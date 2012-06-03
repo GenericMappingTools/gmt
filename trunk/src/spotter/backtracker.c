@@ -70,6 +70,8 @@
  * either single or double precision (see -bi option)
  */
 
+#define THIS_MODULE k_mod_backtracker /* I am backtracker */
+
 #include "spotter.h"
 
 struct BACKTRACKER_CTRL {	/* All control options for this program (except common args) */
@@ -146,7 +148,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "backtracker %s - Generate forward and backward flowlines and hotspot tracks\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
 	GMT_message (GMT, "\t[-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>] [%s] [-W] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -409,7 +411,7 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_backtracker", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_backtracker_Ctrl (GMT);	/* Allocate and initialize a new control structure */

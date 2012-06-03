@@ -26,6 +26,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_grdlandmask /* I am grdlandmask */
+
 #include "gmt.h"
 
 #define GRDLANDMASK_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
@@ -86,7 +88,7 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdlandmask %s [API] - Create a \"wet-dry\" mask grid from shoreline data base\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
 
@@ -234,7 +236,7 @@ int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdlandmask", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options)) Return (API->error);
 	Ctrl = New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdlandmask_parse (API, Ctrl, options))) Return (error);

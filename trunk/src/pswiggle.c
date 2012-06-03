@@ -31,6 +31,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_pswiggle /* I am pswiggle */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -201,7 +203,7 @@ int GMT_pswiggle_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the pswiggle synopsis and optionally full usage information */
 
-	GMT_message (GMT, "pswiggle %s [API] - Plot z = f(x,y) anomalies along tracks\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: pswiggle [<table>] %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[-A<azimuth>] [%s] [-C<center>] [-G[-|+|=]<fill>]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-I<az>] [%s] [-K] [-O] [-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>]\n", GMT_Jz_OPT);
@@ -407,7 +409,7 @@ int GMT_pswiggle (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_pswiggle", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYycghipst>" GMT_OPT("EHMm"), options)) Return (API->error);
 	Ctrl = New_pswiggle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pswiggle_parse (API, Ctrl, options))) Return (error);

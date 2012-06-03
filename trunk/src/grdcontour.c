@@ -25,6 +25,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_grdcontour /* I am grdcontour */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -144,7 +146,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
-	GMT_message (GMT, "grdcontour %s [API] - Make contour map using a grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdcontour <grid> -C<cont_int>|<cpt> [-A[-|<annot_int>][<labelinfo>] [%s ] [%s]\n", GMT_B_OPT, GMT_J_OPT);
 	GMT_message (GMT, "\t[-D<template>] [-F[l|r]] [%s] [%s] [-K] [-L<low>/<high>]\n", GMT_Jz_OPT, GMT_CONTG);
 	GMT_message (GMT, "\t[-O] [-P] [-Q<cut>] [%s] [-S<smooth>]\n", GMT_Rgeoz_OPT);
@@ -718,7 +720,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdcontour", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRbf", "BKOPUXhxYycpt" GMT_OPT("EMm"), options)) Return (API->error);
 	Ctrl = New_grdcontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdcontour_parse (API, Ctrl, options))) Return (error);

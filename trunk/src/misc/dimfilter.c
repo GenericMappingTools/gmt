@@ -17,9 +17,9 @@
  *
  * For details, see Kim, S.-S., and Wessel, P. 2008, "Directional Median Filtering
  * for Regional-Residual Separation of Bathymetry, Geochem. Geophys. Geosyst.,
- * 9(Q03005), doi:10.1029/2007GC001850. 
+ * 9(Q03005), doi:10.1029/2007GC001850.
  */
- 
+
 #include "gmt.h"
 
 struct DIMFILTER_INFO {
@@ -84,9 +84,9 @@ struct DIMFILTER_CTRL {
 
 void *New_dimfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct DIMFILTER_CTRL *C;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct DIMFILTER_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->F.filter = C->N.filter = C->D.mode = -1;
 	C->N.n_sectors = 1;
@@ -95,10 +95,10 @@ void *New_dimfilter_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 void Free_dimfilter_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
-	if (C->In.file) free (C->In.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->S.file) free (C->S.file);	
-	GMT_free (GMT, C);	
+	if (C->In.file) free (C->In.file);
+	if (C->G.file) free (C->G.file);
+	if (C->S.file) free (C->S.file);
+	GMT_free (GMT, C);
 }
 
 
@@ -129,23 +129,23 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N sets the secondary filter type and the number of sectors.  Choose between\n");
 	GMT_message (GMT, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator)\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-#ifdef OBSOLETE							
+#ifdef OBSOLETE
 	GMT_message (GMT, "\t-E Remove local planar trend from data, apply filter, then add back trend at filtered value.\n");
-#endif		
+#endif
 	GMT_message (GMT, "\t-I for new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
 	GMT_message (GMT, "\t   Default is yinc = xinc.  Append an m [or c] to xinc or yinc to indicate minutes [or seconds];\n");
 	GMT_message (GMT, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
 	GMT_message (GMT, "\t-Q is for the error analysis mode and requires the total number of depth columns in the input file.\n");
 	GMT_message (GMT, "\t   See documentation for how to prepare for using this option.\n");
 	GMT_message (GMT, "\t-R for new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
-#ifdef OBSOLETE							
+#ifdef OBSOLETE
 	GMT_message (GMT, "\t-S sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
 	GMT_message (GMT, "\t   a statistical measure of deviations from the average value.  For the convolution filters this\n");
 	GMT_message (GMT, "\t   yields the standard deviation while for the median/mode filters we use MAD\n");
-#endif		
+#endif
 	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration]\n");
 	GMT_explain_options (GMT, "Vf");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -162,7 +162,7 @@ int GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl, str
 	int k;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef OBSOLETE					
+#ifdef OBSOLETE
 	int slow;
 #endif
 
@@ -185,11 +185,11 @@ int GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl, str
 				n_errors += GMT_check_condition (GMT, k < 0 || k > 4, "Syntax error -D option: Choose from the range 0-4\n");
 				Ctrl->D.mode = k;
 				break;
-#ifdef OBSOLETE					
+#ifdef OBSOLETE
 			case 'E':
 				Ctrl->E.active = true;
 				break;
-#endif					
+#endif
 			case 'F':
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
@@ -255,12 +255,12 @@ int GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl, str
 				Ctrl->Q.active = true;
 				Ctrl->Q.err_cols = atoi (opt->arg);
 				break;
-#ifdef OBSOLETE					
+#ifdef OBSOLETE
 			case 'S':
 				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				break;
-#endif					
+#endif
 			case 'T':	/* Toggle registration */
 				Ctrl->T.active = true;
 				break;
@@ -278,23 +278,23 @@ int GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl, str
 		n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->F.width <= 0.0, "Syntax error -F option: Correct syntax: -FX<width>, with X one of bcgmp, width is filter fullwidth\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->N.n_sectors == 0, "Syntax error -N option: Correct syntax: -NX<nsectors>, with X one of luamp, nsectors is number of sectors\n");
-#ifdef OBSOLETE						
+#ifdef OBSOLETE
 		slow = (Ctrl->F.filter == 3 || Ctrl->F.filter == 4);		/* Will require sorting etc */
 		n_errors += GMT_check_condition (GMT, Ctrl->E.active && !slow, "Syntax error -E option: Only valid for robust filters -Fm|p.\n");
-#endif	
+#endif
 	}
 	else {
 		n_errors += GMT_check_condition (GMT, !Ctrl->Q.active, "Syntax error: Must use -Q to specify total # of columns in the input file.\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->Q.err_cols > 50, "Syntax error -Q option: Total # of columns cannot exceed 50.\n");
 	}
-	
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
 void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GRD_HEADER *h, double y_0, int fast)
 /* Last two gives offset between output node and 'origin' input node for this window (0,0 for integral grids) */
 /* true when input/output grids are offset by integer values in dx/dy */
-   	               
+
 {
 	int i, j, ij, i_half, j_half;
 	double x_scl, y_scl, f_half, r_f_half, sigma, sig_2;
@@ -339,7 +339,7 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GRD_HEADER *h, doub
 				r = d_acos (c_y1 * c_y2 + s_y1 * s_y2 * cosd (theta)) * F->deg2km * R2D;
 			}
 			/* Now we know r in F->width units  */
-			
+
 			if (r > f_half) {
 				F->weight[ij] = -1.0;
 				continue;
@@ -365,14 +365,14 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GRD_HEADER *h, doub
 int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	unsigned short int **sector = NULL;
-	
+
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
 	unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
 	bool full_360, shift = false, slow, slow2, error = false, fast_way;
 	int j_origin, *i_origin = NULL, ii, jj, scol, srow;
-	
+
 	uint64_t n_nan = 0, ij_in, ij_out, ij_wt;
-	
+
 	double wesn[4], inc[2], x_scale, y_scale, x_width, y_width, angle, z = 0.0;
 	double x_out, y_out, *wt_sum = NULL, *value = NULL, last_median, this_median;
 	double last_median2 = 0.0, this_median2, d, **work_array = NULL, *x_shift = NULL;
@@ -380,20 +380,20 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef DEBUG
 	double x_debug[5], y_debug[5], z_debug[5];
 #endif
-	
+
 #ifdef OBSOLETE
 	bool first_time = true;
 	int n = 0;
 	int n_bad_planes = 0, S = 0;
 	double Sx = 0.0, Sy = 0.0, Sz = 0.0, Sxx = 0.0, Syy = 0.0, Sxy = 0.0, Sxz = 0.0, Syz = 0.0;
 	double denominator, scale, Sw, intercept = 0.0, slope_x = 0.0, slope_y = 0.0, inv_D;
-	double *work_array2 = NULL;			
+	double *work_array2 = NULL;
 	short int **xx = NULL, **yy = NULL;
 	struct GMT_GRID *Sout = NULL;
-#endif	
+#endif
 
 	char *filter_name[5] = {"Boxcar", "Cosine Arch", "Gaussian", "Median", "Mode"};
-	
+
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 	struct DIMFILTER_INFO F;
 	struct DIMFILTER_CTRL *Ctrl = NULL;
@@ -411,17 +411,17 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
-	GMT = GMT_begin_module (API, "GMT_dimfilter", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_module (API, "dimfilter", &GMT_cpy);	/* Save current state */
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);
-	
+
 	/*---------------------------- This is the dimfilter main code ----------------------------*/
 
 	GMT_memset (&F, 1, struct DIMFILTER_INFO);
 	F.deg2km = GMT->current.proj.DIST_KM_PR_DEG;
-	
+
 	if (!Ctrl->Q.active) {
-	
+
 		if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
@@ -434,7 +434,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 1 : 0;
 		else
 			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
-		
+
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
@@ -451,7 +451,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO]) error = true;
 		if (Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) error = true;
-		
+
 		if (error) {
 			GMT_report (GMT, GMT_MSG_FATAL, "New WESN incompatible with old.\n");
 			Return (EXIT_FAILURE);
@@ -465,9 +465,9 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
 		   if new grid spacing is multiple of old spacing */
-		   
+
 		fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_SMALL && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_SMALL);
-		
+
 		if (!fast_way) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your output grid spacing is such that filter-weights must\n");
 			GMT_report (GMT, GMT_MSG_NORMAL, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
@@ -478,22 +478,22 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 
-#ifdef OBSOLETE						
+#ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
 			Sout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 		}
-#endif	
+#endif
 		i_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
 		if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
-		
+
 		if (fast_way && Gin->header->registration == one_or_zero) {	/* multiple grid but one is pix, other is grid */
 			F.x_fix = 0.5 * Gin->header->inc[GMT_X];
 			F.y_fix = 0.5 * Gin->header->inc[GMT_Y];
 			shift = (F.x_fix != 0.0 || F.y_fix != 0.0);
 		}
-		
+
 		/* Set up weight matrix and i,j range to test  */
 
 		x_scale = y_scale = 1.0;
@@ -525,37 +525,37 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (slow) {	/* SCAN: Now require several work_arrays, one for each sector */
 			work_array = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double *);
-#ifdef OBSOLETE							
+#ifdef OBSOLETE
 			if (Ctrl->S.active) work_array2 = GMT_memory (GMT, NULL, 2*F.nx*F.ny, double);
 			if (Ctrl->E.active) {
 				xx = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
 				yy = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, short int *);
 			}
-#endif		
+#endif
 			wsize = 2*F.nx*F.ny/Ctrl->N.n_sectors;	/* Should be enough, watch for messages to the contrary */
 			for (i = 0; i < Ctrl->N.n_sectors; i++) {
 				work_array[i] = GMT_memory (GMT, NULL, wsize, double);
-#ifdef OBSOLETE								
+#ifdef OBSOLETE
 				if (Ctrl->E.active) {
 					xx[i] = GMT_memory (GMT, NULL, wsize, short int);
 					yy[i] = GMT_memory (GMT, NULL, wsize, short int);
 				}
-#endif			
+#endif
 			}
 		}
-		
+
 		GMT_report (GMT, GMT_MSG_NORMAL, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter nx,ny = (%d %d)\n",
 			Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
 		GMT_report (GMT, GMT_MSG_NORMAL, "Filter type is %s.\n", filter_name[Ctrl->F.filter]);
-		
+
 		/* Compute nearest xoutput i-indices and shifts once */
-		
+
 		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 			x_out = GMT_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
 			i_origin[col_out] = GMT_grd_x_to_col (GMT, x_out, Gin->header);
 			if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (GMT, i_origin[col_out], Gin->header);
 		}
-		
+
 		/* Now we can do the filtering  */
 
 		/* Determine how much effort to compute weights:
@@ -563,14 +563,14 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			2 = Compute weights once per scanline
 			3 = Compute weights for every output point [slow]
 		*/
-		
+
 		if (fast_way && Ctrl->D.mode <= 2)
 			effort_level = 1;
 		else if (fast_way && Ctrl->D.mode > 2)
 			effort_level = 2;
 		else
 			effort_level = 3;
-			
+
 		if (effort_level == 1) set_weight_matrix_dim (&F, Gout->header, 0.0, shift);	/* Only need this once */
 
 		if (Ctrl->C.active) {	/* Use fixed-width diagonal corridors instead of bow-ties */
@@ -601,27 +601,27 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		n_in_median = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, unsigned int);
 		value = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
 		wt_sum = GMT_memory (GMT, NULL, Ctrl->N.n_sectors, double);
-				
+
 		for (row_out = 0; row_out < Gout->header->ny; row_out++) {
-		
+
 			GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %d\r", row_out);
 			y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);
 			j_origin = GMT_grd_y_to_row (GMT, y_out, Gin->header);
 			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
-			
+
 			for (col_out = 0; col_out < Gout->header->nx; col_out++) {
-			
+
 				if (effort_level == 3) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
 				GMT_memset (n_in_median, Ctrl->N.n_sectors, unsigned int);
 				GMT_memset (value, Ctrl->N.n_sectors, double);
 				GMT_memset (wt_sum, Ctrl->N.n_sectors, double);
-#ifdef OBSOLETE			
+#ifdef OBSOLETE
 				if (Ctrl->E.active) S = 0, Sx = Sy = Sz = Sxx = Syy = Sxy = Sxz = Syz = Sxx = Sw = 0.0;
 				n = 0;
-#endif			
+#endif
 
 				ij_out = GMT_IJP (Gout->header, row_out, col_out);
-				
+
 				for (ii = -F.x_half_width; ii <= F.x_half_width; ii++) {
 					scol = i_origin[col_out] + ii;
 					if (scol < 0 || (col_in = scol) >= Gin->header->nx) continue;
@@ -629,30 +629,30 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 					for (jj = -F.y_half_width; jj <= F.y_half_width; jj++) {
 						srow = j_origin + jj;
 						if (srow < 0 || (row_in = srow) >= Gin->header->ny) continue;
-											
+
 						ij_wt = (jj + F.y_half_width) * F.nx + ii + F.x_half_width;
 						if (F. weight[ij_wt] < 0.0) continue;
-						
+
 						ij_in = GMT_IJP (Gin->header, row_in, col_in);
 						if (GMT_is_fnan (Gin->data[ij_in])) continue;
-						
+
 						/* Get here when point is usable  */
-						
+
 						if (Ctrl->C.active) {	/* Point can belong to several corridors */
 							for (s = 0; s < n_sectors_2; s++) {
 								d = sqrt (c_y[s] * ii + c_x[s] * jj);	/* Perpendicular distance to central diameter, in nodes */
 								if (d > F.y_half_width) continue;	/* Outside this corridor */
 								if (slow) {
 									work_array[s][n_in_median[s]] = Gin->data[ij_in];
-#ifdef OBSOLETE												
+#ifdef OBSOLETE
 									if (Ctrl->S.active) work_array2[n++] = Gin->data[ij_in];
-#endif							
+#endif
 #ifdef DEBUG
 									if (n_in_median[s] < 5) x_debug[n_in_median[s]] = (double)ii;
 									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
 									if (n_in_median[s] < 5) z_debug[n_in_median[s]] = Gin->data[ij_in];
 #endif
-#ifdef OBSOLETE					
+#ifdef OBSOLETE
 									if (Ctrl->E.active) {	/* Sum up required terms to solve for slope and intercepts of planar trend */
 									xx[s][n_in_median[s]] = ii;
 										yy[s][n_in_median[s]] = jj;
@@ -666,20 +666,20 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 										Syz += jj * Gin->data[ij_in];
 										S++;
 									}
-#endif							
+#endif
 									n_in_median[s]++;
 								}
 								else {
 									wx = Gin->data[ij_in] * F. weight[ij_wt];
 									value[s] += wx;
 									wt_sum[s] += F. weight[ij_wt];
-#ifdef OBSOLETE												
+#ifdef OBSOLETE
 									if (Ctrl->S.active) {
 										Sxx += wx * Gin->data[ij_in];
 										Sw += F. weight[ij_wt];
 										n++;
 									}
-#endif							
+#endif
 								}
 							}
 						}
@@ -692,14 +692,14 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 									if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
 									if (n_in_median[s] < 5) z_debug[n_in_median[s]] = Gin->data[ij_in];
 #endif
-#ifdef OBSOLETE					
+#ifdef OBSOLETE
 									if (Ctrl->E.active) xx[s][n_in_median[s]] = yy[s][n_in_median[s]] = 0;	/*(0,0) at the node */
-#endif								
+#endif
 									n_in_median[s]++;
 								}
-#ifdef OBSOLETE												
+#ifdef OBSOLETE
 								if (Ctrl->S.active) work_array2[n++] = Gin->data[ij_in];
-#endif							
+#endif
 							}
 							else {	/* Simply add to the weighted sums */
 								for (s = 0; s < Ctrl->N.n_sectors; s++) {
@@ -707,29 +707,29 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 									value[s] += wx;
 									wt_sum[s] += F. weight[ij_wt];
 								}
-#ifdef OBSOLETE												
+#ifdef OBSOLETE
 								if (Ctrl->S.active) {
 									Sxx += wx * Gin->data[ij_in];
 									Sw += F. weight[ij_wt];
 									n++;
 								}
-#endif							
+#endif
 							}
-#ifdef OBSOLOTE						
+#ifdef OBSOLOTE
 							if (Ctrl->E.active) {	/* Since r is 0, only need to update Sz and S */
 								Sz += Gin->data[ij_in];
 								S++;
 							}
-#endif					
+#endif
 						}
 						else {
 							s = sector[jj+F.y_half_width][ii+F.x_half_width];	/* Get the sector for this node */
 
 							if (slow) {
 								work_array[s][n_in_median[s]] = Gin->data[ij_in];
-#ifdef OBSOLETE												
+#ifdef OBSOLETE
 								if (Ctrl->S.active) work_array2[n++] = Gin->data[ij_in];
-#endif							
+#endif
 #ifdef DEBUG
 								if (n_in_median[s] < 5) x_debug[n_in_median[s]] = (double)ii;
 								if (n_in_median[s] < 5) y_debug[n_in_median[s]] = (double)jj;
@@ -738,7 +738,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 								(void)y_debug;
 								(void)z_debug;
 #endif
-#ifdef OBSOLETE					
+#ifdef OBSOLETE
 								if (Ctrl->E.active) {	/* Sum up required terms to solve for slope and intercepts of planar trend */
 									xx[s][n_in_median[s]] = ii;
 									yy[s][n_in_median[s]] = jj;
@@ -752,28 +752,28 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 									Syz += jj * Gin->data[ij_in];
 									S++;
 								}
-#endif							
+#endif
 								n_in_median[s]++;
 							}
 							else {
 								wx = Gin->data[ij_in] * F. weight[ij_wt];
 								value[s] += wx;
 								wt_sum[s] += F. weight[ij_wt];
-#ifdef OBSOLETE												
+#ifdef OBSOLETE
 								if (Ctrl->S.active) {
 									Sxx += wx * Gin->data[ij_in];
 									Sw += F. weight[ij_wt];
 									n++;
 								}
-#endif							
+#endif
 							}
 						}
 					}
 				}
-				
+
 				/* Now we have done the sectoring and we can apply the filter on each sector  */
 				/* k will be the number of sectors that had enough data to do the operation */
-#ifdef OBSOLETE								
+#ifdef OBSOLETE
 				if (Ctrl->E.active) {	/* Must find trend coeeficients, remove from array, do the filter, then add in intercept (since r = 0) */
 					denominator = S * Sxx * Syy + 2.0 * Sx * Sy * Sxy - S * Sxy * Sxy - Sx * Sx * Syy - Sy * Sy * Sxx;
 					if (denominator == 0.0) {
@@ -787,8 +787,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 						slope_y = (S * Sxx * Syz + Sx * Sy * Sxz + Sz * Sx * Sxy - S * Sxy * Sxz - Sx * Sx * Syz - Sz * Sy * Sxx) * inv_D;
 					}
 				}
-#endif			
-				
+#endif
+
 				if (slow) {	/* Take median or mode of each work array for each sector */
 					if (slow2) {
 						z2_min = DBL_MAX;
@@ -797,7 +797,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 					for (s = k = 0; s < Ctrl->N.n_sectors; s++) {
 						if (n_in_median[s]) {
 							if (n_in_median[s] >= wsize) GMT_report (GMT, GMT_MSG_NORMAL, "Exceed array size (%d > %d)!\n", n_in_median[s], wsize);
-#ifdef OBSOLETE											
+#ifdef OBSOLETE
 							if (Ctrl->E.active) {
 								z_min = DBL_MAX;
 								z_max = -DBL_MAX;
@@ -808,7 +808,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 								}
 								if (first_time) last_median = 0.5 * (z_min + z_max), first_time = false;
 							}
-#endif						
+#endif
 							if (Ctrl->F.filter == 3) {
 								GMT_median (GMT, work_array[s], n_in_median[s], z_min, z_max, last_median, &this_median);
 								last_median = this_median;
@@ -816,9 +816,9 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 							else
 								GMT_mode (GMT, work_array[s], n_in_median[s], n_in_median[s]/2, true, GMT_mode_selection, &GMT_n_multiples, &this_median);
 							value[k] = this_median;
-#ifdef OBSOLETE											
+#ifdef OBSOLETE
 							if (Ctrl->E.active) value[k] += intercept;	/* I.e., intercept + x * slope_x + y * slope_y, but x == y == 0 at node */
-#endif						
+#endif
 							if (slow2) {
 								if (value[k] < z2_min) z2_min = value[k];
 								if (value[k] > z2_max) z2_max = value[k];
@@ -835,12 +835,12 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 						}
 					}
 				}
-				
+
 				if (k == 0) {	/* No filtered values, set to NaN and move on to next output node */
 					Gout->data[ij_out] = GMT->session.f_NaN;
-#ifdef OBSOLETE									
+#ifdef OBSOLETE
 					if (Ctrl->S.active) Sout->data[ij_out] = GMT->session.f_NaN;
-#endif				
+#endif
 					n_nan++;
 					continue;
 				}
@@ -886,7 +886,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (Ctrl->N.filter == 2) z /= (double)k;	/* Mean requires a final normalization */
 				}
 				Gout->data[ij_out] = (float)z;
-#ifdef OBSOLETE								
+#ifdef OBSOLETE
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
 						GMT_sort_array (GMT, work_array2, n, GMTAPI_DOUBLE);
@@ -897,33 +897,33 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					Sout->data[ij_out] = (float)scale;
 				}
-#endif			
+#endif
 			}
 		}
 		GMT_report (GMT, GMT_MSG_NORMAL, "\n");
-		
+
 		/* At last, that's it!  Output: */
 
 		if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
-#ifdef OBSOLETE						
+#ifdef OBSOLETE
 		if (Ctrl->E.active && n_bad_planes) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to detrend data at %" PRIu64 " nodes\n", n_bad_planes);
-#endif	
+#endif
 		if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", GMT_n_multiples);
-				
+
 		GMT_report (GMT, GMT_MSG_NORMAL, "Write filtered grid\n");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 			Return (API->error);
 		}
-#ifdef OBSOLETE						
+#ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Write scale grid\n");
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Sout) != GMT_OK) {
 				Return (API->error);
 			}
 		}
-#endif	
+#endif
 		GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
-		
+
 		GMT_free (GMT, F. weight);
 		GMT_free (GMT, i_origin);
 		for (ii = 0; ii < F.ny; ii++) GMT_free (GMT, sector[ii]);
@@ -934,31 +934,31 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (slow) {
 			for (j = 0; j < Ctrl->N.n_sectors; j++) {
 				GMT_free (GMT, work_array[j]);
-#ifdef OBSOLETE								
+#ifdef OBSOLETE
 				if (Ctrl->E.active) {
 					GMT_free (GMT, xx[j]);
 					GMT_free (GMT, yy[j]);
 				}
-#endif			
+#endif
 			}
 			GMT_free (GMT, work_array);
-#ifdef OBSOLETE							
+#ifdef OBSOLETE
 			if (Ctrl->S.active) GMT_free (GMT, work_array2);
 			if (Ctrl->E.active) {
 				GMT_free (GMT, xx);
 				GMT_free (GMT, yy);
 			}
-#endif		
+#endif
 		}
 		if (!fast_way) GMT_free (GMT, x_shift);
-		
+
 	}
 	else {	/* Here -Q is active */
 		int err_l = 1;
 		double err_workarray[50], err_min, err_max, err_null_median = 0.0, err_median, err_mad, err_depth, err_sum, out[3];
-		
+
 		FILE *ip = NULL;
-	   
+
 		/* check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
 			GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open file %s\n", Ctrl->In.file);
@@ -985,29 +985,29 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 				err_workarray[i] = err_depth;
 				err_sum += err_depth;
 				if (err_depth < err_min) err_min = err_depth;
-				if (err_depth > err_max) err_max = err_depth;	 
+				if (err_depth > err_max) err_max = err_depth;
 			}
 
-			/* calculate MEDIAN and MAD for each row */      
+			/* calculate MEDIAN and MAD for each row */
 			GMT_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_median);
 			err_workarray[0] = fabs (err_workarray[0] - err_median);
 			err_min = err_max = err_workarray[0];
 			for (i = 1; i < Ctrl->Q.err_cols; i++) {
 				err_workarray[i] = fabs (err_workarray[i] - err_median);
 				if (err_workarray[i] < err_min) err_min=err_workarray[i];
-				if (err_workarray[i] > err_max) err_max=err_workarray[i];	 
-			}      
+				if (err_workarray[i] > err_max) err_max=err_workarray[i];
+			}
 			GMT_median (GMT, err_workarray, Ctrl->Q.err_cols, err_min, err_max, err_null_median, &err_mad);
 			err_mad *= 1.482;
-		  
+
 			/* calculate MEAN for each row */
 			out[0] = err_median;
 			out[1] = err_mad;
 			out[2] = (Ctrl->Q.err_cols) ? err_sum / Ctrl->Q.err_cols : 0.0;
-		  
+
 			/* print out the results */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
-		  
+
 			GMT_report (GMT, GMT_MSG_DEBUG, "line %d passed\n", err_l);
 			err_l++;
 		}
@@ -1017,7 +1017,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);	/* Disables further data output */
 		}
 	}
-	
+
 	Return (GMT_OK);
 }
 

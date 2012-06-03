@@ -24,6 +24,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_splitxyz /* I am splitxyz */
+
 #include "gmt.h"
 
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
@@ -147,7 +149,7 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
-	GMT_message (GMT, "splitxyz %s [API] - Split xyz[dh] data tables into individual segments\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
 	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-N<template>]\n");
 	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n",
@@ -333,7 +335,7 @@ int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_splitxyz", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("H"), options)) Return (API->error);
 	Ctrl = New_splitxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_splitxyz_parse (API, Ctrl, options))) Return (error);

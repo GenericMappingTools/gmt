@@ -29,6 +29,8 @@
 
 #define BLOCKMEAN	/* Since mean, median, mode share near-similar macros we require this setting */
 
+#define THIS_MODULE k_mod_blockmean /* I am blockmean */
+
 #include "gmt.h"
 #include "block_subs.h"
 
@@ -38,7 +40,7 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "blockmean %s [API] - Block average (x,y,z) data tables by L2 norm\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-C] [-E] [-S[m|n|s|w]]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -187,7 +189,7 @@ int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_blockmean", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "aghior>" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_blockmean_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_blockmean_parse (API, Ctrl, options))) Return (error);
