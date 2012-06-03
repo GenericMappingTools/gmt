@@ -48,7 +48,7 @@ diff grid_xy.d  "$src"/grid_xy.d --strip-trailing-cr  >> fail
 diff grid_ij.d  "$src"/grid_ij.d --strip-trailing-cr  >> fail
 
 # Connect the original point and the corresponding tile center
-paste pixel_xy.d pixel_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
+paste pixel_xy.d pixel_ij.d | $AWK '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
 	| psxy -R0/5/0/5 -JX4.5 -P -B1g1WSne -Wdefault -K -Y0.5i -X2i > $ps
 # Plot and label the points
 psxy -R -J pixel.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
@@ -58,7 +58,7 @@ pstext -R -J pixel_ij.d -F+f8p,white -O -K -N >> $ps
 
 # Now do the same with gridline orientation
 psbasemap -R0.5/5.5/0.5/5.5 -J -O -Bg1 -K -Y4.7 >> $ps
-paste grid_xy.d grid_ij.d | awk '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
+paste grid_xy.d grid_ij.d | $AWK '{if (NF == 6) printf ">\n%s\t%s\n%s\t%s\n", $1, $2, $4, $5}' \
 	| psxy -R0/5/0/5 -J -O -B1Wsne -Wdefault -K >> $ps
 psxy -R -J grid.d -Sc0.125 -Gwhite -Wfaint -O -K -N >> $ps
 pstext -R -J grid.d -F+f8p -O -K -N >> $ps

@@ -11,7 +11,7 @@ ps=gspline_5.ps
 # First find Parker's solution for no tension:
 greenspline -Rg -I1 mag_obs_1990.d -Sp -GFig_2_p0.nc
 # Then repeat but use the wrong Oslo longitude to recreate Parker's original figure in his book
-awk '{if ($1 == 10.45) {print 104.5, $2, $3} else {print $0}}' "${src:=.}"/mag_obs_1990.d > tmp
+$AWK '{if ($1 == 10.45) {print 104.5, $2, $3} else {print $0}}' "${src:=.}"/mag_obs_1990.d > tmp
 greenspline -Rg -I1 tmp -Sp -GFig_2_orig.nc
 pscoast -R0/360/0/90 -JA0/90/5i -P -Glightgray -K -B30 -Y5.5i --MAP_FRAME_WIDTH=0.025i \
 	--FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=10p -X0.5 > $ps

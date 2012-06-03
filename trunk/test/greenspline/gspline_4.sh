@@ -23,9 +23,9 @@ psxyz -R -JX -JZ -p$view -O -K $T -Su0.05i -Gblack -Wfaint >> $ps
 while [ $k -lt 22 ]; do
 	z=`gmtmath -Q 5 $k $dz MUL ADD =`
 #	echo "Doing z = $z"
-	awk '{if ($3 == '$z') print $1, $2, $4}' 3D.xyzw | xyz2grd -R$R2D -I0.25/0.5 -Gslice_$k.nc
+	$AWK '{if ($3 == '$z') print $1, $2, $4}' 3D.xyzw | xyz2grd -R$R2D -I0.25/0.5 -Gslice_$k.nc
 	grdcontour $Rcut slice_$k.nc -JX -C10 -L9/11 -S8 -Ddump
-	awk '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
+	$AWK '{if ($1 == ">") {print $0} else {print $1, $2, '$z'}}' dump > tmp
 	cat tmp >> total_dump
 	psxyz -R$R2D/$Z -JX -JZ -p$view -O -K tmp -Gp300/39:FgrayB- -Wthin >> $ps
 	k=`expr $k + 1`

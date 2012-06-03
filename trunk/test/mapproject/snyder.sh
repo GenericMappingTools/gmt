@@ -20,7 +20,7 @@ blabber () {
 		echo "Snyder  x=${sf[0]}, y=${sf[1]} X=${si[0]} Y=${si[1]}"
 		echo "GMT     x=${gi[0]}, y=${gi[1]} X=${gf[0]} Y=${gf[1]}"
 	fi
-	echo "${sf[*]} ${gi[*]} ${si[*]} ${gf[*]} $p" | awk -f test.awk
+	echo "${sf[*]} ${gi[*]} ${si[*]} ${gf[*]} $p" | $AWK -f test.awk
 }
 
 

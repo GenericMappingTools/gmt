@@ -5,7 +5,7 @@
 ps=filter.ps
 
 # Make some random noise with a data gap, then save this in CVS as otherwise it would differ each time.
-#gmtmath -T-500/500/10 T POP 0 100 NRAND = | awk '{if ($1 < -100 || $1 > 50) print $0}' | gmtconvert -gx50 > noise.txt
+#gmtmath -T-500/500/10 T POP 0 100 NRAND = | $AWK '{if ($1 < -100 || $1 > 50) print $0}' | gmtconvert -gx50 > noise.txt
 psxy -R-500/500/-300/300 -JX6i/2i -P -T -K -Y8.5i -Xc > $ps
 psxy -R -J -B100g50/100g50WSne -O noise.txt -W0.25p,red,. -K > tmp.eps
 psxy -R -J -O noise.txt -Sc0.05i -Gred -K >> tmp.eps
