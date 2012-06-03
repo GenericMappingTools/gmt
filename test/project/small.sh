@@ -40,19 +40,19 @@ project -C$C -T$P -G1/10 -L-20/60 | psxy -R -J -O -K -W2p,sandybrown >> $ps
 # Try plot 80 degree small half circle only through C and E
 project -C$C -E$P -G1/80+ -L-90/90 > tmp
 psxy -R -J -O -K -W2p,blue tmp >> $ps
-grep Pole tmp | awk '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gblue >> $ps
+grep Pole tmp | $AWK '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gblue >> $ps
 # Try plot 60 degree small half circle through C and E
 project -C$C -E$P -G1/60+ -L-90/90 > tmp
 psxy -R -J -O -K -W2p,magenta tmp >> $ps
-grep Pole tmp | awk '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gmagenta >> $ps
+grep Pole tmp | $AWK '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gmagenta >> $ps
 # Try plot 40 degree small full circle through C and E
 project -C$C -E$P -G1/40+ -L-180/180 > tmp
 psxy -R -J -O -K -W2p,tan tmp >> $ps
-grep Pole tmp | awk '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gtan >> $ps
+grep Pole tmp | $AWK '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gtan >> $ps
 # Try plot 33 degree small half circle through C and E
 project -C$C -E$P -G1/33+ -L-90/90 > tmp
 psxy -R -J -O -K -W2p,brown tmp >> $ps
-grep Pole tmp | awk '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gbrown >> $ps
+grep Pole tmp | $AWK '{print $5, $6}' | psxy -R -J -O -K -Sc0.1i -Gbrown >> $ps
 # Plot P and C and create circle through P and C
 project -C$C -E$P -G1 -L-180/180 | psxy -R -J -O -K -W2p,- >> $ps
 echo 85 40 | psxy -R -J -O -K -Sa0.3i -Gblack >> $ps

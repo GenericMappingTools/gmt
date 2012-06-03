@@ -14,7 +14,7 @@ color_contour () {
 		# For each contour we compute distance a
 		mapproject -Gk $name > contour.d
 		L=`minmax -C contour.d | cut -f8`
-		awk -v L=$L '{print $1, $2, $4/L}' contour.d | psxy -R -J -O -K -Ccontour.cpt -Sc0.005i >> $ps
+		$AWK -v L=$L '{print $1, $2, $4/L}' contour.d | psxy -R -J -O -K -Ccontour.cpt -Sc0.005i >> $ps
 	done
 }
 

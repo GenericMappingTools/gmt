@@ -24,7 +24,7 @@ psxy -R0/3/0/5 -Jx1.5i -Gp128/${GMT_SOURCE_DIR}/share/psldemo/circuit.ras -P -K 
 2 5
 0 5
 %
-awk '{ x0=$1;x1=x0+1;y0=$2;y1=y0+1;c=$3; \
+$AWK '{ x0=$1;x1=x0+1;y0=$2;y1=y0+1;c=$3; \
 	printf "> -Gp80/10%s\n%i %i\n%i %i\n%i %i\n",c,x0,y0,x1,y1,x0,y1 ; \
 	printf "> -GP80/10%s\n%i %i\n%i %i\n%i %i\n",c,x0,y0,x1,y1,x1,y0}' < tt.in \
 	| psxy -R -J -O -K >> $ps
@@ -38,7 +38,7 @@ psxy -R -J -O -K <<% >> $ps
 2.5 4.5
 2 4.5
 %
-awk '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
+$AWK '{ x0=$1+0.5;y0=$2+0.5;c=$3; \
 	printf "%g %g BR p%s\n",x0,y0,c ; \
 	printf "%g %g TL P%s\n",x0,y0,c}' < tt.in \
 	| pstext -F+f7p,Helvetica-Bold,purple+j -R -J -O -K >> $ps

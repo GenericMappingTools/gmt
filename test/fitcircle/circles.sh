@@ -12,12 +12,12 @@ ps=circles.ps
 
 fitcircle gcircle.txt -L3 > g.txt
 fitcircle scircle.txt -L3 -S > s.txt
-gpole1=`grep "L1 N Hemisphere" g.txt | awk '{printf "%s/%s\n", $1, $2}'`
-gpole2=`grep "L2 N Hemisphere" g.txt | awk '{printf "%s/%s\n", $1, $2}'`
-spole1=`grep "L1 Small Circle Pole" s.txt | awk '{printf "%s/%s\n", $1, $2}'`
-spole2=`grep "L2 Small Circle Pole" s.txt | awk '{printf "%s/%s\n", $1, $2}'`
-slat1=`grep "L1 Small Circle" s.txt | awk '{print 90-$NF}'`
-slat2=`grep "L2 Small Circle" s.txt | awk '{print 90-$NF}'`
+gpole1=`grep "L1 N Hemisphere" g.txt | $AWK '{printf "%s/%s\n", $1, $2}'`
+gpole2=`grep "L2 N Hemisphere" g.txt | $AWK '{printf "%s/%s\n", $1, $2}'`
+spole1=`grep "L1 Small Circle Pole" s.txt | $AWK '{printf "%s/%s\n", $1, $2}'`
+spole2=`grep "L2 Small Circle Pole" s.txt | $AWK '{printf "%s/%s\n", $1, $2}'`
+slat1=`grep "L1 Small Circle" s.txt | $AWK '{print 90-$NF}'`
+slat2=`grep "L2 Small Circle" s.txt | $AWK '{print 90-$NF}'`
 psxy -Rg -JG-30/40/7i -P -Bg -K gcircle.txt -Sc0.04i -Gred -Xc -Yc > $ps
 psxy -R -J -O -K scircle.txt -Sc0.04i -Ggreen >> $ps
 project -G1 -T$gpole1 -L-180/180 | psxy -R -J -O -K -W3p >> $ps

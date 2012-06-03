@@ -52,8 +52,8 @@ for az in 30 135 200 290 ; do
 		echo "$cx $cy $az90 0.75" | psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gred -Xa$xpos -Ya$ypos >> $ps
 		makeproj -$az 1.75 0 > tt.x
 		makeproj -$az 0 1.75 > tt.y
-		awk '{printf "%s %s P", $1, $2}' tt.x | pstext -R -J -F+f7p+a$az -O -K -A -Xa$xpos -Ya$ypos >> $ps
-		awk '{printf "%s %s Q", $1, $2}' tt.y | pstext -R -J -F+f7p+a$az90 -O -K -A -Xa$xpos -Ya$ypos >> $ps
+		$AWK '{printf "%s %s P", $1, $2}' tt.x | pstext -R -J -F+f7p+a$az -O -K -A -Xa$xpos -Ya$ypos >> $ps
+		$AWK '{printf "%s %s Q", $1, $2}' tt.y | pstext -R -J -F+f7p+a$az90 -O -K -A -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy 0 0.75" | psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gblack -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy 90 0.75" | psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gblack -Xa$xpos -Ya$ypos >> $ps
 		pstext -R -J -O -K -F+f7p,white -Xa$xpos -Ya$ypos >> $ps <<< "1.75 0 x"

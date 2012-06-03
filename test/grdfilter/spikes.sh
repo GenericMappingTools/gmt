@@ -12,7 +12,7 @@ filter () {
 image () {
 	grdimage -JX2.8i -B20f10g10WSne -Ct.cpt -O -K $*
 	if [ "$1" = "f.nc" ]; then
-		grdinfo $1 | grep Command | awk '{print 50, 50, $6, $7}' | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f18p -W1p -Gwhite
+		grdinfo $1 | grep Command | $AWK '{print 50, 50, $6, $7}' | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f18p -W1p -Gwhite
 	else
 		echo "50 50 Spike" | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f18p -W1p -Gwhite
 	fi

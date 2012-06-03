@@ -41,4 +41,4 @@ echo "Plain modes" >> $log
 blockmode -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended modes" >> $log
 blockmode -R0/2/0/2 -I1 -r -E data.d >> $log
-awk '{if (NF == 6 && $3 != 5) print $0}' $log > fail
+$AWK '{if (NF == 6 && $3 != 5) print $0}' $log > fail
