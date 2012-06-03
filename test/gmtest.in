@@ -33,6 +33,15 @@ HAVE_OPENMP="@HAVE_OPENMP@"
 GRAPHICSMAGICK="@GRAPHICSMAGICK@"
 src="@GMT_SOURCE_DIR@/test/${script_dir}"
 
+# choose awk
+if type gawk 2>&1 >/dev/null ; then
+  export AWK=gawk
+elif type nawk 2>&1 >/dev/null ; then
+  export AWK=nawk
+else
+  export AWK=awk
+fi
+
 # When running tests with MinGW we need to change 'c:/' to '/c/'
 function fix_mingw_path()
 {
