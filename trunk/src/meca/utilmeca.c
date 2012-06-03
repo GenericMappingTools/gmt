@@ -554,7 +554,7 @@ void moment2axe (struct GMT_CTRL *GMT, struct M_TENSOR mt, struct AXIS *T, struc
 	a[6]=mt.f[4];	a[7]=mt.f[5];	a[8]=mt.f[2];
 
 	if (GMT_jacobi (GMT, a, np, np, d, v, b, z, &nrots))
-		fprintf(GMT->session.std[GMT_ERR],"%s: Eigenvalue routine failed to converge in 50 sweeps.\n", GMT->init.progname);
+		fprintf(GMT->session.std[GMT_ERR],"%s: Eigenvalue routine failed to converge in 50 sweeps.\n", gmt_module_name(GMT));
 
 	for (j = 0; j < np; j++) {
 		pl[j] = asin(-v[j*np]);

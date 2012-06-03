@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	if ((module_id = gmt_module_lookup (argv[1])) == k_mod_notfound) {
+	if ((module_id = gmt_module_lookup (argv[1])) == k_mod_nongmt) {
 		fprintf (stderr, "gmt: No such program: %s\n", argv[1]);
 		return EXIT_FAILURE;
 	}
@@ -77,8 +77,8 @@ int main (int argc, char *argv[]) {
 	if ((api_ctrl = GMT_Create_Session (argv[0], g_module[module_id].api_mode)) == NULL)
 		return EXIT_FAILURE;
 
-	/* Copy Gmt_moduleinfo to api_ctrl->GMT */
-	api_ctrl->GMT->init.module = g_module[module_id];
+	/* TODO: remove - Copy Gmt_moduleinfo to api_ctrl->GMT */
+	api_ctrl->GMT->init.module_id = module_id;
 
 	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */
 	status = g_module[module_id].p_func (api_ctrl, argc-2, argv+2);

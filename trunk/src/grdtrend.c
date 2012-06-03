@@ -611,7 +611,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 				compute_resid (GMT, G, T, R);
 				chisq = compute_chisq (GMT, R, W, scale);
-				GMT_report (GMT, GMT_MSG_NORMAL, format, GMT->init.progname, iterations, old_chisq, chisq);
+				GMT_report (GMT, GMT_MSG_NORMAL, format, gmt_module_name(GMT), iterations, old_chisq, chisq);
 				iterations++;
 			} while (old_chisq / chisq > 1.0001);
 

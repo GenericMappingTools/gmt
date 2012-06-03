@@ -37,8 +37,8 @@ int main (int argc, char *argv[]) {
 	if ((api_ctrl = GMT_Create_Session (argv[0], this_module.api_mode)) == NULL)
 		return EXIT_FAILURE;
 
-	/* Copy Gmt_moduleinfo to api_ctrl->GMT */
-	api_ctrl->GMT->init.module = this_module;
+	/* TODO: remove - Copy Gmt_module_id to api_ctrl->GMT */
+	api_ctrl->GMT->init.module_id = MODULE_ID;
 
 	/* 2. Run GMT function, or give usage message if errors arise during parsing */
 	status = this_module.p_func (api_ctrl, argc-1, (argv+1));

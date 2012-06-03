@@ -363,8 +363,8 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		if (n_tracks_found) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Found %d tracks\n", n_tracks_found);
-	
-			printf ("# Search command: %s", GMT->init.progname);
+
+			printf ("# Search command: %s", gmt_module_name(GMT));
 			for (opt = options; opt; opt = opt->next)
 				(opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
 			printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);

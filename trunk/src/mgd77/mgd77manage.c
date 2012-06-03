@@ -253,7 +253,7 @@ int decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, 
 					error++;
 				}
 				if (error) {
-					fprintf (C->session.std[GMT_ERR], "%s: Abbreviation name should only contain lower case letters, digits, and underscores\n", C->init.progname);
+					fprintf (C->session.std[GMT_ERR], "%s: Abbreviation name should only contain lower case letters, digits, and underscores\n", gmt_module_name(C));
 					return (true);
 				}
 				break;
@@ -299,7 +299,7 @@ int decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, 
 			parameters[COL_TYPE] = NC_CHAR;
 			break;
 		default:
-			fprintf (C->session.std[GMT_ERR], "%s: Unknown data type flag %c\n", C->init.progname, *size);
+			fprintf (C->session.std[GMT_ERR], "%s: Unknown data type flag %c\n", gmt_module_name(C), *size);
 			parameters[COL_TYPE] = MGD77_NOT_SET;
 			break;
 	}
@@ -311,7 +311,7 @@ int skip_if_missing (struct GMT_CTRL *C, char *name, char *file, struct MGD77_CO
 	int id;
 
 	if ((id = MGD77_Get_Column (C, name, F)) == MGD77_NOT_SET) {
-		fprintf (C->session.std[GMT_ERR], "%s: Cruise %s is missing column %s which is required for selected operation - skipping\n", C->init.progname, file, name);
+		fprintf (C->session.std[GMT_ERR], "%s: Cruise %s is missing column %s which is required for selected operation - skipping\n", gmt_module_name(C), file, name);
 		MGD77_Free_Dataset (C, D);	/* Free memory already allocated by MGD77_Read_File for this aborted effort */
 	}
 	return (id);
@@ -1618,17 +1618,17 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		if (n_bad) {	/* Report what we found */
 			if (In.verbose_level | 1) fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
-				GMT->init.progname, In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
+				gmt_module_name(GMT), In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
 		}
-		
+
 		MGD77_Close_File (GMT, &In);
 		MGD77_Free_Dataset (GMT, &D);
 		n_changed++;
 	}
-	
+
 	if (got_table) GMT_free (GMT, colvalue);
 	if (two_cols) GMT_free (GMT, coldnt);
-	
+
 	if (Ctrl->D.active)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Removed %d data columns from %d MGD77 files\n", n_delete, n_changed);
 	else if (Ctrl->A.mode == MODE_e)

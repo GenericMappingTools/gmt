@@ -2320,7 +2320,7 @@ void gmt_echo_command (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_OPTION
 	struct GMT_OPTION *opt = NULL;
 
 	GMT_memset (outstring, GMT_BUFSIZ, char);
-	PSL_command (P, "\n%% PostScript produced by:\n%%%%GMT:  %s", C->init.progname);
+	PSL_command (P, "\n%% PostScript produced by:\n%%%%GMT: %s", gmt_module_name(C));
 	for (opt = options; opt; opt = opt->next) {
 		if (length >= 120) {
 			PSL_command (P, "%s \\\n%%%%GMT:+", outstring);
@@ -3562,7 +3562,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *P = C->PSL;
-	
+
 	if (!P) {
 		GMT_report (C, GMT_MSG_FATAL, "PSL pointer not initialized!\n");
 		GMT_exit (GMT_RUNTIME_ERROR);
@@ -3621,8 +3621,8 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	/* Get title */
 
-	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, C->init.progname);
-	
+	sprintf (title, "GMT v%s Document from %s", GMT_VERSION, gmt_module_name(C));
+
 	PSL_beginplot (P, fp, C->current.setting.ps_orientation, C->common.O.active, C->current.setting.ps_color_mode, C->current.ps.origin, C->current.setting.map_origin, C->current.setting.ps_page_size, title, fno);
 
 	/* Issue the comments that allow us to trace down what command created this layer */
@@ -3662,7 +3662,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strcpy (C->current.ps.map_logo_label, C->init.module.name);
+		strcpy (C->current.ps.map_logo_label, gmt_module_name(C));
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;

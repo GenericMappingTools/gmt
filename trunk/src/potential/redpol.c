@@ -845,7 +845,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 	
 	if (date < 1900.0 || date > 2015.0) {
-		GMT_report (C, GMT_MSG_FATAL, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", C->init.progname, date);
+		GMT_report (C, GMT_MSG_FATAL, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", gmt_module_name(C), date);
 		return (true);
 	}
 	

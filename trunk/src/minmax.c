@@ -24,6 +24,8 @@
  * Version:	 API
  */
 
+#define THIS_MODULE k_mod_minmax /* I am minmax */
+
 #include "gmt.h"
 
 EXTERN_MSC int gmt_geo_C_format (struct GMT_CTRL *C);
@@ -85,18 +87,18 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 }
 
 void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
-	GMT_free (GMT, C);	
+	GMT_free (GMT, C);
 }
 
 int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	gmt_module_show_name_and_purpose (GMT->init.module);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
 	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
- 
+
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
@@ -261,7 +263,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_minmax", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy);	/* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghirs>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_minmax_parse (API, Ctrl, options))) Return (error);
@@ -273,8 +275,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 	delimeter[1] = '\0';
 	GMT_memset (file, GMT_BUFSIZ, char);
 	off = (GMT->common.r.active) ? 0.5 : 0.0;
-	
-	
+
 	brackets = !Ctrl->C.active;
 	work_on_abs_value = (Ctrl->E.active && Ctrl->E.abs);
 	if (GMT_x_is_lon (GMT, GMT_IN)) {	/* Must check that output format won't mess things up by printing west > east */

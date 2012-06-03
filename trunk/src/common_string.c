@@ -52,7 +52,6 @@
 #include <limits.h>
 
 #include "gmt_notposix.h"
-#include "gmt_types.h"
 #include "common_string.h"
 
 #define BUF_SIZE 4096

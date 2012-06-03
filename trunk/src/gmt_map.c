@@ -1017,7 +1017,7 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, uint64_t
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
 			}
-			else if (C->common.R.oblique && C->current.proj.projection == GMT_AZ_EQDIST && n <= 5 && !strcmp (C->init.module.name, "pscoast")) {
+			else if (C->common.R.oblique && C->current.proj.projection == GMT_AZ_EQDIST && n <= 5 && C->init.module_id == k_mod_pscoast) {
 				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
 				   This results in a rectangular closed polygon after the clipping. */
 				n = 0;

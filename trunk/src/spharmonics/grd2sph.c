@@ -46,18 +46,18 @@ int main (int argc, char **argv)
 	int i, d, o, nm, f_arg = -1, n_files = 0;
 
 	float *grd;
-	
+
 	double out[4];
 
 	struct GRD_HEADER header;
 	struct grd2sph_CTRL *Ctrl;
 
 	void *New_grd2sph_Ctrl (), Free_grd2sph_Ctrl (struct grd2sph_CTRL *C);
-	
+
 	argc = GMT_begin (argc, argv);
 
 	Ctrl = (struct grd2sph_CTRL *)New_grd2sph_Ctrl ();	/* Allocate and initialize a new control structure */
-	
+
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
 			switch (argv[i][1]) {
@@ -116,23 +116,23 @@ int main (int argc, char **argv)
 	}
 
 	if (n_files == 0) {
-		fprintf (stderr, "%s: Syntax error: Must specify at least one input grid\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Must specify at least one input grid\n", GMT->init.module_name);
 		error++;
 	}
 	if (n_files > 1) {
-		fprintf (stderr, "%s: Syntax error: Can only handle one input grid\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Can only handle one input grid\n", GMT->init.module_name);
 		error++;
 	}
 	if (Ctrl->D.max_degree <= 0) {
-		fprintf (stderr, "%s: Syntax error: -D maximum degree must be positive\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: -D maximum degree must be positive\n", GMT->init.module_name);
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", GMT->init.module_name);
 		error++;
 	}
 	if (GMT->current.io.info.binary[GMT_OUT] && GMT->current.io.info.io_header[GMT_OUT]) {
-		fprintf (stderr, "%s: Syntax error: Binary output data cannot have header -H\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Binary output data cannot have header -H\n", GMT->init.module_name);
 		error++;
 	}
 
@@ -146,21 +146,21 @@ int main (int argc, char **argv)
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
 	if (!(GMT_grd_is_global (&header) && GMT_180_RANGE (header.y_min, header.y_max))) {
-		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT->init.progname, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
+		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT->init.module_name, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
 		exit (EXIT_FAILURE);
 	}
-	
-	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Working on file %s\n", GMT->init.progname, argv[f_arg]);
+
+	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Working on file %s\n", GMT->init.module_name, argv[f_arg]);
 
 	nm = header.nx * header.ny;
 
-	grd = GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.progname);
+	grd = GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.module_name);
 
 	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, false), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */
-	
+
 	/* Write out coefficients in the form degree order cos sin */
-	
+
 	if (GMT->current.io.info.io_header[GMT_OUT]) printf ("#degree\torder\tcos\tsin\n");
 	out[2] = out[3] = 0.0;
 	for (d = 0; d <= Ctrl->D.max_degree; d++) {
@@ -175,8 +175,8 @@ int main (int argc, char **argv)
 	}
 
 	GMT_free (grd);
-	
-	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Completed\n", GMT->init.progname);
+
+	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Completed\n", GMT->init.module_name);
 
 	Free_grd2sph_Ctrl (Ctrl);	/* Deallocate control structure */
 
@@ -187,7 +187,7 @@ int main (int argc, char **argv)
 
 void *New_grd2sph_Ctrl () {	/* Allocate and initialize a new control structure */
 	struct grd2sph_CTRL *C;
-	
+
 	C = (struct grd2sph_CTRL *) GMT_memory (VNULL, 1, sizeof (struct grd2sph_CTRL), "New_grd2sph_Ctrl");
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
