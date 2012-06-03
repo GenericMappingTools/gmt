@@ -49,6 +49,7 @@ set (_scr_other GMT_-B_geo_1.sh GMT_-B_geo_2.sh GMT_-B_linear.sh GMT_-B_log.sh
 
 # Scripts that are only used for testing, figures are not in the documentation
 set (_scr_test GMT_RGBchart.sh)
+# GMT_App_O.sh GMT_encoding.sh GMT_dummydata.sh
 
 set (_scripts_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 

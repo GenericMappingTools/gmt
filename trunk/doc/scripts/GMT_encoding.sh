@@ -11,7 +11,8 @@ if [ $# -eq 0 ]; then
 	exit
 fi
 
-cat << EOF > tt.awk	# This awk script creates the tt.chart table of which entries are defined
+cat << EOF > tt.awk
+# This awk script creates the tt.chart table of which entries are defined
 {
 	printf "%d\t", NR-1
 	for (i = 1; i < 8; i++)
@@ -23,8 +24,9 @@ cat << EOF > tt.awk	# This awk script creates the tt.chart table of which entrie
 	printf "\n"
 }
 EOF
-egrep -v '\[|\]' "${GMT5_SHAREDIR:-$GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.chart
-cat << EOF > tt.awk	# This awk script creates a file for psxy to plot a rectangle for undefined entries
+egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.chart
+cat << EOF > tt.awk
+# This awk script creates a file for psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
 	{
@@ -32,7 +34,7 @@ cat << EOF > tt.awk	# This awk script creates a file for psxy to plot a rectangl
 	}
 }
 EOF
-egrep -v '\[|\]' "${GMT5_SHAREDIR:-$GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.empty
+egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.empty
 
 cat << EOF > tt.awk
 BEGIN {
@@ -43,10 +45,10 @@ BEGIN {
 	}
 }
 {
-	printf "0.5 %g \\\\\\\%2.2ox\n", \$1+0.5, \$1
+	printf "0.5 %g \\\\\\\%02ox\n", \$1+0.5, \$1
 	for (i = 2; i <= NF; i++)
 	{
-		printf "%g %g \\\\%2.2o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
+		printf "%g %g \\\\%02o%o\n", \$i+1.5, \$1+0.5, \$1, \$i
 	}
 }
 EOF
