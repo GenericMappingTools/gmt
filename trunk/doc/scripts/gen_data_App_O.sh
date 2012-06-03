@@ -1,17 +1,9 @@
 #!/bin/bash
-#	$Id$
 #
-#	Makes the inserts for Appendix O (labeled lines)
-#	This first script just gets the data ready and run the various scripts
+# $Id$
+# Makes the data for GMT_App_O_[1-9].sh
 #
-grdcut data/../../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
-# fixed algorithm points
-cat << EOF > fix.d
-80	-8.5
-55	-7.5
-102	0
-130	10.5
-EOF
+grdcut ../examples/ex01/osu91a1f_16.nc -R50/160/-15/15 -Ggeoid.nc
 # Complex line algorithm points
 cat << EOF > cross.d
 > 1st branch
@@ -42,3 +34,4 @@ dist=`gmtconvert tt.d --FORMAT_FLOAT_OUT=%.0lf -El -o2`
 R=`minmax -I1 tt.d`
 echo "# Geoid Extrema Separation is $dist km" > transect.d
 grdtrack tt.d -Ggeoid.nc | grdtrack -GGMT_App_O.nc >> transect.d
+rm -f tt.d .gmtcommands
