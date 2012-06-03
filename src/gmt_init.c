@@ -5249,6 +5249,10 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
 
 	/* GMT_INIT */
+
+	if (C->init.module_name != NULL)
+		free (C->init.module_name);
+
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
 #if 0
 	GMT_memset (hist_cpy, GMT_N_UNIQUE, char *);
