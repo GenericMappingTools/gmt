@@ -165,34 +165,34 @@ int main (int argc, char **argv)
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (n_files > 1) {
-		fprintf (stderr, "%s: Syntax error: Can only handle one input coefficient file\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Can only handle one input coefficient file\n", GMT->init.module_name);
 		error++;
 	}
 	if (!GMT->common.R.active) {
-		fprintf (stderr, "%s: Syntax error: Must specify -R option\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: Must specify -R option\n", GMT->init.module_name);
 		error++;
 	}
 	if (!Ctrl->G.file) {
-		fprintf (stderr, "%s: Syntax error -G option: Must specify output file\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error -G option: Must specify output file\n", GMT->init.module_name);
 		error++;
 	}
 	if (Ctrl->D.active && !(Ctrl->D.mode == 'g' || Ctrl->D.mode == 'n')) {
-		fprintf (stderr, "%s: Syntax error -D option: Must append g or n\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error -D option: Must append g or n\n", GMT->init.module_name);
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", GMT->init.module_name);
 		error++;
 	}
 	if (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0) {
-		fprintf (stderr, "%s: Syntax error -I option.  Must specify positive increment(s)\n", GMT->init.progname);
+		fprintf (stderr, "%s: Syntax error -I option.  Must specify positive increment(s)\n", GMT->init.module_name);
 		error++;
 	}
 
 	if (error) exit (EXIT_FAILURE);
 
 	if (n_files == 1 && (fp = GMT_fopen (argv[f_arg], GMT->current.io.info.r_mode)) == NULL) {
-		fprintf (stderr, "%s: Cannot open file %s\n", GMT->init.progname, argv[f_arg]);
+		fprintf (stderr, "%s: Cannot open file %s\n", GMT->init.module_name, argv[f_arg]);
 		exit (EXIT_FAILURE);
 	}
 	else {
@@ -205,21 +205,21 @@ int main (int argc, char **argv)
 	while ((n_fields = GMT->current.io.input (GMT, fp, &n_expected_fields, &in)) >= 0 && !(GMT->current.io.info.status & GMT_IO_EOF)) {	/* Not yet EOF */
 		n_read++;
 		if (GMT->current.io.info.status & GMT_IO_MISMATCH) {
-			fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %ld\n", GMT->init.progname, n_fields, n_expected_fields, n_read);
+			fprintf (stderr, "%s: Mismatch between actual (%d) and expected (%d) fields near line %ld\n", GMT->init.module_name, n_fields, n_expected_fields, n_read);
 			exit (EXIT_FAILURE);
 		}
 		/* Store coefficients somewhere */
 	}
 	GMT_fclose (fp);
-	
+
 	header.x_inc = Ctrl->I.inc[GMT_X];
 	header.y_inc = Ctrl->I.inc[GMT_Y];
 	header.registration = GMT->common.r.active;
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);
 
-	grd = GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.progname);
-	lon = GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.progname);
+	grd = GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.module_name);
+	lon = GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.module_name);
 	for (i = 0; i < header.nx; i++) lon[i] = GMT_col_to_x (GMT, i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
 		
 	for (j = ij = 0; j < header.ny; j++) {

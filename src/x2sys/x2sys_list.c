@@ -449,14 +449,14 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 		for (j = 0; j < 2; j++) GMT_free (GMT, x_side[j]);
 	}
 	/* Time to issue output */
-	
+
 	if (!GMT->common.b.active[GMT_OUT]) {	/* Write 3 header records */
 		char *cmd = NULL;
 		fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
 		cmd = GMT_Create_Cmd (API, options);
-		fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", GMT->init.progname, cmd);	/* Build command line argument string */
+		fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", gmt_module_name(GMT), cmd);	/* Build command line argument string */
 		GMT_free (GMT, cmd);
-		
+
 		fprintf (GMT->session.std[GMT_OUT], "#");
 		for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
 			if (i > 0) fprintf (GMT->session.std[GMT_OUT], "\t");

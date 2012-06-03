@@ -647,7 +647,7 @@ int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int mo
 
 	unsigned int error = 0;
 
-	if (!strcmp (C->init.progname, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
+	if (!strcmp (gmt_module_name(C), "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
 	switch (GMT_minmaxinc_verify (C, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], GMT_SMALL)) {
 		case 3:
@@ -1045,12 +1045,12 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		size_t len;
 		struct GMTAPI_CTRL *API = C->parent;
 		int argc = 0; char **argv = NULL;
-		
+
 		if ((argv = GMT_Create_Args (API, &argc, options)) == NULL) {
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not create argc, argv from linked structure options!\n");
 			return;
 		}
-		strcpy (header->command, C->init.progname);
+		strcpy (header->command, gmt_module_name(C));
 		len = strlen (header->command);
 		for (i = 0; len < GRD_COMMAND_LEN320 && i < argc; i++) {
 			len += strlen (argv[i]) + 1;

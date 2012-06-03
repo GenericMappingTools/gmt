@@ -744,7 +744,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 						sprintf (line, "# Tag: %s", Ctrl->T.TAG);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
 						cmd = GMT_Create_Cmd (API, options);
-						sprintf (line, "# Command: %s %s", GMT->init.progname, cmd);	/* Build command line argument string */
+						sprintf (line, "# Command: %s %s", gmt_module_name(GMT), cmd);	/* Build command line argument string */
 						GMT_free (GMT, cmd);
 						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
 						sprintf (line, "# %s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",

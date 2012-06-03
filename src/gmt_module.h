@@ -166,7 +166,7 @@ enum Gmt_module_id {
 	k_mod_x2sys_solve,
 	k_mod_xyz2grd,
 	k_mod_xyzokb,
-  k_mod_notfound
+  k_mod_nongmt
 };
 
 /* function prototypes of all GMT modules */
@@ -293,10 +293,13 @@ EXTERN_MSC int GMT_xyzokb (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC void gmt_module_show_all();
 
 /* Pretty print module names and purposes */
-EXTERN_MSC void gmt_module_show_name_and_purpose(struct Gmt_moduleinfo module);
+EXTERN_MSC void gmt_module_show_name_and_purpose(enum Gmt_module_id module);
 
 /* Lookup module id by name */
 EXTERN_MSC enum Gmt_module_id gmt_module_lookup (char *candidate);
+
+/* Get module name */
+EXTERN_MSC char *gmt_module_name (struct GMT_CTRL *gmt_ctrl);
 
 #ifdef __cplusplus
 }

@@ -744,15 +744,15 @@ int GMT_err_func (struct GMT_CTRL *C, int err, bool fail, char *file, char *fnam
 		{ /* Stay silent */ }
 	else if (file && file[0])
 #ifdef DEBUG
-		GMT_message (C, "%s:%s:%d: %s [%s]\n", C->init.progname, fname, line, GMT_strerror(err), file);
+		GMT_message (C, "%s:%s:%d: %s [%s]\n", gmt_module_name(C), fname, line, GMT_strerror(err), file);
 #else
-		GMT_message (C, "%s (%s): %s [%s]\n", C->init.progname, fname, GMT_strerror(err), file);
+		GMT_message (C, "%s (%s): %s [%s]\n", gmt_module_name(C), fname, GMT_strerror(err), file);
 #endif
 	else
 #ifdef DEBUG
-		GMT_message (C, "%s:%s:%d: %s\n", C->init.progname, fname, line, GMT_strerror(err));
+		GMT_message (C, "%s:%s:%d: %s\n", gmt_module_name(C), fname, line, GMT_strerror(err));
 #else
-		GMT_message (C, "%s (%s): %s\n", C->init.progname, fname, GMT_strerror(err));
+		GMT_message (C, "%s (%s): %s\n", gmt_module_name(C), fname, GMT_strerror(err));
 #endif
 	/* Pass error code on or exit */
 	if (fail)
@@ -3139,7 +3139,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
 		GMT_report (C, GMT_MSG_FATAL, "Error: Requesting SIZE_MAX number of items (%zu) - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_FATAL, "GMT_memory called by %s from file %s on line %d\n", C->init.progname, fname, line);
+		GMT_report (C, GMT_MSG_FATAL, "GMT_memory called by %s from file %s on line %d\n", gmt_module_name(C), fname, line);
 #endif
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -3159,7 +3159,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not reallocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
-			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [realloc] called by %s from file %s on line %d\n", C->init.progname, fname, line);
+			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [realloc] called by %s from file %s on line %d\n", gmt_module_name(C), fname, line);
 #endif
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -3180,7 +3180,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
 			GMT_report (C, GMT_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
-			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [calloc] called by %s from file %s on line %d\n", C->init.progname, fname, line);
+			GMT_report (C, GMT_MSG_FATAL, "GMT_memory [calloc] called by %s from file %s on line %d\n", gmt_module_name(C), fname, line);
 #endif
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -3196,7 +3196,7 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *fname, const uns
 	if (addr == NULL) {
 		/* report freeing unallocated memory */
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s from file %s on line %d tried to free unallocated memory\n", C->init.progname, fname, line);
+		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s from file %s on line %d tried to free unallocated memory\n", gmt_module_name(C), fname, line);
 #else
 		GMT_report (C, GMT_MSG_DEBUG, "GMT_free_func: %s tried to free unallocated memory\n");
 #endif

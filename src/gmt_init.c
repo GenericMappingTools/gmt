@@ -5216,8 +5216,20 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	C->common.p.active = C->common.s.active = C->common.t.active = C->common.colon.active = false;
 	GMT_memset (C->common.b.ncol, 2, int);
 
-	*Ccopy = Csave;				/* Pass back out for safe-keeping by the module until GMT_end_module is called */
-	C->init.progname = (C->hidden.func_level == 1) ? &mod_name[4] : mod_name;		/* Either top-level (program) or module call */
+	*Ccopy = Csave; /* Pass back out for safe-keeping by the module until GMT_end_module is called */
+
+	if (mod_name != NULL) {
+		/* mod_name should only be set for non-GMT modules. For internally
+		 * registered modules: mod_name == NULL */
+		if (C->init.module_id != k_mod_nongmt)
+#ifdef DEBUG
+			fprintf (stderr, "DEV NOTE: %s not registered as internal module yet.\n", g_module[C->init.module_id].name);
+#endif
+		else {
+			//C->init.module_id = k_mod_nongmt;
+			C->init.module_name = strdup (mod_name);
+		}
+	}
 
 	return (C);
 }
@@ -8035,7 +8047,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	C->session.std[GMT_IN]  = stdin;
 	C->session.std[GMT_OUT] = stdout;
 	C->session.std[GMT_ERR] = stderr;
-	
+
 	/* Set default verbosity level */
 	C->current.setting.verbose = GMT_MSG_COMPAT;
 
@@ -8045,8 +8057,8 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	C->session.max_meminc = GMT_MAX_MEMINC;
 #endif
 
-	/* We use the calling programs session name as program name */
-	C->init.progname = basename(session);
+	/* We don't know the module name yet */
+	C->init.module_name = NULL;
 
 	/* Set runtime bindir */
 	GMT_runtime_bindir (path, session);
@@ -8211,7 +8223,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 
 	gmt_geo_C_format (C);
 	gmt_plot_C_format (C);
-	
+
 	/* Set default for -n parameters */
 	C->common.n.antialias = true; C->common.n.interpolant = BCR_BICUBIC; C->common.n.threshold = 0.5;
 
@@ -8220,6 +8232,9 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	if (C->current.setting.io_gridfile_shorthand) gmt_setshorthand (C);	/* Load the short hand mechanism from .gmt_io */
 
 	GMT_fft_initialization (C);	/* Determine which FFT algos are available and set pointers */
+
+	/* We default to non-GMT module id */
+	C->init.module_id = k_mod_nongmt;
 
 	return (C);
 }
@@ -8292,8 +8307,8 @@ int GMT_report_func (struct GMT_CTRL *C, unsigned int level, char *source_line, 
 	source_line_basename = (strrchr (source_line, '\\') ?
 			strrchr (source_line, '\\') : source_line - 1) + 1;
 #endif
-	snprintf (message, GMT_BUFSIZ, "%s, %s, %s: ",
-			C->init.progname, C->init.module.name, source_line_basename);
+	snprintf (message, GMT_BUFSIZ, "%s, %s: ",
+			gmt_module_name(C), source_line_basename);
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */

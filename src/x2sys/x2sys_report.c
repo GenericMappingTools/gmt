@@ -331,11 +331,11 @@ int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 			R[k].W = GMT->session.d_NaN;
 	}
 	scale = (n_use && sum_w > 0.0) ? n_use / sum_w : 1.0;
-	
+
 	/* Time to issue output */
-	
+
 	fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
-	fprintf (GMT->session.std[GMT_OUT], "# Command: %s", GMT->init.progname);
+	fprintf (GMT->session.std[GMT_OUT], "# Command: %s", gmt_module_name(GMT));
 	if (!Ctrl->In.file) fprintf (GMT->session.std[GMT_OUT], " [stdin]");
 	for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
 	fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]\n", c, c, c, c, c, n_use);
