@@ -33,6 +33,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_grd2cpt /* I am grd2cpt */
+
 #include "gmt.h"
 
 struct GRD2CPT_CTRL {
@@ -119,7 +121,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grd2cpt %s [API] - Make linear or histogram-equalized color palette table from grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-E<nlevels>\n");
 	GMT_message (GMT, "\t[-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] [%s]\n\t[-S<z_start>/<z_stop>/<z_inc>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
@@ -321,7 +323,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grd2cpt", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
 	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2cpt_parse (API, Ctrl, options))) Return (error);

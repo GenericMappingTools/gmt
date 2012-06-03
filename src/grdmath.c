@@ -26,6 +26,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_grdmath /* I am grdmath */
+
 #include "gmt.h"
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
@@ -108,7 +110,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdmath %s [API] - Reverse Polish Notation (RPN) calculator for grids (element by element)\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdmath [%s] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s] [%s]\n"
 		"\t[%s]\n\t[%s] [%s]\n",	GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT,
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT);
@@ -2961,7 +2963,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdmath", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options)) Return1 (API->error);
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return1 (error);

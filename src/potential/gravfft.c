@@ -25,6 +25,8 @@
  *
  * */
 
+#define THIS_MODULE k_mod_gravfft /* I am gravfft */
+
 #include "gmt.h"
 
 struct GRAVFFT_CTRL {
@@ -433,7 +435,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
-		GMT_message (GMT, "gravfft %s - Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)\n\n", GMT_VERSION);
+		gmt_module_show_name_and_purpose (THIS_MODULE);
 		GMT_message (GMT, "usage: gravfft <topo_grd> -C<n/wavelength/mean_depth/tbw> -D<density>\n");
 		GMT_message (GMT,"       -G<out_grdfile> [-E<n_terms>] [-F] [-L[-l[n]] -I<second_file>[/<wbct>]\n");
 		GMT_message (GMT,"       [-H] [-M] [-N<stuff>] [-Q] -T<te/rl/rm/rw> [-s<scale>] [-t[c|a]]\n");
@@ -540,7 +542,7 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gravfft", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vf", "", options)) Return (API->error);
 	Ctrl = New_gravfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gravfft_parse (API, Ctrl, options))) Return (error);

@@ -15,6 +15,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_mgd77path /* I am mgd77path */
+
 #include "gmt.h"
 #include "mgd77.h"
 
@@ -52,7 +54,7 @@ int GMT_mgd77path_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mgd77path %s [API] - Return paths to MGD77 cruises and directories\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77path <cruise(s)> A[-] -D [-I<code>] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -153,7 +155,7 @@ int GMT_mgd77path (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_mgd77path", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_mgd77path_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return (error);

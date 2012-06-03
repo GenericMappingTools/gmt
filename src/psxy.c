@@ -24,6 +24,8 @@
  * or polygons on maps.
  */
 
+#define THIS_MODULE k_mod_psxy /* I am psxy */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -236,7 +238,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psxy synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psxy %s [API] - Plot lines, polygons, and symbols on maps\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psxy [<table>] %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][n][cap][/[+|-]<pen>]]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [%s] [-I<intens>] [-K] [-L] [-N] [-O] [-P]\n", GMT_Jz_OPT);
@@ -532,7 +534,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psxy", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXYacghipst>" GMT_OPT("HMm"), options)) Return (API->error);
 
 	/* Initialize GMT_SYMBOL structure */

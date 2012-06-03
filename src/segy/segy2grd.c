@@ -25,6 +25,8 @@
  * Version:	3.4.1
  */
  
+#define THIS_MODULE k_mod_segy2grd /* I am segy2grd */
+
 #include "gmt.h"
 #include "segy_io.h"
 
@@ -113,7 +115,7 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "segy2grd %s - Converting SEGY data to a GMT grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: segy2grd <segyfile> -G<grdfile> %s %s\n", GMT_Id_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-A[n|z]] [%s] [-F] [-L<nsamp>] [-M<ntraces>] [-N<nodata>]\n", GMT_GRDEDIT);
 	GMT_message (GMT, "\t[-Q<mode><value>] [-S<header>] [%s]\n\n", GMT_V_OPT);
@@ -300,7 +302,7 @@ int GMT_segy2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_segy2grd", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options)) Return (API->error);
 	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_segy2grd_parse (API, Ctrl, options))) Return (error);

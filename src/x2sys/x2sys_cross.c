@@ -28,6 +28,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_x2sys_cross /* I am x2sys_cross */
+
 #include "x2sys.h"
 
 /* Control structure for x2sys_cross */
@@ -91,7 +93,7 @@ void Free_x2sys_cross_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	
 int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
-	GMT_message (GMT, "x2sys_cross %s - Calculate crossovers between track data files\n\n", X2SYS_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-Il|a|c] [%s]\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-Qe|i] [%s] [-Sl|h|u<speed>] [%s] [-W<size>] [%s] [-Z]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
 
@@ -321,7 +323,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_x2sys_cross", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VfRJb", ">", options)) Return (API->error);
 	Ctrl = New_x2sys_cross_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_cross_parse (API, Ctrl, options))) Return (error);

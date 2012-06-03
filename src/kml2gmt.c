@@ -24,6 +24,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_kml2gmt /* I am kml2gmt */
+
 #include "gmt.h"
 
 #define POINT			0
@@ -59,7 +61,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "kml2gmt %s [API] - Extract GMT table data from Google Earth KML files\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [-Z] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -144,7 +146,7 @@ int GMT_kml2gmt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_kml2gmt", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vb:", "" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_kml2gmt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_kml2gmt_parse (API, Ctrl, options))) Return (error);

@@ -72,6 +72,8 @@
 	  2) New option to only output pole and ave, i.e., not text messages
  */
 
+#define THIS_MODULE k_mod_fitcircle /* I am fitcircle */
+
 #include "gmt.h"
 
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
@@ -109,7 +111,7 @@ int GMT_fitcircle_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "fitcircle %s [API] - Find mean position and best-fitting great- or small-circle to points on sphere\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: fitcircle [<table>] -L[<norm>] [-S[<lat>]] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -342,7 +344,7 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_fitcircle", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghio>" GMT_OPT("H"), options)) Return (API->error);
 	Ctrl = New_fitcircle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_fitcircle_parse (API, Ctrl, options))) Return (error);

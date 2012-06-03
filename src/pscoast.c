@@ -51,6 +51,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_pscoast /* I am pscoast */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -155,8 +157,8 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the pscoast synopsis and optionally full usage information */
 
-	GMT_message (GMT, "pscoast %s [API] - Plot continents, shorelines, rivers, and borders on maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] [-G[<fill>]] [-I<feature>[/<pen>]]\n");
 	GMT_message (GMT, "\t[%s] [-K] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_message (GMT, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
@@ -563,7 +565,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_pscoast", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRb", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
 	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = GMT_pscoast_parse (API, Ctrl, options))) Return (error);

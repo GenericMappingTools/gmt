@@ -32,6 +32,8 @@
 
 /* #define DEBUGX */	/* Uncomment for testing */
 
+#define THIS_MODULE k_mod_x2sys_solve /* I am x2sys_solve */
+
 #include "x2sys.h"
 
 #define N_COE_PARS	12	/* Total number of items that might be known at each crossover */
@@ -173,7 +175,7 @@ void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	
 int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
-	GMT_message (GMT, "x2sys_solve %s - Determine least-squares systematic correction from crossovers\n\n", X2SYS_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 #ifdef SAVEFORLATER
 	GMT_message (GMT, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [-I<tracklist>] [%s] [-W] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
 #else
@@ -361,7 +363,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_x2sys_solve", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vb", ">", options)) Return (API->error);
 	Ctrl = New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_solve_parse (API, Ctrl, options))) Return (error);

@@ -33,6 +33,8 @@
  */
 
 #define GMT_WITH_NO_PS
+#define THIS_MODULE k_mod_ps2raster /* I am ps2raster */
+
 #include "gmt.h"
 
 EXTERN_MSC void GMT_str_toupper (char *string);
@@ -249,7 +251,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "ps2raster %s [API] - Convert [E]PS file(s) to other formats using GhostScript.\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>]\n");
 	GMT_message (GMT, "\t[-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_message (GMT, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
@@ -599,7 +601,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_ps2raster", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
 	Ctrl = New_ps2raster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_ps2raster_parse (API, Ctrl, options))) Return (error);

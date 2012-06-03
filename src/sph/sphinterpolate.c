@@ -33,6 +33,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_sphinterpolate /* I am sphinterpolate */
+
 #include "gmt.h"
 #include "sph.h"
 
@@ -90,7 +92,7 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "sphinterpolate %s - Spherical gridding in tension of data on a sphere\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-Q<mode>][/<args>] [-T] [-V] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
@@ -233,7 +235,7 @@ int GMT_sphinterpolate (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_sphinterpolate", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbr:", "hm" GMT_OPT("F"), options)) Return (API->error);
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_sphinterpolate_Ctrl (GMT);	/* Allocate and initialize a new control structure */

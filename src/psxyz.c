@@ -24,6 +24,8 @@
  * or polygons in a 3-D perspective view.
  */
 
+#define THIS_MODULE k_mod_psxyz /* I am psxyz */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -106,7 +108,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psxyz synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psxyz %s [API] - Plot lines, polygons, and symbols in 3-D\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psxyz [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-K] [-L] [-N] [-O] [-P] [-Q] [-S<symbol><size>|+s<scaling>[/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
@@ -389,7 +391,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psxyz", &GMT_cpy);				/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYyacghipst>" GMT_OPT("EZHMm"), options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 

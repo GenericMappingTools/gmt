@@ -24,6 +24,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_gmtvector /* I am gmtvector */
+
 #include "gmt.h"
 
 #define DO_NOTHING	0
@@ -95,7 +97,7 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtvector %s [API] - Basic manipulation of Cartesian vectors\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -458,7 +460,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtvector", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtvector_parse (API, Ctrl, options))) Return (error);

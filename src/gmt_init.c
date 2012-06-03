@@ -5221,14 +5221,8 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	if (mod_name != NULL) {
 		/* mod_name should only be set for non-GMT modules. For internally
 		 * registered modules: mod_name == NULL */
-		if (C->init.module_id != k_mod_nongmt)
-#ifdef DEBUG
-			fprintf (stderr, "DEV NOTE: %s not registered as internal module yet.\n", g_module[C->init.module_id].name);
-#endif
-		else {
-			//C->init.module_id = k_mod_nongmt;
-			C->init.module_name = strdup (mod_name);
-		}
+		C->init.module_id = k_mod_nongmt;
+		C->init.module_name = strdup (mod_name);
 	}
 
 	return (C);

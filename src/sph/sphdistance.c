@@ -35,6 +35,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_sphdistance /* I am sphdistance */
+
 #include "gmt.h"
 #include "sph.h"
 
@@ -121,7 +123,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "sphdistance %s - Make grid of distances to nearest points on a sphere\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphdistance [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-C] [-D] [-E] [-L<unit>] [-N<nodetable>] [-Q<voronoitable>]\n");
@@ -263,7 +265,7 @@ int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_sphdistance", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRb:", "himrs" GMT_OPT("F"), options)) Return (API->error);
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */

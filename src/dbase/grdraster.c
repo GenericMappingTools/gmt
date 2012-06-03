@@ -30,6 +30,8 @@
  * grids using metadata from the grdraster.info table.
  */
 
+#define THIS_MODULE k_mod_grdraster /* I am grdraster */
+
 #include "gmt.h"
 #include "common_byteswap.h"
 
@@ -632,7 +634,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	int i, nrasters;
 
-	GMT_message (GMT, "grdraster %s [API] - Extract subregion from a binary raster and save as a GMT grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdraster <file number>|<text> %s [-G<outgrid>] [%s]\n", GMT_Rgeo_OPT, GMT_Id_OPT);
 	GMT_message (GMT, "\t[-T<table>] [%s] [%s]\n", GMT_bo_OPT, GMT_o_OPT);
 
@@ -770,7 +772,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdraster", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRb", "", options)) Return (API->error);
 	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdraster_parse (API, Ctrl, options))) Return (error);

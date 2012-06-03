@@ -25,6 +25,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_psimage /* I am psimage */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -95,7 +97,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psimage synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psimage %s [API] - Place images or EPS files on maps\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [-C<xpos>/<ypos>[/<justify>]]\n");
 	GMT_message (GMT, "\t[-F<pen>] [-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O] [-P]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
@@ -319,7 +321,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psimage", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJR", "KOPUXxYycpt>", options)) Return (API->error);
 	Ctrl = New_psimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psimage_parse (API, Ctrl, options))) Return (error);

@@ -21,6 +21,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_mgd77track /* I am mgd77track */
+
 #include "pslib.h"
 #include "gmt.h"
 #include "mgd77.h"
@@ -144,7 +146,7 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *C, int level, struct MGD77TRACK_CT
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "mgd77track %s [API] - Plot track-line map of MGD77 cruises\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77track cruise(s) %s %s [-A[c][<size>]][,<inc><unit>] [%s]\n", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F] [-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
 	GMT_message (GMT, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
@@ -569,7 +571,7 @@ int GMT_mgd77track (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	GMT = GMT_begin_module (API, "GMT_mgd77track", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
 	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */

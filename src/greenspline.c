@@ -36,6 +36,8 @@
  *	Computers & Geosciences, 35: 1247–1254".
  */
 
+#define THIS_MODULE k_mod_greenspline /* I am greenspline */
+
 #include "gmt.h"
 
 EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
@@ -165,7 +167,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "greenspline %s [API] - Interpolate using Green's functions for splines in 1-3 dimensions\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]\n");
 	GMT_message (GMT, "\t[-I<dx>[/<dy>[/<dz>]] [-C<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-Q<az>] [-Sc|t|r|p|q[<pars>]] [-T<maskgrid>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -1107,7 +1109,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_greenspline", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vb:", "ghiors>" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_greenspline_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_greenspline_parse (API, Ctrl, options))) Return (error);

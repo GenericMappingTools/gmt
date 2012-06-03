@@ -41,6 +41,8 @@
  * Both binary and ASCII data files are accommodated
  */
  
+#define THIS_MODULE k_mod_gmtselect /* I am gmtselect */
+
 #include "gmt.h"
 
 #define GMTSELECT_N_TESTS	6				/* Number of specific tests available */
@@ -150,7 +152,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtselect %s [API] - Select data table subsets based on multiple spatial criteria\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_message (GMT, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
 	GMT_message (GMT, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>/<max>] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
@@ -441,7 +443,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtselect", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtselect_parse (API, Ctrl, options))) Return (error);

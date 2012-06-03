@@ -186,7 +186,7 @@ int main (int argc, char **argv)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtmercmap", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_module (API, "gmtmercmap", &GMT_cpy);		/* Save current state */
 	if (GMT_Parse_Common (API, "-VR", "BKOPUXxYycnpt>", options)) Return ((int)API->error);
 	Ctrl = New_gmtmercmap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmercmap_parse (API, Ctrl, options))) Return ((int)error);

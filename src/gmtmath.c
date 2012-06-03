@@ -29,6 +29,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_gmtmath /* I am gmtmath */
+
 #include "gmt.h"
 
 EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
@@ -320,7 +322,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "gmtmath %s [API] - Reverse Polish Notation (RPN) calculator for data tables\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtmath [-A<ftable>] [-C<cols>] [-I] [-L] [-N<n_col>/<t_col>] [-Q]\n");
 	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin>/<tmax>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
@@ -2946,7 +2948,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_gmtmath", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return1 (API->error);
 	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmath_parse (API, Ctrl, options))) Return1 (error);

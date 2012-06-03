@@ -30,6 +30,8 @@
  *
  */
  
+#define THIS_MODULE k_mod_sphtriangulate /* I am sphtriangulate */
+
 #include "gmt.h"
 #include "sph.h"
 
@@ -378,7 +380,7 @@ void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL 
 int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
-	GMT_message (GMT, "sphtriangulate %s - Delaunay or Voronoi construction of spherical lon,lat data\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
 	GMT_message (GMT, "\t[-Qd|v] [-T] [-V] [%s] [%s] [%s]\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
@@ -504,7 +506,7 @@ int GMT_sphtriangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_sphtriangulate", &GMT_cpy);			/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRb:", "hims", options)) Return (API->error);
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */

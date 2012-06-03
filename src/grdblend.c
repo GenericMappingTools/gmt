@@ -38,6 +38,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_grdblend /* I am grdblend */
+
 #include "gmt.h"
 
 EXTERN_MSC int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
@@ -435,7 +437,7 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdblend %s [API] - Blend several partially over-lapping grids into one larger grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W]\n\t[-Z<scale>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
@@ -596,7 +598,7 @@ int GMT_grdblend (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdblend", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf:", "r", options)) Return (API->error);
 	GMT_grd_init (GMT, &S.header, options, false);
 	Ctrl = New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */

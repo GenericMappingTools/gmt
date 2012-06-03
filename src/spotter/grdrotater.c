@@ -23,6 +23,8 @@
  * Ver:		1
  */
 
+#define THIS_MODULE k_mod_grdrotater /* I am grdrotater */
+
 #include "spotter.h"
 
 #define PAD 3	/* Used to polish up a rotated grid by checking near neighbor nodes */
@@ -91,7 +93,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdrotater %s - Finite rotation reconstruction of geographic grid\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdrotater <grid> -E[+]<rottable> OR -e<plon>/<plat>/<prot> -G<outgrid> [-F<polygontable>]\n");
 	GMT_message (GMT, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] > projpol\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT);
@@ -343,7 +345,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdrotater", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "ghion>" GMT_OPT("HMmQ"), options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_grdrotater_Ctrl (GMT);	/* Allocate and initialize a new control structure */

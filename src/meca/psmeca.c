@@ -19,6 +19,8 @@ PostScript code is written to stdout.
  Roots:		based on psxy.c
  */
 
+#define THIS_MODULE k_mod_psmeca /* I am psmeca */
+
 #include "pslib.h"      /* to have pslib environment */
 #include "gmt.h"
 
@@ -163,7 +165,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psmeca synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psmeca %s - Plot focal mechanisms on maps\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]\n");
 	GMT_message (GMT, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);
@@ -508,7 +510,7 @@ int GMT_psmeca (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psmeca", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
 	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmeca_parse (API, Ctrl, options))) Return (error);

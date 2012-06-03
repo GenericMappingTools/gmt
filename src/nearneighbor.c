@@ -31,6 +31,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_nearneighbor /* I am nearneighbor */
+
 #include "gmt.h"
 
 #define NN_DEF_SECTORS	4
@@ -124,7 +126,7 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "nearneighbor %s [API] - Grid table data using a \"Nearest neighbor\" algorithm\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
 	GMT_message (GMT, "\t[-E<empty>] [%s] [-W] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT);
@@ -283,7 +285,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_nearneighbor", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRbf:", "hinrs" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_nearneighbor_parse (API, Ctrl, options))) Return (error);

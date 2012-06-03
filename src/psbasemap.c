@@ -26,6 +26,8 @@
  * the specified map projection.
  */
 
+#define THIS_MODULE k_mod_psbasemap /* I am psbasemap */
+
 #include "pslib.h"
 #include "gmt.h"
 
@@ -64,8 +66,8 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psbasemap %s [API] - Plot PostScript base maps\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "\t[%s]\n", GMT_SCALE);
 	GMT_message (GMT, "\t[-O] [-P] [%s]\n", GMT_TROSE);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -156,7 +158,7 @@ int GMT_psbasemap (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psbasemap", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
 	Ctrl = New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psbasemap_parse (API, Ctrl, options))) Return (error);

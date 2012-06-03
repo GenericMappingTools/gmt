@@ -23,6 +23,8 @@ PostScript code is written to stdout.
 
 */
 
+#define THIS_MODULE k_mod_psvelo /* I am psvelo */
+
 #include "pslib.h"	/* to have pslib environment */
 #include "gmt.h"
 
@@ -121,7 +123,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *C, int level)
 
 	/* This displays the psvelo synopsis and optionally full usage information */
 
-	GMT_message (GMT, "psvelo %s - Plot velocity vectors, crosses, and wedges on maps\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psvelo [<table>] %s %s [-A<awidth>/<alength>/<hwidth>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
 	GMT_message (GMT, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
@@ -336,7 +338,7 @@ int GMT_psvelo (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_module (API, "GMT_psvelo", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
 	Ctrl = New_psvelo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psvelo_parse (API, Ctrl, options))) Return (error);

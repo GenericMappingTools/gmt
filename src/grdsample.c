@@ -29,6 +29,8 @@
  * Version:	5 API
  */
 
+#define THIS_MODULE k_mod_grdsample /* I am grdsample */
+
 #include "gmt.h"
 
 struct GRDSAMPLE_CTRL {
@@ -69,7 +71,7 @@ int GMT_grdsample_usage (struct GMTAPI_CTRL *C, int level) {
 
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdsample %s [API] - Resample a grid onto a new lattice\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
 
@@ -198,7 +200,7 @@ int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdsample", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRf", "nr" GMT_OPT("FQ"), options)) Return (API->error);
 	Ctrl = New_grdsample_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdsample_parse (API, Ctrl, options))) Return (error);

@@ -26,6 +26,8 @@
  * Ver:		5 API
  */
 
+#define THIS_MODULE k_mod_grdproject /* I am grdproject */
+
 #include "gmt.h"
 
 struct GRDPROJECT_CTRL {
@@ -83,7 +85,7 @@ int GMT_grdproject_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "grdproject %s [API] - Forward and inverse map transformation of grids\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdproject <ingrid> -G<outgrid> %s\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx>/<dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
 	GMT_message (GMT, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
@@ -230,7 +232,7 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_grdproject", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJR", "nr" GMT_OPT("FS"), options)) Return (API->error);
 	Ctrl = New_grdproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdproject_parse (API, Ctrl, options))) Return (error);

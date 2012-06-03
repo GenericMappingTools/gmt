@@ -27,6 +27,8 @@
  *
  */
 
+#define THIS_MODULE k_mod_x2sys_get /* I am x2sys_get */
+
 #include "x2sys.h"
 
 struct X2SYS_GET_CTRL {
@@ -80,7 +82,7 @@ void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 int GMT_x2sys_get_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "x2sys_get %s - Get track listing from track index database\n\n", X2SYS_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: x2sys_get -T<TAG> [-C] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -211,7 +213,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_x2sys_get", &GMT_cpy);	/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
 	Ctrl = New_x2sys_get_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_get_parse (API, Ctrl, options))) Return (error);

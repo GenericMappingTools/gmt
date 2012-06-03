@@ -28,6 +28,8 @@
  * Version:	5 API
  */
  
+#define THIS_MODULE k_mod_sample1d /* I am sample1d */
+
 #include "gmt.h"
 
 #define INT_1D	0	/* Regular 1-D interpolation */
@@ -90,7 +92,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 	char type[3] = {'l', 'a', 'c'};
 	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "sample1d %s [API] - Resample 1-D table data using splines\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: sample1d [<table>] [-A[m|p]] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
 	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
@@ -258,7 +260,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_module (API, "GMT_sample1d", &GMT_cpy);		/* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbf", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_sample1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sample1d_parse (API, Ctrl, options))) Return (error);
