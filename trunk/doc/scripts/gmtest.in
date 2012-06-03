@@ -16,14 +16,11 @@ fi
 
 shift
 
-# Determine if awk is buggy
-result=`echo 1 | awk '{print sin($1)}'`
-if [ $result = 1 ]; then # awk is rotten
-  if [ `type nawk | grep "not found" | wc -l` -eq 1 ]; then
-    export AWK=gawk
-  else
-    export AWK=nawk
-  fi
+# choose awk
+if type gawk 2>&1 >/dev/null ; then
+  export AWK=gawk
+elif type nawk 2>&1 >/dev/null ; then
+  export AWK=nawk
 else
   export AWK=awk
 fi
