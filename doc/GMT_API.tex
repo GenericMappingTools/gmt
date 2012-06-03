@@ -21,10 +21,10 @@
 
 \thispagestyle{headings}
 
-\tableofcontents 
+\tableofcontents
 \thispagestyle{headings}
 
-\chapter{Introduction} 
+\chapter{Introduction}
 \index{Introduction}
 \pagenumbering{arabic}
 \thispagestyle{headings}
@@ -1236,7 +1236,7 @@ should be written (1) or not (0).
 \index{GMT\_WRITE\_DATASET}
 \item [GMT\_WRITE\_TABLES]: Each table in the data set is written to individual files [1].
 You can either specify an output file name that \emph{must} contain one C-style
-format specifier for a int variable (e.g., ``New\_Table\_\%6.6ld.txt''), which will be
+format specifier for a int variable (e.g., ``New\_Table\_\%06d.txt''), which will be
 replaced with the table number (a running number from 0) \emph{or} you must assign
 to each table \emph{i} a unique output file name via the \texttt{D->table[i]->file[GMT\_OUT]}
 variables prior to calling the function.
@@ -1246,7 +1246,7 @@ Same setup as for GMT\_WRITE\_TABLES except we use sequential segment numbers to
 \index{GMT\_WRITE\_SEGMENTS}
 \item [GMT\_WRITE\_TABLE\_SEGMENTS]: Each segment in the data set is written to an individual file [3].
 You can either specify an output file name that \emph{must} contain two C-style
-format specifiers for two int variables (e.g., ``New\_Table\_\%6.6ld\_Segment\_\%3.3ld.txt''),
+format specifiers for two int variables (e.g., ``New\_Table\_\%06d\_Segment\_\%03d.txt''),
 which will be replaced with the table and segment numbers, \emph{or}
 you must assign to each segment \emph{j} in each table \emph{i} a unique output file name
 via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to calling the function.
