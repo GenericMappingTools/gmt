@@ -166,7 +166,7 @@ enum Gmt_module_id {
 	k_mod_x2sys_solve,
 	k_mod_xyz2grd,
 	k_mod_xyzokb,
-  k_mod_nongmt
+	k_mod_nongmt
 };
 
 /* function prototypes of all GMT modules */

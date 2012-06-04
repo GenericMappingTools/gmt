@@ -35,7 +35,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"filter1d", "core", "Do time domain filtering of 1-D data tables", k_mode_gmt, &GMT_filter1d},
 	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", k_mode_gmt, &GMT_fitcircle},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", k_mode_gmt, &GMT_gmt2kml},
-	{"gmtaverage", "core", "Block average (x, y, z) data tables by mean, median, or mode estimation", k_mode_gmt, &GMT_gmtaverage},
+	{"gmtaverage", "core", "Block average (x,y,z) data tables by mean, median, or mode estimation", k_mode_gmt, &GMT_gmtaverage},
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", k_mode_gmt, &GMT_gmtconvert},
 	{"gmtdefaults", "core", "List current GMT default parameters", k_mode_psl, &GMT_gmtdefaults},
 	{"gmtdp", "core", "Line reduction using the Douglas-Peucker algorithm", k_mode_gmt, &GMT_gmtdp},
@@ -123,7 +123,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"rotconverter", "spotter", "Manipulate total reconstruction and stage rotations", k_mode_gmt, &GMT_rotconverter},
 	{"sample1d", "core", "Resample 1-D table data using splines", k_mode_gmt, &GMT_sample1d},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", k_mode_gmt, &GMT_segy2grd},
-	{"spectrum1d", "core", "Compute auto- [and cross- ] spectra from one [or two] timeseries", k_mode_gmt, &GMT_spectrum1d},
+	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", k_mode_gmt, &GMT_spectrum1d},
 	{"sphdistance", "sph", "Make grid of distances to nearest points on a sphere", k_mode_gmt, &GMT_sphdistance},
 	{"sphinterpolate", "sph", "Spherical gridding in tension of data on a sphere", k_mode_gmt, &GMT_sphinterpolate},
 	{"sphtriangulate", "sph", "Delaunay or Voronoi construction of spherical lon,lat data", k_mode_gmt, &GMT_sphtriangulate},
@@ -145,7 +145,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"x2sys_solve", "x2sys", "Determine least-squares systematic correction from crossovers", k_mode_gmt, &GMT_x2sys_solve},
 	{"xyz2grd", "core", "Convert data table to a grid file", k_mode_gmt, &GMT_xyz2grd},
 	{"xyzokb", "potential", "Compute the gravity/magnetic anomaly of a body by the method of Okabe", k_mode_gmt, &GMT_xyzokb},
-  {NULL, NULL, NULL, -1, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, -1, NULL} /* last element == NULL detects end of array */
 };
 
 /* Pretty print all module names and their purposes */
@@ -164,6 +164,7 @@ void gmt_module_show_all() {
 
 /* Pretty print module names and purposes */
 void gmt_module_show_name_and_purpose(enum Gmt_module_id module_id) {
+	assert (module_id != k_mod_nongmt);
 	fprintf (stderr, "%s(%s) %s - %s\n\n",
 			g_module[module_id].name,
 			g_module[module_id].component,

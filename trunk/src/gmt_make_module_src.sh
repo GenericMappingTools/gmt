@@ -15,6 +15,7 @@ set -e
 FILE_MODULEINFO=gmt_moduleinfo.txt
 FILE_GMT_MODULE_C=gmt_module.c
 FILE_GMT_MODULE_H=gmt_module.h
+FILE_GMT_MODULE_TROFF=explain_gmt_modules.txt
 COPY_YEAR=$(date +%Y)
 
 #
@@ -76,24 +77,24 @@ EOF
 
 # $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
 gawk '
-  BEGIN {
-    FS = "\t";
-    first_record = 1;
-  }
-  /^[ \t]*#/ {
-    next;
-  }
-  first_record {
-    printf "\tk_mod_%s = 0,\n", $1;
-    first_record = 0;
-    next;
-  }
-  {
-    printf "\tk_mod_%s,\n", $1;
-  }' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_H}
+	BEGIN {
+		FS = "\t";
+		first_record = 1;
+	}
+	/^[ \t]*#/ {
+		next;
+	}
+	first_record {
+		printf "\tk_mod_%s = 0,\n", $1;
+		first_record = 0;
+		next;
+	}
+	{
+		printf "\tk_mod_%s,\n", $1;
+	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_H}
 
 cat << EOF >> ${FILE_GMT_MODULE_H}
-  k_mod_nongmt
+	k_mod_nongmt
 };
 
 /* function prototypes of all GMT modules */
@@ -101,12 +102,12 @@ EOF
 
 # $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
 gawk '
-  BEGIN {
-    FS = "\t";
-  }
-  !/^[ \t]*#/ {
-    printf "EXTERN_MSC int GMT_%s (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);\n", $1;
-  }' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_H}
+	BEGIN {
+		FS = "\t";
+	}
+	!/^[ \t]*#/ {
+		printf "EXTERN_MSC int GMT_%s (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);\n", $1;
+	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_H}
 
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
@@ -167,15 +168,15 @@ EOF
 
 # $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
 gawk '
-  BEGIN {
-    FS = "\t";
-  }
-  !/^[ \t]*#/ {
-    printf "\t{\"%s\", \"%s\", \"%s\", %s, &GMT_%s},\n", $1, $2, $4, $3, $1;
-  }' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_C}
+	BEGIN {
+		FS = "\t";
+	}
+	!/^[ \t]*#/ {
+		printf "\t{\"%s\", \"%s\", \"%s\", %s, &GMT_%s},\n", $1, $2, $4, $3, $1;
+	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
-  {NULL, NULL, NULL, -1, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, -1, NULL} /* last element == NULL detects end of array */
 };
 
 /* Pretty print all module names and their purposes */
@@ -194,6 +195,7 @@ void gmt_module_show_all() {
 
 /* Pretty print module names and purposes */
 void gmt_module_show_name_and_purpose(enum Gmt_module_id module_id) {
+	assert (module_id != k_mod_nongmt);
 	fprintf (stderr, "%s(%s) %s - %s\n\n",
 			g_module[module_id].name,
 			g_module[module_id].component,
@@ -222,6 +224,43 @@ char *gmt_module_name (struct GMT_CTRL *gmt_ctrl) {
 	return module_name;
 }
 EOF
+
+#
+# Generate FILE_GMT_MODULE_TROFF
+#
+
+# $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
+gawk '
+	BEGIN {
+		FS = "\t";
+	}
+	!/^[ \t]*#/ {
+		name = $1;
+		suppl = $2;
+		purpose = $4;
+		if (suppl != "core") # remove "core" from list
+			a_suppl_names[suppl] = suppl; # array of suppl names (once)
+		a_mod_names[name] = name; # array of module names (ind = name)
+		a_suppl[name] = suppl; # array of suppl names (multiple times, ind = name)
+		a_purpose[name] = purpose; # array of purposes
+	}
+	END {
+		n_mod_names = asort(a_mod_names); # sort array of module names
+		n_suppl_names = asort(a_suppl_names); # sort array of suppl names
+		printf ".TS\nl l .\n" # begin table
+		a_suppl_names[0] = "core"; # insert "core" first
+		for (ind_suppl = 0; ind_suppl <= n_suppl_names; ++ind_suppl) {
+			# for each suppl name:
+			if (ind_suppl > 0)
+				printf "\n\tSupplement \\fI%s\\fP:\n", a_suppl_names[ind_suppl];
+			for (ind_mod_name = 1; ind_mod_name <= n_mod_names; ++ind_mod_name) {
+				mod_name = a_mod_names[ind_mod_name];
+				if (a_suppl[mod_name] == a_suppl_names[ind_suppl])
+					printf "\\fB%s\\fP\t%s\n", mod_name, a_purpose[mod_name];
+			}
+		}
+		printf ".TE\n" # end table
+	}' ${FILE_MODULEINFO} > ${FILE_GMT_MODULE_TROFF}
 
 exit 0
 

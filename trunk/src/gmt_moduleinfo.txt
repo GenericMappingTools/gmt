@@ -11,7 +11,7 @@ colmath	core	k_mode_gmt	Do mathematics on columns from data tables
 filter1d	core	k_mode_gmt	Do time domain filtering of 1-D data tables
 fitcircle	core	k_mode_gmt	Find mean position and best-fitting great- or small-circle to points on sphere
 gmt2kml	core	k_mode_gmt	Convert GMT data tables to KML files for Google Earth
-gmtaverage	core	k_mode_gmt	Block average (x, y, z) data tables by mean, median, or mode estimation
+gmtaverage	core	k_mode_gmt	Block average (x,y,z) data tables by mean, median, or mode estimation
 gmtconvert	core	k_mode_gmt	Convert, paste, or extract columns from data tables
 gmtdefaults	core	k_mode_psl	List current GMT default parameters
 gmtdp	core	k_mode_gmt	Line reduction using the Douglas-Peucker algorithm
@@ -99,7 +99,7 @@ redpol	potential	k_mode_gmt	Compute the Continuous Reduction To the Pole, AKA di
 rotconverter	spotter	k_mode_gmt	Manipulate total reconstruction and stage rotations
 sample1d	core	k_mode_gmt	Resample 1-D table data using splines
 segy2grd	segy	k_mode_gmt	Converting SEGY data to a GMT grid
-spectrum1d	core	k_mode_gmt	Compute auto- [and cross- ] spectra from one [or two] timeseries
+spectrum1d	core	k_mode_gmt	Compute auto- [and cross-] spectra from one [or two] timeseries
 sphdistance	sph	k_mode_gmt	Make grid of distances to nearest points on a sphere
 sphinterpolate	sph	k_mode_gmt	Spherical gridding in tension of data on a sphere
 sphtriangulate	sph	k_mode_gmt	Delaunay or Voronoi construction of spherical lon,lat data
