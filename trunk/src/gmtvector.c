@@ -264,7 +264,7 @@ int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int cartesian,
 			GMT_geo_to_cart (C, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
 			n_out = 3;
 		}
-		else if (cartesian) {	/* Cartsesian x/y */
+		else if (cartesian) {	/* Cartesian x/y */
 			coord[GMT_X] = atof (txt_a);
 			coord[GMT_Y] = atof (txt_b);
 		}
@@ -356,15 +356,15 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
-	unsigned int i, j, k, tbl, nv, nrots;
+	unsigned int i, j, k, tbl, n_components, nrots;
 	uint64_t row, n, seg, p;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
 	struct GMT_LINE_SEGMENT *S = NULL;
 	
 	GMT_memset (M, 3, double);
-	nv = (GMT_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
-	for (k = 0; k < nv; k++) P[k] = GMT_memory (GMT, NULL, D->n_records, double);
+	n_components = (GMT_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
+	for (k = 0; k < n_components; k++) P[k] = GMT_memory (GMT, NULL, D->n_records, double);
 	for (tbl = n = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			S = D->table[tbl]->segment[seg];
@@ -374,32 +374,32 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 						GMT_geo_to_cart (GMT, S->coord[GMT_Y][row], S->coord[GMT_X][row], X, true);	/* get x/y/z */
 					else
 						GMT_polar_to_cart (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], X, true);
-					for (k = 0; k < nv; k++) P[k][n] = X[k];
+					for (k = 0; k < n_components; k++) P[k][n] = X[k];
 				}
-				else for (k = 0; k < nv; k++) P[k][n] = S->coord[k][row];
-				for (k = 0; k < nv; k++) M[k] += P[k][n];
+				else for (k = 0; k < n_components; k++) P[k][n] = S->coord[k][row];
+				for (k = 0; k < n_components; k++) M[k] += P[k][n];
 				n++;
 			}
 		}
 	}
-	for (k = 0; k < nv; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
+	for (k = 0; k < n_components; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
 	GMT_memcpy (X, M, 3, double);
 	
 	/* Get covariance matrix */
 	
 	GMT_memset (C, 9, double);
-	for (j = 0; j < nv; j++) for (i = 0; i < nv; i++) {
-		k = nv*j + i;
+	for (j = 0; j < n_components; j++) for (i = 0; i < n_components; i++) {
+		k = n_components*j + i;
 		C[k] = 0.0;
 		for (p = 0; p < n; p++) C[k] += (P[j][p] - M[j]) * (P[i][p] - M[i]);
 		C[k] /= (n - 1.0);
 	}
-	for (k = 0; k < nv; k++) GMT_free (GMT, P[k]);
+	for (k = 0; k < n_components; k++) GMT_free (GMT, P[k]);
 
-	if (GMT_jacobi (GMT, C, nv, nv, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
+	if (GMT_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
 		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
-	if (nv == 3) {
+	if (n_components == 3) {
 		GMT_cart_to_geo (GMT, &lat, &lon, X, true);
 		if (lon < 0.0) lon += 360.0;
 	}
@@ -407,25 +407,27 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 
 	/* Find the xy[z] point of end of eigenvector 1: */
 	GMT_memset (B, 3, double);
-	for (k = 0; k < nv; k++) B[k] = X[k] + sqrt (lambda[0]) * V[k];
+	for (k = 0; k < n_components; k++) B[k] = X[k] + sqrt (lambda[0]) * V[k];
 	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);
-	for (k = 0; k < nv; k++) B[k] /= L;
-	if (nv == 3) {
+	for (k = 0; k < n_components; k++) B[k] /= L;
+	if (n_components == 3) {
 		GMT_cart_to_geo (GMT, &lat2, &lon2, B, true);
 		if (lon2 < 0.0) lon2 += 360.0;
 		L = lon2 - lon;
 		if (fabs (L) > 180.0) L = copysign (360.0 - fabs (L), L);
+		scl = cos (lat * D2R);	/* Local flat-Earth approximation */
 	}
 	else {
 		lon2 = B[GMT_X];
 		lat2 = B[GMT_Y];
+		scl = 1.0;
 	}
 	Y = lat2 - lat;
 
-	E[0] = 90.0 - atan2 (Y, L * cos (lat * D2R)) * R2D;
-	/* Convert to 95% confidence in km */
+	E[0] = 90.0 - atan2 (Y, L * scl) * R2D;
+	/* Convert to 95% confidence (in km, if geographic) */
 
-	scl = (nv == 3) ? GMT->current.proj.DIST_KM_PR_DEG * R2D * sqrt (GMT_chi2crit (GMT, conf, 3)) : sqrt (GMT_chi2crit (GMT, conf, 2));
+	scl = (n_components == 3) ? GMT->current.proj.DIST_KM_PR_DEG * R2D * sqrt (GMT_chi2crit (GMT, conf, 3)) : sqrt (GMT_chi2crit (GMT, conf, 2));
 	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
 	E[2] = 2.0 * sqrt (lambda[1]) * scl;
 
@@ -437,7 +439,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 
 int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	unsigned int tbl, error = 0, k, n, nv, n_out, add = 0;
+	unsigned int tbl, error = 0, k, n, n_components, n_out, add_cols = 0;
 	bool single = false;
 	
 	uint64_t row, seg;
@@ -506,7 +508,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
 				Return (API->error);
 			}
-			add = 3;	/* Make space for angle major minor */
+			add_cols = 3;	/* Make space for angle major minor */
 		}
 		else {	/* Decode a single vector */
 			n = decode_vector (GMT, Ctrl->A.arg, vector_1, Ctrl->C.active[GMT_IN], Ctrl->E.active);
@@ -520,8 +522,8 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 			n_out = (Ctrl->C.active[GMT_OUT] && n == 3) ? 3 : 2;
 		}
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
-		nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
-		for (k = 0; k < nv; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
+		n_components = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
+		for (k = 0; k < n_components; k++) Din->table[0]->segment[0]->coord[k][0] = vector_1[k];
 		single = true;
 	}
 	else {	/* Read input files or stdin */
@@ -541,13 +543,13 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 
-	Dout = GMT_alloc_dataset (GMT, Din, n_out + add, 0, GMT_ALLOC_NORMAL);
+	Dout = GMT_alloc_dataset (GMT, Din, n_out + add_cols, 0, GMT_ALLOC_NORMAL);
 	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */
 	
 	if (Ctrl->T.mode == DO_DOT) Ctrl->T.mode = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? DO_DOT3D : DO_DOT2D;
-	nv = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
+	n_components = (n == 3 || GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;	/* Number of Cartesian vector components */
 	
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
@@ -561,11 +563,11 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 					else
 						GMT_polar_to_cart (GMT, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], vector_1, true);
 				}
-				else for (k = 0; k < nv; k++) vector_1[k] = Sin->coord[k][row];
+				else for (k = 0; k < n_components; k++) vector_1[k] = Sin->coord[k][row];
 				
 				switch (Ctrl->T.mode) {
 					case DO_AVERAGE:	/* Get sum of 2-D or 3-D vectors and compute average */
-						for (k = 0; k < nv; k++) vector_3[k] = 0.5 * (vector_1[k] + vector_2[k]);
+						for (k = 0; k < n_components; k++) vector_3[k] = 0.5 * (vector_1[k] + vector_2[k]);
 						break;
 					case DO_BISECTOR:	/* Compute pole or bisector of vector 1 and 2 */
 						get_bisector (GMT, vector_1, vector_2, vector_3);
@@ -584,7 +586,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 						GMT_cross3v (GMT, vector_1, vector_2, vector_3);
 						break;
 					case DO_SUM:	/* Get sum of 2-D or 3-D vectors */
-						for (k = 0; k < nv; k++) vector_3[k] = vector_1[k] + vector_2[k];
+						for (k = 0; k < n_components; k++) vector_3[k] = vector_1[k] + vector_2[k];
 						break;
 					case DO_ROT2D:	/* Rotate a 2-D vector about the z_axis */
 						matrix_vect_mult (GMT, 2, R, vector_1, vector_3);
@@ -593,7 +595,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 						matrix_vect_mult (GMT, 3, R, vector_1, vector_3);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
-						GMT_memcpy (vector_3, vector_1, nv, double);
+						GMT_memcpy (vector_3, vector_1, n_components, double);
 						break;
 				}
 				if (Ctrl->C.active[GMT_OUT]) {	/* Report Cartesian output... */
@@ -628,7 +630,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
 	if (single) GMT_free_dataset (GMT, &Din);

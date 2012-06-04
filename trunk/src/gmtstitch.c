@@ -23,7 +23,7 @@
  * Version:	5 API
  *
  * Brief synopsis: gmtstitch will combine pieces of coastlines or similar segments
- * into acontinuous line, polygon, or group of lines/polygons so that the jump
+ * into a continuous line, polygon, or group of lines/polygons so that the jump
  * between segment endpoints exceeds a specified threshold.
  */
 
@@ -243,19 +243,19 @@ static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_
 
 int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	int nearest_end[2][2], ii, end, end_order, error = 0, d_mode = 0;
-	int io_mode = GMT_WRITE_SET, q_mode = 0;
+	int error = 0;
 	
 	bool save_type = false, first, wrap_up = false, done, *skip = NULL;
 	
-	unsigned int j, tbl, n_columns, n_qfiles = 0, G;
+	unsigned int nearest_end[2][2], j, tbl, n_columns, n_qfiles = 0, G, end_order;
+	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
 	
 	uint64_t dim_tscr[4] = {1, 1, 0, 0};
 	
 	size_t n_id_alloc = GMT_CHUNK, n_seg_alloc[2] = {0, 0}, n_alloc_pts;
 	
-	uint64_t n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg, n_steps, n_seg_length;
-	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L;
+	uint64_t n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg;
+	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps, n_seg_length;
 
 	double dd[2][2], p_dummy_x, p_dummy_y, p_last_x, p_last_y, p_first_x, p_first_y, distance;
 	double closed_dist = 0.0;
