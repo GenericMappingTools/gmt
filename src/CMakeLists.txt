@@ -177,7 +177,7 @@ string (REPLACE ".c" ".1" GMT_MAN_1 "${GMT_PROGS_SRCS}")
 list (APPEND GMT_MAN_1 gmt.1 gmt_shell_functions.1 gmtlogo.1 isogmt.1 gmtswitch.1)
 set (GMT_MAN_3 pslib.3)
 set (GMT_MAN_5 gmtcolors.5 gmt.conf.5)
-set (GMT_MAN_DEPS common_options.txt
+set (GMT_MAN_DEPS common_options.txt explain_gmt_modules.txt
 	explain_-A.txt explain_-B.txt explain_-B_full.txt explain_-I.txt
 	explain_-J.txt explain_-J_full.txt explain_-Jz.txt explain_-Jz_full.txt
 	explain_-K.txt explain_-K_full.txt explain_-L_scale.txt explain_-O.txt
