@@ -37,6 +37,8 @@
 
 #include "gmt.h"
 
+#define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
+
 struct GRD2CPT_CTRL {
 	struct In {
 		bool active;
@@ -83,8 +85,10 @@ struct GRD2CPT_CTRL {
 		bool active;
 		unsigned int mode;
 	} Q;
-	struct S {	/* -S<z_start>/<z_stop>/<z_inc> */
+	struct S {	/* -S<z_start>/<z_stop>/<z_inc> or -S<n_levels> */
 		bool active;
+		unsigned int mode;	/* 0 or 1 (-Sn) */
+		unsigned int n_levels;
 		double low, high, inc;
 		char *file;
 	} S;
@@ -123,7 +127,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-E<nlevels>\n");
-	GMT_message (GMT, "\t[-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] [%s]\n\t[-S<z_start>/<z_stop>/<z_inc>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "\t[-I] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] [%s]\n\t[-S<z_start>/<z_stop>/<z_inc> or -S<n>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -145,7 +149,8 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Qi: z-values are actually log10(z). Assign colors and write z [Default].\n");
 	GMT_message (GMT, "\t   -Qo: z-values are z, but take log10(z), assign colors and write z.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Sample points should Step from z_start to z_stop by z_inc [Default guesses some values].\n");
+	GMT_message (GMT, "\t-S Sample points should Step from z_start to z_stop by z_inc.\n");
+	GMT_message (GMT, "\t   Use -S<n> to select <n> points from a cumulative normal distribution [%d].\n", GRD2CPT_N_LEVELS);
 	GMT_message (GMT, "\t-T Force color tables to be symmetric about 0. Append one modifier:\n");
 	GMT_message (GMT, "\t   - for values symmetric about zero from -|zmin| to +|zmin|.\n");
 	GMT_message (GMT, "\t   + for values symmetric about zero from -|zmax| to +|zmax|.\n");
@@ -239,9 +244,16 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 				break;
 			case 'S':	/* Sets sample range */
 				Ctrl->S.active = true;
-				if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Cannot decode values\n");
-					n_errors++;
+				if (strchr (opt->arg, '/')) {	/* Gave low/high/inc */
+					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
+						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Cannot decode values\n");
+						n_errors++;
+					}
+					Ctrl->S.mode = 0;
+				}
+				else if (opt->arg[0]) {	/* Gave -S<nlevels> */
+					Ctrl->S.n_levels = atoi (opt->arg);
+					Ctrl->S.mode = 1;
 				}
 				break;
 			case 'T':	/* Force symmetry */
@@ -278,7 +290,8 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, n_files[GMT_IN] < 1, "Error: No grid name(s) specified.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->W.active && Ctrl->Z.active, "Syntax error: -W and -Z cannot be used simultaneously\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max, "Syntax error -L option: min_limit must be less than max_limit.\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0), "Syntax error -S option: Bad arguments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0 && (Ctrl->S.high <= Ctrl->S.low || Ctrl->S.inc <= 0.0), "Syntax error -S option: Bad arguments\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.mode == 0  && Ctrl->S.n_levels == 0, "Syntax error -S option: Bad arguments\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && (Ctrl->T.active || Ctrl->E.active), "Syntax error -S option: Cannot be combined with -E nor -T option.\n");
 	n_errors += GMT_check_condition (GMT, n_files[GMT_OUT] > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value < 0.0 || Ctrl->A.value > 1.0), "Syntax error -A: Transparency must be n 0-100 range [0 or opaque]\n");
@@ -341,7 +354,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
-	if (!Ctrl->E.active) Ctrl->E.levels = 11;	/* Default number of levels */
+	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
 	if (Ctrl->M.active) cpt_flags |= 1;		/* bit 0 controls if BFN is determined by parameters */
 	if (Ctrl->D.mode == 2) cpt_flags |= 2;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
@@ -440,7 +453,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	/* Decide how to make steps in z.  */
-	if (Ctrl->S.active) {	/* Use predefined levels and interval */
+	if (Ctrl->S.active && Ctrl->S.mode == 0) {	/* Use predefined levels and interval */
 		unsigned int i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
@@ -489,28 +502,24 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 		for (j = 0; j < Ctrl->E.levels; j++) cdf_cpt[j].z = start + j * Ctrl->S.inc;
 	}
 
-	else {	/* This is completely ad-hoc.  It chooses z based on steps of 0.1 for a Gaussian CDF:  */
+	else {	/* This is completely ad-hoc.  It chooses z based on equidistant steps [of 0.1 unless -Sn set] for a Gaussian CDF:  */
+		double z_inc = 1.0 / (Ctrl->E.levels - 1);		/* Increment between selected points [0.1] */
+		double zcrit_tail = GMT_zcrit (GMT, 1.0 - z_inc);	/* Get the +/- z-value containing bulk of distribution, with z_inc in each tail */
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
-		if ((mean - 1.28155*sd) <= G[0]->header->z_min || (mean + 1.28155*sd) >= G[0]->header->z_max) {
+		if ((mean - zcrit_tail*sd) <= G[0]->header->z_min || (mean + zcrit_tail*sd) >= G[0]->header->z_max) {
+			/* Adjust mean/std so that our critical locations are still inside the min/max of the data */
 			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
-			sd = (G[0]->header->z_max - mean) / 1.5;
+			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
 			if (sd <= 0.0) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Error: Min and Max data values are equal.\n");
 				Return (EXIT_FAILURE);
 			}
 		}	/* End of stupid bug fix  */
 
+		/* So we go in steps of z_inc in the Gaussian CDF except we start and stop at actual min/max */
 		cdf_cpt[0].z = G[0]->header->z_min;
-		cdf_cpt[1].z = mean - 1.28155 * sd;
-		cdf_cpt[2].z = mean - 0.84162 * sd;
-		cdf_cpt[3].z = mean - 0.52440 * sd;
-		cdf_cpt[4].z = mean - 0.25335 * sd;
-		cdf_cpt[5].z = mean;
-		cdf_cpt[6].z = mean + 0.25335 * sd;
-		cdf_cpt[7].z = mean + 0.52440 * sd;
-		cdf_cpt[8].z = mean + 0.84162 * sd;
-		cdf_cpt[9].z = mean + 1.28155 * sd;
-		cdf_cpt[10].z = G[0]->header->z_max;
+		for (j = 1; j < (Ctrl->E.levels - 1); j++) cdf_cpt[j].z = mean + GMT_zcrit (GMT, j *z_inc) * sd;
+		cdf_cpt[Ctrl->E.levels-1].z = G[0]->header->z_max;
 	}
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
