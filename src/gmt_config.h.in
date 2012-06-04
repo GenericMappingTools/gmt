@@ -188,7 +188,7 @@
 #cmakedefine HAVE_Y1
 #cmakedefine HAVE_YN
 
-/* Sizes */
+/* Sizes (some not available with universal builds on OSX) */
 #cmakedefine SIZEOF__BOOL       @SIZEOF__BOOL@
 #cmakedefine SIZEOF_BOOL        @SIZEOF_BOOL@
 #cmakedefine SIZEOF_INT         @SIZEOF_INT@
@@ -213,30 +213,28 @@
 #cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
 
 /* Architecture type (32/64 bits) */
-#if SIZEOF_VOID_P == 4 /* on i386 */
-#	ifndef __i836__
-#		define __i836__ 1
-#	endif
-#elif SIZEOF_VOID_P == 8 /* on x86_64 */
-#	ifndef __x86_64__
-#		define __x86_64__ 1
-#	endif
-#	if SIZEOF_LONG == 8 && SIZEOF_INT == 4 /* 64 bit longs and pointers (most UNIX) */
+#if !defined(__x86_64__) && !defined(__i836__) && SIZEOF_VOID_P == 4 /* on i386 */
+#	define __i836__ 1
+#elif !defined(__x86_64__) && !defined(__i836__) && SIZEOF_VOID_P == 8 /* on x86_64 */
+#	define __x86_64__ 1
+#endif
+
+#if defined(__x86_64__) && defined(SIZEOF_LONG) && defined(SIZEOF_INT) && \
+		!(defined(__LP64__) || defined(__LLP64__)) /* Needed for universal binaries on OSX */
+#	if defined(__x86_64__) && SIZEOF_LONG == 8 && SIZEOF_INT == 4 /* 64 bit longs and pointers (most UNIX) */
 #		ifndef __LP64__
 #			define __LP64__ 1
 #		endif
-#		ifndef _LP64
-#			define _LP64 1
-#		endif
-#	elif SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
+#	elif defined(__x86_64__) && SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
 #		ifndef __LLP64__
 #			define __LLP64__ 1
 #		endif
-#	endif /* SIZEOF_LONG == 8 && SIZEOF_INT == 4 */
-#endif /* SIZEOF_VOID_P == 4 */
+#	endif /* defined(__x86_64__) && SIZEOF_LONG == 8 && SIZEOF_INT == 4 */
+#endif /* defined(__x86_64__) && defined(SIZEOF_LONG) && defined(SIZEOF_INT) &&
+		!(defined(__LP64__) || defined(__LLP64__)) */
 
 /* Enable 32 bit systems to use files of sizes beyond the usual limit of 2GB */
-#if SIZEOF_VOID_P == 4 && !defined _WIN32 /* on i386 with LFS support */
+#if defined(__i836__) && !defined _WIN32 /* on i386 with LFS support */
 #	define _LARGEFILE_SOURCE
 #	define _FILE_OFFSET_BITS 64
 #endif
