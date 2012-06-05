@@ -2843,7 +2843,7 @@ int GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z)
 				break;
 
 			case 'w':
-				z->swab = true; 	break;
+				z->swab = 3; 	break;	/* Default is swap both input (1) and output (2) */
 
 			/* Set read pointer depending on data format */
 
@@ -2898,6 +2898,7 @@ int GMT_get_io_type (struct GMT_CTRL *C, char type)
 
 p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, int direction, int swap, char type)
 {	/* Return pointer to read or write function for this data type */
+	/* swap is 0 for no swap, 1 for swap input, 2 for swap output, 3 for swap both */
 	p_to_io_func p = NULL;
 
 	switch (type) {	/* Set read pointer depending on data format */
@@ -2914,52 +2915,52 @@ p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, int direction, int swap, char t
 			p = (direction == GMT_IN) ? &gmt_u_read : &gmt_u_write;
 			break;
 		case 'h':	/* Binary int16_t */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_h_read_swab : &gmt_h_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_h_read_swab : &gmt_h_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_h_read : &gmt_h_write;
+				p = (swap & 2) ? &gmt_h_write_swab : &gmt_h_write;
 			break;
 		case 'H':	/* Binary uint16_t */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_H_read_swab : &gmt_H_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_H_read_swab : &gmt_H_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_H_read : &gmt_H_write;
+				p = (swap & 2) ? &gmt_H_write_swab : &gmt_H_write;
 			break;
 		case 'i':	/* Binary int32_t */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_i_read_swab : &gmt_i_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_i_read_swab : &gmt_i_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_i_read : &gmt_i_write;
+				p = (swap & 2) ? &gmt_i_write_swab : &gmt_i_write;
 			break;
 		case 'I':	/* Binary uint32_t */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_I_read_swab : &gmt_I_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_I_read_swab : &gmt_I_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_I_read : &gmt_I_write;
+				p = (swap & 2) ? &gmt_I_write_swab : &gmt_I_write;
 			break;
 		case 'l':	/* Binary int64_t */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_l_read_swab : &gmt_l_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_l_read_swab : &gmt_l_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_l_read : &gmt_l_write;
+				p = (swap & 2) ? &gmt_l_write_swab : &gmt_l_write;
 			break;
 		case 'L':	/* Binary uint64_t */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_L_read_swab : &gmt_L_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_L_read_swab : &gmt_L_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_L_read : &gmt_L_write;
+				p = (swap & 2) ? &gmt_L_write_swab : &gmt_L_write;
 			break;
 		case 'f':	/* Binary 4-byte float */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_f_read_swab : &gmt_f_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_f_read_swab : &gmt_f_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_f_read : &gmt_f_write;
+				p = (swap & 2) ? &gmt_f_write_swab : &gmt_f_write;
 			break;
 		case 'd':	/* Binary 8-byte double */
-			if (swap)
-				p = (direction == GMT_IN) ? &gmt_d_read_swab : &gmt_d_write_swab;
+			if (direction == GMT_IN)
+				p = (swap & 1) ? &gmt_d_read_swab : &gmt_d_read;
 			else
-				p = (direction == GMT_IN) ? &gmt_d_read : &gmt_d_write;
+				p = (swap & 2) ? &gmt_d_write_swab : &gmt_d_write;
 			break;
 		case 'x':
 			break;	/* Binary skip */

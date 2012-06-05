@@ -258,6 +258,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 			strcpy (GMT->current.io.r_mode, "rb");
 			strcpy (GMT->current.io.w_mode, "wb");
 		}
+		Ctrl->Z.swab = 1;	/* Only swap on input */
 	}
 
 	if (Ctrl->Z.active) {
@@ -289,7 +290,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 
 int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool error = false, previous = false;
+	bool error = false, previous_bin_i = false, previous_bin_o = false;
 	int scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL;
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
@@ -328,26 +329,39 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the xyz2grd main code ----------------------------*/
 
 	if (Ctrl->S.active) {	/* Just swap data and bail */
-		int in_ID;
+		int out_ID;
 		
-		save_i = GMT->current.io.input;			/* Save previous input parameters */
-		previous = GMT->common.b.active[GMT_IN];
+		save_i = GMT->current.io.input;			/* Save previous i/0 parameters */
+		save_o = GMT->current.io.output;
+		previous_bin_i = GMT->common.b.active[GMT_IN];
+		previous_bin_o = GMT->common.b.active[GMT_OUT];
 		GMT->current.io.input = GMT_z_input;		/* Override input reader */
+		GMT->current.io.output = GMT_z_output;		/* Override output writer */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set input binary as well */
+		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
-		if (!Ctrl->S.file) {
-			if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->S.file)) == GMTAPI_NOTSET) {
+		/* Register the data source */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+			Return (API->error);
+		}
+		if (Ctrl->S.file) {	/* Specified an output file */
+			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->S.file)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
 		}
 		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
-		
+		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
+			Return (API->error);
+		}
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {
+			Return (API->error);
+		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
@@ -355,12 +369,6 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		GMT->current.io.input = save_i;			/* Reset input pointer */
-		GMT->common.b.active[GMT_IN] = previous;	/* Reset input binary */
-		save_o = GMT->current.io.output;		/* Save previous output parameters */
-		previous = GMT->common.b.active[GMT_OUT];
-		GMT->current.io.output = GMT_z_output;		/* Override output writer */
-		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		do {	/* Keep returning records until we reach EOF */
 			if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -376,8 +384,10 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, in);
 		} while (true);
 
+		GMT->current.io.input = save_i;			/* Reset input pointer */
+		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset input binary */
 		GMT->current.io.output = save_o;		/* Reset output pointer */
-		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
+		GMT->common.b.active[GMT_OUT] = previous_bin_o;	/* Reset output binary */
 
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
@@ -508,7 +518,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->Z.active) {	/* Need to override input method */
 		zcol = GMT_X;
 		save_i = GMT->current.io.input;
-		previous = GMT->common.b.active[GMT_IN];
+		previous_bin_i = GMT->common.b.active[GMT_IN];
 		GMT->current.io.input = GMT_z_input;		/* Override and use chosen input mode */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set binary as well */
 		in = GMT->current.io.curr_rec;
@@ -619,7 +629,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->Z.active) {
 		GMT->current.io.input = save_i;	/* Reset pointer */
-		GMT->common.b.active[GMT_IN] = previous;	/* Reset binary */
+		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset binary */
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
 			GMT_report (GMT, GMT_MSG_FATAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 			Return (EXIT_FAILURE);

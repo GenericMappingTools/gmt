@@ -445,8 +445,8 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
 	bool active;
-	bool swab;
 	bool repeat[2];
+	unsigned int swab;
 	off_t skip;
 	char type;
 	char format[2];
