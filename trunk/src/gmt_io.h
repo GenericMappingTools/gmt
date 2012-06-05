@@ -444,12 +444,13 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 };
 
 struct GMT_PARSE_Z_IO {	/* -Z[<flags>] */
-	bool active;
-	bool repeat[2];
-	unsigned int swab;
-	off_t skip;
-	char type;
-	char format[2];
+	bool active;		/* true if selected */
+	bool not_grid;		/* false if binary data file is a grid so organization matters */
+	bool repeat[2];		/* true if periodic in x|y and repeating row/col is missing */
+	enum GMT_swap_direction swab;	/* k_swap_none = no byte swapping, k_swap_inswaps input, k_swap_out swaps output, combine to swap both */
+	off_t skip;		/* Initial bytes to skip before reading */
+	char type;		/* Data type flag A|a|c|u|h|H|i|I|l|L|f|d */
+	char format[2];		/* 2-char code describing row/col organization for grids */
 };
 
 struct GMT_PLOT_CALCLOCK {

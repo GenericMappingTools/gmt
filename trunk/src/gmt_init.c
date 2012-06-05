@@ -1346,7 +1346,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 {
 	/* Syntax:	-b[i][cvar1/var2/...] or -b[i|o]<n><type>[,<n><type>]... */
 
-	unsigned int i, col = 0, id = GMT_IN;
+	unsigned int i, col = 0, id = GMT_IN, swap_flag;
 	int k, ncol = 0;
 	bool endian_swab = false, swab = false, error = false, i_or_o = false, set = false;
 	char *p = NULL, c;
@@ -1379,6 +1379,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 	if (text[0] == 'o') { id = GMT_OUT; i_or_o = true; }
 	C->common.b.active[id] = true;
 	C->common.b.type[id] = 'd';	/* Set default to double */
+	C->common.b.swab[id] = k_swap_none;	/* No byte swapping */
 
 	/* Because under GMT_COMPAT c means either netCDF or signed char we deal with netCDF up front */
 
@@ -1398,7 +1399,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 #endif
 	if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just save the type for the entire record */
 		C->common.b.type[id] = text[k];			/* Default column type */
-		C->common.b.swab[id] = (text[k+1] == 'w');	/* Default swab */
+		if (text[k+1] == 'w') C->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	/* Default swab */
 	}
 	else {
 		for (i = k; text[i]; i++) {
@@ -1423,8 +1424,9 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be specified\n");
 						return (EXIT_FAILURE);
 					}
+					swap_flag = (swab) ? id + 1 : 0;	/* 0 for no swap, 1 if swap input, 2 if swap output */
 					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
-						C->current.io.fmt[id][col].io = GMT_get_io_ptr (C, id, swab, c);
+						C->current.io.fmt[id][col].io = GMT_get_io_ptr (C, id, swap_flag, c);
 						C->current.io.fmt[id][col].type = GMT_get_io_type (C, c);
 					}
 					ncol = 0;	/* Must parse a new number for each item */

@@ -128,6 +128,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   For this option, only one input file (or stdin) is allowed.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z Set exact specification of incoming 1-column z-table.\n");
+	GMT_message (GMT, "\t   Unless -S is used, specify two chars that indicate file organization:\n");
 	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
 	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row.\n");
 	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
@@ -166,6 +167,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files = 0;
 	bool do_grid, b_only = false;
+	char *ptr_to_arg = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -236,7 +238,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				n_errors += GMT_parse_z_io (GMT, opt->arg, &Ctrl->Z);
+				ptr_to_arg = opt->arg;
 				break;
 
 			default:	/* Report bad options */
@@ -247,6 +249,10 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 	}
 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	if (Ctrl->Z.active) {
+		if (Ctrl->S.active) Ctrl->Z.not_grid = true;	/* The row/col organization does not apply */
+		n_errors += GMT_parse_z_io (GMT, ptr_to_arg, &Ctrl->Z);
+	}
 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error -S option: Must also specify -Z\n");
 	if (Ctrl->S.active) {	/* Reading and writing binary file */

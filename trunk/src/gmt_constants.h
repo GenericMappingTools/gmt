@@ -88,6 +88,12 @@ enum GMT_enum_unit {GMT_CM = 0,
 	GMT_M,
 	GMT_PT};
 
+/* Handling of swap/no swap in i/o */
+enum GMT_swap_direction {
+	k_swap_none = 0,
+	k_swap_in = 1,
+	k_swap_out};
+
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMn"		/* Distances in meter, feet, km, Miles, nautical miles */
 #define GMT_LEN_UNITS	"dmsefkMn"	/* Distances in arc-{degree,minute,second} or meter, feet, km, Miles, nautical miles */
