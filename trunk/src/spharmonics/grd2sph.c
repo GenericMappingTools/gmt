@@ -116,23 +116,23 @@ int main (int argc, char **argv)
 	}
 
 	if (n_files == 0) {
-		fprintf (stderr, "%s: Syntax error: Must specify at least one input grid\n", GMT->init.module_name);
+		fprintf (stderr, "%s: Syntax error: Must specify at least one input grid\n", gmt_module_name(GMT));
 		error++;
 	}
 	if (n_files > 1) {
-		fprintf (stderr, "%s: Syntax error: Can only handle one input grid\n", GMT->init.module_name);
+		fprintf (stderr, "%s: Syntax error: Can only handle one input grid\n", gmt_module_name(GMT));
 		error++;
 	}
 	if (Ctrl->D.max_degree <= 0) {
-		fprintf (stderr, "%s: Syntax error: -D maximum degree must be positive\n", GMT->init.module_name);
+		fprintf (stderr, "%s: Syntax error: -D maximum degree must be positive\n", gmt_module_name(GMT));
 		error++;
 	}
 	if (!(Ctrl->N.mode == 'm' || Ctrl->N.mode == 'g' || Ctrl->N.mode == 's')) {
-		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", GMT->init.module_name);
+		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", gmt_module_name(GMT));
 		error++;
 	}
 	if (GMT->current.io.info.binary[GMT_OUT] && GMT->current.io.info.io_header[GMT_OUT]) {
-		fprintf (stderr, "%s: Syntax error: Binary output data cannot have header -H\n", GMT->init.module_name);
+		fprintf (stderr, "%s: Syntax error: Binary output data cannot have header -H\n", gmt_module_name(GMT));
 		error++;
 	}
 
@@ -146,11 +146,11 @@ int main (int argc, char **argv)
 	GMT_err_fail (GMT_read_grd_info (argv[f_arg], &header), argv[f_arg]);
 
 	if (!(GMT_grd_is_global (&header) && GMT_180_RANGE (header.y_min, header.y_max))) {
-		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", GMT->init.module_name, argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
+		fprintf (stderr, "%s: File %s is not a global grid (it has -R%g/%g/%g/%g)\n", gmt_module_name(GMT), argv[f_arg], header.x_min, header.x_max, header.y_min, header.y_max);
 		exit (EXIT_FAILURE);
 	}
 
-	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Working on file %s\n", GMT->init.module_name, argv[f_arg]);
+	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Working on file %s\n", gmt_module_name(GMT), argv[f_arg]);
 
 	nm = header.nx * header.ny;
 
@@ -176,7 +176,7 @@ int main (int argc, char **argv)
 
 	GMT_free (grd);
 
-	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Completed\n", GMT->init.module_name);
+	if (GMT->current.setting.verbose) fprintf (stderr, "%s: Completed\n", gmt_module_name(GMT));
 
 	Free_grd2sph_Ctrl (Ctrl);	/* Deallocate control structure */
 
