@@ -5200,12 +5200,11 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 		Csave->session.user_media_name = GMT_memory (C, NULL, C->session.n_user_media, char *);
 		for (i = 0; i < C->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (C->session.user_media_name[i]);
 	}
-	if (C->init.module_id == k_mod_nongmt && C->init.module_name != NULL) Csave->init.module_name = strdup (C->init.module_name);
-	
+
 	/* GMT_IO */
 	Csave->current.io.OGR = GMT_duplicate_ogr (C, C->current.io.OGR);	/* Duplicate OGR struct, if set */
 	GMT_free_ogr (C, &(C->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
-	
+
 	/* GMT_COMMON */
 	if (C->common.U.label) Csave->common.U.label = strdup (C->common.U.label);
 
@@ -5228,6 +5227,9 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 		C->init.module_id = k_mod_nongmt;
 		C->init.module_name = strdup (mod_name);
 	}
+	else
+		/* Remove pointer to module name referenced by Csave->init.module_name */
+		C->init.module_name = NULL;
 
 	return (C);
 }
@@ -5254,10 +5256,8 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 
 	/* GMT_INIT */
 
-	if (C->init.module_id == k_mod_nongmt && C->init.module_name != NULL) {
-		free (C->init.module_name);
-		C->init.module_name = NULL;
-	}
+	if (C->init.module_name != NULL)
+		free (C->init.module_name); /* before C will be clobbered by Ccopy below */
 
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
 #if 0
@@ -5290,12 +5290,12 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	gmt_free_user_media (C);	/* Free user-specified media formats */
 
 	/* GMT_IO */
-	
+
 	GMT_free_ogr (C, &(C->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
 
 	/* Overwrite C with what we saved in GMT_begin_module */
 	GMT_memcpy (C, Ccopy, 1, struct GMT_CTRL);	/* Overwrite struct with things from Ccopy */
-	
+
 	/* Now fix things that were allocated separately */
 
 	gmt_free_user_media (Ccopy);		/* Free user-specified media formats */

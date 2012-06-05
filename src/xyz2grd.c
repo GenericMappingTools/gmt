@@ -126,6 +126,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S Swap the byte-order of the input data and write result to <zfile>\n");
 	GMT_message (GMT, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
 	GMT_message (GMT, "\t   For this option, only one input file (or stdin) is allowed.\n");
+	GMT_message (GMT, "\t   Note: Cannot handle swapping of 8-byte integers.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z Set exact specification of incoming 1-column z-table.\n");
 	GMT_message (GMT, "\t   Unless -S is used, specify two chars that indicate file organization:\n");

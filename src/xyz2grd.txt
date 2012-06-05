@@ -60,7 +60,8 @@ present and sorted according to specified ordering convention contained in IT(fl
 If incoming data represents rows, make IT(flags) start with BD(T)(op) if first row is y = ymax
 or BD(B)(ottom) if first row is y = ymin.  Then, append BD(L) or BD(R) to indicate that first element is at left
 or right end of row.  Likewise for column formats: start with BD(L) or BD(R) to position first column,
-and then append BD(T) or BD(B) to position first element in a row.  
+and then append BD(T) or BD(B) to position first element in a row.  Note: These two row/column indicators 
+are only required for grids; for other tables they do not apply.
 For gridline registered grids:  If data are periodic in x but the
 incoming data do not contain the (redundant) column at x = xmax, append BD(x).  For data periodic in y
 without redundant row at y = ymax, append BD(y).  Append BD(s)IT(n) to skip the first IT(n) number
@@ -109,6 +110,11 @@ Not used with binary data.
 #include "explain_float.txt"
 #include "explain_grd_output.txt"
 #include "explain_grd_coord.txt"
+.SH SWAPPING LIMITATIONS
+All data types can be read, even 64-bit integers, but internally grids are stored using floats.  Hence,
+integer values exceeding the float type's 23-bit mantissa may not be represented exactly.  When OPT(S)
+is used no grids are implied and we read data into an intermediate double container.  This means all
+but 64-bit integers can be represented using the double type's 53-bit mantissa.
 .SH EXAMPLES
 To create a grid file from the ASCII data in hawaii_grv.xyz, use
 .br
