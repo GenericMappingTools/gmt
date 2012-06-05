@@ -52,11 +52,6 @@ segments and then the x,y values of each segment are filtered separately.  This 
 edge effects at the ends of each segment, but prevents a low\-pass x,y filter from rounding 
 off the corners of track segments.  [Default = no filtering].
 .TP
-OPT(M)
-Use Map units.  Then x,y are in degrees of longitude, latitude, distances are
-in kilometers, and angles are azimuths.  [Default:  distances are cartesian in same
-units as x,y and angles are counter-clockwise from horizontal].
-.TP
 OPT(N)IT(template)
 Write each segment to a separate output file [Default writes a multiple segment
 file to stdout].  Append a format template for the individual file names; this template BD(must) contain a
@@ -99,6 +94,10 @@ Not used with binary data.
 #include "explain_colon.txt"
 #include "explain_help.txt"
 #include "explain_precision.txt"
+.SH DISTANCE CALCULATIONS
+The type of input data is dictated by the OPT(f) option.  If OPT(fg) is given then x,y are in degrees of longitude, latitude, distances are
+in kilometers, and angles are azimuths.  Otherwise, distances are Cartesian in same
+units as x,y and angles are counter-clockwise from horizontal.
 .SH EXAMPLES
 Suppose you want to make a wiggle plot of magnetic anomalies on segments oriented 
 approximately east\-west from a cruise called cag71 in the region OPT(R)300/315/12/20.  

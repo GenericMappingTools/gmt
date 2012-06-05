@@ -218,8 +218,8 @@ int main (int argc, char **argv)
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);
 
-	grd = GMT_memory (VNULL, (size_t)(header.nx * header.ny), sizeof (float), GMT->init.module_name);
-	lon = GMT_memory (VNULL, (size_t)header.nx, sizeof (double), GMT->init.module_name);
+	grd = GMT_memory (GMT, NULL, (size_t)(header.nx * header.ny), float);
+	lon = GMT_memory (GMT, NULL, (size_t)header.nx, double);
 	for (i = 0; i < header.nx; i++) lon[i] = GMT_col_to_x (GMT, i, header.x_min, header.x_max, header.x_inc, header.xy_off, header.nx);
 		
 	for (j = ij = 0; j < header.ny; j++) {
@@ -250,7 +250,7 @@ int main (int argc, char **argv)
 void *New_sph2grd_Ctrl () {	/* Allocate and initialize a new control structure */
 	struct SPH2GRD_CTRL *C;
 	
-	C = (struct SPH2GRD_CTRL *) GMT_memory (VNULL, 1, sizeof (struct SPH2GRD_CTRL), "New_sph2grd_Ctrl");
+	C = GMT_memory (GMT, NULL, 1, struct SPH2GRD_CTRL);
 	
 	C->N.mode = 'm';
 	return (C);
