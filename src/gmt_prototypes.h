@@ -118,7 +118,7 @@ EXTERN_MSC void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options);
 
 /* gmt_io.c: */
 
-EXTERN_MSC p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, int direction, int swap, char type);
+EXTERN_MSC p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, int direction, enum GMT_swap_direction swap, char type);
 EXTERN_MSC void GMT_set_segmentheader (struct GMT_CTRL *C, int direction, bool true_false);
 EXTERN_MSC void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, unsigned int dir);
 EXTERN_MSC void * GMT_z_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *status);
@@ -185,7 +185,7 @@ EXTERN_MSC bool gmt_byteswap_file (struct GMT_CTRL *C,
 		const uint64_t offset, const uint64_t length);
 EXTERN_MSC int GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_PALETTE *P, bool *use_fill, struct GMT_FILL *fill, struct GMT_FILL def_fill, bool *use_pen, struct GMT_PEN *pen, struct GMT_PEN def_pen, unsigned int def_outline, struct GMT_OGR_SEG *G);
 EXTERN_MSC int GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z_IO *z);
-EXTERN_MSC void GMT_init_z_io (struct GMT_CTRL *C, char format[], bool repeat[], int swab, off_t skip, char type, struct GMT_Z_IO *r);
+EXTERN_MSC void GMT_init_z_io (struct GMT_CTRL *C, char format[], bool repeat[], enum GMT_swap_direction swab, off_t skip, char type, struct GMT_Z_IO *r);
 EXTERN_MSC int GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 

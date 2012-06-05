@@ -105,7 +105,7 @@ struct GMT_COMMON {
 	} a;
 	struct b {	/* -b[i][o][s|S][d|D][#cols][cvar1/var2/...] */
 		bool active[2];		/* true if current input/output is in native binary format */
-		bool swab[2];		/* true if current binary input/output must be byte-swapped */
+		enum GMT_swap_direction swab[2];	/* k_swap_in or k_swap_out if current binary input/output must be byte-swapped, else k_swap_none */
 		unsigned int ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
