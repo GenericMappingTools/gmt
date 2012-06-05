@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-06-04	pwessel
+	* gmtvector.c		Incorrectly applied flat-Earth adjustment for 2-D Cartesian azimuth.
+
 2012-06-01	pwessel
 	* gmt_io.c:		Reading files with one segment header and no data caused a SEGV.
 

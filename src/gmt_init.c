@@ -5198,6 +5198,8 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 		Csave->session.user_media_name = GMT_memory (C, NULL, C->session.n_user_media, char *);
 		for (i = 0; i < C->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (C->session.user_media_name[i]);
 	}
+	if (C->init.module_id == k_mod_nongmt && C->init.module_name != NULL) Csave->init.module_name = strdup (C->init.module_name);
+	
 	/* GMT_IO */
 	Csave->current.io.OGR = GMT_duplicate_ogr (C, C->current.io.OGR);	/* Duplicate OGR struct, if set */
 	GMT_free_ogr (C, &(C->current.io.OGR), 1);		/* Free up the GMT/OGR structure, if used */
@@ -5250,8 +5252,10 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 
 	/* GMT_INIT */
 
-	if (C->init.module_name != NULL)
+	if (C->init.module_id == k_mod_nongmt && C->init.module_name != NULL) {
 		free (C->init.module_name);
+		C->init.module_name = NULL;
+	}
 
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
 #if 0

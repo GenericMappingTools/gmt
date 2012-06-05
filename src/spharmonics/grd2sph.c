@@ -25,7 +25,7 @@
 
 #include "gmt.h"
 
-struct grd2sph_CTRL {
+struct GRD2SPH_CTRL {
 	struct D {	/* -D<degree> */
 		bool active;
 		int max_degree;
@@ -50,13 +50,13 @@ int main (int argc, char **argv)
 	double out[4];
 
 	struct GRD_HEADER header;
-	struct grd2sph_CTRL *Ctrl;
+	struct GRD2SPH_CTRL *Ctrl;
 
-	void *New_grd2sph_Ctrl (), Free_grd2sph_Ctrl (struct grd2sph_CTRL *C);
+	void *New_grd2sph_Ctrl (), Free_grd2sph_Ctrl (struct GRD2SPH_CTRL *C);
 
 	argc = GMT_begin (argc, argv);
 
-	Ctrl = (struct grd2sph_CTRL *)New_grd2sph_Ctrl ();	/* Allocate and initialize a new control structure */
+	Ctrl = (struct GRD2SPH_CTRL *)New_grd2sph_Ctrl ();	/* Allocate and initialize a new control structure */
 
 	for (i = 1; i < argc; i++) {
 		if (argv[i][0] == '-') {
@@ -154,7 +154,7 @@ int main (int argc, char **argv)
 
 	nm = header.nx * header.ny;
 
-	grd = GMT_memory (VNULL, (size_t) nm, sizeof (float), GMT->init.module_name);
+	grd = GMT_memory (GMT, NULL, nm, float);
 
 	GMT_err_fail (GMT_read_grd (argv[f_arg], &header, grd, 0.0, 0.0, 0.0, 0.0, GMT->current.io.pad, false), argv[f_arg]);
 	/* Do conversion to spherical harmonic coefficients */
@@ -186,9 +186,9 @@ int main (int argc, char **argv)
 }
 
 void *New_grd2sph_Ctrl () {	/* Allocate and initialize a new control structure */
-	struct grd2sph_CTRL *C;
+	struct GRD2SPH_CTRL *C;
 
-	C = (struct grd2sph_CTRL *) GMT_memory (VNULL, 1, sizeof (struct grd2sph_CTRL), "New_grd2sph_Ctrl");
+	C = GMT_memory (GMT, NULL, 1, struct GRD2SPH_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
@@ -197,6 +197,6 @@ void *New_grd2sph_Ctrl () {	/* Allocate and initialize a new control structure *
 	return (C);
 }
 
-void Free_grd2sph_Ctrl (struct grd2sph_CTRL *C) {	/* Deallocate control structure */
+void Free_grd2sph_Ctrl (struct GRD2SPH_CTRL *C) {	/* Deallocate control structure */
 	GMT_free (C);	
 }

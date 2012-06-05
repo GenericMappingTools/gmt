@@ -123,7 +123,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-D Append header information; specify '=' to get default value.\n");
 	GMT_message (GMT, "\t-N Set value for nodes without input xyz triplet [Default is NaN].\n");
 	GMT_message (GMT, "\t   Z-table entries that equal <nodata> are replaced by NaN.\n");
-	GMT_message (GMT, "\t-S Swap the byte-order of the input data and write resut to <zfile>\n");
+	GMT_message (GMT, "\t-S Swap the byte-order of the input data and write result to <zfile>\n");
 	GMT_message (GMT, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
 	GMT_message (GMT, "\t   For this option, only one input file (or stdin) is allowed.\n");
 	GMT_explain_options (GMT, "V");
@@ -348,6 +348,13 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		
+		/* Initialize the i/o for doing record-by-record reading/writing */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 		GMT->current.io.input = save_i;			/* Reset input pointer */
 		GMT->common.b.active[GMT_IN] = previous;	/* Reset input binary */
 		save_o = GMT->current.io.output;		/* Save previous output parameters */
@@ -372,6 +379,12 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->current.io.output = save_o;		/* Reset output pointer */
 		GMT->common.b.active[GMT_OUT] = previous;	/* Reset output binary */
 
+		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
+		}
 		Return (GMT_OK);	/* We are done here */
 	}
 

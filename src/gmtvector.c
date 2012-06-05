@@ -28,16 +28,17 @@
 
 #include "gmt.h"
 
-#define DO_NOTHING	0
-#define DO_AVERAGE	1
-#define DO_DOT2D	2
-#define DO_DOT3D	3
-#define DO_CROSS	4
-#define DO_SUM		5
-#define DO_ROT2D	6
-#define DO_ROT3D	7
-#define DO_DOT		8
-#define DO_BISECTOR	9
+enum gmtvector_method {	/* The available methods */
+	DO_NOTHING=0,
+	DO_AVERAGE,
+	DO_DOT2D,
+	DO_DOT3D,
+	DO_CROSS,
+	DO_SUM,
+	DO_ROT2D,
+	DO_ROT3D,
+	DO_DOT,
+	DO_BISECTOR};
 
 struct GMTVECTOR_CTRL {
 	struct Out {	/* -> */
@@ -71,7 +72,7 @@ struct GMTVECTOR_CTRL {
 	struct T {	/* -T[operator] */
 		bool active;
 		bool degree;
-		unsigned int mode;
+		enum gmtvector_method mode;
 		double par[3];
 	} T;
 };
@@ -247,7 +248,7 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int cartesian, int geocentric) {
+unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int cartesian, int geocentric) {
 	unsigned int n_out, n_errors = 0, ix, iy;
 	int n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
@@ -415,7 +416,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 		if (lon2 < 0.0) lon2 += 360.0;
 		L = lon2 - lon;
 		if (fabs (L) > 180.0) L = copysign (360.0 - fabs (L), L);
-		scl = cos (lat * D2R);	/* Local flat-Earth approximation */
+		scl = cosd (lat);	/* Local flat-Earth approximation */
 	}
 	else {
 		lon2 = B[GMT_X];
@@ -424,7 +425,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	}
 	Y = lat2 - lat;
 
-	E[0] = 90.0 - atan2 (Y, L * scl) * R2D;
+	E[0] = 90.0 - atan2 (Y, L * scl) * R2D;	/* Get azimuth */
 	/* Convert to 95% confidence (in km, if geographic) */
 
 	scl = (n_components == 3) ? GMT->current.proj.DIST_KM_PR_DEG * R2D * sqrt (GMT_chi2crit (GMT, conf, 3)) : sqrt (GMT_chi2crit (GMT, conf, 2));
@@ -504,7 +505,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 				Return (API->error);
 			}
 			n = n_out = (Ctrl->C.active[GMT_OUT] && (Din->n_columns == 3 || GMT_is_geographic (GMT, GMT_IN))) ? 3 : 2;
-			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellispe parameters */
+			mean_vector (GMT, Din, Ctrl->C.active[GMT_IN], Ctrl->A.conf, vector_1, E);	/* Get mean vector and confidence ellipse parameters */
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
 				Return (API->error);
 			}
@@ -572,6 +573,7 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 					case DO_BISECTOR:	/* Compute pole or bisector of vector 1 and 2 */
 						get_bisector (GMT, vector_1, vector_2, vector_3);
 						break;
+					case DO_DOT:	/* Just here to quiet the compiler as DO_DOT has been replaced in line 552 above */
 					case DO_DOT2D:	/* Get angle between 2-D vectors */
 						if (!single) GMT_normalize2v (GMT, vector_1);
 						vector_3[0] = GMT_dot2v (GMT, vector_1, vector_2);

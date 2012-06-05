@@ -253,7 +253,7 @@ int GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, struc
 #endif
 			case 'N':
 				Ctrl->N.active = true;
-				Ctrl->N.name = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->N.name = strdup (opt->arg);
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
