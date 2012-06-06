@@ -4377,6 +4377,8 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		/* DIR GROUP */
 
 		case GMTCASE_DIR_GSHHG:
+			/* Force update of session.GSHHGDIR before copying the string */
+			GMT_shore_adjust_res (C, 'c');
 			strcpy (value, (C->session.GSHHGDIR) ? C->session.GSHHGDIR : "");
 			break;
 		case GMTCASE_DIR_TMP:
@@ -8293,9 +8295,9 @@ int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 	return (0);
 }
 
-int GMT_report_func (struct GMT_CTRL *C, unsigned int level, char *source_line, char *format, ...) {
+int GMT_report_func (struct GMT_CTRL *C, unsigned int level, const char *source_line, char *format, ...) {
 	char message[GMT_BUFSIZ];
-	char *source_line_basename;
+	const char *source_line_basename;
 	size_t source_info_len;
 	va_list args;
 	if (level > C->current.setting.verbose)
@@ -8307,7 +8309,7 @@ int GMT_report_func (struct GMT_CTRL *C, unsigned int level, char *source_line, 
 	source_line_basename = (strrchr (source_line, '\\') ?
 			strrchr (source_line, '\\') : source_line - 1) + 1;
 #endif
-	snprintf (message, GMT_BUFSIZ, "%s, %s: ",
+	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
 			gmt_module_name(C), source_line_basename);
 	source_info_len = strlen (message);
 	va_start (args, format);
