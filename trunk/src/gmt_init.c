@@ -3566,13 +3566,9 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		/* DIR GROUP */
 
 		case GMTCASE_DIR_GSHHG:
-			if (*value) {
+			if (*value)
 				/* Set session GSHHG dir */
 				C->session.GSHHGDIR = strdup (value);
-				/* Force update of session.GSHHGDIR before GMT_begin_module()
-				 * is called to avoid invalid frees after GMT_end_module() */
-				GMT_shore_adjust_res (C, 'c');
-			}
 			break;
 		case GMTCASE_DIR_TMP:
 			if (*value) {
