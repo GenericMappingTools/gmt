@@ -235,7 +235,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 				break;
 			case 'S':
 				Ctrl->S.active = true;
-				Ctrl->S.file = strdup (opt->arg);
+				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
@@ -342,8 +342,8 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		save_o = GMT->current.io.output;
 		previous_bin_i = GMT->common.b.active[GMT_IN];
 		previous_bin_o = GMT->common.b.active[GMT_OUT];
-		GMT->current.io.input = GMT_z_input;		/* Override input reader */
-		GMT->current.io.output = GMT_z_output;		/* Override output writer */
+		GMT->current.io.input = GMT_z_input;		/* Override input reader with chosen binary reader for selected type */
+		GMT->current.io.output = GMT_z_output;		/* Override output writer with chosen binary writer for selected type */
 		GMT->common.b.active[GMT_IN] = io.binary;	/* May have to set input binary as well */
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
@@ -352,7 +352,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
 		/* Register the data source */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set via file */
 			Return (API->error);
 		}
 		if (Ctrl->S.file) {	/* Specified an output file */
@@ -360,13 +360,13 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
+		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
 			Return (API->error);
 		}
-		if ((error = GMT_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
 			Return (API->error);
 		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
