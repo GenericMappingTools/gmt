@@ -475,11 +475,15 @@ int GMT_grdgradient (struct GMTAPI_CTRL *API, int mode, void *args)
 				max_gradient = MAX (max_gradient, output);
 			}
 			else if (Ctrl->D.active) {
-				azim = (Ctrl->D.mode & 1) ? atan2d (-dzdy, -dzdx) : 90.0 - atan2d (-dzdy, -dzdx);
-				if (Ctrl->D.mode & 4) azim += 90.0;
-				if (azim < 0.0) azim += 360.0;
-				if (azim >= 360.0) azim -= 360.0;
-				if (Ctrl->D.mode & 2 && azim >= 180) azim -= 180.0;
+				if (dzdx == 0.0 && dzdy == 0.0)	/* Flat, so no preferred direction */
+					azim = GMT->session.d_NaN;
+				else {
+					azim = (Ctrl->D.mode & 1) ? atan2d (dzdy, dzdx) : 90.0 - atan2d (dzdy, dzdx);
+					if (Ctrl->D.mode & 4) azim += 90.0;
+					if (azim < 0.0) azim += 360.0;
+					if (azim >= 360.0) azim -= 360.0;
+					if (Ctrl->D.mode & 2 && azim >= 180) azim -= 180.0;
+				}
 				output = azim;
 				if (Ctrl->S.active) Slope->data[ij] = (float)hypot (dzdx, dzdy);
 			}

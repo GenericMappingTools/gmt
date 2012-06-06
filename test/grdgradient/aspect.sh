@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: $
+# $Id$
 # Test the generation of aspect maps
 
 ps=aspect.ps
@@ -20,11 +20,13 @@ triangulate $pts -R0/10/0/10 -I0.2 -Gpiramide.nc > /dev/null
 
 grdgradient piramide.nc -D -Gaspect.nc
 
-echo   0  red     90 red     > pal.cpt
-echo  90  green  180 green  >> pal.cpt
-echo 180  blue   270 blue   >> pal.cpt
-echo 270  yellow 360 yellow >> pal.cpt
+echo   -45  red     45 red     > pal.cpt
+echo  45  green  135 green  >> pal.cpt
+echo 135  blue   225 blue   >> pal.cpt
+echo 225  yellow 315 yellow >> pal.cpt
 
-grdimage aspect.nc -JX12c -Cpal.cpt -P -K > $ps
-
-psscale -D12c/3.0c/6c/0.6c -Cpal.cpt -B90 -O >> $ps
+grdimage aspect.nc -JX10c -Cpal.cpt -P -K -B2WSne -Xc > $ps
+psscale -D11c/5c/6c/0.6c -Cpal.cpt -B90:,-\\232: -O -K -E+n >> $ps
+makecpt -Cjet -T0/1/0.1 > t.cpt
+grdimage piramide.nc -J -O -K -Ct.cpt -B2WSne -Y13c >> $ps
+psscale -D11c/5c/8c/0.6c -Ct.cpt -O >> $ps
