@@ -3,6 +3,7 @@
 # $Id$
 
 # test byteswapping 64 bit integers
+exit 0 # not implemented yet, disabled for the time being
 
 # generate random binary file
 BYTES=$((1024*1024)) # 1 MiB
@@ -25,6 +26,6 @@ xyz2grd -S8/16384/524288 -Gswapped_tmp.b data.b
 xyz2grd -S8/16384/524288 -Gswapped_region.b swapped_tmp.b
 
 # compare result
-diff -q data.b swapped_again.b
+diff -q data.b swapped.b
 diff -q data.b swapped_skip.b
 diff -q data.b swapped_region.b
