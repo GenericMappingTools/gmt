@@ -238,8 +238,9 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 		if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) )
 			return (path);
 		else {
-			/* free invalid C->session.GSHHGDIR */
-			free (C->session.GSHHGDIR);
+			/* remove reference to invalid C->session.GSHHGDIR but don't free
+			 * the pointer. this is no leak because the reference still exists
+			 * in the previous copy of the current GMT_CTRL struct. */
 			C->session.GSHHGDIR = NULL;
 		}
 	}
