@@ -15,3 +15,15 @@ gmtconvert -bi1h -bo1hw data.b | gmtconvert -bi1hw -bo1h > out.d
 # compare result
 diff -q data.b out.u
 diff -q data.b out.d
+
+# swap using xyz2grd
+xyz2grd -Sswapped_tmp.b -ZH data.b
+xyz2grd -Sswapped.b -ZH swapped_tmp.b
+
+# compare result
+diff -q data.b swapped.b
+
+# files must differ
+if diff -q swapped_tmp.b swapped.b; then
+  false # return with error
+fi
