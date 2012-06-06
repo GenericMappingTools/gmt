@@ -151,13 +151,14 @@ struct Gmt_moduleinfo g_module[] = {
 /* Pretty print all module names and their purposes */
 void gmt_module_show_all() {
 	enum Gmt_module_id module_id = 0; /* Module ID */
+	char module_name_comp[GMT_TEXT_LEN64];
 
-	fprintf (stderr, "Program - Purpose of Program\n");
+	fprintf (stderr, "Program                Purpose of Program\n");
 	while (g_module[module_id].name != NULL) {
-		fprintf (stderr, "%s(%s) - %s\n",
-				g_module[module_id].name,
-				g_module[module_id].component,
-				g_module[module_id].purpose);
+		snprintf (module_name_comp, GMT_TEXT_LEN64, "%s(%s)",
+				g_module[module_id].name, g_module[module_id].component);
+		fprintf (stderr, "%-22s %s\n",
+				module_name_comp, g_module[module_id].purpose);
 		++module_id;
 	}
 }
