@@ -160,7 +160,7 @@ if (WIN32 AND NOT CYGWIN)
 	# Fix bundle:
 	install (CODE "
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages\")
-		include(BundleUtilities)
+		include (BundleUtilities)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
@@ -187,7 +187,10 @@ if (APPLE)
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages.+[.]app/Contents/Resources\")
 		cmake_policy (SET CMP0009 NEW)
 		cmake_policy (SET CMP0011 NEW)
-		include(BundleUtilities NO_POLICY_SCOPE)
+		# Workaround incompatible 'file' utilities possibly used in
+		# is_file_executable() from GetPrerequisites.cmake:
+		set (file_cmd /usr/bin/file)
+		include (BundleUtilities)
 		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
