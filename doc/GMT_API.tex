@@ -196,18 +196,19 @@ of variable.  Unlike the other objects, images can only be read and not written.
 \small
 \centering
 \begin{tabular}{ll} \hline
-\multicolumn{2}{l}{\texttt{union GMT\_UNIVECTOR \{}} \\ 
-\texttt{	uint8_t *uc1;}	&       /* \emph{Pointer for unsigned 1-byte array} */ \\
-\texttt{	int8_t *sc1;}		&       /* \emph{Pointer for signed 1-byte array} */ \\
-\texttt{	uint16_t *ui2;}	&       /* \emph{Pointer for unsigned 2-byte array} */ \\
-\texttt{	int16_t *si2;}		&       /* \emph{Pointer for signed 2-byte array} */ \\
-\texttt{	uint32_t *ui4;}	&       /* \emph{Pointer for unsigned 4-byte array} */ \\
-\texttt{	int32_t *si4;}		&       /* \emph{Pointer for signed 4-byte array} */ \\
-\texttt{	uint64_t *ui8;}	&       /* \emph{Pointer for unsigned 8-byte array} */ \\
-\texttt{	int64_t *si8;}		&       /* \emph{Pointer for signed 8-byte array} */ \\
-\texttt{	float *f4;}		&       /* \emph{Pointer for float array} */ \\
-\texttt{	double *f8;}		&       /* \emph{Pointer for double array} */ \\
-\texttt{\};}	&        \\  \hline
+\verb!union GMT_UNIVECTOR {! & \\
+\verb!  uint8_t *uc1;!  & /* \emph{Pointer for unsigned 1-byte array} */ \\
+\verb!  int8_t *sc1;!   & /* \emph{Pointer for signed 1-byte array} */ \\
+\verb!  uint16_t *ui2;! & /* \emph{Pointer for unsigned 2-byte array} */ \\
+\verb!  int16_t *si2;!  & /* \emph{Pointer for signed 2-byte array} */ \\
+\verb!  uint32_t *ui4;! & /* \emph{Pointer for unsigned 4-byte array} */ \\
+\verb!  int32_t *si4;!  & /* \emph{Pointer for signed 4-byte array} */ \\
+\verb!  uint64_t *ui8;! & /* \emph{Pointer for unsigned 8-byte array} */ \\
+\verb!  int64_t *si8;!  & /* \emph{Pointer for signed 8-byte array} */ \\
+\verb!  float *f4;!     & /* \emph{Pointer for float array} */ \\
+\verb!  double *f8;!    & /* \emph{Pointer for double array} */ \\
+\verb!};!               & \\
+\hline
 \end{tabular}
 \caption{Definition of the GMT\_UNIVECTOR union that hold a pointer to any array type.}
 \label{tbl:univector}
@@ -218,14 +219,15 @@ of variable.  Unlike the other objects, images can only be read and not written.
 \small
 \centering
 \begin{tabular}{ll} \hline
-\multicolumn{2}{l}{\texttt{struct GMT\_VECTOR \{}} \\ 
-\texttt{	unsigned int id;}	&       /* \emph{An identification number} */ \\
-\texttt{	unsigned int n\_columns;}	&       /* \emph{Number of vectors}  */\\
-\texttt{	uint64\_t n\_rows;}	&       /* \emph{Number of rows in each vector} */ \\
-\texttt{	enum GMT\_enum\_alloc alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
-\texttt{	enum GMT\_enum\_type *type;}		&       /* \emph{Array with data type for each vector}  */\\
-\texttt{	union GMT\_UNIVECTOR *data;}	&       /* \emph{Array with unions for each column}  */\\
-\texttt{\};}	&        \\  \hline
+\verb!struct GMT_VECTOR {!               & \\
+\verb!  unsigned int id;!                & /* \emph{An identification number} */ \\
+\verb!  unsigned int n_columns;!         & /* \emph{Number of vectors} */\\
+\verb!  uint64_t n_rows;!                & /* \emph{Number of rows in each vector} */ \\
+\verb!  enum GMT_enum_alloc alloc_mode;! & /* \emph{Determines if we may free the vectors or not} */\\
+\verb!  enum GMT_enum_type *type;!       & /* \emph{Array with data type for each vector} */\\
+\verb!  union GMT_UNIVECTOR *data;!      & /* \emph{Array with unions for each column} */\\
+\verb!};!                                & \\
+\hline
 \end{tabular}
 \caption{Definition of the GMT\_VECTOR structure used to pass user data columns.}
 \label{tbl:vector}
@@ -249,20 +251,20 @@ read the data properly.
 \small
 \centering
 \begin{tabular}{ll} \hline
-\multicolumn{2}{l}{\texttt{struct GMT\_MATRIX \{}} \\ 
-\texttt{	unsigned int id;}		&       /* \emph{An identification number} */ \\
-\texttt{	unsigned int n\_rows;}		&       /* \emph{Number of rows in the matrix} */ \\
-\texttt{	unsigned int n\_columns;}	&       /* \emph{Number of columns in the matrix}  */\\
-\texttt{	unsigned int n\_layers;}	&       /* \emph{Number of layers in a 3-D matrix}  */\\
-\texttt{	unsigned int shape;}		&       /* \emph{0 = C (rows) and 1 = Fortran (cols)}  */\\
-\texttt{	unsigned int registration;}	&       /* \emph{0 for gridline and 1 for pixel registration}  */\\
-\texttt{	size\_t dim;}		&       /* \emph{Length of dimension for row (C) or column (Fortran)}  */\\
-\texttt{	size\_t size;}		&       /* \emph{Byte length of data}  */\\
-\texttt{	enum GMT\_enum\_alloc alloc\_mode;}	&       /* \emph{Determines if we may free the vectors or not}  */\\
-\texttt{	enum GMT\_enum\_type type;}		&       /* \emph{The matrix data type}  */\\
-\texttt{	double limit[6];}	&       /* \emph{The min and max limits on x-, y-, and z-ranges}  */\\
-\texttt{	union GMT\_UNIVECTOR data;}	&       /* \emph{Union with pointers a data matrix of any type}  */\\
-\texttt{\};}	&        \\  \hline
+\verb!struct GMT_MATRIX {!               & \\
+\verb!  unsigned int id;!                & /* \emph{An identification number} */ \\
+\verb!  unsigned int n_rows;!            & /* \emph{Number of rows in the matrix} */ \\
+\verb!  unsigned int n_columns;!         & /* \emph{Number of columns in the matrix} */\\
+\verb!  unsigned int n_layers;!          & /* \emph{Number of layers in a 3-D matrix} */\\
+\verb!  unsigned int shape;!             & /* \emph{0 = C (rows) and 1 = Fortran (cols)} */\\
+\verb!  unsigned int registration;!      & /* \emph{0 for gridline and 1 for pixel registration} */\\
+\verb!  size_t dim;!                     & /* \emph{Length of dimension for row (C) or column (Fortran)} */\\
+\verb!  size_t size;!                    & /* \emph{Byte length of data} */\\
+\verb!  enum GMT_enum_alloc alloc_mode;! & /* \emph{Determines if we may free the vectors or not} */\\
+\verb!  enum GMT_enum_type type;!        & /* \emph{The matrix data type} */\\
+\verb!  double limit[6];!                & /* \emph{The min and max limits on x-, y-, and z-ranges} */\\
+\verb!union GMT_UNIVECTOR data;!       & /* \emph{Union with pointers a data matrix of any type} */\\
+\verb!};!                              & \\ \hline
 \end{tabular}
 \caption{Definition of the GMT\_MATRIX structure used to pass a user data matrix.}
 \label{tbl:matrix}
@@ -950,12 +952,13 @@ according to need.  The option structure is defined in Table \ref{tbl:options}.
 \small
 \centering
 \begin{tabular}{ll} \hline
-\multicolumn{2}{l}{\texttt{struct GMT\_OPTION \{}} \\ 
-\texttt{char option;}			&       /* \emph{Single character of the option (e.g.,'G' for} \Opt{G} */ \\
-\texttt{char *arg;}			&       /* \emph{String pointer with arguments (NULL if not used)} */ \\
-\texttt{struct GMT\_OPTION *next;}	&       /* \emph{Pointer to next option (NULL for last option)}  */\\
-\texttt{struct GMT\_OPTION *prev;}	&       /* \emph{Pointer to previous option (NULL for first option)}  */\\
-\texttt{\};}	&        \\  \hline
+\verb!struct GMT_OPTION {!        & \\
+\verb!  char option;!             & /* \emph{Single character of the option (e.g.,'G' for} \Opt{G} */ \\
+\verb!  char *arg;!               & /* \emph{String pointer with arguments (NULL if not used)} */ \\
+\verb!  struct GMT_OPTION *next;! & /* \emph{Pointer to next option (NULL for last option)} */\\
+\verb!  struct GMT_OPTION *prev;! & /* \emph{Pointer to previous option (NULL for first option)} */\\
+\verb!};!                         & \\
+\hline
 \end{tabular}
 \caption{Definition of the structure used to hold a single program option.}
 \label{tbl:options}
