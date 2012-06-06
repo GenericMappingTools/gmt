@@ -109,25 +109,21 @@ EXTERN_MSC const char * GMT_strerror (int err);
 #	endif
 #endif
 
-/* Convenience functions to GMT_err_func */
-#ifndef WIN32
-#	define __FILENAME ((strrchr(__FILE__, '/') ? : __FILE__- 1) + 1)
-#else
-#	define __FILENAME ((strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__))
-#endif
-
-#ifdef DEBUG
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__FILENAME,__LINE__)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__FILENAME,__LINE__)
-#else
-#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__func__,0)
-#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__func__,0)
-#endif
-
-/* Convenience functions to GMT_report_func */
+/* Concatenate __FILE__ and __LINE__ as string */
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 #define __SOURCE_LINE __FILE__ ":" TOSTRING(__LINE__)
+
+/* Convenience functions to GMT_err_func */
+#ifdef DEBUG
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__SOURCE_LINE)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__SOURCE_LINE)
+#else
+#	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__func__)
+#	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__func__)
+#endif
+
+/* Convenience functions to GMT_report_func */
 #ifdef DEBUG
 /* !keep space before comma in ', ##__VA_ARGS__'! */
 #	define GMT_report(C, level, format, ...) GMT_report_func(C, level, __SOURCE_LINE, format , ##__VA_ARGS__)

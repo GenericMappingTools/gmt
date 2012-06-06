@@ -93,6 +93,8 @@
 #cmakedefine HAVE_FTELLO
 #cmakedefine HAVE__FSEEKI64
 #cmakedefine HAVE__FTELLI64
+#cmakedefine HAVE___FUNC__
+#cmakedefine HAVE___FUNCTION__
 #cmakedefine HAVE__GETCWD
 #cmakedefine HAVE_GETPID
 #cmakedefine HAVE__GETPID

@@ -34,9 +34,9 @@ struct MATH_MACRO {
 
 /* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #ifdef DEBUG
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__FILE__,__LINE__)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE)
 #else
-#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),"",0)
+#define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
 #endif
 /* The k = *n_alloc below is needed to ensure only the final GMT_malloc call changes n_alloc */
 #define GMT_malloc2(C,a,b,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
@@ -45,30 +45,29 @@ struct MATH_MACRO {
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG
-#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__FILE__,__LINE__)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__SOURCE_LINE)
 #else
-#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),"",0)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__func__)
 #endif
 
 /* Convenience macro for GMT_free_func */
 #ifdef DEBUG
-#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__FILE__,__LINE__),(ptr)=NULL)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__SOURCE_LINE),(ptr)=NULL)
 #else
-#define GMT_free(C,ptr) (GMT_free_func(C,ptr,"",0),(ptr)=NULL)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__func__),(ptr)=NULL)
 #endif
 
 #ifdef DEBUG
 #define MEM_TXT_LEN	128U
 
 struct MEMORY_ITEM {
-	size_t size;	/* Size of memory allocated */
-	unsigned int line;	/* Line number where things were initially allocated */
-	void *ptr;	/* Memory pointer */
+	size_t size; /* Size of memory allocated */
+	void *ptr;   /* Memory pointer */
 #ifdef NEW_DEBUG
-	char *name;	/* File name */
+	char *name;  /* Source filename and line */
 	struct MEMORY_ITEM *l, *r;
 #else
-	char name[MEM_TXT_LEN];	/* File name */
+	char name[MEM_TXT_LEN]; /* Source filename and line */
 #endif
 };
 
