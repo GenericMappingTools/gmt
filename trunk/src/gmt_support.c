@@ -9343,8 +9343,7 @@ struct MEMORY_ITEM * gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKE
 
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char *where, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
-	size_t old;
-	int64_t diff;
+	size_t old, diff;
 	void *use = NULL;
 	struct MEMORY_ITEM *entry = NULL;
 
@@ -9364,13 +9363,21 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 		entry->ptr = ptr;	/* Since realloc could have changed it */
 		M->n_reallocated++;
 	}
-	diff = size - old;
-	if (diff < 0 && labs (diff) > M->current) {
-		GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
-		M->current = 0;	/* Cannot have negative in size_t */
+
+	if (old > size) {	/* Reduction in memory */
+		diff = old - size;	/* Change in memory */
+		if (diff > M->current) {
+			GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
+			M->current = 0;	/* Cannot have negative in size_t */
+		}
+		else
+			M->current -= diff;	/* Revised memory tally */
 	}
-	else
-		M->current += diff;
+	else {			/* Addition in memory */
+		diff = size - old;	/* Change in memory */
+		M->current += diff;	/* Revised memory tally */
+	}
+
 	entry->size = size;
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
