@@ -77,6 +77,9 @@
  *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
+//#define NEW_DEBUG
+//#define DEBUG_FULL
+
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
@@ -9193,6 +9196,10 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	int64_t result;
 	uint64_t entry;
 	void *use = NULL;
+#ifdef DEBUG_FULL
+	char *mode[3] = {"INI", "ADD", "SET"};
+#endif
+	int kind;
 
 	if (!M) return;		/* Not initialized */
 	if (!M->active) return;	/* Not activated */
@@ -9207,12 +9214,14 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
+		kind = 0;
 	}
 	else {	/* Found existing pointer, get its previous size */
 		entry = result;
 		old = M->item[entry].size;
 		M->item[entry].ptr = ptr;	/* Since realloc could have changed it */
 		M->n_reallocated++;
+		kind = 1;
 	}
 	if (old > size) {	/* Reduction in memory */
 		diff = old - size;	/* Change in memory */
@@ -9222,12 +9231,16 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 		}
 		else
 			M->current -= diff;	/* Revised memory tally */
+		kind = 2;
 	}
 	else {			/* Addition in memory */
 		diff = size - old;	/* Change in memory */
 		M->current += diff;	/* Revised memory tally */
 	}
 	M->item[entry].size = size;
+#ifdef DEBUG_FULL
+	fprintf (stderr, "%s: *p = x%lx %10zu bytes %s\n", mode[kind], (long)M->item[entry].ptr, M->item[entry].size, M->item[entry].name);
+#endif
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
 }
@@ -9251,6 +9264,9 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	}
 	else
 		M->current -= M->item[entry].size;	/* "Free" the memory */
+#ifdef DEBUG_FULL
+	fprintf (stderr, "DEL: *p = x%lx %10zu bytes %s\n", (long)M->item[entry].ptr, M->item[entry].size, M->item[entry].name);
+#endif
 	entry++;
 	while (entry < M->n_ptr) {		/* For the rest of the array we shuffle one down */
 		M->item[entry-1] = M->item[entry];
@@ -9341,48 +9357,6 @@ struct MEMORY_ITEM * gmt_memtrack_find (struct GMT_CTRL *C, struct MEMORY_TRACKE
 	return ((x->ptr) ? x : NULL);
 }
 
-void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char *where, void *ptr, void *prev_ptr, size_t size) {
-	/* Called from GMT_memory to update current list of memory allocated */
-	size_t old, diff;
-	void *use = NULL;
-	struct MEMORY_ITEM *entry = NULL;
-
-	if (!M) return;		/* Not initialized */
-	if (!M->active) return;	/* Not activated */
-	use = (prev_ptr) ? prev_ptr : ptr;
-	entry = (M->search) ? gmt_memtrack_find (C, M, use) : NULL;
-	if (!entry) {	/* Not found, must insert new entry at end */
-		entry = gmt_treeinsert (C, M, use);
-		entry->name = strdup (where);
-		old = 0;
-		M->n_ptr++;
-		M->n_allocated++;
-	}
-	else {	/* Found existing pointer, get its previous size */
-		old = entry->size;
-		entry->ptr = ptr;	/* Since realloc could have changed it */
-		M->n_reallocated++;
-	}
-
-	if (old > size) {	/* Reduction in memory */
-		diff = old - size;	/* Change in memory */
-		if (diff > M->current) {
-			GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
-			M->current = 0;	/* Cannot have negative in size_t */
-		}
-		else
-			M->current -= diff;	/* Revised memory tally */
-	}
-	else {			/* Addition in memory */
-		diff = size - old;	/* Change in memory */
-		M->current += diff;	/* Revised memory tally */
-	}
-
-	entry->size = size;
-	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
-	if (size > M->largest) M->largest = size;		/* Update largest single item */
-}
-
 void gmt_treedelete (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr) {
 	struct MEMORY_ITEM *c = NULL, *p = NULL, *t = NULL, *x = NULL;
 	M->list_tail->ptr = addr;
@@ -9402,10 +9376,70 @@ void gmt_treedelete (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr) {
 		x = c->l;	c->l = x->r;
 		x->l = t->l;	x->r = t->r;
 	}
+#ifdef DEBUG_FULL
+	fprintf (stderr, "DEL: *p = x%lx %10zu bytes %s\n", (long)t->ptr, t->size, t->name);
+#endif
 	if (t->name) free (t->name);
 	free (t);
 	if (addr < p->ptr) p->l = x; else p->r = x;
 	M->list_tail->ptr = NULL;
+}
+
+void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char *where, void *ptr, void *prev_ptr, size_t size) {
+	/* Called from GMT_memory to update current list of memory allocated */
+	size_t old, diff;
+	void *use = NULL;
+	struct MEMORY_ITEM *entry = NULL, *new = NULL;
+#ifdef DEBUG_FULL
+	char *mode[3] = {"INI", "ADD", "SET"};
+#endif
+	int kind;
+
+	if (!M) return;		/* Not initialized */
+	if (!M->active) return;	/* Not activated */
+	use = (prev_ptr) ? prev_ptr : ptr;
+	entry = (M->search) ? gmt_memtrack_find (C, M, use) : NULL;
+	if (!entry) {	/* Not found, must insert new entry at end */
+		entry = gmt_treeinsert (C, M, use);
+		entry->name = strdup (where);
+		old = 0;
+		M->n_ptr++;
+		M->n_allocated++;
+		kind = 0;
+	}
+	else {	/* Found existing pointer, get its previous size */
+		old = entry->size;
+		if (entry->ptr != ptr) {	/* Must delete and add back since the address changed */
+			new = gmt_treeinsert (C, M, ptr);
+			new->name = strdup (entry->name);
+			gmt_treedelete (C, M, entry->ptr);
+			entry = new;
+		}
+		M->n_reallocated++;
+		kind = 1;
+	}
+
+	if (old > size) {	/* Reduction in memory */
+		kind = 2;
+		diff = old - size;	/* Change in memory */
+		if (diff > M->current) {
+			GMT_report (C, GMT_MSG_FATAL, "Memory tracker reports < 0 bytes allocated!\n");
+			M->current = 0;	/* Cannot have negative in size_t */
+		}
+		else
+			M->current -= diff;	/* Revised memory tally */
+	}
+	else {			/* Addition in memory */
+		diff = size - old;	/* Change in memory */
+		M->current += diff;	/* Revised memory tally */
+	}
+
+	entry->size = size;
+#ifdef DEBUG_FULL
+	fprintf (stderr, "%s: *p = x%lx %10zu bytes %s\n", mode[kind], (long)entry->ptr, entry->size, entry->name);
+#endif
+	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
+	if (size > M->largest) M->largest = size;		/* Update largest single item */
 }
 
 void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char *where, void *ptr) {
