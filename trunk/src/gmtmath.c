@@ -2842,12 +2842,11 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DA
 
 #include "gmtmath.h"
 
-#define Free_Hash { for (i = 0; i < GMTMATH_N_OPERATORS; i++) { p = localhashnode[i].next; while ((current = p)) { p = p->next; GMT_free (GMT, current); } } }
 #define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (alloc_mode[i] == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]); else if (alloc_mode[i] == 1) GMT_free_dataset (GMT, &stack[i]); }
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Hash; Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
 
 int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	unsigned int expect;
@@ -2930,7 +2929,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_DATASET *stack[GMTMATH_STACK_SIZE], *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
 	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;
 	struct GMT_TABLE *rhs = NULL, *D = NULL, *I = NULL;
-	struct GMT_HASH *p = NULL, *current = NULL, localhashnode[GMTMATH_N_OPERATORS];
+	struct GMT_HASH localhashnode[GMTMATH_N_OPERATORS];
 	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
 	struct GMTMATH_INFO info;
 	struct MATH_MACRO *M = NULL;

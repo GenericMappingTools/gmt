@@ -81,9 +81,6 @@
 int gmt_geo_C_format (struct GMT_CTRL *C);
 void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
-/* private function prototypes */
-void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, int n_items);
-
 #ifdef DEBUG
 /* This is used to help is find memory leaks */
 struct MEMORY_TRACKER *GMT_mem_keeper;
@@ -1696,7 +1693,6 @@ int gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 		/* cannot call GMT_Free_Options() from here, so we are leaking on exit.
 		 * struct GMTAPI_CTRL *G = C->parent;
-		 * gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
 		 * if (GMT_Destroy_Session (&G))
 		 *   exit (EXIT_FAILURE); */
 		exit (EXIT_SUCCESS);
@@ -2272,22 +2268,6 @@ void gmt_verify_encodings (struct GMT_CTRL *C) {
 
 	if (C->current.setting.map_degree_symbol < 2 && C->current.setting.ps_encoding.code[gmt_dquote] == 32) {
 		GMT_message (C, "Warning: Selected character encoding does not have second symbol (double quote) - will use space instead\n");
-	}
-}
-
-void gmt_free_hash (struct GMT_CTRL *C, struct GMT_HASH *hashnode, int n_items) {
-	int i;
-	struct GMT_HASH *p = NULL, *current = NULL;
-
-	/* Erase all the linked nodes from each array position. */
-	if (!hashnode) return;	/* Nothing to free */
-	for (i = 0; i < n_items; i++) {
-		p = hashnode[i].next;
-		while (p) {
-			current = p;
-			p = p->next;
-			GMT_free (C, current);
-		}
 	}
 }
 
@@ -4708,34 +4688,37 @@ int GMT_hash (struct GMT_CTRL *C, char *v, unsigned int n_hash)
 int GMT_hash_lookup (struct GMT_CTRL *C, char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash)
 {
 	int i;
-	unsigned int ui;
-	struct GMT_HASH *this = NULL;
+	unsigned int ui, k;
 
-	i = GMT_hash (C, key, n_hash);	/* Get initial hash key */
+	i = GMT_hash (C, key, n_hash);			/* Get initial hash key */
 
-	if (i < 0 || (ui = i) >= n || !hashnode[i].next) return (-1);	/* Bad key */
-	this = hashnode[i].next;
-	while (this && strcmp (this->key, key)) this = this->next;
-	if (!this) return (-1);	/* Bad key */
-	return (this->id);
+	if (i < 0 || (ui = i) >= n) return (-1);	/* Bad key */
+	if (hashnode[ui].n_id == 0) return (-1);	/* No entry for this hash value */
+	/* Must search among the entries with identical hash value ui, starting at item k = 0 */
+	k = 0;
+	while (k < hashnode[ui].n_id && strcmp (hashnode[ui].key[k], key)) k++;
+	if (k == hashnode[ui].n_id) return (-1);	/* Bad key; no match found */
+	return (hashnode[ui].id[k]);			/* Return array index that goes with this key */
 }
 
 void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode, char **keys, unsigned int n_hash, unsigned int n_keys)
 {
-	unsigned int i;
+	unsigned int i, next;
 	int entry;
-	struct GMT_HASH *this = NULL;
 
 	/* Set up hash table */
 
-	for (i = 0; i < n_hash; i++) hashnode[i].next = NULL;	/* Start with NULL everywhere */
+	GMT_memset (hashnode, n_hash, struct GMT_HASH);	/* Start with NULL everywhere */
 	for (i = 0; i < n_keys; i++) {
 		entry = GMT_hash (C, keys[i], n_hash);
-		this = &hashnode[entry];
-		while (this->next) this = this->next;	/* Get to end of linked list for this hash */
-		this->next = GMT_memory (C, NULL, 1, struct GMT_HASH);
-		this->next->key = keys[i];
-		this->next->id = i;
+		next = hashnode[entry].n_id;
+		if (next == GMT_HASH_MAXDEPTH) {
+			GMT_report (C, GMT_MSG_FATAL, "%s makes hash-depth exceed hard-wired limit of %d - increment GMT_HASH_MAXDEPTH in gmt_hash.h and recompile GMT\n", keys[i], GMT_HASH_MAXDEPTH);
+			GMT_exit (EXIT_FAILURE);
+		}
+		hashnode[entry].key[next] = keys[i];
+		hashnode[entry].id[next]  = i;
+		hashnode[entry].n_id++;
 	}
 }
 
@@ -5030,8 +5013,6 @@ int gmt_get_history (struct GMT_CTRL *C)
 #endif
 	fclose (fp);
 
-	gmt_free_hash (C, unique_hashnode, GMT_N_UNIQUE);	/* Done with this for now */
-
 	return (GMT_NOERROR);
 }
 
@@ -5104,9 +5085,7 @@ void GMT_end (struct GMT_CTRL *C)
 
 	gmt_put_history (C);
 
-	/* Remove allocated hash structures */
-	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
-	gmt_free_hash (C, C->session.rgb_hashnode, GMT_N_COLOR_NAMES);
+	/* Remove font structures */
 	for (i = 0; i < C->session.n_fonts; i++) free (C->session.font[i].name);
 	GMT_free (C, C->session.font);
 #ifdef __FreeBSD__
