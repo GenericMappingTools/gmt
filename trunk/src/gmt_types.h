@@ -147,6 +147,7 @@ struct GMT_SESSION {
 	double u2u[4][4];		/* u2u is the 4x4 conversion matrix for cm, inch, m, pt */
 	char unit_name[4][8];		/* Full name of the 4 units cm, inch, m, pt */
 	struct GMT_HASH rgb_hashnode[GMT_N_COLOR_NAMES];/* Used to translate colornames to r/g/b */
+	bool rgb_hashnode_init;		/* true once the rgb_hashnode array has been loaded; false otherwise */
 	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
 	unsigned int grdcode[GMT_N_GRD_FORMATS];	/* Old (obsolete) grid ID code */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
