@@ -2843,7 +2843,7 @@ void grd_ZDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, alloc_mode, &info, localhashnode); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, alloc_mode, &info); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H)
 {
@@ -2904,10 +2904,9 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 	return GRDMATH_ARG_IS_BAD;
 }
 
-void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], unsigned int alloc_mode[], struct GRDMATH_INFO *info, struct GMT_HASH lnode[]) {
+void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], unsigned int alloc_mode[], struct GRDMATH_INFO *info) {
 	/* Free allocated memory before quitting */
 	unsigned int k;
-	struct GMT_HASH *p = NULL, *current = NULL;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
 		if (alloc_mode[k] == 1) GMT_free_grid (GMT, &stack[k], true);
@@ -2919,10 +2918,6 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GMT_GRID *stack[], unsigned int 
 	GMT_free (GMT, info->grd_yn);
 	GMT_free (GMT, info->dx);
 	if (info->ASCII_file) free (info->ASCII_file);
-	for (k = 0; k < GRDMATH_N_OPERATORS; k++) {
-		p = lnode[k].next;
-		while ((current = p)) { p = p->next; GMT_free (GMT, current); }
-	}
 }
 
 int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
