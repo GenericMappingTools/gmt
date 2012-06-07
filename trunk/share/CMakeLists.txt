@@ -28,14 +28,13 @@ if (GSHHG_PATH AND COPY_GSHHG)
 		COMPONENT GSHHG)
 	# set installed location
 	set (GSHHG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/coast)
+	# create coastline.conf which is needed for in-build-dir ctest
+	configure_file (coastline.conf.in coastline.conf @ONLY)
 	message ("${GSHHG_INSTALL_PATH}")
 else (GSHHG_PATH AND COPY_GSHHG)
 	# set installed location
 	set (GSHHG_INSTALL_PATH ${GSHHG_PATH})
 endif (GSHHG_PATH AND COPY_GSHHG)
-
-# create coastline.conf which is needed for in-build-dir ctest
-configure_file (coastline.conf.in coastline.conf @ONLY)
 
 # add subtrees
 add_subdirectory (conf)
