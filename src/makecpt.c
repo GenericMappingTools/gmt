@@ -32,7 +32,7 @@
 
 #include "gmt.h"
 
-EXTERN_MSC unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 

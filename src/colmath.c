@@ -32,7 +32,7 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
+int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
 
 /* Control structure for colmath */

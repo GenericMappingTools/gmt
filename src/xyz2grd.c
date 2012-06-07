@@ -30,7 +30,7 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-EXTERN_MSC void GMT_str_tolower (char *string);
+void GMT_str_tolower (char *string);
 #endif
 
 struct XYZ2GRD_CTRL {

@@ -37,7 +37,7 @@
 
 #include "gmt.h"
 
-EXTERN_MSC void GMT_str_toupper (char *string);
+void GMT_str_toupper (char *string);
 
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>

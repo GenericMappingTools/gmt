@@ -597,7 +597,7 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 		int ix, iy, n_fields, rmode;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
- 		EXTERN_MSC bool gmt_skip_output (struct GMT_CTRL *C, double *cols, int n_cols);
+bool gmt_skip_output (struct GMT_CTRL *C, double *cols, int n_cols);
 		
 		pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->common.o.active);
 
