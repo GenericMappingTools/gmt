@@ -6028,8 +6028,8 @@ void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
 	if (!table) return;		/* Do not try to free NULL pointer */
 	for (k = 0; k < table->n_headers; k++) free (table->header[k]);
 	if (table->n_headers) GMT_free (C, table->header);
-	GMT_free (C, table->min);
-	GMT_free (C, table->max);
+	if (table->min) GMT_free (C, table->min);
+	if (table->max) GMT_free (C, table->max);
 	for (k = 0; k < 2; k++) if (table->file[k]) free (table->file[k]);
 	GMT_free_ogr (C, &(table->ogr), 1);
 	if (table->segment) {	/* Free segments */
