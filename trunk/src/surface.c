@@ -141,7 +141,6 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	int grid_east;
 	int offset[25][12];	/* Indices of 12 nearby points in 25 cases of edge conditions  */
 	bool constrained;		/* true if set_low or set_high is true */
-	float *lower, *upper;		/* arrays for minmax values, if set */
 	double low_limit, high_limit;	/* Constrains on range of solution */
 	double grid_xinc, grid_yinc;	/* size of each grid cell for a given grid factor */
 	double r_grid_xinc, r_grid_yinc;	/* Reciprocals  */
@@ -780,8 +779,8 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	if (C->set_low) GMT_free (GMT, C->lower);
-	if (C->set_high) GMT_free (GMT, C->upper);
+	if (C->set_low > 0 && C->set_low < 3) GMT_free_grid (GMT, &C->Low, true);
+	if (C->set_high > 0 && C->set_high < 3) GMT_free_grid (GMT, &C->High, true);
 	return (0);
 }
 
@@ -1964,8 +1963,8 @@ int GMT_surface (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_free (GMT, C.data);
 	GMT_free (GMT, C.briggs);
 	GMT_free (GMT, C.iu);
-	if (C.set_low) GMT_free (GMT, C.lower);
-	if (C.set_high) GMT_free (GMT, C.upper);
+	if (C.set_low > 0 && C.set_low < 3) GMT_free_grid (GMT, &C.Low, true);
+	if (C.set_high > 0 && C.set_high < 3) GMT_free_grid (GMT, &C.High, true);
 
 	if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
 

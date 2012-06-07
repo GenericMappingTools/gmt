@@ -1531,7 +1531,8 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 			col[GMT_X] = GMT_IS_LON;
 			col[GMT_Y] = GMT_IS_LAT;
 		}
-		return (GMT_NOERROR);
+		//return (GMT_NOERROR);
+		pos = 1;
 	}
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
@@ -7720,15 +7721,15 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 		case 'f':
 			switch (item[0]) {
 				case 'i':
-					error += GMT_check_condition (C, C->common.f.active[GMT_IN], "Warning Option -fi given more than once\n");
+					//error += GMT_check_condition (C, C->common.f.active[GMT_IN], "Warning Option -fi given more than once\n");
 					C->common.f.active[GMT_IN] = true;
 					break;
 				case 'o':
-					error += GMT_check_condition (C, C->common.f.active[GMT_OUT], "Warning Option -fo given more than once\n");
+					//error += GMT_check_condition (C, C->common.f.active[GMT_OUT], "Warning Option -fo given more than once\n");
 					C->common.f.active[GMT_OUT] = true;
 					break;
 				default:
-					error += GMT_check_condition (C, C->common.f.active[GMT_IN] | C->common.f.active[GMT_OUT], "Warning Option -f given more than once\n");
+					//error += GMT_check_condition (C, C->common.f.active[GMT_IN] | C->common.f.active[GMT_OUT], "Warning Option -f given more than once\n");
 					C->common.f.active[GMT_IN] = C->common.f.active[GMT_OUT] = true;
 					break;
 			}
