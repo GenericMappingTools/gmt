@@ -2300,10 +2300,6 @@ int GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
 
-	/* Set up hash table */
-
-	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
-
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (line); /* Get rid of [\r]\n */
@@ -2324,7 +2320,6 @@ int GMT_loaddefaults (struct GMT_CTRL *C, char *file)
 	fclose (fp);
 	gmt_verify_encodings (C);
 
-	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (error) GMT_message (C, "Error: %d conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
@@ -2335,10 +2330,6 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	unsigned int p, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	char *param = NULL;
-
-	/* Set up hash table */
-
-	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 
 	for (opt = options; opt; opt = opt->next) {
 		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
@@ -2360,7 +2351,6 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	n_errors += (param != NULL);	/* param should be NULL */
 
-	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %d conversion errors\n", n_errors);
 }
 
@@ -4437,10 +4427,6 @@ void GMT_pickdefaults (struct GMT_CTRL *C, bool lines, struct GMT_OPTION *option
 	int n = 0;
 	struct GMT_OPTION *opt = NULL;
 
-	/* Set up hash table */
-
-	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
-
 	for (opt = options; opt; opt = opt->next) {
 		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
 		if (!lines && n) fprintf (C->session.std[GMT_OUT], " ");	/* Separate by spaces */
@@ -4449,8 +4435,6 @@ void GMT_pickdefaults (struct GMT_CTRL *C, bool lines, struct GMT_OPTION *option
 		n++;
 	}
 	if (!lines && n) fprintf (C->session.std[GMT_OUT], "\n");	/* Single lines */
-
-	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now  */
 }
 
 int GMT_savedefaults (struct GMT_CTRL *C, char *file)
@@ -4478,10 +4462,6 @@ int GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	}
 	if ((fpi = fopen (line, "r")) == NULL) return (-1);
 
-	/* Set up hash table */
-
-	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
-
 	while (fgets (line, GMT_BUFSIZ, fpi)) {
 		rec++;
 		GMT_chop (line);	/* Get rid of [\r]\n */
@@ -4508,7 +4488,6 @@ int GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	fclose (fpi);
 	if (fpo != C->session.std[GMT_OUT]) fclose (fpo);
 
-	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);	/* Done with this for now */
 	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: %d conversion errors while writing gmt.conf\n", error);
 
 	return (0);
@@ -5126,6 +5105,7 @@ void GMT_end (struct GMT_CTRL *C)
 	gmt_put_history (C);
 
 	/* Remove allocated hash structures */
+	gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
 	gmt_free_hash (C, C->session.rgb_hashnode, GMT_N_COLOR_NAMES);
 	for (i = 0; i < C->session.n_fonts; i++) free (C->session.font[i].name);
 	GMT_free (C, C->session.font);
@@ -7800,9 +7780,7 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 			break;
 
 		case '-':
-			GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);
 			error += gmt_parse_dash_option (C, item);
-			gmt_free_hash (C, keys_hashnode, GMT_N_KEYS);
 			break;
 
 		case '>':	/* Registered output file; nothing to do here */
@@ -8071,10 +8049,6 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 
 	GMT_init_fonts (C);	/* Load in available font names */
 
-	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
-
-	GMT_hash_init (C, C->session.rgb_hashnode, GMT_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
-
 	/* Initialize values whose defaults are not necessarily 0/false/NULL */
 
 	/* MAP settings */
@@ -8198,6 +8172,12 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	}
 
 	GMT_io_init (C);		/* Init the table i/o structure before parsing GMT defaults */
+
+	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);	/* Initialize hash table for GMT defaults */
+
+	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
+
+	GMT_hash_init (C, C->session.rgb_hashnode, GMT_color_name, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
 	/* Initialize the standard GMT system default settings from the system file */
 
