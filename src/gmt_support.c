@@ -9199,6 +9199,7 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 #ifdef DEBUG_FULL
 	char *mode[3] = {"INI", "ADD", "SET"};
 #endif
+	const char *where_basename;
 	int kind;
 
 	if (!M) return;		/* Not initialized */
@@ -9209,7 +9210,14 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 		entry = M->n_ptr;	/* Position of this new entry as last item */
 		if (entry == M->n_alloc) gmt_memtrack_alloc (C, M);	/* Must update our memory arrays */
 		M->item[entry].ptr = ptr;	/* Store the pointer */
-		strncpy (M->item[entry].name, where, MEM_TXT_LEN-1U);
+		/* if 'where' contains absolute path strip leading path: */
+#ifndef WIN32
+		where_basename = (strrchr (where, '/') ? : where - 1) + 1;
+#else
+		where_basename = (strrchr (where, '\\') ?
+				strrchr (where, '\\') : where - 1) + 1;
+#endif
+		strncpy (M->item[entry].name, where_basename, MEM_TXT_LEN-1U);
 		M->item[entry].name[MEM_TXT_LEN-1U] = 0;
 		old = 0;
 		M->n_ptr++;
@@ -9305,7 +9313,7 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 			GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" PRIu64 "\n", excess);
 		for (k = 0; k < M->n_ptr; k++) {
 			tot = gmt_memtrack_mem (C, M->item[k].size, &u);
-			GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s is %.3f %s [%zu bytes]\n", M->item[k].name, tot, unit[u], M->item[k].size);
+			GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s: %.3f %s [%zu bytes]\n", M->item[k].name, tot, unit[u], M->item[k].size);
 		}
 	}
 
@@ -9393,6 +9401,7 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 #ifdef DEBUG_FULL
 	char *mode[3] = {"INI", "ADD", "SET"};
 #endif
+	const char *where_basename;
 	int kind;
 
 	if (!M) return;		/* Not initialized */
@@ -9401,7 +9410,14 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	entry = (M->search) ? gmt_memtrack_find (C, M, use) : NULL;
 	if (!entry) {	/* Not found, must insert new entry at end */
 		entry = gmt_treeinsert (C, M, use);
-		entry->name = strdup (where);
+		/* if 'where' contains absolute path strip leading path: */
+#ifndef WIN32
+		where_basename = (strrchr (where, '/') ? : where - 1) + 1;
+#else
+		where_basename = (strrchr (where, '\\') ?
+				strrchr (where, '\\') : where - 1) + 1;
+#endif
+		entry->name = strdup (where_basename);
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
@@ -9468,7 +9484,7 @@ void gmt_treereport (struct GMT_CTRL *C, struct MEMORY_ITEM *x) {
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot = gmt_memtrack_mem (C, x->size, &u);
-	GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s is %.3f %s [%zu bytes]\n", x->name, tot, unit[u], x->size);
+	GMT_report (C, GMT_MSG_FATAL, "Memory not freed first allocated in %s: %.3f %s [%zu bytes]\n", x->name, tot, unit[u], x->size);
 }
 
 void gmt_treeprint (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x)
@@ -9496,7 +9512,7 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 		GMT_report (C, GMT_MSG_FATAL, "Single largest allocation was %.3f %s [%zu bytes]\n", tot, unit[u], M->largest);
 		tot = gmt_memtrack_mem (C, M->current, &u);
 		if (M->current) GMT_report (C, GMT_MSG_FATAL, "MEMORY NOT FREED: %.3f %s [%zu bytes]\n", tot, unit[u], M->current);
-		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 "Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
+		GMT_report (C, GMT_MSG_FATAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
 		excess = M->n_allocated - M->n_freed;
 		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" PRIu64 "\n", excess);
 		gmt_treeprint (C, M, M->list_head->r);

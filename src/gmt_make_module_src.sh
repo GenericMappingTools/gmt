@@ -219,9 +219,13 @@ enum Gmt_module_id gmt_module_lookup (char *candidate) {
 
 /* Get module name */
 char *gmt_module_name (struct GMT_CTRL *gmt_ctrl) {
+	static char no_module[] = "core"; /* when called before GMT_begin_module */
 	char *module_name;
 	module_name = gmt_ctrl->init.module_id == k_mod_nongmt ?
 			gmt_ctrl->init.module_name : g_module[gmt_ctrl->init.module_id].name;
+	if (module_name == NULL)
+		/* when called before GMT_begin_module or after GMT_end_module */
+		return no_module;
 	return module_name;
 }
 EOF
