@@ -1,5 +1,5 @@
 #!/bin/bash
-#	$Id: rectest.sh 9896 2012-03-17 05:07:27Z remko $
+#	$Id$
 #
 # Test to make sure the -Ei option works as advertised.
 # We have data that will fall in to 4 separate blocks
