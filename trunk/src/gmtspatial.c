@@ -28,7 +28,7 @@
 
 #include "gmt.h"
 
-EXTERN_MSC void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
+void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
 
 #define POL_IS_CW	1
 #define POL_IS_CCW	0

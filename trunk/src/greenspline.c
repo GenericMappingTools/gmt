@@ -40,11 +40,11 @@
 
 #include "gmt.h"
 
-EXTERN_MSC void gmt_Cmul (double A[], double B[], double C[]);
-EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
-EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
-EXTERN_MSC double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
-EXTERN_MSC double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
+void gmt_Cmul (double A[], double B[], double C[]);
+void gmt_Cdiv (double A[], double B[], double C[]);
+void gmt_Ccot (double Z[], double cotZ[]);
+double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
+double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 
 /* Control structure for greenspline */
 

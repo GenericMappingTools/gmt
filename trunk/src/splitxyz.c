@@ -32,7 +32,7 @@
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
 
 #ifdef GMT_COMPAT
-EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 #endif
 
 struct SPLITXYZ_CTRL {

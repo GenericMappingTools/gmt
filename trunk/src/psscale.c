@@ -30,8 +30,8 @@
 #include "pslib.h"
 #include "gmt.h"
 
-EXTERN_MSC void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
-EXTERN_MSC double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
+void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
+double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T */
 #define V_BORDER 8	/* 8p vertical border space for -T */

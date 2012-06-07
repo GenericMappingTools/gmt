@@ -37,7 +37,7 @@
 #include "gmt.h"
 
 #ifdef GMT_COMPAT
-EXTERN_MSC int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
 #endif
 
 struct PSWIGGLE_CTRL {

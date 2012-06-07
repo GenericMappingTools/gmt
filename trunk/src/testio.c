@@ -30,7 +30,7 @@
 #include "gmt.h"
 
 /* TODO: remove this func declaration and include gmt_module.h when implemented: */
-EXTERN_MSC int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args);
+int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args);
 
 int main (int argc, char *argv[]) {
 

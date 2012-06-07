@@ -32,9 +32,9 @@
 
 #include "gmt.h"
 
-EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
+int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 #ifdef GMT_COMPAT
-EXTERN_MSC int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
+int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
 
 #define INV_ROWS	1
