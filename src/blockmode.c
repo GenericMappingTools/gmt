@@ -205,7 +205,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_free_grid (GMT, &Grid, false); Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 {
@@ -498,7 +498,6 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	GMT_free_grid (GMT, &Grid, false);	/* Free directly since not registered as a i/o resource */
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);
 
