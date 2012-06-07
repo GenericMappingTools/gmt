@@ -159,7 +159,7 @@ int GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl, str
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {GMT_free (GMT, zw); GMT_free (GMT, xy); GMT_free (GMT, np); GMT_free (GMT, slh); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {GMT_free_grid (GMT, &Grid, false); GMT_free (GMT, zw); GMT_free (GMT, xy); GMT_free (GMT, np); GMT_free (GMT, slh); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 {
@@ -369,7 +369,6 @@ int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
 	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
-	GMT_free_grid (GMT, &Grid, false);	/* Free directly since not registered as an i/o resource */
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
 	
 	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
