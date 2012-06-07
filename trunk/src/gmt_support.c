@@ -9419,11 +9419,15 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 		GMT_report_func (C, GMT_MSG_FATAL, where, "Wrongly tries to free item\n");
 		return;
 	}
-	M->current -= entry->size;	/* "Free" the memory */
+	if (entry->size > M->current) {
+		GMT_report_func (C, GMT_MSG_FATAL, where, "Memory tracker reports < 0 bytes allocated!\n");
+		M->current = 0;
+	}
+	else
+		M->current -= entry->size;	/* "Free" the memory */
 	gmt_treedelete (C, M, entry->ptr);
 	M->n_ptr--;
 	M->n_freed++;
-	if (M->current < 0) GMT_report_func (C, GMT_MSG_FATAL, where, "Memory tracker reports < 0 bytes allocated!\n");
 }
 
 void gmt_treereport (struct GMT_CTRL *C, struct MEMORY_ITEM *x) {
