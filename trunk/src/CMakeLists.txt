@@ -145,15 +145,26 @@ list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
 
 # libpslib
 set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
-	common_runpath.h gmt_notposix.h)
+	common_runpath.h declspec.h gmt_config.h gmt_notposix.h)
 
 # libgmt
-set (GMT_LIB_SRCS gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
+set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
+	common_runpath.h common_string.h declspec.h getopt.h gmt.h gmt_calclock.h
+	gmt_colors.h gmt_common.h gmt_constants.h gmt_contour.h gmt_crossing.h
+	gmt_customio.h gmt_defaults.h gmt_error.h gmt_gdalread.h gmt_grd.h
+	gmt_grdio.h gmt_hash.h gmt_init.h gmt_internals.h gmt_io.h gmt_macros.h
+	gmt_map.h gmt_media_name.h gmt_media_size.h gmt_mgg_header2.h gmt_module.h
+	gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_plot.h gmt_project.h
+	gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h
+	gmt_synopsis.h gmt_texture.h gmt_time.h gmt_types.h gmt_unique.h
+	gmt_vector.h gmt_version.h gmtapi.h gmtapi_define.h gshhg_version.h pslib.h
+	s_rint.h triangle.h
+	gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
-	gmtapi_parse.c gshhg_version.c gshhg_version.h
+	gmtapi_parse.c gshhg_version.c
 	common_math.c common_string.c common_runpath.c compat/qsort.c
-	gmt_module.h gmt_module.c gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c
+	gmt_module.c gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 # dependencies on generated files
@@ -302,7 +313,7 @@ configure_file (isogmt.in isogmt @ONLY)
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
 # extra ugly definitions for triangle
-set_source_files_properties (triangle
+set_source_files_properties (triangle.c
 	PROPERTIES
 	COMPILE_DEFINITIONS "NO_TIMER;TRILIBRARY;REDUCED;CDT_ONLY;ANSI_DECLARATORS")
 
@@ -429,7 +440,7 @@ target_link_libraries (psldemo pslib)
 
 # gshhg_version
 add_executable (gshhg_version gshhg_version.h gshhg_version.c)
-set_source_files_properties (gshhg_version
+set_target_properties (gshhg_version
 	PROPERTIES COMPILE_DEFINITIONS "STANDALONE")
 target_link_libraries (gshhg_version ${NETCDF_LIBRARIES})
 
