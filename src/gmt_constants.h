@@ -37,12 +37,6 @@
  *			GMT CONSTANTS MACRO DEFINITIONS
  *--------------------------------------------------------------------*/
 
-#ifndef true
-#define true 1
-#endif
-#ifndef false
-#define false 0
-#endif
 #ifndef TWO_PI
 #define TWO_PI        6.28318530717958647692
 #endif
