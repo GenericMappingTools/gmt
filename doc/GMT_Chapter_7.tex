@@ -45,11 +45,11 @@ as the default measure unit.  The examples are all written to be ``quiet'',
 that is no information is echoed to the screen.  Thus,
 these scripts are well suited for background execution.
 
-Note that we also end each script by cleaning up after
-ourselves. Because \progname{awk} is broken as designed on some
-systems, and \progname{nawk} is not available on others we refer
-to \progname{\$AWK} in the scripts below; the \progname{do\_examples.sh}
-scripts will set this when running all examples. 
+Note that we also end each script by cleaning up after ourselves.
+Because there are several \progname{AWK} implementations such as
+\progname{gawk} and \progname{nawk}, which are not available
+everywhere, we refer to \progname{\$AWK} in the scripts below.
+This variable must be set prior to running the example scripts.
 
 Finally, be aware that for practical purposes the output \PS\ file name is stored as the variable \texttt{ps}.
 
@@ -164,7 +164,7 @@ to select the range of the projected distance coordinate they have
 in common.  The script prompts you for that information after
 reporting the values.  We decide to make a file of equidistant
 sampling points spaced 1 km apart from -1167 to +1169, and use
-the \UNIX\ utility \progname{\$AWK} to accomplish this step.  We can then
+the \UNIX\ utility \progname{AWK} to accomplish this step.  We can then
 resample the projected data, and carry out the cross-spectral
 calculations, assuming that the ship is the input and the satellite
 is the output data.  There are several intermediate steps that
@@ -356,7 +356,7 @@ number.  We know the profiles trend approximately N40\DS E
 so we want the labels to have that same orientation (i.e., the
 angle with the baseline must be 50\DS ).  We do this by
 extracting the last record from each track, paste this file
-with the \filename{tracks.lis} file, and use \progname{\$AWK} to create the
+with the \filename{tracks.lis} file, and use \progname{AWK} to create the
 format needed for \GMTprog{pstext}.  Note we offset the positions
 by -0.05 inch with \Opt{D} in order to have a small gap
 between the profile and the label:
@@ -625,7 +625,7 @@ See http://topex.ucsd.edu/marine\_grav/mar\_grav.html.}
 for the northern Pacific and decide to isolate all seamounts that
 (1) exceed 50 mGal in amplitude and (2) are within 200 km
 of the Pratt seamount.  We do this by dumping the 50 mGal
-contours to disk, then making a simple \progname{\$AWK} script
+contours to disk, then making a simple \progname{AWK} script
 \filename{center.awk} that returns the mean location of the points
 making up each closed polygon, and then pass these locations
 to \GMTprog{gmtselect} which retains only the points within 200

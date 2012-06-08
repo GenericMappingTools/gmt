@@ -63,7 +63,7 @@ $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | pshistogram  -W0.1 
 	-X5i -B:."Sat": >> example_03b.ps
 #
 # This experience shows that the satellite values are spaced fairly evenly, with
-# delta-p between 3.222 and 3.418.  The ship values are spaced quite unevelnly, with
+# delta-p between 3.222 and 3.418.  The ship values are spaced quite unevenly, with
 # delta-p between 0.095 and 9.017.  This means that when we want 1 km even sampling,
 # we can use "sample1d" to interpolate the sat data, but the same procedure applied
 # to the ship data could alias information at shorter wavelengths.  So we have to use
