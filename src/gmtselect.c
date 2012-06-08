@@ -494,7 +494,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_FATAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 		east_border = ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 		wd[0] = 1;	wd[1] = -1;

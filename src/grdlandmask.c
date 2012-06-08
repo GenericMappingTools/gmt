@@ -269,7 +269,7 @@ int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_report (GMT, GMT_MSG_NORMAL, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.mode) {
