@@ -126,9 +126,10 @@ struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pen
  * upon exit there are unreleased memory we issue a report of how many items were
  * not freed and where they were first allocated.  This is only used by the developers
  * and if -DDEBUG is not supplied then all of this is left out.
- * Supply -DDEBUG_FULL to also write a detailed log of all transactions taking place
- * during a session to the file MEMORY_TRACKER.log.
- * Also note that if GMT_MEM is set in the environment the we deactivate the tracking.
+ * Two optional environmental variables controls the memory tracking:
+ * (1) Set GMT_LOG_MEMORY_USAGE to "on" to write a detailed log of all
+ *     transactions taking place during a session to the file GMT_Memory_Tracker.log.
+ * (2) Set GMT_TRACK_MEMORY_USAGE to "off" to deactivate the tracking.
  *
  * Paul Wessel, Latest revision June 2012.
  * Binary tree manipulation functions are modified after Sedgewick's Algorithms in C */
@@ -155,12 +156,14 @@ double gmt_memtrack_mem (struct GMT_CTRL *C, size_t mem, unsigned int *unit)
 
 void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Called in GMT_begin() */
 	struct MEMORY_TRACKER *P = NULL;
-	char *c = NULL;
-#ifdef DEBUG_FULL
 	time_t now = time (NULL);
-#endif
+	char *c = NULL;
+
 	P = calloc (1U, sizeof (struct MEMORY_TRACKER));
-	P->active = ((c = getenv ("GMT_MEM")) == NULL);
+	c = getenv ("GMT_TRACK_MEMORY_USAGE");
+	P->active = (!c || strcmp (c, "off"));
+	c = getenv ("GMT_LOG_MEMORY_USAGE");
+	P->do_log = (c && !strcmp (c, "on"));
 	P->search = true;
 	P->list_tail = calloc (1U, sizeof *P->list_tail);
 	P->list_tail->l = P->list_tail;	P->list_tail->r = P->list_tail;
@@ -168,14 +171,13 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	P->list_head->r = P->list_tail;
 	P->list_head->l = NULL;
 	*M = P;
-#ifdef DEBUG_FULL
 	if (!P->active) return;	/* Not activated so no log file */
-	if ((P->fp = fopen ("MEMORY_TRACKER.log", "w")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_memtrack_init: Could not open log file MEMORY_TRACKER.log\n");
+	if (!P->do_log) return;	/* Logging not requested */
+	if ((P->fp = fopen ("GMT_Memory_Tracker.log", "w")) == NULL) {
+		GMT_report (C, GMT_MSG_FATAL, "GMT_memtrack_init: Could not create log file GMT_Memory_Tracker.log\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	fprintf (P->fp, "# %s", ctime (&now));
-#endif
 }
 
 struct MEMORY_ITEM * gmt_treeinsert (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr)
@@ -224,16 +226,14 @@ void gmt_treedelete (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr) {
 		x = c->l;	c->l = x->r;
 		x->l = t->l;	x->r = t->r;
 	}
-#ifdef DEBUG_FULL
-	fprintf (M->fp, "DEL: *p = x%lx %10zu bytes %s\n", (long)t->ptr, t->size, t->name);
-#endif
+	if (M->do_log) fprintf (M->fp, "DEL: *p = x%lx %10zu bytes %s\n", (long)t->ptr, t->size, t->name);
 	if (t->name) free (t->name);
 	free (t);
 	if (addr < p->ptr) p->l = x; else p->r = x;
 	M->list_tail->ptr = NULL;
 }
 
-const char *nopath_filename (char *where)
+const char *nopath_filename (const char *where)
 {	/* if 'where' contains absolute path strip leading path: */
 	const char *where_basename;
 #ifndef WIN32
@@ -250,9 +250,7 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	size_t old, diff;
 	void *use = NULL;
 	struct MEMORY_ITEM *entry = NULL, *new = NULL;
-#ifdef DEBUG_FULL
-	char *mode[3] = {"INI", "ADD", "SET"};
-#endif
+	static char *mode[3] = {"INI", "ADD", "SET"};
 	int kind;
 
 	if (!M) return;		/* Not initialized */
@@ -296,9 +294,7 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	}
 
 	entry->size = size;
-#ifdef DEBUG_FULL
-	fprintf (M->fp, "%s: *p = x%lx %10zu bytes %s\n", mode[kind], (long)entry->ptr, entry->size, entry->name);
-#endif
+	if (M->do_log) fprintf (M->fp, "%s: *p = x%lx %10zu bytes %s\n", mode[kind], (long)entry->ptr, entry->size, entry->name);
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
 }
@@ -312,12 +308,12 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	entry = gmt_memtrack_find (C, M, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
 		const char *where_basename = nopath_filename (where);
-		GMT_report_func (C, GMT_MSG_FATAL, where, "Wrongly tries to free item\n");
+		GMT_report_func (C, GMT_MSG_FATAL, where_basename, "Wrongly tries to free item\n");
 		return;
 	}
 	if (entry->size > M->current) {
 		const char *where_basename = nopath_filename (where);
-		GMT_report_func (C, GMT_MSG_FATAL, where, "Memory tracker reports < 0 bytes allocated!\n");
+		GMT_report_func (C, GMT_MSG_FATAL, where_basename, "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;
 	}
 	else
@@ -364,9 +360,7 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 		if (excess) GMT_report (C, GMT_MSG_FATAL, "Items not properly freed: %" PRIu64 "\n", excess);
 		gmt_treeprint (C, M, M->list_head->r);
 	}
-#ifdef DEBUG_FULL
-	fclose (M->fp);
-#endif
+	if (M->do_log) fclose (M->fp);
 
 	free (M->list_head);
 	free (M->list_tail);
