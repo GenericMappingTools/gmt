@@ -428,6 +428,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
+	double da, db, dc, dd;
 
 	/* The x/y coordinates in SAVE in original cooordinates */
 
@@ -436,14 +437,16 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			if (pol == pol2) continue;		/* Cannot be inside itself */
 			if (!save[pol2].do_it) continue;	/* No point checking contours that have already failed */
-			if (abs (save[pol].kind) == 3) {	/* These are not closed (in lon/lat) */
-				save[pol].do_it = false;		/* This may be improved in the future */
-				continue;
+			//if (abs (save[pol].kind) == 3) {	/* These are not closed (in lon/lat) */
+			//	save[pol].do_it = false;		/* This may be improved in the future */
+			//	continue;
+			//}
+			if (abs (save[pol].kind) != 3) {	/* Not a polar cap so we can call GMT_non_zero_winding */
+				col = save[pol2].n / 2;	/* Pick the half-point for testing */
+				inside = GMT_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
+				if (inside == 2) save[pol].do_it = false;	/* Not innermost so mark it for exclusion */
 			}
-			col = save[pol2].n / 2;	/* Pick the half-point for testing */
-			inside = GMT_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
-			if (inside == 2) save[pol].do_it = false;	/* Not innermost so mark it for exclusion */
-			if (abs (save[pol2].kind) == 3) {	/* Polar caps are different */
+			if (abs (save[pol2].kind) == 3) {	/* Polar caps needs a different test */
 				if (abs (save[pol].kind) == 3) {	/* Both are caps */
 					if (save[pol].kind != save[pol2].kind) continue;	/* One is S and one is N cap as far as we can tell, so we skip */
 					/* Crude test to determine if one is closer to the pole than the other; if so exclude the far one */
@@ -454,14 +457,17 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 	for (pol = 0; pol < n; pol++) if (abs (save[pol].kind) == 2) save[pol].n--;	/* Chop off the extra duplicate point for split periodic contours */
 
-	/* Must make sure that for split periodic contour that if one fails to be innermost them both should fail */
+	/* Must make sure that for split periodic contour that if one fails to be innermost then both should fail */
 	
 	for (pol = 0; pol < n; pol++) {
-		if (abs (save[pol].kind) != 2) continue;
+		if (abs (save[pol].kind) != 2) continue;	/* Not a split polygon */
 		for (pol2 = 0, found = false; !found && pol2 < n; pol2++) {
 			if (pol == pol2) continue;
-			if (abs (save[pol2].kind) != 2) continue;
-			match = ((save[pol].y[0] == save[pol2].y[0] && save[pol].y[save[pol].n-1] == save[pol2].y[save[pol2].n-1]) || (save[pol].y[0] == save[pol2].y[save[pol2].n-1] && save[pol].y[save[pol].n-1] == save[pol2].y[0]));
+			if (abs (save[pol2].kind) != 2) continue;	/* Not a split polygon */
+			/* The following uses 10^-7 as limit, hence the 0.1 */
+			da = save[pol].y[0] - save[pol2].y[0]; db = save[pol].y[save[pol].n-1] - save[pol2].y[save[pol2].n-1];
+			dc = save[pol].y[0] - save[pol2].y[save[pol2].n-1];	dd = save[pol].y[save[pol].n-1] - save[pol2].y[0];
+			match = ((GMT_IS_ZERO (0.1*da) && GMT_IS_ZERO (0.1*db)) || (GMT_IS_ZERO (0.1*dc) && GMT_IS_ZERO (0.1*dd)));
 			if (!match) continue;
 			if ((save[pol].do_it + save[pol2].do_it) == 1) save[pol].do_it = save[pol2].do_it = false;
 			found = true;
