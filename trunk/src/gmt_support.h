@@ -58,21 +58,18 @@ struct MATH_MACRO {
 #endif
 
 #ifdef DEBUG
-#define MEM_TXT_LEN	128U
 
 struct MEMORY_ITEM {
 	size_t size; /* Size of memory allocated */
 	void *ptr;   /* Memory pointer */
 	char *name;  /* Source filename and line */
 	struct MEMORY_ITEM *l, *r;
-#if 0	/* The old style version for the slow linear search */
-	char name[MEM_TXT_LEN]; /* Source filename and line */
-#endif
 };
 
 struct MEMORY_TRACKER {
 	bool active;	/* Normally true but can be changed to focus on just some allocations */
 	bool search;	/* Normally true but can be changed to skip searching when we know we add a new item */
+	bool do_log;	/* true if we wish to write detailed alloc/free log */
 	uint64_t n_ptr;		/* Number of unique pointers to allocated memory */
 	uint64_t n_allocated;	/* Number of items allocated by GMT_memory */
 	uint64_t n_reallocated;	/* Number of items reallocated by GMT_memory */
@@ -82,12 +79,7 @@ struct MEMORY_TRACKER {
 	size_t largest;		/* Highest memory allocation to a single variable */
 	size_t n_alloc;		/* Allocated size of memory pointer array */
 	struct MEMORY_ITEM *list_head, *list_tail;
-#if 0	/* The old style version for the slow linear search */
-	struct MEMORY_ITEM *item;	/* Memory item array */
-#endif
-#ifdef DEBUG_FULL
-	FILE *fp;	/* For logging if DEBUG_FULL is set */
-#endif
+	FILE *fp;	/* For logging if GMT_TRACK_MEMORY_USAGE is active */
 };
 
 #endif
