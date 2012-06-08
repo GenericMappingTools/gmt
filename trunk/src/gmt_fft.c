@@ -40,7 +40,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-static char *GMT_fft_algo[N_GMT_FFT] = {"OS/X Accelerate Framework", "Fastest Fourier Transform in the West", "Sun Performance Library", \
+static char *GMT_fft_algo[N_GMT_FFT] = {"Auto-Selected", "OS/X Accelerate Framework", "Fastest Fourier Transform in the West", "Sun Performance Library", \
 	"Paul N. Swarztrauber's FFT pack", "Fortran-to-C translation of FOURT by Norman Brenner, MIT"};
 
 /* Default GMT FFT which we always compile in */

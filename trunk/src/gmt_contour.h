@@ -37,8 +37,8 @@ struct GMT_XOVER {		/* Structure with info on all track cross-over */
 };
 
 struct GMT_XSEGMENT {
-	uint64_t start;	/* y-array index for minimum y endpoint */
-	uint64_t stop;	/* y-array index for maximum y endpoint */
+	uint64_t start;		/* y-array index for minimum y endpoint */
+	uint64_t stop;		/* y-array index for maximum y endpoint */
 };
 
 struct GMT_LABEL {	/* Contains information on contour/lineation labels */

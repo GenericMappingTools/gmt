@@ -82,7 +82,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate;		/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;			/* Level of verbosity 0-4 [1] */
-	int fft;				/* -1 for auto, or 0-4 for specific FFT algorithm */
+	unsigned int fft;				/* 0 for auto, or 1-5 for specific FFT algorithm */
 	bool history;			/* true to pass information via gmt.conf files */
 	/* IO group */
 	unsigned int io_n_header_items;	/* number of header records [0] */

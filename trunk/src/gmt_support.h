@@ -63,10 +63,9 @@ struct MATH_MACRO {
 struct MEMORY_ITEM {
 	size_t size; /* Size of memory allocated */
 	void *ptr;   /* Memory pointer */
-#ifdef NEW_DEBUG
 	char *name;  /* Source filename and line */
 	struct MEMORY_ITEM *l, *r;
-#else
+#if 0	/* The old style version for the slow linear search */
 	char name[MEM_TXT_LEN]; /* Source filename and line */
 #endif
 };
@@ -82,10 +81,12 @@ struct MEMORY_TRACKER {
 	size_t maximum;		/* Highest memory count during execution */
 	size_t largest;		/* Highest memory allocation to a single variable */
 	size_t n_alloc;		/* Allocated size of memory pointer array */
-#ifdef NEW_DEBUG
 	struct MEMORY_ITEM *list_head, *list_tail;
-#else
+#if 0	/* The old style version for the slow linear search */
 	struct MEMORY_ITEM *item;	/* Memory item array */
+#endif
+#ifdef DEBUG_FULL
+	FILE *fp;	/* For logging if DEBUG_FULL is set */
 #endif
 };
 

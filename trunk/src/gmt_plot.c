@@ -93,7 +93,7 @@ int gmt_load_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char ite
 
 size_t GMT_n_annotations[4] = {0, 0, 0, 0};
 size_t GMT_alloc_annotations[4] = {0, 0, 0, 0};
-double *GMT_x_annotation[4], *GMT_y_annotation[4];
+double *GMT_x_annotation[4] = {NULL, NULL, NULL, NULL}, *GMT_y_annotation[4] = {NULL, NULL, NULL, NULL};
 
 /* Get bitmapped 600 dpi GMT glyph for timestamp.  The glyph is a 90 x 220 pixel 1-bit image
    and it is here represented as ceil (220 / 8) * 90 = 2520 bytes */
@@ -2093,8 +2093,11 @@ void GMT_map_basemap (struct GMT_CTRL *C)
 	PSL_comment (P, "End of basemap\n");
 
 	for (i = 0; i < 4; i++) {
-		GMT_free (C, GMT_x_annotation[i]);
-		GMT_free (C, GMT_y_annotation[i]);
+		if (GMT_n_annotations[i]) {
+			GMT_free (C, GMT_x_annotation[i]);
+			GMT_free (C, GMT_y_annotation[i]);
+			GMT_n_annotations[i] = 0;
+		}
 	}
 
 	PSL_setcolor (P, C->current.setting.map_default_pen.rgb, PSL_IS_STROKE);

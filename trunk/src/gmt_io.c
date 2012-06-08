@@ -4368,23 +4368,24 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 	T->header  = GMT_memory (C, NULL, n_head_alloc, char *);
 
 	while (status >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
-		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
-			T->header[T->n_headers] = strdup (C->current.io.current_record);
-			T->n_headers++;
-			if (T->n_headers == n_head_alloc) {
-				n_head_alloc <<= 1;
-				T->header = GMT_memory (C, T->header, n_head_alloc, char *);
+		if (header) {
+			while ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C)) { /* Process headers */
+				T->header[T->n_headers] = strdup (C->current.io.current_record);
+				T->n_headers++;
+				if (T->n_headers == n_head_alloc) {
+					n_head_alloc <<= 1;
+					T->header = GMT_memory (C, T->header, n_head_alloc, char *);
+				}
+				in = GMT_ascii_textinput (C, fp, &ncol, &status);
+				n_read++;
 			}
-			in = GMT_ascii_textinput (C, fp, &ncol, &status);
-			n_read++;
-		}
-		header = false;	/* Done processing header block; other comments are GIS/OGR encoded comments */
-
-		if (T->n_headers)
-			T->header = GMT_memory (C, T->header, T->n_headers, char *);
-		else {	/* No header records found */
-			GMT_free (C, T->header);
-			T->header = NULL;
+			if (T->n_headers)
+				T->header = GMT_memory (C, T->header, T->n_headers, char *);
+			else {	/* No header records found */
+				GMT_free (C, T->header);
+				T->header = NULL;
+			}
+			header = false;	/* Done processing header block; other comments are GIS/OGR encoded comments */
 		}
 
 		no_segments = !GMT_REC_IS_SEG_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
@@ -5721,24 +5722,26 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 					 * expensive we will set n_row_alloc to the size of the previous segment */
 
 	while (status >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
-		while (header && ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C))) { /* Process headers */
-			T->header[T->n_headers] = strdup (C->current.io.current_record);
-			T->n_headers++;
-			if (T->n_headers == n_head_alloc) {
-				n_head_alloc <<= 1;
-				T->header = GMT_memory (C, T->header, n_head_alloc, char *);
+		if (header) {
+			while ((C->current.io.io_header[GMT_IN] && n_read <= C->current.io.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C)) { /* Process headers */
+				T->header[T->n_headers] = strdup (C->current.io.current_record);
+				T->n_headers++;
+				if (T->n_headers == n_head_alloc) {
+					n_head_alloc <<= 1;
+					T->header = GMT_memory (C, T->header, n_head_alloc, char *);
+				}
+				in = C->current.io.input (C, fp, &n_expected_fields, &status);
+				n_read++;
 			}
-			in = C->current.io.input (C, fp, &n_expected_fields, &status);
-			n_read++;
+			if (T->n_headers)
+				T->header = GMT_memory (C, T->header, T->n_headers, char *);
+			else {	/* No header records found */
+				GMT_free (C, T->header);
+				T->header = NULL;
+			}
+			header = false;	/* Done processing header block; other comments are GIS/OGR encoded comments */
 		}
-		header = false;	/* Done processing header block; other comments are GIS/OGR encoded comments */
 
-		if (T->n_headers)
-			T->header = GMT_memory (C, T->header, T->n_headers, char *);
-		else {	/* No header records found */
-			GMT_free (C, T->header);
-			T->header = NULL;
-		}
 		if (GMT_REC_IS_EOF (C)) continue;	/* Got EOF after headers */
 
 		no_segments = !GMT_REC_IS_SEG_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
