@@ -119,7 +119,6 @@ struct GMT_COMMON {
 	} c;
 	struct f {	/* -f[i|o]<col>|<colrange>[t|T|g],.. */
 		bool active[2];	/* For GMT_IN|OUT */
-//		char col_type[2][GMT_MAX_COLUMNS];
 	} f;
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		bool active;

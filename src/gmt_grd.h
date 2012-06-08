@@ -61,7 +61,7 @@ struct GRD_HEADER {
 	unsigned int complex_mode;	/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
 	unsigned int mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
 	uint64_t nm;		/* Number of data items in this grid (nx * ny) [padding is excluded] */
-	uint64_t size;		/* Actual number of items required to hold this grid (= mx * my) */
+	uint64_t size;		/* Actual number of items (not bytes) required to hold this grid (= mx * my) */
 	unsigned int n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
 	unsigned int pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
 	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */

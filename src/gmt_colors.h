@@ -88,20 +88,20 @@ struct GMT_BFN_COLOR {		/* For back-, fore-, and nan-colors */
 };
 
 struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
-	unsigned int n_headers;	/* Number of CPT file header records (0 if no header) */
+	unsigned int n_headers;		/* Number of CPT file header records (0 if no header) */
 	struct GMT_LUT *range;		/* CPT lookup table read by GMT_read_cpt */
 	struct GMT_BFN_COLOR patch[3];	/* Structures with back/fore/nan colors */
-	unsigned int n_colors;	/* Number of colors in CPT lookup table */
-	unsigned int cpt_flags;	/* Flags controling use of BFN colors */
+	unsigned int n_colors;		/* Number of colors in CPT lookup table */
+	unsigned int cpt_flags;		/* Flags controling use of BFN colors */
 	unsigned int alloc_mode;	/* Allocation info [0] */
 	unsigned int model;		/* RGB, HSV, CMYK */
-	bool is_gray;		/* true if only grayshades are needed */
+	bool is_gray;			/* true if only grayshades are needed */
 	bool is_bw;			/* true if only black and white are needed */
 	bool is_continuous;		/* true if continuous color tables have been given */
 	bool has_pattern;		/* true if cpt file contains any patterns */
 	bool skip;			/* true if current z-slice is to be skipped */
 	bool categorical;		/* true if CPT applies to categorical data */
-	char **header;			/* Array with all CPT ile header records, if any) */		/* Content not counted by sizeof (struct) */
+	char **header;			/* Array with all CPT file header records, if any) */		/* Content not counted by sizeof (struct) */
 };
 
 #endif /* _GMT_COLORS_H */

@@ -135,7 +135,7 @@ enum GMT_swap_direction {
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
 /* Various options for FFT calculations [Default is 0] */
-enum GMT_enum_fft {GMT_FFT_AUTO=-1,	/* Automatically select best FFT algorithm */
+enum GMT_enum_fft {GMT_FFT_AUTO=0,	/* Automatically select best FFT algorithm */
 	GMT_FFT_ACCELERATE,		/* Select Accelerate Framework FFT [OS X only] */
 	GMT_FFT_W,			/* Select FFT in the West */
 	GMT_FFT_PERFLIB,		/* Select Sun's Performance library FFT [Solaris only] */
