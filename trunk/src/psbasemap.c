@@ -67,7 +67,6 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *C, int level)
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "\t[%s]\n", GMT_SCALE);
 	GMT_message (GMT, "\t[-O] [-P] [%s]\n", GMT_TROSE);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
