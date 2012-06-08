@@ -613,7 +613,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
-	if (need_coast_base) GMT_report (GMT, GMT_MSG_NORMAL, "GSHHS version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (need_coast_base) GMT_report (GMT, GMT_MSG_NORMAL, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 	if (Ctrl->I.active && GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution river data base not installed\n", shore_resolution[base]);
@@ -639,7 +639,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		sprintf (header, "# %s extracted from the %s resolution GSHHS version %s database\n", kind[id], shore_resolution[base], c.version);
+		sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], c.version);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 		sprintf (header, "# %s\n# %s\n", c.title, c.source);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
