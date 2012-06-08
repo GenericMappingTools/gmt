@@ -168,13 +168,14 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	P->list_head->r = P->list_tail;
 	P->list_head->l = NULL;
 #ifdef DEBUG_FULL
+	*M = P;
+	if (!P->active) return;	/* Not activated so no log file */
 	if ((P->fp = fopen ("MEMORY_TRACKER.log", "w")) == NULL) {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_memtrack_init: Could not open log file MEMORY_TRACKER.log\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	fprintf (P->fp, "# %s", ctime (&now));
 #endif
-	*M = P;
 }
 
 struct MEMORY_ITEM * gmt_treeinsert (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr)
