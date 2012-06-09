@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -2144,15 +2144,15 @@ void GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P)
 	if (!P) return;
 	/* Frees all memory used by this palette but does not free the palette itself */
 	for (i = 0; i < P->n_colors; i++) {
-		GMT_free (C, P->range[i].label);
-		GMT_free (C, P->range[i].fill);
+		if (P->range[i].label) GMT_free (C, P->range[i].label);
+		if (P->range[i].fill)  GMT_free (C, P->range[i].fill);
 	}
-	for (i = 0; i < 3; i++) GMT_free (C, P->patch[i].fill);
+	for (i = 0; i < 3; i++) if (P->patch[i].fill) GMT_free (C, P->patch[i].fill);
 	GMT_free (C, P->range);
 	/* Use free() to free the headers since they were allocated with strdup */
 	for (i = 0; i < P->n_headers; i++) if (P->header[i]) free (P->header[i]);
 	P->n_headers = P->n_colors = 0;
-	GMT_free (C, P->header);
+	if (P->header) GMT_free (C, P->header);
 }
 
 void gmt_copy_palette_hdrs (struct GMT_CTRL *C, struct GMT_PALETTE *P_to, struct GMT_PALETTE *P_from)
@@ -4170,7 +4170,7 @@ void GMT_contlabel_free (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		for (j = 0; j < L->n_labels; j++) GMT_free (C, L->L[j].label);
-		GMT_free (C, L->L);
+		if (L->L) GMT_free (C, L->L);
 		GMT_free (C, L->x);
 		GMT_free (C, L->y);
 		GMT_free (C, L->name);
@@ -9200,13 +9200,13 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 		while (s) {
 			current = s;
 			s = s->next;
-			GMT_free (C, current->fill);
-			GMT_free (C, current->pen);
-			GMT_free (C, current->string);
+			if (current->fill) GMT_free (C, current->fill);
+			if (current->pen) GMT_free (C, current->pen);
+			if (current->string) GMT_free (C, current->string);
 			GMT_free (C, current);
 		}
-		GMT_free (C, C->init.custom_symbol[i]->PS_macro);
-		GMT_free (C, C->init.custom_symbol[i]->type);
+		if (C->init.custom_symbol[i]->PS_macro) GMT_free (C, C->init.custom_symbol[i]->PS_macro);
+		if (C->init.custom_symbol[i]->type) GMT_free (C, C->init.custom_symbol[i]->type);
 		GMT_free (C, C->init.custom_symbol[i]);
 	}
 	GMT_free (C, C->init.custom_symbol);

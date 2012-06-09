@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -965,8 +965,8 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	/* Free bitimage arrays. GMT_free will not complain if they have not been used (NULL) */
-	GMT_free (GMT, bitimage_8);
-	GMT_free (GMT, bitimage_24);
+	if (bitimage_8) GMT_free (GMT, bitimage_8);
+	if (bitimage_24) GMT_free (GMT, bitimage_24);
 
 	if (need_to_project && n_grids) GMT_free_grid (GMT, &Grid_proj[0], true);
 

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -101,6 +101,7 @@ struct SAVE {
 	double *xp, *yp;
 	double cval;
 	double xlabel, ylabel;
+	double y_min, y_max;
 	int n, np;
 	struct GMT_PEN pen;
 	int do_it, high, kind;
@@ -432,15 +433,24 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 
 	/* The x/y coordinates in SAVE in original cooordinates */
 
+	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
+		if (abs (save[pol].kind) != 3) continue;	/* Skip all but polar caps */
+		save[pol].y_min = save[pol].y_max = save[pol].y[0];
+		for (j = 1; j < save[pol].n; j++) {
+			if (save[pol].y[j] < save[pol].y_min) save[pol].y_min = save[pol].y[j];
+			if (save[pol].y[j] > save[pol].y_max) save[pol].y_max = save[pol].y[j];
+		}
+	}
+	
 	for (pol = 0; pol < n; pol++) {	/* Mark polygons that have other polygons inside them */
 		np = save[pol].n;	/* Length of this polygon */
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			if (pol == pol2) continue;		/* Cannot be inside itself */
 			if (!save[pol2].do_it) continue;	/* No point checking contours that have already failed */
-			//if (abs (save[pol].kind) == 3) {	/* These are not closed (in lon/lat) */
-			//	save[pol].do_it = false;		/* This may be improved in the future */
-			//	continue;
-			//}
+			///if (abs (save[pol].kind) == 3) {	/* These are not closed (in lon/lat) */
+			///	save[pol].do_it = false;		/* This may be improved in the future */
+			///	continue;
+			///}
 			if (abs (save[pol].kind) != 3) {	/* Not a polar cap so we can call GMT_non_zero_winding */
 				col = save[pol2].n / 2;	/* Pick the half-point for testing */
 				inside = GMT_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
@@ -450,7 +460,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 				if (abs (save[pol].kind) == 3) {	/* Both are caps */
 					if (save[pol].kind != save[pol2].kind) continue;	/* One is S and one is N cap as far as we can tell, so we skip */
 					/* Crude test to determine if one is closer to the pole than the other; if so exclude the far one */
-					if ((save[pol2].kind == 3 && save[pol2].y[0] > save[pol].y[0]) || (save[pol2].kind == -3 && save[pol2].y[0] < save[pol].y[0])) save[pol].do_it = false;
+					if ((save[pol2].kind == 3 && save[pol2].y_min > save[pol].y_min) || (save[pol2].kind == -3 && save[pol2].y_min < save[pol].y_min)) save[pol].do_it = false;
 				}
 			}
 		}

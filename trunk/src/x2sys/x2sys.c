@@ -1216,6 +1216,11 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SY
 		GMT_report (C, GMT_MSG_FATAL, "Read error in header record\n");
 		exit (EXIT_FAILURE);
 	}
+	GMT_chop (line);	/* Remove trailing CR or LF */
+	if (strcmp (&line[2], S->TAG)) {	/* Mismatch between database tag and present tag */
+		GMT_report (C, GMT_MSG_FATAL, "track data file %s lists tag as %s but active tag is %s\n",  track_path, &line[2], S->TAG);
+		exit (EXIT_FAILURE);
+	}
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %d %d", name, &id, &flag);
