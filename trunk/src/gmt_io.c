@@ -213,6 +213,15 @@ void GMT_skip_xy_duplicates (struct GMT_CTRL *C, bool mode)
 	C->current.io.skip_duplicates = mode;
 }
 
+bool GMT_is_ascii_record (struct GMT_CTRL *C)
+{	/* Returns true if the input is potentially an ascii record, possibly with text, and
+	 * there are no options in effect to select specific columns on input or output. */
+	if (C->common.b.active[GMT_IN] || C->common.b.active[GMT_OUT]) return (false);	/* Binary, so clearly false */
+	if (C->current.io.ndim > 0) return (false);					/* netCDF, so clearly false */
+	if (C->common.i.active || C->common.o.active) return (false);			/* Selected columns via -i and/or -o, so false */
+	return (true);	/* Might be able to treat record as an ascii record */
+}
+
 unsigned int gmt_n_cols_needed_for_gaps (struct GMT_CTRL *C, unsigned int n) {
 	unsigned int n_use = MAX (n, C->common.g.n_col);
 	/* Return the actual items needed (which may be more than n if gap testing demands it) and update previous record */

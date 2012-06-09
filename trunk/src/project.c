@@ -578,7 +578,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 	out = GMT_memory (GMT, NULL, n_items, double);
 
 	if (P->first && (error = GMT_set_cols (GMT, GMT_OUT, n_items))) return (error);
-	pure_ascii = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT]);
+	pure_ascii = GMT_is_ascii_record (GMT);
 
 	/* Now output  */
 

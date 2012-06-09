@@ -154,7 +154,7 @@ int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, s
 
 #define Return(code) {Free_gmtmercmap_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); exit (code);}
 
-#define ETOPO1M_LIMIT 100
+#define ETOPO1M_LIMIT 100	/* Cut-offs in degrees squared */
 #define ETOPO2M_LIMIT 10000
 
 int main (int argc, char **argv)
@@ -163,8 +163,8 @@ int main (int argc, char **argv)
 	
 	double area, z, z_min, z_max;
 	
-	char file[GMT_TEXT_LEN256], z_file[GMTAPI_STRLEN], i_file[GMTAPI_STRLEN], c_file[GMTAPI_STRLEN], t_file[GMTAPI_STRLEN];
-	char cmd[GMT_BUFSIZ];
+	char file[GMT_TEXT_LEN256], z_file[GMTAPI_STRLEN], i_file[GMTAPI_STRLEN];
+	char cmd[GMT_BUFSIZ], c_file[GMTAPI_STRLEN], t_file[GMTAPI_STRLEN];
 
 	struct GMT_GRID *G = NULL, *I = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -177,19 +177,19 @@ int main (int argc, char **argv)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	/* Initializing new GMT session */
-	if ((API = GMT_Create_Session ("TEST", k_mode_psl)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("gmtmercmap", k_mode_psl)) == NULL) exit (EXIT_FAILURE);
 	options = GMT_Prep_Options (API, argc-1, argv+1);	if (API->error) return (API->error);	/* Set or get option list */
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
-		exit ((int)GMT_gmtmercmap_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+		exit (GMT_gmtmercmap_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) 
-		exit ((int)GMT_gmtmercmap_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+		exit (GMT_gmtmercmap_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "gmtmercmap", &GMT_cpy);		/* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "BKOPUXxYycnpt>", options)) Return ((int)API->error);
+	if (GMT_Parse_Common (API, "-VR", "BKOPUXxYycnpt>", options)) Return (API->error);
 	Ctrl = New_gmtmercmap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtmercmap_parse (API, Ctrl, options))) Return ((int)error);
+	if ((error = GMT_gmtmercmap_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtmercmap main code ----------------------------*/
 

@@ -119,6 +119,7 @@ EXTERN_MSC void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options);
 /* gmt_io.c: */
 
 EXTERN_MSC p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, int direction, enum GMT_swap_direction swap, char type);
+EXTERN_MSC bool GMT_is_ascii_record (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_set_segmentheader (struct GMT_CTRL *C, int direction, bool true_false);
 EXTERN_MSC void GMT_io_binary_header (struct GMT_CTRL *C, FILE *fp, unsigned int dir);
 EXTERN_MSC void * GMT_z_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *status);
