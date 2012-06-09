@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -6060,8 +6060,8 @@ void GMT_free_dataset_ptr (struct GMT_CTRL *C, struct GMT_DATASET *data)
 	for (tbl = 0; tbl < data->n_tables; tbl++) {
 		GMT_free_table (C, data->table[tbl]);
 	}
-	GMT_free (C, data->min);
-	GMT_free (C, data->max);
+	if (data->min) GMT_free (C, data->min);
+	if (data->max) GMT_free (C, data->max);
 	GMT_free (C, data->table);
 	for (k = 0; k < 2; k++) if (data->file[k]) free (data->file[k]);
 }

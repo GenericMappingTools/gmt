@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1056,7 +1056,7 @@ void GMT_shore_cleanup (struct GMT_CTRL *C, struct GMT_SHORE *c)
 	GMT_free (C, c->bin_firstseg);
 	GMT_free (C, c->GSHHS_area);
 	GMT_free (C, c->GSHHS_area_fraction);
-	GMT_free (C, c->GSHHS_node);
+	if (c->min_area > 0.0) GMT_free (C, c->GSHHS_node);
 	GMT_free (C, c->GSHHS_parent);
 	nc_close (c->cdfid);
 }

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1617,7 +1617,7 @@ void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, bool free_grid)
 void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	GMT_free_grid_ptr (C, *G, free_grid);
-	GMT_free (C, *G);
+	if (*G) GMT_free (C, *G);
 }
 
 int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **Out)

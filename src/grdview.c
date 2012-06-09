@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1650,6 +1650,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
 		GMT_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
+	if (get_contours) GMT_free_grid (GMT, &Z, true);	/* Allocated a 2nd time via Z_orig */
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
 

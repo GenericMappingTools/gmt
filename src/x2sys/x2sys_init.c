@@ -434,6 +434,8 @@ int GMT_x2sys_init (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_FATAL, "Could not create %s\n", track_file);
 		Return (EXIT_FAILURE);
 	}
+	fprintf (fp,"# %s\n", Ctrl->In.TAG);	/* Write header record to empty track file */
+	
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, track_file, fp), track_file);
 
 	/* Initialize the system's index data base  */

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -3109,7 +3109,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("IMNRVbfnr", opt->option)) continue;
+		if (strchr ("IMNRVbfnr" GMT_OPT("F"), opt->option)) continue;
 		/* if (opt->option == GMTAPI_OPT_OUTFILE) continue; */	/* We do output after the loop */
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
