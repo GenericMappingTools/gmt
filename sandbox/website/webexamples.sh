@@ -18,7 +18,7 @@
 #	gmt/examples/gmt_example_??.{ps,png} (copy from fig directory)
 #-----------------------------------------------------------------------------
 
-n_examples=32
+n_examples=33
 
 if [ $# -eq 1 ]; then
 	gush=0
@@ -150,6 +150,9 @@ surfaces.</A></LI>
 
 <LI>
 <A HREF="examples/ex32/gmt_example_32.html">Draping an image over a topography grid.</A></LI>
+
+<LI>
+<A HREF="examples/ex33/gmt_example_33.html">Sampling a grid along collinear lines and stacking them.</A></LI>
 </OL>
 </BODY>
 </HTML>
