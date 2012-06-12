@@ -66,7 +66,7 @@ int spotter_comp_stage (const void *p_1, const void *p_2)
 	/* Returns -1 if rotation pointed to by p_1 is older that point_2,
 	   +1 if the reverse it true, and 0 if they are equal
 	*/
-	struct EULER *point_1 = (struct EULER *)p_1, *point_2 = (struct EULER *)p_2;
+	const struct EULER *point_1 = p_1, *point_2 = p_2;
 
 	if (point_1->t_start > point_2->t_start) return (-1);
 	if (point_1->t_start < point_2->t_start) return (+1);
@@ -78,7 +78,7 @@ int spotter_comp_total (const void *p_1, const void *p_2)
 	/* Returns -1 if rotation pointed to by p_1 is older that point_2,
 	   +1 if the reverse it true, and 0 if they are equal
 	*/
-	struct EULER *point_1 = (struct EULER *)p_1, *point_2 = (struct EULER *)p_2;
+	const struct EULER *point_1 = p_1, *point_2 = p_2;
 
 	if (point_1->t_start < point_2->t_start) return (-1);
 	if (point_1->t_start > point_2->t_start) return (1);
