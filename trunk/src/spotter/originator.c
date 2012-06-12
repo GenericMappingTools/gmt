@@ -192,10 +192,8 @@ void Free_originator_Ctrl (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *C) {	/*
 
 int comp_hs (const void *p1, const void *p2)
 {
-	struct HOTSPOT_ORIGINATOR *a, *b;
+	const struct HOTSPOT_ORIGINATOR *a = p1, *b = p2;
 
-	a = (struct HOTSPOT_ORIGINATOR *) p1;
-	b = (struct HOTSPOT_ORIGINATOR *) p2;
 	if (a->np_dist < b->np_dist) return (-1);
 	if (a->np_dist > b->np_dist) return (+1);
 	return (0);
@@ -399,7 +397,9 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	hot = GMT_memory (GMT, NULL, n_hotspots, struct HOTSPOT_ORIGINATOR);
 
-	sprintf (fmt1, "%s%s%s%s%s%s%s%s%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+	sprintf (fmt1, "%s%s%s%s%s%s%s%s%%s", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, 
+		GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator,
+		GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator);
 	if (Ctrl->Z.active)
 		sprintf (fmt2, "%s%%d%s%%d%s%s%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 	else

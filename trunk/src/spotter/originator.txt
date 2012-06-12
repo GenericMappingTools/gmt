@@ -39,8 +39,9 @@ Set the maximum age to extend the oldest stage back in time [no extension].
 .TP
 OPT(Q)IT(r/t)
 .TP
-INput files only has (IT(x),IT(y),IT(z)); specify constant values for IT(r),IT(t) that
+Input files only has (IT(x),IT(y),IT(z)); specify constant values for IT(r),IT(t) that
 will be implied for each record.
+.TP
 OPT(S)[IT(n_hs)]
 Set the number of closest hotspots to report [Default is 1].
 .TP
