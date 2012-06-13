@@ -192,8 +192,7 @@ void cart_to_geo (struct GMT_CTRL *C, uint64_t n, double *x, double *y, double *
 /* Must be int due to qsort requirement */
 int compare_arc (const void *p1, const void *p2)
 {
-	struct STRPACK_ARC *a = (struct STRPACK_ARC *)p1;
-	struct STRPACK_ARC *b = (struct STRPACK_ARC *)p2;
+	const struct STRPACK_ARC *a = p1, *b = p2;
 	if (a->begin < b->begin) return (-1);
 	if (a->begin > b->begin) return (1);
 	if (a->end < b->end) return (-1);

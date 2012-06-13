@@ -1554,9 +1554,7 @@ int GMT_median (struct GMT_CTRL *C, double *x, uint64_t n, double xmin, double x
 
 int compare_observation (const void *a, const void *b)
 {
-	struct OBSERVATION *obs_1, *obs_2;
-	obs_1 = (struct OBSERVATION *)a;
-	obs_2 = (struct OBSERVATION *)b;
+	const struct OBSERVATION *obs_1 = a, *obs_2 = b;
 
 	/* Sorts observations into ascending order based on obs->value */
 	if (obs_1->value < obs_2->value)

@@ -277,9 +277,7 @@ void length_size (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, doub
 }
 
 int comp_pairs (const void *a, const void *b) {
-	struct PAIR *xa, *xb;
-	xa = (struct PAIR *)a;
-	xb = (struct PAIR *)b;
+	const struct PAIR *xa = a, *xb = b;
 	/* Sort on node value */
 	if (xa->node < xb->node) return (-1);
 	if (xa->node > xb->node) return (+1);

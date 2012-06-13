@@ -335,10 +335,8 @@ int compare_points (const void *point_1v, const void *point_2v)
 		*/
 	uint64_t block_i, block_j, index_1, index_2;
 	double x0, y0, dist_1, dist_2;
-	struct SURFACE_DATA *point_1, *point_2;
+	const struct SURFACE_DATA *point_1 = point_1v, *point_2 = point_2v;
 	
-	point_1 = (struct SURFACE_DATA *)point_1v;
-	point_2 = (struct SURFACE_DATA *)point_2v;
 	index_1 = point_1->index;
 	index_2 = point_2->index;
 	if (index_1 < index_2) return (-1);

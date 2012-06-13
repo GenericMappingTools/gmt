@@ -680,7 +680,7 @@ struct BLK_DATA {
 /* Sort on index, then the specified item a[0,1,2] = x, y, z */
 int BLK_compare_sub (const void *point_1, const void *point_2, int item)
 {
-	struct BLK_DATA *p1 = (struct BLK_DATA *)point_1, *p2 = (struct BLK_DATA *)point_2;
+	const struct BLK_DATA *p1 = point_1, *p2 = point_2;
 
 	/* First sort on bin index i */
 	if (p1->i < p2->i) return (-1);
@@ -716,7 +716,7 @@ int gmt_comp_double_asc (const void *p_1, const void *p_2)
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
 	bool bad_1, bad_2;
-	double *point_1 = (double *)p_1, *point_2 = (double *)p_2;
+	const double *point_1 = p_1, *point_2 = p_2;
 
 	bad_1 = GMT_is_dnan ((*point_1));
 	bad_2 = GMT_is_dnan ((*point_2));
@@ -736,7 +736,7 @@ int gmt_comp_float_asc (const void *p_1, const void *p_2)
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
 	bool bad_1, bad_2;
-	float *point_1 = (float *)p_1, *point_2 = (float *)p_2;
+	const float *point_1 = p_1, *point_2 = p_2;
 
 	bad_1 = GMT_is_fnan ((*point_1));
 	bad_2 = GMT_is_fnan ((*point_2));
@@ -755,7 +755,7 @@ int gmt_comp_ulong_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	uint64_t *point_1 = (uint64_t *)p_1, *point_2 = (uint64_t *)p_2;
+	const uint64_t *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -767,7 +767,7 @@ int gmt_comp_long_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	int64_t *point_1 = (int64_t *)p_1, *point_2 = (int64_t *)p_2;
+	const int64_t *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -779,7 +779,7 @@ int gmt_comp_uint_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	unsigned int *point_1 = (unsigned int *)p_1, *point_2 = (unsigned int *)p_2;
+	const unsigned int *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -791,7 +791,7 @@ int gmt_comp_int_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	int *point_1 = (int *)p_1, *point_2 = (int *)p_2;
+	const int *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -803,7 +803,7 @@ int gmt_comp_ushort_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	unsigned short int *point_1 = (unsigned short int *)p_1, *point_2 = (unsigned short int *)p_2;
+	const unsigned short int *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -815,7 +815,7 @@ int gmt_comp_short_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	short int *point_1 = (short int *)p_1, *point_2 = (short int *)p_2;
+	const short int *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -827,7 +827,7 @@ int gmt_comp_uchar_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	unsigned char *point_1 = (unsigned char *)p_1, *point_2 = (unsigned char *)p_2;
+	const unsigned char *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -839,7 +839,7 @@ int gmt_comp_char_asc (const void *p_1, const void *p_2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	char *point_1 = (char *)p_1, *point_2 = (char *)p_2;
+	const char *point_1 = p_1, *point_2 = p_2;
 
 	if ((*point_1) < (*point_2)) return (-1);
 	if ((*point_1) > (*point_2)) return (+1);
@@ -4058,7 +4058,7 @@ void gmt_contlabel_angle (double x[], double y[], uint64_t start, uint64_t stop,
 
 int gmt_sort_label_struct (const void *p_1, const void *p_2)
 {
-	struct GMT_LABEL **point_1 = (struct GMT_LABEL **)p_1, **point_2 = (struct GMT_LABEL **)p_2;
+	const struct GMT_LABEL **point_1 = p_1, **point_2 = p_2;
 
 	if ((*point_1)->dist < (*point_2)->dist) return -1;
 	if ((*point_1)->dist > (*point_2)->dist) return +1;
@@ -7776,7 +7776,7 @@ unsigned int GMT_get_arc (struct GMT_CTRL *C, double x0, double y0, double r, do
 /* GMT_ysort must be an int since it is passed to qsort! */
 int GMT_ysort (const void *p1, const void *p2, void *arg)
 {
-	struct GMT_XSEGMENT *a = (struct GMT_XSEGMENT *)p1, *b = (struct GMT_XSEGMENT *)p2;
+	const struct GMT_XSEGMENT *a = p1, *b = p2;
 	double *x2sys_y = arg;
 
 	if (x2sys_y[a->start] < x2sys_y[b->start]) return -1;
