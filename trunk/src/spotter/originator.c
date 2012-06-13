@@ -399,10 +399,23 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 		hotspot[spot].h = &orig_hotspot[spot];	/* Point to the original hotspot structures */
 		hotspot[spot].np_dist = 1.0e100;
 		if (Ctrl->F.mode) {	/* See if there is a drift file for this hotspot */
-			char file[GMT_TEXT_LEN64];
+			char path[GMT_BUFSIZ], file[GMT_TEXT_LEN64];
 			uint64_t row;
 			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
-			if (GMT_access (GMT, file, R_OK)) continue;	/* file do not exist */
+			strcpy (path, file);
+			if (GMT_access (GMT, path, R_OK)) {	/* Not found in current dir or GMT_DATADIR; check if -F gave an explicit directory */
+				if (strchr (Ctrl->F.file, '/')) {	/* Filename has leading path so we will use that path */
+					strcpy (path, Ctrl->F.file);
+					k = strlen (path);
+					while (k && path[k] != '/') k--;	/* Look for last slash  */
+					k++; path[k] = 0;	/* Truncate anything after last slash */
+					strcat (path, file);	/* Prepend path to drift file name */
+					if (GMT_access (GMT, path, R_OK)) continue;	/* file do not exist there either */
+				}
+				else	/* No directory given, so nothing to do */
+					continue;
+			}
+			/* Here we successfully found a drift file, somewhere */
 			if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 				Return (API->error);
 			}

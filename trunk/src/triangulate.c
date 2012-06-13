@@ -73,10 +73,8 @@ struct TRIANGULATE_EDGE {
 
 int compare_edge (const void *p1, const void *p2)
 {
-	struct TRIANGULATE_EDGE *a, *b;
+	const struct TRIANGULATE_EDGE *a = p1, *b = p2;
 
-	a = (struct TRIANGULATE_EDGE *)p1;
-	b = (struct TRIANGULATE_EDGE *)p2;
 	if (a->begin < b->begin) return (-1);
 	if (a->begin > b->begin) return (+1);
 	if (a->end < b->end) return (-1);

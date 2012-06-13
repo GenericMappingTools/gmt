@@ -154,7 +154,7 @@ unsigned int get_data_flag (double *data[], uint64_t j, struct X2SYS_INFO *s)
 
 int comp_bincross (const void *p1, const void *p2)
 {
-	struct BINCROSS *a = (struct BINCROSS *)p1, *b = (struct BINCROSS *)p2;
+	const struct BINCROSS *a = p1, *b = p2;
 
 	if (a->d < b->d) return (-1);
 	if (a->d > b->d) return (+1);

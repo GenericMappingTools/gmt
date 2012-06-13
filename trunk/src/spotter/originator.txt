@@ -24,6 +24,8 @@ See option OPT(:) on how to read (latitude, longitude,height, radius, crustal_ag
 Prepend BD(+) if you want to invert the rotations prior to use.
 #include "hotspot.txt"
 Prepend BD(+) if we should look for hotspot drift tables whose name must be IT(hs_abbrev)_drift.txt.
+Such files may be located in the current directory, the same directory as IT(hs_file), or in
+the directories pointed to by GMT_DATADIR.
 If found then we interpolate to get hotspot location as a function of time [fixed].
 .SH OPTIONAL ARGUMENTS
 #include "explain_intables.txt"

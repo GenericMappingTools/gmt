@@ -4087,11 +4087,9 @@ int psl_comp_rgb_asc (const void *p1, const void *p2)
 	   +1 if rgb2 > rgb1, and 0 if they are equal.
 	   We decide based on r, then g, then b.
 	*/
-	double *point_1, *point_2;
+	const double *point_1 = p1, *point_2 = p2;
 	int k;
 
-	point_1 = (double *)p1;
-	point_2 = (double *)p2;
 	for (k = 0; k < 3; k++) {
 		if (point_1[k] < point_2[k]) return (-1);
 		if (point_1[k] > point_2[k]) return (+1);
@@ -4104,10 +4102,8 @@ int psl_comp_long_asc (const void *p1, const void *p2)
 	/* Returns -1 if point_1 is < that point_2,
 	   +1 if point_2 > point_1, and 0 if they are equal
 	*/
-	int *point_1, *point_2;
+	const int *point_1 = p1, *point_2 = p2;
 
-	point_1 = (int *)p1;
-	point_2 = (int *)p2;
 	if ( (*point_1) < (*point_2) )
 		return (-1);
 	else if ( (*point_1) > (*point_2) )

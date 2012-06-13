@@ -138,10 +138,7 @@ void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 
 int compare_x (const void *point_1, const void *point_2)
 {
-	struct GMTSELECT_DATA *p1, *p2;
-
-	p1 = (struct GMTSELECT_DATA *)point_1;
-	p2 = (struct GMTSELECT_DATA *)point_2;
+	const struct GMTSELECT_DATA *p1 = point_1, *p2 = point_2;
 
 	if (p1->x < p2->x) return (-1);
 	if (p1->x > p2->x) return (1);
