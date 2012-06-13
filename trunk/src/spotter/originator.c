@@ -123,6 +123,7 @@ struct HOTSPOT_ORIGINATOR {
 	double np_lat;		/* Latitude  of nearest point on the current flowline */
 	uint64_t nearest;	/* Point id of current flowline node points closest to hotspot */
 	unsigned int stage;	/* Stage to which seamount belongs */
+	struct GMT_LINE_SEGMENT *D;	/* Used for drifting hotspots only */
 };
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */
@@ -131,13 +132,14 @@ struct ORIGINATOR_CTRL {	/* All control options for this program (except common 
 		bool active;
 		double value;	
 	} D;
-	struct E {	/* -Erotfile */
+	struct E {	/* -E[+]rotfile */
 		bool active;
 		bool mode;
 		char *file;
 	} E;
-	struct F {	/* -Ehotspotfile */
+	struct F {	/* -F[+]hotspotfile */
 		bool active;
+		bool mode;
 		char *file;
 	} F;
 	struct L {	/* -L */
@@ -204,7 +206,7 @@ int GMT_originator_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: originator [<table>] -E[+]<rottable> -F<hotspottable> [-D<d_km>]\n");
+	GMT_message (GMT, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>]\n");
 	GMT_message (GMT, "\t[-H] [-L[<flag>]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -213,6 +215,8 @@ int GMT_originator_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).\n");
 	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use.\n");
 	GMT_message (GMT, "\t-F Specify file name for hotspot locations.\n");
+	GMT_message (GMT, "\t   Prepend + if we should look for hotspot drift tables.\n");
+	GMT_message (GMT, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
 	GMT_message (GMT, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
@@ -270,8 +274,9 @@ int GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ctrl, s
 				Ctrl->E.file  = strdup (&opt->arg[k]);
 				break;
 			case 'F':
-				Ctrl->F.active = true;
-				Ctrl->F.file = strdup (opt->arg);
+				Ctrl->F.active = true;	k = 0;
+				if (opt->arg[0] == '+') { Ctrl->F.mode = true; k = 1;}
+				Ctrl->F.file = strdup (&opt->arg[k]);
 				break;
 			case 'L':
 				Ctrl->L.active = true;
@@ -343,11 +348,12 @@ int GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ctrl, s
 int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	unsigned int n_max_spots, n_input, n_expected_fields, n_out;
-	unsigned int spot, k, smt, kk, n_stages, n_hotspots, np, n_read, n_skipped = 0;
+	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
+	uint64_t k, kk, np;
 	
 	bool error = false, better;
 
-	double x_smt, y_smt, z_smt, r_smt, t_smt, *c, *in = NULL, dist, dlon, out[5];
+	double x_smt, y_smt, z_smt, r_smt, t_smt, t, *c = NULL, *in = NULL, dist, dlon, lon, lat, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];
 
 	char record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], fmt1[GMT_BUFSIZ], fmt2[GMT_BUFSIZ];
@@ -355,6 +361,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct EULER *p = NULL;
 	struct HOTSPOT *orig_hotspot = NULL;
 	struct HOTSPOT_ORIGINATOR *hotspot = NULL, *hot = NULL;
+	struct GMT_DATASET *F = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct ORIGINATOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -391,6 +398,17 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (spot = 0; spot < n_hotspots; spot++) {
 		hotspot[spot].h = &orig_hotspot[spot];	/* Point to the original hotspot structures */
 		hotspot[spot].np_dist = 1.0e100;
+		if (Ctrl->F.mode) {	/* See if there is a drift file for this hotspot */
+			char file[GMT_TEXT_LEN64];
+			uint64_t row;
+			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
+			if (GMT_access (GMT, file, R_OK)) continue;	/* file do not exist */
+			if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
+				Return (API->error);
+			}
+			hotspot[spot].D = F->table[0]->segment[0];	/* Only one table with one segment for histories */
+			for (row = 0; row < hotspot[spot].D->n_rows; row++) hotspot[spot].D->coord[GMT_Y][row] = GMT_lat_swap (GMT, hotspot[spot].D->coord[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+		}
 	}
 	
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);
@@ -448,11 +466,11 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* Data record to process */
 	
-		if (n_input == 3) {	/* set constant r,t values */
+		if (n_input == 3) {	/* Set constant r,t values based on -Q */
 			in[3] = Ctrl->Q.r_fix;
 			in[4] = Ctrl->Q.t_fix;
 		}
-		if (GMT_is_dnan (in[4]))	/* Age is NaN, assign value */
+		if (GMT_is_dnan (in[4]))	/* Age is NaN, assign upper value */
 			t_smt = Ctrl->N.t_upper;
 		else {			/* Assign given value, truncate if necessary */
 			t_smt = in[4];
@@ -487,7 +505,17 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		for (kk = 0, k = 1; kk < np; kk++, k += 3) {	/* For this seamounts track */
 			for (spot = 0; spot < n_hotspots; spot++) {	/* For all hotspots */
-				dist = GMT_great_circle_dist_degree (GMT, hot[spot].h->lon, hot[spot].h->lat, R2D * c[k], R2D * c[k+1]);
+				if (hot[spot].D) {	/* Must interpolate drifting hotspot location at current time c[k+2] */
+					t = c[k+2];	/* Current time */
+					GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
+					GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+				}
+				else {	/* Use the fixed hotspot location */
+					lon = hot[spot].h->lon;
+					lat = hot[spot].h->lat;
+				}
+				/* Compute distance from track location to (moving or fixed) hotspot */
+				dist = GMT_great_circle_dist_degree (GMT, lon, lat, R2D * c[k], R2D * c[k+1]);
 				if (!Ctrl->L.degree) dist *= GMT->current.proj.DIST_KM_PR_DEG;
 				if (dist < hot[spot].np_dist) {
 					hot[spot].np_dist = dist;
@@ -497,7 +525,16 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		for (spot = 0; spot < n_hotspots; spot++) {
 
-			GMT_geo_to_cart (GMT, hot[spot].h->lat, hot[spot].h->lon, H, true);	/* 3-D Cartesian vector of this hotspot */
+			if (hot[spot].D) {	/* Must interpolate drifting hotspot location at current time c[k+2] */
+				t = c[3*hot[spot].nearest+3];	/* Time of closest approach */
+				GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_X], hot[spot].D->n_rows, 1, &t, &lon, GMT->current.setting.interpolant);
+				GMT_intpol (GMT, hot[spot].D->coord[GMT_Z], hot[spot].D->coord[GMT_Y], hot[spot].D->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
+			}
+			else {	/* Use the fixed hotspot location */
+				lon = hot[spot].h->lon;
+				lat = hot[spot].h->lat;
+			}
+			GMT_geo_to_cart (GMT, lat, lon, H, true);	/* 3-D Cartesian vector of this hotspot */
 
 			/* Fine-tune the nearest point by considering intermediate points along greatcircle between knot points */
 
@@ -547,7 +584,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 			 * x-axis and y-axis is normal to that, flowlines whose closest approach point's longitude is
 			 * further east are said to have negative distance. */
 			 
-			dlon = fmod (hot[spot].h->lon - hot[spot].np_lon, 360.0);
+			dlon = fmod (lon - hot[spot].np_lon, 360.0);
 			if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
 			hot[spot].np_sign = copysign (1.0, dlon);
 			 
@@ -611,7 +648,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5ld\n", smt);
+	GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5d\n", smt);
 
 	GMT_free (GMT, hotspot);
 	GMT_free (GMT, orig_hotspot);

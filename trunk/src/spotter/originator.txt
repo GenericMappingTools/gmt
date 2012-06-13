@@ -3,8 +3,8 @@
 .SH NAME
 originator \- Associate seamounts with nearest hotspot point sources
 .SH SYNOPSIS
-BD(originator) [ IT(table) ] OPT(E)IT(rotfile) 
-OPT(F)IT(hs_file) 
+BD(originator) [ IT(table) ] OPT(E)[BD(+)]IT(rotfile) 
+OPT(F)[BD(+)]IT(hs_file) 
 [ OPT(D)IT(d_km) ] [ OPT(L)[IT(flag)] ] [ OPT(N)IT(upper_age) ] [ OPT(Q)IT(r/t) ] 
 [ OPT(S)[IT(n_hs)] ] [ OPT(T) ] [ GMT_V_OPT ]  OPT(W)IT(maxdist) ] [ OPT(Z) ]
 [ GMT_bi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ] 
@@ -21,7 +21,10 @@ See option OPT(:) on how to read (latitude, longitude,height, radius, crustal_ag
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 #include "euler.txt"
+Prepend BD(+) if you want to invert the rotations prior to use.
 #include "hotspot.txt"
+Prepend BD(+) if we should look for hotspot drift tables whose name must be IT(hs_abbrev)_drift.txt.
+If found then we interpolate to get hotspot location as a function of time [fixed].
 .SH OPTIONAL ARGUMENTS
 #include "explain_intables.txt"
 .TP
@@ -67,9 +70,22 @@ in the file seamounts.d, using the DC85.d Euler poles and the pac_hs.d list of p
 and report the 2 most likely hotspot candidates for each seamount, run
 .br
 .sp
-BD(originator) seamounts.d OPT(S)2 OPT(E)DC85.d OPT(F)pac_hs.d > origins.d
+originator seamounts.d -S2 -EDC85.d -Fpac_hs.d > origins.d
 .br
 .sp
+To determine the predicted age of a seamount, distances to the closest hotspot, and echo the observed age given its location, observed age, and a rotation model, try
+.br
+.sp
+echo "1.55 -8.43 52.3" | originator -FONeill_2005_hotspots.txt -EOMS2005_APM_fixed.txt -Q1/120 -Lt
+.br
+.sp
+where 52.3 Ma is observed age.  The output is 70 -95.486 52.3.  To repeat the same exercise with a moving hotspot model, try
+.br
+.sp
+echo "1.55 -8.43 52.3" | originator -F+ONeill_2005_hotspots.txt -EOMS2005_APM_smooth.txt -Q1/120 -Lt
+.br
+.sp
+Now the output is 80 -213.135 52.3.  Negative distances means the closest approach was east of the hotspot.
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR grdrotater (1),
