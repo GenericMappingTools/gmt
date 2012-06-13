@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.1b_r10277 [64-bit] [C4] Document from psbasemap
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:20 2011
+%%CreationDate: Wed Jun 13 13:00:19 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -UExample 1 in Cookbook
+%%GMT: psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -UExample 1 in Cookbook
 %%PROJ: xy 0.00000000 6.50000000 0.00000000 9.00000000 0.000 6.500 0.000 9.000 +xy +a=6378137.000 +b=6356752.314245
 % Begin GMT time-stamp
 V
@@ -653,7 +658,7 @@ O0
 300 600 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightgray
+%%GMT: pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightgray
 %%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -15903,8 +15908,8 @@ S
 -8 0 D
 -9 0 D
 -9 0 D
-3565 3600 M
-35 0 D
+-35 0 D
+3600 3600 M
 S
 3285 3593 M
 3 -8 D
@@ -16246,7 +16251,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i
+%%GMT: grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i
 %%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -16408,6 +16413,16 @@ PSL_eoclip N
 5349 1824 M -22 9 D S
 5257 1788 M 16 18 D S
 5201 1893 M 24 0 D S
+4 W
+[33 17] 0 B
+4443 50 M -3 24 D S
+4635 105 M 3 -23 D S
+4743 117 M 2 -24 D S
+2333 115 M 3 24 D S
+2485 131 M -3 -24 D S
+2635 105 M -6 -23 D S
+12 W
+[100 50] 0 B
 4938 2918 M 16 -18 D S
 5071 2930 M -7 -22 D S
 5194 2874 M -13 -20 D S
@@ -18452,7 +18467,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i
+%%GMT: grdcontour osu91a1f_16.nc -JH0/6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i
 %%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -20925,7 +20940,7 @@ O0
 0 4800 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Rg -JH6i -Y4i -O -K -Bg30:.Low Order Geoid: -Dc -Glightgray
+%%GMT: pscoast -Rg -JH6i -Y4i -O -K -Bg30:.Low Order Geoid: -Dc -Glightgray
 %%PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -36241,8 +36256,8 @@ S
 -8 0 D
 -9 0 D
 -9 0 D
-3565 3600 M
-35 0 D
+-35 0 D
+3600 3600 M
 S
 3285 3593 M
 3 -8 D
@@ -36590,7 +36605,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i:-+
+%%GMT: grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K -T0.1i/0.02i:-+
 %%PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -38829,7 +38844,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+
+%%GMT: grdcontour osu91a1f_16.nc -JH6i -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+
 %%PROJ: hammer 0.00000000 360.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin

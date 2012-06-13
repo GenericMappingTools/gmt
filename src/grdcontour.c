@@ -96,6 +96,15 @@ struct GRDCONTOUR_CTRL {
 #define TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
 #define TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
 
+enum grdcontour_contour_type {cont_is_not_closed = 0,	/* Not a closed contour of any sort */
+	cont_is_closed = 1,				/* Clear case of closed contour away from boundaries */
+	cont_is_closed_straddles_west = -2,		/* Part of a closed contour that exits west for periodic boundary */
+	cont_is_closed_straddles_east = +2,		/* Part of a closed contour that exits east for periodic boundary */
+	cont_is_closed_around_south_pole = -3,		/* Closed contour in southern hemisphere that encloses the south pole */
+	cont_is_closed_around_north_pole = +3,		/* Closed contour in northern hemisphere that encloses the north pole */
+	cont_is_closed_straddles_equator_south = -4,	/* Closed contour crossing equator that encloses the south pole */
+	cont_is_closed_straddles_equator_north = +4};	/* Closed contour crossing equator that encloses the north pole */
+	
 struct SAVE {
 	double *x, *y;
 	double *xp, *yp;
@@ -104,7 +113,8 @@ struct SAVE {
 	double y_min, y_max;
 	int n, np;
 	struct GMT_PEN pen;
-	int do_it, high, kind;
+	int do_it, high;
+	enum grdcontour_contour_type kind;
 	char label[GMT_TEXT_LEN64];
 };
 
@@ -434,7 +444,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	/* The x/y coordinates in SAVE in original cooordinates */
 
 	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
-		if (abs (save[pol].kind) != 3) continue;	/* Skip all but polar caps */
+		if (abs (save[pol].kind) < 3) continue;	/* Skip all but polar caps */
 		save[pol].y_min = save[pol].y_max = save[pol].y[0];
 		for (j = 1; j < save[pol].n; j++) {
 			if (save[pol].y[j] < save[pol].y_min) save[pol].y_min = save[pol].y[j];
@@ -447,10 +457,10 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			if (pol == pol2) continue;		/* Cannot be inside itself */
 			if (!save[pol2].do_it) continue;	/* No point checking contours that have already failed */
-			///if (abs (save[pol].kind) == 3) {	/* These are not closed (in lon/lat) */
-			///	save[pol].do_it = false;		/* This may be improved in the future */
-			///	continue;
-			///}
+			if (abs (save[pol].kind) == 4) {	/* These are closed "polar caps" that crosses equator (in lon/lat) */
+				save[pol].do_it = false;	/* This may be improved in the future */
+				continue;
+			}
 			if (abs (save[pol].kind) != 3) {	/* Not a polar cap so we can call GMT_non_zero_winding */
 				col = save[pol2].n / 2;	/* Pick the half-point for testing */
 				inside = GMT_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
@@ -460,7 +470,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 				if (abs (save[pol].kind) == 3) {	/* Both are caps */
 					if (save[pol].kind != save[pol2].kind) continue;	/* One is S and one is N cap as far as we can tell, so we skip */
 					/* Crude test to determine if one is closer to the pole than the other; if so exclude the far one */
-					if ((save[pol2].kind == 3 && save[pol2].y_min > save[pol].y_min) || (save[pol2].kind == -3 && save[pol2].y_min < save[pol].y_min)) save[pol].do_it = false;
+					if ((save[pol2].kind == 3 && save[pol2].y_min > save[pol].y_min) || (save[pol2].kind == cont_is_closed_around_south_pole && save[pol2].y_min < save[pol].y_min)) save[pol].do_it = false;
 				}
 			}
 		}
@@ -495,14 +505,14 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		
 		if (abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
-			col = (save[pol].kind == -2) ? 0 : G->header->nx - 1;
+			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->nx - 1;
 			row = GMT_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
 			row += GMT_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
 			row /= 2;
 		}
-		else if (abs (save[pol].kind) == 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
+		else if (abs (save[pol].kind) >= 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
 			col = G->header->nx / 2;
-			row = (save[pol].kind == -3) ? G->header->ny - 1 : 0;
+			row = (save[pol].kind < 0) ? G->header->ny - 1 : 0;
 		}
 		else {
 			/* Loop around the contour and get min/max original x,y (longitude, latitude) coordinates */
@@ -671,25 +681,37 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 	}
 }
 
-int gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, int n)
-{	/* Determine if this is a closed contour; returns a flag in the -3/+3 range */
-	int closed = 0;
+enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *y, int n)
+{	/* Determine if this is a closed contour; returns a flag in the -4/+4 range */
+	enum grdcontour_contour_type closed = cont_is_not_closed;
+	int k;
 	double small_x = 0.01 * G->header->inc[GMT_X], small_y = 0.01 * G->header->inc[GMT_Y];	/* Use 1% noise to find near-closed contours */
+	double y_min, y_max;
+	
 	if (fabs (x[0] - x[n-1]) < small_x && fabs (y[0] - y[n-1]) < small_y) {	/* Closed interior contour */
-		closed = 1;
+		closed = cont_is_closed;
 		x[n-1] = x[0];	y[n-1] = y[0];	/* Force exact closure */
 	}
 	else if (GMT_is_geographic (GMT, GMT_IN) && GMT_grd_is_global (GMT, G->header)) {	/* Global geographic grids are special */
 		if (fabs (x[0] - G->header->wesn[XLO]) < small_x && fabs (x[n-1] - G->header->wesn[XLO]) < small_x) {	/* Split periodic boundary contour */
-			closed = -2;	/* Left periodic */
+			closed = cont_is_closed_straddles_west;	/* Left periodic */
 			x[0] = x[n-1] = G->header->wesn[XLO];	/* Force exact closure */
 		}
 		else if (fabs (x[0] - G->header->wesn[XHI]) < small_x && fabs (x[n-1] - G->header->wesn[XHI]) < small_x) {	/* Split periodic boundary contour */
-			closed = +2;	/* Right periodic */
+			closed = cont_is_closed_straddles_east;	/* Right periodic */
 			x[0] = x[n-1] = G->header->wesn[XHI];	/* Force exact closure */
 		}
 		else if (GMT_360_RANGE (x[0], x[n-1])) {	/* Must be a polar cap */
-			closed = (y[0] > 0.0) ? +3 : -3;	/* N or S polar cap; do not force closure though */
+			/* Determine if the polar cap stays on one side of the equator */
+			y_min = y_max = y[0];
+			for (k = 1; k < n; k++) {
+				if (y[k] < y_min) y_min = y[k];
+				if (y[k] > y_max) y_max = y[k];
+			}
+			if (y_min < 0.0 && y_max > 0.0)
+				closed = (y_max > fabs (y_min)) ? cont_is_closed_straddles_equator_north : cont_is_closed_straddles_equator_south;	/* Special flags for meandering closed contours otherwise indistinguishable from polar caps */
+			else
+				closed = (y[0] > 0.0) ? cont_is_closed_around_north_pole : cont_is_closed_around_south_pole;		/* N or S polar cap; do not force closure though */
 		}
 	}
 	return (closed);
@@ -700,8 +722,10 @@ int gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *x, double *
 
 int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the grdcontour task */
-	int error, c, closed;
+	int error, c;
 	bool need_proj, make_plot, two_only = false, begin, is_closed; 
+	
+	enum grdcontour_contour_type closed;
 	
 	unsigned int id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl;
 	unsigned int cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
@@ -1036,9 +1060,9 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		while ((n = GMT_contours (GMT, G, Ctrl->S.value, GMT->current.setting.interpolant, Ctrl->F.value, edge, &begin, &x, &y)) > 0) {
 
 			closed = gmt_is_closed (GMT, G, x, y, n);	/* Closed interior/periodic boundary contour? */
-			is_closed = (closed != 0);
+			is_closed = (closed != cont_is_not_closed);
 
-			if (!closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria for closed contours */
+			if (closed == cont_is_not_closed || n >= Ctrl->Q.min) {	/* Passed our minimum point criteria for closed contours */
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
@@ -1053,11 +1077,11 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 					D->table[tbl]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
 					if (io_mode == GMT_WRITE_TABLES && !D->table[tbl]->file[GMT_OUT])
-						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, closed, cont_counts);
+						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
 					else if (io_mode == GMT_WRITE_SEGMENTS)
-						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, closed, cont_counts);
+						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
 				}
-				if (make_plot && cont_do_tick[c] && closed) {	/* Must store the entire contour for later processing */
+				if (make_plot && cont_do_tick[c] && is_closed) {	/* Must store the entire contour for later processing */
 					/* These are original coordinates that have not yet been projected */
 					int extra;
 					if (n_save == n_alloc) save = GMT_malloc (GMT, save, n_save, &n_alloc, struct SAVE);
@@ -1082,7 +1106,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					else
 						cont_label[0] = '\0';
-					GMT_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed == 1, &Ctrl->contour);
+					GMT_hold_contour (GMT, &xp, &yp, nn, cval, cont_label, cont_type[c], cont_angle[c], closed == cont_is_closed, &Ctrl->contour);
 					GMT_free (GMT, xp);
 					GMT_free (GMT, yp);
 				}
