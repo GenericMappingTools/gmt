@@ -4026,7 +4026,7 @@ void MGD77_Cruise_Explain (struct GMT_CTRL *C)
 
 int compare_L (const void *p1, const void *p2)
 {	/* Only used in MGD77_Path_Expand */
-	const char **a = p1, **b = p2;
+	const char **a = (const char **) p1, **b = (const char **)p2;
 	return (strcmp (*a, *b));
 }
 
