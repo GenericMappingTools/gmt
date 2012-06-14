@@ -65,7 +65,7 @@ are only required for grids; for other tables they do not apply.
 For gridline registered grids:  If data are periodic in x but the
 incoming data do not contain the (redundant) column at x = xmax, append BD(x).  For data periodic in y
 without redundant row at y = ymax, append BD(y).  Append BD(s)IT(n) to skip the first IT(n) number
-of bytes (probably a header).  If the byte-order needs to be swapped, append BD(w).  Select
+of bytes (probably a header).  If the byte-order or the words needs to be swapped, append BD(w).  Select
 one of several data types (all binary except BD(a)):
 .br
 .sp
