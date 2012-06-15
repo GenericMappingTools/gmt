@@ -654,7 +654,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			F.radius_func = &FlatEarthRadius;
 			break;
 		case 4:	/* Great circle distances */
-			x_scale = 0.0;
+			x_scale = GMT->current.proj.DIST_KM_PR_DEG * ((fabs (Gout->header->wesn[YLO]) > Gout->header->wesn[YHI]) ? cosd (Gout->header->wesn[YLO]) : cosd (Gout->header->wesn[YHI]));
 			y_scale = GMT->current.proj.DIST_KM_PR_DEG;
 			F.radius_func = &SphericalRadius;
 			break;
