@@ -303,12 +303,12 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t<ingrid> is the name of the grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Find area and volume inside the given <cval> contour,\n");
+	GMT_message (GMT, "\t-C Find area, volume, and mean height inside the given <cval> contour,\n");
 	GMT_message (GMT, "\t   OR search using all contours from <low> to <high> in steps of <delta>.\n");
-	GMT_message (GMT, "\t   [Default returns entire area and volume of grid].\n");
+	GMT_message (GMT, "\t   [Default returns area, volume and mean height of entire grid].\n");
 	GMT_message (GMT, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
 	GMT_message (GMT, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian].\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_message (GMT, "\t-T (Or -Th): Find the contour value that yields max average height (volume/area).\n");
+	GMT_message (GMT, "\t-T (or -Th): Find the contour value that yields max average height (volume/area).\n");
 	GMT_message (GMT, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
 	GMT_explain_options (GMT, "RV");
 	GMT_message (GMT, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
