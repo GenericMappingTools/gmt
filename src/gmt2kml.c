@@ -161,7 +161,7 @@ void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deall
 	if (C->N.fmt) free (C->N.fmt);
 	if (C->T.title) free (C->T.title);
 	if (C->T.folder) free (C->T.folder);
-	GMT_free (GMT, C->L.ext);
+	if (C->L.ext) GMT_free (GMT, C->L.ext);
 	GMT_free (GMT, C);
 }
 
