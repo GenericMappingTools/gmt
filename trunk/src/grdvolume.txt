@@ -5,7 +5,7 @@ grdvolume \- Calculate grid volume and area constrained by a contour
 .SH SYNOPSIS
 BD(grdvolume) IT(grdfile) [ OPT(C)IT(cval) or OPT(C)IT(low/high/delta) ] 
 [ OPT(L)IT(base) ] [ GMT_Rgeo_OPT ] [ OPT(S)[IT(unit)] ] [ OPT(T)[BD(c)|BD(h)] ] [ GMT_V_OPT ] 
-[ OPT(Z)IT(fact)[/IT(shift)] ] [ GMT_fi_OPT ]
+[ OPT(Z)IT(fact)[/IT(shift)] ] [ GMT_fi_OPT ] [ GMT_o_OPT ]
 .SH DESCRIPTION
 BD(grdvolume) reads a 2-D binary grid file and calculates the volume contained
 between the surface and the plane specified by the given contour (or zero if not given)
@@ -45,6 +45,7 @@ OPT(Z)IT(fact)[/IT(shift)]
 Optionally subtract IT(shift) before scaling data by IT(fact). [Default is no scaling].
 (Numbers in OPT(C), OPT(L) refer to values after this scaling has occurred).
 #include "explain_-f.txt"
+#include "explain_-ocols.txt" 
 #include "explain_help.txt"
 #include "explain_grd_input.txt"
 .SH EXAMPLES
