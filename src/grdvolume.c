@@ -297,7 +297,8 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s] [%s]\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -312,7 +313,7 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
 	GMT_explain_options (GMT, "RV");
 	GMT_message (GMT, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
-	GMT_explain_options (GMT, "f.");
+	GMT_explain_options (GMT, "fo.");
 	
 	return (EXIT_FAILURE);
 }
@@ -424,7 +425,7 @@ int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if ( GMT_Parse_Common (API, "-VRf", "", options)) Return (API->error);
+	if ( GMT_Parse_Common (API, "-VRfo", "", options)) Return (API->error);
 	Ctrl = New_grdvolume_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdvolume_parse (API, Ctrl, options))) Return (error);
 
