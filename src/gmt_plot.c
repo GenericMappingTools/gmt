@@ -1495,6 +1495,38 @@ void gmt_map_symbol_ns (struct GMT_CTRL *C, struct PSL_CTRL *P, double lon, char
 	if (nc) GMT_free (C, xings);
 }
 
+void gmt_z_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double zmin, double zmax, int xz_or_yz)
+{
+	unsigned int k, i, nz, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
+	double dz, zz, min, max, *z = NULL;
+	char *plane[2] = {"x-z", "y-z"};
+
+	min = (xz_or_yz == GMT_X) ? C->current.proj.rect[XLO] : C->current.proj.rect[YLO];
+	max = (xz_or_yz == GMT_X) ? C->current.proj.rect[XHI] : C->current.proj.rect[YHI];
+
+	for (k = 0; k < 2; k++) {
+		if (C->current.setting.map_grid_cross_size[k] > 0.0) continue;
+
+		dz = GMT_get_map_interval (C, &C->current.map.frame.axis[GMT_Z].item[item[k]]);
+
+		if (!C->current.map.frame.axis[GMT_Z].item[item[k]].active || fabs(dz) == 0.0) continue;
+
+		PSL_comment (P, "%s gridlines %s\n", plane[xz_or_yz], k ? "(secondary)" : "(primary)");
+
+		GMT_setpen (C, &C->current.setting.map_grid_pen[k]);
+
+		nz = GMT_coordinate_array (C, zmin, zmax, &C->current.map.frame.axis[GMT_Z].item[item[k]], &z, NULL);
+		for (i = 0; i < nz; i++) {	/* Here z acts as y and x|y acts as x */
+			/* Draw one horizontal line */
+			zz = GMT_z_to_zz (C, z[i]);
+			PSL_plotsegment (P, min, zz, max, zz);
+		}
+
+		if (C->current.setting.map_grid_pen[k].style) PSL_setdash (P, NULL, 0);
+		GMT_free (C, z);
+	}
+}
+
 void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n)
 {
 	unsigned int k, np, item[2] = {GMT_GRID_UPPER, GMT_GRID_LOWER};
@@ -2103,10 +2135,14 @@ void GMT_map_basemap (struct GMT_CTRL *C)
 	PSL_setcolor (P, C->current.setting.map_default_pen.rgb, PSL_IS_STROKE);
 }
 
-void gmt_vertical_wall (struct GMT_CTRL *C, struct PSL_CTRL *P, int quadrant, double *nesw)
+void gmt_vertical_wall (struct GMT_CTRL *C, struct PSL_CTRL *P, int quadrant, double *nesw, bool back)
 {
 	GMT_plane_perspective (C, (quadrant + 1) % 2, nesw[quadrant % 4]);
 	PSL_plotbox (P, nesw[(quadrant+1)%4], C->current.proj.zmin, nesw[(quadrant+3)%4], C->current.proj.zmax);
+	if (back) {
+		gmt_z_gridlines (C, P, C->common.R.wesn[ZLO], C->common.R.wesn[ZHI], 0);
+		gmt_z_gridlines (C, P, C->common.R.wesn[ZLO], C->common.R.wesn[ZHI], 1);
+	}
 }
 
 void GMT_vertical_axis (struct GMT_CTRL *C, unsigned int mode)
@@ -2131,12 +2167,12 @@ void GMT_vertical_axis (struct GMT_CTRL *C, unsigned int mode)
 	if (C->current.map.frame.draw_box) {
 		PSL_setfill (P, C->session.no_rgb, true);
 		if (fore) {
-			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant + 3, nesw);
-			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant    , nesw);
+			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant + 3, nesw, false);
+			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant    , nesw, false);
 		}
 		if (back) {
-			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant + 1, nesw);
-			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant + 2, nesw);
+			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant + 1, nesw, true);
+			gmt_vertical_wall (C, P, C->current.proj.z_project.quadrant + 2, nesw, true);
 		}
 	}
 
