@@ -81,7 +81,7 @@
 int gmt_geo_C_format (struct GMT_CTRL *C);
 void GMT_grdio_init (struct GMT_CTRL *C);	/* Defined in gmt_customio.c and only used here */
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 /* This is used to help is find memory leaks */
 struct MEMORY_TRACKER *GMT_mem_keeper;
 #endif
@@ -5121,7 +5121,7 @@ void GMT_end (struct GMT_CTRL *C)
 
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (C->PSL);
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_report (C, GMT_mem_keeper);
 #endif
 	Free_GMT_Ctrl (C);	/* Deallocate control structure */
@@ -8011,7 +8011,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	/* Set default verbosity level */
 	C->current.setting.verbose = GMT_MSG_COMPAT;
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_init (C, &GMT_mem_keeper);	/* Helps us determine memory leaks */
 	C->session.min_meminc = GMT_MIN_MEMINC;
 	C->session.max_meminc = GMT_MAX_MEMINC;

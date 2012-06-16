@@ -292,7 +292,7 @@ int GMT_mgd77sniffer (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options)) bailout (API->error);
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 
@@ -2681,7 +2681,7 @@ int GMT_mgd77sniffer (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 

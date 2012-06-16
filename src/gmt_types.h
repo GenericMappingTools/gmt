@@ -139,7 +139,7 @@ struct GMT_SESSION {
 	int (*output_ascii) (struct GMT_CTRL *, FILE *, unsigned int, double *);	/* Pointer to function writing ascii tables only */
 	unsigned int n_fonts;		/* Total number of fonts returned by GMT_init_fonts */
 	unsigned int n_user_media;	/* Total number of user media returned by gmt_load_user_media */
-	size_t min_meminc;		/* DEBUG, sets min/max memory increments */
+	size_t min_meminc;		/* with -DMEMDEBUG, sets min/max memory increments */
 	size_t max_meminc;
 	float f_NaN;			/* Holds the IEEE NaN for floats */
 	double d_NaN;			/* Holds the IEEE NaN for doubles */

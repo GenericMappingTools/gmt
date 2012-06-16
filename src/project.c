@@ -968,7 +968,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 			p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 			p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 			if (P.n_z) {	/* Copy over z column(s) */
-#ifdef DEBUG
+#ifdef MEMDEBUG
 				GMT_memtrack_off (GMT, GMT_mem_keeper);	/* Because it gives way too many pointers to search through */
 #endif
 				if (pure_ascii) {	/* Must store all text beyond x,y columns */
@@ -979,7 +979,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 					p_data[P.n_used].z = GMT_memory (GMT, NULL, P.n_z, double);
 					GMT_memcpy (p_data[P.n_used].z, &in[GMT_Z], P.n_z, double);
 				}
-#ifdef DEBUG
+#ifdef MEMDEBUG
 				GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 			}
@@ -1009,14 +1009,14 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	if (P.n_z) GMT_memtrack_off (GMT, GMT_mem_keeper);	/* Free pointers that were allocated when tracking was off */
 #endif
 	for (rec = 0; rec < P.n_used; rec++) {
 		if (p_data[rec].t) GMT_free (GMT, p_data[rec].t);
 		if (p_data[rec].z) GMT_free (GMT, p_data[rec].z);
 	}
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	if (P.n_z) GMT_memtrack_on (GMT, GMT_mem_keeper);	/* Continue memory tracking */
 #endif
 

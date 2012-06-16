@@ -48,6 +48,8 @@ extern "C" {
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 
+#define MEMDEBUG	/* For the time being we set this explicitly; later it will only be set via -DMEMDEBUG */
+
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
@@ -116,8 +118,8 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "common_math.h"        /* Shared math functions */
 #include "common_string.h"      /* All code shared between GMT and PSL */
 
-#ifdef DEBUG
-/* Items needed if -DDEBUG is in effect */
+#ifdef MEMDEBUG
+/* Items needed if -DMEMDEBUG is in effect */
 EXTERN_MSC void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M);
 EXTERN_MSC void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_on (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);

@@ -342,7 +342,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 
@@ -439,13 +439,13 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!(n%1000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
-#ifdef DEBUG
+#ifdef MEMDEBUG
 			GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 			n_alloc <<= 1;
 			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
 			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
-#ifdef DEBUG
+#ifdef MEMDEBUG
 			GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 		}
@@ -456,12 +456,12 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\n", n);
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 	/* Compute weighted averages based on the nearest neighbors */
@@ -510,7 +510,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\r", row);
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\n", row);
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
