@@ -4058,7 +4058,7 @@ void gmt_contlabel_angle (double x[], double y[], uint64_t start, uint64_t stop,
 
 int gmt_sort_label_struct (const void *p_1, const void *p_2)
 {
-	const struct GMT_LABEL **point_1 = p_1, **point_2 = p_2;
+	const struct GMT_LABEL **point_1 = (const struct GMT_LABEL **)p_1, **point_2 = (const struct GMT_LABEL **)p_2;
 
 	if ((*point_1)->dist < (*point_2)->dist) return -1;
 	if ((*point_1)->dist > (*point_2)->dist) return +1;
