@@ -8316,26 +8316,36 @@ unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double d
 	return (n);
 }
 
-unsigned int GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, unsigned int x_or_y, double **array)
+unsigned int GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, unsigned int x_or_y_or_z, double **array)
 {
 	int i, n;
 	double *val = NULL, v0, v1;
 
 	if (delta <= 0.0) return (0);
 
-	if (C->current.map.frame.axis[x_or_y].type != GMT_POW) return (GMT_linear_array (C, min, max, delta, 0.0, array));
+	if (C->current.map.frame.axis[x_or_y_or_z].type != GMT_POW) return (GMT_linear_array (C, min, max, delta, 0.0, array));
 
-	if (x_or_y == 0) { /* x-axis */
+	if (x_or_y_or_z == 0) { /* x-axis */
 		C->current.proj.fwd_x (C, min, &v0);
 		C->current.proj.fwd_x (C, max, &v1);
 		n = GMT_linear_array (C, v0, v1, delta, 0.0, &val);
 		for (i = 0; i < n; i++) C->current.proj.inv_x (C, &val[i], val[i]);
 	}
-	else {	/* y-axis */
+	else if (x_or_y_or_z == 1) { /* y-axis */
 		C->current.proj.fwd_y (C, min, &v0);
 		C->current.proj.fwd_y (C, max, &v1);
 		n = GMT_linear_array (C, v0, v1, delta, 0.0, &val);
 		for (i = 0; i < n; i++) C->current.proj.inv_y (C, &val[i], val[i]);
+	}
+	else if (x_or_y_or_z == 2) { /* z-axis */
+		C->current.proj.fwd_z (C, min, &v0);
+		C->current.proj.fwd_z (C, max, &v1);
+		n = GMT_linear_array (C, v0, v1, delta, 0.0, &val);
+		for (i = 0; i < n; i++) C->current.proj.inv_z (C, &val[i], val[i]);
+	}
+	else {
+		GMT_report (C, GMT_MSG_FATAL, "Error: Invalid side (%d) passed to GMT_pow_array!\n", x_or_y_or_z);
+		GMT_exit (EXIT_FAILURE);
 	}
 
 	*array = val;

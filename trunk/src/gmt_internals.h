@@ -32,7 +32,7 @@ EXTERN_MSC unsigned int GMT_unit_lookup (struct GMT_CTRL *C, int c, unsigned int
 EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, bool do_minutes, bool do_seconds, unsigned int lonlat, bool worldmap);
 EXTERN_MSC unsigned int GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels);
 EXTERN_MSC unsigned int GMT_linear_array (struct GMT_CTRL *C, double min, double max, double delta, double phase, double **array);
-EXTERN_MSC unsigned int GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, unsigned int x_or_y, double **array);
+EXTERN_MSC unsigned int GMT_pow_array (struct GMT_CTRL *C, double min, double max, double delta, unsigned int x_or_y_or_z, double **array);
 EXTERN_MSC int GMT_prepare_label (struct GMT_CTRL *C, double angle, unsigned int side, double x, double y, unsigned int type, double *line_angle, double *text_angle, unsigned int *justify);
 EXTERN_MSC unsigned int GMT_time_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array);
 EXTERN_MSC void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, uint64_t n, double *min, double *max);

@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-06-15	pwessel
+	* gmt_plot.c:		3-D basemaps can now have horizontal gridlines on xz and yz back walls.
+
 2012-06-04	pwessel
 	* gmtvector.c		Incorrectly applied flat-Earth adjustment for 2-D Cartesian azimuth.
 
