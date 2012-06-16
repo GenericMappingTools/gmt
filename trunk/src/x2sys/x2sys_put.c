@@ -255,7 +255,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Ok, now we can start reading new info */
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
@@ -340,7 +340,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	GMT_fclose (GMT, fp);
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 

@@ -512,14 +512,14 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_free (GMT, yy);
 	if (triplets[GMT_IN]) GMT_free (GMT, zz);
 #ifdef TRIANGLE_D
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	/* Shewchuk's function allocated the memory separately */
 	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 #endif
 	if (!Ctrl->Q.active) GMT_free (GMT, link);
 #ifdef TRIANGLE_D
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_on (GMT, GMT_mem_keeper);
 #endif
 #endif

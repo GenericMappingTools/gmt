@@ -57,7 +57,7 @@ struct MATH_MACRO {
 #define GMT_free(C,ptr) (GMT_free_func(C,ptr,__func__),(ptr)=NULL)
 #endif
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 
 struct MEMORY_ITEM {
 	size_t size; /* Size of memory allocated */
@@ -79,7 +79,7 @@ struct MEMORY_TRACKER {
 	size_t largest;		/* Highest memory allocation to a single variable */
 	size_t n_alloc;		/* Allocated size of memory pointer array */
 	struct MEMORY_ITEM *list_head, *list_tail;
-	FILE *fp;	/* For logging if GMT_TRACK_MEMORY_USAGE is active */
+	FILE *fp;	/* For logging if GMT_TRACK_MEMORY is 2 */
 };
 
 #endif

@@ -120,16 +120,16 @@ struct GMT_PEN_NAME GMT_penname[GMT_N_PEN_NAMES] = {		/* Names and widths of pen
 #include "gmt_pennames.h"
 };
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 /* Memory tracking used to assist in finding memory leaks.  We internally keep track
  * of all memory allocated by GMT_memory and subsequently freed with GMT_free.  If
  * upon exit there are unreleased memory we issue a report of how many items were
  * not freed and where they were first allocated.  This is only used by the developers
- * and if -DDEBUG is not supplied then all of this is left out.
- * Two optional environmental variables controls the memory tracking:
- * (1) Set GMT_LOG_MEMORY_USAGE to "on" to write a detailed log of all
+ * and if -DMEMDEBUG is not set then all of this is left out.
+ * A environmental variable controls the memory tracking:
+ * (1) Set GMT_TRACK_MEMORY to 1 to activate the memory tracking.
+ * (2) Set GMT_TRACK_MEMORY to 2 to activate the memory tracking and to write a detailed log of all
  *     transactions taking place during a session to the file GMT_Memory_Tracker.log.
- * (2) Set GMT_TRACK_MEMORY_USAGE to "off" to deactivate the tracking.
  *
  * Paul Wessel, Latest revision June 2012.
  * Binary tree manipulation functions are modified after Sedgewick's Algorithms in C */
@@ -158,12 +158,12 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	struct MEMORY_TRACKER *P = NULL;
 	time_t now = time (NULL);
 	char *c = NULL;
+	int value = 0;
 
 	P = calloc (1U, sizeof (struct MEMORY_TRACKER));
-	c = getenv ("GMT_TRACK_MEMORY_USAGE");
-	P->active = (!c || strcmp (c, "off"));
-	c = getenv ("GMT_LOG_MEMORY_USAGE");
-	P->do_log = (c && !strcmp (c, "on"));
+	if ((c = getenv ("GMT_TRACK_MEMORY"))) value = atoi (c);	/* 0 is off; 1 for tracking; 2 adds logging to file */
+	P->active = (value == 1);
+	P->do_log = (value == 2);
 	P->search = true;
 	P->list_tail = calloc (1U, sizeof *P->list_tail);
 	P->list_tail->l = P->list_tail;	P->list_tail->r = P->list_tail;
@@ -3411,7 +3411,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			GMT_exit (EXIT_FAILURE);
 		}
 	}
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	gmt_memtrack_add (C, GMT_mem_keeper, where, tmp, prev_addr, nelem * size);
 #endif
 	return (tmp);
@@ -3426,7 +3426,8 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *where)
 				"GMT_free_func tried to free unallocated memory\n");
 		return; /* Do not free a NULL pointer, although allowed */
 	}
-#else /* DEBUG */
+#endif
+#ifdef MEMDEBUG
 	gmt_memtrack_sub (C, GMT_mem_keeper, where, addr);
 #endif
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)

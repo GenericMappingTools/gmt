@@ -238,7 +238,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-#ifdef DEBUG
+#ifdef MEMDEBUG
 	GMT_memtrack_off (GMT, GMT_mem_keeper);
 #endif
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
@@ -427,5 +427,8 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 
+#ifdef MEMDEBUG
+	GMT_memtrack_on (GMT, GMT_mem_keeper);
+#endif
 	Return (GMT_OK);
 }
