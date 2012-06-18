@@ -253,8 +253,6 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	static char *mode[3] = {"INI", "ADD", "SET"};
 	int kind;
 
-	if (!M) return;		/* Not initialized */
-	if (!M->active) return;	/* Not activated */
 	use = (prev_ptr) ? prev_ptr : ptr;
 	entry = (M->search) ? gmt_memtrack_find (C, M, use) : NULL;
 	if (!entry) { /* Not found, must insert new entry at end */
@@ -303,8 +301,6 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	/* Called from GMT_free to remove memory pointer */
 	struct MEMORY_ITEM *entry = NULL;
 
-	if (!M) return;		/* Not initialized */
-	if (!M->active) return;	/* Not activated */
 	entry = gmt_memtrack_find (C, M, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
 		const char *where_basename = nopath_filename (where);
@@ -3412,7 +3408,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 		}
 	}
 #ifdef MEMDEBUG
-	gmt_memtrack_add (C, GMT_mem_keeper, where, tmp, prev_addr, nelem * size);
+	if (M && M->active) gmt_memtrack_add (C, GMT_mem_keeper, where, tmp, prev_addr, nelem * size);
 #endif
 	return (tmp);
 }
@@ -3428,7 +3424,7 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *where)
 	}
 #endif
 #ifdef MEMDEBUG
-	gmt_memtrack_sub (C, GMT_mem_keeper, where, addr);
+	if (M && M->active) gmt_memtrack_sub (C, GMT_mem_keeper, where, addr);
 #endif
 #if defined(WIN32) && defined(USE_MEM_ALIGNED)
 	_aligned_free (addr);
