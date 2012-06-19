@@ -174,7 +174,7 @@ void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M) {	/* Call
 	if (!P->active) return;	/* Not activated so no log file */
 	if (!P->do_log) return;	/* Logging not requested */
 	if ((P->fp = fopen ("GMT_Memory_Tracker.log", "w")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_memtrack_init: Could not create log file GMT_Memory_Tracker.log\n");
+		GMT_report (C, GMT_MSG_FATAL, "Could not create log file GMT_Memory_Tracker.log\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	fprintf (P->fp, "# %s", ctime (&now));
@@ -1355,7 +1355,7 @@ void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, unsigned int size
 	while (text[i]) buffer[k++] = text[i++];
 	buffer[k++] = '\0';	/* Properly terminate buffer */
 
-	if (k > size) GMT_report (C, GMT_MSG_FATAL, "GMT_enforce_rgb_triplets: Replacement string too long - truncated\n");
+	if (k > size) GMT_report (C, GMT_MSG_FATAL, "Replacement string too long - truncated\n");
 	strncpy (text, buffer, k);	/* Copy back the revised string */
 }
 
@@ -4464,11 +4464,11 @@ uint64_t gmt_smooth_contour (struct GMT_CTRL *C, double **x_in, double **y_in, u
 	flag[n_out-1] = true;
 
 	if (GMT_intpol (C, t_in, x, n, n_out, t_out, x_tmp, stype)) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT internal error in  gmt_smooth_contour!\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT internal error\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (GMT_intpol (C, t_in, y, n, n_out, t_out, y_tmp, stype)) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT internal error in  gmt_smooth_contour!\n");
+		GMT_report (C, GMT_MSG_FATAL, "GMT internal error\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -4910,7 +4910,7 @@ bool gmt_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this_label,
 			break;
 
 		default:	/* Should not happen... */
-			GMT_report (C, GMT_MSG_FATAL, "ERROR in gmt_label_is_OK. Notify gmt-team@lists.hawaii.edu\n");
+			GMT_report (C, GMT_MSG_FATAL, "GMT internal error\n");
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -5378,7 +5378,7 @@ unsigned int GMT_non_zero_winding (struct GMT_CTRL *C, double xp, double yp, dou
 	if (n_path < 2) return (GMT_OUTSIDE);	/* Cannot be inside a null set or a point so default to outside */
 
 	if (GMT_polygon_is_open (C, x, y, n_path)) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_non_zero_winding given non-closed polygon\n");
+		GMT_report (C, GMT_MSG_FATAL, "given non-closed polygon\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -5880,12 +5880,11 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, u
 /* Dummy functions since not installed */
 uint64_t gmt_delaunay_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, int **link)
 {
-	GMT_report (C, GMT_MSG_FATAL, "GMT: gmt_delaunay_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_report (C, GMT_MSG_FATAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation");
 	return (0);
-	
 }
 uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
-	GMT_report (C, GMT_MSG_FATAL, "GMT: gmt_voronoi_shewchuk is unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_report (C, GMT_MSG_FATAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation");
 	return (0);
 }
 #endif
@@ -6065,7 +6064,7 @@ uint64_t gmt_delaunay_watson (struct GMT_CTRL *C, double *x_in, double *y_in, ui
 
 uint64_t gmt_voronoi_watson (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out)
 {
-	GMT_report (C, GMT_MSG_FATAL, "GMT: No Voronoi unless you select Shewchuk's triangle option during GMT installation");
+	GMT_report (C, GMT_MSG_FATAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation");
 	return (0);
 }
 
@@ -6073,7 +6072,7 @@ int GMT_delaunay (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, in
 {
 	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (gmt_delaunay_shewchuk (C, x_in, y_in, n, link));
 	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (gmt_delaunay_watson    (C, x_in, y_in, n, link));
-	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_delaunay: GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
+	GMT_report (C, GMT_MSG_FATAL, "GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
 	return (-1);
 }
 
@@ -6081,7 +6080,7 @@ int GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, dou
 {
 	if (C->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) return (gmt_voronoi_shewchuk (C, x_in, y_in, n, we, x_out, y_out));
 	if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)   return (gmt_voronoi_watson    (C, x_in, y_in, n, we, x_out, y_out));
-	GMT_report (C, GMT_MSG_FATAL, "GMT: GMT_voronoi: GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
+	GMT_report (C, GMT_MSG_FATAL, "GMT_TRIANGULATE outside possible range! %d\n", C->current.setting.triangulate);
 	return (-1);
 	
 }
@@ -6270,20 +6269,20 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		if (G->header->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
 	if (n_skip == 4) {	/* No need to set anything since there is data in the pad area on all sides */
-		GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_grd_set: All boundaries set via extended data.\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "All boundaries set via extended data.\n");
 		return (GMT_NOERROR);
 	}
 
 	/* Check minimum size:  */
 	if (G->header->nx < 1 || G->header->ny < 1) {
-		GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_grd_set requires nx,ny at least 1.\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "requires nx,ny at least 1.\n");
 		return (GMT_NOERROR);
 	}
 
 	/* Check that pad is at least 2 */
 	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
 	if (bok > 0) {
-		GMT_report (C, GMT_MSG_VERBOSE, "GMT_boundcond_grd_set called with a pad < 2; skipped.\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "called with a pad < 2; skipped.\n");
 		return (GMT_NOERROR);
 	}
 
@@ -6679,7 +6678,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 
 	/* Check minimum size:  */
 	if (G->header->nx < 1 || G->header->ny < 1) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_boundcond_image_set requires nx,ny at least 1.\n");
+		GMT_report (C, GMT_MSG_FATAL, "requires nx,ny at least 1.\n");
 		return (-1);
 	}
 
@@ -7194,7 +7193,10 @@ int GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 	int j = 0, i, n_slash, error = 0, k = 0, options;
 	char txt_cpy[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_sx[GMT_TEXT_LEN256], txt_sy[GMT_TEXT_LEN256], txt_len[GMT_TEXT_LEN256];
 
-	if (!text) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getscale\n"); GMT_exit (EXIT_FAILURE); }
+	if (!text) {
+		GMT_report (C, GMT_MSG_FATAL, "No argument given\n");
+		GMT_exit (EXIT_FAILURE);
+	}
 
 	GMT_memset (ms, 1, struct GMT_MAP_SCALE);
 	ms->measure = 'k';	/* Default distance unit is km */
@@ -7338,7 +7340,10 @@ int GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 	 * If -Tm, optionally set annotation interval with +
 	 */
 
-	if (!text) { GMT_report (C, GMT_MSG_FATAL, "No argument given to GMT_getrose\n"); GMT_exit (EXIT_FAILURE); }
+	if (!text) {
+		GMT_report (C, GMT_MSG_FATAL, "No argument given\n");
+		GMT_exit (EXIT_FAILURE);
+	}
 
 	ms->type = 0;
 	ms->gave_xy = false;
@@ -7509,7 +7514,7 @@ void GMT_str_setcase (struct GMT_CTRL *C, char *value, int mode)
 	else if (mode == +1)
 		GMT_str_toupper (value);
 	else
-		GMT_report (C, GMT_MSG_FATAL, "Error: Bad mode in GMT_str_setcase (%d)\n", mode);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Bad mode (%d)\n", mode);
 }
 
 unsigned int GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *sep, unsigned int *pos, char *token)
@@ -7797,7 +7802,7 @@ int GMT_init_track (struct GMT_CTRL *C, double y[], uint64_t n, struct GMT_XSEGM
 	struct GMT_XSEGMENT *L = NULL;
 
 	if (nl == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT: ERROR in GMT_init_track; nl = 0\n");
+		GMT_report (C, GMT_MSG_FATAL, "Error: nl = 0\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -8340,7 +8345,7 @@ unsigned int GMT_pow_array (struct GMT_CTRL *C, double min, double max, double d
 		for (i = 0; i < n; i++) C->current.proj.inv_z (C, &val[i], val[i]);
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Invalid side (%d) passed to GMT_pow_array!\n", x_or_y_or_z);
+		GMT_report (C, GMT_MSG_FATAL, "Error: Invalid side (%d) passed!\n", x_or_y_or_z);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -8456,7 +8461,7 @@ unsigned int GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, s
 			n = GMT_time_array (C, min, max, T, array);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Invalid projection type (%d) passed to GMT_coordinate_array!\n", C->current.proj.xyz_projection[T->parent]);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Invalid projection type (%d) passed!\n", C->current.proj.xyz_projection[T->parent]);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -8532,7 +8537,7 @@ void GMT_get_coordinate_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT
 			GMT_get_time_label (C, string, P, T, coord);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Wrong type (%d) passed to GMT_get_coordinate_label!\n", C->current.map.frame.axis[T->parent].type);
+			GMT_report (C, GMT_MSG_FATAL, "Error: Wrong type (%d) passed!\n", C->current.map.frame.axis[T->parent].type);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
@@ -8905,7 +8910,7 @@ int GMT_flip_justify (struct GMT_CTRL *C, unsigned int justify)
 			break;
 		default:
 			j = justify;
-			GMT_report (C, GMT_MSG_FATAL, "GMT_flip_justify called with incorrect argument (%d)\n", j);
+			GMT_report (C, GMT_MSG_FATAL, "called with incorrect argument (%d)\n", j);
 			break;
 	}
 
@@ -9873,7 +9878,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEG
 	}
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
-		GMT_report (C, GMT_MSG_NORMAL, "GMT_split_line_at_dateline called but no straddling detected (bug?)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "no straddling detected (bug?)\n");
 		GMT_free_segment (C, Sx);
 		GMT_free (C, pos);
 		return 0;
@@ -9933,19 +9938,19 @@ int GMT_detrend (struct GMT_CTRL *C, double *x, double *y, uint64_t n, double in
 			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
 		}
 		else {
-			GMT_report (C, GMT_MSG_NORMAL, "GMT_detrend called with less than 2 points, return NaNs\n");
+			GMT_report (C, GMT_MSG_NORMAL, "called with less than 2 points, return NaNs\n");
 			*intercept = (m) ? sum_y : C->session.d_NaN;	/* Value of single y-point or NaN */
 			*slope = C->session.d_NaN;
 		}
 	}
-	
+
 	if (mode) {	/* Either remove or restore trend from/to the data */
 		if (GMT_is_dnan (*slope)) {
-			GMT_report (C, GMT_MSG_NORMAL, "GMT_detrend called with slope = NaN - skipped\n");
+			GMT_report (C, GMT_MSG_NORMAL, "called with slope = NaN - skipped\n");
 			return (-1);
 		}
 		if (GMT_is_dnan (*intercept)) {
-			GMT_report (C, GMT_MSG_NORMAL, "GMT_detrend called with intercept = NaN - skipped\n");
+			GMT_report (C, GMT_MSG_NORMAL, "called with intercept = NaN - skipped\n");
 			return (-1);
 		}
 		for (i = 0; i < n; i++) {
