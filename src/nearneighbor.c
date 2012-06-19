@@ -343,7 +343,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
 #ifdef MEMDEBUG
-	GMT_memtrack_off (GMT, GMT_mem_keeper);
+	GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -440,13 +440,13 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 #ifdef MEMDEBUG
-			GMT_memtrack_on (GMT, GMT_mem_keeper);
+			GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 			n_alloc <<= 1;
 			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
 			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
 #ifdef MEMDEBUG
-			GMT_memtrack_off (GMT, GMT_mem_keeper);
+			GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 		}
 	} while (true);
@@ -457,12 +457,12 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\n", n);
 
 #ifdef MEMDEBUG
-	GMT_memtrack_on (GMT, GMT_mem_keeper);
+	GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 #ifdef MEMDEBUG
-	GMT_memtrack_off (GMT, GMT_mem_keeper);
+	GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 	/* Compute weighted averages based on the nearest neighbors */
 
@@ -511,7 +511,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\n", row);
 #ifdef MEMDEBUG
-	GMT_memtrack_on (GMT, GMT_mem_keeper);
+	GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);

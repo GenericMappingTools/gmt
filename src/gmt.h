@@ -118,17 +118,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "common_math.h"        /* Shared math functions */
 #include "common_string.h"      /* All code shared between GMT and PSL */
 
-#ifdef MEMDEBUG
-/* Items needed if -DMEMDEBUG is in effect */
-EXTERN_MSC void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER **M);
-EXTERN_MSC void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
-EXTERN_MSC void GMT_memtrack_on (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
-EXTERN_MSC void GMT_memtrack_off (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
-
-/* This single pointer will be a global to avoid having to pass it just do to debugging */
-EXTERN_MSC struct MEMORY_TRACKER *GMT_mem_keeper;
-#endif
-
 #ifdef __cplusplus
 }
 #endif

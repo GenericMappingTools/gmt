@@ -87,7 +87,7 @@ void *New_minmax_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 }
 
 void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Deallocate control structure */
-	GMT_free (GMT, C);
+	//GMT_free (GMT, C);
 }
 
 int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)

@@ -1325,13 +1325,15 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef TRIANGLE_D
 #ifdef MEMDEBUG
 	/* Shewchuk's function allocated the memory separately */
-		if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_off (GMT, GMT_mem_keeper);
+		if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK)
+			GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 #endif
 		GMT_free (GMT, ind);
 #ifdef TRIANGLE_D
 #ifdef MEMDEBUG
-		if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK) GMT_memtrack_on (GMT, GMT_mem_keeper);
+		if (GMT->current.setting.triangulate == GMT_TRIANGLE_SHEWCHUK)
+			GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 #endif
 	}

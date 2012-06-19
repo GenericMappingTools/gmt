@@ -4048,7 +4048,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 #endif
 #ifdef MEMDEBUG
 	/* Since the sorting throws this machinery off */
-	GMT_memtrack_off (C, GMT_mem_keeper);
+	GMT_memtrack_off (C, &g_mem_keeper);
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -4157,7 +4157,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	if (n != n_alloc) L = GMT_memory (C, L, n, char *);
 	*list = L;
 #ifdef MEMDEBUG
-	GMT_memtrack_on (C, GMT_mem_keeper);
+	GMT_memtrack_on (C, &g_mem_keeper);
 #endif
 	return (n);
 }
@@ -4171,12 +4171,12 @@ void MGD77_Path_Free (struct GMT_CTRL *C, uint64_t n, char **list)
 
 #ifdef MEMDEBUG
 	/* Since the sorting throws this machinery off */
-	GMT_memtrack_off (C, GMT_mem_keeper);
+	GMT_memtrack_off (C, &g_mem_keeper);
 #endif
 	for (i = 0; i < n; i++) GMT_free (C, list[i]);
 	GMT_free (C, list);
 #ifdef MEMDEBUG
-	GMT_memtrack_on (C, GMT_mem_keeper);
+	GMT_memtrack_on (C, &g_mem_keeper);
 #endif
 }
 

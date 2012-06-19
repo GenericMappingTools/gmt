@@ -256,7 +256,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Ok, now we can start reading new info */
 
 #ifdef MEMDEBUG
-	GMT_memtrack_off (GMT, GMT_mem_keeper);
+	GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 	if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 		GMT_report (GMT, GMT_MSG_FATAL, "Read error in 2nd line of track binindex file\n");
@@ -341,7 +341,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	GMT_fclose (GMT, fp);
 #ifdef MEMDEBUG
-	GMT_memtrack_on (GMT, GMT_mem_keeper);
+	GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 
 	/* Done, now we must rewrite the <ID>_index.b and <ID>_tracks.d files */

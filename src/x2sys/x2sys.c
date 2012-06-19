@@ -1205,7 +1205,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SY
 	if ((ftrack = fopen (track_path, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);
 
 #ifdef MEMDEBUG
-	GMT_memtrack_off (C, GMT_mem_keeper);
+	GMT_memtrack_off (C, &g_mem_keeper);
 #endif
 	if (mode == 1)
 		B->head = GMT_memory (C, NULL, n_alloc, struct X2SYS_BIX_TRACK_INFO);
@@ -1245,7 +1245,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SY
 	last_id++;
 	if (mode == 1) B->head = GMT_memory (C, B->head, last_id, struct X2SYS_BIX_TRACK_INFO);
 #ifdef MEMDEBUG
-	GMT_memtrack_on (C, GMT_mem_keeper);
+	GMT_memtrack_on (C, &g_mem_keeper);
 #endif
 
 	*ID = last_id;
@@ -1268,7 +1268,7 @@ int x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SYS
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 #ifdef MEMDEBUG
-	GMT_memtrack_off (C, GMT_mem_keeper);
+	GMT_memtrack_off (C, &g_mem_keeper);
 #endif
 	B->base = GMT_memory (C, NULL, B->nm_bin, struct X2SYS_BIX_DATABASE);
 
@@ -1301,7 +1301,7 @@ int x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SYS
 		}
 	}
 #ifdef MEMDEBUG
-	GMT_memtrack_on (C, GMT_mem_keeper);
+	GMT_memtrack_on (C, &g_mem_keeper);
 #endif
 	fclose (fbin);
 	return (X2SYS_NOERROR);

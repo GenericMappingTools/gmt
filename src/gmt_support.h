@@ -62,7 +62,7 @@ struct MATH_MACRO {
 struct MEMORY_ITEM {
 	size_t size; /* Size of memory allocated */
 	void *ptr;   /* Memory pointer */
-	char *name;  /* Source filename and line */
+	char *name;  /* Source filename and line or function name */
 	struct MEMORY_ITEM *l, *r;
 };
 
@@ -82,6 +82,14 @@ struct MEMORY_TRACKER {
 	FILE *fp;	/* For logging if GMT_TRACK_MEMORY is 2 */
 };
 
+/* Items needed if -DMEMDEBUG is in effect */
+EXTERN_MSC void GMT_memtrack_init (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
+EXTERN_MSC void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
+EXTERN_MSC void GMT_memtrack_on (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
+EXTERN_MSC void GMT_memtrack_off (struct GMT_CTRL *C, struct MEMORY_TRACKER *M);
+
+/* external struct to avoid having to pass it */
+EXTERN_MSC struct MEMORY_TRACKER g_mem_keeper;
 #endif
 
 #endif /* _GMT_SUPPORT_H */
