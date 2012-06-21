@@ -52,6 +52,8 @@
 
 #ifdef HAVE_BASENAME
 #	include <libgen.h>
+#else
+#	define basename GMT_basename
 #endif
 
 #ifdef HAVE_CTYPE_H_

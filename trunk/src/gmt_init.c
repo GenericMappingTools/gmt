@@ -8258,7 +8258,7 @@ int GMT_report_func (struct GMT_CTRL *C, unsigned int level, const char *source_
 	if (level > C->current.setting.verbose)
 		return 0;
 	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
-			gmt_module_name(C), basename (source_line));
+			gmt_module_name(C), GMT_basename (source_line));
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */

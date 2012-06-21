@@ -245,7 +245,7 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	entry = (M->search) ? gmt_memtrack_find (C, M, use) : NULL;
 	if (!entry) { /* Not found, must insert new entry at end */
 		entry = gmt_treeinsert (C, M, use);
-		entry->name = strdup ( basename (where) );
+		entry->name = strdup ( GMT_basename (where) );
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
@@ -290,11 +290,11 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 
 	entry = gmt_memtrack_find (C, M, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
-		GMT_report_func (C, GMT_MSG_FATAL, basename (where), "Wrongly tries to free item\n");
+		GMT_report_func (C, GMT_MSG_FATAL, GMT_basename (where), "Wrongly tries to free item\n");
 		return;
 	}
 	if (entry->size > M->current) {
-		GMT_report_func (C, GMT_MSG_FATAL, basename (where), "Memory tracker reports < 0 bytes allocated!\n");
+		GMT_report_func (C, GMT_MSG_FATAL, GMT_basename (where), "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;
 	}
 	else
