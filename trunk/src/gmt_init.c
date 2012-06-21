@@ -8253,20 +8253,12 @@ int GMT_message (struct GMT_CTRL *C, char *format, ...) {
 
 int GMT_report_func (struct GMT_CTRL *C, unsigned int level, const char *source_line, char *format, ...) {
 	char message[GMT_BUFSIZ];
-	const char *source_line_basename;
 	size_t source_info_len;
 	va_list args;
 	if (level > C->current.setting.verbose)
 		return 0;
-	/* if source_line contains absolute path strip leading path: */
-#ifndef WIN32
-	source_line_basename = (strrchr (source_line, '/') ? : source_line - 1) + 1;
-#else
-	source_line_basename = (strrchr (source_line, '\\') ?
-			strrchr (source_line, '\\') : source_line - 1) + 1;
-#endif
 	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
-			gmt_module_name(C), source_line_basename);
+			gmt_module_name(C), basename (source_line));
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */
