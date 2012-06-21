@@ -49,14 +49,6 @@
  * POSIX replacements
  */
 
-#ifndef HAVE_BASENAME
-/* basename -- extract the base portion of a pathname */
-char* basename (char* path) {
-	char *ptr = strrchr (path, '/');
-	return ptr ? ptr + 1 : (char*)path;
-}
-#endif /* HAVE_BASENAME */
-
 #ifndef HAVE_STRDUP
 char *strdup (const char *s) {
 	size_t n;

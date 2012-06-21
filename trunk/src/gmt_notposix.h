@@ -392,11 +392,6 @@
 #	define access _access
 #endif
 
-/* basename -- extract the base portion of a pathname */
-#ifndef HAVE_BASENAME
-	EXTERN_MSC char* basename (char* path);
-#endif
-
 /* fileno is usually in stdio.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in stdio.h */

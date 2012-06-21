@@ -37,13 +37,6 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-#if ! defined PATH_MAX && defined MAX_PATH
-#	define PATH_MAX MAX_PATH
-#endif
-#ifndef PATH_MAX
-# define PATH_MAX 4096
-#endif
-
 /* Prototypes */
 #if defined (__APPLE__)
 #	define GMT_runtime_bindir(result, argv) GMT_runtime_bindir_osx(result)

@@ -72,6 +72,10 @@ EXTERN_MSC char *stresep (char **stringp, const char *delim, int esc);
 
 EXTERN_MSC int match_string_in_file (const char *filename, const char *string);
 
+#ifndef HAVE_BASENAME
+EXTERN_MSC char *basename(const char *path);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
