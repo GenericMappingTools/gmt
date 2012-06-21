@@ -233,18 +233,6 @@ void gmt_treedelete (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr) {
 	M->list_tail->ptr = NULL;
 }
 
-const char *nopath_filename (const char *where)
-{	/* if 'where' contains absolute path strip leading path: */
-	const char *where_basename;
-#ifndef WIN32
-	where_basename = (strrchr (where, '/') ? : where - 1) + 1;
-#else
-	where_basename = (strrchr (where, '\\') ?
-			strrchr (where, '\\') : where - 1) + 1;
-#endif
-	return (where_basename);
-}
-
 void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char *where, void *ptr, void *prev_ptr, size_t size) {
 	/* Called from GMT_memory to update current list of memory allocated */
 	size_t old, diff;
@@ -256,9 +244,8 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	use = (prev_ptr) ? prev_ptr : ptr;
 	entry = (M->search) ? gmt_memtrack_find (C, M, use) : NULL;
 	if (!entry) { /* Not found, must insert new entry at end */
-		const char *where_basename = nopath_filename (where);
 		entry = gmt_treeinsert (C, M, use);
-		entry->name = strdup (where_basename);
+		entry->name = strdup ( basename (where) );
 		old = 0;
 		M->n_ptr++;
 		M->n_allocated++;
@@ -303,13 +290,11 @@ void gmt_memtrack_sub (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 
 	entry = gmt_memtrack_find (C, M, ptr);
 	if (!entry) {	/* Error, trying to free something not allocated by GMT_memory */
-		const char *where_basename = nopath_filename (where);
-		GMT_report_func (C, GMT_MSG_FATAL, where_basename, "Wrongly tries to free item\n");
+		GMT_report_func (C, GMT_MSG_FATAL, basename (where), "Wrongly tries to free item\n");
 		return;
 	}
 	if (entry->size > M->current) {
-		const char *where_basename = nopath_filename (where);
-		GMT_report_func (C, GMT_MSG_FATAL, where_basename, "Memory tracker reports < 0 bytes allocated!\n");
+		GMT_report_func (C, GMT_MSG_FATAL, basename (where), "Memory tracker reports < 0 bytes allocated!\n");
 		M->current = 0;
 	}
 	else
