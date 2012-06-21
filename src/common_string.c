@@ -39,6 +39,7 @@
  *  stresep                 Like strsep but takes an additional argument esc in order
  *                          to ignore escaped chars (from NetBSD)
  *  match_string_in_file    Return true if a string is found in file
+ *  GMT_basename            Extract the base portion of a pathname
  */
 
 /* CMake definitions: This must be first! */
@@ -462,7 +463,6 @@ int match_string_in_file (const char *filename, const char *string) {
 	return false;
 }
 
-#ifndef HAVE_BASENAME
 /* $OpenBSD: basename.c,v 1.14 2005/08/08 08:05:33 espie Exp $
  *
  * Copyright (c) 1997, 2004 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -480,8 +480,24 @@ int match_string_in_file (const char *filename, const char *string) {
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/* The GMT_basename() function returns the last component from the pathname
+ * pointed to by path, deleting any trailing `/' characters.  If path consists
+ * entirely of `/' characters, a pointer to the string "/" is returned.  If
+ * path is a null pointer or the empty string, a pointer to the string "." is
+ * returned.
+ *
+ * On successful completion, GMT_basename() returns a pointer to the last
+ * component of path.
+ *
+ * If GMT_basename() fails, a null pointer is returned and the global variable
+ * errno is set to indicate the error.
+ *
+ * The GMT_basename() function returns a pointer to internal static storage
+ * space that will be overwritten by subsequent calls (not thread safe).  The
+ * function does not modify the string pointed to by path. */
+
 char *
-basename(const char *path)
+GMT_basename(const char *path)
 {
 #ifdef WIN32
 	static char path_fixed[PATH_MAX];
@@ -543,4 +559,3 @@ basename(const char *path)
 	bname[len] = '\0';
 	return (bname);
 }
-#endif /* !HAVE_BASENAME */
