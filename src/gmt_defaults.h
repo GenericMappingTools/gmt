@@ -79,11 +79,11 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_logo[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
-	unsigned int interpolant;		/* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
-	unsigned int triangulate;		/* 0 for Watson [Default], 1 for Shewchuk (if configured) */
-	unsigned int verbose;			/* Level of verbosity 0-4 [1] */
-	unsigned int fft;				/* 0 for auto, or 1-5 for specific FFT algorithm */
-	bool history;			/* true to pass information via gmt.conf files */
+	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
+	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
+	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
+	unsigned int fft;         /* 0 for auto, or 1-5 for specific FFT algorithm */
+	unsigned int history;     /* mode to pass information via history file .gmtcommands (k_history_off, k_history_read, k_history_write) */
 	/* IO group */
 	unsigned int io_n_header_items;	/* number of header records [0] */
 	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */

@@ -117,6 +117,13 @@ static char *GMT_just_string[12] = {	/* Strings to specify justification */
 
 static struct GMT_HASH keys_hashnode[GMT_N_KEYS];
 
+enum history_mode {
+	/* whether to ignore/read/write history file .gmtcommands */
+	k_history_off = 0,
+	k_history_read,
+	k_history_write
+};
+
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value);
@@ -2332,19 +2339,19 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 bool gmt_true_false_or_error (char *value, bool *answer)
 {
-	/* Assigns 0 or 1 to answer, depending on whether value is false or true.
-	 * answer = 0, when value is "f", "false" or "0"
-	 * answer = 1, when value is "t", "true" or "1"
+	/* Assigns false or true to answer, depending on whether value is false or true.
+	 * answer = false, when value is "f", "false" or "0"
+	 * answer = true, when value is "t", "true" or "1"
 	 * In either case, the function returns false as exit code.
 	 * When value is something else, answer is not altered and true is return as error.
 	 */
 
 	if (!strcmp (value, "true") || !strcmp (value, "t") || !strcmp (value, "1")) {	/* true */
-		*answer = 1;
+		*answer = true;
 		return (false);
 	}
 	if (!strcmp (value, "false") || !strcmp (value, "f") || !strcmp (value, "0")) {	/* false */
-		*answer = 0;
+		*answer = false;
 		return (false);
 	}
 
@@ -3492,7 +3499,14 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_HISTORY: GMT_COMPAT_CHANGE ("GMT_HISTORY");
 #endif
 		case GMTCASE_GMT_HISTORY:
-			error = gmt_true_false_or_error (lower_value, &C->current.setting.history);
+			if      (strspn (lower_value, "1t"))
+				C->current.setting.history = (k_history_read | k_history_write);
+			else if (strchr (lower_value, 'r'))
+				C->current.setting.history = k_history_read;
+			else if (strspn (lower_value, "0f"))
+				C->current.setting.history = k_history_off;
+			else
+				error = true;
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_INTERPOLANT: GMT_COMPAT_CHANGE ("GMT_INTERPOLANT");
@@ -3656,7 +3670,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 	static char value[GMT_TEXT_LEN256], txt[8];
 	int case_val;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
-	
+
 	GMT_memset (value, GMT_TEXT_LEN256, char);
 	if (!keyword) return (value);		/* keyword argument missing */
 
@@ -4302,7 +4316,12 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_HISTORY: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_GMT_HISTORY:
-			sprintf (value, "%s", ft[C->current.setting.history]);
+			if (C->current.setting.history & k_history_write)
+				sprintf (value, "true");
+			else if (C->current.setting.history & k_history_read)
+				sprintf (value, "readonly");
+			else
+				sprintf (value, "false");
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_INTERPOLANT: GMT_COMPAT_WARN;
@@ -4946,13 +4965,14 @@ int gmt_get_history (struct GMT_CTRL *C)
 	bool done = false;
 	char line[GMT_BUFSIZ], hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
 	char option[GMT_TEXT_LEN64], value[GMT_BUFSIZ];
-	FILE *fp = NULL;	/* For .gmtcommands file */
+	FILE *fp = NULL; /* For .gmtcommands file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 #ifdef FLOCK
 	struct flock lock;
 #endif
 
-	if (!C->current.setting.history) return (GMT_NOERROR);	/* .gmtcommands mechanism has been disabled */
+	if (!(C->current.setting.history & k_history_read))
+		return (GMT_NOERROR); /* .gmtcommands mechanism has been disabled */
 
 	/* This is called once per GMT Session by GMT_Create_Session via GMT_begin and before any GMT_* module is called.
 	 * It loads in the known shorthands found in the .gmtcommands file
@@ -5017,12 +5037,13 @@ int gmt_put_history (struct GMT_CTRL *C)
 	int id;
 	bool empty;
 	char hfile[GMT_BUFSIZ], cwd[GMT_BUFSIZ];
-	FILE *fp = NULL;	/* For .gmtcommands file */
+	FILE *fp = NULL; /* For .gmtcommands file */
 #ifdef FLOCK
 	struct flock lock;
 #endif
 
-	if (!C->current.setting.history) return (GMT_NOERROR);	/* .gmtcommands mechanism has been disabled */
+	if (!(C->current.setting.history & k_history_write))
+		return (GMT_NOERROR); /* .gmtcommands mechanism has been disabled */
 
 	/* This is called once per GMT Session by GMT_end via GMT_Destroy_Session.
 	 * It writes out the known shorthands to the .gmtcommands file
