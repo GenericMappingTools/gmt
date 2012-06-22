@@ -8013,6 +8013,9 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	C->session.max_meminc = GMT_MAX_MEMINC;
 #endif
 
+	/* We default to non-GMT module id */
+	C->init.module_id = k_mod_nongmt;
+
 	/* We don't know the module name yet */
 	C->init.module_name = NULL;
 
@@ -8190,9 +8193,6 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	if (C->current.setting.io_gridfile_shorthand) gmt_setshorthand (C);	/* Load the short hand mechanism from .gmt_io */
 
 	GMT_fft_initialization (C);	/* Determine which FFT algos are available and set pointers */
-
-	/* We default to non-GMT module id */
-	C->init.module_id = k_mod_nongmt;
 
 	return (C);
 }
