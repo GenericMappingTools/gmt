@@ -5533,7 +5533,15 @@ uint64_t gmt_getprevpoint (double plon, double lon[], uint64_t n, uint64_t this)
 	return (ip);
 }
 
-#define GMT_SAME_LONGITUDE(A,B) (doubleAlmostEqualZero (fmod(A,360.0),fmod(B,360.0)))	/* A and B are the same longitude */
+static inline bool gmt_same_longitude (double a, double b) {
+	/* return true if a and b are the same longitude */
+	while (a < 0.0)   a += 360.0;
+	while (a > 360.0) a -= 360.0;
+	while (b < 0.0)   b += 360.0;
+	while (b > 360.0) b -= 360.0;
+	return doubleAlmostEqualZero (a, b);
+}
+
 #define GMT_SAME_LATITUDE(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
 
 int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, unsigned int count[])
@@ -5555,16 +5563,16 @@ int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
 		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
 		 * point if case (2) occurs: this avoids counting a crossing twice for consequtive segments.
 		 */
-		if (GMT_SAME_LONGITUDE (plon, P->coord[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->coord[GMT_Y][i])) return (1);	/* Point is on the perimeter */
+		if (gmt_same_longitude (plon, P->coord[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->coord[GMT_Y][i])) return (1);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
 		/* First skip segments that have no actual length: consecutive points with both latitudes == -90 or +90 */
 		if (fabs (P->coord[GMT_Y][i]) == 90.0 && doubleAlmostEqualZero (P->coord[GMT_Y][i], P->coord[GMT_Y][in]))
 			continue;
 		/* Next deal with case when the longitude of P goes ~right through the second of the line nodes */
-		if (GMT_SAME_LONGITUDE (plon, P->coord[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
+		if (gmt_same_longitude (plon, P->coord[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
 		lon1 = P->coord[GMT_X][i];	/* Copy the first of two longitudes since we may need to mess with them */
 		lon2 = P->coord[GMT_X][in];	/* Copy the second of two longitudes since we may need to mess with them */
-		if (GMT_SAME_LONGITUDE (plon, lon1)) {	/* Line goes through the 1st node */
+		if (gmt_same_longitude (plon, lon1)) {	/* Line goes through the 1st node */
 			/* Must check that the two neighboring points are on either side; otherwise it is just a tangent line */
 			ip = gmt_getprevpoint (plon, P->coord[GMT_X], P->n_rows, i);	/* Index of previous point != plon */
 			if ((lon2 >= lon1 && P->coord[GMT_X][ip] > lon1) || (lon2 <= lon1 && P->coord[GMT_X][ip] < lon1)) continue;	/* Both on same side */
