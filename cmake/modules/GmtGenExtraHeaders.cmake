@@ -175,34 +175,6 @@ macro (gen_gmt_keywords_h)
 	file (WRITE gmt_keywords.h "${_gmtkeywords}\n")
 endmacro (gen_gmt_keywords_h)
 
-macro (gen_gmtapi_err_h)
-	# gmtapi_errno.h
-	file2list (_gmtapierr_file ${GMT_SRC}/src/gmtapi_errors.d)
-	list_regex_replace (
-		"^([^#\t ]+).*"
-		"\\\\1 "
-		_gmtapierr ${_gmtapierr_file}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _gmtapierr)
-	set (_gmtapierrnodef)
-	set (_errno 0)
-	foreach (_err ${_gmtapierr})
-		list (APPEND _gmtapierrnodef "#define ${_err}${_errno}")
-		math (EXPR _errno "0${_errno} - 1")
-		#set (_errno "${_errno}")
-	endforeach (_err ${_gmtapierr})
-	string (REPLACE ";" "\n" _gmtapierrnodef "${_gmtapierrnodef}")
-	file (WRITE gmtapi_errno.h "${_gmtapierrnodef}\n")
-
-	# gmtapi_errstr.h
-	list_regex_replace (
-		"^([^\t ]+)[\t ]*$"
-		"\"\\\\1\""
-		_gmtapierrstr ${_gmtapierr})
-	string (REPLACE ";" ",\n" _gmtapierrstr "${_gmtapierrstr}")
-	file (WRITE gmtapi_errstr.h "${_gmtapierrstr}\n")
-endmacro (gen_gmtapi_err_h)
-
 # gmt_media_name.h gmt_pennames.h gmt_unique.h
 macro (gen_gmt_dimensions_h)
 	file2list (_file_lines ${GMT_SRC}/src/gmt_media_name.h)
@@ -394,8 +366,6 @@ elseif (GENERATE_COMMAND STREQUAL gen_gmt_grdkeys_h)
 	gen_gmt_grdkeys_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 	gen_gmt_keywords_h ()
-elseif (GENERATE_COMMAND STREQUAL gen_gmtapi_err_h)
-	gen_gmtapi_err_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_dimensions_h)
 	gen_gmt_dimensions_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_math_h)
