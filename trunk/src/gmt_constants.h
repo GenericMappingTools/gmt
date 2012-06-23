@@ -30,7 +30,7 @@
  *	GMT API CONSTANTS DEFINITIONS
  *===================================================================================*/
 
-#include "gmtapi_errno.h"			/* All error return values are defined here */
+#include "gmtapi_error_codes.h"			/* All API error codes are defined here */
 #include "gmtapi_define.h"			/* All constant values are defined here */
 
 /*--------------------------------------------------------------------
