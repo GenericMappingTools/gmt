@@ -74,9 +74,6 @@ static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;	/* Global structure needed for FO
 #endif
 
 static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions for multi-session programs */
-static char *GMTAPI_errstr[] = {
-#include "gmtapi_errstr.h"
-};
 
 /* Macros that report error, then return NULL pointer, true, or a value, respectively */
 #define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}
@@ -2485,13 +2482,11 @@ int GMT_Report_Error (struct GMTAPI_CTRL *API, int error)
 {	/* Write error message to log or stderr, then return error code back.
  	 * All functions can call this, even if API has not been initialized. */
 	FILE *fp = NULL;
-	if (error < GMT_OK) {	/* Report only negative numbers as errors: positive are warnings only */
+	if (error != GMT_OK) {	/* Report error */
 		if (!API || !API->GMT || (fp = API->GMT->session.std[GMT_ERR]) == NULL) fp = stderr;
 		if (API && API->session_tag) fprintf (fp, "[Session %s (%d)]: ", API->session_tag, API->session_ID);
-		fprintf (fp, "Error returned from GMT API: %s (%d)\n", GMTAPI_errstr[-error], error);
+		fprintf (fp, "Error returned from GMT API: %s (%d)\n", g_api_error_string[error], error);
 	}
-	else if (error)
-		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Report_Error: Warning returned from GMT API: %d\n", error);
 	if (API) API->error = error;	/* Update API error value of API exists */
 	return (error);
 }

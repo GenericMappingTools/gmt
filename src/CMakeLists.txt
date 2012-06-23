@@ -157,12 +157,12 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_plot.h gmt_project.h
 	gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h
 	gmt_synopsis.h gmt_texture.h gmt_time.h gmt_types.h gmt_unique.h
-	gmt_vector.h gmt_version.h gmtapi.h gmtapi_define.h gshhg_version.h pslib.h
-	s_rint.h triangle.h
-	gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c
+	gmt_vector.h gmt_version.h gmtapi.h gmtapi_define.h gmtapi_error_codes.h
+	gshhg_version.h pslib.h s_rint.h triangle.h
+	gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c  gmt_error_codes.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
-	gmtapi_parse.c gshhg_version.c
+	gmtapi_parse.c gmtapi_error_codes.c gshhg_version.c
 	common_math.c common_string.c common_runpath.c compat/qsort.c
 	gmt_module.c gmt_init.c gmt_map.c gmt_plot.c gmtapi_util.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
@@ -170,8 +170,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 # dependencies on generated files
 set (GMT_GEN_HDRS gmt_color_rgb.h gmt_colornames.h gmt_datums.h
 	gmt_ellipsoids.h gmt_grdkeys.h gmt_keycases.h
-	gmt_keywords.h gmtapi_errno.h
-	gmtapi_errstr.h gmt_config.h
+	gmt_keywords.h gmt_config.h
 	gmtmath.h gmtmath_op.h gmtmath_explain.h
 	grdmath.h grdmath_op.h grdmath_explain.h
 	gmt_dimensions.h
@@ -262,14 +261,6 @@ add_custom_command (OUTPUT gmt_keycases.h gmt_keywords.h
 	-D GMT_SRC=${GMT_SOURCE_DIR}
 	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
 	DEPENDS gmt_keywords.txt gmt_keywords.d)
-
-add_custom_command (OUTPUT gmtapi_errno.h gmtapi_errstr.h
-	COMMAND ${CMAKE_COMMAND}
-	-D GENERATE_COMMAND=gen_gmtapi_err_h
-	-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-	-D GMT_SRC=${GMT_SOURCE_DIR}
-	-P ${CMAKE_MODULE_PATH}/GmtGenExtraHeaders.cmake
-	DEPENDS gmtapi_errors.d)
 
 add_custom_command (OUTPUT gmt_dimensions.h
 	COMMAND ${CMAKE_COMMAND}
