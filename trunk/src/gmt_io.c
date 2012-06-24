@@ -1123,8 +1123,6 @@ bool gmt_ogr_header_parser (struct GMT_CTRL *C, char *record)
 	return (true);
 }
 
-#define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
-
 unsigned int gmt_assign_aspatial_cols (struct GMT_CTRL *C)
 {	/* This function will load input columns with aspatial data as requested by -a.
  	 * It will then handle any possible -i scalings/offsets as well for those columns */
