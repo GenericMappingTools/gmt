@@ -62,10 +62,12 @@ int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version
 	/* get length of version string */
 	status = nc_inq_attlen (ncid, NC_GLOBAL, VERSION_ATT_NAME, &v_len);
 	if (status != NC_NOERR) {
+		nc_close(ncid);
 		fprintf(stderr, FAILURE_PREFIX "cannot inquire version attribute length from file \"%s\" (%d).\n", filename, status);
 		return 0;
 	}
 	if (v_len == 0 || v_len > BUF_SIZE) {
+		nc_close(ncid);
 		fprintf(stderr, FAILURE_PREFIX "invalid version attribute length: %zd\n", v_len);
 		return 0;
 	}
@@ -73,9 +75,13 @@ int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version
 	/* get version string */
 	status = nc_get_att_text (ncid, NC_GLOBAL, VERSION_ATT_NAME, gshhg_version_string);
 	if (status != NC_NOERR) {
+		nc_close(ncid);
 		fprintf(stderr, FAILURE_PREFIX "cannot read version attribute from file \"%s\" (%d).\n", filename, status);
 		return 0;
 	}
+
+	/* close shoreline file */
+	nc_close(ncid);
 
 	/* null-terminate version string */
 	gshhg_version_string[v_len] = '\0';
