@@ -33,6 +33,7 @@ function usage () {
 }
 
 # set defaults
+NC_CHUNK="-clon/128,lat/128"
 NC_DEFLATE=3
 NC_SHUFFLE=
 NC_SUFFIX=""
@@ -121,7 +122,7 @@ for file in $@; do
   if [ "$NC_VERBOSE" = "TRUE" ]; then
     echo -n "$(basename "${file}")... " >&2
   fi
-  nccopy -d $NC_DEFLATE $NC_SHUFFLE "$file" "${file}.$$.tmp" || continue
+  nccopy -d $NC_DEFLATE $NC_SHUFFLE $NC_CHUNK "$file" "${file}.$$.tmp" || continue
 
   # check compressed file size
   if [ "$NC_DEFLATE" -eq 0 ] || file1_greater_file2 "$file" "${file}.$$.tmp" ; then
