@@ -8092,7 +8092,11 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	C->current.proj.z_project.level = 0.0;
 	for (i = 0; i < 4; i++) C->current.proj.edge[i] = true;
 	GMT_grdio_init (C);
+#ifdef NO_PAD
+	GMT_set_pad (C, 0);
+#else
 	GMT_set_pad (C, 2);	/* Default is to load in grids with 2 rows/cols for boundary padding */
+#endif
 	C->current.proj.f_horizon = 90.0;
 	C->current.proj.proj4 = GMT_memory (C, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
 	for (i = 0; i < GMT_N_PROJ4; i++) {	/* Load up proj4 structure once and for all */
