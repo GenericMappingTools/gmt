@@ -502,6 +502,8 @@ int GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (gmt_nc_grd_info (C, header, 'w'));
 }
 
+//#undef NO_PAD
+
 int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
@@ -552,6 +554,81 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 
 	tmp = GMT_memory (C, NULL, header->nx, float);
 
+#ifdef NO_PAD
+	if (*pad == 0) {
+		/* when pad = 0 we can directly write to *grid without the need to flip
+		 * and pad in place */
+		unsigned n = 0;
+		unsigned n_nodes = height_in * width_in; /* number of grid nodes */
+		unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* xy_dim not row major!!! */
+		nc_type z_type;      /* type of z variable */
+		size_t z_size;       /* size of z variable */
+		size_t chunksize[5]; /* chunksize of z */
+		size_t n_contiguous_chunk_rows = 0; /* that are read by nc_get_vara_float(), 0 = all */
+
+		fprintf (stderr, "nx:%u ny:%u x0:%u y0:%u y-order:%d\n",
+				width_in, height_in, first_col, first_row, header->y_order);
+
+		/* get number of chunked rows that fit into cache (32MiB) */
+		GMT_err_trap (nc_inq_vartype  (ncid, header->z_id, &z_type));
+		GMT_err_trap (nc_inq_type(ncid, z_type, NULL, &z_size));
+		if (height_in * width_in * z_size > NC_CACHE_SIZE) {
+			int storage_in;
+			GMT_err_trap (nc_inq_var_chunking(ncid, header->z_id, &storage_in, chunksize));
+			if (storage_in != NC_CHUNKED)
+				chunksize[yx_dim[0]] = 128; /* default if NC_CONTIGUOUS */
+			n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width_in * z_size) / chunksize[0] );
+			fprintf (stderr, "reading %zu contiguous chunked rows (%.1f MiB)\n",
+					n_contiguous_chunk_rows,
+					n_contiguous_chunk_rows * z_size * width_in * chunksize[yx_dim[0]] / 1048576.0f);
+		}
+
+		if (n_contiguous_chunk_rows) {
+			/* read grid in chunks to keep memory footprint low */
+			float *p_grid = grid;
+			count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+			count[yx_dim[1]] = width_in;
+			while ( start[yx_dim[0]] + count[yx_dim[0]] < height_in ) {
+				GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, p_grid));
+				start[yx_dim[0]] += chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+				p_grid += count[yx_dim[0]] * width_in; /* advance grid location */
+			}
+			if ( start[yx_dim[0]] != height_in ) {
+				/* get last chunked row */
+				count[yx_dim[0]] = height_in - start[yx_dim[0]];
+				GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, p_grid));
+			}
+		}
+		else {
+			/* read whole grid contiguous */
+			start[yx_dim[0]] = first_row;
+			start[yx_dim[1]] = first_col;
+			count[yx_dim[0]] = height_in;
+			count[yx_dim[1]] = width_in;
+			GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, grid));
+		}
+
+		/* get stats */
+		header->z_min = DBL_MAX;
+		header->z_max = -DBL_MAX;
+		while (n < n_nodes) {
+			if (check && grid[n] == header->nan_value) {
+				grid[n] = C->session.f_NaN;
+				continue;
+			}
+			else if (!isnan (grid[n])) {
+				header->z_min = MIN (header->z_min, grid[n]);
+				header->z_max = MAX (header->z_max, grid[n]);
+			}
+			++n;
+		}
+
+		/* TODO: in-place padding and flipping (should be easy); remove else
+		 * statement below */
+	} else
+#endif /* NO_PAD */
+	{ /* !NO_PAD */
+
 	/* Load the data row by row. The data in the file is stored either "top down"
 	 * (y_order < 0, the first row is the top row) or "bottom up" (y_order > 0, the first
 	 * row is the bottom row). GMT will store the data in "top down" mode. */
@@ -592,6 +669,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, &grid[ij]));
 	fprintf (stderr, "End nc_get_vara_float\n");
 #endif
+	} /* !NO_PAD */
 
 	header->nx = width_in;
 	header->ny = height_in;
@@ -664,6 +742,80 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	setup_chunk_cache();
 	GMT_err_trap (gmt_nc_grd_info (C, header, 'W'));
 
+#ifdef NO_PAD
+	if (*pad == 0) {
+		/* when pad = 0 we can directly write to *grid without the need to flip
+		 * and pad in place */
+		unsigned n = 0;
+		unsigned n_nodes = height_out * width_out; /* number of grid nodes */
+		unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* xy_dim not row major!!! */
+		nc_type z_type;      /* type of z variable */
+		size_t z_size;       /* size of z variable */
+		size_t chunksize[5]; /* chunksize of z */
+		size_t n_contiguous_chunk_rows = 0; /* that are read by nc_get_vara_float(), 0 = all */
+
+		fprintf (stderr, "nx:%u ny:%u x0:%u y0:%u y-order:%d\n",
+				width_out, height_out, first_col, first_row, header->y_order);
+
+		/* get stats */
+		header->z_min = DBL_MAX;
+		header->z_max = -DBL_MAX;
+		check = !isnan (header->nan_value);
+		while (n < n_nodes) {
+			if (check && isnan (grid[n]))
+				grid[n] = header->nan_value;
+			else if (!isnan (grid[n])) {
+				header->z_min = MIN (header->z_min, grid[n]);
+				header->z_max = MAX (header->z_max, grid[n]);
+			}
+			++n;
+		}
+
+		/* get number of chunked rows that fit into cache (32MiB) */
+		GMT_err_trap (nc_inq_vartype  (header->ncid, header->z_id, &z_type));
+		GMT_err_trap (nc_inq_type(header->ncid, z_type, NULL, &z_size));
+		if (height_out * width_out * z_size > NC_CACHE_SIZE) {
+			int storage_in;
+			GMT_err_trap (nc_inq_var_chunking(header->ncid, header->z_id, &storage_in, chunksize));
+			if (storage_in != NC_CHUNKED)
+				chunksize[yx_dim[0]] = 128; /* default if NC_CONTIGUOUS */
+			n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width_out * z_size) / chunksize[0] );
+			fprintf (stderr, "writing %zu contiguous chunked rows (%.1f MiB)\n",
+					n_contiguous_chunk_rows,
+					n_contiguous_chunk_rows * z_size * width_out * chunksize[yx_dim[0]] / 1048576.0f);
+		}
+
+		if (n_contiguous_chunk_rows) {
+			/* read grid in chunks to keep memory footprint low */
+			float *p_grid = grid;
+			count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+			count[yx_dim[1]] = width_out;
+			while ( start[yx_dim[0]] + count[yx_dim[0]] < height_out ) {
+				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, p_grid));
+				start[yx_dim[0]] += chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+				p_grid += count[yx_dim[0]] * width_out; /* advance grid location */
+			}
+			if ( start[yx_dim[0]] != height_out ) {
+				/* get last chunked row */
+				count[yx_dim[0]] = height_out - start[yx_dim[0]];
+				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, p_grid));
+			}
+		}
+		else {
+			/* write whole grid contiguous */
+			start[yx_dim[0]] = first_row;
+			start[yx_dim[1]] = first_col;
+			count[yx_dim[0]] = height_out;
+			count[yx_dim[1]] = width_out;
+			GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
+		}
+
+		/* TODO: in-place padding and flipping (should be easy); remove else
+		 * statement below */
+	} else
+#endif /* NO_PAD */
+	{ /* !NO_PAD */
+
 	/* Set start position for writing grid */
 
 	count[1] = width_out;
@@ -730,6 +882,8 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	}
 
 	if (nr_oor > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
+
+	} /* !NO_PAD */
 
 	GMT_free (C, actual_col);
 
