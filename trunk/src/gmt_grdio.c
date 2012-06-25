@@ -854,7 +854,7 @@ int GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, char mo
 	}
 	else
 		r_w = 1;
- 	GMT_err_trap (GMT_grd_get_format (C, file, &G->header, magic));
+	GMT_err_trap (GMT_grd_get_format (C, file, &G->header, magic));
 	if (GMT_is_dnan(G->header.z_scale_factor))
 		G->header.z_scale_factor = 1.0;
 	else if (G->header.z_scale_factor == 0.0) {

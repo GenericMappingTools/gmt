@@ -47,8 +47,23 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
+/* HDF5 chunk cache: reasonable defaults assuming min. chunk size of 128x128 and type byte */
+#define NC_CACHE_SIZE       33554432 /* 32MiB */
+#define NC_CACHE_NELEMS     2053     /* prime > NC_CACHE_SIZE / (128*128*1byte) */
+#define NC_CACHE_PREEMPTION 0.75
+
 int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
 int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+
+static inline void setup_chunk_cache (void) {
+	/* Change the default chunk cache settings in the HDF5 library for all variables
+	 * in the nc-file. The settings apply for subsequent file opens/creates. */
+	static bool already_setup = false;
+	if (!already_setup) {
+		nc_set_chunk_cache(NC_CACHE_SIZE, NC_CACHE_NELEMS, NC_CACHE_PREEMPTION);
+		already_setup = true;
+	}
+}
 
 int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Returns type GMT_GRD_IS_N? (=n?) for new NetCDF grid,
@@ -195,11 +210,14 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
 			break;
 		case 'u':
-			GMT_err_trap (nc_open (header->name, NC_WRITE, &ncid)); 
-			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode)); 
+			GMT_err_trap (nc_open (header->name, NC_WRITE, &ncid));
+			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 			break;
 		default:
-			if (C->current.setting.io_nc4_deflation_level > 0) {
+			if (C->current.setting.io_nc4_chunksize[0] != 0 &&
+					C->current.setting.io_nc4_chunksize[1] != 0 &&
+					header->ny >= C->current.setting.io_nc4_chunksize[0] &&
+					header->nx >= C->current.setting.io_nc4_chunksize[1]) {
 				GMT_err_trap (nc_create (header->name, NC_NETCDF4 | NC_CLOBBER, &ncid));
 			}
 			else {
@@ -284,7 +302,13 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Variable name is given, or defaults to "z" */
 		if (!header->varname[0]) strcpy (header->varname, "z");
 		GMT_err_trap (nc_def_var (ncid, header->varname, z_type, 2, dims, &z_id));
-		if (C->current.setting.io_nc4_deflation_level > 0) {
+		if (C->current.setting.io_nc4_chunksize[0] != 0 &&
+				C->current.setting.io_nc4_chunksize[1] != 0 &&
+				header->ny >= C->current.setting.io_nc4_chunksize[0] &&
+				header->nx >= C->current.setting.io_nc4_chunksize[1]) {
+			/* set chunk size */
+			GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, C->current.setting.io_nc4_chunksize));
+			/* set deflation level */
 			GMT_err_trap (nc_def_var_deflate (ncid, z_id, true, true, C->current.setting.io_nc4_deflation_level));
 		}
 	}
@@ -491,7 +515,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
-	 
+
 	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
 	int i, ncid, ndims;
 	int check, err;
@@ -521,6 +545,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	/* Open the NetCDF file */
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
+	setup_chunk_cache();
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
 	check = !GMT_is_dnan (header->nan_value);
 	GMT_err_trap (nc_inq_varndims (ncid, header->z_id, &ndims));
@@ -636,7 +661,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	header->ny = height_out;
 
 	/* Write grid header without closing file afterwards */
-
+	setup_chunk_cache();
 	GMT_err_trap (gmt_nc_grd_info (C, header, 'W'));
 
 	/* Set start position for writing grid */

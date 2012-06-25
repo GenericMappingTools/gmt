@@ -91,7 +91,11 @@ enum Gmt_error_code {
 };
 
 /* Definition for an error trap */
+#ifdef DEBUG
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_report(C,GMT_MSG_FATAL,"GMT_err_trap: %d\n", err);return(err);}
+#else
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
+#endif
 
 EXTERN_MSC const char * GMT_strerror (int err);
 

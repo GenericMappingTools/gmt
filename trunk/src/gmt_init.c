@@ -3378,6 +3378,12 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = true;
 			break;
+		case GMTCASE_IO_NC4_CHUNK_SIZE:
+			if ( sscanf (value, "%zu , %zu", /* chunk size: lat,lon */
+					&C->current.setting.io_nc4_chunksize[0],
+					&C->current.setting.io_nc4_chunksize[1]) != 2 )
+				error = true;
+			break;
 		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
 			if (!strcmp (lower_value, "false"))
 				ival = 0;
@@ -4228,11 +4234,16 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_IO_NAN_RECORDS:
 			if (C->current.setting.io_nan_records)
 				strcpy (value, "pass");
-			else 
+			else
 				strcpy (value, "skip");
 			break;
+		case GMTCASE_IO_NC4_CHUNK_SIZE:
+			sprintf (value, "%zu,%zu", /* chunk size: lat,lon */
+					C->current.setting.io_nc4_chunksize[0],
+					C->current.setting.io_nc4_chunksize[1]);
+			break;
 		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
-			sprintf (value, "%d", C->current.setting.io_nc4_deflation_level);
+			sprintf (value, "%u", C->current.setting.io_nc4_deflation_level);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_XY_TOGGLE: GMT_COMPAT_WARN;
