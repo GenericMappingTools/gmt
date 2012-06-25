@@ -4,7 +4,7 @@
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
 BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
-[ OPT(C)IT(length)/IT(ds)[IT(spacing)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] [ OPT(N) ] 
+[ OPT(C)IT(length)/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] [ OPT(N) ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -50,6 +50,7 @@ Specify two length scales that control how the sampling is done:
 IT(length) sets the full length of each cross-profile, while
 IT(ds) is the distance increment along each cross-profile.
 Optionally, append BD(/)IT(spacing) for an equidistant spacing between cross-profiles [Default erects cross-profiles at the input coordinates].
+By default, all cross-profiles have the same direction.  Append BD(+a) to alternate the direction of cross-profiles.
 Append suitable units for each length scale (See UNITS below).
 The output columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
 .TP

@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-06-24	pwessel
+	* grdtrack.c:		Modifier +a added to -C to alternate the direction of cross-profiles.
+
 2012-06-15	pwessel
 	* gmt_plot.c:		3-D basemaps can now have horizontal gridlines on xz and yz back walls.
 
