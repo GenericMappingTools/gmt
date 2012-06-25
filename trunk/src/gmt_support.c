@@ -9486,7 +9486,7 @@ struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 	return (D);
 }
 
-struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols)
+struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate)
 {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
@@ -9521,6 +9521,8 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 		return (NULL);
 	}
 
+	if (alternate) sign = -1.0;	/* Survey layout */
+	
 	/* Get resampling step size and zone width in degrees */
 
 	cross_length *= 0.5;	/* Now half-length in user's units */
@@ -9564,7 +9566,10 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 				GMT_normalize3v (GMT, E);			/* Make sure E has unit length */
 				gmt_init_rot_matrix (Rot0, E);			/* Get partial rotation matrix since no actual angle is applied yet */
 				az_cross = fmod (Tin->segment[seg]->coord[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
-				sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
+				if (alternate)
+					sign = -sign;
+				else
+					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				dist_across_seg = 0.0;
 				S = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 				GMT_alloc_segment (GMT, S, np_cross, n_tot_cols, true);
@@ -9622,7 +9627,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	return (Xout);
 }
 
-struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols)
+struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate)
 {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
@@ -9654,6 +9659,8 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 		return (NULL);
 	}
 
+	if (alternate) sign = -1.0;	/* Survey mode */
+	
 	/* Get resampling step size and zone width in degrees */
 
 	cross_length *= 0.5;					/* Now half-length in user's units */
@@ -9682,7 +9689,10 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 
 				x = Tin->segment[seg]->coord[GMT_X][row];	y = Tin->segment[seg]->coord[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				az_cross = fmod (Tin->segment[seg]->coord[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
-				sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
+				if (alternate)
+					sign = -sign;
+				else
+					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
 				GMT_alloc_segment (GMT, S, np_cross, n_tot_cols, true);
 				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
@@ -9731,13 +9741,13 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	return (Xout);
 }
 
-struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols)
+struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate)
 {	/* Call either the spherical or Cartesian version */
 	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN))
-		D = gmt_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols);
+		D = gmt_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, alternate);
 	else
-		D = gmt_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols);
+		D = gmt_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, alternate);
 	return (D);
 }
 

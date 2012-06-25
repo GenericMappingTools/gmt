@@ -63,8 +63,8 @@ struct GRDTRACK_CTRL {
 		bool active;
 		int mode;
 	} A;
-	struct C {	/* -C<length>/<ds>[/<spacing>] */
-		bool active;
+	struct C {	/* -C<length>/<ds>[/<spacing>][+a] */
+		bool active, alternate;
 		int mode;	/* May be negative */
 		char unit;
 		double ds, spacing, length;
@@ -121,7 +121,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]]]\n"); 
+	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]][+a]]\n"); 
 	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -145,6 +145,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   <length>: Full-length of each cross profile.  Append desired distance unit [%s].\n", GMT_LEN_UNITS);
 	GMT_message (GMT, "\t   <dz>: Distance interval along the cross-profiles.\n");
 	GMT_message (GMT, "\t   Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
+	GMT_message (GMT, "\t   Append +a to alternate direction of cross-profiles [Default orients all the same way].\n");
 	GMT_message (GMT, "\t   Output columns are x, y, dist, z1, z2, ...\n");
 	GMT_message (GMT, "\t   Default samples the grid(s) at the input data points.\n");
 	GMT_message (GMT, "\t-D Save [resampled] input lines to a separate file <dfile>.  Requires -C.\n");
@@ -178,7 +179,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 
 	int j;
 	unsigned int pos, n_errors = 0, ng = 0, n_files = 0;
-	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256];
+	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -204,10 +205,15 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 				break;
 			case 'C':	/* Create cross profiles */
 				Ctrl->C.active = true;
+				if ((c = strstr (opt->arg, "+a"))) {	/* Select alternating direction of cross-profiles */
+					Ctrl->C.alternate = true;
+					*c = 0;	/* Truncate option at +a */
+				}
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
 				Ctrl->C.mode = GMT_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
 				Ctrl->C.mode = GMT_get_distance (GMT, tb, &(Ctrl->C.ds), &(Ctrl->C.unit));
 				if (j == 3) Ctrl->C.mode = GMT_get_distance (GMT, tc, &(Ctrl->C.spacing), &(Ctrl->C.unit));
+				if (Ctrl->C.alternate) *c = '+';	/* Undo truncation */
 				break;
 			case 'D':	/* Dump resampled lines */
 				Ctrl->D.active = true;
@@ -310,7 +316,8 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
+	//n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 
@@ -476,7 +483,7 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_DEV]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked deviations(s) in each profile */
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
-		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols)) == NULL) Return (API->error);
+		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.alternate)) == NULL) Return (API->error);
 		if (Ctrl->D.active) {
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp) != GMT_OK) {
 				Return (API->error);
