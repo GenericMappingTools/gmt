@@ -354,18 +354,29 @@ int GMT_nc_get_att_text (struct GMT_CTRL *C, int ncid, int varid, char *name, ch
 	 * ncid, varid, name, text	: as in nc_get_att_text
 	 * textlen			: maximum number of characters to copy to string text
 	 */
-	int err;
+	int status;
 	size_t attlen;
 	char *att = NULL;
 
-	GMT_err_trap (nc_inq_attlen (ncid, varid, name, &attlen));
+	status = nc_inq_attlen (ncid, varid, name, &attlen);
+	if (status != NC_NOERR) {
+		strncpy (text, "N/A", textlen-1);
+		text[textlen-1] = '\0';
+		return status;
+	}
 	att = GMT_memory (C, NULL, attlen, char);
-	nc_get_att_text (ncid, varid, name, att);
-	attlen = MIN (attlen, textlen-1);	/* Truncate text to one less than textlen (to keep space for NUL terminator) */
-	GMT_memcpy (text, att, attlen, char);		/* Copy att to text */
-	GMT_memset (&text[attlen], textlen - attlen, char);	/* Fill rest of text with zeros */
+	status = nc_get_att_text (ncid, varid, name, att);
+	if (status == NC_NOERR) {
+		attlen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
+		strncpy (text, att, attlen); /* Copy att to text */
+		text[attlen] = '\0'; /* Terminate string */
+	}
+	else {
+		strncpy (text, "N/A", textlen-1);
+		text[textlen-1] = '\0';
+	}
 	GMT_free (C, att);
-	return (GMT_NOERROR);
+	return status;
 }
 
 FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
