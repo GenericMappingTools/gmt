@@ -502,6 +502,22 @@ int GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (gmt_nc_grd_info (C, header, 'w'));
 }
 
+void grd_flip_vertical (float *grid, const unsigned height, const unsigned width) {
+	/* Reverses the grid vertically, that is, from north up to south up or vice versa. */
+	unsigned height_over_2 = (unsigned) floor (height / 2.0);
+	unsigned row;
+	float *tmp = malloc (width * sizeof (float));
+	float *top, *bottom;
+	for (row = 0; row < height_over_2; ++row) {
+		top = grid + row * width;                       /* points to top row */
+		bottom = grid + (height - row) * width - width; /* points to bottom row */
+		memcpy (tmp, top, width * sizeof (float));    /* save top row */
+		memcpy (top, bottom, width * sizeof (float)); /* copy bottom to top */
+		memcpy (bottom, tmp, width * sizeof (float)); /* copy tmp to bottom */
+	}
+	free (tmp);
+}
+
 //#undef NO_PAD
 
 int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
@@ -566,13 +582,18 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		size_t chunksize[5]; /* chunksize of z */
 		size_t n_contiguous_chunk_rows = 0; /* that are read by nc_get_vara_float(), 0 = all */
 
+		/* adjust first_row */
+		if (header->y_order > 0)
+			first_row = header->ny - 1 - last_row;
+
 		fprintf (stderr, "nx:%u ny:%u x0:%u y0:%u y-order:%d\n",
 				width_in, height_in, first_col, first_row, header->y_order);
 
 		/* get number of chunked rows that fit into cache (32MiB) */
-		GMT_err_trap (nc_inq_vartype  (ncid, header->z_id, &z_type));
-		GMT_err_trap (nc_inq_type(ncid, z_type, NULL, &z_size));
-		if (height_in * width_in * z_size > NC_CACHE_SIZE) {
+		GMT_err_trap (nc_inq_vartype  (ncid, header->z_id, &z_type)); /* type of z */
+		GMT_err_trap (nc_inq_type(ncid, z_type, NULL, &z_size)); /* size of z elements in bytes */
+		if (n_nodes * z_size > NC_CACHE_SIZE) {
+			/* memory needed for subset exceeds the cache size */
 			int storage_in;
 			GMT_err_trap (nc_inq_var_chunking(ncid, header->z_id, &storage_in, chunksize));
 			if (storage_in != NC_CHUNKED)
@@ -583,30 +604,50 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 					n_contiguous_chunk_rows * z_size * width_in * chunksize[yx_dim[0]] / 1048576.0f);
 		}
 
+		/* set index of input origin */
+		start[yx_dim[0]] = first_row;
+		start[yx_dim[1]] = first_col;
+
 		if (n_contiguous_chunk_rows) {
 			/* read grid in chunks to keep memory footprint low */
+			unsigned remainder;
 			float *p_grid = grid;
+
+			/* adjust row count, so that it ends on the bottom of a chunk */
 			count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+			remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
+			count[yx_dim[0]] -= remainder;
+			fprintf (stderr, "r:%u c:%zu\n", remainder, count[yx_dim[0]]);
+
 			count[yx_dim[1]] = width_in;
-			while ( start[yx_dim[0]] + count[yx_dim[0]] < height_in ) {
+			while ( start[yx_dim[0]] + count[yx_dim[0]] <= height_in ) {
 				GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, p_grid));
-				start[yx_dim[0]] += chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+				//memset (p_grid, 255, 40 * 4 * count[yx_dim[1]]); // test pattern
 				p_grid += count[yx_dim[0]] * width_in; /* advance grid location */
+				start[yx_dim[0]] += count[yx_dim[0]];  /* set new origin */
+				if (remainder) {
+					/* reset count */
+					count[yx_dim[0]] += remainder;
+					remainder = 0;
+				}
 			}
 			if ( start[yx_dim[0]] != height_in ) {
 				/* get last chunked row */
-				count[yx_dim[0]] = height_in - start[yx_dim[0]];
+				count[yx_dim[0]] = height_in - start[yx_dim[0]] + first_row;
 				GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, p_grid));
+				//memset (p_grid, 255, 40 * 4 * count[yx_dim[1]]); // test pattern
 			}
 		}
 		else {
 			/* read whole grid contiguous */
-			start[yx_dim[0]] = first_row;
-			start[yx_dim[1]] = first_col;
 			count[yx_dim[0]] = height_in;
 			count[yx_dim[1]] = width_in;
 			GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, grid));
 		}
+
+		/* flip grid upside down */
+		if (header->y_order > 0)
+			grd_flip_vertical (grid, height_in, width_in);
 
 		/* get stats */
 		header->z_min = DBL_MAX;
@@ -754,6 +795,10 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 		size_t chunksize[5]; /* chunksize of z */
 		size_t n_contiguous_chunk_rows = 0; /* that are read by nc_get_vara_float(), 0 = all */
 
+		/* adjust first_row */
+		if (header->y_order > 0)
+			first_row = header->ny - 1 - last_row;
+
 		fprintf (stderr, "nx:%u ny:%u x0:%u y0:%u y-order:%d\n",
 				width_out, height_out, first_col, first_row, header->y_order);
 
@@ -771,10 +816,14 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 			++n;
 		}
 
+		/* flip grid upside down */
+		if (header->y_order > 0)
+			grd_flip_vertical (grid, height_out, width_out);
+
 		/* get number of chunked rows that fit into cache (32MiB) */
 		GMT_err_trap (nc_inq_vartype  (header->ncid, header->z_id, &z_type));
 		GMT_err_trap (nc_inq_type(header->ncid, z_type, NULL, &z_size));
-		if (height_out * width_out * z_size > NC_CACHE_SIZE) {
+		if (n_nodes * z_size > NC_CACHE_SIZE) {
 			int storage_in;
 			GMT_err_trap (nc_inq_var_chunking(header->ncid, header->z_id, &storage_in, chunksize));
 			if (storage_in != NC_CHUNKED)
@@ -787,28 +836,41 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 
 		if (n_contiguous_chunk_rows) {
 			/* read grid in chunks to keep memory footprint low */
+			unsigned remainder;
 			float *p_grid = grid;
+
+			/* adjust row count, so that it ends on the bottom of a chunk */
 			count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+			remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
+			count[yx_dim[0]] -= remainder;
+			fprintf (stderr, "r:%u c:%zu\n", remainder, count[yx_dim[0]]);
+
 			count[yx_dim[1]] = width_out;
-			while ( start[yx_dim[0]] + count[yx_dim[0]] < height_out ) {
-				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, p_grid));
-				start[yx_dim[0]] += chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+			while ( start[yx_dim[0]] + count[yx_dim[0]] <= height_out ) {
+				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
+				//memset (p_grid, 255, 40 * 4 * count[yx_dim[1]]); // test pattern
 				p_grid += count[yx_dim[0]] * width_out; /* advance grid location */
+				start[yx_dim[0]] += count[yx_dim[0]];  /* set new origin */
+				if (remainder) {
+					/* reset count */
+					count[yx_dim[0]] += remainder;
+					remainder = 0;
+				}
 			}
 			if ( start[yx_dim[0]] != height_out ) {
 				/* get last chunked row */
-				count[yx_dim[0]] = height_out - start[yx_dim[0]];
-				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, p_grid));
+				count[yx_dim[0]] = height_out - start[yx_dim[0]] + first_row;
+				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
+				//memset (p_grid, 255, 40 * 4 * count[yx_dim[1]]); // test pattern
 			}
 		}
 		else {
-			/* write whole grid contiguous */
-			start[yx_dim[0]] = first_row;
-			start[yx_dim[1]] = first_col;
+			/* read whole grid contiguous */
 			count[yx_dim[0]] = height_out;
 			count[yx_dim[1]] = width_out;
 			GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
 		}
+
 
 		/* TODO: in-place padding and flipping (should be easy); remove else
 		 * statement below */
