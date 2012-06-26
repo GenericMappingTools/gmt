@@ -1,9 +1,8 @@
 #
 # GMT @GMT_PACKAGE_VERSION@ Defaults file (@GMT_CONF_TEMPLATE@ version)
-#
+# vim:sw=8:ts=8:sts=8
 # $Revision$
 # $LastChangedDate$
-# vim:sw=8:ts=8:sts=8
 #
 # COLOR Parameters
 #
@@ -61,8 +60,9 @@ IO_GRIDFILE_FORMAT		= nf
 IO_GRIDFILE_SHORTHAND		= false
 IO_HEADER			= false
 IO_N_HEADER_RECS		= 1
-IO_NC4_DEFLATION_LEVEL		= 0
 IO_NAN_RECORDS			= pass
+IO_NC4_CHUNK_SIZE		= 0,0
+IO_NC4_DEFLATION_LEVEL		= 0
 IO_LONLAT_TOGGLE		= false
 IO_SEGMENT_MARKER		= >
 #
