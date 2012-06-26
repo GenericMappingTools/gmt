@@ -192,7 +192,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 	int error;
 	unsigned int n_grds = 0;
 	bool subset;
-	
+
 	uint64_t ij, n_nan = 0, n = 0;
 
 	double x_min = 0.0, y_min = 0.0, z_min = 0.0, x_max = 0.0, y_max = 0.0, z_max = 0.0, wesn[4];
@@ -201,7 +201,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	char format[GMT_BUFSIZ], text[GMT_TEXT_LEN64], record[GMT_BUFSIZ];
 	char *type[2] = { "Gridline", "Pixel"};
-	
+
 	struct GRDINFO_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -492,7 +492,21 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_ascii_format_col (GMT, text, rms, GMT_Z);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
-		}
+			{
+				/* chunk size and deflation level */
+				bool chunked = G->header->z_chunksize[0] != 0;
+				if (chunked) {
+					sprintf (text, " chunk_size: %u,%u shuffle: %s deflation_level: %u",
+							G->header->z_chunksize[0], G->header->z_chunksize[1],
+							G->header->z_shuffle ? "on" : "off", G->header->z_deflate_level);
+				}
+				else
+					text[0] = '\0';
+				sprintf (record, "%s: format: %s%s",
+						G->header->name, chunked ? "netCDF-4" : "classic", text);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			}
+		} /* !(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == 2))) */
 		else {
 			if (G->header->z_min < global_zmin) global_zmin = G->header->z_min;
 			if (G->header->z_max > global_zmax) global_zmax = G->header->z_max;
