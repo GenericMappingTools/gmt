@@ -1176,7 +1176,7 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 
 bool GMT_check_region (struct GMT_CTRL *C, double wesn[])
 {	/* If region is given then we must have w < e and s < n */
-	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]) && !C->common.R.oblique);
+	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
 int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
