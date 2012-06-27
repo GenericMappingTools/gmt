@@ -661,8 +661,8 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 
-		if (GMT->current.io.io_header[GMT_IN]) {	/* Skip any header records */
-			for (i = 0; i < (int)GMT->current.io.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
+		if (GMT->current.setting.io_header[GMT_IN]) {	/* Skip any header records */
+			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 				GMT_report (GMT, GMT_MSG_FATAL, "Read error for headers\n");
 				Return (EXIT_FAILURE);
 			}

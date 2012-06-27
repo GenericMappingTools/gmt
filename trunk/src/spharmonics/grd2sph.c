@@ -131,7 +131,7 @@ int main (int argc, char **argv)
 		fprintf (stderr, "%s: Syntax error: -N Normalization must be one of m, g, or s\n", gmt_module_name(GMT));
 		error++;
 	}
-	if (GMT->current.io.info.binary[GMT_OUT] && GMT->current.io.info.io_header[GMT_OUT]) {
+	if (GMT->current.io.setting.binary[GMT_OUT] && GMT->current.io.setting.io_header[GMT_OUT]) {
 		fprintf (stderr, "%s: Syntax error: Binary output data cannot have header -H\n", gmt_module_name(GMT));
 		error++;
 	}
