@@ -245,7 +245,6 @@ int GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, n_tags == 0, "Syntax error: No system tag given!\n");
 	n_errors += GMT_check_condition (GMT, n_tags > 1, "Syntax error: Only give one system tag!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error: -Idx/dy must be positive!\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "Syntax error: -R given inconsistent values!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }

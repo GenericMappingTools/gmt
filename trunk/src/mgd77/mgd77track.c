@@ -478,7 +478,6 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_D] && Ctrl->G.value[GAP_D] <= 0.0, "Syntax error -Gd: Must specify a positive gap distance in km!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.active[GAP_T] && Ctrl->G.value[GAP_T] <= 0.0, "Syntax error -Gt: Must specify a positive gap distance in minutes!\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Region is not set\n");
-	n_errors += GMT_check_condition (GMT, GMT->common.R.active && GMT_check_region (GMT, GMT->common.R.wesn), "Syntax error: Region set incorrectly\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
