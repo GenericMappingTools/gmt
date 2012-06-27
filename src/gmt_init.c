@@ -549,7 +549,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'h':	/* Header */
 
-			GMT_message (C, "\t-h[i][<n>] Input/output file has [%" PRIu64 "] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
+			GMT_message (C, "\t-h[i][<n>] Input/output file has [%d] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
 			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
@@ -1150,8 +1150,8 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 	/* Parse the -h option.  Full syntax: -h[i][o][<nrecs>] */
 
 	if (!item || !item[0]) {	/* Nothing further to parse; just set defaults */
-		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = true;
-		C->current.io.io_n_header_items = 1;
+		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = true;
+		C->current.setting.io_n_header_items = 1;
 		return (GMT_NOERROR);
 	}
 	j = 0;
@@ -1161,16 +1161,16 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		if (i < 0)
 			error++;
 		else
-			C->current.io.io_n_header_items = i;
+			C->current.setting.io_n_header_items = i;
 	}
-	else C->current.io.io_n_header_items = 1;
+	else C->current.setting.io_n_header_items = 1;
 
 	if (j == 0)	/* Both in and out may have header records */
-		C->current.io.io_header[GMT_IN] = C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = (C->current.setting.io_n_header_items > 0);
 	else if (item[k] == 'i')		/* Only input should have header records */
-		C->current.io.io_header[GMT_IN] = (C->current.io.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_IN] = (C->current.setting.io_n_header_items > 0);
 	else		/* Only output should have header records */
-		C->current.io.io_header[GMT_OUT] = (C->current.io.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_OUT] = (C->current.setting.io_n_header_items > 0);
 	return (error);
 }
 

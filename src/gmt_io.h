@@ -217,7 +217,7 @@ enum GMT_io_enum {
 #define GMT_get_cols(C,direction) (C->common.b.ncol[direction])
 
 /* Determine if current binary table has header */
-#define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.io.io_header[dir] && GMT->current.io.io_n_header_items)
+#define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)
 
 /* Types of possible column entries in a file: */
 
@@ -371,12 +371,10 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_GRD_INFO grd_info;
 
 	bool multi_segments[2];	/* true if current Ascii input/output file has multiple segments */
-	bool io_header[2];		/* true if input/output data has header records */
 	bool skip_bad_records;	/* true if records where x and/or y are NaN or Inf */
 	bool give_report;		/* true if functions should report how many bad records were skipped */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
 
-	uint64_t io_n_header_items;	/* number of header records (ascii) or bytes (binary) [0] */
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */

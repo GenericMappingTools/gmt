@@ -368,7 +368,7 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			for (row = 0; row < G->header->ny; row++) y[row] = GMT_grd_row_to_y (GMT, row, G->header);
 			for (col = 0; col < G->header->nx; col++) x[col] = GMT_grd_col_to_x (GMT, col, G->header);
 
-			if (GMT->current.io.io_header[GMT_OUT] && first) {
+			if (GMT->current.setting.io_header[GMT_OUT] && first) {
 				if (!G->header->x_units[0]) strcpy (G->header->x_units, "x");
 				if (!G->header->y_units[0]) strcpy (G->header->y_units, "y");
 				if (!G->header->z_units[0]) strcpy (G->header->z_units, "z");

@@ -264,7 +264,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->current.setting.io_seg_marker[GMT_OUT] = '%';
 	}
 	else
-		GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
+		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;

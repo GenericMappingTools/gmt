@@ -603,7 +603,7 @@ int GMT_sphtriangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	GMT_free (GMT,  zz);	/* Done with zz for now */
 	
-	GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
+	GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 	if (Ctrl->Q.mode == VORONOI) {	/* Selected Voronoi polygons */
 		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
 		GMT_free (GMT, T.V.lon);	GMT_free (GMT, T.V.lat);

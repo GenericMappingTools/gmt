@@ -568,7 +568,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		sprintf (fmt, "%%s%s%%s%s%%c%s%s%s%s%s%%s%s%%c%s%s%s%%d", s, s, s, GMT->current.setting.format_float_out, s, GMT->current.setting.format_float_out, s, s, s, GMT->current.setting.format_float_out, s);
 
-		GMT->current.io.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
+		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 		sprintf (buffer, "# segid%sbegin_id%sb_pt%sb_dist%sb_nndist%send_id%se_pt%se_dist%se_nndist", s, s, s, s, s, s, s, s);
 		LNK->table[0]->n_headers = 1;
 		LNK->table[0]->header = GMT_memory (GMT, NULL, 1, char *);

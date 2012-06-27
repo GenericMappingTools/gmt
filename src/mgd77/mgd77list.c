@@ -996,7 +996,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 		}
 		
-		if (!GMT->common.b.active[GMT_OUT] && GMT->current.io.io_header[GMT_OUT]) {	/* Write out header record */
+		if (!GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */
 			fprintf (GMT->session.std[GMT_OUT], "# ");
 			for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
 				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */

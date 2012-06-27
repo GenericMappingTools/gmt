@@ -385,8 +385,8 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary file %s\n",
-					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], S_obj->filename);
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %d bytes of header %s binary file %s\n",
+					operation[direction], API->GMT->current.setting.io_n_header_items, dir[direction], S_obj->filename);
 			}
 			break;
 			
@@ -401,8 +401,8 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary %s stream\n",
-					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %d bytes of header %s binary %s stream\n",
+					operation[direction], API->GMT->current.setting.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
 			
@@ -418,8 +418,8 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_stream[kind], GMT_direction[direction]);
 			if (GMT_binary_header (API->GMT, direction)) {
 				GMT_io_binary_header (API->GMT, S_obj->fp, direction);
-				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %" PRIu64 " bytes of header %s binary %s stream via supplied file descriptor\n",
-					operation[direction], API->GMT->current.io.io_n_header_items, dir[direction], GMT_stream[kind]);
+				GMT_report (API->GMT, GMT_MSG_FATAL, "%s %d bytes of header %s binary %s stream via supplied file descriptor\n",
+					operation[direction], API->GMT->current.setting.io_n_header_items, dir[direction], GMT_stream[kind]);
 			}
 			break;
 			
