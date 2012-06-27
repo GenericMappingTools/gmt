@@ -43,14 +43,14 @@ extern "C" {
 #	include "compat/stdbool.h"
 #endif /* HAVE_STDBOOL_H_ */
 
-#if ! defined PATH_MAX && defined MAX_PATH
-#	define PATH_MAX MAX_PATH
+#include <limits.h> /* defines PATH_MAX */
+#include <stdlib.h> /* defines _MAX_PATH on WIN32 */
+#if ! defined PATH_MAX && defined _MAX_PATH
+#	define PATH_MAX _MAX_PATH
 #endif
 #ifndef PATH_MAX
-#	define PATH_MAX 4096
+#	define PATH_MAX 1024
 #endif
-
-#include "gmt.h"
 
 EXTERN_MSC unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *start, char *token);
 EXTERN_MSC void GMT_chop (char *string);
