@@ -56,13 +56,6 @@
 #include "gmt_notposix.h"
 #include "common_string.h"
 
-#if ! defined PATH_MAX && defined MAX_PATH
-#	define PATH_MAX MAX_PATH
-#endif
-#ifndef PATH_MAX
-#	define PATH_MAX 4096
-#endif
-
 #define BUF_SIZE 4096
 
 char *GMT_chop_ext (char *string) {
@@ -496,9 +489,7 @@ int match_string_in_file (const char *filename, const char *string) {
  * space that will be overwritten by subsequent calls (not thread safe).  The
  * function does not modify the string pointed to by path. */
 
-char *
-GMT_basename(const char *path)
-{
+char *GMT_basename(const char *path) {
 #ifdef WIN32
 	static char path_fixed[PATH_MAX];
 #endif

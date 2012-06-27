@@ -58,13 +58,6 @@
 
 #include "common_runpath.h"
 
-#if ! defined PATH_MAX && defined MAX_PATH
-#	define PATH_MAX MAX_PATH
-#endif
-#ifndef PATH_MAX
-#	define PATH_MAX 4096
-#endif
-
 /* #define DEBUG_RUNPATH */
 
 /* Private functions */
