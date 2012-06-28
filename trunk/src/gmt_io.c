@@ -194,7 +194,7 @@ int GMT_fclose (struct GMT_CTRL *C, FILE *stream)
 		GMT_free (C, C->current.io.add_offset);
 		GMT_free (C, C->current.io.scale_factor);
 		GMT_free (C, C->current.io.missing_value);
-		C->current.io.ncid = C->current.io.nvars = 0;	/* Split in two too shut up a compiler warning */
+		C->current.io.ncid = C->current.io.nvars = C->current.io.ncols = 0;
 		C->current.io.ndim = C->current.io.nrec = 0;
 		C->current.io.input = C->session.input_ascii;
 		return (0);
@@ -310,13 +310,13 @@ int gmt_process_binary_input (struct GMT_CTRL *C, unsigned int n_read) {
 
 void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval)
 {
-	int status, i, n_use, ns;
+	int status, i, j, k, n_use, ns;
 
 	C->current.io.status = 0;
 	if (*n == GMT_MAX_COLUMNS)
-		*n = C->current.io.nvars;
-	else if ((ns = *n) > C->current.io.nvars) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_nc_input is asking for %d columns, but file has only %d\n", *n, C->current.io.nvars);
+		*n = C->current.io.ncols;
+	else if ((ns = *n) > C->current.io.ncols) {
+		GMT_report (C, GMT_MSG_FATAL, "gmt_nc_input is asking for %d columns, but file has only %d\n", *n, C->current.io.ncols);
 		C->current.io.status = GMT_IO_MISMATCH;
 	}
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
@@ -327,13 +327,17 @@ void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval)
 			*retval = -1;
 			return (NULL);
 		}
-		for (i = 0; i < C->current.io.nvars && i < n_use; i++) {
-			nc_get_var1_double (C->current.io.ncid, C->current.io.varid[i], &C->current.io.nrec, &C->current.io.curr_rec[i]);
-			if (C->current.io.curr_rec[i] == C->current.io.missing_value[i])
-				C->current.io.curr_rec[i] = C->session.d_NaN;
+		for (i = j = 0; i < C->current.io.nvars && j < n_use; i++) {
+			C->current.io.t_index[i][0] = C->current.io.nrec;
+			nc_get_vara_double (C->current.io.ncid, C->current.io.varid[i], C->current.io.t_index[i], C->current.io.count[i], &C->current.io.curr_rec[j]);
+			for (k = 0; k < C->current.io.count[i][1]; k++, j++) {
+
+			if (C->current.io.curr_rec[j] == C->current.io.missing_value[i])
+				C->current.io.curr_rec[j] = C->session.d_NaN;
 			else
-				C->current.io.curr_rec[i] = C->current.io.curr_rec[i] * C->current.io.scale_factor[i] + C->current.io.add_offset[i];
-				gmt_convert_col (C->current.io.col[GMT_IN][i], C->current.io.curr_rec[i]);
+				C->current.io.curr_rec[j] = C->current.io.curr_rec[j] * C->current.io.scale_factor[i] + C->current.io.add_offset[i];
+				gmt_convert_col (C->current.io.col[GMT_IN][i], C->current.io.curr_rec[j]);
+			}
 		}
 		C->current.io.nrec++;
 		C->current.io.rec_no++;
@@ -390,11 +394,13 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
  */
 {
 	char file[GMT_BUFSIZ], path[GMT_BUFSIZ];
-	int i, j, nvars;
-	size_t n;
+	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
+	size_t n, item[2];
 	int64_t tmp_pointer;	/* To avoid 64-bit warnings */
-	char varnm[20][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256], units[GMT_TEXT_LEN256], varname[GMT_TEXT_LEN64];
+	double t_value[5], dummy[2];
+	char varnm[20][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256], units[GMT_TEXT_LEN256], varname[GMT_TEXT_LEN64], dimname[GMT_TEXT_LEN64];
 	struct GMT_TIME_SYSTEM time_system;
+	bool by_value;
 
 	if (mode[0] != 'r') {
 		GMT_report (C, GMT_MSG_FATAL, "GMT_fopen does not support netCDF writing mode\n");
@@ -423,6 +429,21 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	C->current.io.ndim = C->current.io.nrec = 0;
 
 	for (i = 0; i < C->current.io.nvars; i++) {
+
+		/* Check for indices */
+		for (j = 0; j < 5; j++) C->current.io.t_index[i][j] = 0, C->current.io.count[i][j] = 1;
+		j = in = 0, by_value = false;
+		while (varnm[i][j] && varnm[i][j] != '(' && varnm[i][j] != '[') j++;
+		if (varnm[i][j] == '(') {
+			in = sscanf (&varnm[i][j+1], "%lf,%lf,%lf,%lf)", &t_value[1], &t_value[2], &t_value[3], &t_value[4]);
+			varnm[i][j] = '\0';
+			by_value = true;
+		}
+		else if (varnm[i][j] == '[') {
+			in = sscanf (&varnm[i][j+1], "%ld,%ld,%ld,%ld]", &C->current.io.t_index[i][1], &C->current.io.t_index[i][2], &C->current.io.t_index[i][3], &C->current.io.t_index[i][4]);
+			varnm[i][j] = '\0';
+		}
+
 		/* Get variable ID and variable name */
 		if (nvars <= 0)
 			C->current.io.varid[i] = i;
@@ -430,19 +451,45 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 			GMT_err_fail (C, nc_inq_varid (C->current.io.ncid, varnm[i], &C->current.io.varid[i]), file);
 		nc_inq_varname (C->current.io.ncid, C->current.io.varid[i], varname);
 
-		/* Check column size */
-		nc_inq_varndims (C->current.io.ncid, C->current.io.varid[i], &j);
-		if (j != 1) {
-			GMT_report (C, GMT_MSG_FATAL, "NetCDF variable %s is not 1-dimensional\n", varname);
+		/* Check number of dimensions */
+		nc_inq_varndims (C->current.io.ncid, C->current.io.varid[i], &ndims);
+		if (ndims > 5) {
+			GMT_report (C, GMT_MSG_FATAL, "NetCDF variable %s has too many dimensions (%d)\n", varname, j);
 			GMT_exit (EXIT_FAILURE);
 		}
-		nc_inq_vardimid(C->current.io.ncid, C->current.io.varid[i], &j);
-		nc_inq_dimlen(C->current.io.ncid, j, &n);
+		if (ndims - in < 1) {
+			GMT_report (C, GMT_MSG_FATAL, "NetCDF variable %s has %zu dimensions, cannot specify more than %d indices; ignoring remainder\n", varname, ndims, ndims-1);
+			for (j = in; j < ndims; j++) C->current.io.t_index[i][j] = 1;
+		}
+		if (ndims - in > 2) GMT_report (C, GMT_MSG_FATAL, "NetCDF variable %s has %zu dimensions, showing only 2\n", varname, ndims);
+
+		/* Get information of the first two dimensions */
+		nc_inq_vardimid(C->current.io.ncid, C->current.io.varid[i], dimids);
+		nc_inq_dimlen(C->current.io.ncid, dimids[0], &n);
 		if (C->current.io.ndim != 0 && C->current.io.ndim != n) {
 			GMT_report (C, GMT_MSG_FATAL, "NetCDF variable %s has different dimension (%zu) from others (%zu)\n", varname, n, C->current.io.ndim);
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->current.io.ndim = n;
+		if (dimids[1] >= 0 && ndims - in > 1) {
+			nc_inq_dimlen(C->current.io.ncid, dimids[1], &n);
+		}
+		else
+			n = 1;
+		C->current.io.count[i][1] = n;
+		C->current.io.ncols += n;
+
+		/* If selected by value instead of index */
+		for (j = 1; by_value && j <= in; j++) {
+			nc_inq_dim (C->current.io.ncid, dimids[j], dimname, &n);
+			nc_inq_varid (C->current.io.ncid, dimname, &id);
+			item[0] = 0, item[1] = n-1;
+			if (nc_get_att_double (C->current.io.ncid, id, "actual_range", dummy)) {
+				nc_get_var1_double (C->current.io.ncid, id, &item[0], &dummy[0]);
+				nc_get_var1_double (C->current.io.ncid, id, &item[1], &dummy[1]);
+			}
+			C->current.io.t_index[i][j] = lrint((t_value[j] - dummy[0]) / (dummy[1] - dummy[0]));
+		}
 
 		/* Get scales, offsets and missing values */
 		if (nc_get_att_double(C->current.io.ncid, C->current.io.varid[i], "scale_factor", &C->current.io.scale_factor[i])) C->current.io.scale_factor[i] = 1.0;

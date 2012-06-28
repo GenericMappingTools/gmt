@@ -399,7 +399,9 @@ struct GMT_IO {				/* Used to process input data records */
 	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ascii format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
-	int nvars;			/* Number of requested variables in netCDF file */
+	int nvars, ncols;			/* Number of requested variables and total columns in netCDF file */
+	size_t t_index[GMT_MAX_COLUMNS][5];		/* Indices for cross-sections (netCDF only) */
+	size_t count[GMT_MAX_COLUMNS][5];		/* Count used for cross-sections (netCDF only) */
 	size_t ndim;			/* Length of the column dimension */
 	size_t nrec;			/* Record count */
 	struct GMT_DATE_IO date_input;	/* Has all info on how to decode input dates */
@@ -415,10 +417,10 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_COL_TYPE fmt[2][GMT_MAX_COLUMNS];	/* Formatting information for binary data */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	/* The remainder are just pointers to memory allocated elsewhere */
-	int *varid;			/* Array of variable IDs */
-	double *scale_factor;		/* Array of scale factors */
-	double *add_offset;		/* Array of offsets */
-	double *missing_value;		/* Array of missing values */
+	int *varid;			/* Array of variable IDs (netCDF only) */
+	double *scale_factor;		/* Array of scale factors (netCDF only) */
+	double *add_offset;		/* Array of offsets (netCDF only) */
+	double *missing_value;		/* Array of missing values (netCDF only) */
 };
 
 struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is implicit */

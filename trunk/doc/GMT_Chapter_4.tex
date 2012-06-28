@@ -2068,17 +2068,17 @@ corresponding grid float format file.
 \index{grid file!formats!netCDF|(}
 \index{grid file!formats!COARDS|(}
 
-When the netCDF file contains more than one 2-dimensional variable, \GMT\ programs
+When the netCDF grid file contains more than one 2-dimensional variable, \GMT\ programs
 will load the first such variable in the file and ignore all others. Alternatively,
 the user can select the
-required variable by adding the suffix ``?\emph{varname}'' to the file name. For example,
+required variable by adding the suffix ``?\emph{varname}'' to the grid file name. For example,
 to get information on the variable ``slp'' in file \filename{file.nc}, use:
 \begin{verbatim}
 	grdinfo "file.nc?slp"
 \end{verbatim}
 Since COARDS-compliant netCDF files are the default, the additional suffix ``=nf'' can be omitted.
 
-In case the named variable is 3-dimensional, \GMT\ will load the first (bottom) layer. If another
+In case the named grid is 3-dimensional, \GMT\ will load the first (bottom) layer. If another
 layer is required, either add ``[\emph{index}]'' or ``(\emph{level})'', where \emph{index} is
 the index of the third (depth) variable (starting at 0 for the first layer) and \emph{level}
 is the numerical value of the third (depth) variable associated with the requested layer.
@@ -2108,6 +2108,26 @@ or (only in case the coordinates increase linearly):
 \begin{verbatim}
 	grdinfo "file.nc?pressure(24,10)"
 \end{verbatim}
+
+Programs that generally deal with columns of one-dimensional data, like \prog{psxy} or \prog{gmtconvert} can use multi-dimensional netCDF
+files in a very similar way. If a variable in a netCDF file is one-dimensional, there is nothing more needed than name the variables
+on the command line. For example:
+\begin{verbatim}
+	psxy "file.nc?lon/lat" ...
+	gmtconvert "file.nc?time/lat/lon"
+\end{verbatim}
+If one or more of the selected variables are two-dimensional, and have the same leading dimension as the other selected variables they will
+be plotted in their entirety. For example, if a netCDF files contains 6 time steps recording temperature at 4 points, and the variable \filename{temp}
+is a 6 by 4 array, then the command \filename{gmtconvert "file.nc?time/temp"} can result in:
+\begin{verbatim}
+	2012-06-25T00:00:00 20.1 20.2 20.1 20.3
+	2012-06-25T12:00:00 24.2 23.2 24.5 23.5
+	2012-06-26T00:00:00 16.1 16.2 16.1 16.3
+	2012-06-26T12:00:00 22.1 23.0 23.9 23.5
+	2012-06-27T00:00:00 17.5 16.9 17.2 16.8
+	2012-06-27T12:00:00 27.2 27.2 27.5 27.5
+\end{verbatim}
+If, for example, only the second temperature column is needed, use \filename{gmtconvert "file.nc?time/temp[1]"} (indices start counting at 0).
 
 The COARDS conventions set restrictions on the names that can be used for the units of the variables
 and coordinates. For example, the units of longitude and latitude are ``degrees\_east'' and ``degrees\_north'',
