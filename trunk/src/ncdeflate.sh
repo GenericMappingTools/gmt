@@ -33,7 +33,6 @@ function usage () {
 }
 
 # set defaults
-NC_CHUNK="-clon/128,lat/128"
 NC_DEFLATE=3
 NC_SHUFFLE=
 NC_SUFFIX=""
@@ -118,11 +117,19 @@ for file in $@; do
     continue
   fi
 
+  # set default chunking
+  NC_CHUNK="-c$(ncdump -h "$file" | awk '/^dimensions:/ { getline ; while (match($0,"^\t")) {printf "%s/128,", $1; getline } } END {print "/"}')"
+
   # compress file
   if [ "$NC_VERBOSE" = "TRUE" ]; then
     echo -n "$(basename "${file}")... " >&2
   fi
-  nccopy -d $NC_DEFLATE $NC_SHUFFLE $NC_CHUNK "$file" "${file}.$$.tmp" || continue
+  if [ "$NC_DEFLATE" -gt 0 ]; then
+    nccopy -k 3 -d $NC_DEFLATE $NC_SHUFFLE $NC_CHUNK "$file" "${file}.$$.tmp" || continue
+  else
+    # write classic
+    nccopy -k 1 "$file" "${file}.$$.tmp" || continue
+  fi
 
   # check compressed file size
   if [ "$NC_DEFLATE" -eq 0 ] || file1_greater_file2 "$file" "${file}.$$.tmp" ; then
