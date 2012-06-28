@@ -32,12 +32,12 @@
 
 /* To avoid lots of dynamic memory allocation for the hash lookup tables we
  * use a statically allocated structure.  By determining that the max number
- * of identical hash numbers across all the keywords is 5, we simply allocate
- * space for 5 entries for each structure.  Should later additions to GMT's
+ * of identical hash numbers across all the keywords is 16, we simply allocate
+ * space for 16 entries for each structure.  Should later additions to GMT's
  * default parameters, colornames, etc increase this value we will be warned
  * and can change the entry GMT_HASH_MAXDEPTH below accordingly.
  */
-#define GMT_HASH_MAXDEPTH	6
+#define GMT_HASH_MAXDEPTH	16
 
 struct GMT_HASH {	/* Used to relate text keywords to array indices */
 	unsigned int id[GMT_HASH_MAXDEPTH];	/* Indices of corresponding keyword with identical hash value */

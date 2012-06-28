@@ -2667,6 +2667,8 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #ifdef GMT_COMPAT
 		case GMTCASE_TIME_FORMAT_PRIMARY: GMT_COMPAT_CHANGE ("FORMAT_TIME_PRIMARY_MAP");
 #endif
+		case GMTCASE_FORMAT_TIME_MAP:
+			strncpy (C->current.setting.format_time[1], value, GMT_TEXT_LEN64);
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
 			strncpy (C->current.setting.format_time[0], value, GMT_TEXT_LEN64);
 			break;
@@ -2704,6 +2706,8 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #ifdef GMT_COMPAT
 		case GMTCASE_ANNOT_FONT_PRIMARY: GMT_COMPAT_CHANGE ("FONT_ANNOT_PRIMARY");
 #endif
+		case GMTCASE_FONT_ANNOT:
+			if (GMT_getfont (C, value, &C->current.setting.font_annot[1])) error = true;
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
 				/* When + is prepended, scale fonts, offsets and ticklengths relative to FONT_ANNOT_PRIMARY (except LOGO font) */
@@ -2787,6 +2791,8 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #ifdef GMT_COMPAT
 		case GMTCASE_ANNOT_OFFSET_PRIMARY: GMT_COMPAT_CHANGE ("MAP_ANNOT_OFFSET_PRIMARY");
 #endif
+		case GMTCASE_MAP_ANNOT_OFFSET:
+			C->current.setting.map_annot_offset[1] = GMT_to_inch (C, value);
 		case GMTCASE_MAP_ANNOT_OFFSET_PRIMARY:
 			C->current.setting.map_annot_offset[0] = GMT_to_inch (C, value);
 			break;
@@ -2913,6 +2919,13 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #ifdef GMT_COMPAT
 		case GMTCASE_GRID_CROSS_SIZE_PRIMARY: GMT_COMPAT_CHANGE ("MAP_GRID_CROSS_SIZE_PRIMARY");
 #endif
+		case GMTCASE_MAP_GRID_CROSS_SIZE:
+			dval = GMT_to_inch (C, value);
+			if (dval >= 0.0)
+				C->current.setting.map_grid_cross_size[0] = C->current.setting.map_grid_cross_size[1] = dval;
+			else
+				error = true;
+			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
 			dval = GMT_to_inch (C, value);
 			if (dval >= 0.0)
@@ -2933,6 +2946,8 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #ifdef GMT_COMPAT
 		case GMTCASE_GRID_PEN_PRIMARY: GMT_COMPAT_CHANGE ("MAP_GRID_PEN_PRIMARY");
 #endif
+		case GMTCASE_MAP_GRID_PEN:
+			error = GMT_getpen (C, value, &C->current.setting.map_grid_pen[1]);
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
 			error = GMT_getpen (C, value, &C->current.setting.map_grid_pen[0]);
 			break;
@@ -3017,7 +3032,6 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.map_scale_height = dval;
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH: GMT_COMPAT_CHANGE ("MAP_TICK_LENGTH_PRIMARY and MAP_TICK_LENGTH_SECONDARY");
 			C->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT_to_inch (C, value);
 			C->current.setting.map_tick_length[GMT_TICK_UPPER]  = 0.50 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
@@ -3025,6 +3039,10 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			C->current.setting.map_tick_length[GMT_TICK_LOWER]  = 0.75 * C->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 			break;
 #endif
+		case GMTCASE_MAP_TICK_LENGTH:
+			i = sscanf (value, "%[^/]/%s", txt_a, txt_b);
+			C->current.setting.map_tick_length[GMT_ANNOT_LOWER] = GMT_to_inch (C, txt_a);
+			C->current.setting.map_tick_length[GMT_TICK_LOWER]  = (i > 1) ? GMT_to_inch (C, txt_b) : 0.25 * C->current.setting.map_tick_length[GMT_ANNOT_LOWER];
 		case GMTCASE_MAP_TICK_LENGTH_PRIMARY:
 			i = sscanf (value, "%[^/]/%s", txt_a, txt_b);
 			C->current.setting.map_tick_length[GMT_ANNOT_UPPER] = GMT_to_inch (C, txt_a);
@@ -3036,12 +3054,13 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			C->current.setting.map_tick_length[GMT_TICK_LOWER]  = (i > 1) ? GMT_to_inch (C, txt_b) : 0.25 * C->current.setting.map_tick_length[GMT_ANNOT_LOWER];
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_MAP_TICK_PEN:
 		case GMTCASE_TICK_PEN: GMT_COMPAT_CHANGE ("MAP_TICK_PEN_PRIMARY and MAP_TICK_PEN_SECONDARY");
 			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[0]);
 			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[1]);
 			break;
 #endif
+		case GMTCASE_MAP_TICK_PEN:
+			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[1]);
 		case GMTCASE_MAP_TICK_PEN_PRIMARY:
 			error = GMT_getpen (C, value, &C->current.setting.map_tick_pen[0]);
 			break;
