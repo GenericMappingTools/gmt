@@ -28,6 +28,7 @@ DIR_USER			# Colon-separated list of dirs where we look for data
 # FONT Group: Fonts and sizes for plotting
 #-------------------------------------------------------
 FONT				# Use to set all the fonts with one gmtset call [does not go in gmt.conf]
+FONT_ANNOT			# Font for both axes annotations [does got go in gmt.conf]
 FONT_ANNOT_PRIMARY		# Font for primary axes annotations
 FONT_ANNOT_SECONDARY		# Font for secondary axes annotations
 FONT_LABEL			# Font for axes labels
@@ -46,6 +47,7 @@ FORMAT_GEO_OUT			# How to write ddd[:mm[:ss[.xx]]] to ascii output
 FORMAT_GEO_MAP			# How to plot ddd[:mm[:ss[.xx]]] on maps
 FORMAT_FLOAT_OUT		# How to write floating points to ascii output
 FORMAT_FLOAT_MAP		# How to plot floating points on maps
+FORMAT_TIME_MAP			# How to plot both month-, week-, and weekday-names on maps [does not go in gmt.conf]
 FORMAT_TIME_PRIMARY_MAP		# How to plot primary month-, week-, and weekday-names on maps
 FORMAT_TIME_SECONDARY_MAP	# How to plot secondary month-, week-, and weekday-names on maps
 FORMAT_TIME_LOGO		# How to plot time for the GMT time-stamp
@@ -73,6 +75,7 @@ IO_SEGMENT_MARKER		# 1st char in segment headers for input and output
 #-------------------------------------------------------
 # MAP Group:	Map construction settings
 #-------------------------------------------------------
+MAP_ANNOT_OFFSET		# Distance between a map tick and the either tick annotation [does not go in gmt.conf]
 MAP_ANNOT_OFFSET_PRIMARY	# Distance between a map tick and the primary tick annotation
 MAP_ANNOT_OFFSET_SECONDARY	# Distance between a map tick and the secondary tick annotation
 MAP_ANNOT_ORTHO			# Specifies which axes should have orthogonal annotations [WESNZ]
@@ -85,8 +88,10 @@ MAP_FRAME_AXES			# Which axes should be plotted [WESNZ]
 MAP_FRAME_PEN			# Pen used to draw plain map frame
 MAP_FRAME_TYPE			# Type of map frame (plain or fancy)
 MAP_FRAME_WIDTH			# Width of the fancy map frame
+MAP_GRID_CROSS_SIZE		# Size of any grid crosses (0 for gridlines) [does not go in gmt.conf]
 MAP_GRID_CROSS_SIZE_PRIMARY	# Size of primary grid crosses (0 for gridlines)
 MAP_GRID_CROSS_SIZE_SECONDARY	# Size of secondary grid crosses (0 for gridlines)
+MAP_GRID_PEN			# Pen for any grid-lines/crosses [does not go in gmt.conf]
 MAP_GRID_PEN_PRIMARY		# Pen for primary grid-lines/crosses
 MAP_GRID_PEN_SECONDARY		# Pen for secondary grid-lines/crosses
 MAP_LABEL_OFFSET		# Distance between an axis label and the annotations
@@ -97,8 +102,10 @@ MAP_ORIGIN_X			# x-value of lower-left corner of map relative to page [1i]
 MAP_ORIGIN_Y			# y-value of lower-left corner of map relative to page [1i]
 MAP_POLAR_CAP			# Modify gridline spacing for polar caps
 MAP_SCALE_HEIGHT		# Height of scale bar on maps
+MAP_TICK_LENGTH			# Length of major and minor frame axes ticks [does not go in gmt.conf]
 MAP_TICK_LENGTH_PRIMARY		# Length of major and minor primary frame axes ticks
 MAP_TICK_LENGTH_SECONDARY	# Length of major and minor secondary frame axes ticks
+MAP_TICK_PEN			# Pen for axes ticks [does not go in gmt.conf]
 MAP_TICK_PEN_PRIMARY		# Pen for primary axes ticks
 MAP_TICK_PEN_SECONDARY		# Pen for secondary axes ticks
 MAP_TITLE_OFFSET		# Distance between a map title and the label
