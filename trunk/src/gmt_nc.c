@@ -28,22 +28,33 @@
  * Most functions will return with error message if an internal error is returned.
  * There functions are only called indirectly via the GMT_* grdio functions.
  *
- * Author:	Remko Scharroo
- * Date:	04-AUG-2005
- * Version:	1
+ * Author:  Remko Scharroo
+ * Date:    04-AUG-2005
+ * Version: 1
+ *
+ * Added support for chunked I/O, Florian Wobbe, June 2012.
  *
  * Functions include:
  *
- *	GMT_nc_read_grd_info :		Read header from file
- *	GMT_nc_read_grd :		Read data set from file
- *	GMT_nc_update_grd_info :	Update header in existing file
- *	GMT_nc_write_grd_info :		Write header to new file
- *	GMT_nc_write_grd :		Write header and data set to new file
+ *  GMT_nc_read_grd_info:   Read header from file
+ *  GMT_nc_read_grd:        Read data set from file
+ *  GMT_nc_update_grd_info: Update header in existing file
+ *  GMT_nc_write_grd_info:  Write header to new file
+ *  GMT_nc_write_grd:       Write header and data set to new file
+ *
+ * Private functions:
+ *  setup_chunk_cache:      Change the default HDF5 chunk cache settings
+ *  pad_grid:               Add padding to a grid
+ *  unpad_grid:             Remove padding from a grid
+ *  padding_copy:           Fill padding by replicating the border cells
+ *  padding_zero:           Fill padding with zeros
+ *  grid_flip_vertical      Reverses the grid vertically
+ *  n_chunked_rows_in_cache Determines how many chunks to read at once
+ *  io_nc_grid              Does the actual netcdf I/O
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
-#define GMT_CDF_CONVENTION    "COARDS/CF-1.0"	/* grd files are COARDS-compliant */
 #include "gmt.h"
 #include "gmt_internals.h"
 
@@ -54,16 +65,6 @@
 
 int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
 int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
-
-static inline void setup_chunk_cache (void) {
-	/* Change the default chunk cache settings in the HDF5 library for all variables
-	 * in the nc-file. The settings apply for subsequent file opens/creates. */
-	static bool already_setup = false;
-	if (!already_setup) {
-		nc_set_chunk_cache(NC_CACHE_SIZE, NC_CACHE_NELEMS, NC_CACHE_PREEMPTION);
-		already_setup = true;
-	}
-}
 
 int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 {	/* Returns type GMT_GRD_IS_N? (=n?) for new NetCDF grid,
@@ -120,9 +121,9 @@ void gmt_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units
 	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
 	char name[GRD_UNIT_LEN80], units[GRD_UNIT_LEN80];
-	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name, GRD_UNIT_LEN80)) 
+	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name, GRD_UNIT_LEN80))
 		nc_inq_varname (ncid, varid, name);
-	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, GRD_UNIT_LEN80) && units[0]) 
+	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, GRD_UNIT_LEN80) && units[0])
 		sprintf (name_units, "%s [%s]", name, units);
 	else
 		strcpy (name_units, name);
@@ -218,7 +219,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 					C->current.setting.io_nc4_chunksize[1] != 0 &&
 					header->ny >= C->current.setting.io_nc4_chunksize[0] &&
 					header->nx >= C->current.setting.io_nc4_chunksize[1]) {
-				GMT_err_trap (nc_create (header->name, NC_NETCDF4 | NC_CLOBBER, &ncid));
+				GMT_err_trap (nc_create (header->name, NC_NETCDF4, &ncid));
 			}
 			else {
 				GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
@@ -302,14 +303,17 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Variable name is given, or defaults to "z" */
 		if (!header->varname[0]) strcpy (header->varname, "z");
 		GMT_err_trap (nc_def_var (ncid, header->varname, z_type, 2, dims, &z_id));
+
+		/* set deflation and chunking */
 		if (C->current.setting.io_nc4_chunksize[0] != 0 &&
 				C->current.setting.io_nc4_chunksize[1] != 0 &&
 				header->ny >= C->current.setting.io_nc4_chunksize[0] &&
 				header->nx >= C->current.setting.io_nc4_chunksize[1]) {
 			/* set chunk size */
 			GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, C->current.setting.io_nc4_chunksize));
-			/* set deflation level */
-			GMT_err_trap (nc_def_var_deflate (ncid, z_id, true, true, C->current.setting.io_nc4_deflation_level));
+			/* set deflation level for z variable */
+			if (C->current.setting.io_nc4_deflation_level)
+				GMT_err_trap (nc_def_var_deflate (ncid, z_id, true, true, C->current.setting.io_nc4_deflation_level));
 		}
 	}
 	header->z_id = z_id;
@@ -359,12 +363,12 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			header->wesn[YLO] = 0.0, header->wesn[YHI] = (double) header->ny-1;
 		/* Check for reverse order of y-coordinate */
 		if (header->wesn[YLO] > header->wesn[YHI]) {
-			header->y_order = -1;
+			header->y_order = k_nc_start_north;
 			dummy[0] = header->wesn[YHI], dummy[1] = header->wesn[YLO];
 			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
 		}
 		else
-			header->y_order = 1;
+			header->y_order = k_nc_start_south;
 		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
@@ -422,7 +426,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Store global attributes */
 		unsigned int row, col;
 		int reg;
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_CDF_CONVENTION), (const char *) GMT_CDF_CONVENTION));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), (const char *) GMT_NC_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
 		}
@@ -446,7 +450,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 
 		/* Define y variable */
 		gmt_nc_put_units (ncid, ids[header->xy_dim[1]], header->y_units);
-		header->y_order = 1;
+		header->y_order = k_nc_start_south;
 		dummy[(1-header->y_order)/2] = header->wesn[YLO], dummy[(1+header->y_order)/2] = header->wesn[YHI];
 		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
@@ -487,7 +491,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		xy = GMT_memory (C, NULL,  MAX (header->nx,header->ny), double);
 		for (col = 0; col < header->nx; col++) xy[col] = GMT_grd_col_to_x (C, col, header);
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
-		if (header->y_order > 0) {
+		if (header->y_order == k_nc_start_south) {
 			for (row = 0; row < header->ny; row++) xy[row] = (double) GMT_col_to_x (C, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		else {
@@ -518,8 +522,156 @@ int GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (gmt_nc_grd_info (C, header, 'w'));
 }
 
-void grd_flip_vertical (float *grid, const unsigned height, const unsigned width) {
-	/* Reverses the grid vertically, that is, from north up to south up or vice versa. */
+/* Fill padding by replicating the border cells */
+void padding_copy(void *gridp, const unsigned n_cols, const unsigned n_rows,
+		const unsigned *n_pad, size_t cell_size) {
+	/* n_cols and n_rows are dimensions of the padded grid */
+	char *grid = (char*)gridp;
+	unsigned row, cell;
+
+	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
+		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
+
+	for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+		/* Iterate over rows that contain data */
+		for (cell = 0; cell < n_pad[XLO]; ++cell) {
+			/* Duplicate first n_pad[XLO] columns in this row */
+			memcpy (grid + (row * n_cols + cell) * cell_size,
+							grid + (row * n_cols + n_pad[XLO]) * cell_size,
+							cell_size);
+		}
+		for (cell = 0; cell < n_pad[XHI]; ++cell) {
+			/* Duplicate last n_pad[XHI] columns in this row */
+			memcpy (grid + (row * n_cols + n_cols - cell - 1) * cell_size,
+							grid + (row * n_cols + n_cols - n_pad[XHI] - 1) * cell_size,
+							cell_size);
+		}
+	}
+
+	for (cell = 0; cell < n_pad[YHI]; ++cell) {
+		/* Duplicate n_pad[YHI] rows in the beginning */
+		memcpy(grid + cell * n_cols * cell_size,
+					 grid + n_pad[YHI] * n_cols * cell_size,
+					 n_cols * cell_size);
+	}
+	for (cell = 0; cell < n_pad[YLO]; ++cell) {
+		/* Duplicate last n_pad[YLO] rows */
+		memcpy(grid + (n_rows - cell - 1) * n_cols * cell_size,
+					 grid + (n_rows - n_pad[YLO] - 1) * n_cols * cell_size,
+					 n_cols * cell_size);
+	}
+}
+
+/* Fill padding with zeros */
+void padding_zero(void *gridp, const unsigned n_cols, const unsigned n_rows,
+		const unsigned *n_pad, size_t cell_size) {
+	/* n_cols and n_rows are dimensions of the padded grid */
+	char *grid = (char*)gridp;
+	unsigned row;
+
+	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
+		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
+
+	/* Iterate over rows that contain data */
+	for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+		/* Zero n cells at beginning of row */
+		memset (grid + row * n_cols * cell_size, 0, n_pad[XLO] * cell_size);
+		/* Zero n cells at end of row */
+		memset (grid + (row * n_cols + n_cols - n_pad[XHI]) * cell_size, 0, n_pad[XHI] * cell_size);
+	}
+	/* Zero n_pad[YHI] rows in the beginning */
+	memset(grid, 0, n_pad[YHI] * n_cols * cell_size);
+	/* Zero last n_pad[YLO] rows */
+	memset(grid + (n_rows-n_pad[YLO]) * n_cols * cell_size, 0, n_pad[YLO] * n_cols * cell_size);
+}
+
+/* Fill mode for grid padding */
+enum {
+	k_pad_fill_none = 0, /* Leave padded cells untouched */
+	k_pad_fill_zero,     /* Fill padded grid cells with zeros */
+	k_pad_fill_copy      /* Padded cells get the value of their nearest neighbor */
+};
+
+/* Add padding to a matrix/grid and reshape data */
+void pad_grid(void *gridp, const unsigned n_old_cols, const unsigned n_old_rows,
+		const unsigned *n_pad, size_t cell_size, unsigned filltype) {
+	/* n_cols and n_rows are dimensions of the grid without padding
+	 * cell_size is the size in bytes of each element in grid
+	 * n_pad[4] contains the number of cols/rows to pad on each side {W,E,S,N} */
+	char *grid = (char*)gridp;
+	unsigned new_row;
+	unsigned old_row = n_old_rows-1;
+	unsigned n_new_cols = n_old_cols + n_pad[XLO] + n_pad[XHI];
+	unsigned n_new_rows = n_old_rows + n_pad[YLO] + n_pad[YHI];
+
+#ifdef DEBUG
+	fprintf (stderr, "pad grid w:%u e:%u s:%u n:%u\n",
+			n_pad[XLO], n_pad[XHI], n_pad[YLO], n_pad[YHI]);
+#endif
+	if (n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] == 0)
+		return; /* nothing to pad */
+
+	assert (n_old_cols > 0 && n_old_rows > 0 && cell_size > 0);
+
+	/* Reshape matrix */
+	for (new_row = n_new_rows - n_pad[YLO] - 1; new_row + 1 > n_pad[YHI]; --new_row, --old_row) {
+		/* Copy original row to new row */
+		if ( n_pad[YHI] == 0 && n_pad[YLO] == 0 ) /* rows overlap! */
+			memmove(grid + (new_row * n_new_cols + n_pad[XLO]) * cell_size,
+							grid + old_row * n_old_cols * cell_size,
+							n_old_cols * cell_size);
+		else /* no overlap, memcpy is safe */
+			memcpy(grid + (new_row * n_new_cols + n_pad[XLO]) * cell_size,
+						 grid + old_row * n_old_cols * cell_size,
+						 n_old_cols * cell_size);
+	}
+
+	/* Fill padded grid cells */
+	switch (filltype) {
+		case k_pad_fill_zero:
+			padding_zero (grid, n_new_cols, n_new_rows, n_pad, cell_size);
+			break;
+		case k_pad_fill_copy:
+			padding_copy (grid, n_new_cols, n_new_rows, n_pad, cell_size);
+			break;
+	}
+}
+
+/* Remove padding from a matrix/grid and reshape data */
+void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
+		const unsigned *n_pad, size_t cell_size) {
+	/* n_cols and n_rows are dimensions of the grid without padding
+	 * cell_size is the size in bytes of each element in grid
+	 * n_pad[4] contains the number of cols/rows to pad on each side {W,E,S,N} */
+	char *grid = (char*)gridp;
+	unsigned n_old_cols = n_cols + n_pad[XLO] + n_pad[XHI];
+	unsigned row;
+
+#ifdef DEBUG
+	fprintf (stderr, "unpad grid w:%u e:%u s:%u n:%u\n",
+			n_pad[XLO], n_pad[XHI], n_pad[YLO], n_pad[YHI]);
+#endif
+	if (n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] == 0)
+		return; /* nothing to unpad */
+
+	assert (n_cols > 0 && n_rows > 0 && cell_size > 0);
+
+	/* Reshape matrix */
+	for (row = 0; row < n_rows; ++row) {
+		unsigned old_row = row + n_pad[YHI];
+		/* Copy original row to new row */
+		if (n_pad[YHI] == 0) /* rows overlap! */
+			memmove(grid + row * n_cols * cell_size,
+							grid + (old_row * n_old_cols + n_pad[XLO]) * cell_size,
+							n_cols * cell_size);
+		else /* no overlap, memcpy is safe */
+			memcpy(grid + row * n_cols * cell_size,
+						 grid + (old_row * n_old_cols + n_pad[XLO]) * cell_size,
+						 n_cols * cell_size);
+	}
+}
+/* Reverses the grid vertically, that is, from north up to south up or vice versa. */
+void grid_flip_vertical (float *grid, const unsigned height, const unsigned width) {
 	unsigned height_over_2 = (unsigned) floor (height / 2.0);
 	unsigned row;
 	float *tmp = malloc (width * sizeof (float));
@@ -534,438 +686,354 @@ void grd_flip_vertical (float *grid, const unsigned height, const unsigned width
 	free (tmp);
 }
 
-//#undef NO_PAD
+/* Change the default chunk cache settings in the HDF5 library for all variables
+ * in the nc-file. The settings apply for subsequent file opens/creates. */
+static inline void setup_chunk_cache (void) {
+	static bool already_setup = false;
+	if (!already_setup) {
+		nc_set_chunk_cache(NC_CACHE_SIZE, NC_CACHE_NELEMS, NC_CACHE_PREEMPTION);
+		already_setup = true;
+	}
+}
+
+/* Get number of chunked rows that fit into cache (32MiB) */
+int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned width, unsigned height, size_t *n_contiguous_chunk_rows, size_t *chunksize) {
+	nc_type z_type;      /* type of z variable */
+	size_t z_size;       /* size of z variable */
+	unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* because xy_dim not row major */
+	int err, storage_in;
+
+	GMT_err_trap (nc_inq_vartype(header->ncid, header->z_id, &z_type)); /* type of z */
+	GMT_err_trap (nc_inq_type(header->ncid, z_type, NULL, &z_size)); /* size of z elements in bytes */
+	GMT_err_trap (nc_inq_var_chunking (header->ncid, header->z_id, &storage_in, chunksize));
+	if (storage_in != NC_CHUNKED)
+		chunksize[yx_dim[0]] = 128; /* default if NC_CONTIGUOUS */
+
+	if (height * width * z_size > NC_CACHE_SIZE) {
+		/* memory needed for subset exceeds the cache size */
+		*n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width * z_size) / chunksize[0] );
+#ifdef DEBUG
+		GMT_report (C, GMT_MSG_FATAL, "processing %zu contiguous chunked rows (%.1f MiB)\n",
+						 *n_contiguous_chunk_rows,
+						 *n_contiguous_chunk_rows * z_size * width * chunksize[yx_dim[0]] / 1048576.0f);
+	}
+	else
+		*n_contiguous_chunk_rows = 0; /* all chunks fit into cache */
+#endif
+	return GMT_NOERROR;
+}
+
+/* netcdf I/O mode */
+enum {
+	k_put_netcdf = 0,
+	k_get_netcdf
+};
+
+/* Wrapper around nc_put_vara_float and nc_get_vara_float */
+static inline int io_nc_vara_float (int ncid, int varid, const size_t *startp,
+	 const size_t *countp, float *ip, unsigned io_mode) {
+	if (io_mode == k_put_netcdf)
+		/* write netcdf */
+		return nc_put_vara_float (ncid, varid, startp, countp, ip);
+	/* read netcdf */
+	return nc_get_vara_float (ncid, varid, startp, countp, ip);
+}
+
+/* Wrapper around nc_put_varm_float and nc_get_varm_float */
+static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
+	 const size_t *countp, const ptrdiff_t *stridep,
+	 const ptrdiff_t *imapp, float *ip, unsigned io_mode) {
+	if (io_mode == k_put_netcdf)
+		/* write netcdf */
+		return nc_put_varm_float (ncid, varid, startp, countp, stridep, imapp, ip);
+	/* read netcdf */
+	return nc_get_varm_float (ncid, varid, startp, countp, stridep, imapp, ip);
+}
+
+/* Read and write classic or chunked netcdf files */
+int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], unsigned origin[], unsigned offset, unsigned increment, unsigned io_mode, float* grid) {
+	/* io_mode = k_get_netcdf: read a netcdf file to grid
+	 * io_mode = k_put_netcdf: write a grid to netcdf */
+	int status = NC_NOERR;
+	unsigned first_col = origin[1], first_row = origin [0];
+	unsigned width = dim[1], height = dim[0];
+	unsigned yx_dim[2];  /* because xy_dim is not row major! */
+	size_t chunksize[5]; /* chunksize of z */
+	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
+	size_t n_contiguous_chunk_rows;  /* that are processed at once, 0 = all */
+	ptrdiff_t imap[5] = {1,1,1,1,1}; /* mapping between dims of netCDF and in-memory grid */
+	float *p_grid = grid + offset;   /* points to beginning of grid */
+
+	/* catch illegal io_mode in debug */
+	assert (io_mode == k_put_netcdf || io_mode == k_get_netcdf);
+
+#ifdef DEBUG
+	GMT_report (C, GMT_MSG_FATAL, "%s nx:%u ny:%u x0:%u y0:%u y-order:%s\n",
+			io_mode == k_put_netcdf ? "writing," : "reading,",
+			width, height, first_col, first_row,
+			header->y_order == k_nc_start_south ? "S->N" : "N->S");
+#endif
+
+	/* set index of input origin */
+	yx_dim[0] = header->xy_dim[1], yx_dim[1] = header->xy_dim[0]; /* xy_dim not row major */
+	start[yx_dim[0]] = first_row;
+	start[yx_dim[1]] = first_col;
+
+	/* set mapping of complex grids */
+	imap[yx_dim[0]] = width * increment; /* distance between each row */
+	imap[yx_dim[1]] = increment;         /* distance between values in a row */
+
+	/* determine how many chunks to process at once */
+	n_chunked_rows_in_cache (C, header, width, height, &n_contiguous_chunk_rows, chunksize);
+
+	if (n_contiguous_chunk_rows) {
+		/* read/write grid in chunks to keep memory footprint low */
+		unsigned remainder;
+
+		/* adjust row count, so that it ends on the bottom of a chunk */
+		count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
+		remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
+		count[yx_dim[0]] -= remainder;
+
+		count[yx_dim[1]] = width;
+		while ( start[yx_dim[0]] + count[yx_dim[0]] <= height && status == NC_NOERR) {
+			/* get/put chunked rows */
+			if (increment)
+				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
+			else
+				status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
+			p_grid += count[yx_dim[0]] * width;   /* advance grid location */
+			start[yx_dim[0]] += count[yx_dim[0]]; /* set new origin */
+			if (remainder) {
+				/* reset count to full chunk height */
+				count[yx_dim[0]] += remainder;
+				remainder = 0;
+			}
+		}
+		if ( start[yx_dim[0]] != height && status == NC_NOERR ) {
+			/* get/put last chunked row */
+			count[yx_dim[0]] = height - start[yx_dim[0]] + first_row;
+			if (increment)
+				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
+			else
+				status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
+		}
+	}
+	else {
+		/* get/put whole grid contiguous */
+		count[yx_dim[0]] = height;
+		count[yx_dim[1]] = width;
+		if (increment)
+			status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
+		else
+			status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
+	}
+	return status;
+}
 
 int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* header:	grid structure header
-	 * grid:	array with final grid
-	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
-	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
-	 *		Note: The file has only real values, we simply allow space in the complex array
-	 *		for real and imaginary parts when processed by grdfft etc.
+{ /* header:       grid structure header
+	 * grid:         array with final grid
+	 * wesn:         Sub-region to extract  [Use entire file if 0,0,0,0]
+	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
+	 * complex_mode: 1|2 if complex array is to hold real (1) or imaginary (2) part (0 = read as real only)
+	 * Note: The file has only real values, we simply allow space in the complex array
+	 * for real and imaginary parts when processed by grdfft etc.
 	 *
 	 * Reads a subset of a grdfile and optionally pads the array with extra rows and columns
 	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
 
-	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
-	int i, ncid, ndims;
-	int check, err;
-	int row, first_col, last_col, first_row, last_row;
-	unsigned int col, *actual_col = NULL;
-	unsigned int width_in, width_out, height_in, i_0_out, inc, off;
-	size_t ij, kk;	/* To allow 64-bit addressing on 64-bit systems */
-	float *tmp = NULL;
+	bool adj_nan_value; /* if we need to change the fill value */
+	int err;            /* netcdf errors */
+	int first_col, last_col, first_row, last_row;
+	unsigned *actual_col = NULL;
+	unsigned dim[2], origin[2]; /* dimension and origin {y,x} of subset to read from netcdf */
+	unsigned width, height, inc, off, n;
 
 	/* Check type: is file in old NetCDF format or not at all? */
-
 	if (C->session.grdformat[header->type][0] == 'c')
 		return (GMT_cdf_read_grd (C, header, grid, wesn, pad, complex_mode));
 	else if (C->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	GMT_free (C, actual_col);
+#ifdef DEBUG
+	GMT_report (C, GMT_MSG_FATAL, "width:   %d   height:%d\n", width, height);
+	GMT_report (C, GMT_MSG_FATAL, "head->nx:%d head->ny:%d\n", header->nx, header->ny);
+	GMT_report (C, GMT_MSG_FATAL, "first_col:%d last_col:%d first_row:%d last_row:%d\n", first_col, last_col, first_row, last_row);
+	GMT_report (C, GMT_MSG_FATAL, "head->t-index x0:%d y0:%d\n", header->t_index[1], header->t_index[0]);
+	GMT_report (C, GMT_MSG_FATAL, "head->pad xlo:%u xhi:%u\n", header->pad[XLO], header->pad[XHI]);
+#endif
 
-	width_out = width_in;		/* Width of output array */
-	if (pad[XLO] > 0) width_out += pad[XLO];
-	if (pad[XHI] > 0) width_out += pad[XHI];
+	/* Adjust first_row */
+	if (header->y_order == k_nc_start_south)
+		first_row = header->ny - 1 - last_row;
 
-	width_out *= inc;			/* Possibly doubled if complex_mode is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
+	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);
 
 	/* Open the NetCDF file */
-
-	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
+	if (!strcmp (header->name,"="))
+		return (GMT_GRDIO_NC_NO_PIPE);
 	setup_chunk_cache();
-	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
-	check = !GMT_is_dnan (header->nan_value);
-	GMT_err_trap (nc_inq_varndims (ncid, header->z_id, &ndims));
+	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &header->ncid));
 
-	tmp = GMT_memory (C, NULL, header->nx, float);
+	/* read grid */
+	if (header->t_index[1] < 0)
+		header->t_index[1] = 0;
+	dim[0]    = height; //,    dim[1]    = width;
+	// the statement before is supposed to work but doesn't if width > header->nx, so:
+	dim[1] = width > header->nx ? header->nx : width;
+	origin[0] = first_row, origin[1] = header->t_index[1]; // t_index[1] was first_col
+	io_nc_grid (C, header, dim, origin, off, inc, k_get_netcdf, grid);
 
-#ifdef NO_PAD
-	if (*pad == 0) {
-		/* when pad = 0 we can directly write to *grid without the need to flip
-		 * and pad in place */
-		unsigned n = 0;
-		unsigned n_nodes = height_in * width_in; /* number of grid nodes */
-		unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* xy_dim not row major!!! */
-		nc_type z_type;      /* type of z variable */
-		size_t z_size;       /* size of z variable */
-		size_t chunksize[5]; /* chunksize of z */
-		size_t n_contiguous_chunk_rows = 0; /* that are read by nc_get_vara_float(), 0 = all */
-
-		/* adjust first_row */
-		if (header->y_order > 0)
-			first_row = header->ny - 1 - last_row;
-
-		fprintf (stderr, "nx:%u ny:%u x0:%u y0:%u y-order:%d\n",
-				width_in, height_in, first_col, first_row, header->y_order);
-
-		/* get number of chunked rows that fit into cache (32MiB) */
-		GMT_err_trap (nc_inq_vartype  (ncid, header->z_id, &z_type)); /* type of z */
-		GMT_err_trap (nc_inq_type(ncid, z_type, NULL, &z_size)); /* size of z elements in bytes */
-		if (n_nodes * z_size > NC_CACHE_SIZE) {
-			/* memory needed for subset exceeds the cache size */
-			int storage_in;
-			GMT_err_trap (nc_inq_var_chunking (ncid, header->z_id, &storage_in, chunksize));
-			if (storage_in != NC_CHUNKED)
-				chunksize[yx_dim[0]] = 128; /* default if NC_CONTIGUOUS */
-			n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width_in * z_size) / chunksize[0] );
-			fprintf (stderr, "reading %zu contiguous chunked rows (%.1f MiB)\n",
-					n_contiguous_chunk_rows,
-					n_contiguous_chunk_rows * z_size * width_in * chunksize[yx_dim[0]] / 1048576.0f);
-		}
-
-		/* set index of input origin */
-		start[yx_dim[0]] = first_row;
-		start[yx_dim[1]] = first_col;
-
-		if (n_contiguous_chunk_rows) {
-			/* read grid in chunks to keep memory footprint low */
-			unsigned remainder;
-			float *p_grid = grid;
-
-			/* adjust row count, so that it ends on the bottom of a chunk */
-			count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
-			remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
-			count[yx_dim[0]] -= remainder;
-			//fprintf (stderr, "r:%u c:%zu\n", remainder, count[yx_dim[0]]);
-
-			count[yx_dim[1]] = width_in;
-			while ( start[yx_dim[0]] + count[yx_dim[0]] <= height_in ) {
-				GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, p_grid));
-				//memset (p_grid, 255, 40 * 4 * count[yx_dim[1]]); // test pattern
-				p_grid += count[yx_dim[0]] * width_in; /* advance grid location */
-				start[yx_dim[0]] += count[yx_dim[0]];  /* set new origin */
-				if (remainder) {
-					/* reset count */
-					count[yx_dim[0]] += remainder;
-					remainder = 0;
-				}
-			}
-			if ( start[yx_dim[0]] != height_in ) {
-				/* get last chunked row */
-				count[yx_dim[0]] = height_in - start[yx_dim[0]] + first_row;
-				GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, p_grid));
-				//memset (p_grid, 255, 40 * 4 * count[yx_dim[1]]); // test pattern
-			}
-		}
-		else {
-			/* read whole grid contiguous */
-			count[yx_dim[0]] = height_in;
-			count[yx_dim[1]] = width_in;
-			GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, grid));
-		}
-
-		/* flip grid upside down */
-		if (header->y_order > 0)
-			grd_flip_vertical (grid, height_in, width_in);
-
-		/* get stats */
-		header->z_min = DBL_MAX;
-		header->z_max = -DBL_MAX;
-		while (n < n_nodes) {
-			if (check && grid[n] == header->nan_value) {
-				grid[n] = C->session.f_NaN;
-				continue;
-			}
-			else if (!isnan (grid[n])) {
-				header->z_min = MIN (header->z_min, grid[n]);
-				header->z_max = MAX (header->z_max, grid[n]);
-			}
-			++n;
-		}
-
-		/* TODO: in-place padding and flipping (should be easy); remove else
-		 * statement below */
-	} else
-#endif /* NO_PAD */
-	{ /* !NO_PAD */
-
-	/* Load the data row by row. The data in the file is stored either "top down"
-	 * (y_order < 0, the first row is the top row) or "bottom up" (y_order > 0, the first
-	 * row is the bottom row). GMT will store the data in "top down" mode. */
-
-	for (i = 0; i < ndims-2; i++) start[i] = header->t_index[i];
-
-#if 1
-	count[header->xy_dim[0]] = header->nx;
-
-	if (header->y_order < 0)
-		ij = (size_t)pad[YHI] * (size_t)width_out + (size_t)i_0_out;
-	else {		/* Flip around the meaning of first and last row */
-		ij = ((size_t)last_row - (size_t)first_row + (size_t)pad[YHI]) * (size_t)width_out + (size_t)i_0_out;
-		row = first_row;
-		first_row = header->ny - 1 - last_row;
-		last_row = header->ny - 1 - row;
+	/* TODO: Fix this ugly hack
+	 * If grid is global, then width > dim[1] in netcdf variable
+	 * so we need to padd the right margin */
+	if (width > header->nx) {
+		unsigned fix_pad[4] = {0,0,0,0};
+		fix_pad[XHI] = width - header->nx;
+		pad_grid(grid, width, height, fix_pad, sizeof(grid[0]), k_pad_fill_zero);
 	}
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 
-	for (row = first_row; row <= last_row; row++, ij -= ((size_t)header->y_order * (size_t)width_out)) {
-		start[header->xy_dim[1]] = row;
-		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, tmp));	/* Get one row */
-		for (col = 0, kk = ij; col < width_in; col++, kk+=inc) {	/* Check for and handle NaN proxies */
-			grid[kk] = tmp[actual_col[col]];
-			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
-			if (GMT_is_fnan (grid[kk])) continue;
-			header->z_min = MIN (header->z_min, (double)grid[kk]);
-			header->z_max = MAX (header->z_max, (double)grid[kk]);
+	/* Adjust width if complex */
+	width *= inc;
+
+	/* get stats */
+	header->z_min = DBL_MAX;
+	header->z_max = -DBL_MAX;
+	adj_nan_value = !isnan (header->nan_value);
+	for (n = 0 + off; n < width * height; complex_mode ? n += inc : ++n) {
+		if (adj_nan_value && grid[n] == header->nan_value) {
+			grid[n] = C->session.f_NaN;
+			continue;
+		}
+		else if (!isnan (grid[n])) {
+			header->z_min = MIN (header->z_min, grid[n]);
+			header->z_max = MAX (header->z_max, grid[n]);
 		}
 	}
-#else
-	count[header->xy_dim[0]] = width_in;
-	count[header->xy_dim[1]] = height_in;
-	imap[header->xy_dim[0]] = inc;
-	imap[header->xy_dim[1]] = width_out;
-	ij = (size_t)pad[YHI] * (size_t)width_out + (size_t)i_0_out;
-	fprintf (stderr, "Start nc_get_vara_float\n");
-	GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, count, &grid[ij]));
-	fprintf (stderr, "End nc_get_vara_float\n");
+#ifdef DEBUG
+	GMT_report (C, GMT_MSG_FATAL, "minmax: %f %f\n", header->z_min, header->z_max);
 #endif
-	} /* !NO_PAD */
 
-	header->nx = width_in;
-	header->ny = height_in;
+	/* flip grid upside down */
+	if (header->y_order == k_nc_start_south)
+		grid_flip_vertical (grid, height, width);
+
+	/* Add padding with border replication / zero-fill complex grids */
+	pad_grid(grid, width, height, pad, sizeof(grid[0]), complex_mode ? k_pad_fill_zero : k_pad_fill_copy);
+
+	/* Adjust header */
 	GMT_memcpy (header->wesn, wesn, 4, double);
+	header->nx = width;
+	header->ny = height;
 
-	GMT_err_trap (nc_close (ncid));
+	GMT_err_trap (nc_close (header->ncid));
 
-	GMT_free (C, actual_col);
-	GMT_free (C, tmp);
-	return (GMT_NOERROR);
+	return GMT_NOERROR;
 }
 
 int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-{	/* header:	grid structure header
-	 * grid:	array with final grid
-	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
-	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only)
-	 *		Note: The file has only real values, we simply allow space in the complex array
-	 *		for real and imaginary parts when processed by grdfft etc.
+{ /* header:       grid structure header
+	 * grid:         array with final grid
+	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]
+	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
+	 * complex_mode: 1|2 if complex array is to hold real (1) or imaginary (2) part (0 = read as real only)
+	 * Note: The file has only real values, we simply allow space in the complex array
+	 * for real and imaginary parts when processed by grdfft etc.
 	 */
 
-	size_t start[2] = {0,0}, count[2] = {1,1};
-	int err;
-	bool check;
-	unsigned int i, j, width_in, width_out, height_out, inc, off, *actual_col = NULL;
-	int first_col, last_col, first_row, last_row, nan_i;
-	uint64_t nr_oor = 0;
-	size_t ij, node;	/* To allow 64-bit addressing on 64-bit systems */
-	float *tmp_f = NULL, nan_f;
-	int *tmp_i = NULL;
-	double limit[2] = {FLT_MIN, FLT_MAX}, value;
-	nc_type z_type;
+	int status = NC_NOERR;
+	bool adj_nan_value;   /* if we need to change the fill value */
+	bool do_round = true; /* if we need to round to integral */
+	unsigned n, width, width_real, height, inc, off, *actual_col = NULL;
+	unsigned dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
+	int first_col, last_col, first_row, last_row;
+	double limit[2];      /* minmax of z variable */
 
 	/* Determine the value to be assigned to missing data, if not already done so */
-
 	switch (header->type) {
 		case GMT_GRD_IS_NB:
-			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
-			limit[0] = CHAR_MIN - 0.5, limit[1] = CHAR_MAX + 0.5;
-			z_type = NC_BYTE; break;
+			if (isnan (header->nan_value))
+				header->nan_value = CHAR_MIN;
+			break;
 		case GMT_GRD_IS_NS:
-			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
-			limit[0] = SHRT_MIN - 0.5, limit[1] = SHRT_MAX + 0.5;
-			z_type = NC_SHORT; break;
+			if (isnan (header->nan_value))
+				header->nan_value = SHRT_MIN;
+			break;
 		case GMT_GRD_IS_NI:
-			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
-			limit[0] = INT_MIN - 0.5, limit[1] = INT_MAX + 0.5;
-			z_type = NC_INT; break;
-		case GMT_GRD_IS_NF:
-			z_type = NC_FLOAT; break;
+			if (isnan (header->nan_value))
+				header->nan_value = INT_MIN;
+			break;
 		case GMT_GRD_IS_ND:
-			z_type = NC_DOUBLE; break;
-		default:
-			z_type = NC_NAT;
+			GMT_report (C, GMT_MSG_FATAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
+			/* no break! */
+		default: /* don't round float */
+			do_round = false;
 	}
 
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
+	GMT_free (C, actual_col);
 
-	width_in = width_out;		/* Physical width of input array */
-	if (pad[XLO] > 0) width_in += pad[XLO];
-	if (pad[XHI] > 0) width_in += pad[XHI];
-
+	/* Adjust header */
 	GMT_memcpy (header->wesn, wesn, 4, double);
-	header->nx = width_out;
-	header->ny = height_out;
+	header->nx = width;
+	header->ny = height;
+
+	/* Adjust first_row */
+	if (header->y_order == k_nc_start_south)
+		first_row = header->ny - 1 - last_row;
 
 	/* Write grid header without closing file afterwards */
 	setup_chunk_cache();
-	GMT_err_trap (gmt_nc_grd_info (C, header, 'W'));
+	status = gmt_nc_grd_info (C, header, 'W');
+	if (status != NC_NOERR)
+		goto nc_err;
 
-#ifdef NO_PAD
-	if (*pad == 0) {
-		/* when pad = 0 we can directly write to *grid without the need to flip
-		 * and pad in place */
-		unsigned n = 0;
-		unsigned n_nodes = height_out * width_out; /* number of grid nodes */
-		unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* xy_dim not row major!!! */
-		nc_type z_type;      /* type of z variable */
-		size_t z_size;       /* size of z variable */
-		size_t chunksize[5]; /* chunksize of z */
-		size_t n_contiguous_chunk_rows = 0; /* that are read by nc_get_vara_float(), 0 = all */
+	/* Set stride and offset if complex */
+	(void)GMT_init_complex (complex_mode, &inc, &off);
 
-		/* adjust first_row */
-		if (header->y_order > 0)
-			first_row = header->ny - 1 - last_row;
+	/* Remove padding from grid */
+	width_real = width * inc;
+	unpad_grid(grid, width_real, height, pad, sizeof(grid[0]));
 
-		fprintf (stderr, "nx:%u ny:%u x0:%u y0:%u y-order:%d\n",
-				width_out, height_out, first_col, first_row, header->y_order);
+	/* flip grid upside down */
+	if (header->y_order == k_nc_start_south)
+		grid_flip_vertical (grid, height, width_real);
 
-		/* get number of chunked rows that fit into cache (32MiB) */
-		GMT_err_trap (nc_inq_vartype  (header->ncid, header->z_id, &z_type));
-		GMT_err_trap (nc_inq_type(header->ncid, z_type, NULL, &z_size));
-		if (n_nodes * z_size > NC_CACHE_SIZE) {
-			int storage_in;
-			GMT_err_trap (nc_inq_var_chunking (header->ncid, header->z_id, &storage_in, chunksize));
-			if (storage_in != NC_CHUNKED)
-				chunksize[yx_dim[0]] = 128; /* default if NC_CONTIGUOUS */
-			n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width_out * z_size) / chunksize[0] );
-			fprintf (stderr, "writing %zu contiguous chunked rows (%.1f MiB)\n",
-					n_contiguous_chunk_rows,
-					n_contiguous_chunk_rows * z_size * width_out * chunksize[yx_dim[0]] / 1048576.0f);
-		}
-
-		/* get stats */
-		header->z_min = DBL_MAX;
-		header->z_max = -DBL_MAX;
-		check = !isnan (header->nan_value);
-		while (n < n_nodes) {
-			if (check && isnan (grid[n]))
-				grid[n] = header->nan_value;
-			else if (!isnan (grid[n])) {
-				header->z_min = MIN (header->z_min, grid[n]);
-				header->z_max = MAX (header->z_max, grid[n]);
-			}
-			else if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
+	/* get stats */
+	header->z_min = DBL_MAX;
+	header->z_max = -DBL_MAX;
+	adj_nan_value = !isnan (header->nan_value);
+	n = 0;
+	while (n < width_real * height) {
+		if (adj_nan_value && isnan (grid[n]))
+			grid[n] = header->nan_value;
+		else if (!isnan (grid[n])) {
+			if (do_round)
 				grid[n] = rint (grid[n]); /* round to int */
-			}
-			++n;
+			header->z_min = MIN (header->z_min, grid[n]);
+			header->z_max = MAX (header->z_max, grid[n]);
 		}
-
-		/* flip grid upside down */
-		if (header->y_order > 0)
-			grd_flip_vertical (grid, height_out, width_out);
-
-		if (n_contiguous_chunk_rows) {
-			/* read grid in chunks to keep memory footprint low */
-			unsigned remainder;
-
-			/* adjust row count, so that it ends on the bottom of a chunk */
-			count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
-			remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
-			count[yx_dim[0]] -= remainder;
-			//fprintf (stderr, "r:%u c:%zu\n", remainder, count[yx_dim[0]]);
-
-			count[yx_dim[1]] = width_out;
-			while ( start[yx_dim[0]] + count[yx_dim[0]] <= height_out ) {
-				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
-				grid += count[yx_dim[0]] * width_out; /* advance grid location */
-				start[yx_dim[0]] += count[yx_dim[0]]; /* set new origin */
-				if (remainder) {
-					/* reset count */
-					count[yx_dim[0]] += remainder;
-					remainder = 0;
-				}
-			}
-			if ( start[yx_dim[0]] != height_out ) {
-				/* get last chunked row */
-				count[yx_dim[0]] = height_out - start[yx_dim[0]] + first_row;
-				GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
-			}
-		}
-		else {
-			/* read whole grid contiguous */
-			count[yx_dim[0]] = height_out;
-			count[yx_dim[1]] = width_out;
-			GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, grid));
-		}
-
-		/* TODO: in-place padding and flipping (should be easy); remove else
-		 * statement below */
-	} else
-#endif /* NO_PAD */
-	{ /* !NO_PAD */
-
-	/* Set start position for writing grid */
-
-	count[1] = width_out;
-	ij = (size_t)first_col + (size_t)pad[XLO] + ((size_t)last_row + (size_t)pad[YHI]) * (size_t)width_in;
-	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
-	check = !GMT_is_dnan (header->nan_value);
-
-	/* Store z-variable. Distinguish between floats and integers */
-
-	if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-		tmp_f = GMT_memory (C, NULL, width_in, float);
-		nan_f = (float)header->nan_value;
-		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
-			start[0] = j;
-			for (i = 0; i < width_out; i++) {
-				node = inc*(ij+actual_col[i])+off;
-				if (node > header->size) {
-					fprintf (stderr, "Outside bounds\n");
-				}
-				value = grid[node];
-				if (GMT_is_dnan (value))
-					tmp_f[i] = nan_f;
-				else if (fabs(value) > FLT_MAX) {
-					tmp_f[i] = nan_f;
-					nr_oor++;
-				}
-				else {
-					tmp_f[i] = (float)value;
-					if (!check || tmp_f[i] != nan_f) {
-						header->z_min = MIN (header->z_min, (double)tmp_f[i]);
-						header->z_max = MAX (header->z_max, (double)tmp_f[i]);
-					}
-				}
-			}
-			GMT_err_trap (nc_put_vara_float (header->ncid, header->z_id, start, count, tmp_f));
-		}
-		GMT_free (C, tmp_f);
+		++n;
 	}
 
-	else { /* z_type != NC_FLOAT && z_type != NC_DOUBLE */
-		tmp_i = GMT_memory (C, NULL, width_in, int);
-		nan_i = lrint (header->nan_value);
-		for (j = 0; j < height_out; j++, ij -= (size_t)width_in) {
-			start[0] = j;
-			for (i = 0; i < width_out; i++) {
-				value = grid[inc*(ij+actual_col[i])+off];
-				if (GMT_is_dnan (value))
-					tmp_i[i] = nan_i;
-				else if (value <= limit[0] || value >= limit[1]) {
-					tmp_i[i] = nan_i;
-					nr_oor++;
-				}
-				else {
-					tmp_i[i] = lrint (value);
-					if (!check || tmp_i[i] != nan_i) {
-						header->z_min = MIN (header->z_min, (double)tmp_i[i]);
-						header->z_max = MAX (header->z_max, (double)tmp_i[i]);
-					}
-				}
-			}
-			GMT_err_trap (nc_put_vara_int (header->ncid, header->z_id, start, count, tmp_i));
-		}
-		GMT_free (C, tmp_i);
-	}
+#ifdef DEBUG
+	GMT_report (C, GMT_MSG_FATAL, "minmax: %f %f\n", header->z_min, header->z_max);
+#endif
 
-	if (nr_oor > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
-
-	} /* !NO_PAD */
-
-	GMT_free (C, actual_col);
+	/* write grid */
+	dim[0]    = height,    dim[1]    = width;
+	origin[0] = first_row, origin[1] = first_col;
+	status = io_nc_grid (C, header, dim, origin, off, inc, k_put_netcdf, grid);
+	if (status != NC_NOERR)
+		goto nc_err;
 
 	/* Limits need to be written in actual, not internal grid, units */
-
 	if (header->z_min <= header->z_max) {
 		limit[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
 		limit[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
@@ -974,11 +1042,24 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 		GMT_report (C, GMT_MSG_FATAL, "Warning: No valid values in grid [%s]\n", header->name);
 		limit[0] = limit[1] = NAN; /* set limit to NaN */
 	}
-	GMT_err_trap (nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2U, limit));
+	status = nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit);
+	if (status != NC_NOERR)
+		goto nc_err;
 
 	/* Close grid */
+	status = nc_close (header->ncid);
+	if (status != NC_NOERR)
+		goto nc_err;
 
-	GMT_err_trap (nc_close (header->ncid));
+	return GMT_NOERROR;
 
-	return (GMT_NOERROR);
+nc_err:
+	/* exit gracefully */
+	nc_close(header->ncid); /* close nc-file */
+	unlink (header->name);  /* remove nc-file */
+	if (status == NC_ERANGE) {
+		/* report out of range */
+		GMT_report (C, GMT_MSG_FATAL, "%s,\nadjust scale and offset parameters or remove out-of-range values.\n", nc_strerror (status));
+	}
+	return status;
 }
