@@ -35,12 +35,12 @@ approximated by great circle arcs.  When using the OPT(A) sides will be regarded
 Alternatively, append BD(m) to have sides first follow meridians, then parallels. Or append BD(p)
 to first follow parallels, then meridians.
 .TP
-OPT(N)[BD(i)|BD(I)|BD(p)|BD(P)]IT(values)
+OPT(N)[BD(z)|BD(Z)|BD(p)|BD(P)]IT(values)
 Sets the IT(out/edge/in) that will be assigned to nodes that are IT(out)side the polygons,
 on the IT(edge), or IT(in)side.  Values can be any number, including the
-textstring NaN  [Default is 0/0/1].  Optionally, use BD(Ni) to set polygon insides to the
-polygon ID obtained from the data (either segment header OPT(L)IT(header) or via OPT(a));
-use OPT(NI) to consider the polygon boundary as part of the inside. Alternatively, use
+textstring NaN  [Default is 0/0/1].  Optionally, use BD(Nz) to set polygon insides to the
+z-value obtained from the data (either segment header OPT(Z)IT(zval), OPT(L)IT(header) or via OPT(a)Z=IT(name));
+use OPT(NZ) to consider the polygon boundary as part of the inside. Alternatively, use
 OPT(Np) to use a running number as polygon ID; optionally append start of the sequence [0].
 Here, OPT(NP) includes the polygon perimeter as inside.
 .TP
@@ -72,9 +72,9 @@ To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc -V
 .br
 .sp
-To assign polygon IDs to the gridnodes using the insides of the polygons in plates.gmt, do
+To assign polygon IDs to the gridnodes using the insides of the polygons in plates.gmt, based on the attribute POL_ID, do
 .sp
-grdmask plates.gmt -R-40/40/-40/40 -I2m -Ni -Gplate_IDs.nc -V
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID-V
 .br
 .sp
 Same exercise, but instead compute running polygon IDs starting at 100, do

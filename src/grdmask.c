@@ -81,7 +81,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-A[m|p]] [-N[i|I|p|P][<values>]]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t%s [-A[m|p]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_RADIUS_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
@@ -97,9 +97,10 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Ignored if -S is used since points are then not considered to be lines.\n");
 	GMT_message (GMT, "\t-N Set <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");
 	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
-	GMT_message (GMT, "\t   Optionally, use -Ni (inside) or -NI (inside+edge) to set polygon ID:\n");
-	GMT_message (GMT, "\t     a) If OGR/GMT files, get polygon ID via -a for Z column.\n");
-	GMT_message (GMT, "\t     b) Interpret segment labels (-L<label>) as polygon IDs.\n");
+	GMT_message (GMT, "\t   Optionally, use -Nz (inside) or -NZ (inside+edge) to set a z-value:\n");
+	GMT_message (GMT, "\t     a) If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.\n");
+	GMT_message (GMT, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
+	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
 	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
 	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
@@ -155,10 +156,10 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 			case 'N':	/* Mask values */
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
-					case 'i':	/* Polygon ID from file (inside only) */
+					case 'z':	/* Z-value from file (inside only) */
 						Ctrl->N.mode = 1;
 						break;
-					case 'I':	/* Polygon ID from file (inside + edge) */
+					case 'Z':	/* Z-value from file (inside + edge) */
 						Ctrl->N.mode = 2;
 						break;
 					case 'p':	/* Polygon ID from running number (inside only) */
@@ -214,11 +215,11 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	uint64_t ij, k, seg;
 	
-	char seg_label[GMT_TEXT_LEN64];
+	char text_item[GMT_TEXT_LEN64];
 
 	float mask_val[3];
 	
-	double distance, xx, yy, ID, xtmp, *grd_x0 = NULL, *grd_y0 = NULL;
+	double distance, xx, yy, z_value, xtmp, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -252,15 +253,21 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
-	ID = Ctrl->N.mask[0];	/* Starting value if running IDs */
+	z_value = Ctrl->N.mask[0];	/* Starting value if running IDs */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
 		char line[GMT_BUFSIZ];
 		if (Ctrl->N.mode == 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to the polygon ID\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons or on the edge will be set to the polygon ID\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
+		}
+		else if (Ctrl->N.mode == 3) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+		}
+		else if (Ctrl->N.mode == 4) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
@@ -348,16 +355,18 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			else if (S->n_rows > 2) {	/* assign 'inside' to nodes if they are inside given polygon */
 				if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
-				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for polygon IDs in the data headers */
+				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for z-values in the data headers */
 					if (S->ogr)	/* OGR data */
-						ID = GMT_get_aspatial_value (GMT, GMT_IS_Z, S);
-					else if (GMT_parse_segment_item (GMT, S->header, "-L", seg_label))	/* Look for segment header ID */
-						ID = atof (seg_label);
+						z_value = GMT_get_aspatial_value (GMT, GMT_IS_Z, S);
+					else if (GMT_parse_segment_item (GMT, S->header, "-Z", text_item))	/* Look for zvalue option */
+						z_value = atof (text_item);
+					else if (GMT_parse_segment_item (GMT, S->header, "-L", text_item))	/* Look for segment header ID */
+						z_value = atof (text_item);
 					else
-						GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");
+						GMT_report (GMT, GMT_MSG_FATAL, "No z-value found; z-value set to NaN\n");
 				}
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
-					ID += 1.0;
+					z_value += 1.0;
 
 				for (row = 0; row < ny; row++) {
 
@@ -381,7 +390,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 						ij = GMT_IJP (Grid->header, row, col);
 						
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
-						Grid->data[ij] = (Ctrl->N.mode) ? (float)ID : mask_val[side];
+						Grid->data[ij] = (Ctrl->N.mode) ? (float)z_value : mask_val[side];
 					}
 					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %d scanning row %05d\r", n_pol, row);
 				}
