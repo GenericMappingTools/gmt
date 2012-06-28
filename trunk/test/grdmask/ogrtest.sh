@@ -15,7 +15,7 @@ EOF
 grdimage mask.nc -Cmask.cpt -Jx800id -P -Ba10sf5sWSne -K -Xc > $ps
 psxy -Rmask.nc -J -O -K pentagon.gmt -W0.25p,white >> $ps
 # 2. make an ID grid from a multipolygon file with IDs set to CPT entries
-grdmask -R-3/8/-3/5 -I0.1 -r multihole.gmt -aZ=ID -Ni -GID.nc
+grdmask -R-3/8/-3/5 -I0.1 -r multihole.gmt -aZ=ID -Nz -GID.nc
 cat << EOF > mask.cpt
 0	blue	1	- ;B
 1	green	2	- ;G
