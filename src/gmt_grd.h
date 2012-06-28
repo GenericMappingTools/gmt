@@ -38,17 +38,42 @@
 
 #include "netcdf.h"
 
+/* netcdf convention */
+#define GMT_NC_CONVENTION "COARDS/CF-1.5"
+
 /* Nodes that are unconstrained are assumed to be set to NaN */
 
-enum GMT_enum_reg {GMT_GRIDLINE_REG = 0,
-	GMT_PIXEL_REG = 1U};
+enum GMT_enum_reg {
+	GMT_GRIDLINE_REG = 0,
+	GMT_PIXEL_REG};
 
 /* These lengths (except GRD_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
-enum GMT_enum_grdlen {	GRD_UNIT_LEN80	= 80U,
-			GRD_TITLE_LEN80	= 80U,
-		GRD_VARNAME_LEN80	= 80U,
-		GRD_COMMAND_LEN320	= 320U,
-		GRD_REMARK_LEN160	= 160U};
+enum GMT_enum_grdlen {
+	GRD_UNIT_LEN80     = 80U,
+	GRD_TITLE_LEN80    = 80U,
+	GRD_VARNAME_LEN80  = 80U,
+	GRD_COMMAND_LEN320 = 320U,
+	GRD_REMARK_LEN160  = 160U};
+
+enum {
+	/* Order of rows in z variable */
+	k_nc_start_north = -1, /* The least dimension (i.e., lat or y) decreases */
+	k_nc_start_south = 1 /* The least dimension (i.e., lat or y) increases */
+};
+
+/*
+ * GMT's internal representation of grids is north-up, i.e., the index of the
+ * least dimension (aka y or lat) increases to the south. NetCDF files are
+ * usually written bottom-up, i.e., the index of the least dimension increases
+ * from south to north (k_nc_start_south):
+ *
+ * k_nc_start_north:  k_nc_start_south:
+ *
+ * y ^ 0 1 2            -------> x
+ *   | 3 4 5            | 0 1 2
+ *   | 6 7 8            | 3 4 5
+ *   -------> x       y V 6 7 8
+ */
 
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
@@ -67,7 +92,7 @@ struct GRD_HEADER {
 	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
-	int y_order;			/* NetCDF: 1 if S->N, -1 if N->S */
+	int y_order;			/* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;			/* NetCDF: id of z field */
 	int ncid;			/* NetCDF: file ID */
 	int t_index[3];			/* NetCDF: index of higher coordinates */
@@ -124,12 +149,14 @@ struct GRD_HEADER {
 /* The array wesn in the header has a name that indicates the order (west, east, south, north).
  * However, to avoid using confusing indices 0-3 we define very brief constants XLO, XHI, YLO, YHI
  * that should be used instead: */
-enum GMT_enum_wesnIDs {XLO = 0,	/* Index for west or xmin value */
-	XHI,			/* Index for east or xmax value */
-	YLO,			/* Index for south or ymin value */
-	YHI,			/* Index for north or ymax value */
-	ZLO, 			/* Index for zmin value */
-	ZHI};			/* Index for zmax value */
+enum GMT_enum_wesnIDs {
+	XLO = 0, /* Index for west or xmin value */
+	XHI,     /* Index for east or xmax value */
+	YLO,     /* Index for south or ymin value */
+	YHI,     /* Index for north or ymax value */
+	ZLO,     /* Index for zmin value */
+	ZHI      /* Index for zmax value */
+};
 
 /* These macros should be used to convert between (column,row) and (x,y).  It will eliminate
  * one source of typos and errors, and since macros are done at compilation time there is no

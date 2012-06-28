@@ -364,8 +364,7 @@ int GMT_nc_get_att_text (struct GMT_CTRL *C, int ncid, int varid, char *name, ch
 
 	status = nc_inq_attlen (ncid, varid, name, &attlen);
 	if (status != NC_NOERR) {
-		strncpy (text, "N/A", textlen-1);
-		text[textlen-1] = '\0';
+		*text = '\0';
 		return status;
 	}
 	att = GMT_memory (C, NULL, attlen, char);
@@ -375,10 +374,8 @@ int GMT_nc_get_att_text (struct GMT_CTRL *C, int ncid, int varid, char *name, ch
 		strncpy (text, att, attlen); /* Copy att to text */
 		text[attlen] = '\0'; /* Terminate string */
 	}
-	else {
-		strncpy (text, "N/A", textlen-1);
-		text[textlen-1] = '\0';
-	}
+	else
+		*text = '\0';
 	GMT_free (C, att);
 	return status;
 }
