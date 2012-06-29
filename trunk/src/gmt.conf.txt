@@ -189,12 +189,12 @@ Defines the format of the time information in the UNIX time stamp. This format i
 so that virtually any text can be used (even not containing any time information)  [%Y %b %d %H:%M:%S].
 .TP
 .B FORMAT_TIME_PRIMARY_MAP
-Controls how primary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
-character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case  [full].
+Controls how primary month-, week-, and weekday-names are formatted.  Choose among BD(full), BD(abbreviated), and
+BD(character).  If the leading BD(f), BD(a), or BD(c) are replaced with BD(F), BD(A), and BD(C) the entire annotation will be in upper case  [full].
 .TP
 .B FORMAT_TIME_SECONDARY_MAP
-Controls how secondary month-, week-, and weekday-names are formatted.  Choose among full, abbreviated, and
-character.  If the leading f, a, or c are replaced with F, A, and C the entire annotation will be in upper case  [full].
+Controls how secondary month-, week-, and weekday-names are formatted.  Choose among BD(full), BD(abbreviated), and
+BD(character).  If the leading BD(f), BD(a), or BD(c) are replaced with BD(F), BD(A), and BD(C) the entire annotation will be in upper case  [full].
 .TP
 .B GMT_FFT
 Determines which Fast Fourier Transform should be used among those that have been configured during installation.
@@ -203,7 +203,9 @@ Fortran multi-dimensional FFT), fftw (The Fastest Fourier Transform in the West)
 (use Paul N. Swarztrauber FFT pack translated from Fortran) or perflib (Sun Performance Library under Solaris) [auto].
 .TP
 .B GMT_HISTORY
-If true, passes the history of past common command options via the hidden \.gmtcommands file [true].
+Passes the history of past common command options via the hidden \.gmtcommands file.
+The dfferent values for this setting are: BD(true), BD(readonly), BD(false), to either read and write to the \.gmtcommands file,
+only read, or not use the file at all  [true].
 .TP
 .B GMT_INTERPOLANT
 Determines if linear (linear), Akima's spline (akima), natural cubic spline (cubic) or\"'
