@@ -389,7 +389,7 @@ void solve_system_1d (struct GMT_CTRL *GMT, double *gtg, double *gtd, double *mo
 	}
 	else {
 		if (GMT_jacobi (GMT, gtg, n_model, mp, lambda, v, b, z, &nrots)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Matrix Solver Convergence Failure.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Matrix Solver Convergence Failure.\n");
 		}
 		c_test = fabs (lambda[0]) / c_no;
 		while (rank < n_model && lambda[rank] > 0.0 && lambda[rank] > c_test) rank++;
@@ -531,7 +531,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw|p\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw|p\n");
 						n_errors++;
 					}
 				}
@@ -555,7 +555,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 				if (opt->arg[j])
 					Ctrl->N.value = atoi(&opt->arg[j]);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: No model specified\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: No model specified\n");
 					n_errors++;
 				}
 				break;
@@ -575,7 +575,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xymrwp", Ctrl->F.col[j])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
@@ -654,21 +654,21 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (xmin == xmax) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Min and Max value of input data are the same.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Min and Max value of input data are the same.\n");
 		Return (EXIT_FAILURE);
 	}
 	if (n_data == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read any data.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not read any data.\n");
 		Return (EXIT_FAILURE);
 	}
-	if (n_data < (uint64_t)Ctrl->N.value) GMT_report (GMT, GMT_MSG_FATAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
+	if (n_data < (uint64_t)Ctrl->N.value) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Ill-posed problem; n_data < n_model_max.\n");
 
 	transform_x_1d (data, n_data, Ctrl->N.mode, xmin, xmax);	/* Set domain to [-1, 1] or [-pi, pi]  */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format,"Read %%" PRIu64 " data with X values from %s to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, n_data, xmin, xmax);
-		GMT_report (GMT, GMT_MSG_NORMAL, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, n_data, xmin, xmax);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "N_model%sRank%sChi_Squared%sSignificance\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator);
 	}
 
 	sprintf (format, "%%d%s%%d%s%s%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
@@ -681,7 +681,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 		calc_m_and_r_1d (data, n_data, c_model, n_model, Ctrl->N.mode, workb);
 		c_chisq = get_chisq_1d (data, n_data, n_model);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, 1.0);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, 1.0);
 		if (Ctrl->N.robust) {
 			do {
 				recompute_weights_1d (GMT, data, n_data, work, &scale);
@@ -691,7 +691,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 				calc_m_and_r_1d (data, n_data, c_model, n_model, Ctrl->N.mode, workb);
 				c_chisq = get_chisq_1d (data, n_data, n_model);
 				significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
-				GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, prob);
+				GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
@@ -712,7 +712,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 			solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 			calc_m_and_r_1d (data, n_data, c_model, n_model, Ctrl->N.mode, workb);
 			c_chisq = get_chisq_1d (data, n_data, n_model);
-			GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, 1.00);
+			GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, 1.00);
 			if (Ctrl->N.robust) {
 				do {
 					recompute_weights_1d (GMT, data, n_data, work, &scale);
@@ -722,7 +722,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 					calc_m_and_r_1d (data, n_data, c_model, n_model, Ctrl->N.mode, workb);
 					c_chisq = get_chisq_1d (data, n_data, n_model);
 					significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
-					GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, prob);
+					GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
 				} while (significant);
 				/* Go back to previous model only if w_chisq < c_chisq  */
 				if (w_chisq < c_chisq) {
@@ -749,7 +749,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		solve_system_1d (GMT, gtg, gtd, c_model, n_model, np, lambda, v, workb, workz, Ctrl->C.value, &rank);
 		calc_m_and_r_1d (data, n_data, c_model, n_model, Ctrl->N.mode, workb);
 		c_chisq = get_chisq_1d (data, n_data, n_model);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, 1.00);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, 1.00);
 		if (Ctrl->N.robust) {
 			do {
 				recompute_weights_1d (GMT, data, n_data, work, &scale);
@@ -759,7 +759,7 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 				calc_m_and_r_1d (data, n_data, c_model, n_model, Ctrl->N.mode, workb);
 				c_chisq = get_chisq_1d (data, n_data, n_model);
 				significant = GMT_sig_f (GMT, c_chisq, n_data-n_model, w_chisq, n_data-n_model, Ctrl->I.value, &prob);
-				GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq, prob);
+				GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq, prob);
 			} while (significant);
 			/* Go back to previous model only if w_chisq < c_chisq  */
 			if (w_chisq < c_chisq) {
@@ -770,15 +770,15 @@ int GMT_trend1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Final model stats: N model parameters %%d.  Rank %%d.  Chi-Squared: %s\n", GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, n_model, rank, c_chisq);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Model Coefficients  (Chebyshev):");
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, n_model, rank, c_chisq);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Model Coefficients  (Chebyshev):");
 		sprintf (format, "%s%s", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		for (i = 0; i < n_model; i++) GMT_message (GMT, format, c_model[i]);
 		GMT_message (GMT, "\n");
 		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Model Coefficients (Polynomial):");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Model Coefficients (Polynomial):");
 		for (i = 0; i < n_model; i++) GMT_message (GMT, format, c_model[i]);
 		GMT_message (GMT, "\n");
 	}

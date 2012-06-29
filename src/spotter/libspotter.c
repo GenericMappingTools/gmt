@@ -409,10 +409,10 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 		DOS_path_fix (Plates);
 #endif
 		if ((fp = GMT_fopen (C, Plates, "r")) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open GPlates plate id file %s\n", Plates);
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (C, GMT_MSG_VERBOSE, "Using GPlates plate id file %s\n", Plates);
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Using GPlates plate id file %s\n", Plates);
 		A_id = B_id = 0;
 		while ((A_id == 0 || B_id == 0) && GMT_fgets (C, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
 			if (buffer[0] == '#' || buffer[0] == '\n') continue;
@@ -422,11 +422,11 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 		}
 		GMT_fclose (C, fp);
 		if (A_id == 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", A);
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (B_id == 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", B);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not find an entry for plate %s in the GPlates plate id file\n", B);
 			GMT_exit (EXIT_FAILURE);
 		}
 		/* OK, here we have the two IDs */
@@ -435,14 +435,14 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 		DOS_path_fix (Rotations);
 #endif
 		if ((fp = GMT_fopen (C, Rotations, "r")) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open GPlates rotation file %s\n", Rotations);
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (C, GMT_MSG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Using GPlates rotation file %s\n", Rotations);
 		GPlates = total_in = true;
 	}
 	else if ((fp = GMT_fopen (C, file, "r")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open stage pole file: %s\n", file);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open stage pole file: %s\n", file);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -471,12 +471,12 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 			nf = sscanf (buffer, "%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
 				&e[i].lon, &e[i].lat, &e[i].t_start, &e[i].t_stop, &e[i].omega, &K[0], &K[1], &K[2], &K[3], &K[4], &K[5], &K[6], &K[7], &K[8]);
 			if (! (nf == 4 || nf == 5 || nf == 13 || nf == 14)) {
-				GMT_report (C, GMT_MSG_FATAL, "Error: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Rotation file format must be lon lat t0 [t1] omega [k_hat a b c d e f g df]\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (nf == 4 || nf == 13) {	/* total reconstruction format: Got lon lat t0 omega [covars], must shift the K's by one */
 				if (i && !total_in) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Rotation file mixes total reconstruction and stage rotation format\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Rotation file mixes total reconstruction and stage rotation format\n");
 					GMT_exit (EXIT_FAILURE);
 				}
 				total_in = true;
@@ -493,7 +493,7 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 		}
 
 		if (e[i].t_stop >= e[i].t_start) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		e[i].duration = e[i].t_start - e[i].t_stop;
@@ -516,7 +516,7 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 	GMT_fclose (C, fp);
 
 	if (GPlates && i == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Could not find rotations for the plate pair %s - %s\n", A, B);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Could not find rotations for the plate pair %s - %s\n", A, B);
 		GMT_exit (EXIT_FAILURE);
 	}
 	
@@ -551,7 +551,7 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 	/* Extend oldest stage pole back to t_max Ma */
 
 	if ((*t_max) > 0.0 && e[0].t_start < (*t_max)) {
-		GMT_report (C, GMT_MSG_NORMAL, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
+		GMT_report (C, GMT_MSG_VERBOSE, "libspotter: Extending oldest stage pole back to %g Ma\n", (*t_max));
 
 		e[0].t_start = (*t_max);
 		e[0].duration = e[0].t_start - e[0].t_stop;
@@ -578,7 +578,7 @@ unsigned int spotter_hotspot_init (struct GMT_CTRL *C, char *file, bool geocentr
 	double P[3];
 
 	if ((fp = GMT_fopen (C, file, "r")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "Cannot open file %s - aborts\n", file);
+		GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s - aborts\n", file);
 		exit (EXIT_FAILURE);
 	}
 
@@ -589,7 +589,7 @@ unsigned int spotter_hotspot_init (struct GMT_CTRL *C, char *file, bool geocentr
 		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s", &e[i].lon, &e[i].lat, e[i].abbrev, &ival, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) ival = i + 1;	/* Minimal lon, lat, abbrev */
 		if (ival <= 0) {
-			GMT_report (C, GMT_MSG_FATAL, "Hotspot ID numbers must be > 0\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Hotspot ID numbers must be > 0\n");
 			exit (EXIT_FAILURE);
 		}
 		e[i].id = ival;
@@ -686,7 +686,7 @@ unsigned int spotter_backtrack (struct GMT_CTRL *C, double xp[], double yp[], do
 			stage = 0;
 			while (stage < ns && t <= p[stage].t_stop) stage++;	/* Find first applicable stage pole */
 			if (stage == ns) {
-				GMT_report (C, GMT_MSG_FATAL, "(spotter_backtrack) Ran out of stage poles for t = %g\n", t);
+				GMT_report (C, GMT_MSG_NORMAL, "(spotter_backtrack) Ran out of stage poles for t = %g\n", t);
 				GMT_exit (EXIT_FAILURE);
 			}
 			dt = MIN (p[stage].duration, t - MAX(p[stage].t_stop, t_zero));
@@ -867,7 +867,7 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *C, double xp[], double yp[], d
 			while (stage && (t + GMT_CONV_LIMIT) > p[stage].t_start) stage--;
 			/* while (stage < ns && (t + GMT_CONV_LIMIT) < p[stage].t_stop) stage++; */	/* Find first applicable stage pole */
 			if (stage == ns) {
-				GMT_report (C, GMT_MSG_FATAL, "(spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
+				GMT_report (C, GMT_MSG_NORMAL, "(spotter_forthtrack) Ran out of stage poles for t = %g\n", t);
 				GMT_exit (EXIT_FAILURE);
 			}
 			dt = MIN (tp[i], p[stage].t_start) - t;	/* Time interval to rotate */
@@ -1504,7 +1504,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 	axis[GMT_X] = (axis[GMT_Z] == 0) ? 1 : 0;	/* u will be either first or second original axis */
 	axis[GMT_Y] = axis[GMT_X] + 1;				/* Let v be the next (either second or third) */
 	if (axis[GMT_Y] == axis[GMT_Z]) axis[GMT_Y]++;	/* Occupied by w, go to next */
-	GMT_report (GMT, GMT_MSG_NORMAL, "Spinning in the %c-%c coordinate system\n", name[axis[GMT_X]], name[axis[GMT_Y]]);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Spinning in the %c-%c coordinate system\n", name[axis[GMT_X]], name[axis[GMT_Y]]);
 	
 	/* We will loop over 360 degrees and determine where the radial vector intersects the projected ellipse P'(u,v)
 	 * (1) If the origin (0,0) is inside P' then we will always get two real roots that differ in sign. in that case
@@ -1558,7 +1558,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 		}
 	} while (!done);
 	if (bail) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Could not obtain confidence regions for rotation at t = %.2f\n", p->t_start);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Could not obtain confidence regions for rotation at t = %.2f\n", p->t_start);
 		return (0);
 	}
 	if (na == SPOTTER_N_FINE_STEPS) {	/* Two branches, stitch together */
@@ -1607,7 +1607,7 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 			}
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_NORMAL, "No (u,v,w) solution for angle %g\n", phi[i]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "No (u,v,w) solution for angle %g\n", phi[i]);
 		}
 	}
 	if (dump) fclose (fp);
@@ -1783,7 +1783,7 @@ bool on_the_ellipse (double xyz[3], double L[3], double c)
 void spotter_ellipsoid_normal (struct GMT_CTRL *GMT, double X[3], double L[3], double c, double N[3])
 {	/* Compute normal vector N at given point X ON the ellipse */
 	if (!on_the_ellipse (X, L, c)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Point X is not on the ellipsoid in ellipsoid_normal!");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Point X is not on the ellipsoid in ellipsoid_normal!");
 		return;
 	}
 	if (GMT_IS_ZERO (X[GMT_Z])) {	/* Normal vector lies entirely in (x-y) plane */

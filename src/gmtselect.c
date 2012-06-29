@@ -248,7 +248,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
 #ifdef GMT_COMPAT
@@ -271,7 +271,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
 							n_errors++;
 							break;
 					}
@@ -304,7 +304,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->I.pass[5] = false;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Expects -Icflrsz\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
 							n_errors++;
 							break;
 					}
@@ -320,7 +320,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 					}
 					for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);
 					if (!opt->arg[j]) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
 						n_errors++;
 					}
 					else {
@@ -352,13 +352,13 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->N.mask[j] = true;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Bad modifier (use s or k)\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Bad modifier (use s or k)\n");
 							n_errors++;
 					}
 					j++;
 				}
 				if (!(j == 2 || j == GMTSELECT_N_CLASSES)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -367,7 +367,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				Ctrl->Z.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (j != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Z option: Specify z_min and z_max\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
 					n_errors++;
 				}
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
@@ -478,7 +478,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
-	if (do_project) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -J means all data will be projected before tests are applied\n");
+	if (do_project) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: -J means all data will be projected before tests are applied\n");
 	 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
 		if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
@@ -488,10 +488,10 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 			Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
 		}
 		if (GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 		east_border = ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 		wd[0] = 1;	wd[1] = -1;
@@ -519,11 +519,11 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
@@ -572,7 +572,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		if (Lin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
@@ -594,7 +594,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		GMT_skip_xy_duplicates (GMT, false);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
 			Return (EXIT_FAILURE);
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
@@ -649,13 +649,13 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Data record to process */
 
 		n_read++;
-		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records, passed %ld records\r", n_read, n_pass);
+		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Read %ld records, passed %ld records\r", n_read, n_pass);
 
 		if (n_fields < n_minimum) {	/* Bad number of columns */
 			if (Ctrl->Z.active)
-				GMT_report (GMT, GMT_MSG_FATAL, "-Z requires a data file with at least 3 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "-Z requires a data file with at least 3 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
 			else
-				GMT_report (GMT, GMT_MSG_FATAL, "Data file must have at least 2 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
 			Return (EXIT_FAILURE);
 		}
 
@@ -718,7 +718,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 				last_bin = bin;
 				GMT_free_shore (GMT, &c);	/* Free previously allocated arrays */
 				if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
-					GMT_report (GMT, GMT_MSG_FATAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 					Return (EXIT_FAILURE);
 				}
 
@@ -793,7 +793,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
 		GMT_free_shore (GMT, &c);

@@ -222,15 +222,15 @@ int GMT_colmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	n_cols_out = (Ctrl->A.active) ? n_cols_in : n_cols_out;	/* Default or Reset since we did not have -A */
 	
 	if (error) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Parsing requires files with same number of records.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Parsing requires files with same number of records.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_cols_out == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Selection lead to no output columns.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
-	if (warn) GMT_report (GMT, GMT_MSG_NORMAL, "Some requested columns are outside the range of some tables and will be skipped.\n");
+	if (warn) GMT_report (GMT, GMT_MSG_VERBOSE, "Some requested columns are outside the range of some tables and will be skipped.\n");
 	
 	/* We now know the exact number of segments and columns and an upper limit on total records.
 	 * Allocate data set with a single table with those proportions. This copies headers as well */
@@ -284,8 +284,8 @@ int GMT_colmath (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
 
 	Return (GMT_OK);
 }

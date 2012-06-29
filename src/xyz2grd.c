@@ -191,7 +191,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 				else
 #endif
 				if (!strchr ("flmnrsuz", opt->arg[0])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Select -Af, -Al, -Am, -An, -Ar, -As, -Au, or -Az\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -A option: Select -Af, -Al, -Am, -An, -Ar, -As, -Au, or -Az\n");
 					n_errors++;
 				}
 				else {
@@ -229,7 +229,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -258,7 +258,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->Z.active, "Syntax error -S option: Must also specify -Z\n");
 	if (Ctrl->S.active) {	/* Reading and writing binary file */
 		if (n_files > 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -S can only handle one input file\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -S can only handle one input file\n");
 			n_errors++;
 		}
 		else {
@@ -273,7 +273,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 		GMT->common.b.type[GMT_IN] = Ctrl->Z.type;
 		if (b_only) {
 			GMT->common.b.active[GMT_IN] = false;
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bi\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -Z overrides -bi\n");
 		}
 	}
 
@@ -348,7 +348,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->common.b.active[GMT_OUT] = io.binary;	/* May have to set output binary as well */
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1))) Return (error);
 		/* Initialize the i/o since we are doing record-by-record reading/writing */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping data bytes only\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Swapping data bytes only\n");
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
 		/* Register the data source */
@@ -418,36 +418,36 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		FILE *fp = GMT->session.std[GMT_IN];
 		
 		if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 		
 		Grid->header->registration = GMT_GRIDLINE_REG;
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding ncols record\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->ny) != 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding ncols record\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding ncols record\n");
 			Return (EXIT_FAILURE);
 		}
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[XLO]) != 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding xll record\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding xll record\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding yll record\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding yll record\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error decoding cellsize record\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding cellsize record\n");
 			Return (EXIT_FAILURE);
 		}
 		Grid->header->inc[GMT_Y] = Grid->header->inc[GMT_X];
@@ -457,7 +457,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_set_grddim (GMT, Grid->header);
 		GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Grid->header, 1), Ctrl->G.file);
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 		n_left = Grid->header->nm;
 
 		Grid->data = GMT_memory (GMT, NULL, Grid->header->nm, float);
@@ -467,7 +467,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
 			fscanf (fp, "%f", &value);
 			if (Ctrl->E.set && !doubleAlmostEqualZero (value, Ctrl->E.nodata)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
 			}
 			else
 				Ctrl->E.nodata = value;
@@ -487,7 +487,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		GMT_fclose (GMT, fp);
 		if (n_left) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Expected %" PRIu64 " points, found only %" PRIu64 "\n", Grid->header->nm, Grid->header->nm - n_left);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Expected %" PRIu64 " points, found only %" PRIu64 "\n", Grid->header->nm, Grid->header->nm - n_left);
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
@@ -507,13 +507,13 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
 	if (GMT->common.b.active[GMT_IN] && GMT->current.io.col_type[GMT_IN][GMT_Z] & GMT_IS_RATIME && GMT->current.io.fmt[GMT_IN][GMT_Z].type == GMTAPI_FLOAT) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your single precision binary input data are unlikely to hold absolute time coordinates without serious truncation.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: You must use double precision when storing absolute time coordinates in binary data tables.\n");
 	}
 
 	if (Ctrl->D.active) GMT_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %zu\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %zu\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
 
@@ -568,7 +568,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		n_read++;
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
-				GMT_report (GMT, GMT_MSG_FATAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
+				GMT_report (GMT, GMT_MSG_NORMAL, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 				Return (EXIT_FAILURE);
 			}
 			gmt_ij = io.get_gmt_ij (&io, Grid, ij);	/* Convert input order to output node (with padding) as per -Z */
@@ -638,7 +638,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->current.io.input = save_i;	/* Reset pointer */
 		GMT->common.b.active[GMT_IN] = previous_bin_i;	/* Reset binary */
 		if (ij != io.n_expected) {	/* Input amount does not match expectations */
-			GMT_report (GMT, GMT_MSG_FATAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " records, but %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
 			Return (EXIT_FAILURE);
 		}
 		GMT_check_z_io (GMT, &io, Grid);	/* This fills in missing periodic row or column */
@@ -663,7 +663,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 				else {	/* Both have some stuff, consolidate combined value into the west bin, then replicate to the east */
 					if (Amode == 'f' || Amode == 's') {	/* Trouble since we did not store when we added these points */
 						if (first_bad) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Using -Af|s with replicated longitude bins may give inaccurate values");
+							GMT_report (GMT, GMT_MSG_VERBOSE, "Using -Af|s with replicated longitude bins may give inaccurate values");
 							first_bad = false;
 						}
 					}
@@ -707,15 +707,15 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		GMT_free (GMT, flag);
 		
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			char line[GMT_BUFSIZ];
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_NORMAL, " n_read: %" PRIu64 "  n_used: %" PRIu64 "  n_filled: %" PRIu64 " n_empty: %" PRIu64 " set to ",
+			GMT_report (GMT, GMT_MSG_VERBOSE, " n_read: %" PRIu64 "  n_used: %" PRIu64 "  n_filled: %" PRIu64 " n_empty: %" PRIu64 " set to ",
 				n_read, n_used, n_filled, n_empty);
-			(GMT_is_dnan (Ctrl->N.value)) ? GMT_report (GMT, GMT_MSG_NORMAL, "NaN\n") : GMT_report (GMT, GMT_MSG_NORMAL, line, Ctrl->N.value);
-			if (n_bad) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " records unreadable\n", n_bad);
-			if (n_stuffed && Amode != 'n') GMT_report (GMT, GMT_MSG_NORMAL, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
-			if (n_confused) GMT_report (GMT, GMT_MSG_NORMAL, "Warning - %" PRIu64 " values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
+			(GMT_is_dnan (Ctrl->N.value)) ? GMT_report (GMT, GMT_MSG_VERBOSE, "NaN\n") : GMT_report (GMT, GMT_MSG_VERBOSE, line, Ctrl->N.value);
+			if (n_bad) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " records unreadable\n", n_bad);
+			if (n_stuffed && Amode != 'n') GMT_report (GMT, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " nodes had multiple entries that were processed\n", n_stuffed);
+			if (n_confused) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning - %" PRIu64 " values gave bad indices: Pixel vs gridline confusion?\n", n_confused);
 		}
 	}
 

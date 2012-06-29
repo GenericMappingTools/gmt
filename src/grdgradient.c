@@ -191,7 +191,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 						case 'O': case 'o': Ctrl->D.mode |= 2; break;
 						case 'N': case 'n': Ctrl->D.mode |= 4; break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: Unrecognized modifier\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -D option: Unrecognized modifier\n");
 							n_errors++;
 							break;
 					}
@@ -300,7 +300,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E option overrides -A, -D or -S\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;
 	}
 
@@ -610,8 +610,8 @@ int GMT_grdgradient (struct GMTAPI_CTRL *API, int mode, void *args)
 		else
 			strcpy (Out->header->title, "Directional derivative(s)");
 		sprintf (format, "\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Min Mean Max sigma intensities:");
-		GMT_report (GMT, GMT_MSG_NORMAL, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
+		GMT_report (GMT, GMT_MSG_VERBOSE, " Min Mean Max sigma intensities:");
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
 	}
 	else {
 		if (Ctrl->E.mode > 1)

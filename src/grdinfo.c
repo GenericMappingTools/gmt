@@ -247,7 +247,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing file %s\n", G->header->name);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing file %s\n", G->header->name);
 		
 		for (n = 0; n < GMT_Z; n++) GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
 		
@@ -570,6 +570,6 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 	Return (GMT_OK);
 }

@@ -266,7 +266,7 @@ int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int m, d
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_jacobi failed to converge in %d sweeps\n", nsweeps);
+		GMT_report (C, GMT_MSG_NORMAL, "GMT_jacobi failed to converge in %d sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
@@ -422,7 +422,7 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 						}
 					}
 					else if (ipiv[k] > 1) {
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT_gaussjordan: Singular matrix!\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "GMT_gaussjordan: Singular matrix!\n");
 						GMT_free (GMT, ipiv);
 						GMT_free (GMT, indxc);
 						GMT_free (GMT, indxr);
@@ -449,7 +449,7 @@ int GMT_gaussjordan (struct GMT_CTRL *GMT, double *a, unsigned int n_in, unsigne
 		indxr[i] = irow;
 		indxc[i] = icol;
 		if (a[icol*ndim+icol] == 0.0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "GMT_gaussjordan: Singular matrix!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "GMT_gaussjordan: Singular matrix!\n");
 			GMT_free (GMT, ipiv);
 			GMT_free (GMT, indxc);
 			GMT_free (GMT, indxr);
@@ -507,7 +507,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 	double *rv1 = NULL;
 	
 	if (m < n) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: m < n augment A with additional rows\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error in GMT_svdcmp: m < n augment A with additional rows\n");
 		return (EXIT_FAILURE);
 	}
 	
@@ -653,7 +653,7 @@ int GMT_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 				break;
 			}
 			if (its == 30) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error in GMT_svdcmp: No convergence in 30 iterations\n");
 				return (EXIT_FAILURE);
 			}
 			x=w[l];		/* shift from bottom 2-by-2 minor */
@@ -985,7 +985,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 
 		/* Follow great circle */
 		else if ((theta = d_acosd (GMT_dot3v (C, a, b))) == 180.0)	/* trouble, no unique great circle */
-			GMT_report (C, GMT_MSG_NORMAL, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
 
 		else if ((n_step = lrint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;

@@ -272,11 +272,11 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 	if (j && file[j+1] == 'b') file[j] = '\0';			/* Temporarily strip the band request string so that the opening test doesn't fail */
 
 	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 		return (-1);
 	}
 	if (GMT_fread (c, 1U, 4U, fp) != 4U) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Could not read 4 bytes from file %s\n", file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Could not read 4 bytes from file %s\n", file);
 		return (-1);
 	}
 	GMT_fclose (GMT, fp);
@@ -334,13 +334,13 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	known = file_is_known (GMT, Ctrl->In.file);	/* Determine if this is an EPS file, Sun rasterfile, or other */
 	if (known < 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 	
 	if (known) {	/* Read an EPS or Sun raster file */
 		if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Trouble loading %s file %s!\n", format[known-1], Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Trouble loading %s file %s!\n", format[known-1], Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -380,7 +380,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 #else
 	else {	/* Without GDAL we can only read EPS and Sun raster */
-		GMT_report (GMT, GMT_MSG_FATAL, "Unsupported file format for file %s!\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Unsupported file format for file %s!\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 #endif
@@ -421,7 +421,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		free_GMT = true;
 	}
 	else
-		GMT_report (GMT, GMT_MSG_FATAL, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Can only do transparent color for 8- or 24-bit images. -Gt ignored\n");
 
 	if (Ctrl->E.dpi > 0.0) Ctrl->W.width = (double) header.width / Ctrl->E.dpi;
 	if (Ctrl->W.height == 0.0) Ctrl->W.height = header.height * Ctrl->W.width / header.width;
@@ -454,7 +454,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	for (row = 0; row < Ctrl->N.ny; row++) {
 		y = Ctrl->C.y + row * Ctrl->W.height;
-		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
+		if (Ctrl->N.ny > 1) GMT_report (GMT, GMT_MSG_VERBOSE, "Replicating image %d times for row %d\n", Ctrl->N.nx, row);
 		for (col = 0; col < Ctrl->N.nx; col++) {
 			x = Ctrl->C.x + col * Ctrl->W.width;
 			if (header.depth == 0)

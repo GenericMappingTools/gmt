@@ -207,7 +207,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 					}
 					if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
 						if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
@@ -242,7 +242,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
@@ -333,7 +333,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (!(strcmp (Ctrl->In.file[0], "=") || strcmp (Ctrl->In.file[1], "="))) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Piping of grid files not supported!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Piping of grid files not supported!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -346,7 +346,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (!(Grid[0]->header->nx == Grid[1]->header->nx && Grid[0]->header->ny == Grid[1]->header->ny && GMT_grd_same_region (GMT, Grid[0], Grid[1])
 		&& Grid[0]->header->inc[GMT_X] == Grid[1]->header->inc[GMT_X] && Grid[0]->header->inc[GMT_Y] == Grid[1]->header->inc[GMT_Y])) {
-		GMT_report (GMT, GMT_MSG_FATAL, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
 		Return (EXIT_FAILURE);
 	}
 
@@ -363,7 +363,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 		GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */

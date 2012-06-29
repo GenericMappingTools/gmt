@@ -270,7 +270,7 @@ char *GMTMEX_options_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int n
 	if ((s = strstr (options, "-V"))) {	/* User gave -V[level] among the options */
 		int level;
 		s += 2;	/* Skip to char after -V */
-		level = (isdigit ((int)s[0]) && s[0] >= '0' && s[0] <= '4') ? (int)(s[0] - '0') : GMT_MSG_NORMAL;
+		level = (isdigit ((int)s[0]) && s[0] >= '0' && s[0] <= '4') ? (int)(s[0] - '0') : GMT_MSG_VERBOSE;
 		API->GMT->current.setting.verbose = level;
 	}
 	while (options[k] && !(options[k] == '>' && options[k-1] == ' ')) k++;		/* Test if ... */

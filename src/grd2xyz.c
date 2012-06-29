@@ -153,7 +153,7 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -225,12 +225,12 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (GMT->common.b.active[GMT_OUT]) {
 		if (Ctrl->Z.active && !io.binary) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Z overrides -bo\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -Z overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
 #ifdef GMT_COMPAT
 		if (Ctrl->E.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: -E overrides -bo\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -E overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
 #endif
@@ -257,7 +257,7 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", G->header->name);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on file %s\n", G->header->name);
 
 		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");
@@ -298,7 +298,7 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			size_t n_alloc, len, rec_len;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!GMT_IS_ZERO (slop)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
 				Return (EXIT_FAILURE);
 			}
 			n_alloc = G->header->nx * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
@@ -399,12 +399,12 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
 		if (GMT->current.setting.io_nan_mode == 2)
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " finite values suppressed\n", n_suppressed);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64" NaN values suppressed\n", n_suppressed);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
 	Return (GMT_OK);

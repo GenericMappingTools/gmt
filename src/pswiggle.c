@@ -467,7 +467,7 @@ int GMT_pswiggle (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */

@@ -206,7 +206,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Cannot decode value\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -225,7 +225,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 			case 'L':	/* Limit data range */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -L option: Cannot decode limits\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -L option: Cannot decode limits\n");
 					n_errors++;
 				}
 				break;
@@ -246,7 +246,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 				Ctrl->S.active = true;
 				if (strchr (opt->arg, '/')) {	/* Gave low/high/inc */
 					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Cannot decode values\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Cannot decode values\n");
 						n_errors++;
 					}
 					Ctrl->S.mode = 0;
@@ -260,7 +260,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 				Ctrl->T.active = true;
 				kind = '\0';
 				if (sscanf (opt->arg, "%c", &kind) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Cannot decode option\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode option\n");
 					n_errors++;
 				}
 				switch (kind) {
@@ -269,7 +269,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 					case '_': Ctrl->T.kind = -2; break; /* Symmetric with min(|zmin|,|zmax|) range */
 					case '=': Ctrl->T.kind = +2; break; /* Symmetric with max(|zmin|,|zmax|) range */
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Must append modifier -, +, _, or =\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Must append modifier -, +, _, or =\n");
 						n_errors++;
 						break;
 				}
@@ -377,7 +377,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		grdfile[k] = strdup (opt->arg);
 		if (k && !(G[k]->header->nx == G[k-1]->header->nx && G[k]->header->ny == G[k-1]->header->ny)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Grids do not have the same domain!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Grids do not have the same domain!\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -447,9 +447,9 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 	mean /= ngood;
 	sd /= ngood;
 	sd = sqrt (sd - mean * mean);
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Mean and S.D. of data are %s %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, mean, sd);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, mean, sd);
 	}
 
 	/* Decide how to make steps in z.  */
@@ -511,7 +511,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 			mean = 0.5 * (G[0]->header->z_min + G[0]->header->z_max);
 			sd = (G[0]->header->z_max - mean) / 1.5;	/* This factor of 1.5 probably needs to change since z_inc is no longer fixed at 0.1 */
 			if (sd <= 0.0) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Min and Max data values are equal.\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Min and Max data values are equal.\n");
 				Return (EXIT_FAILURE);
 			}
 		}	/* End of stupid bug fix  */
@@ -524,7 +524,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (j = 0; j < Ctrl->E.levels; j++) {
 		if (cdf_cpt[j].z <= G[0]->header->z_min)
 			cdf_cpt[j].f = 0.0;
@@ -539,7 +539,7 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			cdf_cpt[j].f = (double)(nfound-1)/(double)(ngood-1);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, format, cdf_cpt[j].z, cdf_cpt[j].f);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, cdf_cpt[j].z, cdf_cpt[j].f);
 	}
 
 	/* Now the cdf function has been found.  We now resample the chosen cptfile  */

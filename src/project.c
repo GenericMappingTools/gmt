@@ -418,13 +418,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 			case 'C':
 				Ctrl->C.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -C<lon0>/<lat0>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon0>/<lat0>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->C.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->C.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 #ifdef GMT_COMPAT
@@ -437,13 +437,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 			case 'E':
 				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -E<lon1>/<lat1>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -E<lon1>/<lat1>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'F':
@@ -452,13 +452,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 					if (k < PROJECT_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
 						if (!strchr ("xyzpqrs", opt->arg[j])) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Choose from -Fxyzpqrs\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Choose from -Fxyzpqrs\n");
 							n_errors++;
 						}
 					}
 					else {
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Too many output columns selected\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected\n");
 					}
 				}
 				break;
@@ -498,13 +498,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 			case 'T':
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -T<lonp>/<latp>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -T<lonp>/<latp>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'W':
@@ -747,7 +747,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 			radius = 0.5 * d_acosd (GMT_dot3v (GMT, a, b)); 
 			if (radius > fabs (Ctrl->G.colat)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
 				Ctrl->G.mode = 0;
 			}
 			else if (doubleAlmostEqual (Ctrl->G.colat, 90.0)) {	/* Great circle pole needed */
@@ -775,7 +775,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (n_iter > 500) done = true;	/* Safety valve */
 				} while (!done);
 				GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the new pole */
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
 				GMT_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
 				sin_lat_to_pole = s;
 				GMT_cross3v (GMT, P.pole, a, x);
@@ -936,7 +936,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (z_first) {
 				unsigned int n_cols = GMT_get_cols (GMT, GMT_IN);
 				if (n_cols == 2 && P.want_z_output) {
-					GMT_report (GMT, GMT_MSG_FATAL, "No data columns, cannot use z flag in -F\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "No data columns, cannot use z flag in -F\n");
 					Return (EXIT_FAILURE);
 				}
 				else
@@ -1007,7 +1007,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 #ifdef MEMDEBUG
 	if (P.n_z) GMT_memtrack_off (GMT, &g_mem_keeper);	/* Free pointers that were allocated when tracking was off */

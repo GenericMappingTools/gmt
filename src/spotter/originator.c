@@ -389,7 +389,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	n_hotspots = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (Ctrl->S.n > n_hotspots) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
 		Return (EXIT_FAILURE);
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);
@@ -491,7 +491,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (Ctrl->T.active)
 					t_smt = Ctrl->N.t_upper;
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
 					continue;
 				}
 			}
@@ -505,10 +505,10 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (!(smt % 10)) GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5d\r", smt);
+		if (!(smt % 10)) GMT_report (GMT, GMT_MSG_VERBOSE, "Working on seamount # %5d\r", smt);
 
 		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_forthtrack - aborting\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -661,7 +661,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Working on seamount # %5d\n", smt);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Working on seamount # %5d\n", smt);
 
 	GMT_free (GMT, hotspot);
 	GMT_free (GMT, orig_hotspot);

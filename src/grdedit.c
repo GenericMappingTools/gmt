@@ -216,7 +216,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
 	if (!strcmp (Ctrl->In.file,  "=")) {		/* DOES THIS TEST STILL MAKE SENSE? */
-		GMT_report (GMT, GMT_MSG_FATAL, "Piping of grid file not supported!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Piping of grid file not supported!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -225,23 +225,23 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 	}
 
 	if ((G->header->type == GMT_GRD_IS_SF || G->header->type == GMT_GRD_IS_SD) && Ctrl->T.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Toggling registrations not possible for Surfer grid formats\n");
-		GMT_report (GMT, GMT_MSG_FATAL, "(Use grdreformat to convert to GMT default format and work on that file)\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Toggling registrations not possible for Surfer grid formats\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "(Use grdreformat to convert to GMT default format and work on that file)\n");
 		Return (EXIT_FAILURE);
 	}
 	
 	if (Ctrl->S.active && !GMT_grd_is_global (GMT, G->header)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Shift only allowed for global grids\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Shift only allowed for global grids\n");
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Editing parameters for file %s\n", Ctrl->In.file);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Editing parameters for file %s\n", Ctrl->In.file);
 
 	/* Decode grd information given, if any */
 
 	if (Ctrl->D.active) {
 		double scale_factor, add_offset;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Decode and change attributes in file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Decode and change attributes in file %s\n", Ctrl->In.file);
 		scale_factor = G->header->z_scale_factor;
 		add_offset = G->header->z_add_offset;
 		GMT_decode_grd_h_info (GMT, Ctrl->D.information, G->header);
@@ -253,7 +253,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
-		GMT_report (GMT, GMT_MSG_NORMAL, "Shifting longitudes in file %s by %g degrees\n", Ctrl->In.file, shift_amount);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Shifting longitudes in file %s by %g degrees\n", Ctrl->In.file, shift_amount);
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
@@ -267,7 +267,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 	}
 	else if (Ctrl->N.active) {
 		int in_ID = 0;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
@@ -277,7 +277,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		}
 
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, NULL, Ctrl->N.file)) == GMTAPI_NOTSET) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to register file %s\n", Ctrl->N.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to register file %s\n", Ctrl->N.file);
 			Return (EXIT_FAILURE);
 		}
 
@@ -321,7 +321,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, G) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " new data points, updated %" PRIu64 ".\n", n_data, n_use);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " new data points, updated %" PRIu64 ".\n", n_data, n_use);
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
 		struct GRD_HEADER *h_tr = NULL;
@@ -366,13 +366,13 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		}
 		if (Ctrl->T.active) {	/* Grid-line <---> Pixel toggling of the header */
 			GMT_change_grdreg (GMT, G->header, 1 - G->header->registration);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Toggled registration mode in file %s from %s to %s\n", 
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Toggled registration mode in file %s from %s to %s\n", 
 				Ctrl->In.file, registration[1-G->header->registration], registration[G->header->registration]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Reset region in file %s to %g/%g/%g/%g\n", 
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n", 
 				Ctrl->In.file, G->header->wesn[XLO], G->header->wesn[XHI], G->header->wesn[YLO], G->header->wesn[YHI]);
 		}
 		if (GMT->common.R.active) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Reset region in file %s to %g/%g/%g/%g\n", 
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Reset region in file %s to %g/%g/%g/%g\n", 
 				Ctrl->In.file, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 			GMT_memcpy (G->header->wesn, GMT->common.R.wesn, 4, double);
 			Ctrl->A.active = true;	/* Must ensure -R -I compatibility */
@@ -380,7 +380,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		if (Ctrl->A.active) {
 			G->header->inc[GMT_X] = GMT_get_inc (GMT, G->header->wesn[XLO], G->header->wesn[XHI], G->header->nx, G->header->registration);
 			G->header->inc[GMT_Y] = GMT_get_inc (GMT, G->header->wesn[YLO], G->header->wesn[YHI], G->header->ny, G->header->registration);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Reset grid-spacing in file %s to %g/%g\n",
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Reset grid-spacing in file %s to %g/%g\n",
 				Ctrl->In.file, G->header->inc[GMT_X], G->header->inc[GMT_Y]);
 		}
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, G) != GMT_OK) {
@@ -388,7 +388,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "File %s updated.\n", Ctrl->In.file);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "File %s updated.\n", Ctrl->In.file);
 
 	Return (EXIT_SUCCESS);
 }

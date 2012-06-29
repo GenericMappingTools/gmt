@@ -414,7 +414,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 					Ctrl->G.file[0] = strdup (opt->arg);
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
 					n_errors++;
 				}
 				break;
@@ -439,7 +439,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error option -N: Usage is -N<level>[/<color>]\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error option -N: Usage is -N<level>[/<color>]\n");
 					n_errors++;
 				}
 				break;
@@ -467,7 +467,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 						Ctrl->Q.mask = true;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -602,7 +602,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		if (P->is_bw) Ctrl->Q.monochrome = true;
 		if (P->categorical && Ctrl->W.active) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
 	}
 	get_contours = (Ctrl->Q.mode == GRDVIEW_MESH && Ctrl->W.contour) || (Ctrl->Q.mode == GRDVIEW_SURF && P->n_colors > 1);
@@ -657,7 +657,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Read data */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Processing shape file\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing shape file\n");
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
 		Return (API->error);
@@ -666,7 +666,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (k = 0; k < n_drape; k++) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Processing drape file %s\n", Ctrl->G.file[k]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing drape file %s\n", Ctrl->G.file[k]);
 
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
 				Return (API->error);
@@ -710,14 +710,14 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (get_contours) {	/* Need to find contours */
 		struct GMT_GRID *Z_orig = NULL;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Find contours\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Find contours\n");
 		n_edges = Z->header->ny * lrint (ceil (Z->header->nx / 16.0));
 		edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
 		Z_orig = GMT_duplicate_grid (GMT, Z, true);	/* Original copy of Z grid used for contouring */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Trace and bin contours...\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Trace and bin contours...\n");
 		for (c = 0; c < P->n_colors+1; c++) {	/* For each color change */
 
 			/* Reset markers and set up new zero-contour */
@@ -726,7 +726,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (cval < Z->header->z_min || cval > Z->header->z_max) continue;
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Now tracing contour interval %8g\r", cval);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Now tracing contour interval %8g\r", cval);
 			/* Old version of loop below could give round-off since we kept subtracting the increments between successive contours.
 			 * The safer way is to always start with original grid and subtract current contour value instead, as in grdcontour. PW, 11/18/2011 */
 			GMT_grd_loop (GMT, Topo, row, col, ij) {
@@ -783,13 +783,13 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Illumination wanted */
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing illumination file\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing illumination file\n");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
 			Return (API->error);
 		}
 		if (Intens->header->nx != Topo->header->nx || Intens->header->ny != Topo->header->ny) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Intensity file has improper dimensions!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
 		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */
@@ -813,7 +813,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 	z = GMT_memory (GMT, NULL, max_alloc, double);
 	v = GMT_memory (GMT, NULL, max_alloc, double);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Start creating PostScript plot\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
 
 	GMT_plotinit (GMT, options);
 
@@ -905,7 +905,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		struct GMT_LINE_SEGMENT S;
 		GMT_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Tiling without interpolation\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Tiling without interpolation\n");
 
 		if (Ctrl->T.outline) GMT_setpen (GMT, &Ctrl->T.pen);
 		GMT_memset (&S, 1, struct GMT_LINE_SEGMENT);
@@ -937,8 +937,8 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		float *int_drape = NULL;
 		unsigned char *bitimage_24 = NULL, *bitimage_8 = NULL;
 
-		if (Ctrl->C.active && P->has_pattern) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Patterns in cpt file will not work with -Qi\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "Get and store projected vertices\n");
+		if (Ctrl->C.active && P->has_pattern) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file will not work with -Qi\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Get and store projected vertices\n");
 
 		PSL_comment (PSL, "Plot 3-D surface using scanline conversion of polygons to raster image\n");
 
@@ -949,7 +949,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		last_i = nx_i - 1;	last_j = ny_i - 1;
 
 		if (drape_resample) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Resampling illumination grid to drape grid resolution\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
 			ix = GMT_memory (GMT, NULL, Z->header->nm, int);
 			iy = GMT_memory (GMT, NULL, Z->header->nm, int);
 			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);
@@ -1032,10 +1032,10 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Plot from back to front */
 
 		GMT_memset (rgb, 4, double);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Start rasterization\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Start rasterization\n");
 		for (j = j_start; j != j_stop; j += j_inc) {
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Scan line conversion at j-line %.6ld\r", j);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Scan line conversion at j-line %.6ld\r", j);
 
 			for (i = i_start; i != i_stop; i += i_inc) {
 				bin = GMT_IJ0 (Z->header, j, i);
@@ -1143,14 +1143,14 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_free (GMT, y_imask);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Creating PostScript image ");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Creating PostScript image ");
 		if (Ctrl->Q.monochrome) {
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "[B/W image]\n");
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "[B/W image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_8, nx_i, ny_i, 8);
 			GMT_free (GMT, bitimage_8);
 		}
 		else {
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "[color image]\n");
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "[color image]\n");
 			PSL_plotcolorimage (PSL, GMT->current.proj.z_project.xmin, GMT->current.proj.z_project.ymin, x_width, y_width, PSL_BL, bitimage_24, Ctrl->Q.mask ? -nx_i : nx_i, ny_i, 24);
 			GMT_free (GMT, bitimage_24);
 		}
@@ -1652,7 +1652,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	if (get_contours) GMT_free_grid (GMT, &Z, true);	/* Allocated a 2nd time via Z_orig */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (EXIT_SUCCESS);
 }

@@ -328,7 +328,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
 	struct GMT_LINE_SEGMENT *Sp = NULL;
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Determine the segments in D closest to our segment\n");
+	GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Determine the segments in D closest to our segment\n");
 	I->distance = DBL_MAX;
 	mode3 = 3 + 10 * I->inside;	/* Set GMT_near_lines modes */
 	mode1 = 1 + 10 * I->inside;	/* Set GMT_near_lines modes */
@@ -392,9 +392,9 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 	}
 	
 	if (n_close == 0)
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "No other segment found within dmax [probably due to +p requirement]\n");
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Closest segment (Table %d, segment %" PRIu64 ") is %.3f km away; %d segments found within dmax\n", I->table, I->segment, I->distance, n_close);
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Closest segment (Table %d, segment %" PRIu64 ") is %.3f km away; %d segments found within dmax\n", I->table, I->segment, I->distance, n_close);
 	
 	/* Here we have found the shortest distance from a point on S to another segment; S' is segment number seg */
 	
@@ -455,14 +455,14 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 			separation[0] = (np) ? separation[0] / np : DBL_MAX;		/* Mean distance between S and S' */
 			use_length = (np) ? length[0] * np / S->n_rows : length[0];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[0] = (np) ? separation[0] / use_length : DBL_MAX;		/* Closeness as viewed from S */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "S has length %.3f km, has mean separation to Sp of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[0], separation[0], close[0], np, S->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[0], &med_separation[0]);
 					med_close[0] = med_separation[0] / use_length;
 				}
 				else med_close[0] = DBL_MAX;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n", med_separation[0], med_close[0]);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "S  has median separation to Sp of %.3f km, and a robust closeness ratio of %g\n", med_separation[0], med_close[0]);
 			}
 	
 			/* Must now compare the other way */
@@ -488,7 +488,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 			separation[1] = (np) ? separation[1] / np : DBL_MAX;		/* Mean distance between S' and S */
 			use_length = (np) ? length[1] * np / Sp->n_rows : length[1];	/* ~reduce length to overlap section assuming equal point spacing */
 			close[1] = (np) ? separation[1] / use_length : DBL_MAX;		/* Closeness as viewed from S' */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[1], separation[1], close[1], np, Sp->n_rows);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Sp has length %.3f km, has mean separation to S of %.3f km, and a closeness ratio of %g [n = %" PRIu64 "/%" PRIu64 "]\n", length[1], separation[1], close[1], np, Sp->n_rows);
 			if (I->mode) {
 				if (np) {
 					GMT_median (GMT, sep, np, low, high, separation[1], &med_separation[1]);
@@ -496,7 +496,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 				}
 				else med_close[1] = DBL_MAX;
 				GMT_free (GMT, sep);
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n", med_separation[1], med_close[1]);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Sp has median separation to S  of %.3f km, and a robust closeness ratio of %g\n", med_separation[1], med_close[1]);
 				k = (med_close[0] <= med_close[1]) ? 0 : 1;	/* Pick the setup with the smallest robust closeness */
 				closest = med_close[k];		/* The longer the segment and the closer they are, the smaller the closeness */
 			}
@@ -625,7 +625,7 @@ int GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ctrl, s
 				while (GMT_strtok (opt->arg, "+", &pos, p)) {
 					switch (p[0]) {
 						case 'a':	/* Gave a new +a<dmax> value */
-							GMT_report (GMT, GMT_MSG_FATAL, "+a not implemented yet\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "+a not implemented yet\n");
 							Ctrl->D.I.a_threshold = atof (&p[1]);
 							break;
 						case 'd':	/* Gave a new +d<dmax> value */
@@ -806,7 +806,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read Input tables\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Read Input tables\n");
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -814,7 +814,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Allocate memory and read in all the files; each file can have many lines (-m) */
 	
 	if (D->n_records == 0) {	/* Empty files, nothing to do */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found.\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found.\n");
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
 			Return (API->error);
 		}
@@ -1182,7 +1182,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 				S1 = D->table[tbl]->segment[seg];
 				if (S1->n_rows == 0) continue;
 
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Check if segment %" PRIu64 "from Table %d has duplicates:\n", seg, tbl);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Check if segment %" PRIu64 "from Table %d has duplicates:\n", seg, tbl);
 				if (same_feature) {	/* We must exclude this segment from the comparison otherwise we end up finding itself as a duplicate */
 					S2->n_rows = S1->n_rows;
 					for (col = 0; col < S1->n_columns; col++) S2->coord[col] = S1->coord[col];
@@ -1291,7 +1291,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 		for (seg2 = 0; seg2 < T->n_segments; seg2++) {	/* For all polygons */
 			S2 = T->segment[seg2];
 			if (GMT_polygon_is_hole (S2)) continue;	/* Holes are handled in GMT_inonout */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
 					ID = lrint (GMT_get_aspatial_value (GMT, GMT_IS_Z, S2));
@@ -1300,7 +1300,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else
-					GMT_report (GMT, GMT_MSG_FATAL, "No polygon ID found; ID set to NaN\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "No polygon ID found; ID set to NaN\n");
 			}
 			else	/* Increment running polygon ID */
 				ID++;
@@ -1316,7 +1316,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					if (n < np) continue;	/* Not inside this polygon */
 					if (count[p]) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Segment %d-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Segment %d-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
 						continue;
 					}
 					count[p]++;
@@ -1327,11 +1327,11 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->coord[n][row] = (double)ID;
-						GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+						GMT_report (GMT, GMT_MSG_VERBOSE, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
-							GMT_report (GMT, GMT_MSG_FATAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
 							buffer[0] = txt[0] = 0;
@@ -1339,7 +1339,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
-							GMT_report (GMT, GMT_MSG_NORMAL, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+							GMT_report (GMT, GMT_MSG_VERBOSE, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 						}
 					}
 				}
@@ -1354,7 +1354,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
 			Return (API->error);
 		}
@@ -1408,7 +1408,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " segments split across the Dateline\n", n_split);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " segments split across the Dateline\n", n_split);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
 			Return (API->error);
 		}

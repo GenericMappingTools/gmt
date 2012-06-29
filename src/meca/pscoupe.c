@@ -904,7 +904,7 @@ int GMT_pscoupe (struct GMTAPI_CTRL *API, int mode, void *args)
 			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
 
  		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
 			continue;
 		}
 		depth = atof (col[2]);
@@ -972,7 +972,7 @@ int GMT_pscoupe (struct GMTAPI_CTRL *API, int mode, void *args)
 				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.0;
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
 			}
 			else
 				meca.NP1.rake = computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
@@ -1126,7 +1126,7 @@ Definition of scalar moment.
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of records read: %li\n", n_rec);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 

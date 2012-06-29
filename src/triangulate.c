@@ -159,7 +159,7 @@ int GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl,
 					case 'y': case 'Y':
 						Ctrl->D.dir = GMT_Y; break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Give -Dx or -Dy\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Give -Dx or -Dy\n");
 						n_errors++; break;
 				}
 				break;
@@ -260,7 +260,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*---------------------------- This is the triangulate main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%s triangulation algoritm selected\n", tri_algorithm[GMT->current.setting.triangulate]);
+	GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "%s triangulation algoritm selected\n", tri_algorithm[GMT->current.setting.triangulate]);
 	
 	if (Ctrl->G.active) {
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
@@ -268,7 +268,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 	}
-	if (Ctrl->Q.active && Ctrl->Z.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
+	if (Ctrl->Q.active && Ctrl->Z.active) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
 	triplets[GMT_OUT] = (n_output == 3);
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output))) Return (error);
@@ -323,7 +323,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (triplets[GMT_IN]) zz = GMT_memory (GMT, zz, n_alloc, double);
 		}
 		if (n == INT_MAX) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
 			GMT_free (GMT, xx);
 			GMT_free (GMT, yy);
 			if (triplets[GMT_IN]) GMT_free (GMT, zz);
@@ -346,7 +346,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 		yyp = GMT_memory (GMT, NULL, n, double);
 		for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, xx[i], yy[i], &xxp[i], &yyp[i]);
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Do Delaunay optimal triangulation on projected coordinates\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on projected coordinates\n");
 
 		if (Ctrl->Q.active) {
 			double we[2];
@@ -360,7 +360,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, yyp);
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Do Delaunay optimal triangulation on given coordinates\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Do Delaunay optimal triangulation on given coordinates\n");
 
 		if (Ctrl->Q.active) {
 			double we[2];
@@ -372,9 +372,9 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl->Q.active)
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " Voronoi edges found\n", np);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " Voronoi edges found\n", np);
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " Delaunay triangles found\n", np);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " Delaunay triangles found\n", np);
 	
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
@@ -477,7 +477,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			n_edge = j + 1;
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " unique triangle edges\n", n_edge);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " unique triangle edges\n", n_edge);
 
 			for (i = 0; i < n_edge; i++) {
 				fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
@@ -526,7 +526,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 #endif
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

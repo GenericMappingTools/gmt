@@ -357,14 +357,14 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: -Sc option usage is -Sc<low/high>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: -Sl option usage is -Sl<low/high>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -452,7 +452,7 @@ int GMT_mgd77magref (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			else if ( !((nval == 3) && (Ctrl->CM4->CM4_F.field_components[0] == 2) && (Ctrl->CM4->CM4_F.field_components[1] == 3) && 
 						(Ctrl->CM4->CM4_F.field_components[2] == 4)) ) {
-				GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR. In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "GMT ERROR. In mix CM4/IGRF mode -F option can oly be -Ft[r]/... or -Fxyz[r]/...\n");
 				error++;
 			}
 
@@ -523,7 +523,7 @@ int GMT_mgd77magref (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (GMT->common.b.active[GMT_OUT] && GMT->common.b.ncol[GMT_OUT] > 0 && n_out > GMT->common.b.ncol[GMT_OUT]) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Binary output must have at least %d columns (your -bo option only set %d)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Binary output must have at least %d columns (your -bo option only set %d)\n", n_out, GMT->common.b.ncol[GMT_OUT]);
 		Return (EXIT_FAILURE);
 	}
 

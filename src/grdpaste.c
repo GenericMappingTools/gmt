@@ -99,7 +99,7 @@ int GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, struc
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Only two files may be pasted\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Only two files may be pasted\n");
 				}
 				break;
 
@@ -171,7 +171,7 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (A->header->registration != B->header->registration) error++;
 	if ((A->header->z_scale_factor != B->header->z_scale_factor) || (A->header->z_add_offset != B->header->z_add_offset)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Scale/offset not compatible!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -180,7 +180,7 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 		C->header->inc[GMT_Y] = A->header->inc[GMT_Y];
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_FATAL, "Grid intervals do not match!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Grid intervals do not match!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -236,7 +236,7 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_FATAL, "Grids do not share a common edge!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -267,12 +267,12 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_FATAL, "Grids do not share a common edge!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 			Return (EXIT_FAILURE);
 		}
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_FATAL, "Grids do not share a common edge!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 		Return (EXIT_FAILURE);
 	}
 	if (GMT_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Must be careful in determining a match */
@@ -282,12 +282,12 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Now we can do it  */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, "File spec:\tW E S N dx dy nx ny:\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->nx, B->header->ny);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy nx ny:\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->nx, B->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
 	}
 
 	C->header->registration = A->header->registration;

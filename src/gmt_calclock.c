@@ -370,7 +370,7 @@ int GMT_verify_time_step (struct GMT_CTRL *C, int step, char unit) {
 	int retval = 0;
 	
 	if (step < 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps must be positive.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps must be positive.\n");
 		return (-1);
 	}
 
@@ -383,21 +383,21 @@ int GMT_verify_time_step (struct GMT_CTRL *C, int step, char unit) {
 		case 's':
 		case 'S':
 			if (step > 60) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in seconds must be <= 60\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in seconds must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'm':
 		case 'M':
 			if (step > 60) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in minutes must be <= 60\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in minutes must be <= 60\n");
 				retval = -1;
 			}
 			break;
 		case 'h':
 		case 'H':
 			if (step > 24) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in hours must be <= 24\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in hours must be <= 24\n");
 				retval = -1;
 			}
 			break;
@@ -408,14 +408,14 @@ int GMT_verify_time_step (struct GMT_CTRL *C, int step, char unit) {
 			/* The letter d is used for both days of the month and days of the (Gregorian) year */
 			if (C->current.plot.calclock.date.day_of_year) {
 				if (step > 365) {	/* This is probably an error.  */
-					GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in year days must be <= 365\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in year days must be <= 365\n");
 					retval = -1;
 				}
 			}
 			else {
 				/* If step is longer than 31 it is probably an error. */
 				if (step > 31) {
-					GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in days of the month must be <= 31\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in days of the month must be <= 31\n");
 					retval = -1;
 				}
 			}
@@ -423,28 +423,28 @@ int GMT_verify_time_step (struct GMT_CTRL *C, int step, char unit) {
 		case 'k':
 		case 'K':
 			if (step > 7) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in weekdays must be <= 7\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in weekdays must be <= 7\n");
 				retval = -1;
 			}
 			break;
 		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
 					calendar, we only allow step size = 1 here, for ticking each week start. */
 			if (step != 1) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time step must be 1 for Gregorian weeks\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time step must be 1 for Gregorian weeks\n");
 				retval = -1;
 			}
 			break;
 		case 'u':	/* ISO week */
 		case 'U':
 			if (step > 52) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in weeks must be <= 52\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in weeks must be <= 52\n");
 				retval = -1;
 			}
 			break;
 		case 'o':
 		case 'O':
 			if (step > 12) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: time steps in months must be <= 12\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: time steps in months must be <= 12\n");
 				retval = -1;
 			}
 			break;
@@ -455,7 +455,7 @@ int GMT_verify_time_step (struct GMT_CTRL *C, int step, char unit) {
 		case 'p':
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error: Unrecognized time axis unit.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Unrecognized time axis unit.\n");
 			retval = -1;
 			break;
 	}
@@ -729,7 +729,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 				GMT_memcpy (&(p->cc[1]), &(p->cc[0]), 1, struct GMT_gcal);	/* Set to same as first calendar */
 				p->dt[0] = GMT_rdc2dt (C, p->rd[0], p->sd[0]);
 				if (GMT_iso_ywd_is_bad (p->cc[0].iso_y, p->cc[0].iso_w, 1) ) {
-					GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
+					GMT_report (C, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ywd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
 			}
@@ -763,7 +763,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 				k = (p->cc[0].month-1)/p->step;
 				p->cc[0].month = k * p->step + 1;
 				if (GMT_g_ymd_is_bad (p->cc[0].year, p->cc[0].month, p->cc[0].day_m) ) {
-					GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
+					GMT_report (C, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  bad ymd on floor (month) in GMT_init_moment_interval()\n");
 					return;
 				}
 				p->rd[0] = GMT_rd_from_gymd (C, p->cc[0].year, p->cc[0].month, p->cc[0].day_m);
@@ -816,7 +816,7 @@ void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, dou
 			break;
 		default:
 			/* Should never get here because unit should already have been verified.  */
-			GMT_report (C, GMT_MSG_FATAL, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
 			break;
 	}
 }		
@@ -971,7 +971,7 @@ void GMT_get_time_label (struct GMT_CTRL *C, char *string, struct GMT_PLOT_CALCL
 			(P->date.compact) ? sprintf (string, "%d", (int)lrint(calendar.sec)) : sprintf (string, "%02d", (int)lrint(calendar.sec));
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: wrong unit passed to GMT_get_time_label\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Error: wrong unit passed to GMT_get_time_label\n");
 			sprintf (string, "NaN");
 			break;
 	}

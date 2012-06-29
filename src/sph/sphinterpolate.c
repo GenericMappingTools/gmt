@@ -79,7 +79,7 @@ int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	if (m < 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "GMT Error: %s\n", msg);
+		GMT_report (GMT, GMT_MSG_NORMAL, "GMT Error: %s\n", msg);
 		m = -1;
 	}
 	par[0] = atof (txt_a);
@@ -179,7 +179,7 @@ int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL 
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
 						break;
 				}
 				break;
@@ -294,7 +294,7 @@ int GMT_sphinterpolate (struct GMTAPI_CTRL *API, int mode, void *args)
 	n_alloc = n;
 	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Do spherical interpolation using %" PRIu64 " points\n", n);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
 
 	if (Ctrl->Z.active && w_max > w_min) {	/* Scale the data */
 		sf = 1.0 / (w_max - w_min);
@@ -304,7 +304,7 @@ int GMT_sphinterpolate (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Set up output grid */
 	
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Evaluate output grid\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate output grid\n");
 	surfd = GMT_memory (GMT, NULL, Grid->header->nm, double);
 	
 	/* Do the interpolation */
@@ -331,7 +331,7 @@ int GMT_sphinterpolate (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Gridding completed\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Gridding completed\n");
 
 	Return (GMT_OK);
 }

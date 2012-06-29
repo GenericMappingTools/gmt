@@ -255,27 +255,27 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[0];	/* Starting value if running IDs */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char line[GMT_BUFSIZ];
 		if (Ctrl->N.mode == 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to the chosen z-value\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 3) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else if (Ctrl->N.mode == 4) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely outside the polygons will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely outside the polygons will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes completely inside the polygons will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on the polygons boundary will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on the polygons boundary will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
@@ -363,7 +363,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 					else if (GMT_parse_segment_item (GMT, S->header, "-L", text_item))	/* Look for segment header ID */
 						z_value = atof (text_item);
 					else
-						GMT_report (GMT, GMT_MSG_FATAL, "No z-value found; z-value set to NaN\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "No z-value found; z-value set to NaN\n");
 				}
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
@@ -392,7 +392,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (float)z_value : mask_val[side];
 					}
-					GMT_report (GMT, GMT_MSG_NORMAL, "Polygon %d scanning row %05d\r", n_pol, row);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Polygon %d scanning row %05d\r", n_pol, row);
 				}
 			}
 		}

@@ -216,7 +216,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 				Ctrl->A.active = true;
 				n = sscanf (opt->arg, "%c%[^/]/%s", &c, txt_a, txt_b);
 				if (n < 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
 					n_errors++;
 				}
 				else {
@@ -236,7 +236,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 							Ctrl->A.orient = true;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>]\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>]\n");
 							n_errors++;
 							break;
 					}
@@ -334,7 +334,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 					case 'm': Ctrl->N.mode = GMT_LATSWAP_G2M; break;
 					case '\0': Ctrl->N.mode = GMT_LATSWAP_G2O; break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -N[a|c|g|m]\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -N[a|c|g|m]\n");
 						n_errors++;
 				}
 				break;
@@ -382,11 +382,11 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		n_errors += GMT_check_condition (GMT, !GMT->current.proj.utm_zoney && GMT->current.proj.utm_hemisphere == 0, "Syntax error: -Ju need zone specification with latitude or hemisphere selection\n");
 		if (GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, GMT->common.R.wesn)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Bad UTM zone\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
 			n_errors++;
 		}
 		else
-			GMT_report (GMT, GMT_MSG_NORMAL, "UTM zone used to generate region %g/%g/%g/%g\n", 
+			GMT_report (GMT, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n", 
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		
 		GMT->common.R.active = true;
@@ -547,7 +547,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = save[GMT_Y];
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && !(geodetic_calc || Ctrl->T.active)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && !(geodetic_calc || Ctrl->T.active)) {
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		xmin = (Ctrl->C.active) ? GMT->current.proj.rect[XLO] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XLO];
 		xmax = (Ctrl->C.active) ? GMT->current.proj.rect[XHI] - GMT->current.proj.origin[GMT_X] : GMT->current.proj.rect[XHI];
@@ -574,7 +574,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 			ymax += Ctrl->C.northing;
 		}
 
-		GMT_report (GMT, GMT_MSG_FATAL, " Transform ");
+		GMT_report (GMT, GMT_MSG_NORMAL, " Transform ");
 		if (Ctrl->N.active) {
 			char *auxlat[4] = {"authalic", "conformal", "meridional", "geocentric"};
 			GMT_message (GMT, "geodetic");
@@ -705,7 +705,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (Ctrl->I.active) {		/* Do inverse transformation */
 
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 				x_in = in[GMT_X];
 				y_in = in[GMT_Y];
 			}
@@ -746,7 +746,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 
 			if (Ctrl->S.active && GMT_map_outside (GMT, out[GMT_X], out[GMT_Y])) continue;
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 				x_in_min = MIN (x_in_min, x_in);
 				x_in_max = MAX (x_in_max, x_in);
 				y_in_min = MIN (y_in_min, y_in);
@@ -789,7 +789,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
+			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 		else {		/* Do forward transformation */
 
@@ -831,7 +831,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 					out[GMT_Y] += Ctrl->C.northing;
 				}
 			}
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 				x_in_min = MIN (x_in_min, in[GMT_X]);
 				x_in_max = MAX (x_in_max, in[GMT_X]);
 				y_in_min = MIN (y_in_min, in[GMT_Y]);
@@ -918,7 +918,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 			}
 			else {
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 					x_out_min = MIN (x_out_min, out[GMT_X]);
 					x_out_max = MAX (x_out_max, out[GMT_X]);
 					y_out_min = MIN (y_out_min, out[GMT_Y]);
@@ -956,7 +956,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Projected %" PRIu64 " points\r", n);
+			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 	} while (true);
 	
@@ -967,35 +967,35 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Projected %" PRIu64 " points\n", n);
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && n_read > 0) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, x_in_min, x_in_max, y_in_min, y_in_max);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		if (!geodetic_calc) {
 			sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_NORMAL, format, x_out_min, x_out_max, y_out_min, y_out_max);
+			GMT_report (GMT, GMT_MSG_VERBOSE, format, x_out_min, x_out_max, y_out_min, y_out_max);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
-					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
 				else if (Ctrl->N.active)
-					GMT_report (GMT, GMT_MSG_NORMAL, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
 				else
-					GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
 			}
 			else if (Ctrl->T.active && GMT->current.proj.datum.h_given)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
 			else if (Ctrl->T.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
 			else if (Ctrl->E.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
 			else if (Ctrl->N.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
 			else if (GMT_is_geographic (GMT, GMT_IN))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
 		}
-		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " fell outside region\n", n_read - n);
+		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
 
 	GMT_free (GMT, out);

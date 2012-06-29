@@ -170,7 +170,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 						C->W.mode = KML_SEAFLOOR_ABS;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
+						GMT_report (GMT, GMT_MSG_NORMAL, "GMT ERROR -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
 						error++;
 						break;
 				}
@@ -204,7 +204,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 				C->W.URL = strdup (&p[1]);
 				break;
 			default:
-				GMT_report (GMT, GMT_MSG_FATAL, "GMT ERROR -W+<opt>: Unrecognized option selection %c\n", p[1]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "GMT ERROR -W+<opt>: Unrecognized option selection %c\n", p[1]);
 				error++;
 				break;
 		}
@@ -412,7 +412,7 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 							break;
 						default:
 							n_errors++;
-							GMT_report (GMT, GMT_MSG_FATAL, "-A: Give 1, 2, or 4 margins\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
 							break;
 					}
 				}
@@ -609,12 +609,12 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the ps2raster main code ----------------------------*/
 
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
 		Ctrl->F.active = false;
 	}
 
 	if (Ctrl->F.active && Ctrl->In.n_files > 1 && Ctrl->T.device != -GS_DEV_PDF) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
 		Ctrl->F.active = false;
 	}
 
@@ -627,7 +627,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	    Ctrl->T.device == GS_DEV_JPGG || Ctrl->T.device == GS_DEV_TIF ||
 	    Ctrl->T.device == GS_DEV_TIFG || Ctrl->T.device == GS_DEV_PNG ||
 	    Ctrl->T.device == GS_DEV_TPNG || Ctrl->T.device == GS_DEV_PNGG) ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: As far as we know selected raster type is unsuported by GE.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: As far as we know selected raster type is unsuported by GE.\n");
 	}
 
 	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
@@ -641,7 +641,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot to open list file %s\n", Ctrl->L.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot to open list file %s\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -679,12 +679,12 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 		if ((fpp = popen(str, "r")) != NULL) {
 			n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
 			if (pclose(fpp) == -1)
-				GMT_report (GMT, GMT_MSG_FATAL, "Error closing GS version query.\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error closing GS version query.\n");
 			if (n != 2)
-				GMT_report (GMT, GMT_MSG_FATAL, "Failed to parse response to GS version query.\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Failed to parse response to GS version query.\n");
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error GS version query.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error GS version query.\n");
 		}
 
 		if ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9)
@@ -725,18 +725,18 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 		*out_file = '\0'; /* truncate string */
 		strcpy (ps_file, ps_names[k]);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot to open file %s\n", ps_file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot to open file %s\n", ps_file);
 			continue;
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s...", ps_file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s...", ps_file);
 
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff */
 			int dump = true;
-			GMT_report (GMT, GMT_MSG_VERBOSE, " Strip GMT time-stamp...");
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Strip GMT time-stamp...");
 			sprintf (no_U_file, "%s/ps2raster_%db.eps", Ctrl->D.dir, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				Return (EXIT_FAILURE);
 			}
 			while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
@@ -769,17 +769,17 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (Ctrl->A.active) {
 			char *psfile_to_use;
-			GMT_report (GMT, GMT_MSG_VERBOSE, " Find HiResBoundingBox ");
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Find HiResBoundingBox ");
 			sprintf (BB_file, "%s/ps2raster_%" PRIu64 "c.bb", Ctrl->D.dir, (uint64_t)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s\n", BB_file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				Return (EXIT_FAILURE);
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fpb) != NULL && !got_BB) {
@@ -791,7 +791,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 					x0 -= Ctrl->A.margin[XLO];	x1 += Ctrl->A.margin[XHI];	/* If not given, margin = 0/0/0/0 */
 					y0 -= Ctrl->A.margin[YLO];	y1 += Ctrl->A.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Unable to decode BoundingBox file %s\n", BB_file);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);
 						remove (BB_file);	/* Remove the file */
 						sprintf (tmp_file, "%s/", Ctrl->D.dir);
@@ -803,7 +803,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
 						if (sys_retval) {
-							GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+							GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
 						}
 
@@ -814,13 +814,13 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			fclose (fpb);
 			remove (BB_file);	/* Remove the file with BB info */
-			if (got_BB) GMT_report (GMT, GMT_MSG_VERBOSE, "[%g %g %g %g]...", x0, y0, x1, y1);
+			if (got_BB) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...", x0, y0, x1, y1);
 		}
 
 		/* Open temporary file to be processed by ghostscript. When -Te is used, tmp_file is for keeps */
 
 		if (Ctrl->T.eps)
-			GMT_report (GMT, GMT_MSG_VERBOSE, " Format EPS file...");
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Format EPS file...");
 		if (Ctrl->T.eps) {
 			if (Ctrl->D.active) sprintf (tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (!Ctrl->F.active)
@@ -829,14 +829,14 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				strcat (tmp_file, Ctrl->F.file);
 			strcat (tmp_file, ext[GS_DEV_EPS]);
 			if ((fpo = fopen (tmp_file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s for writing\n", tmp_file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", tmp_file);
 				continue;
 			}
 		}
 		else {
 			sprintf (tmp_file, "%s/ps2raster_%" PRIu64 "d.eps", Ctrl->D.dir, (uint64_t)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a temporary file\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				continue;
 			}
 		}
@@ -891,7 +891,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Cannot proceed without knowing the BoundingBox */
 
 		if (!got_BB) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			continue;
 		}
 
@@ -938,17 +938,17 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 								(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 								(south >= -90) && (north <= 90) ) {
 							proj4_cmd = strdup ("latlon");
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: An unknown ps2raster setting was found but since "
+							GMT_report (GMT, GMT_MSG_NORMAL, "Warning: An unknown ps2raster setting was found but since "
 									"image coordinates seem to be geographical, a linear transformation "
 									"will be used.\n");
 						}
 						else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-							GMT_report (GMT, GMT_MSG_FATAL, "Error: requested an automatic geotiff generation, but "
+							GMT_report (GMT, GMT_MSG_NORMAL, "Error: requested an automatic geotiff generation, but "
 									"no recognized ps2raster option was used for the PS creation.\n"); 
 						}
 					}
 					else if (Ctrl->W.kml) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: To GE images must be in geographical coords. Very likely "
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: To GE images must be in geographical coords. Very likely "
 									"this won't work as you wish inside GE.\n"); 
 					}
 				}
@@ -1081,7 +1081,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 			char tag[16];
 			strcpy (tag, &ext[Ctrl->T.device][1]);
 			GMT_str_toupper (tag);
-			GMT_report (GMT, GMT_MSG_VERBOSE, " Convert to %s...", tag);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
 
 			if (!Ctrl->F.active) {
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
@@ -1103,7 +1103,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 			/* Execute the GhostScript command */
 			sys_retval = system (cmd);
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 
@@ -1112,21 +1112,21 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				/* output file not created */
 				if (isGMT_PS && excessK)
 					/* non-closed GMT input PS file */
-					GMT_report (GMT, GMT_MSG_FATAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
+					GMT_report (GMT, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
 				else
 					/* Either a bad closed GMT PS file or one of unknown origin */
-					GMT_report (GMT, GMT_MSG_FATAL, "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
 			}
 			else {
 				/* output file exists */
 				if (isGMT_PS && excessK)
 					/* non-closed GMT input PS file */
-					GMT_report (GMT, GMT_MSG_FATAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
+					GMT_report (GMT, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
 
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, " Done.\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, " Done.\n");
 
 		if (!Ctrl->T.eps)
 			remove (tmp_file);
@@ -1141,7 +1141,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			x_inc = (east  - west)  / pix_w;
 			y_inc = (north - south) / pix_h;
-			GMT_report (GMT, GMT_MSG_NORMAL, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
 
 			/* West and North of the world file contain the coordinates of the
 			 * center of the pixel
@@ -1169,14 +1169,14 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 			strcat (world_file, wext);
 
 			if ((fpw = fopen (world_file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s for writing\n", world_file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", world_file);
 			}
 			else {
 				fprintf (fpw, "%.12f\n0.0\n0.0\n%.12f\n%.12f\n%.12f", x_inc, -y_inc, west, north);
 				fclose (fpw);
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Wrote world file %s\n", world_file);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Wrote world file %s\n", world_file);
 				if (proj4_cmd)
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
+					GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
 			}
 
 			free (wext);
@@ -1193,7 +1193,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				world_file[pos_ext] = '\0';
 				strcat (world_file, ".tiff");
 
-				if (GMT->current.setting.verbose < GMT_MSG_NORMAL)	/* Shut up the gdal_translate (low level) verbosity */
+				if (GMT->current.setting.verbose < GMT_MSG_VERBOSE)	/* Shut up the gdal_translate (low level) verbosity */
 					quiet = " -quiet";
 				else
 					quiet = "";
@@ -1207,14 +1207,14 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 				free(proj4_cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
-				GMT_report (GMT, GMT_MSG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
-					GMT_report (GMT, GMT_MSG_FATAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+					GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (EXIT_FAILURE);
 				}
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
-				GMT_report (GMT, GMT_MSG_FATAL, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
 		}
 
 		else if ( Ctrl->W.kml ) {	/* Write a basic kml file */
@@ -1238,7 +1238,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 			strcat (kml_file, ".kml");
 
 			if ((fpw = fopen (kml_file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to open file %s for writing\n", kml_file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", kml_file);
 			}
 			else {
 				if (Ctrl->W.folder) {	/* Control KML overlay vs full file */
@@ -1286,15 +1286,15 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				else
 					fprintf (fpw, "</Document>\n</kml>\n");
 				fclose (fpw);
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Wrote KML file %s\n", kml_file);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Wrote KML file %s\n", kml_file);
 			}
 		}
 
 		else if (Ctrl->W.active && !found_proj) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Could not find the 'PROJ' tag in the PS file. No world file created.\n");
-			GMT_report (GMT, GMT_MSG_FATAL, "This situation occurs when one of the two next cases is true:\n");
-			GMT_report (GMT, GMT_MSG_FATAL, "1) the PS file was created with a pre-GMT v4.5.0 version\n");
-			GMT_report (GMT, GMT_MSG_FATAL, "2) the PS file was not created by GMT\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Could not find the 'PROJ' tag in the PS file. No world file created.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "This situation occurs when one of the two next cases is true:\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "1) the PS file was created with a pre-GMT v4.5.0 version\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "2) the PS file was not created by GMT\n");
 		}
 	}
 
@@ -1341,7 +1341,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 #endif
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1355,7 +1355,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	RegCloseKey(hkey);
 
 	if (maxVersion == 0) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Unknown version reported in registry\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Unknown version reported in registry\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1376,7 +1376,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
 	if (RegO != ERROR_SUCCESS) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Error opening HKLM key\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1386,12 +1386,12 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	RegCloseKey(hkey);
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Error reading the GS_DLL value contents\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Error reading the GS_DLL value contents\n");
 		return (EXIT_FAILURE);
 	}
 
 	if ( (ptr = strstr(data,"\\gsdll")) == NULL ) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "GS_DLL value is screwed.\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "GS_DLL value is screwed.\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1401,7 +1401,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 
 	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "gswinXXc.exe does not exist.\n");
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "gswinXXc.exe does not exist.\n");
 		return (EXIT_FAILURE);
 	}
 

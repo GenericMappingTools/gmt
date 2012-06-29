@@ -298,7 +298,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");
 			dim_tscr[0] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
 			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for segment lists\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
 				return (GMT->parent->error);
 			}
 			if (dim_tscr[0] == 2) {	/* We want to build two lists (closed and open) */
@@ -331,13 +331,13 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (D[GMT_IN]->n_records == 0) {	/* Empty files, nothing to do */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found.\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
 	segment = GMT_memory (GMT, NULL, n_id_alloc, struct LINK);
 	id = ns = out_seg = 0;
-	GMT_report (GMT, GMT_MSG_NORMAL, "Check for closed polygons\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Check for closed polygons\n");
 
 	/* Closed polygons are already finished - just identify, write out, and move on */
 
@@ -347,7 +347,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	n_seg_alloc[0] = dim_tscr[1] = 0;	/* Allocate no segments for now - we will do this as needed */
 	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr)) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for output segments\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
 		return (GMT->parent->error);
 	}
 	n_seg_alloc[0] = D[GMT_IN]->n_segments;	/* Cannot end up with more segments than given on input  */
@@ -356,7 +356,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
 		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim_tscr)) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for closed segments\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for closed segments\n");
 			return (GMT->parent->error);
 		}
 		if (!Ctrl->C.file[0]) strcpy (Ctrl->C.file, "gmtstitch_closed.txt");
@@ -408,7 +408,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			else { /* No -C: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
 
-				if (np == 1) GMT_report (GMT, GMT_MSG_NORMAL, "Segment %" PRIu64 " only consists of a single point.  Stitching may require additional stitching.\n", id);
+				if (np == 1) GMT_report (GMT, GMT_MSG_VERBOSE, "Segment %" PRIu64 " only consists of a single point.  Stitching may require additional stitching.\n", id);
 				segment[id].id = id;
 				segment[id].orig_id = ns;
 				segment[id].group = tbl;
@@ -436,11 +436,11 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl->C.active) {	/* With -C we only separate closed from open and then we are done */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Separated %" PRIu64 " closed and %" PRIu64 "open segments\n", n_closed, n_open);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Separated %" PRIu64 " closed and %" PRIu64 "open segments\n", n_closed, n_open);
 		wrap_up = 2;
 	}
 	else if (id == 0) {	/* All segments were already closed polygons */
-		GMT_report (GMT, GMT_MSG_NORMAL, "All segments already form closed polygons - no new segment file created\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "All segments already form closed polygons - no new segment file created\n");
 		wrap_up = 1;
 	}
 	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -473,11 +473,11 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (ns < n_id_alloc) segment = GMT_memory (GMT, segment, ns, struct LINK);
 	skip = GMT_memory (GMT, NULL, ns, bool);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " closed polygons\n", n_islands);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %" PRIu64 " closed polygons\n", n_islands);
 
 	/* The algorithm will be confused if there are identical duplicates of segments - thus we check */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Check for duplicate lines\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Check for duplicate lines\n");
 	for (iseg = 0; iseg < ns; iseg++) {
 		if (skip[iseg]) continue;	/* Skip segment that has been determined to be a duplicate segment */
 		for (jseg = iseg + 1; jseg < ns; jseg++) {
@@ -493,7 +493,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					match = (match == segment[iseg].n) ? 1 : 0;
 					if (match) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Segments %" PRIu64 " and %" PRIu64 "are duplicates - Segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
+						GMT_report (GMT, GMT_MSG_VERBOSE, "Segments %" PRIu64 " and %" PRIu64 "are duplicates - Segment %" PRIu64 " will be ignored\n", iseg, jseg, jseg);
 						skip[jseg] = true;
 					}
 				}
@@ -508,11 +508,11 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (iseg > jseg) segment[jseg] = segment[iseg];
 		jseg++;
 	}
-	if (jseg < ns) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " duplicate segment removed\n", ns - jseg);
+	if (jseg < ns) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " duplicate segment removed\n", ns - jseg);
 	ns = jseg;
 	GMT_free (GMT, skip);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
 
 	/* We determine the distance from each segments two endpoints to the two endpoints on every other
 	 * segment; this is four distances per segment.  We then assign the nearest endpoint to each end
@@ -563,7 +563,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename */
 		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
 		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, dim_tscr)) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for link lists\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
 			return (GMT->parent->error);
 		}
 		sprintf (fmt, "%%s%s%%s%s%%c%s%s%s%s%s%%s%s%%c%s%s%s%%d", s, s, s, GMT->current.setting.format_float_out, s, GMT->current.setting.format_float_out, s, s, s, GMT->current.setting.format_float_out, s);
@@ -606,7 +606,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 	done = false;
 	p_dummy_x = p_dummy_y = DBL_MAX;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Assemble new segments\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Assemble new segments\n");
 
 	while (!done) {
 
@@ -618,12 +618,12 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 		id = start_id;
 		end_order = n_steps = n_alloc_pts = 0;
 #ifdef DEBUG2
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", segment[id].orig_id);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id].orig_id);
 #endif
 		while (!done && connect (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {
 			id2 = segment[id].buddy[end_order].id;
 #ifdef DEBUG2
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", segment[id2].orig_id);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id2].orig_id);
 #endif
 			if (id2 == start_id)	/* Closed polygon, start here */
 				done = true;
@@ -716,7 +716,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 			k++;
 		} while (!done);
 		GMT_report (GMT, GMT_MSG_DEBUG, "\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "Segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
 		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, false);
 
 		if (p_first_x == p_last_x && p_first_y == p_last_y) {
@@ -760,10 +760,10 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns + n_islands, chain + n_islands);
-	if (n_trouble) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " trouble spots\n", n_trouble);
-	if (n_closed) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " new closed segments\n", n_closed);
-	if (n_islands) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " were already closed\n", n_islands);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns + n_islands, chain + n_islands);
+	if (n_trouble) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
+	if (n_closed) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " new closed segments\n", n_closed);
+	if (n_islands) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " were already closed\n", n_islands);
 
 	Return (GMT_OK);
 }

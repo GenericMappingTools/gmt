@@ -11,6 +11,10 @@
 	* gmt.conf.in:		Made S1970 the default time system (TIME_EPOCH is 1970-01-01, TIME_UNIT is s)
 				Set TIME_WEEK_START to Monday for SI (leave Sunday for US)
 
+2012-06-29	remko
+	* gmt_error.h, *.c:	Renamed verbosity levels to GMT_QUIET, GMT_NORMAL, GMT_COMPAT, GMT_VERBOSE,
+				GMT_LONG_VERBOSE, GMT_DEBUG. Options have become -Vq, -Vn, -Vc, -V[v], -Vl, -Vd.
+
 2012-06-24	pwessel
 	* grdtrack.c:		Modifier +a added to -C to alternate the direction of cross-profiles.
 

@@ -344,7 +344,7 @@ int GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, struct 
 	/* Check that the options selected are mutually consistent */
 
 	if (!Ctrl->D.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -D is required and must be specified\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -D is required and must be specified\n");
 		n_errors++;
 	}
 	else {
@@ -1085,15 +1085,15 @@ int GMT_psscale (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_report (GMT, GMT_MSG_NORMAL, "CPT is for categorical data.");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "CPT is for categorical data.");
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "  CPT range from %g to %g\n", P->range[0].z_low, P->range[P->n_colors-1].z_high);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "  CPT range from %g to %g\n", P->range[0].z_low, P->range[P->n_colors-1].z_high);
 
 	if (Ctrl->Q.active) {	/* Take log of all z values */
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->range[i].z_low <= 0.0 || P->range[i].z_high <= 0.0) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option: All z-values must be positive for logarithmic scale\n");
 				Return (EXIT_FAILURE);
 			}
 			P->range[i].z_low = d_log10 (GMT, P->range[i].z_low);
@@ -1112,7 +1112,7 @@ int GMT_psscale (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		z_width = D->table[0]->segment[0]->coord[GMT_X];
 		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
-			GMT_report (GMT, GMT_MSG_FATAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 	}

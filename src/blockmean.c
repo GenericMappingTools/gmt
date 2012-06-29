@@ -226,12 +226,12 @@ int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* wesn may include some padding if gridline-registered */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 	
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {	/* Memory reporting */
+	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Memory reporting */
 		unsigned int kind = 0;
 		size_t n_bytes_per_record = sizeof (struct BLK_PAIR);
 		double mem;
@@ -241,7 +241,7 @@ int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (uint64_t);
 		mem = n_bytes_per_record * Grid->header->nm / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Using a total of %.3g %cb for all arrays.\n", mem, unit[kind]);
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for all arrays.\n", mem, unit[kind]);
 	}
 
 	/* Initialize the i/o for doing record-by-record reading/writing */
@@ -310,18 +310,18 @@ int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Done with reading (files are automatically closed by i/o-machinery) */
 	
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found; no output produced");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data points found inside the region; no output produced");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 
 	w_col = GMT_get_cols (GMT, GMT_OUT) - 1;	/* Index of weight column (the last output column) */
 	n_cells_filled = 0;				/* Number of blocks with values */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Calculating block means\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Calculating block means\n");
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
@@ -367,7 +367,7 @@ int GMT_blockmean (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "N read: %" PRIu64 " N used: %" PRIu64 " N outside_area: %" PRIu64 " N cells filled: %" PRIu64 "\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
 	

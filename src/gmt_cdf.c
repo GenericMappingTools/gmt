@@ -404,7 +404,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 		GMT_free (C, tmp_i);
 	}
 
-	if (nr_oor > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %ld out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
+	if (nr_oor > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %ld out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
 
 	GMT_free (C, actual_col);
 
@@ -412,7 +412,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 		limit[0] = header->z_min; limit[1] = header->z_max;
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: No valid values in grid [%s]\n", header->name);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
 		limit[0] = 0.0; limit[1] = 0.0;
 	}
 	GMT_err_trap (nc_put_var_double (ncid, header->z_id - 3, limit));

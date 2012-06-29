@@ -426,7 +426,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Fx<width>, where x is one of bcgmplLuU\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Fx<width>, where x is one of bcgmplLuU\n");
 					n_errors++;
 				}
 				break;
@@ -455,7 +455,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 						Ctrl->N.mode = NAN_PRESERVE;	/* Preserve */
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -Ni|p|r\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Ni|p|r\n");
 						n_errors++;
 						break;
 				}
@@ -553,13 +553,13 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->D.mode == -1) {	/* Special case where widths are given in pixels */
 		if (!doubleAlmostEqual (fmod (Ctrl->F.width, 2.0), 1.0)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
 			Return (EXIT_FAILURE);
 		}
 		Ctrl->F.width *= Gin->header->inc[GMT_X];	/* Scale up to give width */
 		if (Ctrl->F.rect) {
 			if (!doubleAlmostEqual (fmod (Ctrl->F.width2, 2.0), 1.0)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "ERROR: -Dp requires filter width given as an odd number of pixels\n");
 				Return (EXIT_FAILURE);
 			}
 			Ctrl->F.width2 *= Gin->header->inc[GMT_X];	/* Rectangular rather than isotropic Cartesian filtering */
@@ -582,7 +582,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) error = true;
 
 	if (error) {
-		GMT_report (GMT, GMT_MSG_FATAL, "New WESN incompatible with old.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -595,14 +595,14 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_SMALL && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_SMALL);
 	same_grid = !(GMT->common.R.active  || Ctrl->I.active || Gin->header->registration == one_or_zero);
 	if (!fast_way) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your output grid spacing is such that filter-weights must\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
 	}
 	if (Ctrl->N.mode == NAN_REPLACE && !same_grid) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -Nr requires co-registered input/output grids, option is ignored\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -Nr requires co-registered input/output grids, option is ignored\n");
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
@@ -735,10 +735,10 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (tid == 0) {	/* First or only thread */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Filter type is %s.\n", filter_name[filter_type]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
 #ifdef _OPENMP
-		GMT_report (GMT, GMT_MSG_NORMAL, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
 #endif
 	}
 
@@ -747,7 +747,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		Ctrl->A.COL = GMT_grd_x_to_col (GMT, Ctrl->A.x, Gout->header);
 		Ctrl->A.ROW = GMT_grd_y_to_row (GMT, Ctrl->A.y, Gout->header);
 		if (Ctrl->A.mode == 'r') F.debug = true;	/* In order to return radii instead of weights */
-		if (tid == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "ROW = %d COL = %d\n", Ctrl->A.ROW, Ctrl->A.COL);
+		if (tid == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "ROW = %d COL = %d\n", Ctrl->A.ROW, Ctrl->A.COL);
 	}
 #endif
 	/* Compute nearest xoutput i-indices and shifts once */
@@ -783,9 +783,9 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (row_out = 0; row_out < Gout->header->ny; row_out++) {
 
 #ifdef _OPENMP
-		GMT_report (GMT, GMT_MSG_NORMAL, " Thread %d Processing output line %d\r", tid, row_out);
+		GMT_report (GMT, GMT_MSG_VERBOSE, " Thread %d Processing output line %d\r", tid, row_out);
 #else
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %d\r", row_out);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
 #endif
 #ifdef DEBUG
 		if (Ctrl->A.active && row_out != Ctrl->A.ROW) continue;	/* Not at our selected row for testing */
@@ -932,9 +932,9 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 #ifdef _OPENMP
-	GMT_report (GMT, GMT_MSG_NORMAL, " Thread %d Processing output line %d\n", tid, row_out);
+	GMT_report (GMT, GMT_MSG_VERBOSE, " Thread %d Processing output line %d\n", tid, row_out);
 #else
-	GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %d\n", row_out);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing output line %d\n", row_out);
 #endif
 	GMT_free (GMT, weight);
 	GMT_free (GMT, F.x);
@@ -952,8 +952,8 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (!fast_way) GMT_free (GMT, x_shift);
 	GMT_free_grid (GMT, &A, true);	/* Explicitly free the area-weight array since only used internally */
 
-	if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
-	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found by the mode filter\n", GMT_n_multiples);
+	if (n_nan) GMT_report (GMT, GMT_MSG_VERBOSE, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
+	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found by the mode filter\n", GMT_n_multiples);
 
 	if (Ctrl->F.highpass) {
 		if (GMT->common.R.active || Ctrl->I.active || GMT->common.r.active) {	/* Must resample result */
@@ -974,9 +974,9 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Highpass requires us to resample the lowpass result via grdsample %s\n", cmd);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) {	/* Resample the file */
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to resample the lowpass result - exiting\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				GMT_exit ((int)API->error);
 			}
 			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {
@@ -991,7 +991,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		else	/* No need to resample */
 			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] -Gout->data[ij_out];
-		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting lowpass-filtered data from grid to obtain high-pass filtered data\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting lowpass-filtered data from grid to obtain high-pass filtered data\n");
 	}
 	
 	/* At last, that's it!  Output: */

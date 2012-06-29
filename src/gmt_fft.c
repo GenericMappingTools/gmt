@@ -2812,7 +2812,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
 	float *work = NULL;
 	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
-	GMT_report (C, GMT_MSG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
+	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
 	return (GMT_OK);
@@ -2850,7 +2850,7 @@ int GMT_fft_2d_selection (struct GMT_CTRL *C, unsigned int nx, unsigned int ny) 
 	
 	if (C->current.setting.fft != GMT_FFT_AUTO) {	/* Specific selection requested */
 		if (C->session.fft2d[C->current.setting.fft]) return (C->current.setting.fft);	/* It was available */
-		GMT_report (C, GMT_MSG_FATAL, "Desired FFT Algorithm (%s) not configured - Default to brenner instead\n", GMT_fft_algo[C->current.setting.fft]);
+		GMT_report (C, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - Default to brenner instead\n", GMT_fft_algo[C->current.setting.fft]);
 		return (GMT_FFT_BRENNER);						/* Default */
 	}
 	/* Here we want automatic selection from available candidates */

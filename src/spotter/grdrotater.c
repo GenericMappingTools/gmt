@@ -367,7 +367,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Determine the wesn to be used to read the Ctrl->In.file; or exit if file is outside -R */
 
 		if (!GMT_grd_setregion (GMT, G->header, GMT->common.R.wesn, BCR_BILINEAR)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "No grid values inside selected region - aborting\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "No grid values inside selected region - aborting\n");
 			Return (EXIT_FAILURE);
 		}
 		global = (doubleAlmostEqual (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO], 360.0)
@@ -376,7 +376,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 	not_global = !global;
 	
 	if (!Ctrl->S.active) {	/* Read the input grid */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read grid file\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read grid file\n");
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
@@ -396,7 +396,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->e.active) {	/* Get rotation matrix R */
 		spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);	/* Make rotation matrix from rotation parameters */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Using rotation (%g, %g, %g)\n", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	}
 	else {
 		int n_stages;
@@ -405,17 +405,17 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, true, Ctrl->E.mode, &t_max);
 		if (Ctrl->T.value > t_max) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Requested a reconstruction time outside range of rotation table\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Requested a reconstruction time outside range of rotation table\n");
 			GMT_free (GMT, p);
 			Return (EXIT_FAILURE);
 		}
 		spotter_get_rotation (GMT, p, n_stages, Ctrl->T.value, &lon, &lat, &w);
 		spotter_make_rot_matrix (GMT, lon, lat, w, R);	/* Make rotation matrix from rotation parameters */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Using rotation (%g, %g, %g)\n", lon, lat, w);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", lon, lat, w);
 		GMT_free (GMT, p);
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Reconstruct polygon outline\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Reconstruct polygon outline\n");
 	
 	/* First reconstruct the polygon outline */
 	
@@ -444,7 +444,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 		else if (not_global)
 			GMT_free_dataset (GMT, &D);
 	
-		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 		Return (GMT_OK);
 	}
 	
@@ -480,7 +480,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Interpolate reconstructed grid\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
 
 	spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, -Ctrl->e.w, R);	/* Make inverse rotation using negative angle */
 	
@@ -538,7 +538,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Now write rotated grid */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Write reconstructed grid\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Write reconstructed grid\n");
 
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_rot) != GMT_OK) {
@@ -555,7 +555,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 	else if (not_global)
 		GMT_free_dataset (GMT, &D);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

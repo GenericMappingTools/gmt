@@ -248,7 +248,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* Get input and register it */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
 	
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default input destination, unless already set */
 		Return (API->error);
@@ -270,7 +270,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -285,7 +285,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -319,7 +319,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			break;
 		default:
-			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Bad Input mode\n");
 			Return (GMT_WRONG_KIND);
 			break;
 	}
@@ -346,7 +346,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 		Return (GMT_OK);
 	}
 	
@@ -367,7 +367,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_STREAM only allows d, t, c!\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -387,7 +387,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_FATAL, "GMT_IS_FDESC only allows d, t, c!\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -412,7 +412,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			break;
 		default:
-			GMT_report (GMT, GMT_MSG_FATAL, "Bad Input mode\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Bad Input mode\n");
 			Return (GMT_WRONG_KIND);
 			break;
 	}
@@ -457,6 +457,6 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out) != GMT_OK) {
 		Return (API->error);
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 	Return (GMT_OK);
 }

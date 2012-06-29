@@ -106,7 +106,7 @@ int GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *Ctrl,
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
 				else {
 					n_in++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Specify only one input and one output file\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Specify only one input and one output file\n");
 				}
 				break;
 			case '>':	/* Output file */
@@ -174,20 +174,20 @@ int GMT_grdreformat (struct GMTAPI_CTRL *API, int mode, void *args)
 	strcpy (fname[1], Grid->header->name);
 
 	if (type[1] == GMT_GRD_IS_SD) {	/* Golden Surfer format 7 (double) is read-only */
-		GMT_report (GMT, GMT_MSG_FATAL, "Grid format sd (Golden Software Surfer format 7 (double)) is read-only!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Grid format sd (Golden Software Surfer format 7 (double)) is read-only!\n");
 		Return (EXIT_FAILURE);
 	}
 #ifdef USE_GDAL
 	if (type[1] == GMT_GRD_IS_GD) {	/* GDAL format is read-only */
-		GMT_report (GMT, GMT_MSG_FATAL, "Grid format gd (GDAL) is read-only!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Grid format gd (GDAL) is read-only!\n");
 		Return (EXIT_FAILURE);
 	}
 #endif	
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
-		GMT_report (GMT, GMT_MSG_NORMAL, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
-		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_FATAL, "No grd header will be written\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
+		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
 	GMT_free_grid (GMT, &Grid, true);
 
@@ -201,7 +201,7 @@ int GMT_grdreformat (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
 		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;
 		if (error) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Subset exceeds data domain!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, GMT->common.R.wesn, Ctrl->IO.file[0], Grid) == NULL) {

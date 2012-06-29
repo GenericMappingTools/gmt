@@ -100,7 +100,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 		n_byteOffset = 4;
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_gdalwrite: Unsuported input data class!\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT_gdalwrite: Unsuported input data class!\n");
 		return(-1);
 	}
 
@@ -135,7 +135,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 			projWKT = pszPrettyWkt;
 		}
 		else {
-			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: GMT_gdalwrite failed to convert the proj4 string\n%s\n to WKT\n", 
 					prhs->P.ProjectionRefPROJ4);
 		}
 
@@ -150,14 +150,14 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	hDriverOut = GDALGetDriverByName( pszFormat );	/* The true output format driver */
     
 	if( hDriverOut == NULL ) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_gdalwrite: Output driver %s not recognized\n", pszFormat );
+		GMT_report (C, GMT_MSG_NORMAL, "GMT_gdalwrite: Output driver %s not recognized\n", pszFormat );
 		/* The following is s bit idiot. The loop should only be executed is verbose so requires */
-		GMT_report (C, GMT_MSG_NORMAL, "The following format drivers are configured and support output:\n" );
+		GMT_report (C, GMT_MSG_VERBOSE, "The following format drivers are configured and support output:\n" );
 		for (i = 0; i < GDALGetDriverCount(); i++) {
 			hDriver = GDALGetDriver(i);
 			if ( GDALGetMetadataItem( hDriver, GDAL_DCAP_CREATE, NULL ) != NULL || 
 			     GDALGetMetadataItem( hDriver, GDAL_DCAP_CREATECOPY, NULL ) != NULL )
-				GMT_report (C, GMT_MSG_NORMAL, "  %s: %s\n", 
+				GMT_report (C, GMT_MSG_VERBOSE, "  %s: %s\n", 
 					GDALGetDriverShortName( hDriver ), GDALGetDriverLongName( hDriver ) );
 		}
 		return(-1);
@@ -175,7 +175,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 	hDstDS = GDALCreate( hDriver, "mem", nx, ny, n_bands, typeCLASS, NULL );
 
 	if (hDstDS == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
+		GMT_report (C, GMT_MSG_NORMAL, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
 		return(-1);
 	}
 	GDALSetGeoTransform( hDstDS, adfGeoTransform ); 
@@ -203,7 +203,7 @@ int GMT_gdalwrite (struct GMT_CTRL *C, char *fname, struct GDALWRITE_CTRL *prhs)
 		hBand = GDALGetRasterBand( hDstDS, i+1 ); 
 		if( i == 1 && hColorTable != NULL ) {
 			if (GDALSetRasterColorTable( hBand, hColorTable ) == CE_Failure)
-				GMT_report(C, GMT_MSG_FATAL, "\tERROR creating Color Table");
+				GMT_report(C, GMT_MSG_NORMAL, "\tERROR creating Color Table");
 			GDALDestroyColorTable( hColorTable );
 		}
 		switch( typeCLASS ) {

@@ -250,11 +250,11 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 
 	if (GMT_access (GMT, Ctrl->In.file, F_OK)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 	if ((fp = GMT_fopen (GMT, Ctrl->In.file, "rb")) == NULL ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Cannot read file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot read file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 
@@ -269,14 +269,14 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a text set for GSHHG header features.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
 			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for GSHHG features.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
 			return (API->error);
 		}
 	}
@@ -308,7 +308,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
-		if (first) GMT_report (GMT, GMT_MSG_NORMAL, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -385,7 +385,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					Return (EXIT_FAILURE);
 				}
 				if (must_swab) /* Must deal with different endianness */
@@ -423,7 +423,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

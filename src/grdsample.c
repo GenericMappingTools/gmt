@@ -231,7 +231,7 @@ int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	if (GMT->common.R.active) {	/* Make sure input grid and output -R has an overlap */
 		if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
@@ -240,11 +240,11 @@ int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 			if (Gin->header->wesn[XLO] > Gout->header->wesn[XHI]) shift -= 360;
 			if (shift) {	/* Must modify header */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
 			}
 		}
 		else if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 	}
@@ -264,13 +264,13 @@ int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI], 
+	GMT_report (GMT, GMT_MSG_VERBOSE, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI], 
 		Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->nx, Gin->header->ny,
 		Gin->header->inc[GMT_X], Gin->header->inc[GMT_Y], Gin->header->registration);
 
 	memcpy (&format, "Output", 6);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI], 
+	GMT_report (GMT, GMT_MSG_VERBOSE, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI], 
 		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->nx, Gout->header->ny,
 		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
@@ -278,8 +278,8 @@ int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
-	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
 
 	/* Precalculate longitudes */
 

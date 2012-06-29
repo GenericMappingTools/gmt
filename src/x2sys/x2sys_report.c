@@ -264,7 +264,7 @@ int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: -C must specify a single column name\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -281,9 +281,9 @@ int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* Read the entire data base; note the -I, R and -S options are applied during reading */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read crossover database %s...\n", Ctrl->In.file);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Read crossover database %s...\n", Ctrl->In.file);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, GMT->common.R.wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -396,7 +396,7 @@ int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 			qsort(adj[k].K, adj[k].n, sizeof(struct COE_ADJUST), comp_structs);
 			sprintf (file, "%s/%s/%s.%s.adj", X2SYS_HOME, Ctrl->T.TAG, trk_name[k], Ctrl->C.col);
 			if ((fp = GMT_fopen (GMT, file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create file %s!\n", file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create file %s!\n", file);
 				Return (EXIT_FAILURE);
 			}
 			n1 = adj[k].n - 1;

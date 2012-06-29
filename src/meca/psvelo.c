@@ -369,7 +369,7 @@ int GMT_psvelo (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_NORMAL, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
+	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
 	Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
@@ -396,7 +396,7 @@ int GMT_psvelo (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -525,9 +525,9 @@ int GMT_psvelo (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_free (GMT, station_name);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of records read: %li\n", n_rec);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
 
-	if (Ctrl->D.active)  GMT_report (GMT, GMT_MSG_NORMAL, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
+	if (Ctrl->D.active)  GMT_report (GMT, GMT_MSG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 

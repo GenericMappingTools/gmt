@@ -39,7 +39,7 @@ int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	hDataset = GDALOpen(header->name, GA_ReadOnly);
 
 	if (hDataset == NULL) return (GMT_GRDIO_BAD_VAL);
-	GMT_report (C, GMT_MSG_NORMAL, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
+	GMT_report (C, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
 	header->type = GMT_GRD_IS_GD;
 
@@ -136,7 +136,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	}
 
 	if (error) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_gdalread failed to extract a Sub-region\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: GMT_gdalread failed to extract a Sub-region\n");
 		return (-1);
 	}
 
@@ -165,7 +165,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		}
 		else {
 			Ctrl->ProjectionRefWKT = NULL;
-			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: GMT_gdalread failed to convert the proj4 string\n%s\n to WKT\n", 
 					Ctrl->ProjectionRefPROJ4);
 		}
 
@@ -187,7 +187,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	hDataset = GDALOpen(gdal_filename, GA_ReadOnly);
 
 	if (hDataset == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+		GMT_report (C, GMT_MSG_NORMAL, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
 		return (-1);
 	}
 
@@ -213,7 +213,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		GDALGetGeoTransform( hDataset, adfGeoTransform );
 
 		if( adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0 ) {
-			GMT_report (C, GMT_MSG_FATAL, "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose( hDataset );
 			GDALDestroyDriverManager();
 			return (-1);
@@ -239,7 +239,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		if( anSrcWin[0] < 0 || anSrcWin[1] < 0
 			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset) ) {
-			GMT_report (C, GMT_MSG_FATAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
+			GMT_report (C, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
 					GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			return (-1);
 		}
@@ -313,13 +313,13 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			}
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "gdalread: Unsupported data type\n");
+			GMT_report (C, GMT_MSG_NORMAL, "gdalread: Unsupported data type\n");
 			break;
 	}
 
 	tmp = calloc(nBufYSize * nBufXSize, nPixelSize);
 	if (tmp == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "gdalread: failure to allocate enough memory\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gdalread: failure to allocate enough memory\n");
 		return(-1);
 	}
 
@@ -579,7 +579,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* ------------------------------------------------------------------------- */
 	hDataset = GDALOpen ( gdal_filename, GA_ReadOnly );
 	if ( hDataset == NULL ) {
-		GMT_report (C, GMT_MSG_FATAL, "Unable to open %s.\n", gdal_filename );
+		GMT_report (C, GMT_MSG_NORMAL, "Unable to open %s.\n", gdal_filename );
 		return ( -1 );
 	}
 
@@ -651,11 +651,11 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		int	anSrcWin[4];
 		anSrcWin[0] = anSrcWin[1] = anSrcWin[2] = anSrcWin[3] = 0;
 		if( adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0 ) {
-			GMT_report (C, GMT_MSG_FATAL, "The -projwin option was used, but the geotransform is rotated."
+			GMT_report (C, GMT_MSG_NORMAL, "The -projwin option was used, but the geotransform is rotated."
 							" This configuration is not supported.\n");
 			GDALClose( hDataset );
 			GDALDestroyDriverManager();
-			GMT_report (C, GMT_MSG_FATAL, "Quiting with error\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Quiting with error\n");
 			return(-1);
 		}
 
@@ -667,9 +667,9 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 		if( anSrcWin[0] < 0 || anSrcWin[1] < 0
 			|| anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
 			|| anSrcWin[1] + anSrcWin[3] > GDALGetRasterYSize(hDataset) ) {
-			GMT_report (C, GMT_MSG_FATAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
+			GMT_report (C, GMT_MSG_NORMAL, "Computed -srcwin falls outside raster size of %dx%d.\n",
 							GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset) );
-			GMT_report (C, GMT_MSG_FATAL, "Quiting with error\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Quiting with error\n");
 			return(-1);
 		}
 		Ctrl->RasterXsize = nXSize = anSrcWin[2];
@@ -1033,7 +1033,7 @@ void ComputeRasterMinMax(struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH
 			}
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "gdalread: Unsupported data type\n");
+			GMT_report (C, GMT_MSG_NORMAL, "gdalread: Unsupported data type\n");
 			break;
 	}
 	adfMinMax[0] = z_min;

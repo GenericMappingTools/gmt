@@ -222,7 +222,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						Ctrl->A.mode = 1;
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
 						n_errors++;
 					}
 				}
@@ -249,7 +249,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -D: Append b or f\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -D: Append b or f\n");
 						break;
 				}
 				break;
@@ -287,7 +287,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -L: Append f or b\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -L: Append f or b\n");
 						break;
 				}
 				Ctrl->L.d_km = (opt->arg[1]) ? atof (&opt->arg[1]) : -1.0;
@@ -305,7 +305,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 					Ctrl->S.active = true;
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "ERROR Option -S: Append a file stem\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -S: Append a file stem\n");
 					n_errors++;
 				}
 				break;
@@ -355,7 +355,7 @@ int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], doub
 			n = spotter_forthtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, time_flag, wesn, c);
 			break;
 		default:
-			GMT_report (GMT, GMT_MSG_FATAL, "Bad use of spotter_track\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Bad use of spotter_track\n");
 			break;
 	}
 		
@@ -529,7 +529,7 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 			age = in[GMT_Z];
 
 		if (age > Ctrl->N.t_upper) {	/* Points older than oldest stage cannot be used */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Point %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", n_read, in[GMT_Z], Ctrl->N.t_upper);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Point %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", n_read, in[GMT_Z], Ctrl->N.t_upper);
 			n_skipped++;
 			continue;
 		}
@@ -562,7 +562,7 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
@@ -577,7 +577,7 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
@@ -589,7 +589,7 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 			else {
 				if (!Ctrl->W.active) {
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
@@ -608,13 +608,13 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */
 				if (spotter_conf_ellipse (GMT, in[GMT_X], in[GMT_Y], age, p, n_stages, Ctrl->W.mode, Ctrl->D.mode, out)) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
 					continue;
 				}
 			}
 			else {
 				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Nothing returned from spotter_track - aborting\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				out[GMT_X] = lon * R2D;
@@ -636,11 +636,11 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (make_path)
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " segments written\n", n_points);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " points projected\n", n_points);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
 
-	if (n_skipped) GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " points skipped because age < 0\n", n_skipped);
+	if (n_skipped) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " points skipped because age < 0\n", n_skipped);
 
 	/* Clean up and exit */
 

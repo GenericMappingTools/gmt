@@ -231,7 +231,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Cannot use -M with binary output\n");
 	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
@@ -312,7 +312,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: -C must specify a single column name\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -327,9 +327,9 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
 	if (GMT->common.R.active) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
-	GMT_report (GMT, GMT_MSG_NORMAL, "Read crossover database from %s...\n", from);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Read crossover database from %s...\n", from);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -416,7 +416,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl->L.active && !check_for_NaN) {	/* Correction table would not be needed for output */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
 		Ctrl->L.active = false;
 	}
 
@@ -521,7 +521,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT->current.io.multi_segments[GMT_OUT])
 			fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %d\n",
 					GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
 		if (Ctrl->S.active) {	/* May have to flip which is track one and two */
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
 			one = 1 - two;
@@ -601,7 +601,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 						if (weights) {	/* Weightfile was given; compute composite weight for this COE */
 							for (m = 0, w_k = 0.0; m < 2; m++) {
 								if ((id = x2sys_find_track (GMT, P[p].trk[m], weight_name, n_weights)) == -1) {
-									GMT_report (GMT, GMT_MSG_NORMAL, "No weights found for track %s - using weight = 1.\n", P[p].trk[m]);
+									GMT_report (GMT, GMT_MSG_VERBOSE, "No weights found for track %s - using weight = 1.\n", P[p].trk[m]);
 									w = 1.0;
 								}
 								else
@@ -640,7 +640,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], j, out);
 		}
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
 	
 	/* Done, free up data base array */
 	

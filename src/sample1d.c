@@ -291,7 +291,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		m_supplied = m;
 		t_out = GMT_memory (GMT, NULL, m_supplied, double);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " knots from file\n", m_supplied);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Cin) != GMT_OK) {
 			Return (API->error);
 		}
@@ -337,7 +337,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 					t_out[m++] = t_supplied_out[row];
 				}
 				if (m == 0) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Warning: No output points for range %g to %g\n", S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No output points for range %g to %g\n", S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
 					continue;
 				}
 			}
@@ -409,7 +409,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 
 				if (result != GMT_OK) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %d!\n", result+1);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error from GMT_intpol near row %d!\n", result+1);
 					return (result);
 				}
 			}

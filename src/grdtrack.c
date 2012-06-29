@@ -221,7 +221,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Too many grids (max = %d)\n", MAX_GRIDS);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -G option: Too many grids (max = %d)\n", MAX_GRIDS);
 					n_errors++;
 				}
 				else {
@@ -229,7 +229,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 					Ctrl->G.scale[ng] = 1.0;
 					if (strchr (opt->arg, ',') && !strchr (opt->arg, '?')) {	/* IMG grid file with required parameters */
 						if ((j = sscanf (opt->arg, "%[^,],%lf,%d,%lf", line, &Ctrl->G.scale[ng], &Ctrl->G.mode[ng], &Ctrl->G.lat[ng])) < 3) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -G option: Give imgfile, scale, mode [and optionally max_lat]\n");
 							n_errors++;
 						}
 						else
@@ -265,7 +265,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 			case 'S':
 #ifdef GMT_COMPAT
 				if (opt->arg[0] == 0) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
-					GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -S deprecated. Use -sa instead.\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -S deprecated. Use -sa instead.\n");
 					GMT->current.setting.io_nan_mode = 3;
 					break;
 				}
@@ -281,7 +281,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 					case 'U': Ctrl->S.mode = STACK_UPPERN;  break;
 					default:
 						n_errors++; 
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Bad mode (%c) given to -S.\n", (int)opt->arg[0]);
 						break;
 				}
 				pos = 0;
@@ -296,7 +296,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 							break;
 						default:
 							n_errors++; 
-							GMT_report (GMT, GMT_MSG_FATAL, "Error: Bad modifier (%s) given to -S.\n", p[0]);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Error: Bad modifier (%s) given to -S.\n", p[0]);
 							break;
 					}
 				}
@@ -427,7 +427,7 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 			if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, GC[g].G->header->wesn, 4, double);
 
 			if (!GMT_grd_setregion (GMT, GC[g].G->header, wesn, BCR_BILINEAR)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 				Return (GMT_OK);
 			}
 
@@ -689,7 +689,7 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 	}
 	/* Clean up */
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
 			n_points, Ctrl->G.file[g], GC[g].G->header->nx, GC[g].G->header->ny);
 		if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, GMT_ALLOCATED, &GC[g].G) != GMT_OK) {
 			Return (API->error);

@@ -172,15 +172,15 @@ int GMT_kml2gmt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->In.active) {
 		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
 		sprintf (buffer, "# kml2gmt: KML read from %s\n", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading from standard input\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading from standard input\n");
 		sprintf (buffer, "# kml2gmt: KML read from standard input\n");
 	}
 	/* Now we are ready to take on some input values */

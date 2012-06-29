@@ -207,7 +207,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 						case 's': Ctrl->I.mode |= INV_SEGS; break;	/* Reverse segment order */
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:
-							GMT_report (GMT, GMT_MSG_FATAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
 							n_errors++;
 							break;
 					}
@@ -311,11 +311,11 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
 
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "The -a option requires a single table only.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "The -a option requires a single table only.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT->common.a.active && D[GMT_IN]->table[0]->ogr) {
-		GMT_report (GMT, GMT_MSG_FATAL, "The -a option requires a single table without OGR metadata.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "The -a option requires a single table without OGR metadata.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -333,15 +333,15 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 	n_cols_out = (Ctrl->A.active) ? n_cols_in : n_cols_out;	/* Default or Reset since we did not have -A */
 	
 	if (error) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Parsing requires files with same number of records.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Parsing requires files with same number of records.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_cols_out == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Selection lead to no output columns.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
-	if (warn) GMT_report (GMT, GMT_MSG_NORMAL, "Some requested columns are outside the range of some tables and will be skipped.\n");
+	if (warn) GMT_report (GMT, GMT_MSG_VERBOSE, "Some requested columns are outside the range of some tables and will be skipped.\n");
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_OK) {
 		Return (error);
 	}
@@ -423,7 +423,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 		uint64_t row1, row2, seg1, seg2;
 		void *p = NULL;
 		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of records within each segment.\n");
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Reversing order of records within each segment.\n");
 			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 				for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
 					for (row1 = 0, row2 = D[GMT_OUT]->table[tbl]->segment[seg]->n_rows - 1; row1 < D[GMT_OUT]->table[tbl]->segment[seg]->n_rows/2; row1++, row2--) {
@@ -434,7 +434,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		if (Ctrl->I.mode & INV_SEGS) {	/* Must reorder pointers to segments within each table */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of segments within each table.\n");
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Reversing order of segments within each table.\n");
 			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 				for (seg1 = 0, seg2 = D[GMT_OUT]->table[tbl]->n_segments-1; seg1 < D[GMT_OUT]->table[tbl]->n_segments/2; seg1++, seg2--) {	/* For each segment in the table */
 					p = D[GMT_OUT]->table[tbl]->segment[seg1];
@@ -444,7 +444,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		if (Ctrl->I.mode & INV_TBLS) {	/* Must reorder pointers to tables within dataset  */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Reversing order of tables within the data set.\n");
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Reversing order of tables within the data set.\n");
 			for (tbl1 = 0, tbl2 = D[GMT_OUT]->n_tables-1; tbl1 < D[GMT_OUT]->n_tables/2; tbl1++, tbl2--) {	/* For each table */
 				p = D[GMT_OUT]->table[tbl1];
 				D[GMT_OUT]->table[tbl1] = D[GMT_OUT]->table[tbl2];
@@ -473,7 +473,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 				p += strspn (++p, "0123456789"); /* span past digits */
 				if ( strspn (p, "diu") == 0 ) {
 					/* no valid conversion specifier */
-					GMT_report (GMT, GMT_MSG_FATAL,
+					GMT_report (GMT, GMT_MSG_NORMAL,
 							"Syntax error: Use of unsupported conversion specifier at %zu in format string '%s'.\n",
 							p - Ctrl->D.name + 1, Ctrl->D.name);
 					exit (EXIT_FAILURE);
@@ -482,7 +482,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			if ( n_formats == 0 || n_formats > 2 ) {
 				/* Incorrect number of format specifiers */
-					GMT_report (GMT, GMT_MSG_FATAL,
+					GMT_report (GMT, GMT_MSG_NORMAL,
 							"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
 							Ctrl->D.name);
 					exit (EXIT_FAILURE);
@@ -504,8 +504,8 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_NORMAL, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
 	Return (GMT_OK);
 }

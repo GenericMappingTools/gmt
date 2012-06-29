@@ -577,7 +577,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
 		GMT_map_basemap (GMT);
-		GMT_report (GMT, GMT_MSG_NORMAL, "clipping off!\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "clipping off!\n");
 	}
 	else {	/* Start new clip_path */
 		GMT_memset (inc2, 2, double);
@@ -605,7 +605,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory, read and process data file\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Allocate memory, read and process data file\n");
 
 		/* Enlarge region by 1 row/column */
 
@@ -619,7 +619,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
@@ -683,7 +683,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " data points\n", n_read);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
 
 		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->nm; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
@@ -710,7 +710,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (make_plot) GMT_map_basemap (GMT);
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Tracing the clip path\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Tracing the clip path\n");
 
 			section = 0;
 			first = 1;
@@ -754,7 +754,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 		else {	/* Just paint tiles */
 			uint64_t start, n_use, np, plot_n;
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
-			GMT_report (GMT, GMT_MSG_NORMAL, "Tiling...\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Tiling...\n");
 
 			for (row = 0; row < Grid->header->ny; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
@@ -801,7 +801,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->S.active) GMT_free (GMT, d_col);
 		GMT_free (GMT, grd_x0);
 		GMT_free (GMT, grd_y0);
-		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_NORMAL, "clipping on!\n");
+		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_VERBOSE, "clipping on!\n");
 	}
 
 	if (make_plot) GMT_plotend (GMT);

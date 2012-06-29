@@ -499,7 +499,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *
 	if (has_z) {	/* Expect z in 3rd column */
 		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
 		if ((GMT_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
 	}
@@ -509,11 +509,11 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *
 	}
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	if (GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
 		return (-1);
 	}
 	if (GMT_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
 		return (-1);
 	}
 	return (nscan);
@@ -648,7 +648,7 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : GMT_just_decode (GMT, pjust_key, 0);
 					sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by GMT_getfont */
 					T.font = Ctrl->F.font;
-					if (GMT_getfont (GMT, txt_f, &T.font)) GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+					if (GMT_getfont (GMT, txt_f, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 					in_txt = NULL;
 					n_expected_cols = 9 + Ctrl->Z.active;
 				}
@@ -662,7 +662,7 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
-								if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+								if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 								break;
 							case 'a':
 								T.paragraph_angle = atof (text);
@@ -682,11 +682,11 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 					T.paragraph_width  = GMT_to_inch (GMT, txt_b);
 				}
 				if (T.block_justify == -99) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad justification info (set to LB)\n", n_read);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
 					T.block_justify = 1;
 				}
 				if (nscan != (int)n_expected_cols) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
@@ -707,7 +707,7 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 			else {	/* Text block record */
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
 				if (!master_record) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				GMT_chop (line);	/* Chop of line feed */
@@ -753,7 +753,7 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 				T.block_justify = GMT_just_decode (GMT, just_key, 12);
 				sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by GMT_getfont */
 				T.font = Ctrl->F.font;
-				if (GMT_getfont (GMT, txt_f, &T.font)) GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+				if (GMT_getfont (GMT, txt_f, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 				in_txt = text;
 				n_expected_cols = 7 + Ctrl->Z.active;
 			}
@@ -768,7 +768,7 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 					switch (Ctrl->F.read[k]) {
 						case 'f':
 							T.font = Ctrl->F.font;
-							if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+							if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 #ifdef GMT_COMPAT
 							if (Ctrl->S.active) {
 								T.font.form |= 2;
@@ -790,11 +790,11 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
 			if (nscan != (int)n_expected_cols) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Record %d is incomplete (skipped)\n", n_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Record %d is incomplete (skipped)\n", n_read);
 				continue;
 			}
 			if (T.block_justify == -99) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Record %d had bad justification info (set to LB)\n", n_read);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
 				T.block_justify = 1;
 			}
 
@@ -906,7 +906,7 @@ int GMT_pstext (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
+	GMT_report (GMT, GMT_MSG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 
 	Return (GMT_OK);
 }

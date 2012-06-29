@@ -290,7 +290,7 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, false, 0, &t_max);
@@ -303,7 +303,7 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	if (Ctrl->T.active && Ctrl->T.value > t_max) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Requested a fixed reconstruction time outside range of rotation table\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
 		GMT_free (GMT, p);
 		Return (EXIT_FAILURE);
 	}
@@ -327,7 +327,7 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Evalute model prediction grid\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Evalute model prediction grid\n");
 
 	GMT_init_distaz (GMT, (Ctrl->S.mode == PM_DIST) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
 	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
@@ -390,7 +390,7 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* Now write model prediction grid */
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Write predicted grid\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Write predicted grid\n");
 
 	strcpy (G_mod->header->x_units, "degrees_east");
 	strcpy (G_mod->header->y_units, "degrees_north");
@@ -426,7 +426,7 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_free (GMT, grd_yc);
 	GMT_free (GMT, p);
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

@@ -208,14 +208,14 @@ int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
 
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "No datafiles given!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "No datafiles given!\n");
 		Return (EXIT_FAILURE);		
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	if (Ctrl->E.active && !s->geographic) {
-		GMT_report (GMT, GMT_MSG_FATAL, "-E requires geographic data; your TAG implies Cartesian\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
 		Return (EXIT_FAILURE);		
 	}
 
@@ -236,12 +236,12 @@ int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Do the equal area map projection so W = 360 and H = 180 */
 		if (!(doubleAlmostEqual (B.wesn[XHI] - B.wesn[XLO], 360.0)
 					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {
-			GMT_report (GMT, GMT_MSG_FATAL, "-E requires a global region (-Rg or -Rd)");
+			GMT_report (GMT, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
 			Return (EXIT_FAILURE);
 		}
 		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
-		GMT_report (GMT, GMT_MSG_NORMAL, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		GMT_parse_common_options (GMT, "J", 'J', proj);
 		GMT_err_fail (GMT, GMT_map_setup (GMT, B.wesn), "");
@@ -265,10 +265,10 @@ int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	for (trk = 0; trk < n_tracks; trk++) {
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Reading file %s ", trk_name[trk]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading file %s ", trk_name[trk]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
-		GMT_report (GMT, GMT_MSG_NORMAL, "[%s]\n", s->path);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "[%s]\n", s->path);
 		
 		if (Ctrl->E.active) {	/* Project coordinates */
 			for (row = 0; row < p.n_rows; row++) GMT_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);

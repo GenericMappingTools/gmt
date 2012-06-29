@@ -214,7 +214,7 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	/* Rescale a1,a2 into user's units, in case useful later */
 	a[1] *= (2.0/(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
 	a[2] *= (2.0/(Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
-	GMT_report (GMT, GMT_MSG_NORMAL, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g\n", a[0], data_var, a[1], a[2]);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g\n", a[0], data_var, a[1], a[2]);
 }
 
 void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
@@ -281,7 +281,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 			datac[GMT_IJPR(h,j,ir2)] *= (float)cos_wt;
 		}
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Data reflected and tapered\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Data reflected and tapered\n");
 }
 
 double kx (uint64_t k, struct K_XY *K)
@@ -517,14 +517,14 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	n_tokens = pos = 0;
 	while ((GMT_strtok (&line[i], "/", &pos, p))) {
 		if (n_tokens > 3) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Too many slashes in -F.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Too many slashes in -F.\n");
 			return (true);
 		}
 		if(p[0] == '-')
 			fourvals[n_tokens] = -1.0;
 		else {
 			if ((sscanf(p, "%lf", &fourvals[n_tokens])) != 1) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot read token %d.\n", n_tokens);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot read token %d.\n", n_tokens);
 				return (true);
 			}
 		}
@@ -532,7 +532,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	}
 	
 	if (!(n_tokens == 2 || n_tokens == 3 || n_tokens == 4)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
 		return (true);
 	}
 	descending = true;
@@ -543,12 +543,12 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 		if (fourvals[i] > fourvals[i-1]) descending = false;
 	}
 	if (!(descending)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "-F Wavelengths are not in descending order.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "-F Wavelengths are not in descending order.\n");
 		return (true);
 	}
 	if (f_info->kind == FILTER_COS) {	/* Cosine band-pass specification */
 		if ((fourvals[0] * fourvals[1]) < 0.0 || (fourvals[2] * fourvals[3]) < 0.0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "-F Pass/Cut specification error.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "-F Pass/Cut specification error.\n");
 			return (true);
 		}
 	
@@ -656,7 +656,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
 	dim[2] = 3;	dim[3] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
 		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 3 cols and nk rows */
@@ -785,7 +785,7 @@ void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct
 	fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
 	given_space += nx * ny;
 	given_space *= 8;
-	if (do_print) GMT_report (GMT, GMT_MSG_FATAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+	if (do_print) GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 		nx, ny, given_time, given_err, given_space);
 
 	best_err = s_err = t_err = given_err;
@@ -843,11 +843,11 @@ void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct
 	}
 
 	if (do_print) {
-		GMT_report (GMT, GMT_MSG_FATAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_report (GMT, GMT_MSG_FATAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_report (GMT, GMT_MSG_FATAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -885,7 +885,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 	/* Get dimensions as may be appropriate */
 	if (Ctrl->N.n_user_set) {
 		if (Ctrl->N.nx2 < Gin->header->nx || Ctrl->N.ny2 < Gin->header->ny) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: You specified -Nnx/ny smaller than input grid.  Ignored.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: You specified -Nnx/ny smaller than input grid.  Ignored.\n");
 			Ctrl->N.n_user_set = false;
 		}
 	}
@@ -896,7 +896,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 			for (k = 0; k < 4; k++) Gin->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
 		}
 		else {
-			suggest_fft (GMT, Gin->header->nx, Gin->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_NORMAL) || Ctrl->N.suggest_narray));
+			suggest_fft (GMT, Gin->header->nx, Gin->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || Ctrl->N.suggest_narray));
 			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 				/* The most accurate solution needs same or less storage
 				 * as the fastest solution; use the most accurate's dimensions */
@@ -914,7 +914,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 	/* Get here when nx2 and ny2 are set to the vals we will use.  */
 
 	fourt_stats (GMT, Ctrl->N.nx2, Ctrl->N.ny2, factors, &edummy, &worksize, &tdummy);
-	GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension %d %d\tFFT dimension %d %d\n",
+	GMT_report (GMT, GMT_MSG_VERBOSE, " Data dimension %d %d\tFFT dimension %d %d\n",
 		Gin->header->nx, Gin->header->ny, Ctrl->N.nx2, Ctrl->N.ny2);
 
 	if (worksize) {
@@ -1023,7 +1023,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 					Ctrl->In.file[n_files++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: A maximum of two input grids may be processed\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -1185,12 +1185,12 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		if(GridA->header->registration != GridB->header->registration) {
-			GMT_report (GMT, GMT_MSG_FATAL, "The two grids have different registrations!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
 		if ((GridA->header->z_scale_factor != GridB->header->z_scale_factor) || 
 				(GridA->header->z_add_offset != GridB->header->z_add_offset)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Scale/offset not compatible!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
 			Return (EXIT_FAILURE);
 		}
 
@@ -1200,7 +1200,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 			Out->header->inc[GMT_Y] = GridA->header->inc[GMT_Y];
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_FATAL, " Grid intervals do not match!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, " Grid intervals do not match!\n");
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -1221,7 +1221,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	stop = false;
 	for (ij = 0; !stop && ij < GridA->header->size; ij++) stop = GMT_is_fnan (GridA->data[ij]);
 	if (stop) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Input grid cannot have NaNs!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Input grid cannot have NaNs!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -1250,46 +1250,46 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 		exit (-1);
 	}
 #endif
-	GMT_report (GMT, GMT_MSG_NORMAL, "forward FFT...");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...");
 	
 	GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case UP_DOWN_CONTINUE:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...") : GMT_message (GMT,  "upward continuation..."));
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...") : GMT_message (GMT,  "upward continuation..."));
 				par_count += do_continuation (Out, &Ctrl->par[par_count], &K);
 				break;
 			case AZIMUTHAL_DERIVATIVE:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "azimuthal derivative...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "azimuthal derivative...");
 				par_count += do_azimuthal_derivative (Out, &Ctrl->par[par_count], &K);
 				break;
 			case DIFFERENTIATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "differentiate...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "differentiate...");
 				par_count += do_differentiate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case INTEGRATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "integrate...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "integrate...");
 				par_count += do_integrate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case ISOSTASY:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "isostasy...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "isostasy...");
 				par_count += do_isostasy (Out, Ctrl, &Ctrl->par[par_count], &K);
 				break;
 			case FILTER_COS:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "cosine filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cosine filter...");
 				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_EXP:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Gaussian filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Gaussian filter...");
 				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_BW:
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Butterworth filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Butterworth filter...");
 				do_filter (Out, &f_info, &K);
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
-				if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "spectrum...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "spectrum...");
 				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
 				if (status < 0) Return (status);
 				par_count += status;
@@ -1298,7 +1298,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "inverse FFT...");
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...");
 
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
@@ -1312,7 +1312,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "Done\n");
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Done\n");
 
 	Return (EXIT_SUCCESS);
 }

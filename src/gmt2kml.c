@@ -421,8 +421,8 @@ int GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, struct 
 				if (opt->arg[k] == '+') {Ctrl->W.mode = 2; k++;}
 				if (opt->arg[k] && GMT_getpen (GMT, &opt->arg[k], &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
-					GMT_report (GMT, GMT_MSG_FATAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
-					GMT_report (GMT, GMT_MSG_FATAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
 				}
 				break;
@@ -780,13 +780,13 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 				Return (EXIT_FAILURE);
 			}
 			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
 				Return (EXIT_FAILURE);
 			}
 			if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 			if (get_z) {
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
 					Return (EXIT_FAILURE);
 				}
 				if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
@@ -794,7 +794,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			if (Ctrl->F.mode == EVENT) {
 				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode time event from %s\n", C[t1_col]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
 					Return (EXIT_FAILURE);
 				}
 			}
@@ -802,13 +802,13 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (!(strcmp (C[t1_col], "NaN")))
 					out[t1_col] = GMT->session.d_NaN;
 				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
 					Return (EXIT_FAILURE);
 				}
 				if (!(strcmp (C[t2_col], "NaN")))
 					out[t2_col] = GMT->session.d_NaN;
 				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
 					Return (EXIT_FAILURE);
 				}
 			}
@@ -840,7 +840,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 			tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
 			tabs (--N); printf ("</Placemark>\n");
 			n_rec++;
-			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed %ld points\n", n_rec);
+			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %ld points\n", n_rec);
 		} while (true);
 		
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
@@ -924,9 +924,9 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 						tabs (N++); printf ("<LinearRing>\n");
 						if (T->segment[seg]->min[GMT_X] < 180.0 && T->segment[seg]->max[GMT_X] > 180.0) {
 							/* GE cannot handle polygons crossing the dateline; warn for now */
-							GMT_report (GMT, GMT_MSG_FATAL, "Warning: A polygon is straddling the Dateline.  Google Earth will wrap this the wrong way\n");
-							GMT_report (GMT, GMT_MSG_FATAL, "Split the polygon into an East and West part and plot them as separate polygons.\n");
-							GMT_report (GMT, GMT_MSG_FATAL, "gmtconvert can be used to help in this conversion.\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A polygon is straddling the Dateline.  Google Earth will wrap this the wrong way\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Split the polygon into an East and West part and plot them as separate polygons.\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "gmtconvert can be used to help in this conversion.\n");
 						}
 					}
 					tabs (N++); printf ("<coordinates>\n");
