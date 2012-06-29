@@ -4853,7 +4853,7 @@ int GMT_get_datum (struct GMT_CTRL *C, char *name)
 bool GMT_get_time_system (struct GMT_CTRL *C, char *name, struct GMT_TIME_SYSTEM *time_system)
 {
 	/* Convert TIME_SYSTEM into TIME_EPOCH and TIME_UNIT.
-	   TIME_SYSTEM can be one of the following: j2000, jd, mjd, s1985, unix, dr0001, rata
+	   TIME_SYSTEM can be one of the following: j2000, jd, mjd, s1970, s1985, unix, dr0001, rata
 	   or any string in the form "TIME_UNIT since TIME_EPOCH", like "seconds since 1985-01-01".
 	   This function only splits the strings, no validation or analysis is done.
 	   See GMT_init_time_system_structure for that.
@@ -4872,6 +4872,10 @@ bool GMT_get_time_system (struct GMT_CTRL *C, char *name, struct GMT_TIME_SYSTEM
 	else if (!strcmp (name, "mjd")) {
 		strcpy (time_system->epoch, "1858-11-17T00:00:00");
 		time_system->unit = 'd';
+	}
+	else if (!strcmp (name, "s1970")) {
+		strcpy (time_system->epoch, "1970-01-01T00:00:00");
+		time_system->unit = 's';
 	}
 	else if (!strcmp (name, "s1985")) {
 		strcpy (time_system->epoch, "1985-01-01T00:00:00");

@@ -678,6 +678,8 @@ MJD	1858-11-27T00:00:00	d	(Modified Julian Date)
 .br
 J2000	2000-01-01T12:00:00	d	(Astronomical time)
 .br
+S1970	1970-01-01T00:00:00	s	(Computer time)
+.br
 S1985	1985-01-01T00:00:00	s	(Altimetric time)
 .br
 UNIX	1970-01-01T00:00:00	s	(UNIX time)
@@ -690,17 +692,17 @@ This parameter is not stored in the BD(gmt.conf) file but is translated to the r
 values of BD(TIME_EPOCH) and BD(TIME_UNIT).
 .TP
 .B TIME_EPOCH
-Specifies the epoch for relative time  [2000-01-01T12:00:00].
+Specifies the epoch for relative time  [1970-01-01T00:00:00].
 .TP
 .B TIME_UNIT
 Specifies the units of relative time data since epoch (see BD(TIME_EPOCH)).
 Choose y (year - assumes all years are 365.2425 days), o (month - assumes
-all months are of equal length y/12), d (day), h (hour), m (minute), or s (second)  [d].
+all months are of equal length y/12), d (day), h (hour), m (minute), or s (second)  [s].
 .TP
 .B TIME_WEEK_START
 When weeks are indicated on time axes, this parameter determines the first day of the week
 for Gregorian calendars.  (The ISO weekly calendar always begins weeks with Monday.)
-[Sunday].
+[Monday (or Sunday)].
 .TP
 .B TIME_Y2K_OFFSET_YEAR
 When 2-digit years are used to represent 4-digit years (see various BD(FORMAT_DATE)s), BD(TIME_Y2K_OFFSET_YEAR) 
