@@ -388,6 +388,7 @@ backward.  Note that this is not historical.
 given epoch. A combination of the parameters \textbf{TIME\_EPOCH} and
 \textbf{TIME\_UNIT} define the epoch and time unit. The parameter \textbf{TIME\_SYSTEM} provides a few shorthands for common combinations
 of epoch and unit, like \textbf{j2000} for days since noon of 1 Jan 2000.
+The default relative time coordinate is that of UNIX computers: seconds since 1 Jan 1970.
 Denote relative time coordinates by appending the optional lower case
 \textbf{t} after the value.  When it is otherwise apparent that the coordinate is relative time (for example by using
 the \Opt{f} switch), the \textbf{t} can be omitted.
@@ -775,9 +776,9 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \index{\Opt{V} (verbose mode)}
 \index{Verbose (\Opt{V})}
 \label{sec:verbose}
-\Opt{V} selects verbose mode, which will send progress reports to
-\emph{stderr}. Even more verbose levels are \Opt{Vl} (long verbose) and \Opt{Vd}
-(debug). Normal verbosity level produces only fatal error messages. This is the default
+\Opt{V} selects verbose mode, which will send progress reports to standard error.
+Even more verbose levels are \Opt{Vl} (long verbose) and \Opt{Vd}
+(debug). Normal verbosity level produces only error and warning messages. This is the default
 or can be selected by using \Opt{Vn}. If compiled with backward-compatibility support, the
 default is \Opt{Vc}, which includes warnings about deprecated usage. Finally, \Opt{Vq} can be used
 to run without any warnings or errors.
