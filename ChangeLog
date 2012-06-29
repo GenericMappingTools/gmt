@@ -7,8 +7,7 @@
 				or just a column out of those.
 	* gmt_init.c:		Implemented shorthands FONT_ANNOT, etc, for all that have _PRIMARY and
 				_SECONDARY versions. Sets both to the same value.
-				Added S1970 as TIME_SYSTEM.
-	* gmt.conf.in:		Made S1970 the default time system (TIME_EPOCH is 1970-01-01, TIME_UNIT is s)
+	* gmt.conf.in:		Made UNIX the default time system (TIME_EPOCH is 1970-01-01, TIME_UNIT is s)
 				Set TIME_WEEK_START to Monday for SI (leave Sunday for US)
 
 2012-06-29	remko
