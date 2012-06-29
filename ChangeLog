@@ -13,6 +13,7 @@
 2012-06-29	remko
 	* gmt_error.h, *.c:	Renamed verbosity levels to GMT_QUIET, GMT_NORMAL, GMT_COMPAT, GMT_VERBOSE,
 				GMT_LONG_VERBOSE, GMT_DEBUG. Options have become -Vq, -Vn, -Vc, -V[v], -Vl, -Vd.
+	* gmtapi_parse.c:	Translate --help to -? so that it can be used everywhere to get usage info.
 
 2012-06-24	pwessel
 	* grdtrack.c:		Modifier +a added to -C to alternate the direction of cross-profiles.

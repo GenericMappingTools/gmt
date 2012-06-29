@@ -128,27 +128,20 @@ struct GMT_OPTION * GMT_Create_Options (struct GMTAPI_CTRL *API, int n_args_in, 
 
 		if (!args[arg]) continue;	/* Skip any NULL arguments quietly */
 
-		if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-') {	/* string command with "< file" for input */
-			first_char = 0;	option = GMTAPI_OPT_INFILE;	arg++;
-		}
-		else if (args[arg][0] == '>' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-') {	/* string command with "> file" for output */
-			first_char = 0;	option = GMTAPI_OPT_OUTFILE;	arg++;
-		}
-		else if (args[arg][0] != '-') {	/* Probably a file (could also be a gmt/grdmath OPERATOR or number, to be handled later by GMT_Make_Option) */
-			first_char = 0;	option = GMTAPI_OPT_INFILE;
-		}
-		else if (!args[arg][1]) {	/* Found the special synopsis option "-" */
+		if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */
+			first_char = 0, option = GMTAPI_OPT_INFILE, arg++;
+		else if (args[arg][0] == '>' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "> file" for output */
+			first_char = 0, option = GMTAPI_OPT_OUTFILE, arg++;
+		else if (args[arg][0] != '-')	/* Probably a file (could also be a gmt/grdmath OPERATOR or number, to be handled later by GMT_Make_Option) */
+			first_char = 0, option = GMTAPI_OPT_INFILE;
+		else if (!args[arg][1])	/* Found the special synopsis option "-" */
 			first_char = 1, option = GMTAPI_OPT_SYNOPSIS;
-		}
-		else {		/* Most likely found a regular option flag (e.g., -D45.0/3) */
-			/* Yet, negative numbers pose a problem as their leading - is seen as an option.  Next we address this */
-			if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (API->GMT, args[arg])) {
-				first_char = 0, option = GMTAPI_OPT_INFILE;		/* A negative number, most likely; convert to "file" for now */
-			}
-			else {	/* Seems like a regular option setting */
-				first_char = 2, option = args[arg][1];
-			}
-		}
+		else if (!strcmp(args[arg], "--help"))	/* Translate '--help' to '-?' */
+			first_char = 6, option = GMTAPI_OPT_USAGE;
+		else if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (API->GMT, args[arg])) /* A negative number, most likely; convert to "file" for now */
+				first_char = 0, option = GMTAPI_OPT_INFILE;
+		else	/* Most likely found a regular option flag (e.g., -D45.0/3) */
+			first_char = 2, option = args[arg][1];
 
 		if ((new = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
