@@ -716,10 +716,10 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsi
 		GMT_report (C, GMT_MSG_NORMAL, "processing %zu contiguous chunked rows (%.1f MiB)\n",
 						 *n_contiguous_chunk_rows,
 						 *n_contiguous_chunk_rows * z_size * width * chunksize[yx_dim[0]] / 1048576.0f);
+#endif
 	}
 	else
 		*n_contiguous_chunk_rows = 0; /* all chunks fit into cache */
-#endif
 	return GMT_NOERROR;
 }
 
