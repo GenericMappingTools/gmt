@@ -180,7 +180,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -265,29 +265,29 @@ int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (GMT_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		Return (EXIT_FAILURE);
 	}
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.mode) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in water will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in water will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on land will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in the oceans will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in the oceans will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes on land will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in lakes will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in lakes will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[2])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[2]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in islands will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in islands will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[3])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[3]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nodes in ponds will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in ponds will be set to ");
 			(GMT_is_dnan (Ctrl->N.mask[4])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[4]);
 		}
 	}
@@ -316,10 +316,10 @@ int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on block # %5ld\r", bin);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on block # %5ld\r", bin);
 
 		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
-			GMT_report (GMT, GMT_MSG_FATAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -445,7 +445,7 @@ int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

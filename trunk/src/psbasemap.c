@@ -166,7 +166,7 @@ int GMT_psbasemap (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Ready to make the plot */
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Constructing the basemap\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Constructing the basemap\n");
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 

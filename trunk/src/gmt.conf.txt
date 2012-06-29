@@ -215,8 +215,8 @@ Note that Shewchuk is required for operations involving Voronoi constructions.
 .TP
 .B GMT_VERBOSE
 (BD(* \-V)) Determines the level of verbosity used by BD(GMT) programs.  Choose among 6 levels; each level
-adds to the verbosity of the lower levels: BD(s)ilence, BD(f)atal errors, BD(c)ompatibility warnings,
-(n)ormal progress reports, (v)erbose progress reports, BD(d)ebugging messages  [c].
+adds to the verbosity of the lower levels: BD(q)uiet, BD(n)normal (errors only), BD(c)ompatibility warnings,
+(v)erbose progress reports, (l)ong verbose progress reports, BD(d)ebugging messages  [c].
 .TP
 .B IO_COL_SEPARATOR
 This setting determines what character will separate ASCII output data columns written by BD(GMT).  Choose

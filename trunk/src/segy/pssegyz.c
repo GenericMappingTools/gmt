@@ -261,7 +261,7 @@ int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct 
 				break;
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Can't specify more than one trace location key\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Can't specify more than one trace location key\n");
 					n_errors++;
 					continue;
 				}
@@ -610,17 +610,17 @@ int GMT_pssegyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*---------------------------- This is the pssegyz main code ----------------------------*/
 
-	if (!GMT_IS_LINEAR (GMT)) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
+	if (!GMT_IS_LINEAR (GMT)) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: you asked for a non-rectangular projection. \n It will probably still work, but be prepared for problems\n");
 
 	if (Ctrl->In.active) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Will read segy file %s\n", Ctrl->In.file);
 		if ((fpi = fopen (Ctrl->In.file, "rb")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find segy file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find segy file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Will read segy file from standard input\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Will read segy file from standard input\n");
 		if (fpi == NULL) fpi = stdin;
 	}
 
@@ -646,7 +646,7 @@ int GMT_pssegyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->A.active) {
 /* this is a little-endian system, and we need to byte-swap ints in the reel header - we only
 use a few of these*/
-		GMT_report (GMT, GMT_MSG_NORMAL, "Swapping bytes for ints in the headers\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Swapping bytes for ints in the headers\n");
 		binhead.num_traces = bswap16 (binhead.num_traces);
 		binhead.nsamp = bswap16 (binhead.nsamp);
 		binhead.dsfc = bswap16 (binhead.dsfc);
@@ -656,35 +656,35 @@ use a few of these*/
 /* set parameters from the reel headers */
 	if (!Ctrl->M.value) Ctrl->M.value = binhead.num_traces;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of traces in header is %d\n", Ctrl->M.value);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Number of traces in header is %d\n", Ctrl->M.value);
 
 
 	if (!Ctrl->L.value) {/* number of samples not overridden*/
 		Ctrl->L.value = binhead.nsamp;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples per trace is %d\n", Ctrl->L.value);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Number of samples per trace is %d\n", Ctrl->L.value);
 	}
 	else if ((Ctrl->L.value != binhead.nsamp) && (binhead.nsamp))
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning nsampr input %d, nsampr in header %d\n", Ctrl->L.value, binhead.nsamp);
 
 	if (!Ctrl->L.value) { /* no number of samples still - a problem! */
-		GMT_report (GMT, GMT_MSG_FATAL, "Error, number of samples per trace unknown\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error, number of samples per trace unknown\n");
 		exit (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Number of samples is %d\n", n_samp);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Number of samples is %d\n", n_samp);
 
-	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: data not in IEEE format\n");
+	if (binhead.dsfc != 5) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: data not in IEEE format\n");
 
 	if (!Ctrl->Q.value[Z_ID]) {
 		Ctrl->Q.value[Z_ID] = binhead.sr; /* sample interval of data (microseconds) */
 		Ctrl->Q.value[Z_ID] /= 1000000.0;
-		GMT_report (GMT, GMT_MSG_NORMAL, "Sample interval is %f s\n", Ctrl->Q.value[Z_ID]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Sample interval is %f s\n", Ctrl->Q.value[Z_ID]);
 	}
 	else if ((Ctrl->Q.value[Z_ID] != binhead.sr) && (binhead.sr)) /* value in header overridden by input */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning dz input %f, dz in header %f\n", Ctrl->Q.value[Z_ID], (float)binhead.sr);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning dz input %f, dz in header %f\n", Ctrl->Q.value[Z_ID], (float)binhead.sr);
 
 	if (!Ctrl->Q.value[Z_ID]) { /* still no sample interval at this point is a problem! */
-		GMT_report (GMT, GMT_MSG_FATAL, "Error, no sample interval in reel header\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error, no sample interval in reel header\n");
 		exit (EXIT_FAILURE);
 	}
 
@@ -765,11 +765,11 @@ use a few of these*/
 			header->num_samps = bswap32 (header->num_samps);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "trace %d at x=%f, y=%f \n", ix+1, x0, y0);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "trace %d at x=%f, y=%f \n", ix+1, x0, y0);
 
 		if (Ctrl->Q.value[U_ID]) {
 			toffset = (float) -(fabs ((double)(header->sourceToRecDist)) / Ctrl->Q.value[U_ID]);
-			GMT_report (GMT, GMT_MSG_NORMAL, "time shifted by %f\n", toffset);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "time shifted by %f\n", toffset);
 		}
 
 		data = get_segy_data (fpi, header);	/* read a trace */
@@ -789,7 +789,7 @@ use a few of these*/
 
 		if (Ctrl->N.active || Ctrl->Z.active) {
 			scale= (float) segyz_rms (data, n_samp);
-			GMT_report (GMT, GMT_MSG_NORMAL, "\t\t rms value is %f\n", scale);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "\t\t rms value is %f\n", scale);
 		}
 		for (iz = 0; iz < n_samp; iz++) { /* scale bias and clip each sample in the trace */
 			if (Ctrl->N.active) data[iz] /= scale;

@@ -268,7 +268,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 	/* Get mode */
 
 	GMT_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", n_multiples);
+	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", n_multiples);
 
 	/* Get MAD for L1 */
 
@@ -499,7 +499,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 	F.box_width = Ctrl->W.inc;
 	F.cumulative = Ctrl->Q.active;
 	F.center_box = Ctrl->F.active;
-	if (Ctrl->I.active) GMT->current.setting.verbose = GMT_MSG_NORMAL;
+	if (Ctrl->I.active) GMT->current.setting.verbose = GMT_MSG_VERBOSE;
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
 	if (GMT->common.R.active) GMT_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 
@@ -552,21 +552,21 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (n == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Fatal error, read only 0 points.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Fatal error, read only 0 points.\n");
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " points read\n", n);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " points read\n", n);
 
 	data = GMT_memory (GMT, data, n, double);
 
 	get_loc_scl (GMT, data, n, stats);
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, data[0], data[n-1]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, data[0], data[n-1]);
 		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [ and tickmarks] */
@@ -587,13 +587,13 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (fill_boxes (GMT, &F, data, n)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Fatal error during box fill.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
 		Return (EXIT_FAILURE);
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "min/max values are :\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, x_min, x_max, F.yy0, F.yy1);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, x_min, x_max, F.yy0, F.yy1);
 	}
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
@@ -606,7 +606,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 			
 			dim[3] = F.n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to create a data set for spectrum\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
 				Return (API->error);
 			}
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
@@ -661,14 +661,14 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT->current.map.frame.draw = true;
 		}
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Need to provide both x- and y-scale.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
 			Return (EXIT_FAILURE);
 		}
 	}
 
-	if (automatic && GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (automatic && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Use w/e/s/n = %s/%s/%s/%s and x-tick/y-tick = %s/%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 	}
 
 	if (Ctrl->A.active) {
@@ -692,7 +692,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	if (plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active) ) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Fatal error during box plotting.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Fatal error during box plotting.\n");
 		Return (EXIT_FAILURE);
 	}
 	GMT_map_clip_off (GMT);

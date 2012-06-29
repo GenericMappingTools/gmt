@@ -443,7 +443,7 @@ int GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl, str
 			case 'A':	/* Annotation control */
 				Ctrl->A.active = true;
 				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				else if (opt->arg[0] == '-')
@@ -529,7 +529,7 @@ int GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl, str
 							n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b);
 						}
 						else {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
 							Ctrl->T.label = false;
 							n_errors++;
 						}
@@ -662,11 +662,11 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		if (Ctrl->I.active && P->is_continuous) {
-			GMT_report (GMT, GMT_MSG_FATAL, "-I option requires constant color between contours!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "-I option requires constant color between contours!\n");
 			Return (GMT_OK);
 		}
 		if (P->categorical) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
 	}
 	make_plot = !Ctrl->D.active;	/* Turn off plotting if -D was used */
@@ -722,7 +722,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 				z = GMT_memory (GMT, z, n_alloc, double);
 			}
 			if (n == INT_MAX) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot triangulate more than %d points\n", INT_MAX);
 				GMT_free (GMT, x);
 				GMT_free (GMT, y);
 				GMT_free (GMT, z);
@@ -752,7 +752,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 
  		if (Tin->n_columns < 3) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
 				Return (API->error);
 			}
@@ -769,11 +769,11 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Read %d indices triplets from %s.\n", np, Ctrl->Q.file);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %d indices triplets from %s.\n", np, Ctrl->Q.file);
 	}
 	else {	/* Do our own Delaunay triangulation */
 		np = GMT_delaunay (GMT, x, y, n, &ind);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Obtained %d indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Obtained %d indices triplets via Delauney triangulation [%s].\n", np, tri_algorithm[GMT->current.setting.triangulate]);
 	}
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
@@ -814,7 +814,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		double tmp;
 
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, NULL, Ctrl->C.file)) == GMTAPI_NOTSET) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables text input and sets access mode */
@@ -1111,7 +1111,7 @@ int GMT_pscontour (struct GMTAPI_CTRL *API, int mode, void *args)
 				continue;
 			}
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Tracing the %g contour\n", cont[c].val);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Tracing the %g contour\n", cont[c].val);
 
 			id = (cont[c].type == 'A' || cont[c].type == 'a') ? 1 : 0;
 

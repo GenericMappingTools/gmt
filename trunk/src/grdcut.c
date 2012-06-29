@@ -199,7 +199,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		if (go) {
-			GMT_report (GMT, GMT_MSG_FATAL, "The sub-region implied by -Z is empty!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "The sub-region implied by -Z is empty!\n");
 			Return (EXIT_FAILURE);
 		}
 		for (row = G->header->nx-1, go = true; go && row > row0; row--) {	/* Scan from xmax towards xmin */
@@ -233,7 +233,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		if (row0 == 0 && col0 == 0 && row1 == (G->header->nx-1) && col1 == (G->header->ny-1)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Your -Z limits produced no subset - output grid is identical to input grid\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Your -Z limits produced no subset - output grid is identical to input grid\n");
 			GMT_memcpy (wesn_new, G->header->wesn, 4, double);
 		}
 		else {	/* Adjust boundaries inwards */
@@ -269,7 +269,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 		error++;
 
 	if (error) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Subset exceeds data domain!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -284,19 +284,19 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 
 	if (GMT_minmaxinc_verify (GMT, G->header->wesn[XLO], wesn_new[XLO], G->header->inc[GMT_X], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Old and new x_min do not differ by N * dx\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new x_min do not differ by N * dx\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT_minmaxinc_verify (GMT, wesn_new[XHI], G->header->wesn[XHI], G->header->inc[GMT_X], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Old and new x_max do not differ by N * dx\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new x_max do not differ by N * dx\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT_minmaxinc_verify (GMT, G->header->wesn[YLO], wesn_new[YLO], G->header->inc[GMT_Y], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Old and new y_min do not differ by N * dy\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new y_min do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT_minmaxinc_verify (GMT, wesn_new[YHI], G->header->wesn[YHI], G->header->inc[GMT_Y], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Old and new y_max do not differ by N * dy\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new y_max do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -309,15 +309,15 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, "File spec:\tW E S N dx dy nx ny:\n");
-		GMT_report (GMT, GMT_MSG_NORMAL, "Old:");
-		GMT_report (GMT, GMT_MSG_NORMAL, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
-		GMT_report (GMT, GMT_MSG_NORMAL, "New:");
-		GMT_report (GMT, GMT_MSG_NORMAL, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->nx, G->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy nx ny:\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Old:");
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "New:");
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->nx, G->header->ny);
 	}
 
 	/* Send the subset of the grid to the destination. */

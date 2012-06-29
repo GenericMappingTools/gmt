@@ -776,8 +776,14 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \index{Verbose (\Opt{V})}
 \label{sec:verbose}
 \Opt{V} selects verbose mode, which will send progress reports to
-\emph{stderr} [Default runs ``silently''].  The interpretation of
-this option can be toggled by changing the default \textbf{GMT\_VERBOSE}.
+\emph{stderr}. Even more verbose levels are \Opt{Vl} (long verbose) and \Opt{Vd}
+(debug). Normal verbosity level produces only fatal error messages. This is the default
+or can be selected by using \Opt{Vn}. If compiled with backward-compatibility support, the
+default is \Opt{Vc}, which includes warnings about deprecated usage. Finally, \Opt{Vq} can be used
+to run without any warnings or errors.
+This option can also be set by specifying the default \textbf{GMT\_VERBOSE}, as \textbf{quiet},
+\textbf{normal}, \textbf{compat}, \textbf{verbose}, \textbf{long\_verbose}, or \textbf{debug}, in order
+of verbosity.
 
 \subsection{Plot positioning and layout: The \Opt{X} \Opt{Y} options}
 \index{\Opt{X} (shift plot in $x$)}

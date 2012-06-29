@@ -228,7 +228,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 			x_varp *= (C->dt/C->n_spec);
 		}
 
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 			C->y_pow = (C->y_given) ? C->y_variance/y_varp : 0.0;
 			GMT_message (GMT, "Window %d from %d to %d\n", w, t_start, t_stop);
 			sprintf(format, "X var: %s  X pow: %s  ratio: %s  Y var: %s  Y pow: %s  ratio: %s\n",
@@ -276,10 +276,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'x':		/* write x power [ B&P 2nd Ed. eqn. 9.32 ] */
 			sprintf (fname, "%s.xpower", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].xpow;
@@ -292,10 +292,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'y':		/* Write y power [ B&P 2nd Ed. eqn. 9.32 ] */
 			sprintf (fname, "%s.ypower", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow;
@@ -307,10 +307,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'c':		/* Write Coherent Output power [ B&P 2nd Ed. eqn. 9.71 ] */
 			sprintf (fname, "%s.cpower", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * C->spec[i].coh;
@@ -322,10 +322,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'n':		/* Write Noise Output power [ B&P 2nd Ed. eqn. 9.73 & Table 9.6 ] */
 			sprintf (fname, "%s.npower", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].ypow * (1.0 - C->spec[i].coh);
@@ -337,10 +337,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'g':		/* Write Gain spectrum [ B&P 2nd Ed. eqn. 9.90 & Table 9.6 ] */
 			sprintf (fname, "%s.gain", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].gain;
@@ -360,10 +360,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 			*/
 			sprintf (fname, "%s.admit", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].radmit;
@@ -375,10 +375,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'p':		/* Write Phase spectrum [ B&P 2nd Ed. eqn. 9.91 & Table 9.6 ] */
 			sprintf (fname, "%s.phase", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].phase;
@@ -389,10 +389,10 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 		case 'o':		/* Write Coherency spectrum [ B&P 2nd Ed. eqn. 9.82 ] */
 			sprintf (fname, "%s.coh", namestem);
 			if ((fpout = GMT_fopen (GMT, fname, GMT->current.io.w_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, " Cannot open w %s\n", fname);
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot open w %s\n", fname);
 				return (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, " Writing %s\n", fname);
+			GMT_report (GMT, GMT_MSG_VERBOSE, " Writing %s\n", fname);
 			for (i = 0; i < C->n_spec; i++) {
 				out[GMT_X] = f_or_w[i];
 				out[GMT_Y] = C->spec[i].coh;
@@ -561,12 +561,12 @@ int GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ctrl, s
 					if (j < SPECTRUM1D_N_OUTPUT_CHOICES) {
 						Ctrl->C.col[j] = opt->arg[j];
 						if (!strchr ("xycnpago", Ctrl->C.col[j])) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Unrecognized output choice %c\n", Ctrl->C.col[j]);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Unrecognized output choice %c\n", Ctrl->C.col[j]);
 							n_errors++;
 						}
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Too many output columns selected: Choose from -Cxycnpago\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Too many output columns selected: Choose from -Cxycnpago\n");
 						n_errors++;
 					}
 				}
@@ -681,7 +681,7 @@ int GMT_spectrum1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Read %" PRIu64 " data points.\n", S->n_rows);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
 
 			compute_spectra (GMT, &C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
 

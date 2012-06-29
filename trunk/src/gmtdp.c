@@ -295,7 +295,7 @@ int GMT_gmtdp (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the gmtdp main code ----------------------------*/
 
 	if (Ctrl->T.mode > 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 	
@@ -351,7 +351,7 @@ int GMT_gmtdp (struct GMTAPI_CTRL *API, int mode, void *args)
 				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
 			}
 			GMT_free (GMT, index);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Points in: %ld Points out: %ld\n", S[GMT_IN]->n_rows, np_out);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Points in: %ld Points out: %ld\n", S[GMT_IN]->n_rows, np_out);
 		}
 	}
 

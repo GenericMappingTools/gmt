@@ -184,7 +184,7 @@ int GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, struct GM
 					Ctrl->In.file[n_files++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: A maximum of two input grids may be processed\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -209,7 +209,7 @@ int GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, struct GM
 			case 'H':
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -H option: Can't dechiper values\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				Ctrl->H.active = true;
@@ -248,7 +248,7 @@ int GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, struct GM
 					else if (n == 3)
 						strcpy(Ctrl->Q.region, opt->arg);	/* Pad given as a -R region */
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
 						n_errors++;
 					}
 				}
@@ -339,7 +339,7 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
 		if ( (retval = read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->F.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
 			return (EXIT_FAILURE);
 		}
 		ndata = retval;
@@ -367,7 +367,7 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 		if (Gout->header->wesn[YHI] > GridA->header->wesn[YHI]) error = true;
 
 		if (error) {
-			GMT_report (GMT, GMT_MSG_FATAL, "New WESN incompatible with old.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
 			Return (EXIT_FAILURE);
 		}
 
@@ -376,12 +376,12 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, Gout->header->wesn,
 					Gout->header->inc, GridA->header->registration), Ctrl->G.file);
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n",
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Allocates memory and read data file\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
 	if (!GMT->common.R.active)
 		GMT_memcpy (wesn_new, GridA->header->wesn, 4, double);
@@ -402,19 +402,19 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 		GMT->common.R.active = true;
 
 		if (wesn_padded[XLO] < GridA->header->wesn[XLO]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Request padding at the West border exceed grid limit, trimming it\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the West border exceed grid limit, trimming it\n");
 			wesn_padded[XLO] = GridA->header->wesn[XLO];
 		}
 		if (wesn_padded[XHI] > GridA->header->wesn[XHI]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Request padding at the East border exceed grid limit, trimming it\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the East border exceed grid limit, trimming it\n");
 			wesn_padded[XHI] = GridA->header->wesn[XHI];
 		}
 		if (wesn_padded[YLO] < GridA->header->wesn[YLO]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Request padding at the South border exceed grid limit, trimming it\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the South border exceed grid limit, trimming it\n");
 			wesn_padded[YLO] = GridA->header->wesn[YLO];
 		}
 		if (wesn_padded[YHI] > GridA->header->wesn[YHI]) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Request padding at the North border exceed grid limit, trimming it\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the North border exceed grid limit, trimming it\n");
 			wesn_padded[YHI] = GridA->header->wesn[YHI];
 		}
 	}
@@ -429,12 +429,12 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 	if (GMT->common.R.active && Ctrl->G.active) {
 		if (Gout->header->wesn[XLO] < GridA->header->wesn[XLO] ||
 				Gout->header->wesn[XHI] > GridA->header->wesn[XHI]) {
-			GMT_report (GMT, GMT_MSG_FATAL, " Selected region exceeds the X-boundaries of the grid file!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 		else if (Gout->header->wesn[YLO] < GridA->header->wesn[YLO] ||
 				Gout->header->wesn[YHI] > GridA->header->wesn[YHI]) {
-			GMT_report (GMT, GMT_MSG_FATAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 		GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
@@ -463,18 +463,18 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 		}
 
 		if(GridA->header->registration != GridB->header->registration) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Up and bottom grids have different registrations!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Up and bottom grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
 		if ((GridA->header->z_scale_factor != GridB->header->z_scale_factor) ||
 				(GridA->header->z_add_offset != GridB->header->z_add_offset)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Scale/offset not compatible!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
 			Return (EXIT_FAILURE);
 		}
 
 		if (fabs (GridA->header->inc[GMT_X] - GridB->header->inc[GMT_X]) > 1.0e-6 ||
 				fabs (GridA->header->inc[GMT_Y] - GridB->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Up and bottom grid increments do not match!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Up and bottom grid increments do not match!\n");
 			Return (EXIT_FAILURE);
 		}
 		/* ALMOST FOR SURE THERE ARE MEMORY CLEAN UPS TO DO HERE BEFORE RETURNING */
@@ -663,7 +663,7 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 		}
 #endif
 	/*---------------------------------------------------------------------------------------------*/
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) fprintf (stderr, "\n");
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) fprintf (stderr, "\n");
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active) {
@@ -723,7 +723,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_report (GMT, GMT_MSG_FATAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
+			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
 		if (ndata == n_alloc) {
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data, n_alloc, struct DATA);
@@ -903,7 +903,7 @@ void grdokb_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struc
 #endif */
 	for (row = 0; row < Grid->header->ny - 1; row++) {		/* Loop over input grid rows */
 
-		if (GMT_is_verbose (GMT, GMT_MSG_NORMAL))
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE))
 			GMT_message (GMT, "Line = %d\t of = %.3d\r", row, Grid->header->ny);
 
 		for (col = 0; col < Grid->header->nx - 1; col++) {	/* Loop over input grid cols */

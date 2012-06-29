@@ -175,7 +175,7 @@ int GMT_gmtset (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 
 		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path))
-			GMT_report (GMT, GMT_MSG_FATAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
 		GMT_getdefaults (GMT, path);
 	}
 	else if (Ctrl->C.active)

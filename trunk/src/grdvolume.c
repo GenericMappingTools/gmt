@@ -371,7 +371,7 @@ int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, str
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Append c or h [Default].\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Append c or h [Default].\n");
 				}
 				break;
 			case 'Z':
@@ -435,7 +435,7 @@ int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Selected base value exceeds the minimum grid z value - aborting\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Selected base value exceeds the minimum grid z value - aborting\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -467,7 +467,7 @@ int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 	area   = GMT_memory (GMT, NULL, n_contours, double);
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		GMT_grd_do_scaling (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
@@ -482,7 +482,7 @@ int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 		cval = Ctrl->C.low + c * Ctrl->C.inc;
 		take_out = (c == 0) ? cval : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Compute volume, area, and average height for contour = %g\n", cval);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
 		
 		for (ij = 0; ij < Work->header->size; ij++) {
 			Work->data[ij] -= (float)take_out;		/* Take out the zero value */
@@ -491,7 +491,7 @@ int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->L.active) this_base -= take_out;
 
 		if (Ctrl->L.active && this_base >= 0.0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Base exceeds the current contour value - contour is ignored.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Base exceeds the current contour value - contour is ignored.\n");
 			continue;
 		}
 

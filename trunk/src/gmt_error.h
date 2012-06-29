@@ -29,10 +29,10 @@
 
 /* Verbosity levels */
 enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
-	GMT_MSG_FATAL,		/* Fatal errors only */
+	GMT_MSG_NORMAL,		/* Fatal errors only */
 	GMT_MSG_COMPAT,		/* Compatibility warnings */
-	GMT_MSG_NORMAL,		/* Warnings level -V */
-	GMT_MSG_VERBOSE,	/* Longer verbose, -Vl in some programs */
+	GMT_MSG_VERBOSE,		/* Warnings level -V */
+	GMT_MSG_LONG_VERBOSE,	/* Longer verbose, -Vl in some programs */
 	GMT_MSG_DEBUG};		/* Debug messages for developers mostly */
 
 /* Grid i/o error codes */
@@ -92,7 +92,7 @@ enum Gmt_error_code {
 
 /* Definition for an error trap */
 #ifdef DEBUG
-#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_report(C,GMT_MSG_FATAL,"GMT_err_trap: %d\n", err);return(err);}
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_report(C,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
 #else
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 #endif
@@ -102,7 +102,7 @@ EXTERN_MSC const char * GMT_strerror (int err);
 #define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
 
 /* Check condition and report error if true */
-#define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_FATAL,__VA_ARGS__) : 0)
+#define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_NORMAL,__VA_ARGS__) : 0)
 
 /* Set __func__ identifier */
 #ifndef HAVE___FUNC__

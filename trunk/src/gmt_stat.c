@@ -83,7 +83,7 @@ int gmt_f_test_new (struct GMT_CTRL *C, double chisq1, uint64_t nu1, double chis
 
 	if (chisq1 <= 0.0 || chisq2 <= 0.0 || nu1 < 1 || nu2 < 1) {
 		*prob = C->session.d_NaN;
-		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test_new: Error: Bad argument(s).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_f_test_new: Error: Bad argument(s).\n");
 		return (-1);
 	}
 
@@ -136,7 +136,7 @@ double gmt_cf_beta (struct GMT_CTRL *C, double a, double b, double x)
 		bz = 1.0;
 	} while (((fabs (az-aold) ) >= (eps * fabs (az))) && (m < itmax));
 
-	if (m == itmax) GMT_report (C, GMT_MSG_FATAL, "gmt_cf_beta:  A or B too big, or ITMAX too small.\n");
+	if (m == itmax) GMT_report (C, GMT_MSG_NORMAL, "gmt_cf_beta:  A or B too big, or ITMAX too small.\n");
 
 	return (az);
 }
@@ -198,7 +198,7 @@ int gmt_ln_gamma_r (struct GMT_CTRL *C, double x, double *lngam)
 		*lngam = 0.0;
 		return (0);
 	}
-	GMT_report (C, GMT_MSG_FATAL, "Ln Gamma:  Bad x (x <= 0).\n");
+	GMT_report (C, GMT_MSG_NORMAL, "Ln Gamma:  Bad x (x <= 0).\n");
 	return (-1);
 }
 
@@ -207,11 +207,11 @@ int gmt_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibet
 	double bt, gama, gamb, gamab;
 
 	if (a <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad a (a <= 0).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_inc_beta:  Bad a (a <= 0).\n");
 		return(-1);
 	}
 	if (b <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad b (b <= 0).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_inc_beta:  Bad b (b <= 0).\n");
 		return(-1);
 	}
 	if (x > 0.0 && x < 1.0) {
@@ -245,11 +245,11 @@ int gmt_inc_beta (struct GMT_CTRL *C, double a, double b, double x, double *ibet
 		return (0);
 	}
 	else if (x < 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad x (x < 0).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_inc_beta:  Bad x (x < 0).\n");
 		*ibeta = 0.0;
 	}
 	else if (x > 1.0) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_inc_beta:  Bad x (x > 1).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_inc_beta:  Bad x (x > 1).\n");
 		*ibeta = 1.0;
 	}
 	return (-1);
@@ -279,11 +279,11 @@ int gmt_f_test (struct GMT_CTRL *C, double chisq1, uint64_t nu1, double chisq2, 
 	double f, df1, df2, p1, p2;
 
 	if (chisq1 <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Chi-Square One <= 0.0\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_f_test:  Chi-Square One <= 0.0\n");
 		return(-1);
 	}
 	if (chisq2 <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Chi-Square Two <= 0.0\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_f_test:  Chi-Square Two <= 0.0\n");
 		return(-1);
 	}
 	if (chisq1 > chisq2) {
@@ -297,11 +297,11 @@ int gmt_f_test (struct GMT_CTRL *C, double chisq1, uint64_t nu1, double chisq2, 
 		df2 = (double)nu1;
 	}
 	if (gmt_inc_beta(C, 0.5*df2, 0.5*df1, df2/(df2+df1*f), &p1) ) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Trouble on 1st gmt_inc_beta call.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_f_test:  Trouble on 1st gmt_inc_beta call.\n");
 		return(-1);
 	}
 	if (gmt_inc_beta(C, 0.5*df1, 0.5*df2, df1/(df1+df2/f), &p2) ) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_f_test:  Trouble on 2nd gmt_inc_beta call.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_f_test:  Trouble on 2nd gmt_inc_beta call.\n");
 		return(-1);
 	}
 	*prob = p1 + (1.0 - p2);
@@ -338,7 +338,7 @@ void gmt_gamma_ser (struct GMT_CTRL *C, double *gamser, double a, double x, doub
 	gmt_ln_gamma_r (C, a, gln);
 
 	if (x < 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  x < 0 in gmt_gamma_ser(x)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  x < 0 in gmt_gamma_ser(x)\n");
 		*gamser = C->session.d_NaN;
 		return;
 	}
@@ -357,7 +357,7 @@ void gmt_gamma_ser (struct GMT_CTRL *C, double *gamser, double a, double x, doub
 	 		return;
 	 	}
 	}
-	GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in gmt_gamma_ser(x)\n");
+	GMT_report (C, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in gmt_gamma_ser(x)\n");
 }
 
 void gmt_gamma_cf (struct GMT_CTRL *C, double *gammcf, double a, double x, double *gln) {
@@ -388,7 +388,7 @@ void gmt_gamma_cf (struct GMT_CTRL *C, double *gammcf, double a, double x, doubl
 			gold = g;
 		}
 	}
-	GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in gmt_gamma_cf(x)\n");
+	GMT_report (C, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  a too large, ITMAX too small in gmt_gamma_cf(x)\n");
 }
 
 double gmt_gammq (struct GMT_CTRL *C, double a, double x) {
@@ -397,7 +397,7 @@ double gmt_gammq (struct GMT_CTRL *C, double a, double x) {
 	double G, gln;
 
 	if (x < 0.0 || a <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  Invalid arguments to GMT_gammaq\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  Invalid arguments to GMT_gammaq\n");
 		return (C->session.d_NaN);
 	}
 
@@ -496,7 +496,7 @@ double GMT_ker (struct GMT_CTRL *C, double x)
 	double t, rxsq, alpha, beta;
 
 	if (x <= 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  x <= 0 in GMT_ker(x)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  x <= 0 in GMT_ker(x)\n");
 		return (C->session.d_NaN);
 	}
 
@@ -537,7 +537,7 @@ double GMT_kei (struct GMT_CTRL *C, double x)
 		/* Zero is valid.  If near enough to zero, return kei(0)  */
 		if (x > -GMT_CONV_LIMIT) return (-0.25 * M_PI);
 
-		GMT_report (C, GMT_MSG_FATAL, "GMT DOMAIN ERROR:  x < 0 in GMT_kei(x)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT DOMAIN ERROR:  x < 0 in GMT_kei(x)\n");
 		return (C->session.d_NaN);
 	}
 
@@ -708,12 +708,12 @@ double GMT_plm (struct GMT_CTRL *C, int l, int m, double x)
 
 	/* x is cosine of colatitude and must be -1 <= x <= +1 */
 	if (fabs(x) > 1.0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: |x| > 1.0 in GMT_plm_bar\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: |x| > 1.0 in GMT_plm_bar\n");
 		return (C->session.d_NaN);
 	}
 
 	if (m < 0 || m > l) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_plm requires 0 <= m <= l.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: GMT_plm requires 0 <= m <= l.\n");
 		return (C->session.d_NaN);
 	}
 
@@ -784,7 +784,7 @@ double GMT_plm_bar (struct GMT_CTRL *C, int l, int m, double x, bool ortho)
 	/* x is cosine of colatitude (sine of latitude) and must be -1 <= x <= +1 */
 
 	if (fabs (x) > 1.0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: |x| > 1.0 in GMT_plm_bar\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: |x| > 1.0 in GMT_plm_bar\n");
 		return (C->session.d_NaN);
 	}
 
@@ -796,7 +796,7 @@ double GMT_plm_bar (struct GMT_CTRL *C, int l, int m, double x, bool ortho)
 	}
 
 	if (m > l) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: GMT_plm_bar requires 0 <= m <= l.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: GMT_plm_bar requires 0 <= m <= l.\n");
 		return (C->session.d_NaN);
 	}
 
@@ -865,7 +865,7 @@ double GMT_factorial (struct GMT_CTRL *C, int n)
 	double val = 1.0;
 
 	if (n < 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: n < 0 in GMT_factorial(n)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: n < 0 in GMT_factorial(n)\n");
 		return (C->session.d_NaN);
 		/* This could be set to return 0 without warning, to facilitate
 			sums over binomial coefficients, if desired.  -whfs  */
@@ -1001,7 +1001,7 @@ int GMT_f_q (struct GMT_CTRL *C, double chisq1, uint64_t nu1, double chisq2, uin
 	/* Check range of arguments:  */
 
 	if (nu1 <= 0 || nu2 <= 0 || chisq1 < 0.0 || chisq2 < 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_f_q:  Bad argument(s).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT_f_q:  Bad argument(s).\n");
 		return (-1);
 	}
 
@@ -1020,7 +1020,7 @@ int GMT_f_q (struct GMT_CTRL *C, double chisq1, uint64_t nu1, double chisq2, uin
 		the value.  All subsequent code is not used.  */
 
 	if (gmt_inc_beta (C, 0.5*nu2, 0.5*nu1, chisq2/(chisq2+chisq1), prob) ) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_q_p:  Trouble in gmt_inc_beta call.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT_q_p:  Trouble in gmt_inc_beta call.\n");
 		return (-1);
 	}
 	return (0);
@@ -1063,7 +1063,7 @@ int GMT_student_t_a (struct GMT_CTRL *C, double t, uint64_t n, double *prob)
 	int64_t	k, kstop, kt, kb;
 
 	if (t < 0.0 || n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "GMT_student_t_a:  Bad argument(s).\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GMT_student_t_a:  Bad argument(s).\n");
 		*prob = C->session.d_NaN;
 		return (-1);
 	}
@@ -1542,7 +1542,7 @@ int GMT_median (struct GMT_CTRL *C, double *x, uint64_t n, double xmin, double x
 			m_guess = (temp < glb) ? temp : glb;	/* Move guess at least to glb  */
 		}
 		else {	/* If we get here, I made a mistake!  */
-			GMT_report (C, GMT_MSG_FATAL, "Error: Internal goof in GMT_median; please report to developers!\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Internal goof in GMT_median; please report to developers!\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -1648,7 +1648,7 @@ int GMT_mode (struct GMT_CTRL *C, double *x, uint64_t n, uint64_t j, bool sort, 
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
-			GMT_report (C, GMT_MSG_FATAL, "GMT_mode: Array not sorted in non-decreasing order.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_mode: Array not sorted in non-decreasing order.\n");
 			return (-1);
 		}
 		else if (length == short_length) {	/* Possibly multiple mode */
@@ -1702,7 +1702,7 @@ int GMT_mode_f (struct GMT_CTRL *C, float *x, uint64_t n, uint64_t j, bool sort,
 	for (i = 0; i < istop; i++) {
 		length = x[i + j] - x[i];
 		if (length < 0.0) {
-			GMT_report (C, GMT_MSG_FATAL, "GMT_mode_f: Array not sorted in non-decreasing order.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_mode_f: Array not sorted in non-decreasing order.\n");
 			return (-1);
 		}
 		else if (length == short_length) {	/* Possibly multiple mode */

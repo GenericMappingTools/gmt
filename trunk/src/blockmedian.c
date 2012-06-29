@@ -276,7 +276,7 @@ int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
 	if (Ctrl->C.active && go_quickly == 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -C overrides -Q\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
 		go_quickly = 0;
 	}
 	if (Ctrl->C.active) go_quickly = 2;			/* Flag used in output calculation */
@@ -298,9 +298,9 @@ int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	if (!(Ctrl->E.mode & BLK_DO_EXTEND4)) quantile[0] = Ctrl->T.quantile;	/* Just get the single quantile [median] */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
@@ -376,11 +376,11 @@ int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found; no output produced");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data points found inside the region; no output produced");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 
@@ -463,7 +463,7 @@ int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_report (GMT, GMT_MSG_NORMAL, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);

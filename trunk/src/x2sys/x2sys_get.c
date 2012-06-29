@@ -256,7 +256,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		include = GMT_memory (GMT, NULL, n_tracks, unsigned char);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
 				Return (EXIT_FAILURE);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -265,7 +265,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 				if ((p = strchr (line, '.'))) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Leg %s not in the data base\n", line);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Leg %s not in the data base\n", line);
 					continue;
 				}
 				include[k] = true;
@@ -356,7 +356,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, matrix);
 		GMT_free (GMT, include);
 		GMT_free (GMT, ids_in_bin);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
 		for (ii = n_tracks_found = 0; ii < n_tracks; ++ii) {
@@ -364,7 +364,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 				++n_tracks_found;
 		}
 		if (n_tracks_found) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Found %d tracks\n", n_tracks_found);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Found %d tracks\n", n_tracks_found);
 
 			printf ("# Search command: %s", gmt_module_name(GMT));
 			for (opt = options; opt; opt = opt->next)
@@ -386,7 +386,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		else
-			GMT_report (GMT, GMT_MSG_NORMAL, "Search found no tracks\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Search found no tracks\n");
 	}
 	
 	GMT_free (GMT, y_match);
@@ -394,7 +394,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "completed successfully\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "completed successfully\n");
 
 	Return (GMT_OK);
 }

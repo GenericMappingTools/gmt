@@ -177,7 +177,7 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 			case 'F':
 				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Must specify -F<out>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Must specify -F<out>\n");
 					n_errors++;
 					continue;
 				}
@@ -193,7 +193,7 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 						Ctrl->F.mode = false;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: Must specify t|s\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
 						n_errors++;
 						break;
 				}
@@ -335,7 +335,7 @@ int GMT_rotconverter (struct GMTAPI_CTRL *API, int mode, void *args)
 		else if (GMT_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot read file %s\n", opt->arg);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
 				Return (EXIT_FAILURE);
 			}
 			else {	/* Try to decode as a single rotation */
@@ -344,11 +344,11 @@ int GMT_rotconverter (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (k == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = true;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
 					Return (EXIT_FAILURE);
 				}
 				if (angle == 0.0) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Online rotation has zero opening angle\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Online rotation has zero opening angle\n");
 					Return (EXIT_FAILURE);
 				}
 				online_rot = true;

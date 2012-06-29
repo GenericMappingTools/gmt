@@ -270,14 +270,14 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 							if (opt->arg[1] && !GMT_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
+								GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
 								++n_errors;
 							}
 							break;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
 					++n_errors;
 				}
 				break;
@@ -295,7 +295,7 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 				if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 					if (sscanf (opt->arg, "%*s/%d", &sval) != 1) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Syntax is -N<tcol>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 						++n_errors;
 					}
 				}
@@ -318,7 +318,7 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 			case 'T':	/* Set output knots */
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->T.inc) != 3) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Suntax error -T option: Syntax is -T<start>/<stop>/<inc>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Suntax error -T option: Syntax is -T<start>/<stop>/<inc>\n");
 					++n_errors;
 				}
 				else {
@@ -468,7 +468,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
 
 	return (0);
 }
@@ -797,7 +797,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_report (GMT, GMT_MSG_FATAL, __VA_ARGS__); bailout (code);}
+#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_report (GMT, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_filter1d (struct GMTAPI_CTRL *API, int mode, void *args)
@@ -896,7 +896,7 @@ int GMT_filter1d (struct GMTAPI_CTRL *API, int mode, void *args)
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
@@ -946,7 +946,7 @@ int GMT_filter1d (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 				}
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Read %ld records from table %d, segment %ld\n", F.n_rows, tbl, seg);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Read %ld records from table %d, segment %ld\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
@@ -971,7 +971,7 @@ int GMT_filter1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 

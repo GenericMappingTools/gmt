@@ -292,7 +292,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 	FILE *fp;
 
 	if ((fp = x2sys_fopen (GMT, file, "r")) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find track list file %s in either current or X2SYS_HOME directories\n", line);
 		return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 	
@@ -372,7 +372,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 
 #ifdef SAVEFORLATER
 	if (Ctrl->I.file && x2sys_read_namedatelist (GMT, Ctrl->I.file, &trk_list, &start, &n_tracks) == X2SYS_NOERROR) {
-		GMT_report (GMT, GMT_MSG_FATAL, "ERROR -I: Problems reading %s\n", Ctrl->I.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -I: Problems reading %s\n", Ctrl->I.file);
 		Return (EXIT_FAILURE);	
 	}
 #endif
@@ -385,7 +385,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, S), "-C");
 	if (S->n_out_columns != 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: -C must specify a single column name\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -445,7 +445,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	fp = GMT->session.std[GMT_IN];
 	if (Ctrl->In.file && (fp = GMT_fopen (GMT, Ctrl->In.file, GMT->current.io.r_mode)) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Cannot open file %s\n", Ctrl->In.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot open file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);	
 	}
 	
@@ -503,7 +503,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			data[COL_WW][n_COE] = (Ctrl->W.active) ? in[n_active] : 1.0;	/* Weight */
 			if (GMT_is_dnan (data[COL_COE][n_COE])) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: COE == NaN skipped during reading\n");
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: COE == NaN skipped during reading\n");
 				continue;
 			}
 			n_COE++;
@@ -516,7 +516,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Check that IDs are all contained within 0 <= ID < n_tracks and that there are no gaps */
 		n_tracks2 = max_ID - min_ID + 1;
 		if (n_tracks && n_tracks2 != n_tracks) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: The ID numbers in the binary file %s are not compatible with the <trklist> length\n", Ctrl->In.file);
 			error = true;	
 		}
 		else {	/* Either no tracks read before or the two numbers did match properly */
@@ -527,7 +527,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 			for (k = 0; k < n_tracks && check[k]; k++);
 			GMT_free (GMT, check);
 			if (k < n_tracks) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: The ID numbers in the binary file %s to not completely cover the range 0 <= ID < n_tracks!\n", Ctrl->In.file);
 				error = true;
 			}
 		}
@@ -541,12 +541,12 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	else {	/* Ascii input with track names */
 		char file_TAG[GMT_TEXT_LEN64], file_column[GMT_TEXT_LEN64];
 		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
-			GMT_report (GMT, GMT_MSG_FATAL, "Read error in 1st line of track file\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");
 			Return (EXIT_FAILURE);
 		}
 		sscanf (&line[7], "%s %s", file_TAG, file_column);
 		if (strcmp (Ctrl->T.TAG, file_TAG) && strcmp (Ctrl->C.col, file_column)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: The TAG and column info in the ASCII file %s are not compatible with the -C -T options\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);	
 		}
 		while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {    /* Not yet EOF */
@@ -591,7 +591,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 			else
 				data[COL_WW][n_COE] = 1.0;
 			if (GMT_is_dnan (data[COL_COE][n_COE])) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: COE == NaN skipped during reading\n");
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: COE == NaN skipped during reading\n");
 				continue;
 			}
 			
@@ -608,7 +608,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 #ifdef SAVEFORLATER
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Track %s not in specified list of tracks [%s]\n", trk[i], Ctrl->I.file);
 						Return (EXIT_FAILURE);					
 					}
 #endif
@@ -625,7 +625,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	GMT_fclose (GMT, fp);
-	GMT_report (GMT, GMT_MSG_NORMAL, "Found %d COE records\n", n_COE);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %d COE records\n", n_COE);
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) data[i] = GMT_memory (GMT, data[i], n_COE, double);
 	data[COL_WW] = GMT_memory (GMT, data[COL_WW], n_COE, double);
 	
@@ -702,7 +702,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Get LS solution */
 
 	if ((ierror = GMT_gauss (GMT, N, b, m, m, zero_test, true))) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Error %d returned form GMT_gauss!\n", ierror);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Error %d returned form GMT_gauss!\n", ierror);
 		Return (EXIT_FAILURE);					
 	}
 	GMT_free (GMT, N);
@@ -727,7 +727,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	new_mean = Sx / Sw;
 	new_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Old mean and st.dev.: %g %g New mean and st.dev.: %g %g\n", old_mean, old_stdev, new_mean, new_stdev);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Old mean and st.dev.: %g %g New mean and st.dev.: %g %g\n", old_mean, old_stdev, new_mean, new_stdev);
 	
 	/* Write correction table */
 	

@@ -453,7 +453,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) error = true;
 
 		if (error) {
-			GMT_report (GMT, GMT_MSG_FATAL, "New WESN incompatible with old.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
 			Return (EXIT_FAILURE);
 		}
 
@@ -469,11 +469,11 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		fast_way = (fabs (fmod (Gout->header->inc[GMT_X] / Gin->header->inc[GMT_X], 1.0)) < GMT_SMALL && fabs (fmod (Gout->header->inc[GMT_Y] / Gin->header->inc[GMT_Y], 1.0)) < GMT_SMALL);
 
 		if (!fast_way) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your output grid spacing is such that filter-weights must\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your output grid spacing is such that filter-weights must\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "be recomputed for every output node, so expect this run to be slow.  Calculations\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "can be speeded up significantly if output grid spacing is chosen to be a multiple\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "of the input grid spacing.  If the odd output grid is necessary, consider using\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
 		}
 
 		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
@@ -544,9 +544,9 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter nx,ny = (%d %d)\n",
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter nx,ny = (%d %d)\n",
 			Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Filter type is %s.\n", filter_name[Ctrl->F.filter]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[Ctrl->F.filter]);
 
 		/* Compute nearest xoutput i-indices and shifts once */
 
@@ -604,7 +604,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		for (row_out = 0; row_out < Gout->header->ny; row_out++) {
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Processing output line %d\r", row_out);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
 			y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);
 			j_origin = GMT_grd_y_to_row (GMT, y_out, Gin->header);
 			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
@@ -796,7 +796,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					for (s = k = 0; s < Ctrl->N.n_sectors; s++) {
 						if (n_in_median[s]) {
-							if (n_in_median[s] >= wsize) GMT_report (GMT, GMT_MSG_NORMAL, "Exceed array size (%d > %d)!\n", n_in_median[s], wsize);
+							if (n_in_median[s] >= wsize) GMT_report (GMT, GMT_MSG_VERBOSE, "Exceed array size (%d > %d)!\n", n_in_median[s], wsize);
 #ifdef OBSOLETE
 							if (Ctrl->E.active) {
 								z_min = DBL_MAX;
@@ -900,29 +900,29 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 			}
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "\n");
 
 		/* At last, that's it!  Output: */
 
-		if (n_nan) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
+		if (n_nan) GMT_report (GMT, GMT_MSG_VERBOSE, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
 #ifdef OBSOLETE
-		if (Ctrl->E.active && n_bad_planes) GMT_report (GMT, GMT_MSG_NORMAL, "Unable to detrend data at %" PRIu64 " nodes\n", n_bad_planes);
+		if (Ctrl->E.active && n_bad_planes) GMT_report (GMT, GMT_MSG_VERBOSE, "Unable to detrend data at %" PRIu64 " nodes\n", n_bad_planes);
 #endif
-		if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d multiple modes found\n", GMT_n_multiples);
+		if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", GMT_n_multiples);
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Write filtered grid\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Write filtered grid\n");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
 			Return (API->error);
 		}
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Write scale grid\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Write scale grid\n");
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Sout) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 #endif
-		GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Done\n");
 
 		GMT_free (GMT, F. weight);
 		GMT_free (GMT, i_origin);
@@ -961,7 +961,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* check the crucial condition to run the program*/
 		if ((ip = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open file %s\n", Ctrl->In.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 
@@ -979,7 +979,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			err_sum += err_depth;
 			for (i = 1; i < Ctrl->Q.err_cols; i++) {
 				if (fscanf (ip, "%lf", &err_depth) != 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to read depths for column %d\n", i);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to read depths for column %d\n", i);
 					Return (EXIT_FAILURE);
 				}
 				err_workarray[i] = err_depth;

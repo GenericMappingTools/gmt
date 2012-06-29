@@ -84,13 +84,13 @@ void gmt_check_R_J (struct GMT_CTRL *C, double *clon)	/* Make sure -R and -J agr
 	if (C->current.map.is_world && lon0 != *clon) {
 		C->common.R.wesn[XLO] = *clon - 180.0;
 		C->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_report (C, GMT_MSG_NORMAL, "Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_report (C, GMT_MSG_VERBOSE, "Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 	}
 	else if (!C->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < C->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > C->common.R.wesn[XHI]) GMT_report (C, GMT_MSG_NORMAL, "Warning: Central meridian outside region\n");
+		if (lon0 > C->common.R.wesn[XHI]) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Central meridian outside region\n");
 	}
 }
 
@@ -2371,7 +2371,7 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 		err_flag += GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
 		err_flag += GMT_akima (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
 	}
-	if (err_flag) GMT_report (C, GMT_MSG_FATAL, "Error:  Interpolation failed in GMT_vrobinson?\n");
+	if (err_flag) GMT_report (C, GMT_MSG_NORMAL, "Error:  Interpolation failed in GMT_vrobinson?\n");
 }
 
 double gmt_robinson_spline (struct GMT_CTRL *C, double xp, double *x, double *y, double *c)

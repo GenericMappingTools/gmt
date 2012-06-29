@@ -157,7 +157,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 		else
 			strncpy (this_file, name, GMT_BUFSIZ);
 		if ((fp = GMT_fopen (GMT, this_file, "w")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Could not create file %s\n", this_file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Could not create file %s\n", this_file);
 			return (NULL);
 		}
 	}
@@ -466,12 +466,12 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 			ok = false;
 		}
 	}
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) GMT_message (GMT, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);
 	
 	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale[GMT_X];
 	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale[GMT_Y];
 	
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		double rect[4];
 		sprintf (format, "%s/%s/%s/%s", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_memcpy (rect, GMT->current.proj.rect, 4, double);
@@ -574,13 +574,13 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 					sprintf (GMT->current.io.segment_header, "%d %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
-				GMT_report (GMT, GMT_MSG_NORMAL, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
 				last_xmap = -DBL_MAX;
 				last_ymap = -DBL_MAX;
 				n_segments++;
 			}
 			else if (m_button == 1)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Segment header buttons only active if -M is set (ignored)\n");
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Segment header buttons only active if -M is set (ignored)\n");
 			else
 				tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 				
@@ -593,7 +593,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_xy_to_geo (GMT, &out[GMT_X], &out[GMT_Y], xmap, ymap);
 			n_read++;
 			if (Ctrl->S.active && GMT_map_outside (GMT, out[GMT_X], out[GMT_Y])) continue;
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 				x_in_min = MIN (x_in_min, xmap);
 				x_in_max = MAX (x_in_max, xmap);
 				y_in_min = MIN (y_in_min, ymap);
@@ -609,7 +609,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (Ctrl->Z.active[V_ID]) out[val_pos] = z_val;
 			if (Ctrl->Z.active[K_ID]) out[key_pos] = (double)button;
 			GMT->current.io.output (GMT, fp, n_expected_fields, out);
-			if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 				(Ctrl->Z.active[V_ID]) ? GMT_message (GMT, format, out[GMT_X], out[GMT_Y], z_val, button) : GMT_message (GMT, format, out[GMT_X], out[GMT_Y], button);
 			}
 			n++;
@@ -624,7 +624,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && n_read > 0) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && n_read > 0) {
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_message (GMT, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);

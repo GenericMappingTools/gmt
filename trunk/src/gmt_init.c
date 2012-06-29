@@ -66,7 +66,7 @@
 
 #define GMT_def(case_val) * C->session.u2u[GMT_INCH][GMT_unit_lookup(C, C->current.setting.given_unit[case_val], C->current.setting.proj_length_unit)], C->current.setting.given_unit[case_val]
 
-#define Return { GMT_report (C, GMT_MSG_FATAL, "Found no history for option -%s\n", str); return (-1); }
+#define Return { GMT_report (C, GMT_MSG_NORMAL, "Found no history for option -%s\n", str); return (-1); }
 
 #define GMT_more_than_once(C,active) (GMT_check_condition (C, active, "Warning: Option -%c given more than once\n", option))
 
@@ -466,10 +466,10 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t-V Change the verbosity level (currently %d).\n", C->current.setting.verbose);
 			GMT_message (C, "\t   Choose among 6 levels; each level adds more messages:\n");
 			GMT_message (C, "\t     q - Quiet, not even fatal error messages.\n");
-			GMT_message (C, "\t     f - Fatal error messages.\n");
-			GMT_message (C, "\t     c - Compatibility warnings [Default when no -V is used].\n");
-			GMT_message (C, "\t     n - Normal progress messages [Default when -V is used].\n");
-			GMT_message (C, "\t     v - Verbose progress messages.\n");
+			GMT_message (C, "\t     n - Normal verbosity: only error messages.\n");
+			GMT_message (C, "\t     c - Also produce compatibility warnings [Default when no -V is used].\n");
+			GMT_message (C, "\t     v - Verbose progress messages [Default when -V is used].\n");
+			GMT_message (C, "\t     l - Long verbose erbose progress messages.\n");
 			GMT_message (C, "\t     d - Debugging messages.\n");
 			break;
 
@@ -730,7 +730,7 @@ void GMT_cont_syntax (struct GMT_CTRL *C, unsigned int indent, unsigned int kind
 
 void GMT_inc_syntax (struct GMT_CTRL *C, char option, bool error)
 {
-	if (error) GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (error) GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
 	GMT_message (C, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	GMT_message (C, "\t   For geographic regions in degrees you can optionally append units\n");
@@ -744,7 +744,7 @@ void GMT_inc_syntax (struct GMT_CTRL *C, char option, bool error)
 
 void GMT_fill_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c<fill> %s Specify <fill> as one of:\n", option, string);
 	GMT_message (C, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
 	GMT_message (C, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
@@ -758,7 +758,7 @@ void GMT_fill_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_pen_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c ", option);
 	GMT_message (C, string, GMT_putpen (C, C->current.setting.map_default_pen));
 	GMT_message (C, "\n\t   <pen> is a comma-separated list of three optional items in the order:\n");
@@ -779,7 +779,7 @@ void GMT_pen_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_rgb_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c<color> %s Specify <color> as one of:\n", option, string);
 	GMT_message (C, "\t   1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
 	GMT_message (C, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
@@ -790,7 +790,7 @@ void GMT_rgb_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_mapscale_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Use -%cx to specify Cartesian coordinates instead.  Scale is calculated at latitude <slat>;\n", option);
 	GMT_message (C, "\t   optionally give longitude <slon> [Default is central longitude].  Give scale <length> and\n");
@@ -802,7 +802,7 @@ void GMT_mapscale_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_GSHHS_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 	GMT_message (C, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
@@ -812,7 +812,7 @@ void GMT_GSHHS_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_maprose_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Use -%cx to specify Cartesian coordinates instead.  -Tf draws a \"fancy\" rose [Default is plain].\n", option);
 	GMT_message (C, "\t   Give rose <diameter> and optionally the west, east, south, north labels desired [W,E,S,N].\n");
@@ -827,7 +827,7 @@ void GMT_maprose_syntax (struct GMT_CTRL *C, char option, char *string)
 
 void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
 {
-	if (string[0] == ' ') GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
 	GMT_message (C, "\t   Append e (meter), f (feet), k (km), M (mile), n (nautical mile),\n");
 	GMT_message (C, "\t   d (arc degree), m (arc minute), or s (arc second) [e].\n");
@@ -858,7 +858,7 @@ void GMT_syntax (struct GMT_CTRL *C, char option)
 
 	char *u = C->session.unit_name[C->current.setting.proj_length_unit];
 
-	GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 
 	switch (option) {
 
@@ -1140,7 +1140,7 @@ int GMT_default_error (struct GMT_CTRL *C, char option)
 			break;
 	}
 
-	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized option -%c\n", option);
+	if (error) GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognized option -%c\n", option);
 	return (error);
 }
 
@@ -1299,12 +1299,12 @@ int gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 		s[0] = '\0';	/* Temporarily truncate off the geometry */
 		C->common.a.output = true;	/* We are producing, not reading an OGR/GMT file */
 		if (C->current.setting.io_seg_marker[GMT_OUT] != '>') {
-			GMT_report (C, GMT_MSG_NORMAL, "Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_OUT]);
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning -a: OGR/GMT requires > as output segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_OUT]);
 			C->current.setting.io_seg_marker[GMT_OUT] = '>';
 		}
 	}
 	else if (C->current.setting.io_seg_marker[GMT_IN] != '>') {
-		GMT_report (C, GMT_MSG_NORMAL, "Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_IN]);
+		GMT_report (C, GMT_MSG_VERBOSE, "Warning -a: OGR/GMT requires < as input segment marker; your selection of %c will be overruled by >\n", C->current.setting.io_seg_marker[GMT_IN]);
 		C->current.setting.io_seg_marker[GMT_IN] = '>';
 	}
 	while ((GMT_strtok (arg, ",", &pos, p))) {	/* Another col=name argument */
@@ -1363,12 +1363,12 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 				swab = (p[1] != GMT_ENDIAN);
 				break;	/* Must swap */
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Bad endian modifier +%c\n", (int)p[1]);
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -b: Bad endian modifier +%c\n", (int)p[1]);
 				return (EXIT_FAILURE);
 				break;
 		}
 		if (strchr (text, 'w')) {	/* Cannot do individual swap when endian has been indicated */
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Cannot use both w and endian modifiers\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error -b: Cannot use both w and endian modifiers\n");
 			return (EXIT_FAILURE);
 		}
 		endian_swab = true;
@@ -1421,7 +1421,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 						swab = true;
 					set = true;
 					if (ncol == 0) {
-						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be specified\n");
+						GMT_report (C, GMT_MSG_NORMAL, "Syntax error -b: Column count must be specified\n");
 						return (EXIT_FAILURE);
 					}
 					swap_flag = (swab) ? id + 1 : 0;	/* 0 for no swap, 1 if swap input, 2 if swap output */
@@ -1443,7 +1443,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 				case '7': case '8': case '9':
 					ncol = atoi (&text[i]);
 					if (ncol < 1) {
-						GMT_report (C, GMT_MSG_FATAL, "Syntax error -b: Column count must be > 0\n");
+						GMT_report (C, GMT_MSG_NORMAL, "Syntax error -b: Column count must be > 0\n");
 						return (EXIT_FAILURE);
 					}
 					while (text[++i] && isdigit ((int)text[i]))
@@ -1457,7 +1457,7 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 					break;
 				default:
 					error = true;
-					GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -b argument [%s]\n", text);
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -b argument [%s]\n", text);
 					GMT_syntax (C, 'b');
 					break;
 			}
@@ -1561,7 +1561,7 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 				code = GMT_IS_FLOAT;
 				break;
 			default:	/* No suffix, consider it an error */
-				GMT_report (C, GMT_MSG_FATAL, "Error: Malformed -f argument [%s]\n", arg);
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s]\n", arg);
 				return 1;
 				break;
 		}
@@ -1616,7 +1616,7 @@ int gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 			i = strlen (p) - 1;
 			convert = (p[i] == 'l') ? 2 : 1;
 			i = sscanf (&c[1], "%[^/]/%[^l]", txt_a, txt_b);
-			if (i == 0) GMT_report (C, GMT_MSG_FATAL, "-i...s contains bad scale info\n");
+			if (i == 0) GMT_report (C, GMT_MSG_NORMAL, "-i...s contains bad scale info\n");
 			scale = atof (txt_a);
 			if (i == 2) offset = atof (txt_b);
 #else
@@ -1754,15 +1754,15 @@ int GMT_check_binary_io (struct GMT_CTRL *C, unsigned int n_req) {
 
 	if (C->common.b.ncol[GMT_IN] == 0) C->common.b.ncol[GMT_IN] = n_req;
 	if (C->common.b.ncol[GMT_IN] == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Must specify number of columns in binary input data (-bi)\n");
 		n_errors++;
 	}
 	else if (n_req > C->common.b.ncol[GMT_IN]) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error: Binary input data (-bi) provides %d but must have at least %d columns\n", C->common.b.ncol[GMT_IN], n_req);
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Binary input data (-bi) provides %d but must have at least %d columns\n", C->common.b.ncol[GMT_IN], n_req);
 		n_errors++;
 	}
 
-	GMT_report (C, GMT_MSG_NORMAL, "Provides %d, expects %d-column binary data\n", C->common.b.ncol[GMT_IN], n_req);
+	GMT_report (C, GMT_MSG_VERBOSE, "Provides %d, expects %d-column binary data\n", C->common.b.ncol[GMT_IN], n_req);
 
 	return (n_errors);
 }
@@ -1836,9 +1836,9 @@ int gmt_parse_colon_option (struct GMT_CTRL *C, char *item) {
 		else if (GMT_is_geographic (C, way))	/* Lon/lat becomes lat/lon */
 			C->current.setting.io_lonlat_toggle[way] = true;
 		else if (C->current.io.col_type[way][GMT_X] == GMT_IS_LAT && C->current.io.col_type[way][GMT_Y] == GMT_IS_LON)	/* Already lat/lon! */
-			GMT_report (C, GMT_MSG_FATAL, "Warning: -:%s given but %s order already set by -f; -:%s ignored.\n", mode[way+off], dir[way], mode[way+off]);
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: -:%s given but %s order already set by -f; -:%s ignored.\n", mode[way+off], dir[way], mode[way+off]);
 		else {
-			GMT_report (C, GMT_MSG_FATAL, "Error: -:%s given but %s first two columns do not hold x/y or lon/lat\n", mode[way+off], dir[way]);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: -:%s given but %s first two columns do not hold x/y or lon/lat\n", mode[way+off], dir[way]);
 			error++;
 		}
 	}
@@ -1913,7 +1913,7 @@ int gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 
 	if (!txt && !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
 	if ((i = C->common.g.n_methods) == GMT_N_GAP_METHODS) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot specify more than %d gap criteria\n", GMT_N_GAP_METHODS);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot specify more than %d gap criteria\n", GMT_N_GAP_METHODS);
 		return (1);
 	}
 
@@ -1966,14 +1966,14 @@ int gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 			c = k;
 			while (txt[k] && isdigit ((int)txt[k])) k++;	/* Skip past until we find z */
 			if (txt[k] != 'z') {
-				GMT_report (C, GMT_MSG_FATAL, "Error: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
 				return (1);
 			}
 			C->common.g.method[i] = (txt[k+1] == '-') ? GMT_NEGGAP_IN_COL : ((txt[k+1] == '+') ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
 			C->common.g.col[i] = atoi (&txt[c]);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
 			return (1);
 			break;
 	}
@@ -2011,7 +2011,7 @@ int gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 	k++;	/* Skip to start of gap value */
 	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip sign */
 	if ((C->common.g.gap[i] = atof (&txt[k])) == 0.0) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Gap value must be non-zero\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Gap value must be non-zero\n");
 		return (1);
 	}
 	if (C->common.g.method[i] == GMT_GAP_IN_GDIST) {	/* Convert any gap given to meters */
@@ -2078,7 +2078,7 @@ int gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 		case 'c':
 			C->common.n.interpolant = BCR_BICUBIC; break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Use %s to set 2-D grid interpolation mode.\n", GMT_n_OPT);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Use %s to set 2-D grid interpolation mode.\n", GMT_n_OPT);
 			return (1);
 			break;
 	}
@@ -2097,7 +2097,7 @@ int gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 					switch (C->common.n.BC[j]) {
 						case 'g': case 'x': case 'y': break;
 						default:
-							GMT_report (C, GMT_MSG_FATAL, "Error -n: +b<BC> requires <BC> to be g or p[x|y], n[x|y]\n");
+							GMT_report (C, GMT_MSG_NORMAL, "Error -n: +b<BC> requires <BC> to be g or p[x|y], n[x|y]\n");
 							break;
 					}
 				}
@@ -2105,12 +2105,12 @@ int gmt_parse_n_option (struct GMT_CTRL *C, char *item)
 			case 't':	/* Set interpolation threshold */
 				C->common.n.threshold = atof (&p[1]);
 				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error -n: Interpolation threshold must be in [0,1] range\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Error -n: Interpolation threshold must be in [0,1] range\n");
 					return (1);
 				}
 				break;
 			default:	/* Bad modifier */
-				GMT_report (C, GMT_MSG_FATAL, "Error: Use %s to set 2-D grid interpolation mode.\n", GMT_n_OPT);
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Use %s to set 2-D grid interpolation mode.\n", GMT_n_OPT);
 				return (1);
 				break;
 		}
@@ -2124,7 +2124,7 @@ int gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 	double az, el, z;
 	char p[GMT_TEXT_LEN256], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 
-	if (!C->common.J.active) GMT_report (C, GMT_MSG_FATAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
+	if (!C->common.J.active) GMT_report (C, GMT_MSG_NORMAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
 	switch (item[0]) {
 		case 'x':
 			C->current.proj.z_project.view_plane = GMT_X + GMT_ZW;
@@ -2143,11 +2143,11 @@ int gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 			break;
 	}
 	if ((k = sscanf (&item[l], "%lf/%lf/%lf", &az, &el, &z)) < 2) {
-		GMT_report (C, GMT_MSG_FATAL, "Error in -p (%s): Syntax is %s\n", item, GMT_p_OPT);
+		GMT_report (C, GMT_MSG_NORMAL, "Error in -p (%s): Syntax is %s\n", item, GMT_p_OPT);
 		return 1;
 	}
 	if (el <= 0.0 || el > 90.0) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error -p option: Elevation must be in 0-90 range\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error -p option: Elevation must be in 0-90 range\n");
 		return 1;
 	}
 	C->current.proj.z_project.view_azimuth = az;
@@ -2167,7 +2167,7 @@ int gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 		switch (p[0]) {
 			case 'v':	/* Specify fixed view point in 2-D projected coordinates */
 				if (sscanf (&p[1], "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in -p (%s): Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
+					GMT_report (C, GMT_MSG_NORMAL, "Error in -p (%s): Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
 					return 1;
 				}
 				C->current.proj.z_project.view_x = GMT_to_inch (C, txt_a);
@@ -2176,7 +2176,7 @@ int gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 				break;
 			case 'w':	/* Specify fixed World point in user's coordinates */
 				if (sscanf (&p[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) < 2) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in -p: (%s)  Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
+					GMT_report (C, GMT_MSG_NORMAL, "Error in -p: (%s)  Syntax is -p<az>/<el>[/<z>][+wlon0/lat0[/z0]][+vx0[%s]/y0[%s]]\n", p, GMT_DIM_UNITS, GMT_DIM_UNITS);
 					return 1;
 				}
 				error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf (C, txt_a, C->current.io.col_type[GMT_IN][GMT_X], &C->current.proj.z_project.world_x), txt_a);
@@ -2185,7 +2185,7 @@ int gmt_parse_p_option (struct GMT_CTRL *C, char *item)
 				C->current.proj.z_project.world_given = true;
 				break;
 			default:	/* If followed by an integer we assume this might be an exponential notation picked up by mistake */
-				if (!isdigit ((int)p[0])) GMT_report (C, GMT_MSG_FATAL, "Warning -p: Unrecognized modifier %s (ignored)\n", p);
+				if (!isdigit ((int)p[0])) GMT_report (C, GMT_MSG_NORMAL, "Warning -p: Unrecognized modifier %s (ignored)\n", p);
 				break;
 		}
 	}
@@ -2223,7 +2223,7 @@ bool gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	/* Count and set array of NaN-columns */
 	for (i = n = 0; i < GMT_MAX_COLUMNS; i++) if (tmp[i] != -1) C->current.io.io_nan_col[n++] = i;
 	if (error || n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error -s option: Unable to decode columns from %s\n", item);
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error -s option: Unable to decode columns from %s\n", item);
 		return true;
 	}
 	C->current.io.io_nan_ncols = n;
@@ -2234,10 +2234,10 @@ bool gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 int gmt_parse_V_option (struct GMT_CTRL *C, char arg) {
 	switch (arg) {
 		case 'q': case '0': C->current.setting.verbose = GMT_MSG_QUIET; break;
-		case 'f':			C->current.setting.verbose = GMT_MSG_FATAL; break;
+		case 'n':           C->current.setting.verbose = GMT_MSG_NORMAL; break;
 		case 'c': case '1': C->current.setting.verbose = GMT_MSG_COMPAT; break;
-		case 'n': case '2': C->current.setting.verbose = GMT_MSG_NORMAL; break;
-		case 'v': case '3': C->current.setting.verbose = GMT_MSG_VERBOSE; break;
+		case 'v': case '2': C->current.setting.verbose = GMT_MSG_VERBOSE; break;
+		case 'l': case '3': C->current.setting.verbose = GMT_MSG_LONG_VERBOSE; break;
 		case 'd': case '4': C->current.setting.verbose = GMT_MSG_DEBUG; break;
 		default: return true;
 	}
@@ -2334,7 +2334,7 @@ void GMT_setdefaults (struct GMT_CTRL *C, struct GMT_OPTION *options)
 
 	n_errors += (param != NULL);	/* param should be NULL */
 
-	if (n_errors) GMT_report (C, GMT_MSG_FATAL, " %d conversion errors\n", n_errors);
+	if (n_errors) GMT_report (C, GMT_MSG_NORMAL, " %d conversion errors\n", n_errors);
 }
 
 bool gmt_true_false_or_error (char *value, bool *answer)
@@ -2372,10 +2372,10 @@ int gmt_get_time_language (struct GMT_CTRL *C)
 
 	GMT_getsharepath (C, "time", C->current.setting.time_language, ".d", file);
 	if ((fp = fopen (file, "r")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: Could not load time language %s - revert to us (English)!\n", C->current.setting.time_language);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Could not load time language %s - revert to us (English)!\n", C->current.setting.time_language);
 		GMT_getsharepath (C, "time", "us", ".d", file);
 		if ((fp = fopen (file, "r")) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find %s!\n", file);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not find %s!\n", file);
 			GMT_exit (EXIT_FAILURE);
 		}
 		strcpy (C->current.setting.time_language, "us");
@@ -2407,7 +2407,7 @@ int gmt_get_time_language (struct GMT_CTRL *C)
 	}
 	fclose (fp);
 	if (! (nm == 78 && nw == 28 && nu == 1)) {	/* Sums of 1-12, 1-7, and 1, respectively */
-		GMT_report (C, GMT_MSG_FATAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Mismatch between expected and actual contents in %s!\n", file);
 		GMT_exit (EXIT_FAILURE);
 	}
 	return (GMT_NOERROR);
@@ -2448,7 +2448,7 @@ unsigned int gmt_load_user_media (struct GMT_CTRL *C) {	/* Load any user-specifi
 		if (line[0] == '#' || line[0] == '\n') continue;	/* Skip comments and blank lines */
 
 		if (sscanf (line, "%s %lg %lg", media, &w, &h) != 3) {
-			GMT_report (C, GMT_MSG_FATAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
+			GMT_report (C, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -2969,7 +2969,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_MAP_LINE_STEP:
 			if ((C->current.setting.map_line_step = GMT_to_inch (C, value)) <= 0.0) {
 				C->current.setting.map_line_step = 0.01;
-				GMT_report (C, GMT_MSG_FATAL, "Warning: %s <= 0, reset to %g %s\n", keyword, C->current.setting.map_line_step, C->session.unit_name[GMT_INCH]);
+				GMT_report (C, GMT_MSG_NORMAL, "Warning: %s <= 0, reset to %g %s\n", keyword, C->current.setting.map_line_step, C->session.unit_name[GMT_INCH]);
 			}
 			break;
 #ifdef GMT_COMPAT
@@ -3327,7 +3327,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_TRANSPARENCY:
-			GMT_report (C, GMT_MSG_FATAL, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
 			break;
 #endif
 		case GMTCASE_PS_TRANSPARENCY:
@@ -3677,16 +3677,16 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		default:
 			error = true;
 #ifdef GMT_COMPAT
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error: Unrecognized keyword %s.\n", keyword);
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword %s.\n", keyword);
 #else
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error: Unrecognized keyword %s. You may have been using a deprecated GMT3 or GMT4 keyword.\nChange keyword or recompile with GMT_COMPAT=true. " GMT_COMPAT_INFO, keyword);
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword %s. You may have been using a deprecated GMT3 or GMT4 keyword.\nChange keyword or recompile with GMT_COMPAT=true. " GMT_COMPAT_INFO, keyword);
 #endif
 			break;
 	}
 
 	if (len) C->current.setting.given_unit[case_val] = value[len-1];
 
-	if (error && case_val >= 0) GMT_report (C, GMT_MSG_FATAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
+	if (error && case_val >= 0) GMT_report (C, GMT_MSG_NORMAL, "Syntax error: %s given illegal value (%s)!\n", keyword, value);
 	return ((error) ? 1 : 0);
 }
 
@@ -4195,7 +4195,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_TRANSPARENCY:
-			GMT_report (C, GMT_MSG_FATAL, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Transparency is now part of pen and fill specifications.  TRANSPARENCY is ignored\n");
 			break;
 #endif
 		case GMTCASE_PS_TRANSPARENCY:
@@ -4382,9 +4382,9 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_GMT_VERBOSE:
 			switch (C->current.setting.verbose) {
 				case GMT_MSG_QUIET:		strcpy (value, "quiet");	break;
-				case GMT_MSG_FATAL:		strcpy (value, "fatal");	break;
-				case GMT_MSG_NORMAL:	strcpy (value, "normal");	break;
+				case GMT_MSG_NORMAL:		strcpy (value, "normal");	break;
 				case GMT_MSG_VERBOSE:	strcpy (value, "verbose");	break;
+				case GMT_MSG_LONG_VERBOSE:	strcpy (value, "long_verbose");	break;
 				case GMT_MSG_DEBUG:		strcpy (value, "debug");	break;
 				default:				strcpy (value, "compat");	break;
 			}
@@ -4441,7 +4441,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			break;
 
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
 			break;
 	}
 	return (value);
@@ -4471,7 +4471,7 @@ int GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	if (file[0] == '-' && !file[1])
 		fpo = C->session.std[GMT_OUT];
 	else if ((fpo = fopen (file, "w")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Could not create file %s\n", file);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Could not create file %s\n", file);
 		return (-1);
 	}
 
@@ -4481,7 +4481,7 @@ int GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	if (access (line, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (GMT_getuserpath (C, "conf/gmt.conf", line) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not find system defaults file - Aborting.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 	}
@@ -4513,7 +4513,7 @@ int GMT_savedefaults (struct GMT_CTRL *C, char *file)
 	fclose (fpi);
 	if (fpo != C->session.std[GMT_OUT]) fclose (fpo);
 
-	if (error) GMT_report (C, GMT_MSG_FATAL, "Error: %d conversion errors while writing gmt.conf\n", error);
+	if (error) GMT_report (C, GMT_MSG_NORMAL, "Error: %d conversion errors while writing gmt.conf\n", error);
 
 	return (0);
 }
@@ -4688,7 +4688,7 @@ double GMT_convert_units (struct GMT_CTRL *C, char *string, unsigned int default
 	given_unit = GMT_unit_lookup (C, c, default_unit);	/* Will warn if c is not 0, 'c', 'i', 'p' */
 
 	if (!GMT_is_valid_number (string))
-		GMT_report (C, GMT_MSG_FATAL, "Warning: %s not a valid number and may not be decoded properly.\n", string);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: %s not a valid number and may not be decoded properly.\n", string);
 
 	value = atof (string) * C->session.u2u[given_unit][target_unit];
 	if (have_unit) string[len-1] = (char)C->session.unit_name[given_unit][0];	/* Put back the (implied) given unit */
@@ -4714,7 +4714,7 @@ unsigned int GMT_unit_lookup (struct GMT_CTRL *C, int c, unsigned int unit)
 			unit = GMT_PT;
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Length unit %c not supported - revert to default unit [%s]\n", (int)c, C->session.unit_name[unit]);
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: Length unit %c not supported - revert to default unit [%s]\n", (int)c, C->session.unit_name[unit]);
 			break;
 	}
 
@@ -4758,7 +4758,7 @@ void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode, char **keys, 
 		entry = GMT_hash (C, keys[i], n_hash);
 		next = hashnode[entry].n_id;
 		if (next == GMT_HASH_MAXDEPTH) {
-			GMT_report (C, GMT_MSG_FATAL, "%s makes hash-depth exceed hard-wired limit of %d - increment GMT_HASH_MAXDEPTH in gmt_hash.h and recompile GMT\n", keys[i], GMT_HASH_MAXDEPTH);
+			GMT_report (C, GMT_MSG_NORMAL, "%s makes hash-depth exceed hard-wired limit of %d - increment GMT_HASH_MAXDEPTH in gmt_hash.h and recompile GMT\n", keys[i], GMT_HASH_MAXDEPTH);
 			GMT_exit (EXIT_FAILURE);
 		}
 		hashnode[entry].key[next] = keys[i];
@@ -4818,7 +4818,7 @@ int GMT_get_ellipsoid (struct GMT_CTRL *C, char *name)
 			&C->current.setting.ref_ellipsoid[i].date, &C->current.setting.ref_ellipsoid[i].eq_radius,
 			&pol_radius, &C->current.setting.ref_ellipsoid[i].flattening);
 		if (n != 5) {
-			GMT_report (C, GMT_MSG_FATAL, "Error decoding user ellipsoid parameters (%s)\n", line);
+			GMT_report (C, GMT_MSG_NORMAL, "Error decoding user ellipsoid parameters (%s)\n", line);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -4827,11 +4827,11 @@ int GMT_get_ellipsoid (struct GMT_CTRL *C, char *name)
 			/* zero flattening means we must compute flattening from the polar and equatorial radii: */
 
 			C->current.setting.ref_ellipsoid[i].flattening = 1.0 - (pol_radius / C->current.setting.ref_ellipsoid[i].eq_radius);
-			GMT_report (C, GMT_MSG_NORMAL, "user-supplied ellipsoid has implicit flattening of %.8f\n", C->current.setting.ref_ellipsoid[i].flattening);
+			GMT_report (C, GMT_MSG_VERBOSE, "user-supplied ellipsoid has implicit flattening of %.8f\n", C->current.setting.ref_ellipsoid[i].flattening);
 		}
 		/* else check consistency: */
 		else if ((slop = fabs (C->current.setting.ref_ellipsoid[i].flattening - 1.0 + (pol_radius/C->current.setting.ref_ellipsoid[i].eq_radius))) > 1.0e-8) {
-			GMT_report (C, GMT_MSG_NORMAL, "Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning: Possible inconsistency in user ellipsoid parameters (%s) [off by %g]\n", line, slop);
 		}
 		return (i);
 	}
@@ -4931,7 +4931,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (line[0] == '#' || line[0] == '\n') continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
-			GMT_report (C, GMT_MSG_FATAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
+			GMT_report (C, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -4940,7 +4940,7 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 		C->session.shorthand[n].suffix = strdup (a);
 		id = GMT_grd_format_decoder (C, b);
 		if (id == GMT_GRDIO_UNKNOWN_ID) {
-			GMT_report (C, GMT_MSG_FATAL, "Unknown shorthand format [%s]\n", file, b);
+			GMT_report (C, GMT_MSG_NORMAL, "Unknown shorthand format [%s]\n", file, b);
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->session.shorthand[n].id = id;
@@ -5365,7 +5365,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 			C->session.SHAREDIR = strdup (path);
 		else {
 			/* Still not found */
-			GMT_report (C, GMT_MSG_FATAL,
+			GMT_report (C, GMT_MSG_NORMAL,
 				"Error: Could not locate share directory that matches the current GMT version %s.\n",
 				GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 			GMT_exit (EXIT_FAILURE);
@@ -5384,7 +5384,7 @@ void GMT_set_env (struct GMT_CTRL *C)
 		C->session.HOMEDIR = strdup (this);
 #endif
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Could not determine home directory!\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Could not determine home directory!\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	DOS_path_fix (C->session.HOMEDIR);
@@ -5416,9 +5416,9 @@ void GMT_set_env (struct GMT_CTRL *C)
 
 	if ((this = getenv ("GMT_CPTDIR")) != NULL) {
 		/* GMT_CPTDIR was set */
-		GMT_report (C, GMT_MSG_FATAL, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
-		GMT_report (C, GMT_MSG_FATAL, "Warning: System-wide color tables are in %s/cpt.\n", C->session.SHAREDIR);
-		GMT_report (C, GMT_MSG_FATAL, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", C->session.USERDIR);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: System-wide color tables are in %s/cpt.\n", C->session.SHAREDIR);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Use GMT_USERDIR (%s) instead and place user-defined color tables there.\n", C->session.USERDIR);
 	}
 #endif
 
@@ -5438,8 +5438,8 @@ void GMT_set_env (struct GMT_CTRL *C)
 	if ((this = getenv ("GMT_TMPDIR")) != NULL) {
 		/* GMT_TMPDIR was set */
 		if (access (this, R_OK|W_OK|X_OK)) {
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
-			GMT_report (C, GMT_MSG_FATAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			C->session.TMPDIR = NULL;
 		}
 		else
@@ -5563,23 +5563,23 @@ int gmt_strip_colonitem (struct GMT_CTRL *C, int axis, const char *in, const cha
 		strcpy (out, in);
 
 	if (error) {	/* Problems with decoding */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Missing terminating colon in -B string %c-component %s\n", str[axis], in);
+		GMT_report (C, GMT_MSG_NORMAL, "ERROR: Missing terminating colon in -B string %c-component %s\n", str[axis], in);
 		return (1);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":.")) {	/* Problems with decoding title */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one title in -B string %c-component %s\n", str[axis], in);
+		GMT_report (C, GMT_MSG_NORMAL, "ERROR: More than one title in -B string %c-component %s\n", str[axis], in);
 		return (1);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":,")) {	/* Problems with decoding unit */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one unit string in -B %c-component %s\n", str[axis], in);
+		GMT_report (C, GMT_MSG_NORMAL, "ERROR: More than one unit string in -B %c-component %s\n", str[axis], in);
 		return (1);
 	}
 	if (strstr (out, pattern) && !strcmp (pattern, ":=")) {	/* Problems with decoding prefix */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one prefix string in  -B component %s\n", in);
+		GMT_report (C, GMT_MSG_NORMAL, "ERROR: More than one prefix string in  -B component %s\n", in);
 		return (1);
 	}
 	if (strstr (out, pattern)) {	/* Problems with decoding label */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: More than one label string in  -B component %s\n", in);
+		GMT_report (C, GMT_MSG_NORMAL, "ERROR: More than one label string in  -B component %s\n", in);
 		return (1);
 	}
 #ifdef _WIN32
@@ -5624,7 +5624,7 @@ int gmt_split_info_strings (struct GMT_CTRL *C, const char *in, char *x_info, ch
 	if (n_slash) C->current.map.frame.slash = true;
 
 	if (n_slash == 3) {
-		GMT_report (C, GMT_MSG_FATAL, "Error splitting -B string %s\n", in);
+		GMT_report (C, GMT_MSG_NORMAL, "Error splitting -B string %s\n", in);
 		return (1);
 	}
 
@@ -5680,7 +5680,7 @@ int gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, int *n_i
 					n_int[3]++;
 					break;
 				default:
-					GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognixed type (%c) in custom file %s.\n", type[k], A->file_custom);
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognixed type (%c) in custom file %s.\n", type[k], A->file_custom);
 					n_errors++;
 					break;
 			}
@@ -5688,7 +5688,7 @@ int gmt_init_custom_annot (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, int *n_i
 	}
 	GMT_fclose (C, fp);
 	if (n_int[0] && n_int[1]) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
 		n_errors++;
 	}
 	return (n_errors);
@@ -5707,7 +5707,7 @@ int gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, char f
 
 	/* Decode interval, get pointer to next segment */
 	if ((val = strtod (t, &s)) < 0.0 && C->current.proj.xyz_projection[A->id] != GMT_LOG10) {	/* Interval must be >= 0 */
-		GMT_report (C, GMT_MSG_FATAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
+		GMT_report (C, GMT_MSG_NORMAL, "ERROR: Negative interval in -B option (%c-component, %c-info): %s\n", axis, flag, in);
 		return (3);
 	}
 	if (s[0] && (s[0] == '-' || s[0] == '+')) {	/* Phase shift information given */
@@ -5732,7 +5732,7 @@ int gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, char f
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
 		if (GMT_verify_time_step (C, lrint (val), unit)) GMT_exit (EXIT_FAILURE);
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
-			GMT_report (C, GMT_MSG_FATAL, "ERROR: Time step interval (%g) must be an integer\n", val);
+			GMT_report (C, GMT_MSG_NORMAL, "ERROR: Time step interval (%g) must be an integer\n", val);
 			GMT_exit (EXIT_FAILURE);
 		}
 	}
@@ -5780,14 +5780,14 @@ int gmt_set_titem (struct GMT_CTRL *C, struct GMT_PLOT_AXIS *A, char *in, char f
 			I = &A->item[GMT_GRID_LOWER];
 			break;
 		default:	/* Bad flag should never get here */
-			GMT_report (C, GMT_MSG_FATAL, "Bad flag (%c) passed to gmt_set_titem\n", flag);
+			GMT_report (C, GMT_MSG_NORMAL, "Bad flag (%c) passed to gmt_set_titem\n", flag);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
 
 	if (phase != 0.0) A->phase = phase;	/* phase must apply to entire axis */
 	if (I->active) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: Axis sub-item %c set more than once (typo?)\n", flag);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Axis sub-item %c set more than once (typo?)\n", flag);
 		return (GMT_NOERROR);
 	}
 #ifdef GMT_COMPAT
@@ -5854,7 +5854,7 @@ int gmt_decode_tinfo (struct GMT_CTRL *C, int axis, char flag, char *in, struct 
 			C->current.map.frame.draw = true;
 		}
 		else
-			GMT_report (C, GMT_MSG_FATAL, "ERROR: Cannot access custom file in -B string %c-component %s\n", str[axis], in);
+			GMT_report (C, GMT_MSG_NORMAL, "ERROR: Cannot access custom file in -B string %c-component %s\n", str[axis], in);
 	}
 	else
 		gmt_set_titem (C, A, in, flag, str[axis], false);
@@ -6119,7 +6119,7 @@ int gmt_scale_or_width (struct GMT_CTRL *C, char *scale_or_width, double *value)
 		if (n != 1 || *value < 0.0) return (1);
 		*value = 1.0 / (*value * C->current.proj.unit);
 		if (C->current.proj.gave_map_width) {
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error -J option: Cannot specify map width with 1:xxxx format\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error -J option: Cannot specify map width with 1:xxxx format\n");
 			return (1);
 		}
 	}
@@ -6777,7 +6777,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 			case 's':	S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 'j':	/* Vector justification */
 				if (text[0] == 'm') {
-					GMT_report (C, GMT_MSG_FATAL, "-Sm does not accept +j<just> modifiers.\n");
+					GMT_report (C, GMT_MSG_NORMAL, "-Sm does not accept +j<just> modifiers.\n");
 					error++;
 				}
 				else {
@@ -6786,7 +6786,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 						case 'c':	S->v.status |= GMT_VEC_JUST_C;	break;	/* Input (x,y) refers to vector center point */
 						case 'e':	S->v.status |= GMT_VEC_JUST_E;	break;	/* Input (x,y) refers to vector end point */
 						default:	/* Bad justifier code */
-							GMT_report (C, GMT_MSG_FATAL, "Bad +j<just> modifier %c\n", p[1]);
+							GMT_report (C, GMT_MSG_NORMAL, "Bad +j<just> modifier %c\n", p[1]);
 							error++;
 							break;	
 					}
@@ -6804,7 +6804,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				S->v.status |= GMT_VEC_FILL;
 				if (p[1]) {
 					if (GMT_getfill (C, &p[1], &S->v.fill)) {
-						GMT_report (C, GMT_MSG_FATAL, "Bad +g<fill> modifier %c\n", &p[1]);
+						GMT_report (C, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
 						error++;
 					}
 					S->v.status |= GMT_VEC_FILL2;
@@ -6820,14 +6820,14 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				}
 				if (p[j]) {	/* Change default vector pen */
 					if (GMT_getpen (C, &p[j], &S->v.pen)) {
-						GMT_report (C, GMT_MSG_FATAL, "Bad +p<pen> modifier %c\n", &p[1]);
+						GMT_report (C, GMT_MSG_NORMAL, "Bad +p<pen> modifier %c\n", &p[1]);
 						error++;
 					}
 					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
 				break;
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Bad modifier +%c\n", p[0]);
+				GMT_report (C, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);
 				error++;
 				break;	
 		}
@@ -6872,7 +6872,7 @@ int GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 			case 'o':
 				S->f.f_off = GMT_to_inch (C, &p[1]);		break;	/* Symbol offset along line */
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Error option -Sf: Bad modifier +%c\n", p[0]);
+				GMT_report (C, GMT_MSG_NORMAL, "Error option -Sf: Bad modifier +%c\n", p[0]);
 				error++;	break;	
 		}
 	}
@@ -6908,7 +6908,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */
 		if (p->convert_size == 2) text[k] = '\0';		/* Temporarily remove the l */
 		n = sscanf (s+2, "%[^,],%[^l]", txt_a, txt_b);	/* Get the 1-2 pieces */
-		if (n == 0) GMT_report (C, GMT_MSG_FATAL, "-S...+s contains bad scale info\n");
+		if (n == 0) GMT_report (C, GMT_MSG_NORMAL, "-S...+s contains bad scale info\n");
 		p->scale = GMT_to_inch (C, txt_a);	/* The scale may have units */
 		if (n == 2) p->origin = atof (txt_b);	/* Origin is in data units */
 		if (p->convert_size == 2 && n == 2) p->origin = log10 (p->origin);	/* To simplify calculations later */
@@ -6936,7 +6936,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
 			*c = ' ';	/* Make the % a space */
 			c++;		/* Go to next character */
-			if (GMT_getfont (C, c, &p->font)) GMT_report (C, GMT_MSG_FATAL, "-Sl contains bad font (set to %s)\n", GMT_putfont (C, p->font));
+			if (GMT_getfont (C, c, &p->font)) GMT_report (C, GMT_MSG_NORMAL, "-Sl contains bad font (set to %s)\n", GMT_putfont (C, p->font));
 		}
 		if (text[1] == '/') {	/* No size given */
 			symbol_type = 'l';
@@ -7178,21 +7178,21 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			}
 #endif
 			if (p->f.f_sense == GMT_FRONT_CENTERED && p->f.f_symbol == GMT_FRONT_SLIP) {
-				GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Error in Option -Sf: Must specify (l)eft-lateral or (r)ight-lateral slip\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (GMT_IS_ZERO (p->f.f_gap) || GMT_IS_ZERO (p->f.f_len)) {
-				GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Neither <gap> nor <ticklength> can be zero!\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Error in Option -Sf: Neither <gap> nor <ticklength> can be zero!\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
 				k = lrint (fabs (p->f.f_gap));
 				if (k == 0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
 					GMT_exit (EXIT_FAILURE);
 				}
 				if (!GMT_IS_ZERO (p->f.f_off)) {
-					GMT_report (C, GMT_MSG_FATAL, "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Error in Option -Sf: +<offset> cannot be used when number of ticks is specified!\n");
 					GMT_exit (EXIT_FAILURE);
 				}
 			}
@@ -7234,7 +7234,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			k = 0;
 			while (text_cp[j] && text_cp[j] != ' ' && k < 63) p->string[k++] = text_cp[j++];
 			if (!k) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -Sl option: No string given\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -Sl option: No string given\n");
 				decode_error++;
 			}
 			p->string[k] = 0;
@@ -7244,7 +7244,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			p->symbol = GMT_SYMBOL_MARC;
 			p->n_required = 3;	/* Need radius, angle1 and angle2 */
 			if (GMT_parse_vector (C, text, p)) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S%c option\n", symbol_type);
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
 				decode_error++;
 			}
 			if (symbol_type == 'M') p->v.status |= GMT_VEC_MARC90;	/* Flag means we will plot right angle symbol if angles extend 90 exactly */
@@ -7266,7 +7266,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			}
 			if (mode == 0) {
 				decode_error = true;
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S option: Symbol type %c is 3-D only\n", symbol_type);
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S option: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
 		case 'P':
@@ -7313,7 +7313,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			p->symbol = GMT_SYMBOL_CUBE;
 			if (mode == 0) {
 				decode_error = true;
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S option: Symbol type %c is 3-D only\n", symbol_type);
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S option: Symbol type %c is 3-D only\n", symbol_type);
 			}
 			break;
 		case 'V':
@@ -7324,7 +7324,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			if (strchr (text, '+')) {	/* Check if new syntax before decoding */
 #endif
 				if (GMT_parse_vector (C, text, p)) {	/* Error decoding new vector syntax */
-					GMT_report (C, GMT_MSG_FATAL, "Syntax error -S%c option\n", symbol_type);
+					GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
 					decode_error++;
 				}
 				if (!(p->v.status & GMT_VEC_JUST_S)) p->nondim_col[p->n_nondim++] = 2 + col_off;
@@ -7429,14 +7429,14 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
 			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
 			if (GMT_parse_vector (C, text, p)) {
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error -S= option\n");
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S= option\n");
 				decode_error++;
 			}
 			p->n_required = 2;
 			break;
 		default:
 			decode_error = true;
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized symbol type %c\n", symbol_type);
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", symbol_type);
 			break;
 	}
 	if (p->given_size_x == 0.0 && check) {
@@ -7538,7 +7538,7 @@ unsigned int GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, c
 			strcpy (unit_name, "feet");
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "GMT ERROR Option -%c: Only append one of %s|%s\n", option, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY);
+			GMT_report (C, GMT_MSG_NORMAL, "GMT ERROR Option -%c: Only append one of %s|%s\n", option, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY);
 			GMT_exit (EXIT_FAILURE);
 	}
 
@@ -7576,12 +7576,12 @@ int backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item) {
 			case '/':
 				C->common.n.threshold = atof (&item[j+1]);
 				if (C->common.n.threshold < 0.0 || C->common.n.threshold > 1.0) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Interpolation threshold must be in [0,1] range\n");
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Interpolation threshold must be in [0,1] range\n");
 					return (1);
 				}
 				break;
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Syntax error: Specify -%c[-]b|c|l|n[/threshold] to set grid interpolation mode.\n", option);
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Specify -%c[-]b|c|l|n[/threshold] to set grid interpolation mode.\n", option);
 				return (1);
 				break;
 		}
@@ -7675,12 +7675,12 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 			C->common.V.active = true;
 			if (item && item[0]) {	/* Specified a verbosity level */
 				if (gmt_parse_V_option (C, item[0])) {
-					GMT_report (C, GMT_MSG_FATAL, "Error: Unknown argument to -V option, -V%c\n", item[0]);
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Unknown argument to -V option, -V%c\n", item[0]);
 					error++;
 				}
 			}
 			else
-				C->current.setting.verbose = GMT_MSG_NORMAL;
+				C->current.setting.verbose = GMT_MSG_VERBOSE;
 			break;
 
 		case 'X':
@@ -7805,7 +7805,7 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 			break;
 
 		case '^':
-			if (C->common.synopsis.active) GMT_report (C, GMT_MSG_FATAL, "Warning: Option - given more than once\n");
+			if (C->common.synopsis.active) GMT_report (C, GMT_MSG_NORMAL, "Warning: Option - given more than once\n");
 			C->common.synopsis.active = true;
 			break;
 
@@ -7817,7 +7817,7 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 			break;
 
 		default:	/* Here we end up if an unrecognized option is passed (should not happen, though) */
-			GMT_report (C, GMT_MSG_FATAL, "Option -%c is not a recognized common option\n", option);
+			GMT_report (C, GMT_MSG_NORMAL, "Option -%c is not a recognized common option\n", option);
 			return (1);
 			break;
 	}
@@ -7922,16 +7922,16 @@ int GMT_init_time_system_structure (struct GMT_CTRL *C, struct GMT_TIME_SYSTEM *
 	if (gmt_scanf_epoch (C, time_system->epoch, &time_system->rata_die, &time_system->epoch_t0)) error += 2;
 
 	if (error & 1) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: TIME_UNIT is invalid.  Default assumed.\n");
-		GMT_report (C, GMT_MSG_FATAL, "Choose one only from y o d h m s\n");
-		GMT_report (C, GMT_MSG_FATAL, "Corresponding to year month day hour minute second\n");
-		GMT_report (C, GMT_MSG_FATAL, "Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: TIME_UNIT is invalid.  Default assumed.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Choose one only from y o d h m s\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Corresponding to year month day hour minute second\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 	}
 	if (error & 2) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: TIME_EPOCH format is invalid.  Default assumed.\n");
-		GMT_report (C, GMT_MSG_FATAL, "    A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
-		GMT_report (C, GMT_MSG_FATAL, "    or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
-		GMT_report (C, GMT_MSG_FATAL, "    An example of a correct format is:  2000-01-01T12:00:00\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: TIME_EPOCH format is invalid.  Default assumed.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "    A correct format has the form [-]yyyy-mm-ddThh:mm:ss[.xxx]\n");
+		GMT_report (C, GMT_MSG_NORMAL, "    or (using ISO weekly calendar)   yyyy-Www-dThh:mm:ss[.xxx]\n");
+		GMT_report (C, GMT_MSG_NORMAL, "    An example of a correct format is:  2000-01-01T12:00:00\n");
 	}
 	return (error);
 }
@@ -7954,7 +7954,7 @@ int GMT_init_fonts (struct GMT_CTRL *C)
 
 	GMT_getsharepath (C, "pslib", "PS_font_info", ".d", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open %s\n", fullname);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -7963,7 +7963,7 @@ int GMT_init_fonts (struct GMT_CTRL *C)
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 		if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 		if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding font info for font %d\n", i);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Trouble decoding font info for font %d\n", i);
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->session.font[i++].name = strdup (fullname);
@@ -7975,7 +7975,7 @@ int GMT_init_fonts (struct GMT_CTRL *C)
 
 	if (GMT_getsharepath (C, "pslib", "CUSTOM_font_info", ".d", fullname)) {	/* Decode Custom font file */
 		if ((in = fopen (fullname, "r")) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Cannot open %s\n", fullname);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open %s\n", fullname);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -7983,7 +7983,7 @@ int GMT_init_fonts (struct GMT_CTRL *C)
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			if (i == n_alloc) C->session.font = GMT_malloc (C, C->session.font, i, &n_alloc, struct GMT_FONTSPEC);
 			if (sscanf (buf, "%s %lf %*d", fullname, &C->session.font[i].height) != 2) {
-				GMT_report (C, GMT_MSG_FATAL, "Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
 				GMT_exit (EXIT_FAILURE);
 			}
 			C->session.font[i++].name = strdup (fullname);
@@ -8190,7 +8190,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	if (mode == k_mode_psl) {			/* The application will need PSL */
 		C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
 		if (!C->PSL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not initialize PSL - Aborting.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not initialize PSL - Aborting.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
@@ -8218,7 +8218,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	if (access (path, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (GMT_getuserpath (C, "conf/gmt.conf", path) == NULL) {
-			GMT_report (C, GMT_MSG_FATAL, "Error: Could not find system defaults file - Aborting.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not find system defaults file - Aborting.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 	}

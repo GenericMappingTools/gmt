@@ -162,7 +162,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A. Flags are a|f|s.\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -A. Flags are a|f|s.\n");
 						break;
 				}
 				break;
@@ -184,7 +184,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E. Flags are L|l|H|h.\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E. Flags are L|l|H|h.\n");
 						break;
 				}
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
@@ -282,12 +282,12 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
 		}
 	}
 
@@ -341,12 +341,12 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			if (give_r_string) {	/* Return -R string */
 				if (fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
-					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
 					buffer[0] = '.';	buffer[1] = 0;
 					if (GMT->common.r.active) strcpy (buffer, " (-r is ignored).");
-					GMT_report (GMT, GMT_MSG_NORMAL, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
+					GMT_report (GMT, GMT_MSG_VERBOSE, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
@@ -437,15 +437,15 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (Ctrl->E.active && Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Not enough columns to support the -S option\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Not enough columns to support the -S option\n");
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+  				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;
@@ -520,7 +520,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	if (!got_stuff) GMT_report (GMT, GMT_MSG_FATAL, "No input data found!\n");
+	if (!got_stuff) GMT_report (GMT, GMT_MSG_NORMAL, "No input data found!\n");
 
 	GMT->current.io.geo.range = save_range;	/* Restore what we changed */
 

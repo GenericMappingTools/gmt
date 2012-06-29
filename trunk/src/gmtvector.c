@@ -222,7 +222,7 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
-							GMT_report (GMT, GMT_MSG_FATAL, "Bad arguments given to -Tr (%s)\n", opt->arg);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Bad arguments given to -Tr (%s)\n", opt->arg);
 							n_errors++;
 						}
 						break;
@@ -278,11 +278,11 @@ unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int c
 		coord[GMT_Z] = atof (txt_c);
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Bad vector argument (%s)\n", arg);
+		GMT_report (C, GMT_MSG_NORMAL, "Bad vector argument (%s)\n", arg);
 		return (0);
 	}
 	if (n_errors) {
-		GMT_report (C, GMT_MSG_FATAL, "Failed to decode the geographic coordinates (%s)\n", arg);
+		GMT_report (C, GMT_MSG_NORMAL, "Failed to decode the geographic coordinates (%s)\n", arg);
 		return (0);	
 	}
 	return (n_out);
@@ -432,7 +432,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
 	E[2] = 2.0 * sqrt (lambda[1]) * scl;
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}

@@ -150,12 +150,12 @@ int GMT_x2sys_merge (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
 		Return (EXIT_FAILURE);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
 		Return (EXIT_FAILURE);
 	}
 
@@ -235,14 +235,14 @@ int GMT_x2sys_merge (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (!strcmp(pairs_base[i], pairs_merge[j])) {		 /* Update these COEs */
 				for (k = map_merge_start[j]; k <= map_merge_end[j]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_merge)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Read error in merge file line\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Read error in merge file line\n");
 						Return (EXIT_FAILURE);
 					}
 					fprintf (stdout, "%s", line);
 				}
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Read error in base file\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Read error in base file\n");
 						Return (EXIT_FAILURE);
 					}
 				}
@@ -253,7 +253,7 @@ int GMT_x2sys_merge (struct GMTAPI_CTRL *API, int mode, void *args)
 			else if (j == (n_merge - 1)) {	/* Not equal. So do not to update, just recopy */
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Read error in base file\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Read error in base file\n");
 						Return (EXIT_FAILURE);
 					}
 					fprintf (stdout, "%s", line);

@@ -184,7 +184,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->D.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -D option: Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -D option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -200,7 +200,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -209,7 +209,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->W.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -W option: Must specify file name\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -W option: Must specify file name\n");
 					n_errors++;
 				}
 				/* OK if this file doesn't exist */
@@ -554,7 +554,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
 					Return (API->error);
@@ -590,7 +590,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, true);
 		if (ierror) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %d\n", ierror);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 			return (EXIT_FAILURE);
 		}
 		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
@@ -607,13 +607,13 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, true);
 				if (ierror) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Gauss returns error code %d\n", ierror);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 					return (EXIT_FAILURE);
 				}
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 				compute_resid (GMT, G, T, R);
 				chisq = compute_chisq (GMT, R, W, scale);
-				GMT_report (GMT, GMT_MSG_NORMAL, format, gmt_module_name(GMT), iterations, old_chisq, chisq);
+				GMT_report (GMT, GMT_MSG_VERBOSE, format, gmt_module_name(GMT), iterations, old_chisq, chisq);
 				iterations++;
 			} while (old_chisq / chisq > 1.0001);
 
@@ -629,7 +629,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	/* Get here when ready to do output */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) write_model_parameters (GMT, gtd, Ctrl->N.value);
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) write_model_parameters (GMT, gtd, Ctrl->N.value);
 	if (Ctrl->T.file) {
 		strcpy (T->header->title, "trend surface");
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->T.file, T) != GMT_OK) {
@@ -665,7 +665,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	GMT_free (GMT, yval);
 	GMT_free (GMT, xval);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (EXIT_SUCCESS);
 }

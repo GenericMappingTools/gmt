@@ -76,7 +76,7 @@ int gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *patte
 	/* Compilation failed: print the error message and exit */
 
 	if (re == NULL) {
-		GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
 		GMT_exit (EXIT_FAILURE);
 	}
 	
@@ -102,7 +102,7 @@ int gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *patte
 			case PCRE_ERROR_NOMATCH: break;
 			/* Handle other special cases if you like */
 			default: 
-				 GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: PCRE matching error %d.\n", rc);
+				 GMT_report (C, GMT_MSG_NORMAL, "gmt_regexp_match: PCRE matching error %d.\n", rc);
 				 GMT_exit (EXIT_FAILURE);
 				 break;
 		}
@@ -127,7 +127,7 @@ int gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *patte
 	/* compile the RE */
 	if ( (status = regcomp(&re, pattern, cflags)) != 0) {
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
-		GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: POSIX ERE compilation failed: %s\n", err_msg);
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_regexp_match: POSIX ERE compilation failed: %s\n", err_msg);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -139,7 +139,7 @@ int gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *patte
 	else if ( status != REG_NOMATCH ) {
 		/* this is when errors have been encountered */
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
-		GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: POSIX ERE matching error: %s\n", err_msg); /* Report error. */
+		GMT_report (C, GMT_MSG_NORMAL, "gmt_regexp_match: POSIX ERE matching error: %s\n", err_msg); /* Report error. */
 		GMT_exit (EXIT_FAILURE);
 	}
 	return (0); /* No match */
@@ -147,7 +147,7 @@ int gmt_regexp_match (struct GMT_CTRL *C, const char *subject, const char *patte
 #else
 
 	/* disable ERE support */
-	GMT_report (C, GMT_MSG_FATAL, "gmt_regexp_match: this GMT version was compiled without regular expression support.\n");
+	GMT_report (C, GMT_MSG_NORMAL, "gmt_regexp_match: this GMT version was compiled without regular expression support.\n");
 	GMT_exit (EXIT_FAILURE);
 
 #endif

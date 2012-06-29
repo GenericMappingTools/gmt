@@ -295,7 +295,7 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				break;
@@ -422,7 +422,7 @@ int GMT_pspolar (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->N.active) {
 		GMT_map_outside (GMT, Ctrl->D.lon, Ctrl->D.lat);
 		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Point give by -D is outside map; no plotting occours.");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Point give by -D is outside map; no plotting occours.");
 			Return (GMT_OK);
 		};
 	}

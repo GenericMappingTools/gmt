@@ -279,7 +279,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 
 	if (warn_once) {
 		warn_once = false;
-		GMT_report (C, GMT_MSG_FATAL, "GSHHG version %d.%d.%d or newer is "
+		GMT_report (C, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
 								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
 								GSHHG_SITE ".\n", version.major, version.minor, version.patch);
 	}
@@ -331,7 +331,7 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_report (C, GMT_MSG_FATAL, "Syntax error -A option: No area given\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
@@ -360,7 +360,7 @@ int GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
 			base = 4;
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;
@@ -376,7 +376,7 @@ char GMT_shore_adjust_res (struct GMT_CTRL *C, char res) {	/* Returns the highes
 	(void)gmt_shore_check (C, ok);		/* See which resolutions we have */
 	k = orig = gmt_res_to_int (res);	/* Get integer value of requested resolution */
 	while (k >= 0 && !ok[k]) --k;		/* Drop down one level to see if we have a lower resolution available */
-	if (k >= 0 && k != orig) GMT_report (C, GMT_MSG_FATAL, "Warning: Resolution %c not available, substituting resolution %c\n", res, type[k]);
+	if (k >= 0 && k != orig) GMT_report (C, GMT_MSG_NORMAL, "Warning: Resolution %c not available, substituting resolution %c\n", res, type[k]);
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
@@ -426,11 +426,11 @@ int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double we
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 
 	if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
-		GMT_report (C, GMT_MSG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
 		int_areas = true;
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
-		GMT_report (C, GMT_MSG_FATAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
 	}
 
 	/* Get attributes */
@@ -1151,7 +1151,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 		else {
 			n_use = GMT_compact_line (C, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
-				GMT_report (C, GMT_MSG_NORMAL, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
+				GMT_report (C, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
 				GMT_free (C, xtmp);
 				GMT_free (C, ytmp);
 				continue;

@@ -211,12 +211,12 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 	/* Check the magic number and size of header */
 	if (ok == -1) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognized header, expected 0x%04X saw 0x%04X\n", GRD98_MAGIC_NUM + GRD98_VERSION, mggHeader.version);
 		return (GMT_GRDIO_GRD98_BADMAGIC);
 	}
 
 	if (mggHeader.length != sizeof (MGG_GRID_HEADER_2)) {
-		GMT_report (C, GMT_MSG_FATAL, "Error: Invalid grid header size, expected %d, found %d\n", (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Invalid grid header size, expected %d, found %d\n", (int)sizeof (MGG_GRID_HEADER_2), mggHeader.length);
 		return (GMT_GRDIO_GRD98_BADLENGTH);
 	}
 

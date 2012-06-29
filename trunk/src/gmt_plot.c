@@ -2072,7 +2072,7 @@ bool gmt_is_fancy_boundary (struct GMT_CTRL *C)
 			return (false);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error in gmt_is_fancy_boundary - notify developers\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Error in gmt_is_fancy_boundary - notify developers\n");
 			return (false);
 	}
 }
@@ -2921,7 +2921,7 @@ bool gmt_custum_failed_bool_test (struct GMT_CTRL *C, struct GMT_CUSTOM_SYMBOL_I
 			result = GMT_is_dnan (size[s->var]);
 			break;
 		default:
-			GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
 			GMT_exit (EXIT_FAILURE);
 			break;
 		
@@ -2991,7 +2991,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				found_elseif = !skip[level];
 			}
 			if (level == 10) {
-				GMT_report (C, GMT_MSG_FATAL, "Error: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
@@ -3143,7 +3143,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				if ((c = strchr (s->string, '%'))) {	/* Gave font name or number, too */
 					*c = 0;		/* Replace % with the end of string NUL indicator */
 					c++;		/* Go to next character */
-					if (GMT_getfont (C, c, &font)) GMT_report (C, GMT_MSG_FATAL, "Custom symbol subcommand l contains bad font (set to %s)\n", GMT_putfont (C, C->current.setting.font_annot[0]));
+					if (GMT_getfont (C, c, &font)) GMT_report (C, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad font (set to %s)\n", GMT_putfont (C, C->current.setting.font_annot[0]));
 					(void) GMT_setfont (C, &font);
 				}
 				font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
@@ -3157,7 +3157,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 				break;
 
 			default:
-				GMT_report (C, GMT_MSG_FATAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
 				GMT_exit (EXIT_FAILURE);
 				break;
 		}
@@ -3603,7 +3603,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	struct PSL_CTRL *P = C->PSL;
 
 	if (!P) {
-		GMT_report (C, GMT_MSG_FATAL, "PSL pointer not initialized!\n");
+		GMT_report (C, GMT_MSG_NORMAL, "PSL pointer not initialized!\n");
 		GMT_exit (GMT_RUNTIME_ERROR);
 	}
 
@@ -3616,10 +3616,10 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	if ((Out = GMT_Find_Option (C->parent, '>', options))) {	/* Want to use a specific output file */
 		k = (Out->arg[0] == '>') ? 1 : 0;	/* Are we appending (k = 1) or starting a new file (k = 0) */
 		if (C->common.O.active && k == 0) {
-			GMT_report (C, GMT_MSG_NORMAL, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning: -O given but append-mode not selected for file %s\n", &(Out->arg[k]));
 		}
 		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
-			GMT_report (C, GMT_MSG_FATAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
+			GMT_report (C, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
 			GMT_exit (GMT_RUNTIME_ERROR);
 		}
 	}
@@ -3738,7 +3738,7 @@ void GMT_plotend (struct GMT_CTRL *C) {
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */
 
 	if (C->current.ps.nclip != P->current.nclip)
-		GMT_report (C, GMT_MSG_FATAL, "Module was expected to change clip level by %d, but clip level changed by %d\n", C->current.ps.nclip, P->current.nclip);
+		GMT_report (C, GMT_MSG_NORMAL, "Module was expected to change clip level by %d, but clip level changed by %d\n", C->current.ps.nclip, P->current.nclip);
 
 	if (abs (C->current.ps.nclip) == PSL_ALL_CLIP)	/* Special case where we reset all polygon clip levels */
 		C->current.ps.clip_level = 0;
@@ -3746,8 +3746,8 @@ void GMT_plotend (struct GMT_CTRL *C) {
 		C->current.ps.clip_level += C->current.ps.nclip;
 
 	if (!C->common.K.active) {
-		if (C->current.ps.clip_level > 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %d external clip operations were not terminated!\n", C->current.ps.clip_level);
-		if (C->current.ps.clip_level < 0) GMT_report (C, GMT_MSG_FATAL, "Warning: %d extra terminations of external clip operations!\n", -C->current.ps.clip_level);
+		if (C->current.ps.clip_level > 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d external clip operations were not terminated!\n", C->current.ps.clip_level);
+		if (C->current.ps.clip_level < 0) GMT_report (C, GMT_MSG_NORMAL, "Warning: %d extra terminations of external clip operations!\n", -C->current.ps.clip_level);
 		C->current.ps.clip_level = 0;	/* Reset to zero, so it will no longer show up in .gmtcommands */
 	}
 
@@ -4364,7 +4364,7 @@ void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], unsigned int n,
 	else {	/* Gave negative interval which means the # of ticks required */
 		ngap = lrint (fabs (f->f_gap));
 		if (ngap == 0) {	/* Cannot happen but might as well leave the test in case of snafus */
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Number of front ticks reset from 0 to 1 (check your arguments)\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: Number of front ticks reset from 0 to 1 (check your arguments)\n");
 			ngap = 1;
 		}
 		if (ngap == 1)	/* Single centered tick */

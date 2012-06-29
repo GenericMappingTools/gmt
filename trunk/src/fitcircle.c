@@ -266,7 +266,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 	} while (j < 90 && fit > bfit && fit > afit);
 
 	if (j == 90) {	/* Bad news.  There isn't a better fitting pole anywhere.  */
-		GMT_report (GMT, GMT_MSG_FATAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
 		GMT_cpy3v (scpole, gcpole);
 		return (-1.0);
 	}
@@ -391,7 +391,7 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
  	if (n_data == 0) {	/* Blank/empty input files */
-		GMT_report (GMT, GMT_MSG_NORMAL, "No data records found; no output produced");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		GMT_free (GMT, data);
 		Return (EXIT_SUCCESS);
 	}
@@ -445,7 +445,7 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 		sprintf (item, "%sL1 S Hemisphere Great Circle Pole (Cross-Averaged)", GMT->current.setting.io_col_separator);	strcat (record, item);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		if (Ctrl->S.active) {	/* Determine small circle pole */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Fitting small circle using L1 norm.\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Fitting small circle using L1 norm.\n");
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 1, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				GMT_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
@@ -474,10 +474,10 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 			a[j + k*np] += (data[i].x[j]*data[i].x[k]);
 
 		if (GMT_jacobi (GMT, a, n, np, lambda, v, b, z, &nrots)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
-			GMT_report (GMT, GMT_MSG_FATAL, "The reported L2 positions might be garbage.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Eigenvalue routine converged in %d rotations.\n", nrots);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
 		imax = 0;	imin = 2;
 		if (d_acos (GMT_dot3v (GMT, v, meanv)) > M_PI_2)
 			for (i = 0; i < 3; i++) meanv[i] = -v[imax*np+i];
@@ -512,7 +512,7 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, lambda);
 		GMT_free (GMT, a);
 		if (Ctrl->S.active) {	/* Want small circle pole */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Fitting small circle using L2 norm.\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Fitting small circle using L2 norm.\n");
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 2, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				/* True when small circle fits better than great circle */

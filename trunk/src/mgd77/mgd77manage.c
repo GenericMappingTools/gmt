@@ -403,7 +403,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 									Ctrl->A.e77_skip_mode[E77_SLOPES_MODE] = true;
 									break;
 								default:
-									GMT_report (GMT, GMT_MSG_FATAL, "Error: -Ae modifiers must be combination of hfnvs\n");
+									GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Ae modifiers must be combination of hfnvs\n");
 									n_errors++;
 									break;
 							}
@@ -429,7 +429,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Error: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
 						n_errors++;
 						break;
 				}
@@ -442,7 +442,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error -C: Flag must be f, g, or e\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -474,7 +474,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 				}
 #endif
 				if (!strchr ("ekMn", (int)Ctrl->N.code[0])) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error -N: Unit must be e, k, M, or n\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error -N: Unit must be e, k, M, or n\n");
 					n_errors++;
 				}
 				break;
@@ -576,12 +576,12 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	n_paths = MGD77_Path_Expand (GMT, &In, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: No cruises given\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
 	if (got_table && n_paths != 1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: With -Aa|d|D|n|t|T you can only select one cruise at the time.\n");
 		Return (EXIT_FAILURE);
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
@@ -621,9 +621,9 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 		else {
 #ifdef USE_CM4
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: -Ac expects 4, m, c, or g[1-4]\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Ac expects 4, m, c, or g[1-4]\n");
 #else
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: -Ac expects m, c, or g[1-4]\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Ac expects m, c, or g[1-4]\n");
 #endif
 			Return (EXIT_FAILURE);
 		}
@@ -656,14 +656,14 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		else {
 			if ((fp = GMT_fopen (GMT, Ctrl->A.file, GMT->current.io.r_mode)) == NULL) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Cannot open file %s\n", Ctrl->A.file);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->A.file);
 				Return (EXIT_FAILURE);
 			}
 		}
 
 		if (GMT->current.setting.io_header[GMT_IN]) {	/* Skip any header records */
 			for (i = 0; i < (int)GMT->current.setting.io_n_header_items; i++) if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Read error for headers\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Read error for headers\n");
 				Return (EXIT_FAILURE);
 			}
 		}
@@ -704,7 +704,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			if ((GMT->current.io.status & GMT_IO_EOF)) continue;	/* At EOF */
 
 			if (GMT->current.io.status & GMT_IO_MISMATCH) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Mismatch between actual (%d) and expected (%d) fields near line %d\n", n_fields, n_expected_fields, n);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %d\n", n_fields, n_expected_fields, n);
 				GMT_exit (EXIT_FAILURE);
 			}
 
@@ -758,13 +758,13 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 		if (MGD77_Open_File (GMT, list[argno], &In, MGD77_READ_MODE)) continue;
 				
-		GMT_report (GMT, GMT_MSG_NORMAL, "Now processing cruise %s\n", list[argno]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		D = MGD77_Create_Dataset (GMT);
 		In.n_out_columns = 0;
 
 		if (MGD77_Read_File (GMT, list[argno], &In, D)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -775,11 +775,11 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		if (!Ctrl->A.mode == MODE_e && column != MGD77_NOT_SET) {	/* A column with same abbreviation is already present in the file */
 			if (set == MGD77_M77_SET && !Ctrl->F.active) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Column %s is part of the standard MGD77 set and cannot be removed unless you use -F!\n", Ctrl->I.c_abbrev);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Column %s is part of the standard MGD77 set and cannot be removed unless you use -F!\n", Ctrl->I.c_abbrev);
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (!Ctrl->A.replace) {
-				GMT_report (GMT, GMT_MSG_FATAL, "A columned named %s is already present in %s.  use -A+ to overwrite [default is to skip]\n", Ctrl->I.c_abbrev, list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "A columned named %s is already present in %s.  use -A+ to overwrite [default is to skip]\n", Ctrl->I.c_abbrev, list[argno]);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory already allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
@@ -803,7 +803,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			while ((GMT_strtok (Ctrl->D.file, ",", &pos, p))) {	/* For each named column */
 				k = MGD77_Get_Column (GMT, p, &In);
 				if (k == MGD77_NOT_SET) {
-					GMT_report (GMT, GMT_MSG_FATAL, "No column named %s in %s - cannot delete it. \n", p, list[argno]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "No column named %s in %s - cannot delete it. \n", p, list[argno]);
 					continue;
 				}
 				c = In.order[k].set;
@@ -831,7 +831,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			
 			sprintf (oldfile, "%s.old", In.path);
 			if (rename (In.path, oldfile)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to rename %s to %s\n", In.path, oldfile);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to rename %s to %s\n", In.path, oldfile);
 				GMT_exit (EXIT_FAILURE);
 			}
 			
@@ -845,14 +845,14 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			strcat (D->H.history, history);		/* MGD77_Write_FILE_cdf will use this to create the history attribute, thus preserving earlier history */
 
 			if (MGD77_Write_File (GMT, In.path, &In, D)) {	/* Create the new, slimmer file */
-				GMT_report (GMT, GMT_MSG_FATAL, "Error writing slimmer version of %s\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error writing slimmer version of %s\n", list[argno]);
 				GMT_exit (EXIT_FAILURE);
 			}
 
 			/* Now we can safely remove the old file */
 			
 			if (remove (oldfile)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error removing the old version of %s\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error removing the old version of %s\n", list[argno]);
 				GMT_exit (EXIT_FAILURE);
 			}
 			
@@ -864,7 +864,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			In.n_out_columns = 0;
 			D = MGD77_Create_Dataset (GMT);
 			if (MGD77_Read_File (GMT, list[argno], &In, D)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error reading data set for cruise %s\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 				GMT_exit (EXIT_FAILURE);
 			}
 			n_changed++;
@@ -888,7 +888,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				colvalue[rec] = (MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[rec], yvar[rec], IGRF)) ? GMT->session.d_NaN : IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 #ifdef USE_CM4	
 		else if (c_kind == ADD_CM4) {	/* Append CM4 column */
@@ -912,7 +912,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				n_sampled++;
 			}
 			MGD77_CM4_end (GMT, &CM4);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated CM4 at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated CM4 at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_RMAG4) {	/* Append recomputed residual mag column */
 			int ix, iy, it, im;
@@ -937,7 +937,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				colvalue[rec] = (check) ? GMT->session.d_NaN : mvar[rec] - IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 #endif
 		else if (c_kind == ADD_GRAV) {	/* Append IGF column */
@@ -951,7 +951,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				use = (In.original) ? MGD77_ORIG : MGD77_REVISED;
 				GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
 				if (GF_version < MGD77_IGF_HEISKANEN || GF_version > MGD77_IGF_1980) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
 					GF_version = MGD77_IGF_1980;
 				}
 			}
@@ -960,7 +960,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_Theoretical_Gravity (GMT, xvar[rec], yvar[rec], GF_version);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_CARTER) {	/* Append Carter correction column */
 			int ix, iy, it;
@@ -976,7 +976,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
 			
 			for (rec = 0; rec < D->H.n_records; rec++) colvalue[rec] = MGD77_carter_correction (GMT, xvar[rec], yvar[rec], 1000.0 * tvar[rec], &Carter);
-			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", D->H.n_records, D->H.n_records, list[argno]);
 		}
 		else if (c_kind == ADD_RMAG) {	/* Append recomputed residual mag column */
 			int ix, iy, it, im;
@@ -1001,7 +1001,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				colvalue[rec] = (check) ? GMT->session.d_NaN : mvar[rec] - IGRF[MGD77_IGRF_F];
 				n_sampled++;
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (got_grid) {	/* Sample grid along track (or Mercator-projected) track */
 			int ix, iy;
@@ -1043,14 +1043,14 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				n_sampled++;
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Sampled grid at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Sampled grid at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
 		else if (Ctrl->A.mode == MODE_a) {	/* Just got a single column to paste in, assuming the row numbers match */
 			if (n != D->H.n_records) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Extra column data records (%d) do not match # of cruise records (%d) for %s\n", n, D->H.n_records, list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Extra column data records (%d) do not match # of cruise records (%d) for %s\n", n, D->H.n_records, list[argno]);
 				GMT_exit (EXIT_FAILURE);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Appended column data for all %d records for cruise %s\n", D->H.n_records, list[argno]);
 		}
 		else if (Ctrl->A.mode == MODE_d || Ctrl->A.mode == MODE_n || Ctrl->A.mode == MODE_t) {	/* Got either (time,data) or (dist,data) */
 			int ix, iy, it;
@@ -1073,7 +1073,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				y = GMT_memory (GMT, NULL, D->H.n_records, double);
 				result = GMT_intpol (GMT, coldnt, colvalue, n, D->H.n_records, x, y, GMT->current.setting.interpolant);
 				if (result != 0) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error from GMT_intpol near row %d!\n", result+1);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error from GMT_intpol near row %d!\n", result+1);
 					GMT_exit (EXIT_FAILURE);
 				}
 				GMT_memcpy (colvalue, y, D->H.n_records, double);
@@ -1091,13 +1091,13 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 				}
 				GMT_free (GMT, tmp_string);
-				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 			}
 			else if (strings) {	/* One to one match */
 				text = GMT_memory (GMT, NULL, D->H.n_records * LEN_size, char);
 				for (rec = 0; rec < n; rec++) strncpy (&text[rec*LEN_size], tmp_string[rec], LEN_size);
 				GMT_free (GMT, tmp_string);
-				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 			}
 			else {	/* Only update the exact matching records */
 				y = GMT_memory (GMT, NULL, D->H.n_records, double);
@@ -1111,7 +1111,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 				}
 				GMT_memcpy (colvalue, y, D->H.n_records, double);
-				GMT_report (GMT, GMT_MSG_NORMAL, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Appended column data for %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 				GMT_free (GMT, y);
 			}
 			if (Ctrl->A.mode == MODE_d) GMT_free (GMT, d);
@@ -1134,7 +1134,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			double rec_time, del_t, value, *tvar = NULL;
 			
 			if (D->H.E77 && strlen(D->H.E77) > 0 && !Ctrl->A.replace) {
-				GMT_report (GMT, GMT_MSG_FATAL, "E77 corrections are already present in %s.  use -A+e to overwrite with new corrections\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "E77 corrections are already present in %s.  use -A+e to overwrite with new corrections\n", list[argno]);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
@@ -1143,7 +1143,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not in current directory, try MGD77_HOME/E77 */
 				sprintf (efile, "%s/E77/%s.e77", In.MGD77_HOME, list[argno]);
 				if ((fp_e = GMT_fopen (GMT, efile, "r")) == NULL) {	/* Not here either */
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: The file %s.e77 could not be found in current directory or in MGD77_HOME/E77 - skipped\n", list[argno]);
 					MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 					continue;
 				}
@@ -1155,12 +1155,12 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			 
 			P = D->H.mgd77[MGD77_ORIG];	/* Because E77 is absolute and not incremental we start from original settings */
 			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
 			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %" PRIu64, ID, date, &n_recs);
 			if (strcmp (In.NGDC_id, ID)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
 				e_error++;
 			}
 			/* Make sure the File creation dates from the data file and the E77 match */
@@ -1171,12 +1171,12 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			year = atoi (date);
 			
 			if (!(year == atoi (P->File_Creation_Year) && month == atoi (P->File_Creation_Month) && day == atoi (P->File_Creation_Day))) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s: File Creation Date: %s versus %s%s%s - aborting\n", efile, date,
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s: File Creation Date: %s versus %s%s%s - aborting\n", efile, date,
 					P->File_Creation_Year, P->File_Creation_Month, P->File_Creation_Day);
 				e_error++;
 			}
 			if (n_recs != D->H.n_records) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s: n_recs = %d versus %d = aborting\n", efile, n_recs, D->H.n_records);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s: n_recs = %d versus %d = aborting\n", efile, n_recs, D->H.n_records);
 				e_error++;
 			}
 			verified = false;
@@ -1186,12 +1186,12 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (!strncmp (line, "Y Errata table verification status", 34U)) verified = true;
 			}
 			if (!verified && !Ctrl->A.ignore_verify) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 file %s not yet verified.  E77 not applied\n", efile);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 file %s not yet verified.  E77 not applied\n", efile);
 				e_error++;
 			}
 			
 			if (e_error) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
@@ -1214,19 +1214,19 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				else				/* Data record */
 					sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
 					e_error++;
 				}
 			}
 			
 			if (e_error) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: The file %s has too many errors.  E77 not applied\n", efile);
 				GMT_fclose (GMT, fp_e);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
 			}
 			if (n_unprocessed) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: The file %s has unprocessed E77 recommendations.  E77 not applied\n", efile);
 				GMT_fclose (GMT, fp_e);
 				MGD77_Free_Dataset (GMT, &D);	/* Free memory allocated by MGD77_Read_File for this aborted effort */
 				continue;
@@ -1251,7 +1251,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				*/
 				sscanf (line, "%c-%c-%[^-]-%[^-]-%d", &YorN, &kind, ID, field, &item);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s in header records - skipped\n", efile, ID, In.NGDC_id);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in header records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
 					continue;
 				}
@@ -1266,7 +1266,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (Ctrl->A.e77_skip_mode[type]) continue;
 				if (!Ctrl->A.e77_skip_mode[type] && YorN == 'N') continue;
 				if (kind == 'W') {	/* Output the warning (if Y) and goto next line*/
-					if (GMT_is_verbose (GMT, GMT_MSG_NORMAL) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?'))) GMT_message (GMT, "%s: Warning: %s\n", list[argno], line);
+					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && (YorN == 'Y' || (Ctrl->A.ignore_verify && YorN == '?'))) GMT_message (GMT, "%s: Warning: %s\n", list[argno], line);
 					continue;
 				}
 				if (!got_default_answer (line, answer)) continue;
@@ -1348,7 +1348,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 							case E77_HDR_FLAGRANGE:		/* Range of bad values - set flags to BAD  */
 								sscanf (answer, "%" PRIu64 "-%" PRIu64, &from, &to);
 								if (from < 1 || from > D->H.n_records || to < 1 || to > D->H.n_records || to < from) {
-									GMT_report (GMT, GMT_MSG_FATAL, "Error: Record range %s is invalid.  Correction skipped\n", answer);
+									GMT_report (GMT, GMT_MSG_NORMAL, "Error: Record range %s is invalid.  Correction skipped\n", answer);
 									break;
 								}
 								pattern = set_bit (id);
@@ -1371,7 +1371,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
 				sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
 					continue;
 				}
@@ -1384,16 +1384,16 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				rec--;	/* E77 starts with rec = 1 for first data record */
 				if (has_time) {
 					if (!strcmp(timestamp,"NaN")) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
+						GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %s: E77 time stamp %s, using recno\n", ID, timestamp);
 					}
 					else {	/* Must try to interpret the timestamp */
 						if (GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, timestamp, GMT_IS_ABSTIME, &rec_time), timestamp)) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Error: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Error: %s: E77 time stamp (%s) in wrong format? - skipped\n", ID, timestamp);
 							continue;
 						}
 						del_t = fabs (tvar[rec] - rec_time);
 						if (del_t > (0.06 + GMT_CONV_LIMIT)) {	/* 0.06 is finest time step in MGD77 file so we allow that much slop */
-							GMT_report (GMT, GMT_MSG_FATAL, "Error: %s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Error: %s: E77 time stamp and record number do not match record time (del_t = %g s) - skipped\n", ID, del_t);
 							continue;
 						}
 					}
@@ -1413,7 +1413,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 									n_E77_flags++;
 									break;
 								case 'B':
-									GMT_report (GMT, GMT_MSG_NORMAL, "%s: Decreasing time %s - Source Institution need to sort records\n", list[argno], timestamp);
+									GMT_report (GMT, GMT_MSG_VERBOSE, "%s: Decreasing time %s - Source Institution need to sort records\n", list[argno], timestamp);
 									break;
 								case 'C':	/* Excessive speed - flag time, lon, lat */
 									flags[rec] |= set_bit(NCPOS_TIME);
@@ -1433,12 +1433,12 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 									n_E77_flags++;
 									break;
 								default:
-									GMT_report (GMT, GMT_MSG_FATAL, "%s: Unrecognized NAV code %c - skipped\n", list[argno], p[k]);
+									GMT_report (GMT, GMT_MSG_NORMAL, "%s: Unrecognized NAV code %c - skipped\n", list[argno], p[k]);
 									break;
 							}
 						}
 						else if (p[k] < 'A' || p[k] > 'X') {
-							GMT_report (GMT, GMT_MSG_FATAL, "%s: Unrecognized error field %c - skipped\n", list[argno], p[k]);
+							GMT_report (GMT, GMT_MSG_NORMAL, "%s: Unrecognized error field %c - skipped\n", list[argno], p[k]);
 						}
 						else {			/* EO, RANGE, or SLOPE */
 							if (p[k] >= 'A' && p[k] <= 'X')	{ /* Valid codes */
@@ -1452,7 +1452,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 								n_E77_flags++;
 							}
 							else {
-								GMT_report (GMT, GMT_MSG_FATAL, "%s: Unrecognized error field %c - skipped\n", list[argno], p[k]);
+								GMT_report (GMT, GMT_MSG_NORMAL, "%s: Unrecognized error field %c - skipped\n", list[argno], p[k]);
 							}
 						}
 					}		
@@ -1517,30 +1517,30 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			error = 0;
 			if (LEN) {
 				if (OLDLEN != LEN) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Revised text column %s differs in width (%d) from the old values (%d).\n", Ctrl->I.c_abbrev, (int)LEN, (int)OLDLEN);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Revised text column %s differs in width (%d) from the old values (%d).\n", Ctrl->I.c_abbrev, (int)LEN, (int)OLDLEN);
 					error = true;
 				}
 				if (constant && n_dims == 2) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Revised text column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Revised text column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
 					error = true;
 				}
 				if (!constant && n_dims == 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Revised text column %s is an array whereas old values is a constant\n", Ctrl->I.c_abbrev);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Revised text column %s is an array whereas old values is a constant\n", Ctrl->I.c_abbrev);
 					error = true;
 				}
 			}
 			else {
 				if (constant && n_dims == 1) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Revised data column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Revised data column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
 					error = true;
 				}
 				if (!constant && n_dims == 0) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Revised data column %s is an array whereas old values is a constant\n", Ctrl->I.c_abbrev);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Revised data column %s is an array whereas old values is a constant\n", Ctrl->I.c_abbrev);
 					error = true;
 				}
 			}
 			if (error) {
-				GMT_report (GMT, GMT_MSG_FATAL, "You must use -D to delete the old information before adding the new information\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "You must use -D to delete the old information before adding the new information\n");
 				continue;
 			}
 		}
@@ -1632,11 +1632,11 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (two_cols) GMT_free (GMT, coldnt);
 
 	if (Ctrl->D.active)
-		GMT_report (GMT, GMT_MSG_NORMAL, "Removed %d data columns from %d MGD77 files\n", n_delete, n_changed);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Removed %d data columns from %d MGD77 files\n", n_delete, n_changed);
 	else if (Ctrl->A.mode == MODE_e)
-		GMT_report (GMT, GMT_MSG_NORMAL, "E77 corrections applied to %d MGD77 files\n", n_changed);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "E77 corrections applied to %d MGD77 files\n", n_changed);
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "Sampled data for %d MGD77 files\n", n_changed);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Sampled data for %d MGD77 files\n", n_changed);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &In);

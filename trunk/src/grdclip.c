@@ -126,7 +126,7 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					Ctrl->S.mode |= 1;
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.high, txt);
 					if (n != 2) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
 						n_errors++;
 					}
 					else 
@@ -136,14 +136,14 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					Ctrl->S.mode |= 2;
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.low, txt);
 					if (n != 2) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
 						n_errors++;
 					}
 					else
 						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -S option: Expected -Sa<high>/<above> or -Sb<low>/<below>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Expected -Sa<high>/<above> or -Sb<low>/<below>\n");
 					n_errors++;
 				}
 				break;
@@ -223,19 +223,19 @@ int GMT_grdclip (struct GMTAPI_CTRL *API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char format[GMT_BUFSIZ];
 		sprintf (format, "%s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		if (Ctrl->S.mode & 2) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values < ", n_below);
-			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.low, (double)Ctrl->S.below);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values < ", n_below);
+			GMT_report (GMT, GMT_MSG_VERBOSE, format, (double)Ctrl->S.low, (double)Ctrl->S.below);
 		}
 		if (Ctrl->S.mode & 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " values > ", n_above);
-			GMT_report (GMT, GMT_MSG_NORMAL, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values > ", n_above);
+			GMT_report (GMT, GMT_MSG_VERBOSE, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 	Return (GMT_OK);
 }

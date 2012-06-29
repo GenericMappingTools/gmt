@@ -66,7 +66,7 @@ int main (int argc, char *argv[]) {
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_mapproject (API, 0, buffer);
 	if (status) {
-		GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_mapproject returned error %d\n", status);
+		GMT_report (API->GMT, GMT_MSG_NORMAL, "GMT_mapproject returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
@@ -82,7 +82,7 @@ int main (int argc, char *argv[]) {
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_xyz2grd (API, 0, buffer);
 	if (status) {
-		GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_xyz2grd returned error %d\n", status);
+		GMT_report (API->GMT, GMT_MSG_NORMAL, "GMT_xyz2grd returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((G = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);
@@ -114,7 +114,7 @@ int main (int argc, char *argv[]) {
 	fprintf (stderr, "\ngmtselect output\n");
 	status = GMT_gmtselect (API, 0, buffer);
 	if (status) {
-		GMT_report (API->GMT, GMT_MSG_FATAL, "GMT_gmtselect returned error %d\n", status);
+		GMT_report (API->GMT, GMT_MSG_NORMAL, "GMT_gmtselect returned error %d\n", status);
 		exit (EXIT_FAILURE);
 	}
 	if ((Vo = GMT_Retrieve_Data (API, out_ID)) == NULL) exit (EXIT_FAILURE);

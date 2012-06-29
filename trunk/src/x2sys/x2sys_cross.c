@@ -190,7 +190,7 @@ int GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *Ctrl,
 						Ctrl->S.active[HHI] = true;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -S<l|h|u><speed>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -S<l|h|u><speed>\n");
 						n_errors++;
 						break;
 				}
@@ -334,12 +334,12 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (!s->geographic) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_UNKNOWN;
 
 	if (s->x_col == -1 || s->y_col == -1) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: lon,lat or x,y are not among data columns!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: lon,lat or x,y are not among data columns!\n");
 		Return (EXIT_FAILURE);
 	}
 	
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Error: Must give at least one data set!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Must give at least one data set!\n");
 		Return (EXIT_FAILURE);		
 	}
 	
@@ -349,11 +349,11 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->Q.mode == 2) external = false;
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Files found: %" PRIu64 "\n", n_tracks);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Files found: %" PRIu64 "\n", n_tracks);
 
 	duplicate = GMT_memory (GMT, NULL, n_tracks, bool);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Checking for duplicates : ");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Checking for duplicates : ");
 	/* Make sure there are no duplicates */
 	for (A = n_duplicates = 0; A < n_tracks; A++) {	/* Loop over all files */
 		if (duplicate[A]) continue;
@@ -361,19 +361,19 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (duplicate[B]) continue;
 			same = !strcmp (trk_name[A], trk_name[B]);
 			if (same) {
-				GMT_report (GMT, GMT_MSG_FATAL, "File %s repeated on command line - skipped\n", trk_name[A]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "File %s repeated on command line - skipped\n", trk_name[A]);
 				duplicate[B] = true;
 				n_duplicates++;
 			}
 		}
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " found\n", n_duplicates);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " found\n", n_duplicates);
 	
 	if (Ctrl->A.active) {	/* Read list of acceptable trk_name combinations */
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Explicit combinations found: ");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Explicit combinations found: ");
 		if ((fp = fopen (Ctrl->A.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not open combinations file %s!\n", Ctrl->A.file);
 			Return (EXIT_FAILURE);
 		}
 
@@ -386,7 +386,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_chop (line);	/* Get rid of CR, LF stuff */
 
 			if (sscanf (line, "%s %s", name1, name2) != 2) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Error decoding combinations file for pair %" PRIu64 "!\n", n_pairs);
 				Return (EXIT_FAILURE);
 			}
 			pair[n_pairs].id1 = strdup (name1);
@@ -403,11 +403,11 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		fclose (fp);
 
 		if (!n_pairs) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: No combinations found in file %s!\n", Ctrl->A.file);
 			Return (EXIT_FAILURE);
 		}
 		if (n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", n_pairs);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", n_pairs);
 	}
 
 	X2SYS_NaN = GMT->session.d_NaN;
@@ -437,7 +437,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (scol == s->x_col || scol == s->y_col || scol == s->t_col) continue;
 			col_number[k++] = col;
 		}
-		if (s->t_col < 0) GMT_report (GMT, GMT_MSG_NORMAL, "No time column, use dummy times\n");
+		if (s->t_col < 0) GMT_report (GMT, GMT_MSG_VERBOSE, "No time column, use dummy times\n");
 	}
 
 	out = GMT_memory (GMT, NULL, n_output, double);
@@ -495,7 +495,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (duplicate[A]) continue;
 
 		if (s->x_col < 0 || s->x_col < 0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: x and/or y column not found for track %s!\n", trk_name[A]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -526,7 +526,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			same = !strcmp (trk_name[A], trk_name[B]);
 			if (same && !(A == B)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "File %s repeated on command line - skipped\n", trk_name[A]);
+				GMT_report (GMT, GMT_MSG_NORMAL, "File %s repeated on command line - skipped\n", trk_name[A]);
 				continue;
 			}
 			if (!internal &&  same) continue;	/* Only do external errors */
@@ -534,7 +534,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
 			
-			GMT_report (GMT, GMT_MSG_NORMAL, "Processing %s - %s : ", trk_name[A], trk_name[B]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 
 			if (same) {	/* Just set pointers */
 				data[1] = data[0];
@@ -797,7 +797,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (!got_time) GMT_free (GMT, time[1]);
 				GMT_free (GMT, ylist_B);
 			}
-			GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 "\n", nx);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
 		}
 
 		/* Must free up memory for A */

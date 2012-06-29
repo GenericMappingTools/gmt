@@ -146,7 +146,7 @@ int GMT_gmtwhich (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_Put_Record (API, GMT_WRITE_TEXT, ((Ctrl->C.active) ? Yes : path));
 		else {
 			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
-			GMT_report (GMT, GMT_MSG_NORMAL, "File %s not found!\n", opt->arg);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "File %s not found!\n", opt->arg);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */

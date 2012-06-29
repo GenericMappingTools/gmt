@@ -127,7 +127,7 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -151,10 +151,10 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 
@@ -169,20 +169,20 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 		case CLIP_STEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
 			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-			GMT_report (C, GMT_MSG_NORMAL, "Restore 1 text clip level and place delayed straight text\n");
+			GMT_report (C, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed straight text\n");
 			break;
 		case CLIP_CTEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
 			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
-			GMT_report (C, GMT_MSG_NORMAL, "Restore 1 text clip level and place delayed curved text\n");
+			GMT_report (C, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed curved text\n");
 			break;
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
-			GMT_report (C, GMT_MSG_NORMAL, "Restore ALL polygon clip levels\n");
+			GMT_report (C, GMT_MSG_VERBOSE, "Restore ALL polygon clip levels\n");
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_report (C, GMT_MSG_NORMAL, "Restore %d polygon clip levels\n", n);
+			GMT_report (C, GMT_MSG_VERBOSE, "Restore %d polygon clip levels\n", n);
 			break;
 	}
 }
@@ -228,7 +228,7 @@ int GMT_psclip (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_plotinit (GMT, options);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		GMT_plotend (GMT);
-		GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 		Return (EXIT_SUCCESS);
 	}
 
@@ -294,7 +294,7 @@ int GMT_psclip (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

@@ -261,14 +261,14 @@ int GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, struc
 					if (j < SPLITXYZ_N_OUTPUT_CHOICES) {
 						Ctrl->Q.col[j] = opt->arg[j];
 						if (!strchr ("xyzdh", Ctrl->Q.col[j])) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
 							n_errors++;
 						}
 						if (opt->arg[j] == 'z') z_selected = true;
 						n_outputs++;
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
 						n_errors++;
 					}
 				}
@@ -354,7 +354,7 @@ int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 				break;
 			case 'z':
 				if (Ctrl->Z.active) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Cannot specify z when -Z is in effect!\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Cannot specify z when -Z is in effect!\n");
 					Return (-1);
 				}
 				output_choice[k] = 2;
@@ -431,7 +431,7 @@ int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			T->min = GMT_memory (GMT, T->min, n_columns, double);
 			T->max = GMT_memory (GMT, T->max, n_columns, double);
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
@@ -560,7 +560,7 @@ int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 		S->id = seg;
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
+	GMT_report (GMT, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
 		int n_formats = 0;
 		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%ld.bin") : strdup ("splitxyz_segment_%ld.txt");

@@ -165,8 +165,8 @@ void gmt_nc_check_step (struct GMT_CTRL *C, int n, double *x, char *varname, cha
 		if (step > step_max) step_max = step;
 	}
 	if (fabs (step_min-step_max)/(fabs (step_min)+fabs (step_max)) > 0.05) {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
-		GMT_report (C, GMT_MSG_FATAL, "Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", (x[n-1]-x[0])/(n-1), step_min, step_max);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", (x[n-1]-x[0])/(n-1), step_min, step_max);
 	}
 }
 
@@ -713,7 +713,7 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsi
 		/* memory needed for subset exceeds the cache size */
 		*n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width * z_size) / chunksize[0] );
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_FATAL, "processing %zu contiguous chunked rows (%.1f MiB)\n",
+		GMT_report (C, GMT_MSG_NORMAL, "processing %zu contiguous chunked rows (%.1f MiB)\n",
 						 *n_contiguous_chunk_rows,
 						 *n_contiguous_chunk_rows * z_size * width * chunksize[yx_dim[0]] / 1048576.0f);
 	}
@@ -768,7 +768,7 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 	assert (io_mode == k_put_netcdf || io_mode == k_get_netcdf);
 
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_FATAL, "%s nx:%u ny:%u x0:%u y0:%u y-order:%s\n",
+	GMT_report (C, GMT_MSG_NORMAL, "%s nx:%u ny:%u x0:%u y0:%u y-order:%s\n",
 			io_mode == k_put_netcdf ? "writing," : "reading,",
 			width, height, first_col, first_row,
 			header->y_order == k_nc_start_south ? "S->N" : "N->S");
@@ -861,11 +861,11 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	GMT_free (C, actual_col);
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_FATAL, "width:   %d   height:%d\n", width, height);
-	GMT_report (C, GMT_MSG_FATAL, "head->nx:%d head->ny:%d\n", header->nx, header->ny);
-	GMT_report (C, GMT_MSG_FATAL, "first_col:%d last_col:%d first_row:%d last_row:%d\n", first_col, last_col, first_row, last_row);
-	GMT_report (C, GMT_MSG_FATAL, "head->t-index x0:%d y0:%d\n", header->t_index[1], header->t_index[0]);
-	GMT_report (C, GMT_MSG_FATAL, "head->pad xlo:%u xhi:%u\n", header->pad[XLO], header->pad[XHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "width:   %d   height:%d\n", width, height);
+	GMT_report (C, GMT_MSG_NORMAL, "head->nx:%d head->ny:%d\n", header->nx, header->ny);
+	GMT_report (C, GMT_MSG_NORMAL, "first_col:%d last_col:%d first_row:%d last_row:%d\n", first_col, last_col, first_row, last_row);
+	GMT_report (C, GMT_MSG_NORMAL, "head->t-index x0:%d y0:%d\n", header->t_index[1], header->t_index[0]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u\n", header->pad[XLO], header->pad[XHI]);
 #endif
 
 	/* Adjust first_row */
@@ -917,7 +917,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		}
 	}
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_FATAL, "minmax: %f %f\n", header->z_min, header->z_max);
+	GMT_report (C, GMT_MSG_NORMAL, "minmax: %f %f\n", header->z_min, header->z_max);
 #endif
 
 	/* flip grid upside down */
@@ -970,7 +970,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 				header->nan_value = NC_MIN_INT;
 			break;
 		case GMT_GRD_IS_ND:
-			GMT_report (C, GMT_MSG_FATAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
 			/* no break! */
 		default: /* don't round float */
 			do_round = false;
@@ -1023,7 +1023,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	}
 
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_FATAL, "minmax: %f %f\n", header->z_min, header->z_max);
+	GMT_report (C, GMT_MSG_NORMAL, "minmax: %f %f\n", header->z_min, header->z_max);
 #endif
 
 	/* write grid */
@@ -1039,7 +1039,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 		limit[1] = header->z_max * header->z_scale_factor + header->z_add_offset;
 	}
 	else {
-		GMT_report (C, GMT_MSG_FATAL, "Warning: No valid values in grid [%s]\n", header->name);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
 		limit[0] = limit[1] = NAN; /* set limit to NaN */
 	}
 	status = nc_put_att_double (header->ncid, header->z_id, "actual_range", NC_DOUBLE, 2, limit);
@@ -1059,8 +1059,8 @@ nc_err:
 	unlink (header->name);  /* remove nc-file */
 	if (status == NC_ERANGE) {
 		/* report out of range z variable */
-		GMT_report (C, GMT_MSG_FATAL, "Cannot write format %s.\n", C->session.grdformat[header->type]);
-		GMT_report (C, GMT_MSG_FATAL, "The scaled z-range, [%g,%g], exceeds the maximum representable size. Adjust scale and offset parameters or remove out-of-range values.\n", header->z_min, header->z_max);
+		GMT_report (C, GMT_MSG_NORMAL, "Cannot write format %s.\n", C->session.grdformat[header->type]);
+		GMT_report (C, GMT_MSG_NORMAL, "The scaled z-range, [%g,%g], exceeds the maximum representable size. Adjust scale and offset parameters or remove out-of-range values.\n", header->z_min, header->z_max);
 	}
 	return status;
 }

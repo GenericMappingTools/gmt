@@ -301,11 +301,11 @@ int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		if (T->n_tables != 1 || T->table[0]->n_segments != 1) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (T->table[0]->segment[0]->n_rows == 0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: No intervals in file %s\n", Ctrl->T.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: No intervals in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->coord[GMT_X];
@@ -313,11 +313,11 @@ int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: For -Qo logarithmic spacing, dz must be 1, 2, or 3\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, dz must be 1, 2, or 3\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->T.low <= 0.0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		nz = GMT_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
@@ -328,7 +328,7 @@ int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 			Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / Pin->n_colors;
 		}
 		else if (Ctrl->T.inc <= 0) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error: Interval must be > 0\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Interval must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else

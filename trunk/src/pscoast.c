@@ -300,7 +300,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 			case 'I':
 				Ctrl->I.active = true;
 				if (!opt->arg[0]) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -I option takes at least one argument\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -I option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -333,7 +333,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 					default:
 						k = atoi (opt->arg);
 						if (k < 0 || k >= GSHHS_N_RLEVELS) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -I option: Feature not in list!\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -355,7 +355,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 			case 'N':
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: -N option takes at least one argument\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -373,7 +373,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 					default:
 						k = opt->arg[0] - '1';
 						if (k < 0 || k >= GSHHS_N_BLEVELS) {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -N option: Feature not in list!\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -605,23 +605,23 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 	world_map_save = GMT->current.map.is_world;
 
 	if (need_coast_base && GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))  {
-		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		need_coast_base = false;
 	}
 
 	if (Ctrl->N.active && GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
-	if (need_coast_base) GMT_report (GMT, GMT_MSG_NORMAL, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (need_coast_base) GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 	if (Ctrl->I.active && GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "%s resolution river data base not installed\n", shore_resolution[base]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution river data base not installed\n", shore_resolution[base]);
 		Ctrl->I.active = false;
 	}
 
 	if (!(need_coast_base || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
-		GMT_report (GMT, GMT_MSG_FATAL, "No databases available - aborts\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "No databases available - aborts\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -662,7 +662,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 			GMT_plotend (GMT);
 
-			GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 			Return (GMT_OK);
 		}
@@ -674,7 +674,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Pattern fill requires oceans to be painted first\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Pattern fill requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -689,11 +689,11 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		anti_bin = lrint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + lrint (floor (anti_lon / c.bsize));
 		GMT_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
-		if (Ctrl->G.active) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
+		if (Ctrl->G.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -JE requires oceans to be painted first\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: -JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -757,11 +757,11 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
 #endif
 		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
-			GMT_report (GMT, GMT_MSG_FATAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5d\r", bin);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on bin # %5d\r", bin);
 		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %d\n", bin);
 
 		if (GMT->current.map.is_world && greenwich) {
@@ -870,7 +870,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	}
 	if (need_coast_base) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Working on bin # %5ld\n", bin);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
 		GMT_shore_cleanup (GMT, &c);
 	}
 
@@ -878,7 +878,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Read rivers file and plot as lines */
 
-		GMT_report (GMT, GMT_MSG_NORMAL, "Adding Rivers...");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Adding Rivers...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of River segments\n");
 		last_k = -1;
 
@@ -934,7 +934,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 		
-		GMT_report (GMT, GMT_MSG_NORMAL, "Adding Borders...");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */
@@ -1009,7 +1009,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);	/* Disables further data output */
 	}
 	
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done\n");
 
 	Return (GMT_OK);
 }

@@ -263,7 +263,7 @@ int GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ctrl, s
 			case 'A':	/* Annotation control */
 				Ctrl->A.active = true;
 				if (GMT_contlabel_specs (GMT, opt->arg, &Ctrl->contour)) {
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -A option: Expected\n\t-A[-|<aint>][+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p<pen>][+r<min_rc>][+t[<file>]][+u<unit>][+v][+w<width>][+=<prefix>]\n");
 					n_errors ++;
 				}
 				else if (opt->arg[0] == '-')
@@ -301,7 +301,7 @@ int GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ctrl, s
 						Ctrl->F.value = +1;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error: Expected -F[l|r]\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -F[l|r]\n");
 						break;
 				}
 				break;
@@ -354,7 +354,7 @@ int GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ctrl, s
 							n = sscanf (&(opt->arg[j]), "%[^,],%s", txt_a, txt_b);
 						}
 						else {
-							GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Give low and high labels either as -:LH or -:<low>,<high>.\n");
 							Ctrl->T.label = false;
 							n_errors++;
 						}
@@ -666,13 +666,13 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 			dx = x_node_p - C->L[k].x;
 			dy = y_node_p - C->L[k].y;
 			if (GMT_IS_ZERO (hypot (dx, dy))) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to adjust hill label contour orientation (node point on contour)\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to adjust hill label contour orientation (node point on contour)\n");
 				continue;
 			}
 			ij = GMT_IJP (Grid->header, row, col);
 			dz = Grid->data[ij] - C->z;
 			if (doubleAlmostEqualZero (Grid->data[ij], C->z)) {
-				GMT_report (GMT, GMT_MSG_FATAL, "Unable to adjust hill label contour orientation (node value = contour value)\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to adjust hill label contour orientation (node value = contour value)\n");
 				continue;
 			}
 			dot = dx * nx + dy * ny;	/* 2-D Dot product of n and vector from contour to node. +ve if on same side of contour line */
@@ -768,10 +768,10 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
-	if (Ctrl->D.active && Ctrl->D.file[0] == 0) GMT_report (GMT, GMT_MSG_NORMAL, "Contours will be written to standard output\n");
+	if (Ctrl->D.active && Ctrl->D.file[0] == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
 
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
-	GMT_report (GMT, GMT_MSG_NORMAL, "Allocate memory and read data file\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocate memory and read data file\n");
 
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
@@ -790,7 +790,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, G->header, wesn, BCR_BILINEAR)) {
 		/* No grid to plot; just do empty map and return */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No data within specified region\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -812,7 +812,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {	/* Must transform z grid */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		GMT_grd_do_scaling (GMT, G->data, G->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 		G->header->z_min = (G->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		G->header->z_max = (G->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
@@ -821,7 +821,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->L.low > G->header->z_min) G->header->z_min = Ctrl->L.low;	/* Possibly clip the z range */
 	if (Ctrl->L.high < G->header->z_max) G->header->z_max = Ctrl->L.high;
 	if (Ctrl->L.active && G->header->z_max < G->header->z_min) {	/* Specified contour range outside range of data - quit */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours within specified -L range\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No contours within specified -L range\n");
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
 			Return (API->error);
 		}
@@ -844,7 +844,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		if (P->categorical) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Categorical data (as implied by CPT file) do not have contours.  Check plot.\n");
 		}
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		n_contours = P->n_colors + 1;	/* Since n_colors refer to slices */
@@ -882,7 +882,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		n_contours = 0;
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_IN, NULL, Ctrl->C.file)) == GMTAPI_NOTSET) {
-			GMT_report (GMT, GMT_MSG_FATAL, "Error registering contour info file %s\n", Ctrl->C.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
@@ -938,7 +938,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (n_contours == 0) {	/* No contours within range of data */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No contours found\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No contours found\n");
 		if (make_plot) {
 			GMT_plotinit (GMT, options);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
@@ -1034,7 +1034,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Reset markers and set up new zero-contour */
 
 		cval = contour[c];
-		GMT_report (GMT, GMT_MSG_NORMAL, "Tracing the %g contour\n", cval);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Tracing the %g contour\n", cval);
 
 		/* New approach to avoid round-off */
 
@@ -1172,7 +1172,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_free (GMT, cont_angle);
 	GMT_free (GMT, cont_do_tick);
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Done!\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (EXIT_SUCCESS);
 }

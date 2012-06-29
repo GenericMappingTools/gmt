@@ -245,7 +245,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -316,7 +316,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_report (GMT, GMT_MSG_FATAL, "Warning: -T only needed for 0-360 range data (ignored)");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && GMT_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
@@ -536,10 +536,10 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->In.file) strcpy (text, Ctrl->In.file); else strcpy (text, "<stdin>");
 		sprintf (format, "Info for %%s: n = %% " PRIu64 " rmax = %s mean r/az = (%s/%s) totlength = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_FATAL, format, text, n, max, mean_radius, mean_theta, total);
+		GMT_report (GMT, GMT_MSG_NORMAL, format, text, n, max, mean_radius, mean_theta, total);
 		if (Ctrl->I.active) {
 			GMT_free (GMT, sum);
 			GMT_free (GMT, xx);

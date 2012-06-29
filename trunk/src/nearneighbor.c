@@ -186,7 +186,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_FATAL, "Syntax error -E option: Must specify value or NaN\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Must specify value or NaN\n");
 				}
 				break;
 			case 'G':	/* Output file */
@@ -309,7 +309,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_NORMAL, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
 	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
@@ -436,7 +436,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		n++;
-		if (!(n%1000)) GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\r", n);
+		if (!(n%1000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 #ifdef MEMDEBUG
@@ -454,7 +454,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Processed record %10ld\n", n);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processed record %10ld\n", n);
 
 #ifdef MEMDEBUG
 	GMT_memtrack_on (GMT, &g_mem_keeper);
@@ -507,9 +507,9 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 			free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
-		GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\r", row);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Gridded row %10ld\r", row);
 	}
-	GMT_report (GMT, GMT_MSG_NORMAL, "Gridded row %10ld\n", row);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Gridded row %10ld\n", row);
 #ifdef MEMDEBUG
 	GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
@@ -517,11 +517,11 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_NORMAL)) {
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char line[GMT_BUFSIZ];
 		sprintf (line, "%s)\n", GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes were assigned an average value\n", n_set);
-		GMT_report (GMT, GMT_MSG_NORMAL, "%" PRIu64 " nodes failed sector criteria and %" PRIu64 " nodes had no neighbor points (all set to ", n_almost, n_none);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were assigned an average value\n", n_set);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " nodes failed sector criteria and %" PRIu64 " nodes had no neighbor points (all set to ", n_almost, n_none);
 		(GMT_is_dnan (Ctrl->E.value)) ? GMT_message (GMT, "NaN)\n") : GMT_message (GMT,  line, Ctrl->E.value);
 	}
 
