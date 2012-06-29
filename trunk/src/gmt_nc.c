@@ -959,15 +959,15 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	switch (header->type) {
 		case GMT_GRD_IS_NB:
 			if (isnan (header->nan_value))
-				header->nan_value = CHAR_MIN;
+				header->nan_value = NC_MIN_BYTE;
 			break;
 		case GMT_GRD_IS_NS:
 			if (isnan (header->nan_value))
-				header->nan_value = SHRT_MIN;
+				header->nan_value = NC_MIN_SHORT;
 			break;
 		case GMT_GRD_IS_NI:
 			if (isnan (header->nan_value))
-				header->nan_value = INT_MIN;
+				header->nan_value = NC_MIN_INT;
 			break;
 		case GMT_GRD_IS_ND:
 			GMT_report (C, GMT_MSG_FATAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
@@ -1058,8 +1058,9 @@ nc_err:
 	nc_close(header->ncid); /* close nc-file */
 	unlink (header->name);  /* remove nc-file */
 	if (status == NC_ERANGE) {
-		/* report out of range */
-		GMT_report (C, GMT_MSG_FATAL, "%s,\nadjust scale and offset parameters or remove out-of-range values.\n", nc_strerror (status));
+		/* report out of range z variable */
+		GMT_report (C, GMT_MSG_FATAL, "Cannot write format %s.\n", C->session.grdformat[header->type]);
+		GMT_report (C, GMT_MSG_FATAL, "The scaled z-range, [%g,%g], exceeds the maximum representable size. Adjust scale and offset parameters or remove out-of-range values.\n", header->z_min, header->z_max);
 	}
 	return status;
 }
