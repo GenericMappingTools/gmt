@@ -678,8 +678,6 @@ MJD	1858-11-27T00:00:00	d	(Modified Julian Date)
 .br
 J2000	2000-01-01T12:00:00	d	(Astronomical time)
 .br
-S1970	1970-01-01T00:00:00	s	(Computer time)
-.br
 S1985	1985-01-01T00:00:00	s	(Altimetric time)
 .br
 UNIX	1970-01-01T00:00:00	s	(UNIX time)
