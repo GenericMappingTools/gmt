@@ -586,7 +586,7 @@ void padding_zero(void *gridp, const unsigned n_cols, const unsigned n_rows,
 }
 
 /* Fill mode for grid padding */
-enum {
+enum Grid_padding_mode {
 	k_pad_fill_none = 0, /* Leave padded cells untouched */
 	k_pad_fill_zero,     /* Fill padded grid cells with zeros */
 	k_pad_fill_copy      /* Padded cells get the value of their nearest neighbor */
@@ -917,7 +917,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		}
 	}
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_NORMAL, "minmax: %f %f\n", header->z_min, header->z_max);
+	GMT_report (C, GMT_MSG_NORMAL, "z_minmax: %g %g\n", header->z_min, header->z_max);
 #endif
 
 	/* flip grid upside down */
@@ -1023,7 +1023,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	}
 
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_NORMAL, "minmax: %f %f\n", header->z_min, header->z_max);
+	GMT_report (C, GMT_MSG_NORMAL, "z_minmax: %g %g\n", header->z_min, header->z_max);
 #endif
 
 	/* write grid */

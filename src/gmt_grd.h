@@ -55,7 +55,7 @@ enum GMT_enum_grdlen {
 	GRD_COMMAND_LEN320 = 320U,
 	GRD_REMARK_LEN160  = 160U};
 
-enum {
+enum Netcdf_row_order {
 	/* Order of rows in z variable */
 	k_nc_start_north = -1, /* The least dimension (i.e., lat or y) decreases */
 	k_nc_start_south = 1 /* The least dimension (i.e., lat or y) increases */
