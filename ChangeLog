@@ -2,6 +2,15 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-06-30	remko
+	* pslib.c:		Removed revision check on PSL_*.ps files. Has become superfluous since
+				introduction for the VERSION file in the share directory
+
+2012-06-29	remko
+	* gmt_error.h, *.c:	Renamed verbosity levels to GMT_QUIET, GMT_NORMAL, GMT_COMPAT, GMT_VERBOSE,
+				GMT_LONG_VERBOSE, GMT_DEBUG. Options have become -Vq, -Vn, -Vc, -V[v], -Vl, -Vd.
+	* gmtapi_parse.c:	Translate --help to -? so that it can be used everywhere to get usage info.
+
 2012-06-28	remko
 	* gmt_io.c:		Added capability in gmt_nc_input to read 2-d arrays from netCDF files
 				or just a column out of those.
@@ -10,11 +19,6 @@
 	* gmt.conf.in:		Made UNIX the default time system (TIME_EPOCH is 1970-01-01, TIME_UNIT is s)
 				Set TIME_WEEK_START to Monday for SI (leave Sunday for US)
 
-2012-06-29	remko
-	* gmt_error.h, *.c:	Renamed verbosity levels to GMT_QUIET, GMT_NORMAL, GMT_COMPAT, GMT_VERBOSE,
-				GMT_LONG_VERBOSE, GMT_DEBUG. Options have become -Vq, -Vn, -Vc, -V[v], -Vl, -Vd.
-	* gmtapi_parse.c:	Translate --help to -? so that it can be used everywhere to get usage info.
-
 2012-06-24	pwessel
 	* grdtrack.c:		Modifier +a added to -C to alternate the direction of cross-profiles.
 
@@ -22,17 +26,17 @@
 	* gmt_plot.c:		3-D basemaps can now have horizontal gridlines on xz and yz back walls.
 
 2012-06-04	pwessel
-	* gmtvector.c		Incorrectly applied flat-Earth adjustment for 2-D Cartesian azimuth.
+	* gmtvector.c:		Incorrectly applied flat-Earth adjustment for 2-D Cartesian azimuth.
 
 2012-06-01	pwessel
 	* gmt_io.c:		Reading files with one segment header and no data caused a SEGV.
 
 2012-05-31	pwessel
 	* gmt_map.c:		With -R...r and -JE, pscoast could end up trying to paint a
-						block that is outside the rectangular region yet whose projection
-						completely contains the region.
+				block that is outside the rectangular region yet whose projection
+				completely contains the region.
 	* gmt_support.c:	In GMT_crossover(), could get near-duplicate crossovers near a
-						node.  Now checks there are no such consecutive duplicates.
+				node.  Now checks there are no such consecutive duplicates.
 
 2012-05-17	pwessel
 	* grdtrack.c:		Added option -S to stack cross-profiles generated with -C.
