@@ -159,9 +159,6 @@
 
 #define PS_LANGUAGE_LEVEL       2
 #define PSL_Version             "5.0"
-#define PSL_label_version       9865 /* Version number should match that of PSL_label.ps */
-#define PSL_prologue_version    9865 /* Version number should match that of PSL_prologue.ps */
-#define PSL_text_version        8899 /* Version number should match that of PSL_text.ps */
 #define PSL_SMALL               1.0e-10
 #define PSL_MAX_L1_PATH         1000    /* Max path length in Level 1 implementations */
 #define PSL_PAGE_HEIGHT_IN_PTS  842     /* A4 height */
@@ -246,7 +243,7 @@ void psl_a85_encode (struct PSL_CTRL *PSL, unsigned char quad[], int nbytes);
 int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy);
 int psl_comp_long_asc (const void *p1, const void *p2);
 int psl_comp_rgb_asc (const void *p1, const void *p2);
-static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, int revision);
+static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname);
 static void psl_init_fonts (struct PSL_CTRL *PSL);
 int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile);
 void psl_rgb_to_cmyk_char (unsigned char rgb[], unsigned char cmyk[]);
@@ -1157,12 +1154,12 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%EndComments\n\n");
 
 		PSL_command (PSL, "%%%%BeginProlog\n");
-		psl_bulkcopy (PSL, "PSL_prologue", PSL_prologue_version);	/* Version number should match that of PSL_prologue.ps */
-		psl_bulkcopy (PSL, PSL->init.encoding, 0);
+		psl_bulkcopy (PSL, "PSL_prologue");	/* General PS code */
+		psl_bulkcopy (PSL, PSL->init.encoding);
 
 		psl_def_font_encoding (PSL);		/* Initialize book-keeping for font encoding and write font macros */
 
-		psl_bulkcopy (PSL, "PSL_label", PSL_label_version);	/* Place code for label line annotations and clipping */
+		psl_bulkcopy (PSL, "PSL_label");	/* PS code for label line annotations and clipping */
 		PSL_command (PSL, "%%%%EndProlog\n\n");
 
 		PSL_command (PSL, "%%%%BeginSetup\n");
@@ -2528,7 +2525,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	/* Load PSL_text procedures from file for now */
 
 	if (!PSL->internal.text_init) {
-		psl_bulkcopy (PSL, "PSL_text", PSL_text_version);
+		psl_bulkcopy (PSL, "PSL_text");
 		PSL->internal.text_init = true;
 	}
 
@@ -4114,14 +4111,12 @@ int psl_comp_long_asc (const void *p1, const void *p2)
 
 /* This function copies a file called $PSL_SHAREDIR/pslib/<fname>.ps
  * to the postscript output verbatim.
- * If revision is not 0 then the first line should contain
- * Id: <fname>.ps <revision>
  */
-static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, int revision)
+static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname)
 {
 	FILE *in = NULL;
 	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ], version[PSL_BUFSIZ];
-	int i, first = true;
+	int i;
 
 	psl_getsharepath (PSL, "pslib", fname, ".ps", fullname);
 	if ((in = fopen (fullname, "r")) == NULL) {
@@ -4131,12 +4126,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname, int revision)
 	}
 
 	while (fgets (buf, PSL_BUFSIZ, in)) {
-		if (revision && first) {
-			sprintf (version, "$Id: %s.ps %d", fname, revision);
-			first = false;
-			if (!strstr (buf, version)) PSL_message (PSL, PSL_MSG_FATAL, "Warning: PSL expects rev %d of %s\n", revision, fullname);
-		}
-		else if (PSL->internal.comments) {
+		if (PSL->internal.comments) {
 			/* We copy every line, including the comments, except those starting '%-' */
 			if (buf[0] == '%' && buf[1] == '-') continue;
 			PSL_command (PSL, "%s", buf);
