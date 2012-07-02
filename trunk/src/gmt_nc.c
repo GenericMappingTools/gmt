@@ -522,9 +522,46 @@ int GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (gmt_nc_grd_info (C, header, 'w'));
 }
 
-/* Fill padding by replicating the border cells */
+/* Shift columns in a grid to the right (n_shift < 0) or to the left (n_shift < 0) */
+void right_shift_grid(void *gridp, const unsigned n_cols, const unsigned n_rows, int n_shift, size_t cell_size) {
+	char *tmp, *grid = (char*)gridp;
+	unsigned row, n_shift_abs = abs(n_shift);
+
+	assert (n_shift_abs != 0 && n_cols > n_shift_abs && n_cols > 0 && n_rows > 0);
+
+	tmp = malloc (n_shift_abs * cell_size);
+
+	if (n_shift > 0) { /* right shift */
+		for (row = 0; row < n_rows; ++row) {
+			/* copy last n_shift_abs cols into tmp buffer */
+			memcpy (tmp, grid + (row * n_cols + n_cols - n_shift_abs) * cell_size, n_shift_abs * cell_size);
+			/* right shift row */
+			memmove (grid + (row * n_cols + n_shift_abs) * cell_size,
+							 grid + row * n_cols * cell_size,
+							 (n_cols - n_shift_abs) * cell_size);
+			/* prepend tmp buffer */
+			memcpy (grid + row * n_cols * cell_size, tmp, n_shift_abs * cell_size);
+		}
+	}
+	else { /* n_shift_abs < 0 */
+		for (row = 0; row < n_rows; ++row) {
+			/* copy first n_shift_abs cols into tmp buffer */
+			memcpy (tmp, grid + row * n_cols * cell_size, n_shift_abs * cell_size);
+			/* left shift row */
+			memmove (grid + row * n_cols * cell_size,
+							 grid + (row * n_cols + n_shift_abs) * cell_size,
+							 (n_cols - n_shift_abs) * cell_size);
+			/* append tmp buffer */
+			memcpy (grid + (row * n_cols + n_cols - n_shift_abs) * cell_size, tmp, n_shift_abs * cell_size);
+		}
+	}
+	free (tmp);
+}
+
+/* Fill padding by replicating the border cells or wrapping around a
+ * row if columns are periodic */
 void padding_copy(void *gridp, const unsigned n_cols, const unsigned n_rows,
-		const unsigned *n_pad, size_t cell_size) {
+		const unsigned *n_pad, size_t cell_size, bool periodic_cols) {
 	/* n_cols and n_rows are dimensions of the padded grid */
 	char *grid = (char*)gridp;
 	unsigned row, cell;
@@ -532,19 +569,43 @@ void padding_copy(void *gridp, const unsigned n_cols, const unsigned n_rows,
 	assert (n_cols > n_pad[XLO] + n_pad[XHI] && n_rows > n_pad[YLO] + n_pad[YHI] &&
 		n_pad[XLO] + n_pad[XHI] + n_pad[YLO] + n_pad[YHI] > 0 && cell_size > 0);
 
-	for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
-		/* Iterate over rows that contain data */
-		for (cell = 0; cell < n_pad[XLO]; ++cell) {
-			/* Duplicate first n_pad[XLO] columns in this row */
-			memcpy (grid + (row * n_cols + cell) * cell_size,
-							grid + (row * n_cols + n_pad[XLO]) * cell_size,
-							cell_size);
+	if (periodic_cols) {
+		/* A periodic grid wraps around */
+		for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+			/* Iterate over rows that contain data */
+			for (cell = 0; cell < n_pad[XLO]; ++cell) {
+				/* Copy end of this row into first n_pad[XLO] columns:
+				 * X X 0 1 2 3 4 5 X X -> 4 5 0 1 2 3 4 5 X X */
+				memcpy (grid + (row * n_cols + cell) * cell_size,
+								grid + (row * n_cols + n_cols + cell - n_pad[XLO] - n_pad[XHI]) * cell_size,
+								cell_size);
+			}
+			for (cell = 0; cell < n_pad[XHI]; ++cell) {
+				/* Copy start of this row into last n_pad[XHI] columns:
+				 * 4 5 0 1 2 3 4 5 X X -> 4 5 0 1 2 3 4 5 0 1 */
+				memcpy (grid + (row * n_cols + n_cols - cell - 1) * cell_size,
+								grid + (row * n_cols + n_pad[XLO] + n_pad[XHI] - cell - 1) * cell_size,
+								cell_size);
+			}
 		}
-		for (cell = 0; cell < n_pad[XHI]; ++cell) {
-			/* Duplicate last n_pad[XHI] columns in this row */
-			memcpy (grid + (row * n_cols + n_cols - cell - 1) * cell_size,
-							grid + (row * n_cols + n_cols - n_pad[XHI] - 1) * cell_size,
-							cell_size);
+	}
+	else { /* !periodic_cols */
+		for (row = n_pad[YHI]; row + n_pad[YLO] < n_rows; ++row) {
+			/* Iterate over rows that contain data */
+			for (cell = 0; cell < n_pad[XLO]; ++cell) {
+				/* Duplicate first n_pad[XLO] columns in this row:
+				 * 4 5 0 1 2 3 4 5 X X -> 0 0 0 1 2 3 4 5 X X */
+				memcpy (grid + (row * n_cols + cell) * cell_size,
+								grid + (row * n_cols + n_pad[XLO]) * cell_size,
+								cell_size);
+			}
+			for (cell = 0; cell < n_pad[XHI]; ++cell) {
+				/* Duplicate last n_pad[XHI] columns in this row:
+				 * 0 0 0 1 2 3 4 5 X X -> 0 0 0 1 2 3 4 5 5 5 */
+				memcpy (grid + (row * n_cols + n_cols - cell - 1) * cell_size,
+								grid + (row * n_cols + n_cols - n_pad[XHI] - 1) * cell_size,
+								cell_size);
+			}
 		}
 	}
 
@@ -589,7 +650,8 @@ void padding_zero(void *gridp, const unsigned n_cols, const unsigned n_rows,
 enum Grid_padding_mode {
 	k_pad_fill_none = 0, /* Leave padded cells untouched */
 	k_pad_fill_zero,     /* Fill padded grid cells with zeros */
-	k_pad_fill_copy      /* Padded cells get the value of their nearest neighbor */
+	k_pad_fill_copy,     /* Padded cells get the value of their nearest neighbor */
+	k_pad_fill_copy_wrap /* Padded cells get wrapped values from the other side of the row (gridswith periodic columns) */
 };
 
 /* Add padding to a matrix/grid and reshape data */
@@ -632,7 +694,10 @@ void pad_grid(void *gridp, const unsigned n_old_cols, const unsigned n_old_rows,
 			padding_zero (grid, n_new_cols, n_new_rows, n_pad, cell_size);
 			break;
 		case k_pad_fill_copy:
-			padding_copy (grid, n_new_cols, n_new_rows, n_pad, cell_size);
+			padding_copy (grid, n_new_cols, n_new_rows, n_pad, cell_size, false);
+			break;
+		case k_pad_fill_copy_wrap:
+			padding_copy (grid, n_new_cols, n_new_rows, n_pad, cell_size, true);
 			break;
 	}
 }
@@ -724,7 +789,7 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsi
 }
 
 /* netcdf I/O mode */
-enum {
+enum Netcdf_io_mode {
 	k_put_netcdf = 0,
 	k_get_netcdf
 };
