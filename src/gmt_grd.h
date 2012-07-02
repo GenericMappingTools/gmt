@@ -61,6 +61,15 @@ enum Netcdf_row_order {
 	k_nc_start_south = 1 /* The least dimension (i.e., lat or y) increases */
 };
 
+enum GMT_enum_grdtype {
+	/* Special cases of geographic grids with periodicity */
+	GMT_GRD_CARTESIAN=0,			/* Cartesian data, no periodicity involved */
+	GMT_GRD_GEOGRAPHIC_LESS360,		/* x is longitude, but range is < 360 degrees */
+	GMT_GRD_GEOGRAPHIC_EXACT360_NOREPEAT,	/* x is longitude, range is 360 degrees, no repeat node */
+	GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT,	/* x is longitude, range is 360 degrees, gridline registered and repeat node at 360*/
+	GMT_GRD_GEOGRAPHIC_MORE360		/* x is longitude, and range exceeds 360 degrees */
+};
+
 /*
  * GMT's internal representation of grids is north-up, i.e., the index of the
  * least dimension (aka y or lat) increases to the south. NetCDF files are
@@ -90,6 +99,7 @@ struct GRD_HEADER {
 	unsigned int n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
 	unsigned int pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
 	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+	unsigned int grdtype;		/* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
 	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
 	int y_order;			/* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
@@ -251,6 +261,8 @@ enum GMT_enum_wesnIDs {
 #define GMT_grd_same_region(C,G1,G2) (G1->header->wesn[XLO] == G2->header->wesn[XLO] && G1->header->wesn[XHI] == G2->header->wesn[XHI] && G1->header->wesn[YLO] == G2->header->wesn[YLO] && G1->header->wesn[YHI] == G2->header->wesn[YHI])
 /* GMT_y_is_outside is true if y is outside the given range */
 #define GMT_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
+/* GMT_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */
+#define GMT_grd_is_global(C,h) (h->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_NOREPEAT || h->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT)
 
 /* GMT_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
 #define GMT_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRIDLINE_REG)
