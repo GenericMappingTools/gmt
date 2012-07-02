@@ -427,6 +427,40 @@ int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, u
 	return (true);	/* Return true so the calling function can take appropriate action */
 }
 
+int gmt_get_grdtype (struct GMT_CTRL *C, struct GRD_HEADER *h)
+{	/* Determine if grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
+	if (GMT_x_is_lon (C, GMT_IN)) {	/* Data set is geographic with x = longitudes */
+		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "GMT_get_grdtype: Geographic grid, longitudes span exactly 360\n");
+			/* If w/e is 360 and gridline reg then we have a repeat entry for 360.  For pixel there are never repeat pixels */
+			return ((h->registration == GMT_GRIDLINE_REG) ? GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRD_GEOGRAPHIC_EXACT360_NOREPEAT);
+		}
+		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "GMT_get_grdtype: Geographic grid, longitude cells span exactly 360\n");
+			/* If n*xinc = 360 and previous test failed then we do not have a repeat node */
+			return (GMT_GRD_GEOGRAPHIC_EXACT360_NOREPEAT);
+		}
+		else if ((h->wesn[XHI] - h->wesn[XLO]) > 360.0) {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "GMT_get_grdtype: Geographic grid, longitudes span more than 360\n");
+			return (GMT_GRD_GEOGRAPHIC_MORE360);
+		}
+	}
+	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
+		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_get_grdtype: Cartesian grid, yet x spans exactly 360 and -90 <= y <= 90.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			return (GMT_GRD_CARTESIAN);
+		}
+		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
+			GMT_report (C, GMT_MSG_NORMAL, "GMT_get_grdtype: Cartesian grid, yet x cells span exactly 360 and -90 <= y <= 90.\n");
+			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			return (GMT_GRD_CARTESIAN);
+		}
+	}
+	GMT_report (C, GMT_MSG_VERBOSE, "GMT_get_grdtype: Grid is Cartesian\n");
+	return (GMT_GRD_CARTESIAN);
+}
+
 int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header)
 {	/* file:	File name
 	 * header:	grid structure header
@@ -447,6 +481,8 @@ int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 
 	GMT_err_trap ((*C->session.readinfo[header->type]) (C, header));
 	gmt_grd_get_units (C, header);
+	header->grdtype = gmt_get_grdtype (C, header);
+	
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_NORMAL, "Warning: scale_factor should not be 0.\n");
@@ -1110,39 +1146,6 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 	if (n_warn) GMT_report (C, GMT_MSG_NORMAL, "Gridline-registered global grid has inconsistent values at repeated node for %d rows\n", n_warn);
 }
 
-bool GMT_grd_is_global (struct GMT_CTRL *C, struct GRD_HEADER *h)
-{	/* Determine if grid could be global */
-
-	if (GMT_x_is_lon (C, GMT_IN)) {
-		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "GMT_grd_is_global: yes, longitudes span exactly 360\n");
-			return (true);
-		}
-		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "GMT_grd_is_global: yes, longitude cells span exactly 360\n");
-			return (true);
-		}
-		else if ((h->wesn[XHI] - h->wesn[XLO]) > 360.0) {
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "GMT_grd_is_global: yes, longitudes span more than 360\n");
-			return (true);
-		}
-	}
-	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {
-		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
-			GMT_report (C, GMT_MSG_NORMAL, "GMT_grd_is_global: probably, x spans exactly 360 and -90 <= y <= 90\n");
-			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
-			return (false);
-		}
-		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
-			GMT_report (C, GMT_MSG_NORMAL, "GMT_grd_is_global: probably, x cells span exactly 360 and -90 <= y <= 90\n");
-			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
-			return (false);
-		}
-	}
-	GMT_report (C, GMT_MSG_VERBOSE, "GMT_grd_is_global: no!\n");
-	return (false);
-}
-
 int GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, unsigned int interpolant)
 {
 	/* GMT_grd_setregion determines what w,e,s,n should be passed to GMT_read_grd.
@@ -1648,6 +1651,8 @@ int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], 
 	GMT_memcpy (Grid->header->wesn, wesn, 4, double);
 	GMT_memcpy (Grid->header->inc, inc, 2, double);
 	Grid->header->registration = registration;
+	Grid->header->grdtype = gmt_get_grdtype (C, Grid->header);
+	
 	GMT_RI_prepare (C, Grid->header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (C, Grid->header, C->current.io.pad);	/* Assign default pad */
