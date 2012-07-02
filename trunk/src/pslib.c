@@ -4115,7 +4115,7 @@ int psl_comp_long_asc (const void *p1, const void *p2)
 static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname)
 {
 	FILE *in = NULL;
-	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ], version[PSL_BUFSIZ];
+	char buf[PSL_BUFSIZ], fullname[PSL_BUFSIZ];
 	int i;
 
 	psl_getsharepath (PSL, "pslib", fname, ".ps", fullname);
