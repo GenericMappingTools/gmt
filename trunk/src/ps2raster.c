@@ -72,10 +72,11 @@ struct PS2RASTER_CTRL {
 	struct In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct A {	/* -A[u][-] [Adjust boundingbox] */
+	struct A {             /* -A[u][-] [Adjust boundingbox] */
 		bool active;
-		bool strip;	/* Remove the -U time-stamp */
-		bool reset;	/* The -A- turns -A off, overriding any automode in effect */
+		bool round;        /* Round HiRes BB instead of ceil */
+		bool strip;        /* Remove the -U time-stamp */
+		bool reset;        /* The -A- turns -A off, overriding any automode in effect */
 		double margin[4];
 	} A;
 	struct C {	/* -C<option> */
@@ -392,6 +393,7 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 				Ctrl->A.active = true;
 				k = 0;
 				if (opt->arg[k] == 'u') {Ctrl->A.strip = true; k++;}
+				if (opt->arg[k] == 'r') {Ctrl->A.round = true; k++;}
 				if (opt->arg[strlen(opt->arg)-1] == '-')
 					Ctrl->A.reset = true;
 				else if (opt->arg[k]) {	/* Also specified margin(s) */
@@ -698,7 +700,9 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->T.active && Ctrl->T.device == -GS_DEV_PDF) {
 		char *all_names_in = NULL, *cmd2 = NULL;
 
-		for (k = n_alloc = 0; k < Ctrl->In.n_files; k++) n_alloc += (strlen (ps_names[k]) + 1);
+		n_alloc = 0;
+		for (k = 0; k < Ctrl->In.n_files; k++)
+			n_alloc += (strlen (ps_names[k]) + 1);
 		all_names_in = GMT_memory (GMT, NULL, n_alloc, char);
 		for (k = 0; k < Ctrl->In.n_files; k++) {
 			add_to_list (all_names_in, ps_names[k]);
@@ -755,14 +759,14 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = setup = false;
 
 		len = strlen (ps_file);
-		j = len - 1;
+		j = (unsigned int)len - 1;
 		pos_file = -1;
 		pos_ext = -1;	/* In case file has no extension */
 		for (i = 0; i < len; i++, j--) {
 			if (pos_ext < 0 && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
 			if (pos_file < 0 && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
 		}
-		if (pos_ext == -1) pos_ext = len - 1;	/* File has no extension */
+		if (pos_ext == -1) pos_ext = (unsigned int)len - 1;	/* File has no extension */
 		if (!Ctrl->D.active || pos_file == -1) pos_file = 0;	/* File either has no leading directory or we want to use it */
 
 		/* Adjust to a tight BoundingBox if user requested so */
@@ -955,8 +959,11 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
-				if (got_BB)
+				if (got_BB && !Ctrl->A.round)
 					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (ceil(w)), lrint (ceil(h)));
+				else if (got_BB && Ctrl->A.round)		/* Go against Adobe Law and round HRBB instead of ceil */
+					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (w), lrint (h));
+
 				got_BB = false;
 				if (file_has_HRBB)
 					continue;	/* High-res BB will be put elsewhere */
