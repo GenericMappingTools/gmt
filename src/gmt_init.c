@@ -1600,7 +1600,7 @@ int gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 
 	GMT_memset (copy, GMT_BUFSIZ, char);	/* Get a clean copy */
 	strncpy (copy, arg, GMT_BUFSIZ);
-	for (i = 0; i < GMT_BUFSIZ; i++) C->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) C->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
 		convert = 0, scale = 1.0, offset = 0.0;

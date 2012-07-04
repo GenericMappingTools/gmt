@@ -261,7 +261,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-Vbf", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_sample1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sample1d_parse (API, Ctrl, options))) Return (error);
 	
@@ -278,8 +278,16 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
+	/* First read input data to be sampled */
+	
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
+	
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
+		GMT_init_io_columns (GMT, GMT_IN);	/* Reset any effects of -i */
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -302,10 +310,6 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->I.active && Ctrl->I.mode == INT_2D) {
 		spatial = true;
 		inc_degrees = (Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Convert increment to spherical degrees */
-	}
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
 	}
 
 	Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */

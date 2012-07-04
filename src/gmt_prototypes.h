@@ -188,6 +188,7 @@ EXTERN_MSC int GMT_parse_z_io (struct GMT_CTRL *C, char *txt, struct GMT_PARSE_Z
 EXTERN_MSC void GMT_init_z_io (struct GMT_CTRL *C, char format[], bool repeat[], enum GMT_swap_direction swab, off_t skip, char type, struct GMT_Z_IO *r);
 EXTERN_MSC int GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
+EXTERN_MSC void GMT_init_io_columns (struct GMT_CTRL *C, unsigned int dir);
 
 /* gmt_support.c: */
 
