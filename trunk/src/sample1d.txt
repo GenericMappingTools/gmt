@@ -42,7 +42,8 @@ IT(inc) in the chosen units.  See OPT(Am)|BD(p) to only sample along meridians a
 .TP
 OPT(N)IT(knotfile)
 IT(knotfile) is an optional ASCII file with the x locations where the data set will be resampled in the first column.
-Note: if OPT(H) is selected it applies to both IT(infile) and IT(knotfile).
+Note: If OPT(H) is selected it applies to both IT(infile) and IT(knotfile).  Also note that OPT(i) never applies
+to IT(knotfile) since we always consider the first column only.
 .TP
 OPT(S)IT(start)
 For equidistant sampling, IT(start) indicates the location of the first output value. [Default

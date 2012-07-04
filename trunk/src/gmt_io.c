@@ -1702,6 +1702,15 @@ void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, unsigned in
 	}
 }
 
+void GMT_init_io_columns (struct GMT_CTRL *C, unsigned int dir)
+{
+	/* Initialize (reset) information per column which may have changed due to -i -o */
+	unsigned int i;
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) C->current.io.col[dir][i].col = C->current.io.col[dir][i].order = i;	/* Default order */
+	if (dir == GMT_OUT) return;
+	for (i = 0; i < GMT_MAX_COLUMNS; i++) C->current.io.col_skip[i] = false;	/* Consider all input columns */
+}
+
 void GMT_io_init (struct GMT_CTRL *C)
 {
 	/* No need to memset the structure to NULL as this is done in gmt_init.h directory.
@@ -1738,7 +1747,8 @@ void GMT_io_init (struct GMT_CTRL *C)
 	strcpy (C->current.io.clock_input.ampm_suffix[1],  "pm");
 	strcpy (C->current.io.clock_output.ampm_suffix[1], "pm");
 
-	for (i = 0; i < GMT_MAX_COLUMNS; i++) C->current.io.col[GMT_IN][i].col = C->current.io.col[GMT_IN][i].order = C->current.io.col[GMT_OUT][i].col = C->current.io.col[GMT_OUT][i].order = i;	/* Default order */
+	GMT_init_io_columns (C, GMT_IN);	/* Set default input column order */
+	GMT_init_io_columns (C, GMT_OUT);	/* Set default output column order */
 	for (i = 0; i < 2; i++) C->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) C->current.io.col_type[GMT_IN][i] = C->current.io.col_type[GMT_OUT][i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) C->current.io.col_type[GMT_IN][i] = C->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;	/* Other columns default to floats */
