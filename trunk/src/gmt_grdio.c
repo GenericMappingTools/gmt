@@ -385,9 +385,9 @@ int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, u
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
 	 * input grid has the extra data we need to fill the BC pad with observations. */
 	bool wrap;
-	unsigned int n_sides = 0;
+	unsigned int side, n_sides = 0;
 	double wesn2[4];
-	
+
 	/* First copy over original settings to the Pad structure */
 	GMT_memset (P, 1, struct GRD_PAD);					/* Initialize to zero */
 	GMT_memcpy (P->pad, pad, 4, int);					/* Duplicate the pad */
@@ -397,7 +397,7 @@ int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, u
 		return (false);	/* Subset equals whole area */
 	GMT_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
-	
+
 	/* Determine if data exist for a pad on all four sides.  If not we give up */
 	wrap = GMT_grd_is_global (C, header);	/* If global wrap then we cannot be outside */
 	if ((wesn2[XLO] = wesn[XLO] - pad[XLO] * header->inc[GMT_X]) < header->wesn[XLO] && !wrap)	/* Cannot extend west/xmin */
@@ -417,13 +417,19 @@ int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, u
 	else	/* OK to load top pad with data */
 		P->pad[YHI] = 0;
 	if (n_sides == 4) return (false);	/* No can do */
-	
+
 	/* Here we know that there is enough input data to fill some or all of the BC pad with actual data values */
 	/* We have temporarily set padding to zero (since the pad is now part of the region) for those sides we can extend */
-	
+
 	/* Temporarily enlarge the region so it now includes the padding we need */
 	GMT_memcpy (P->wesn, wesn2, 4, double);
-	
+
+	/* Set BC */
+	for (side = 0; side < 4; side++) {
+		if (P->pad[side] == 0)
+			header->BC[side] = GMT_BC_IS_DATA;
+	}
+
 	return (true);	/* Return true so the calling function can take appropriate action */
 }
 
@@ -476,13 +482,13 @@ int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	GMT_grd_init (C, header, NULL, false);
 
 	/* Save parameters on file name suffix before issuing C->session.readinfo */
- 	GMT_err_trap (GMT_grd_get_format (C, file, header, true));
+	GMT_err_trap (GMT_grd_get_format (C, file, header, true));
 	scale = header->z_scale_factor, offset = header->z_add_offset, nan_value = header->nan_value;
 
 	GMT_err_trap ((*C->session.readinfo[header->type]) (C, header));
 	gmt_grd_get_units (C, header);
 	header->grdtype = gmt_get_grdtype (C, header);
-	
+
 	if (!GMT_is_dnan(scale)) header->z_scale_factor = scale, header->z_add_offset = offset;
 	if (!GMT_is_dnan(nan_value)) header->nan_value = nan_value;
 	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_NORMAL, "Warning: scale_factor should not be 0.\n");
@@ -540,18 +546,16 @@ int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, flo
 
 	bool expand;		/* true or false */
 	int err;		/* Implied by GMT_err_trap */
-	unsigned int side;
 	struct GRD_PAD P;
 
 	expand = gmt_padspace (C, header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
 	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
-	
-	if (expand) {	/* Must undo the region extension and reset nx, ny using original pad  */
+
+	if (expand) /* Must undo the region extension and reset nx, ny using original pad  */
 		GMT_memcpy (header->wesn, wesn, 4, double);
-		for (side = 0; side < 4; side++) if (P.pad[side] == 0) header->BC[side]= GMT_BC_IS_DATA;
-	}
-	if (header->z_scale_factor == 0.0) GMT_report (C, GMT_MSG_NORMAL, "Warning: scale_factor should not be 0.\n");
+	if (header->z_scale_factor == 0.0)
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: scale_factor should not be 0.\n");
 	GMT_grd_setpad (C, header, pad);	/* Copy the pad to the header */
 	GMT_set_grddim (C, header);		/* Update all dimensions */
 	if (expand) GMT_grd_zminmax (C, header, grid);	/* Reset min/max since current extrema includes the padded region */
@@ -559,7 +563,7 @@ int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, flo
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
 	GMT_BC_init (C, header);	/* Initialize grid interpolation and boundary condition parameters */
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -1859,7 +1863,6 @@ int GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double 
 		I->header->ny -= (int)(P.pad[YLO] + P.pad[YHI]);
 		GMT_memcpy (I->header->wesn, wesn, 4, double);
 		I->header->nm = GMT_get_nm (C, I->header->nx, I->header->ny);
-		for (i = 0; i < 4; i++) if (P.pad[i] == 0) I->header->BC[i]= GMT_BC_IS_DATA;
 	}
 	GMT_grd_setpad (C, I->header, pad);	/* Copy the pad to the header */
 
