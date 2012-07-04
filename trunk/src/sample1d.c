@@ -121,7 +121,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S Set the first output point to be <start> [first multiple of inc in range].\n");
 	GMT_message (GMT, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
 	GMT_message (GMT, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
-	GMT_explain_options (GMT, "VC2D0fghi.");
+	GMT_explain_options (GMT, "VC2D0fghio.");
 	
 	return (EXIT_FAILURE);
 }
