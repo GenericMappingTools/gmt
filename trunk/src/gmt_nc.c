@@ -757,17 +757,20 @@ void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_ro
 
 /* Ensure that repeating columns in geographic gridline registered grids
  * do not contain conflicting information */
-void grid_fix_repeat_col_f (struct GMT_CTRL *C, float *grid, const unsigned n_cols, const unsigned n_rows) {
+void grid_fix_repeat_col (struct GMT_CTRL *C, void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
+	char *grid = (char*)gridp;
 	unsigned row, n_conflicts = 0;
 
 	for (row = 0; row < n_rows; ++row) {
-		float *first = grid + row * n_cols;              /* first element in row */
-		float *last =  grid + row * n_cols + n_cols - 1; /* last element in row */
-		if (*first != *last) {
-			*last = *first; /* replace value of last element in row with value of first */
+		char *first = grid + row * n_cols * cell_size;                /* first element in row */
+		char *last =  grid + (row * n_cols + n_cols - 1) * cell_size; /* last element in row */
+		if ( memcmp(last, first, cell_size) ) {
+			/* elements differ: replace value of last element in row with value of first */
+			memcpy (last, first, cell_size);
 			++n_conflicts;
 		}
 	}
+
 	if (n_conflicts)
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", n_conflicts);
 }
@@ -945,7 +948,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		return (NC_ENOTNC);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	//GMT_free (C, actual_col);
+	GMT_free (C, actual_col);
 
 #ifdef DEBUG
 	GMT_report (C, GMT_MSG_NORMAL, "width:     %3d   height:%3d\n", width, height);
@@ -1095,11 +1098,11 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 
 	/* Check that repeating columns do not contain conflicting information */
 	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT)
-		grid_fix_repeat_col_f (C, grid, width_real, height);
+		grid_fix_repeat_col (C, grid, width_real, height, sizeof(grid[0]));
 
 	/* flip grid upside down */
 	if (header->y_order == k_nc_start_south)
-		grid_flip_vertical (grid, width_real, height, sizeof(float));
+		grid_flip_vertical (grid, width_real, height, sizeof(grid[0]));
 
 	/* get stats */
 	header->z_min = DBL_MAX;
