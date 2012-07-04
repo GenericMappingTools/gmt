@@ -735,20 +735,41 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 						 n_cols * cell_size);
 	}
 }
+
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void grid_flip_vertical (float *grid, const unsigned height, const unsigned width) {
-	unsigned height_over_2 = (unsigned) floor (height / 2.0);
+void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
+	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
 	unsigned row;
-	float *tmp = malloc (width * sizeof (float));
-	float *top, *bottom;
-	for (row = 0; row < height_over_2; ++row) {
-		top = grid + row * width;                       /* points to top row */
-		bottom = grid + (height - row) * width - width; /* points to bottom row */
-		memcpy (tmp, top, width * sizeof (float));    /* save top row */
-		memcpy (top, bottom, width * sizeof (float)); /* copy bottom to top */
-		memcpy (bottom, tmp, width * sizeof (float)); /* copy tmp to bottom */
+	char *grid = (char*)gridp;
+	char *tmp = malloc (n_cols * cell_size);
+	char *top, *bottom;
+	for (row = 0; row < rows_over_2; ++row) {
+		/* pointer to top row: */
+		top = grid + row * n_cols * cell_size;
+		/* pointer to bottom row: */
+		bottom = grid + ( (n_rows - row) * n_cols - n_cols ) * cell_size;
+		memcpy (tmp, top, n_cols * cell_size);    /* save top row */
+		memcpy (top, bottom, n_cols * cell_size); /* copy bottom to top */
+		memcpy (bottom, tmp, n_cols * cell_size); /* copy tmp to bottom */
 	}
 	free (tmp);
+}
+
+/* Ensure that repeating columns in geographic gridline registered grids
+ * do not contain conflicting information */
+void grid_fix_repeat_col_f (struct GMT_CTRL *C, float *grid, const unsigned n_cols, const unsigned n_rows) {
+	unsigned row, n_conflicts = 0;
+
+	for (row = 0; row < n_rows; ++row) {
+		float *first = grid + row * n_cols;              /* first element in row */
+		float *last =  grid + row * n_cols + n_cols - 1; /* last element in row */
+		if (*first != *last) {
+			*last = *first; /* replace value of last element in row with value of first */
+			++n_conflicts;
+		}
+	}
+	if (n_conflicts)
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: detected %u inconsistent values along east boundary of grid. Values fixed by duplicating west boundary.\n", n_conflicts);
 }
 
 /* Change the default chunk cache settings in the HDF5 library for all variables
@@ -924,13 +945,19 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		return (NC_ENOTNC);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width, &height, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	GMT_free (C, actual_col);
+	//GMT_free (C, actual_col);
+
 #ifdef DEBUG
-	GMT_report (C, GMT_MSG_NORMAL, "width:   %d   height:%d\n", width, height);
-	GMT_report (C, GMT_MSG_NORMAL, "head->nx:%d head->ny:%d\n", header->nx, header->ny);
-	GMT_report (C, GMT_MSG_NORMAL, "first_col:%d last_col:%d first_row:%d last_row:%d\n", first_col, last_col, first_row, last_row);
-	GMT_report (C, GMT_MSG_NORMAL, "head->t-index x0:%d y0:%d\n", header->t_index[1], header->t_index[0]);
-	GMT_report (C, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u\n", header->pad[XLO], header->pad[XHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "width:     %3d   height:%3d\n", width, height);
+	GMT_report (C, GMT_MSG_NORMAL, "head->nx:  %3d head->ny:%3d\n", header->nx, header->ny);
+	GMT_report (C, GMT_MSG_NORMAL, "first_col:%2d   last_col:%3d first_row:%d last_row:%d\n", first_col, last_col, first_row, last_row);
+	GMT_report (C, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n", header->t_index[0], header->t_index[1], header->t_index[2]);
+	GMT_report (C, GMT_MSG_NORMAL, "      pad xlo:%u xhi:%u ylo:%u yhi:%u\n", pad[XLO], pad[XHI], pad[YLO], pad[YHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
+	for (n=0;n<width;++n) {
+		fprintf (stderr, "%3u", actual_col[n]);
+	}
+	fprintf (stderr, "\n");
 #endif
 
 	/* Adjust first_row */
@@ -987,7 +1014,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 
 	/* flip grid upside down */
 	if (header->y_order == k_nc_start_south)
-		grid_flip_vertical (grid, height, width);
+		grid_flip_vertical (grid, width, height, sizeof(float));
 
 	/* Add padding with border replication / zero-fill complex grids */
 	pad_grid(grid, width, height, pad, sizeof(grid[0]), complex_mode ? k_pad_fill_zero : k_pad_fill_copy);
@@ -1066,9 +1093,13 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	width_real = width * inc;
 	unpad_grid(grid, width_real, height, pad, sizeof(grid[0]));
 
+	/* Check that repeating columns do not contain conflicting information */
+	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT)
+		grid_fix_repeat_col_f (C, grid, width_real, height);
+
 	/* flip grid upside down */
 	if (header->y_order == k_nc_start_south)
-		grid_flip_vertical (grid, height, width_real);
+		grid_flip_vertical (grid, width_real, height, sizeof(float));
 
 	/* get stats */
 	header->z_min = DBL_MAX;
