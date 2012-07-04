@@ -758,6 +758,8 @@ void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_ro
 /* Ensure that repeating columns in geographic gridline registered grids
  * do not contain conflicting information */
 void grid_fix_repeat_col (struct GMT_CTRL *C, void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
+	/* Note: when grid is complex, double cell_size and pass the number of complex
+	 * values per row as n_cols */
 	char *grid = (char*)gridp;
 	unsigned row, n_conflicts = 0;
 
@@ -1098,7 +1100,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 
 	/* Check that repeating columns do not contain conflicting information */
 	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT)
-		grid_fix_repeat_col (C, grid, width_real, height, sizeof(grid[0]));
+		grid_fix_repeat_col (C, grid, width, height, sizeof(grid[0]) * inc);
 
 	/* flip grid upside down */
 	if (header->y_order == k_nc_start_south)
