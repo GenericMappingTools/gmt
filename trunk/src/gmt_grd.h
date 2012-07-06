@@ -55,12 +55,6 @@ enum GMT_enum_grdlen {
 	GRD_COMMAND_LEN320 = 320U,
 	GRD_REMARK_LEN160  = 160U};
 
-enum Netcdf_row_order {
-	/* Order of rows in z variable */
-	k_nc_start_north = -1, /* The least dimension (i.e., lat or y) decreases */
-	k_nc_start_south = 1 /* The least dimension (i.e., lat or y) increases */
-};
-
 enum GMT_enum_grdtype {
 	/* Special cases of geographic grids with periodicity */
 	GMT_GRD_CARTESIAN=0,			/* Cartesian data, no periodicity involved */
@@ -84,59 +78,67 @@ enum GMT_enum_grdtype {
  *   -------> x       y V 6 7 8
  */
 
+enum Netcdf_row_order {
+	/* Order of rows in z variable */
+	k_nc_start_north = -1, /* The least dimension (i.e., lat or y) decreases */
+	k_nc_start_south = 1   /* The least dimension (i.e., lat or y) increases */
+};
+
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
-	unsigned int nx;		/* Number of columns */
-	unsigned int ny;		/* Number of rows */
-	unsigned int registration;	/* 0 for node grids, 1 for pixel grids */
+	unsigned int nx;                /* Number of columns */
+	unsigned int ny;                /* Number of rows */
+	unsigned int registration;      /* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
-	int type;			/* Grid format */
-	unsigned int bits;		/* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	unsigned int complex_mode;	/* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
-	unsigned int mx, my;		/* Actual dimensions of the grid in memory, allowing for the padding */
-	uint64_t nm;		/* Number of data items in this grid (nx * ny) [padding is excluded] */
-	uint64_t size;		/* Actual number of items (not bytes) required to hold this grid (= mx * my) */
-	unsigned int n_bands;		/* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
-	unsigned int pad[4];		/* Padding on west, east, south, north sides [2,2,2,2] */
-	unsigned int BC[4];		/* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
-	unsigned int grdtype;		/* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
-	char name[GMT_TEXT_LEN256];	/* Actual name of the file after any ?<varname> and =<stuff> has been removed */
-	char varname[GRD_VARNAME_LEN80];	/* NetCDF: variable name */
-	int y_order;			/* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
-	int z_id;			/* NetCDF: id of z field */
-	int ncid;			/* NetCDF: file ID */
-	int t_index[3];			/* NetCDF: index of higher coordinates */
-	int xy_dim[2];			/* NetCDF: dimension order of x and y; normally {1, 0} */
-	double nan_value;		/* Missing value as stored in grid file */
-	double xy_off;			/* 0.0 (registration == GMT_GRIDLINE_REG) or 0.5 ( == GMT_PIXEL_REG) */
-	double r_inc[2];		/* Reciprocal incs, i.e. 1/inc */
-	char flags[4];			/* Flags used for ESRI grids */
-	char *pocket;			/* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
-	double bcr_threshold;		/* sum of cardinals must >= threshold in bilinear; else NaN */
-	unsigned int bcr_interpolant;	/* Interpolation function used (0, 1, 2, 3) */
-	unsigned int bcr_n;		/* Width of the interpolation function */
-	unsigned int nxp;		/* if X periodic, nxp > 0 is the period in pixels  */
-	unsigned int nyp;		/* if Y periodic, nxp > 0 is the period in pixels  */
-	bool no_BC;			/* If true we skip BC stuff entirely */
-	bool gn;			/* true if top    edge will be set as N pole  */
-	bool gs;			/* true if bottom edge will be set as S pole  */
-	unsigned int z_chunksize[2];  /* chunk size (lat,lon) */
-	bool z_shuffle;               /* if shuffle filter is turned on */
-	unsigned int z_deflate_level; /* if deflate filter is in use */
+	int type;                       /* Grid format */
+	unsigned int bits;              /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
+	unsigned int complex_mode;      /* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
+	unsigned int mx, my;            /* Actual dimensions of the grid in memory, allowing for the padding */
+	uint64_t nm;                    /* Number of data items in this grid (nx * ny) [padding is excluded] */
+	uint64_t size;                  /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+	unsigned int n_bands;           /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
+	unsigned int pad[4];            /* Padding on west, east, south, north sides [2,2,2,2] */
+	unsigned int BC[4];             /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+	unsigned int grdtype;           /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
+	char name[GMT_TEXT_LEN256];     /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
+	char varname[GRD_VARNAME_LEN80];/* NetCDF: variable name */
+	int y_order;                    /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
+	int z_id;                       /* NetCDF: id of z field */
+	int ncid;                       /* NetCDF: file ID */
+	int t_index[3];                 /* NetCDF: index of higher coordinates */
+	int xy_dim[2];                  /* NetCDF: dimension order of x and y; normally {1, 0} */
+	size_t data_offset;             /* NetCDF: distance from the beginning of the in-memory grid */
+	size_t stride;                  /* NetCDF: distance between two rows in the in-memory grid */
+	double nan_value;               /* Missing value as stored in grid file */
+	double xy_off;                  /* 0.0 (registration == GMT_GRIDLINE_REG) or 0.5 ( == GMT_PIXEL_REG) */
+	double r_inc[2];                /* Reciprocal incs, i.e. 1/inc */
+	char flags[4];                  /* Flags used for ESRI grids */
+	char *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+	double bcr_threshold;           /* sum of cardinals must >= threshold in bilinear; else NaN */
+	unsigned int bcr_interpolant;   /* Interpolation function used (0, 1, 2, 3) */
+	unsigned int bcr_n;             /* Width of the interpolation function */
+	unsigned int nxp;               /* if X periodic, nxp > 0 is the period in pixels  */
+	unsigned int nyp;               /* if Y periodic, nxp > 0 is the period in pixels  */
+	bool no_BC;                     /* If true we skip BC stuff entirely */
+	bool gn;                        /* true if top    edge will be set as N pole  */
+	bool gs;                        /* true if bottom edge will be set as S pole  */
+	unsigned int z_chunksize[2];    /* chunk size (lat,lon) */
+	bool z_shuffle;                 /* if shuffle filter is turned on */
+	unsigned int z_deflate_level;   /* if deflate filter is in use */
 
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
-	double wesn[4];			/* Min/max x and y coordinates */
-	double z_min;			/* Minimum z value */
-	double z_max;			/* Maximum z value */
-	double inc[2];			/* x and y increment */
-	double z_scale_factor;		/* grd values must be multiplied by this */
-	double z_add_offset;		/* After scaling, add this */
-	char x_units[GRD_UNIT_LEN80];	/* units in x-direction */
-	char y_units[GRD_UNIT_LEN80];	/* units in y-direction */
-	char z_units[GRD_UNIT_LEN80];	/* grid value units */
-	char title[GRD_TITLE_LEN80];	/* name of data set */
-	char command[GRD_COMMAND_LEN320];	/* name of generating command */
-	char remark[GRD_REMARK_LEN160];	/* comments re this data set */
+	double wesn[4];                   /* Min/max x and y coordinates */
+	double z_min;                     /* Minimum z value */
+	double z_max;                     /* Maximum z value */
+	double inc[2];                    /* x and y increment */
+	double z_scale_factor;            /* grd values must be multiplied by this */
+	double z_add_offset;              /* After scaling, add this */
+	char x_units[GRD_UNIT_LEN80];     /* units in x-direction */
+	char y_units[GRD_UNIT_LEN80];     /* units in y-direction */
+	char z_units[GRD_UNIT_LEN80];     /* grid value units */
+	char title[GRD_TITLE_LEN80];      /* name of data set */
+	char command[GRD_COMMAND_LEN320]; /* name of generating command */
+	char remark[GRD_REMARK_LEN160];   /* comments re this data set */
 };
 
 /*-----------------------------------------------------------------------------------------
