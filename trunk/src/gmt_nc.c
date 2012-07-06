@@ -1097,7 +1097,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		right_shift_grid (grid, dim[1], dim[0], n_shift, sizeof(grid[0]) * inc);
 
 	/* if dim[1] + dim2[1] was < requested width: wrap-pad east border */
-	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT && width > dim[1] + dim2[1]) {
+	if (GMT_grd_is_global(C, header) && width > dim[1] + dim2[1]) {
 		unsigned fix_pad[4] = {0,0,0,0};
 		fix_pad[XHI] = width - dim[1] - dim2[1];
 		pad_grid(grid, width - fix_pad[XHI], height, fix_pad, sizeof(grid[0]) * inc, k_pad_fill_copy_wrap);
