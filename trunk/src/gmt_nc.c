@@ -1084,7 +1084,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &header->ncid));
 
 	/* read grid */
-	if ( dim2[0] == 0 )
+	if ( dim2[1] == 0 )
 		io_nc_grid (C, header, dim, origin, off, inc, 0, k_get_netcdf, grid);
 	else {
 		/* read grid in two parts */
@@ -1094,13 +1094,13 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 
 	/* if we need to shift grid */
 	if (n_shift)
-		right_shift_grid (grid, dim[1], dim[0], n_shift, sizeof(grid[0]));
+		right_shift_grid (grid, dim[1], dim[0], n_shift, sizeof(grid[0]) * inc);
 
-	/* if dim[1] was < requested width: wrap-pad east border */
-	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT && width - dim[1] - dim2[1] > 0) {
+	/* if dim[1] + dim2[1] was < requested width: wrap-pad east border */
+	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT && width > dim[1] + dim2[1]) {
 		unsigned fix_pad[4] = {0,0,0,0};
 		fix_pad[XHI] = width - dim[1] - dim2[1];
-		pad_grid(grid, width - fix_pad[XHI], height, fix_pad, sizeof(grid[0]), k_pad_fill_copy_wrap);
+		pad_grid(grid, width - fix_pad[XHI], height, fix_pad, sizeof(grid[0]) * inc, k_pad_fill_copy_wrap);
 	}
 
 	/* get stats */
