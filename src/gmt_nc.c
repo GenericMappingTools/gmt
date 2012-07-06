@@ -743,19 +743,24 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 }
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
-void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
+void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
 	/* Note: when grid is complex, double cell_size and pass the number of complex
 	 * values per row as n_cols */
 	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
 	unsigned row;
+	unsigned stride = n_cols; /* stride is the distance between rows. defaults to n_cols */
 	char *grid = (char*)gridp;
 	char *tmp = malloc (n_cols * cell_size);
 	char *top, *bottom;
+
+	if (n_stride != 0)
+		stride = n_stride;
+
 	for (row = 0; row < rows_over_2; ++row) {
 		/* pointer to top row: */
-		top = grid + row * n_cols * cell_size;
+		top = grid + row * stride * cell_size;
 		/* pointer to bottom row: */
-		bottom = grid + ( (n_rows - row) * n_cols - n_cols ) * cell_size;
+		bottom = grid + ( (n_rows - row) * stride - stride ) * cell_size;
 		memcpy (tmp, top, n_cols * cell_size);    /* save top row */
 		memcpy (top, bottom, n_cols * cell_size); /* copy bottom to top */
 		memcpy (bottom, tmp, n_cols * cell_size); /* copy tmp to bottom */
@@ -1089,12 +1094,16 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &header->ncid));
 
 	/* read grid */
-	if ( dim2[1] == 0 )
+	if (header->stride != 0 || header->data_offset != 0) {
+		// TODO: proper data_offset on all i/o
+		io_nc_grid (C, header, dim, origin, header->data_offset, 1, header->stride, k_get_netcdf, grid);
+	}
+	else if (dim2[1] == 0)
 		io_nc_grid (C, header, dim, origin, off, inc, 0, k_get_netcdf, grid);
 	else {
 		/* read grid in two parts */
 		io_nc_grid (C, header, dim, origin, off, inc, width, k_get_netcdf, grid);
-		io_nc_grid (C, header, dim2, origin2, off, inc, width, k_get_netcdf, grid + dim[1]);
+		io_nc_grid (C, header, dim2, origin2, off + dim[1], inc, width, k_get_netcdf, grid);
 	}
 
 	/* if we need to shift grid */
@@ -1114,7 +1123,8 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	header->z_min = DBL_MAX;
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
-	for (n = 0 + off; n < width * inc * height; n += inc) {
+	// TODO: row stride
+	for (n = 0 + off; n < (header->stride ? header->stride : width) * inc * height; n += inc) {
 		if (adj_nan_value && grid[n] == header->nan_value) {
 			grid[n] = C->session.f_NaN;
 			continue;
@@ -1130,7 +1140,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 
 	/* flip grid upside down */
 	if (header->y_order == k_nc_start_south)
-		grid_flip_vertical (grid, width, height, sizeof(grid[0]) * inc);
+		grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
 
 	/* Add padding with border replication */
 	pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
@@ -1138,8 +1148,9 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 #ifdef DEBUG
 	if (header->size < 160) {
 		unsigned pad_x = pad[XLO] + pad[XHI];
-		for (n=0; n<(width + pad_x) * (height + pad[YLO] + pad[YHI]) * inc; ++n) {
-			if (n % ((width + pad_x) * inc) == 0)
+		unsigned stride = header->stride ? header->stride : width;
+		for (n=0; n<(stride + pad_x) * (height + pad[YLO] + pad[YHI]) * inc; ++n) {
+			if (n % ((stride + pad_x) * inc) == 0)
 				fprintf (stderr, "\n");
 			fprintf (stderr, "%4.0f", grid[n]);
 		}
@@ -1226,7 +1237,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 
 	/* flip grid upside down */
 	if (header->y_order == k_nc_start_south)
-		grid_flip_vertical (grid, width, height, sizeof(grid[0]) * inc);
+		grid_flip_vertical (grid, width, height, 0, sizeof(grid[0]) * inc);
 
 	/* get stats */
 	header->z_min = DBL_MAX;
