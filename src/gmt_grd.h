@@ -105,8 +105,8 @@ struct GRD_HEADER {
 	int y_order;                    /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;                       /* NetCDF: id of z field */
 	int ncid;                       /* NetCDF: file ID */
-	int t_index[3];                 /* NetCDF: index of higher coordinates */
 	int xy_dim[2];                  /* NetCDF: dimension order of x and y; normally {1, 0} */
+	size_t t_index[3];              /* NetCDF: index of higher coordinates */
 	size_t data_offset;             /* NetCDF: distance from the beginning of the in-memory grid */
 	size_t stride;                  /* NetCDF: distance between two rows in the in-memory grid */
 	double nan_value;               /* Missing value as stored in grid file */
