@@ -1075,7 +1075,6 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		strcpy (header->x_units, "x");
 		strcpy (header->y_units, "y");
 		strcpy (header->z_units, "z");
-		for (i = 0; i < 3; i++) header->t_index[i] = -1;
 		GMT_grd_setpad (C, header, C->current.io.pad);	/* Assign default pad */
 	}
 

@@ -177,34 +177,29 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	double dummy[2], *xy = NULL;
 	char dimname[GRD_UNIT_LEN80], coord[8];
 	nc_type z_type;
-	double t_value[3];
 
 	/* Dimension ids, variable ids, etc.. */
 	int i, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars, ndims = 0;
 	size_t lens[5], item[2];
 
-	for (i = 0; i < 3; i++) t_value[i] = C->session.d_NaN;
-
 	/* If not yet determined, attempt to get the layer IDs from the variable name */
+	int n_t_index_by_value = 0;
+	double t_value[3];
 
-	if (header->t_index[0] >= 0) { /* Do nothing: already determined */ }
-	else if (!header->varname[0])
-		header->t_index[0] = 0;	/* No varname: use first layer */
-	else {
-		i = 0;
-		while (header->varname[i] && header->varname[i] != '(' && header->varname[i] != '[') i++;
-		if (header->varname[i] == '(') {
-			sscanf (&header->varname[i+1], "%lf,%lf,%lf)", &t_value[0], &t_value[1], &t_value[2]);
-			header->varname[i] = '\0';
+	if (header->varname[0]) {
+		char *c = strpbrk (header->varname, "(["); /* find first occurrence of ( or [ */
+		if (c != NULL && *c == '(') {
+			n_t_index_by_value = sscanf (c+1, "%lf,%lf,%lf", &t_value[0], &t_value[1], &t_value[2]);
+			*c = '\0';
+			/* t_index will be determined later from t_value when the nc-file is opened */
 		}
-		else if (header->varname[i] == '[') {
-			sscanf (&header->varname[i+1], "%d,%d,%d]", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
-			header->varname[i] = '\0';
+		else if (c != NULL && *c == '[') {
+			sscanf (c+1, "%zu,%zu,%zu", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
+			*c = '\0';
 		}
 	}
 
 	/* Open NetCDF file */
-
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
 	switch (job) {
 		case 'r':
@@ -406,21 +401,21 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			header->z_deflate_level = deflate ? deflate_level : 0; /* if deflate filter is in use */
 		}
 
-		/* Get grid buffer */
+		/* Determine t_index from t_value */
 		item[0] = 0;
-		for (i = 0; i < ndims-2; i++) {
-			if (header->t_index[i] > -1) { /* Do nothing */ }
-			else if (GMT_is_dnan(t_value[i]))
-				header->t_index[i] = 0;
-			else {
-				item[1] = lens[i]-1;
-				if (nc_get_att_double (ncid, ids[i], "actual_range", dummy)) {
-					GMT_err_trap (nc_get_var1_double (ncid, ids[i], &item[0], &dummy[0]));
-					GMT_err_trap (nc_get_var1_double (ncid, ids[i], &item[1], &dummy[1]));
-				}
-				header->t_index[i] = lrint((t_value[i] - dummy[0]) / (dummy[1] - dummy[0]) * item[1]);
+		for (i = 0; i < n_t_index_by_value; i++) {
+			item[1] = lens[i]-1;
+			if (nc_get_att_double (ncid, ids[i], "actual_range", dummy)) {
+				GMT_err_trap (nc_get_var1_double (ncid, ids[i], &item[0], &dummy[0]));
+				GMT_err_trap (nc_get_var1_double (ncid, ids[i], &item[1], &dummy[1]));
+			}
+			if (item[1] != 0 && dummy[0] != dummy[1]) { /* avoid dvision by 0 */
+				double index = (t_value[i] - dummy[0]) / (dummy[1] - dummy[0]) * item[1];
+				if (index > 0)
+					header->t_index[i] = index;
 			}
 		}
+
 	}
 	else {
 		/* Store global attributes */
@@ -879,6 +874,7 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 
 	/* set index of input origin */
 	yx_dim[0] = header->xy_dim[1], yx_dim[1] = header->xy_dim[0]; /* xy_dim not row major */
+	memcpy (start, header->t_index, 3 * sizeof(size_t)); /* set lower dimensions first (e.g. layer) */
 	start[yx_dim[0]] = origin[0]; /* first row */
 	start[yx_dim[1]] = origin[1]; /* first col */
 
