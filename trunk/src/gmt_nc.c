@@ -358,12 +358,12 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			header->wesn[YLO] = 0.0, header->wesn[YHI] = (double) header->ny-1;
 		/* Check for reverse order of y-coordinate */
 		if (header->wesn[YLO] > header->wesn[YHI]) {
-			header->y_order = k_nc_start_north;
+			header->row_order = k_nc_start_north;
 			dummy[0] = header->wesn[YHI], dummy[1] = header->wesn[YLO];
 			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
 		}
 		else
-			header->y_order = k_nc_start_south;
+			header->row_order = k_nc_start_south;
 		header->inc[GMT_Y] = GMT_get_inc (C, header->wesn[YLO], header->wesn[YHI], header->ny, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
@@ -445,8 +445,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 
 		/* Define y variable */
 		gmt_nc_put_units (ncid, ids[header->xy_dim[1]], header->y_units);
-		header->y_order = k_nc_start_south;
-		dummy[(1-header->y_order)/2] = header->wesn[YLO], dummy[(1+header->y_order)/2] = header->wesn[YHI];
+		header->row_order = k_nc_start_south;
+		dummy[(1-header->row_order)/2] = header->wesn[YLO], dummy[(1+header->row_order)/2] = header->wesn[YHI];
 		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
@@ -486,7 +486,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		xy = GMT_memory (C, NULL,  MAX (header->nx,header->ny), double);
 		for (col = 0; col < header->nx; col++) xy[col] = GMT_grd_col_to_x (C, col, header);
 		GMT_err_trap (nc_put_var_double (ncid, ids[header->xy_dim[0]], xy));
-		if (header->y_order == k_nc_start_south) {
+		if (header->row_order == k_nc_start_south) {
 			for (row = 0; row < header->ny; row++) xy[row] = (double) GMT_col_to_x (C, row, header->wesn[YLO], header->wesn[YHI], header->inc[GMT_Y], 0.5 * header->registration, header->ny);
 		}
 		else {
@@ -869,7 +869,7 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 	GMT_report (C, GMT_MSG_NORMAL, "%s nx:%u ny:%u x0:%u y0:%u y-order:%s\n",
 			io_mode == k_put_netcdf ? "writing," : "reading,",
 			dim[1], dim[0], origin[1], origin[0],
-			header->y_order == k_nc_start_south ? "S->N" : "N->S");
+			header->row_order == k_nc_start_south ? "S->N" : "N->S");
 #endif
 
 	/* set index of input origin */
@@ -1019,7 +1019,7 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 		--last_col;
 
 	/* Adjust first_row */
-	if (header->y_order == k_nc_start_south)
+	if (header->row_order == k_nc_start_south)
 		first_row = header->ny - 1 - last_row;
 
 	origin[0] = first_row;
@@ -1143,7 +1143,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 #endif
 
 	/* flip grid upside down */
-	if (header->y_order == k_nc_start_south)
+	if (header->row_order == k_nc_start_south)
 		grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
 
 	/* Add padding with border replication */
@@ -1221,7 +1221,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	header->ny = height;
 
 	/* Adjust first_row */
-	if (header->y_order == k_nc_start_south)
+	if (header->row_order == k_nc_start_south)
 		first_row = header->ny - 1 - last_row;
 
 	/* Write grid header without closing file afterwards */
@@ -1241,7 +1241,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 		grid_fix_repeat_col (C, grid, width, height, sizeof(grid[0]) * inc);
 
 	/* flip grid upside down */
-	if (header->y_order == k_nc_start_south)
+	if (header->row_order == k_nc_start_south)
 		grid_flip_vertical (grid, width, height, 0, sizeof(grid[0]) * inc);
 
 	/* get stats */

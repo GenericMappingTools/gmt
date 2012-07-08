@@ -102,7 +102,7 @@ struct GRD_HEADER {
 	unsigned int grdtype;           /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
 	char name[GMT_TEXT_LEN256];     /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GRD_VARNAME_LEN80];/* NetCDF: variable name */
-	int y_order;                    /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
+	int row_order;                  /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;                       /* NetCDF: id of z field */
 	int ncid;                       /* NetCDF: file ID */
 	int xy_dim[2];                  /* NetCDF: dimension order of x and y; normally {1, 0} */

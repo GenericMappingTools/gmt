@@ -135,7 +135,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 		GMT_err_trap (nc_get_var_double (ncid, z_range_id, dummy));
 		header->z_min = dummy[0];
 		header->z_max = dummy[1];
-		header->y_order = -1;
+		header->row_order = k_nc_start_north; /* N->S */
 	}
 	else {
 		int reg;
