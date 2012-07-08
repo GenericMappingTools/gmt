@@ -1055,7 +1055,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	int err;            /* netcdf errors */
 	int n_shift;
 	unsigned dim[2], dim2[2], origin[2], origin2[2]; /* dimension and origin {y,x} of subset to read from netcdf */
-	unsigned width, height, inc, off, n;
+	unsigned width, height, inc, off, n, row;
 
 	/* Check type: is file in old NetCDF format or not at all? */
 	if (C->session.grdformat[header->type][0] == 'c')
@@ -1116,19 +1116,30 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		assert (width == dim[1] + dim2[1]);
 
 	/* get stats */
-	header->z_min = DBL_MAX;
-	header->z_max = -DBL_MAX;
+	if (isnan (header->z_min)) { /* if z_min == NaN, then z_max == NaN too */
+		header->z_min = DBL_MAX;
+		header->z_max = -DBL_MAX;
+	}
 	adj_nan_value = !isnan (header->nan_value);
-	// TODO: row stride
-	for (n = 0 + off; n < (header->stride ? header->stride : width) * inc * height; n += inc) {
-		if (adj_nan_value && grid[n] == header->nan_value) {
-			grid[n] = C->session.f_NaN;
-			continue;
+	for (row = 0; row < height; ++row) {
+		float *p_data = grid + row * (header->stride ? header->stride : width) * inc + off;
+		unsigned col;
+		for (col = 0; col < width * inc; col += inc) {
+			if (adj_nan_value && p_data[col] == header->nan_value) {
+				p_data[col] = NAN;
+				continue;
+			}
+			else if (!isnan (p_data[col])) {
+				header->z_min = MIN (header->z_min, p_data[col]);
+				header->z_max = MAX (header->z_max, p_data[col]);
+			}
 		}
-		else if (!isnan (grid[n])) {
-			header->z_min = MIN (header->z_min, grid[n]);
-			header->z_max = MAX (header->z_max, grid[n]);
-		}
+	}
+	/* check limits */
+	if (header->z_min > header->z_max) {
+		header->z_min = NAN;
+		header->z_max = NAN;
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: No valid values in grid [%s]\n", header->name);
 	}
 #ifdef DEBUG
 	GMT_report (C, GMT_MSG_NORMAL, "z_minmax: %g %g\n", header->z_min, header->z_max);
@@ -1156,7 +1167,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 
 	/* Adjust header */
 	GMT_memcpy (header->wesn, wesn, 4, double);
-	header->nx = width; // TODO: maybe width * inc for complex?
+	header->nx = width;
 	header->ny = height;
 
 	GMT_err_trap (nc_close (header->ncid));
