@@ -1090,16 +1090,13 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &header->ncid));
 
 	/* read grid */
-	if (header->stride != 0 || header->data_offset != 0) {
-		// TODO: proper data_offset on all i/o
-		io_nc_grid (C, header, dim, origin, header->data_offset, 1, header->stride, k_get_netcdf, grid);
-	}
-	else if (dim2[1] == 0)
-		io_nc_grid (C, header, dim, origin, off, inc, 0, k_get_netcdf, grid);
+	if (dim2[1] == 0)
+		io_nc_grid (C, header, dim, origin, off, inc, header->stride, k_get_netcdf, grid + header->data_offset);
 	else {
 		/* read grid in two parts */
-		io_nc_grid (C, header, dim, origin, off, inc, width, k_get_netcdf, grid);
-		io_nc_grid (C, header, dim2, origin2, off + dim[1], inc, width, k_get_netcdf, grid);
+		unsigned stride_or_width = header->stride != 0 ? header->stride : width;
+		io_nc_grid (C, header, dim, origin, off, inc, stride_or_width, k_get_netcdf, grid + header->data_offset);
+		io_nc_grid (C, header, dim2, origin2, off, inc, stride_or_width, k_get_netcdf, grid + header->data_offset + dim[1]);
 	}
 
 	/* if we need to shift grid */
@@ -1156,10 +1153,11 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	if (header->size < 160) {
 		unsigned pad_x = pad[XLO] + pad[XHI];
 		unsigned stride = header->stride ? header->stride : width;
+		float *p_data = grid + header->data_offset;
 		for (n=0; n<(stride + pad_x) * (height + pad[YLO] + pad[YHI]) * inc; ++n) {
 			if (n % ((stride + pad_x) * inc) == 0)
 				fprintf (stderr, "\n");
-			fprintf (stderr, "%4.0f", grid[n]);
+			fprintf (stderr, "%4.0f", p_data[n]);
 		}
 		fprintf (stderr, "\n");
 	}
