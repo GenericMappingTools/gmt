@@ -310,7 +310,7 @@ int gmt_process_binary_input (struct GMT_CTRL *C, unsigned int n_read) {
 
 void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval)
 {
-	int status, i, j, k, n_use, ns;
+	int status, i, j, n_use, ns;
 
 	C->current.io.status = 0;
 	if (*n == GMT_MAX_COLUMNS)
@@ -327,15 +327,15 @@ void * gmt_nc_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval)
 			*retval = -1;
 			return (NULL);
 		}
-		for (i = j = 0; i < C->current.io.nvars && j < n_use; i++) {
+		for (i = j = 0; i < C->current.io.nvars && j < n_use; ++i) {
+			unsigned n;
 			C->current.io.t_index[i][0] = C->current.io.nrec;
 			nc_get_vara_double (C->current.io.ncid, C->current.io.varid[i], C->current.io.t_index[i], C->current.io.count[i], &C->current.io.curr_rec[j]);
-			for (k = 0; k < C->current.io.count[i][1]; k++, j++) {
-
-			if (C->current.io.curr_rec[j] == C->current.io.missing_value[i])
-				C->current.io.curr_rec[j] = C->session.d_NaN;
-			else
-				C->current.io.curr_rec[j] = C->current.io.curr_rec[j] * C->current.io.scale_factor[i] + C->current.io.add_offset[i];
+			for (n = 0; n < C->current.io.count[i][1]; ++n, ++j) {
+				if (C->current.io.curr_rec[j] == C->current.io.missing_value[i])
+					C->current.io.curr_rec[j] = C->session.d_NaN;
+				else
+					C->current.io.curr_rec[j] = C->current.io.curr_rec[j] * C->current.io.scale_factor[i] + C->current.io.add_offset[i];
 				gmt_convert_col (C->current.io.col[GMT_IN][i], C->current.io.curr_rec[j]);
 			}
 		}

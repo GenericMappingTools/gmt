@@ -1259,7 +1259,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		i++;
 	}
 	if (C->common.R.oblique) double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
-	if (i < 4 || i > 6 || (!C->common.R.oblique && GMT_check_region (C, p) || (i == 6 && p[4] >= p[5]))) error++;
+	if (i < 4 || i > 6 || ((!C->common.R.oblique && GMT_check_region (C, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	GMT_memcpy (C->common.R.wesn, p, 6, double);	/* This will probably be reset by GMT_map_setup */
 	error += GMT_check_condition (C, i == 6 && !C->current.proj.JZ_set, "Error: -R with six parameters requires -Jz|Z\n");
 
