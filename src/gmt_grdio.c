@@ -1064,18 +1064,18 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 		GMT_memset (header, 1, struct GRD_HEADER);
 
 		/* Set the variables that are not initialized to 0/false/NULL */
-		header->z_scale_factor	= 1.0;
-		header->type			= -1;
-		header->y_order			= 1;
-		header->z_id			= -1;
-		header->n_bands 		= 1;	/* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */
-		header->z_min			= C->session.d_NaN;
-		header->z_max			= C->session.d_NaN;
-		header->nan_value		= C->session.d_NaN;
+		header->z_scale_factor = 1.0;
+		header->type           = -1;
+		header->row_order      = k_nc_start_south; /* S->N */
+		header->z_id           = -1;
+		header->n_bands        = 1; /* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */
+		header->z_min          = C->session.d_NaN;
+		header->z_max          = C->session.d_NaN;
+		header->nan_value      = C->session.d_NaN;
 		strcpy (header->x_units, "x");
 		strcpy (header->y_units, "y");
 		strcpy (header->z_units, "z");
-		GMT_grd_setpad (C, header, C->current.io.pad);	/* Assign default pad */
+		GMT_grd_setpad (C, header, C->current.io.pad); /* Assign default pad */
 	}
 
 	/* Always update command line history, if given */
