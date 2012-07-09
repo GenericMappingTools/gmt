@@ -3507,8 +3507,6 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_GMT_FFT:
 			if (!strncmp (lower_value, "auto", 4))
 				C->current.setting.fft = k_fft_auto;
-			else if (!strncmp (lower_value, "br", 2))   /* complete name: brenner */
-				C->current.setting.fft = k_fft_brenner;
 			else if (!strncmp (lower_value, "fftw", 4)) /* complete name: fftw3 */
 				C->current.setting.fft = k_fft_fftw3;
 			else if (!strncmp (lower_value, "ac", 2))   /* complete name: accelerate */

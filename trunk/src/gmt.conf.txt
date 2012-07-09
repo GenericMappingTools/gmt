@@ -198,9 +198,11 @@ BD(character).  If the leading BD(f), BD(a), or BD(c) are replaced with BD(F), B
 .TP
 .B GMT_FFT
 Determines which Fast Fourier Transform should be used among those that have
-been configured during installation. Choose from auto (pick the most suitable
-for the task among available algorithms), brenner (GMT's version of Normal Brenner's
-Fortran multi-dimensional FFT), fftw3 (The Fastest Fourier Transform in the West), accelerate (Use the Accelerate Framework under OS X), Kiss FFT [auto].
+been configured during installation. Choose from BD(auto) (pick the most suitable
+for the task among available algorithms), BD(fftw3) (The Fastest Fourier Transform
+in the West), BD(accelerate) (Use the Accelerate Framework under OS X; Note, that
+the number of samples to be processed must be a base 2 exponent.), BD(kiss) (Kiss
+FFT) [auto].
 .TP
 .B GMT_HISTORY
 Passes the history of past common command options via the hidden \.gmtcommands file.

@@ -135,8 +135,7 @@ enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
 	k_fft_accelerate,  /* Select Accelerate Framework vDSP FFT [OS X only] */
 	k_fft_fftw3,       /* Select FFTW-3 */
-	k_fft_kiss,        /* Select Kiss FFT */
-	k_fft_brenner,     /* Select Normal Brenners old-school FFT */
+	k_fft_kiss,        /* Select Kiss FFT (always available) */
 	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
 };
 
