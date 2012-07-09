@@ -559,7 +559,7 @@ int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, flo
 	GMT_grd_setpad (C, header, pad);	/* Copy the pad to the header */
 	GMT_set_grddim (C, header);		/* Update all dimensions */
 	if (expand) GMT_grd_zminmax (C, header, grid);	/* Reset min/max since current extrema includes the padded region */
-	GMT_grd_do_scaling (C, grid, header->size, header->z_scale_factor, header->z_add_offset);
+	GMT_scale_and_offset_f (C, grid, header->size, header->z_scale_factor, header->z_add_offset);
 	header->z_min = header->z_min * header->z_scale_factor + header->z_add_offset;
 	header->z_max = header->z_max * header->z_scale_factor + header->z_add_offset;
 	GMT_BC_init (C, header);	/* Initialize grid interpolation and boundary condition parameters */
@@ -588,8 +588,8 @@ int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, fl
 		GMT_report (C, GMT_MSG_NORMAL, "Warning: scale_factor should not be 0. Reset to 1.\n");
 	}
 	gmt_grd_set_units (C, header);
-	
-	GMT_grd_do_scaling (C, grid, header->size, 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
+
+	GMT_scale_and_offset_f (C, grid, header->size, 1.0/header->z_scale_factor, -header->z_add_offset/header->z_scale_factor);
 	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex_mode));
 }
 
@@ -656,23 +656,6 @@ int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code)
 	if (id == -1) return (GMT_GRDIO_UNKNOWN_ID);
 
 	return (id);
-}
-
-void GMT_grd_do_scaling (struct GMT_CTRL *C, float *grid, uint64_t nm, double scale, double offset)
-{
-	/* Routine that scales and offsets the data if specified.
-	 * Note: The loop includes the pad which we also want scaled as well. */
-	uint64_t i;
-
-	if (GMT_is_dnan (scale) || GMT_is_dnan (offset)) return;	/* Sanity check */
-	if (scale == 1.0 && offset == 0.0) return;			/* No work needed */
-
-	if (scale == 1.0)
-		for (i = 0; i < nm; i++) grid[i] += (float)offset;
-	else if (offset == 0.0)
-		for (i = 0; i < nm; i++) grid[i] *= (float)scale;
-	else
-		for (i = 0; i < nm; i++) grid[i] = grid[i] * ((float)scale) + (float)offset;
 }
 
 /* gmt_grd_RI_verify -- routine to check grd R and I compatibility
@@ -994,7 +977,7 @@ int GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, int row_no, flo
 			if (G->check && row[col] == G->header.nan_value) row[col] = C->session.f_NaN;
 		}
 	}
-	GMT_grd_do_scaling (C, row, G->header.nx, G->scale, G->offset);
+	GMT_scale_and_offset_f (C, row, G->header.nx, G->scale, G->offset);
 	G->row++;
 	return (GMT_NOERROR);
 }
@@ -1009,7 +992,7 @@ int GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *row)
 	size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
 	tmp = GMT_memory (C, NULL, G->header.nx * size, char);
 
-	GMT_grd_do_scaling (C, row, G->header.nx, G->scale, G->offset);
+	GMT_scale_and_offset_f (C, row, G->header.nx, G->scale, G->offset);
 	for (col = 0; col < G->header.nx; col++) if (GMT_is_fnan (row[col]) && G->check) row[col] = (float)G->header.nan_value;
 
 	switch (C->session.grdformat[G->header.type][0]) {

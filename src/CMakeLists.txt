@@ -63,6 +63,13 @@ else (PCRE_FOUND)
 	endif (REGEX_FOUND)
 endif (PCRE_FOUND)
 
+if (APPLE)
+	# Accelerate framework
+	find_library (ACCELERATE_FRAMEWORK Accelerate)
+	mark_as_advanced (ACCELERATE_FRAMEWORK)
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${ACCELERATE_FRAMEWORK})
+endif (APPLE)
+
 find_package (Matlab)
 if (GMT_MATLAB AND MATLAB_FOUND)
 	# We want the Matlab API

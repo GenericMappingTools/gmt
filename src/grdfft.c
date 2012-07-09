@@ -1302,11 +1302,14 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
 
+		/* FFT computes an unnormalized transform, in that there is no
+		 * coefficient in front of the summation in the FT. In other words,
+		 * applying the forward and then the backward transform will multiply the
+		 * input by the number of elements (header->size). Here we correct this: */
 		Ctrl->S.scale *= (2.0 / Out->header->size);
-		for (ij = 0; ij < Out->header->size; ij++) Out->data[ij] *= (float)Ctrl->S.scale;
+		GMT_scale_and_offset_f (GMT, Out->data, Out->header->size, Ctrl->S.scale, 0);
 
 		/* The data are in the middle of the padded array */
-
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 			Return (API->error);
 		}

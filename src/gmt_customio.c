@@ -1571,7 +1571,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 
 	if (complex_mode) {
 		to_gdalread->Z.active = true;		/* Force reading into a compex array */
-		to_gdalread->Z.complex = (int)complex_mode;
+		to_gdalread->Z.complex_mode = (int)complex_mode;
 	}
 
 	subset = GMT_is_subset (C, header, wesn);	/* We have a Sub-region demand */

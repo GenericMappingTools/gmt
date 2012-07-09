@@ -58,12 +58,11 @@ EXTERN_MSC void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h);
 EXTERN_MSC void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad);
 EXTERN_MSC void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G);
 EXTERN_MSC void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G);
-EXTERN_MSC void GMT_grd_do_scaling (struct GMT_CTRL *C, float *grid, uint64_t nm, double scale, double offset);
 EXTERN_MSC void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z);
 EXTERN_MSC int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
 EXTERN_MSC int GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
-EXTERN_MSC int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex);
-EXTERN_MSC int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex);
+EXTERN_MSC int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode);
+EXTERN_MSC int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode);
 EXTERN_MSC int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HEADER *header);
 EXTERN_MSC int GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, unsigned int interpolant);
 EXTERN_MSC int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int mode);
@@ -80,7 +79,7 @@ EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *Grid, double
 EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc);
 #ifdef USE_GDAL
 EXTERN_MSC int GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, 
-			unsigned int *pad, unsigned int complex);		/* Function to read true images via GDAL */
+			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
 int GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I);
 #endif
 
