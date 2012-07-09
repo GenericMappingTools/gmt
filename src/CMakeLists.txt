@@ -63,6 +63,16 @@ else (PCRE_FOUND)
 	endif (REGEX_FOUND)
 endif (PCRE_FOUND)
 
+find_package (FFTW3)
+if (FFTW3_FOUND)
+	set (HAVE_FFTW3F TRUE CACHE INTERNAL "System has single precision FFTW3")
+	if (FFTW3F_THREADS_LIBRARY)
+		set (HAVE_FFTW3F_THREADS TRUE CACHE INTERNAL "System has single precision threadded FFTW3")
+	endif (FFTW3F_THREADS_LIBRARY)
+	include_directories (${FFTW3_INCLUDE_DIR})
+	list (APPEND GMT_OPTIONAL_LIBRARIES ${FFTW3F_LIBRARIES})
+endif (FFTW3_FOUND)
+
 if (APPLE)
 	# Accelerate framework
 	find_library (ACCELERATE_FRAMEWORK Accelerate)
@@ -344,8 +354,8 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS dbase gshhg imgsrc meca mgd77 potential segy sph spotter
-	x2sys)
+set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 potential segy sph
+	spotter x2sys)
 
 # other supplement directories (not included in gmtlib)
 set (GMT_OTHER_SUPPL_DIRS misc xgrid)

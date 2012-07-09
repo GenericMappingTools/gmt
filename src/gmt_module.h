@@ -35,9 +35,9 @@ struct GMTAPI_CTRL; /* Forward declaration of GMTAPI_CTRL */
 
 /* name, purpose, Api_mode, and function pointer for each GMT module */
 struct Gmt_moduleinfo {
-	char *name;             /* Program name */
-	char *component;        /* Component (core or supplement) */
-	char *purpose;          /* Program purpose */
+	const char *name;             /* Program name */
+	const char *component;        /* Component (core or supplement) */
+	const char *purpose;          /* Program purpose */
 	enum Api_mode api_mode; /* Either k_mode_gmt or k_mode_psl*/
 	/* gmt module function pointer: */
 	int (*p_func)(struct GMTAPI_CTRL*, int, void*);
@@ -296,10 +296,10 @@ EXTERN_MSC void gmt_module_show_all();
 EXTERN_MSC void gmt_module_show_name_and_purpose(enum Gmt_module_id module);
 
 /* Lookup module id by name */
-EXTERN_MSC enum Gmt_module_id gmt_module_lookup (char *candidate);
+EXTERN_MSC enum Gmt_module_id gmt_module_lookup (const char *candidate);
 
 /* Get module name */
-EXTERN_MSC char *gmt_module_name (struct GMT_CTRL *gmt_ctrl);
+EXTERN_MSC const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl);
 
 #ifdef __cplusplus
 }

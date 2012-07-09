@@ -23,25 +23,45 @@
  * is the one we have had for a long time: a C-translation of the old
  * and venerable Norman Brenner (MIT) Fortran code.
  * Configure is expected to set constant GMT_FFT to one of these values:
- * FFTPACK	: Link with the FFT Pack of Swarztrauber, supplied here
- * FFTW		: Link with the FFTW library (supplied externally)
- * SUN4		: Link with the Sun4 performance library (Sun only)
- * VECLIB	: Link with the OSX Accelerate Framework (OSX only)
- * 
+ * FFTPACK: Link with the FFT Pack of Swarztrauber, supplied here
+ * FFTW3  : Link with the FFTW library (supplied externally)
+ * vDSP   : Link with the OSX Accelerate Framework (OSX only)
+ *
  * If not set we default to GMTs Brenner algorithm.
  *
  * Author:	Paul Wessel
  * Date:	1-APR-2011
  * Version:	5
- * THIS CODE IS NOT SET UP FOR 64-BIT; IT HAS A LOT OF INTS ETC
  */
 
 #define GMT_WITH_NO_PS
 #include "gmt.h"
 #include "gmt_internals.h"
 
-static char *GMT_fft_algo[N_GMT_FFT] = {"Auto-Selected", "OS/X Accelerate Framework", "Fastest Fourier Transform in the West", "Sun Performance Library", \
-	"Paul N. Swarztrauber's FFT pack", "Fortran-to-C translation of FOURT by Norman Brenner, MIT"};
+static char *GMT_fft_algo[k_n_fft_algorithms] = {
+	"Auto-Select",
+	"Accelerate Framework",
+	"FFTW 3",
+	"Kiss FFT",
+	"Fortran-to-C translation of FOURT by Norman Brenner, MIT"
+};
+
+static inline unsigned int propose_radix2 (unsigned n) {
+	/* Returns the smallest base 2 exponent, log2n, that satisfies: 2^log2n >= n */
+	unsigned log2n = 1;
+	while ( 1U<<log2n < n ) ++log2n; /* log2n = 1<<(unsigned)ceil(log2(n)); */
+	return log2n;
+}
+
+static inline unsigned int radix2 (unsigned n) {
+	/* Returns the base 2 exponent that represents 'n' if 'n' is a power of 2,
+	 * 0 otherwise */
+	unsigned log2n = 1;
+	while ( 1U<<log2n < n ) ++log2n; /* log2n = 1<<(unsigned)ceil(log2(n)); */
+	if (n == 1U<<log2n)
+		return log2n;
+	return 0;
+}
 
 /* Default GMT FFT which we always compile in */
 
@@ -2457,10 +2477,10 @@ void rffti(int n, Treal wsave[])
 * Date   : 10/16/07 re-worked by David Sandwells  to use pointers       *
 ************************************************************************/
 
-typedef struct FCOMPLEX {float r,i;} fcomplex;
+struct FCOMPLEX {float r,i;};
 
 /*----------------------------------------------------------------------------*/
-void cfft1d_fftpack (int *np, fcomplex *c, int *dir)
+void cfft1d_fftpack (int *np, struct FCOMPLEX *c, int *dir)
 {
 
 	static float *work;
@@ -2502,7 +2522,7 @@ void cfft1d_fftpack (int *np, fcomplex *c, int *dir)
 int GMT_fft_1d_fftpack (struct GMT_CTRL *C, float *data, int n, int direction, unsigned int mode)
 {
 	int np = (int)n, dir = (int)direction;
-	cfft1d_fftpack (&np, (fcomplex)data, &dir);
+	cfft1d_fftpack (&np, (struct FCOMPLEX *)data, &dir);
 	return (GMT_NOERROR);
 }
 
@@ -2531,7 +2551,7 @@ void transpose_complex_NM (struct FCOMPLEX *in, int n, int m)
 
 int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 {
-	int	i, j;
+	int	i;
 	static	int flag = 1;
 
 	if (flag == 0) {
@@ -2539,7 +2559,9 @@ int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 		flag = 1;
 	}
 
-	if (debug) print_complex (cin, *N, *M, 1);
+#ifdef DEBUG
+	print_complex (cin, *N, *M, 1);
+#endif
 
 	/* forward 2D */
 	if (*dir == -1) {
@@ -2569,11 +2591,14 @@ int cfft2d_fftpack (int *N, int *M, struct FCOMPLEX *cin, int *dir)
 
 		/* transpose */
 		transpose_complex_NM(cin, *M, *N);
-		}
+	}
 
-	if (debug) print_complex(cin, *N, *M, 1);
+#ifdef DEBUG
+	print_complex(cin, *N, *M, 1);
+#endif
 
-return 0;
+	return 0;
+}
 
 int GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
@@ -2582,9 +2607,9 @@ int GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
 }
 #endif
 
-#ifdef WITH_FFTW
+#ifdef HAVE_FFTW3F
 /************************************************************************
-* cfft1d is a subroutine to do a 1-D fft using FFTW routines            *
+* cfft1d is a subroutine to do a 1-D fft using FFTW3 routines            *
 ************************************************************************/
 /************************************************************************
 * Creator: David T. Sandwell    (Scripps Institution of Oceanography    *
@@ -2593,11 +2618,12 @@ int GMT_fft_2d_fftpack (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
 /************************************************************************
 * Modification history:                                                 *
 *  04/01/98  - changed to have arguments be pointers (Fotran callable)  *
-*  10/16/03  - changed to call fftw instead of the sun perflib          *
+*  10/16/03  - changed to call fftw3 instead of the sun perflib          *
 ************************************************************************/
 
-#include "fftw3.h"
+#include <fftw3.h>
 
+#if 0
 cfft1d_fftw (int *np, fftwf_complex *c, int *dir)
 {
         static int nold = 0;
@@ -2635,150 +2661,195 @@ cfft1d_fftw (int *np, fftwf_complex *c, int *dir)
 		}
 	}
 }
+#endif /* 0 */
 
-int GMT_fft_1d_fftw (struct GMT_CTRL *C, float *data, int n, int direction, unsigned int mode)
+int GMT_fft_1d_fftwf (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
 {
-	int np = (int)n, dir = (int)direction;
-	cfft1d_fftw (&np, (fftwf_complex)data, &dir);
-	return (GMT_NOERROR);
-}
-#endif
+	int sign = direction == k_fft_fwd ? FFTW_FORWARD : FFTW_BACKWARD;
+	fftwf_complex *cin, *cout;
+	fftwf_plan plan;
+	cin = (fftwf_complex*)data; /* need fftwf_complex because GMT_GRID is complex float */
+	cout = cin;                 /* in-place transform */
 
-#ifdef WITH_PERFLIB
+	/*
+	 * The first argument, n, is the size of the transform you are trying to
+	 * compute. The size n can be any positive integer, but sizes that are
+	 * products of small factors are transformed most efficiently.
+	 *
+	 * The next two arguments are pointers to the input and output arrays of the
+	 * transform. These pointers can be equal, indicating an in-place transform.
+	 *
+	 * The fourth argument, sign, can be either FFTW_FORWARD (-1) or
+	 * FFTW_BACKWARD (+1), and indicates the direction of the transform you are
+	 * interested in; technically, it is the sign of the exponent in the
+	 * transform.
+	 *
+	 * The flags argument is usually either FFTW_MEASURE or FFTW_ESTIMATE.
+	 * FFTW_MEASURE instructs FFTW to run and measure the execution time of
+	 * several FFTs in order to find the best way to compute the transform of
+	 * size n. This process takes some time (usually a few seconds), depending
+	 * on your machine and on the size of the transform. */
+	plan = fftwf_plan_dft_1d(n, cin, cout, sign, FFTW_ESTIMATE);
 
-/************************************************************************
-* cfft1d is a subroutine used to call and initialize perflib Fortran FFT *
-* routines in a Sun computer.                                           *
-************************************************************************/
-/************************************************************************
-* Creator: David T. Sandwell	(Scripps Institution of Oceanography    *
-* Date   : 12/27/96                                                     *
-************************************************************************/
-/************************************************************************
-* Modification history:                                                 *
-*  04/01/98  - changed to have arguments be pointers (Fotran callable)  *
-*                                                                       *
-* DATE                                                                  *
-************************************************************************/
- 
-#include "../include/soi.h"
+	fftwf_execute(plan); /* do transform */
+	fftwf_destroy_plan(plan); /* deallocate plan */
 
-cfft1d_perflib (int *np,fcomplex *c,int *dir)
-{
-
-	static float *work;
-	static int nold = 0;
-	int i,n;
-
-/* Initialize work array with sines and cosines to save CPU time later 
-   This is done when the length of the FFT has changed or when *dir == 0. */
-
-	n = *np;
-	if ((n != nold) || (*dir == 0)) {
-		if(nold != 0) free (work);
-		if((work = malloc ((4*n+30)*sizeof(float))) == NULL){
-			fprintf(stderr,"Sorry, can't allocate mem.\n");
-			return(-1);
-		}
-		cffti_ (np,work);
-		nold = n;
-	}
-
-/* Do forward transform with NO normalization.  Forward is exp(+i*k*x) */
-
-	if (*dir == -1) {
-		cfftf_ (np,c,work);
-	}
-
-/* Do inverse transform with normalization.  Inverse is exp(-i*k*x) */
-
-	if (*dir == 1) {
-		cfftb_ (np,c,work);
-		for (i=0;i<n;i++) {
-			c[i].r = c[i].r/((float) n);
-			c[i].i = c[i].i/((float) n);
-		}
-	}
+	return GMT_NOERROR;
 }
 
-int GMT_fft_1d_perflib (struct GMT_CTRL *C, float *data, int n, int direction, unsigned int mode)
+int GMT_fft_2d_fftwf (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
-	int np = (int)n, dir = (int)direction;
-	cfft1d_perflib (&np, (fcomplex)data, &dir);
-	return (GMT_NOERROR);
+	int sign = direction == k_fft_fwd ? FFTW_FORWARD : FFTW_BACKWARD;
+	fftwf_complex *cin, *cout;
+	fftwf_plan plan;
+	cin = (fftwf_complex*)data; /* need fftwf_complex because GMT_GRID is complex float */
+	cout = cin;                 /* in-place transform */
+
+	/* The first two arguments, n0 and n1, are the size of the two-dimensional
+	 * transform you are trying to compute. The size n can be any positive
+	 * integer, but sizes that are products of small factors are transformed
+	 * most efficiently.
+	 *
+	 * The next two arguments are pointers to the input and output arrays of the
+	 * transform. These pointers can be equal, indicating an in-place transform.
+	 *
+	 * The fourth argument, sign, can be either FFTW_FORWARD (-1) or
+	 * FFTW_BACKWARD (+1), and indicates the direction of the transform you are
+	 * interested in; technically, it is the sign of the exponent in the
+	 * transform.
+	 *
+	 * The flags argument is usually either FFTW_MEASURE or FFTW_ESTIMATE.
+	 * FFTW_MEASURE instructs FFTW to run and measure the execution time of
+	 * several FFTs in order to find the best way to compute the transform of
+	 * size n. This process takes some time (usually a few seconds), depending
+	 * on your machine and on the size of the transform. */
+	plan = fftwf_plan_dft_2d(ny, nx, cin, cout, sign, FFTW_ESTIMATE);
+
+	fftwf_execute(plan); /* do transform */
+	fftwf_destroy_plan(plan); /* deallocate plan */
+
+	return GMT_NOERROR;
 }
-#endif
 
-#ifdef WITH_ACCELERATE
+#endif /* HAVE_FFTW3F */
 
-/************************************************************************
-* cfft1d is a subroutine used to call and initialize veclib FFT         *
-* in a Mac OS X computer.                                               *
-************************************************************************/
-/************************************************************************
-* Creator: Robert Kern          (Scripps Institution of Oceanography    *
-* Date   : 12/2005                                                      *
-************************************************************************/
-//#include <vecLib/vecLib.h>
+#ifdef __APPLE__ /* Accelerate framework */
+
 #include <Accelerate/Accelerate.h>
 
-void cfft1d_cleanup_();
-
-static int n = 0; 
-static int log2n;
-static FFTSetup setup;
-static DSPSplitComplex d;
-static float scale;
-static int inited = 0;
-
-void cfft1d_accelerate (int* np, DSPComplex* c, int* dir)
+int GMT_fft_1d_vDSP (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
 {
-	if (*dir == 0) return;
-	if (n != *np) {
-		cfft1d_cleanup_ ();
-		n = *np;
-		for (log2n=1; (1<<log2n)<*np; log2n++) {}
+	FFTDirection fft_direction = direction == k_fft_fwd ?
+			kFFTDirection_Forward : kFFTDirection_Inverse;
+	DSPComplex *dsp_complex = (DSPComplex *)data;
+	DSPSplitComplex dsp_split_complex;
 
-		d.realp = (float*)malloc(n*sizeof(float));
-		d.imagp = (float*)malloc(n*sizeof(float));
+	/* Base 2 exponent that specifies the largest power of
+	 * two that can be processed by fft: */
+	vDSP_Length log2n = radix2 (n);
+	FFTSetup setup;
 
-		setup = vDSP_create_fftsetup (log2n, 0);
-		scale = 1.0/n;
-		inited = 1;
+	if (log2n == 0) {
+		GMT_report (C, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
+		return -1;
 	}
-    
-	vDSP_ctoz (c, 2, &d, 1, n);
 
-	vDSP_fft_zip (setup, &d, 1, log2n, (*dir==-1 ? FFT_FORWARD : FFT_INVERSE));
+	/* Build data structure that contains precalculated data for use by
+	 * single-precision FFT functions: */
+	setup = vDSP_create_fftsetup (log2n, kFFTRadix2);
 
-	vDSP_ztoc (&d, 1, c, 2, n);
+	dsp_split_complex.realp = malloc(n * sizeof(float));
+	dsp_split_complex.imagp = malloc(n * sizeof(float));
+	vDSP_ctoz (dsp_complex, 2, &dsp_split_complex, 1, n);
 
-	if (*dir == 1) {
-		vDSP_vsmul ((float*)c, 1, &scale, (float*)c, 1, 2*n);
-	}
-}
+	vDSP_fft_zip (setup, &dsp_split_complex, 1, log2n, fft_direction);
 
-void cfft1d_cleanup_()
-{
-	if (inited) {
-		free(d.realp);
-		free(d.imagp);
-		vDSP_destroy_fftsetup(setup);
-		inited = 0;
-	}
-}
+	vDSP_ztoc (&dsp_split_complex, 1, dsp_complex, 2, n);
+	free (dsp_split_complex.realp);
+	free (dsp_split_complex.imagp);
+	vDSP_destroy_fftsetup (setup); /* Free single-precision FFT data structure */
 
-int GMT_fft_1d_accelerate (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
-{
-	int np = (int)n, dir = (int)direction;
-	cfft1d_accelerate (&np, (DSPComplex *)data, &dir);
 	return (GMT_NOERROR);
 }
-#endif
+
+int GMT_fft_2d_vDSP (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
+{
+	FFTDirection fft_direction = direction == k_fft_fwd ?
+			kFFTDirection_Forward : kFFTDirection_Inverse;
+	DSPComplex *dsp_complex = (DSPComplex *)data;
+	DSPSplitComplex dsp_split_complex;
+
+	/* Base 2 exponent that specifies the largest power of
+	 * two that can be processed by fft: */
+	vDSP_Length log2nx = radix2 (nx);
+	vDSP_Length log2ny = radix2 (ny);
+	unsigned int n_xy = nx * ny;
+	FFTSetup setup;
+
+	if (log2nx == 0 || log2ny == 0) {
+		GMT_report (C, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [nx/ny]\n",
+				1U<<propose_radix2 (nx), 1U<<propose_radix2 (ny));
+		return -1;
+	}
+
+	/* Build data structure that contains precalculated data for use by
+	 * single-precision FFT functions: */
+	setup = vDSP_create_fftsetup (MAX (log2nx, log2ny), kFFTRadix2);
+
+	dsp_split_complex.realp = malloc(n_xy * sizeof(float));
+	dsp_split_complex.imagp = malloc(n_xy * sizeof(float));
+	vDSP_ctoz (dsp_complex, 2, &dsp_split_complex, 1, n_xy);
+
+	/* complex: */
+	vDSP_fft2d_zip (setup, &dsp_split_complex, 1, 0, log2ny, log2nx, fft_direction);
+	/* real:
+	vDSP_fft2d_zrip (setup, &dsp_split_complex, 1, 0, log2ny, log2nx, fft_direction); */
+
+	vDSP_ztoc (&dsp_split_complex, 1, dsp_complex, 2, n_xy);
+	free (dsp_split_complex.realp);
+	free (dsp_split_complex.imagp);
+	vDSP_destroy_fftsetup (setup); /* Free single-precision FFT data structure */
+
+	return (GMT_NOERROR);
+}
+#endif /* APPLE Accelerate framework */
+
+/* Kiss FFT */
+
+#include "kiss_fft/kiss_fftnd.h"
+
+int GMT_fft_1d_kiss (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
+{
+	kiss_fft_cpx *fin, *fout;
+	kiss_fft_cfg config;
+
+	/* Initialize a FFT (or IFFT) config/state data structure */
+	config = kiss_fft_alloc(n, direction == k_fft_inv, NULL, NULL);
+  fin = fout = (kiss_fft_cpx *)data;
+	kiss_fft (config, fin, fout); /* do transform */
+	free (config); /* Free config data structure */
+
+	return (GMT_NOERROR);
+}
+
+int GMT_fft_2d_kiss (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
+{
+	const int dim[2] = {ny, nx}; /* dimensions of fft */
+	const int dimcount = 2;      /* number of dimensions */
+	kiss_fft_cpx *fin, *fout;
+	kiss_fftnd_cfg config;
+
+	/* Initialize a FFT (or IFFT) config/state data structure */
+	config = kiss_fftnd_alloc (dim, dimcount, direction == k_fft_inv, NULL, NULL);
+
+	fin = fout = (kiss_fft_cpx *)data;
+	kiss_fftnd (config, fin, fout); /* do transform */
+	free (config); /* Free config data structure */
+
+	return (GMT_NOERROR);
+}
 
 /* C-callable wrapper for BRENNER_fourt_ */
-
-#define GMT_radix2(n) doubleAlmostEqualZero(log2 ((double)n), floor(log2 ((double)n)))
 
 int GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
 {
@@ -2792,7 +2863,7 @@ int GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, unsigned int n, int dir
 	int ksign, ndim = 1, n_signed = n, kmode = mode;
 	size_t work_size = 0;
 	float *work = NULL;
-	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
+	ksign = (direction == k_fft_inv) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, n, 1))) work = GMT_memory (C, NULL, work_size, float);
 	(void) BRENNER_fourt_ (data, &n_signed, &ndim, &ksign, &kmode, work);
 	if (work_size) GMT_free (C, work);
@@ -2810,7 +2881,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
 	int ksign, ndim = 2, nn[2] = {nx, ny}, kmode = mode;
 	size_t work_size = 0;
 	float *work = NULL;
-	ksign = (direction == GMT_FFT_INV) ? +1 : -1;
+	ksign = (direction == k_fft_inv) ? +1 : -1;
 	if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
 	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
 	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
@@ -2818,71 +2889,60 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
 	return (GMT_OK);
 }
 
-#ifdef GMT_COMPAT
-/* C-callable wrapper for BRENNER_fourt_ [for backwards compatibility only] */
-
-void GMT_fourt (struct GMT_CTRL *C, float *data, int *nn, int ndim, int ksign, int iform, float *work)
-{
-	/* Data array */
-	/* Dimension array */
-	/* Number of dimensions */
-	/* Forward(-1) or Inverse(+1) */
-	/* Real(0) or complex(1) data */
-	/* Work array */
-	(void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &iform, work);
-}
-#endif
-
 int GMT_fft_1d_selection (struct GMT_CTRL *C, unsigned int n) {
 	/* Returns the most suitable 1-D FFT for the job - or the one requested via GMT_FFT */
-	
-	if (C->current.setting.fft != GMT_FFT_AUTO) return (C->current.setting.fft);	/* Specific selection requested */
+	if (C->current.setting.fft != k_fft_auto) {
+		/* Specific selection requested */
+		if (C->session.fft1d[C->current.setting.fft])
+			return (C->current.setting.fft); /* User defined FFT */
+		GMT_report (C, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[C->current.setting.fft]);
+	}
 	/* Here we want automatic selection from available candidates */
-	if (GMT_radix2 (n) && C->session.fft1d[GMT_FFT_ACCELERATE]) return (GMT_FFT_ACCELERATE);	/* Use if Radix-2 under OS/X */
-	if (C->session.fft1d[GMT_FFT_W]) return (GMT_FFT_W);			/* Use that fast gunslinger */
-	if (C->session.fft1d[GMT_FFT_PERFLIB]) return (GMT_FFT_PERFLIB);	/* Make Sun-people happy */
-	if (C->session.fft1d[GMT_FFT_PACK]) return (GMT_FFT_PACK);		/* General-purpose FFT */
-	return (GMT_FFT_BRENNER);						/* Default */
+	if (C->session.fft1d[k_fft_accelerate] && radix2 (n))
+		return (k_fft_accelerate); /* Use if Radix-2 under OS/X */
+	if (C->session.fft1d[k_fft_fftw3])
+		return (k_fft_fftw3);
+	return (k_fft_kiss); /* Default/fallback general-purpose FFT */
 }
 
 int GMT_fft_2d_selection (struct GMT_CTRL *C, unsigned int nx, unsigned int ny) {
 	/* Returns the most suitable 2-D FFT for the job - or the one requested via GMT_FFT */
-	
-	if (C->current.setting.fft != GMT_FFT_AUTO) {	/* Specific selection requested */
-		if (C->session.fft2d[C->current.setting.fft]) return (C->current.setting.fft);	/* It was available */
-		GMT_report (C, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - Default to brenner instead\n", GMT_fft_algo[C->current.setting.fft]);
-		return (GMT_FFT_BRENNER);						/* Default */
+	if (C->current.setting.fft != k_fft_auto) {
+		/* Specific selection requested */
+		if (C->session.fft2d[C->current.setting.fft])
+			return (C->current.setting.fft); /* User defined FFT */
+		GMT_report (C, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[C->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
-	if (GMT_radix2 (nx) && GMT_radix2 (ny) && C->session.fft2d[GMT_FFT_ACCELERATE]) return (GMT_FFT_ACCELERATE);	/* Use if Radix-2 under OS/X */
-	if (C->session.fft2d[GMT_FFT_W]) return (GMT_FFT_W);			/* Use that fast gunslinger */
-	if (C->session.fft2d[GMT_FFT_PERFLIB]) return (GMT_FFT_PERFLIB);	/* Make Sun-people happy */
-	if (C->session.fft2d[GMT_FFT_PACK]) return (GMT_FFT_PACK);		/* General-purpose FFT */
-	return (GMT_FFT_BRENNER);						/* Default */
+	if (C->session.fft2d[k_fft_accelerate] && radix2 (nx) && radix2 (ny))
+		return (k_fft_accelerate); /* Use if Radix-2 under OS/X */
+	if (C->session.fft2d[k_fft_fftw3])
+		return (k_fft_fftw3);
+	return (k_fft_kiss); /* Default/fallback general-purpose FFT */
 }
 
-int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
-{
+int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode) {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
-	 * direction is either 0 (forward) or 1(inverse)
-	 * mode is either 0(real) or 1(complex)
+	 * direction is either k_fft_fwd (forward) or k_fft_inv (inverse)
+	 * mode is either k_fft_real or k_fft_complex
 	 */
 	int status, use;
+	assert (mode == k_fft_complex); /* k_fft_real not implemented yet */
 	use = GMT_fft_1d_selection (C, n);
 	GMT_report (C, GMT_MSG_DEBUG, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft1d[use] (C, data, n, direction, mode);
 	return (status);
 }
 
-int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
-{
+int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes
-	 * direction is either 0 (forward) or 1(inverse)
-	 * mode is either 0(real) or 1(complex)
+	 * direction is either k_fft_fwd (forward) or k_fft_inv (inverse)
+	 * mode is either k_fft_real or k_fft_complex
 	 */
 	int status, use;
+	assert (mode == k_fft_complex); /* k_fft_real not implemented yet */
 	use = GMT_fft_2d_selection (C, nx, ny);
 	GMT_report (C, GMT_MSG_DEBUG, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft2d[use] (C, data, nx, ny, direction, mode);
@@ -2891,31 +2951,46 @@ int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int n
 
 void GMT_fft_initialization (struct GMT_CTRL *C) {
 	/* Called by GMT_begin and sets up pointers to the available FFT calls */
-	unsigned int k;
-	
-	for (k = 0; k < N_GMT_FFT; k++) {
-		C->session.fft1d[k] = NULL;	/* Start with nothing */
-		C->session.fft2d[k] = NULL;	/* Start with nothing */
+
+#if defined HAVE_FFTW3F_THREADS && !defined WIN32
+	/* Don't know how to get the number of CPUs on Windows */
+	int n_cpu = (int)sysconf(_SC_NPROCESSORS_CONF);
+
+	if (n_cpu > 1) {
+		/* one-time initialization required to use FFTW3 threads */
+		if ( fftwf_init_threads() ) {
+			fftwf_plan_with_nthreads(n_cpu);
+#ifdef DEBUG
+			GMT_report (C, GMT_MSG_DEBUG, "FFTW3 with %d threads.\n", n_cpu);
+#endif
+		}
 	}
-#ifdef WITH_ACCELERATE
-	C->session.fft1d[GMT_FFT_ACCELERATE] = &GMT_fft_1d_accelerate;	/* OS X Accelerate Framework */
-	// C->session.fft2d[GMT_FFT_ACCELERATE] = &GMT_fft_2d_accelerate;	/* OS X Accelerate Framework */
-	C->session.fft2d[GMT_FFT_ACCELERATE] = NULL;	/* OS X Accelerate Framework */
+#endif /* HAVE_FFTW3_THREADS */
+
+	/* Start with nothing */
+	memset (C->session.fft1d, k_n_fft_algorithms, sizeof(void*));
+	memset (C->session.fft2d, k_n_fft_algorithms, sizeof(void*));
+
+#ifdef __APPLE__
+	/* OS X Accelerate Framework */
+	C->session.fft1d[k_fft_accelerate] = &GMT_fft_1d_vDSP;
+	C->session.fft2d[k_fft_accelerate] = &GMT_fft_2d_vDSP;
 #endif
-#ifdef WITH_FFTW
-	C->session.fft1d[GMT_FFT_W] = &GMT_fft_1d_fftw;	/* FFTW */
-	//C->session.fft2d[GMT_FFT_W] = &GMT_fft_2d_fftw;	/* FFTW */
-	C->session.fft2d[GMT_FFT_W] = NULL;	/* FFTW */
+#ifdef HAVE_FFTW3F
+	/* single precision FFTW3 */
+	C->session.fft1d[k_fft_fftw3] = &GMT_fft_1d_fftwf;
+	C->session.fft2d[k_fft_fftw3] = &GMT_fft_2d_fftwf;
+#endif /* HAVE_FFTW3F */
+	/* Kiss FFT */
+	C->session.fft1d[k_fft_kiss] = &GMT_fft_1d_kiss; /* KISS FFT is the integrated fallback */
+	C->session.fft2d[k_fft_kiss] = &GMT_fft_2d_kiss; /* KISS FFT is the integrated fallback */
+	C->session.fft1d[k_fft_brenner] = &GMT_fft_1d_brenner; /* The old GMT standby is always available */
+	C->session.fft2d[k_fft_brenner] = &GMT_fft_2d_brenner; /* The old GMT standby is always available */
+}
+
+void GMT_fft_cleanup (void) {
+	/* Called by GMT_end */
+#if defined HAVE_FFTW3F_THREADS && !defined WIN32
+	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW3 */
 #endif
-#ifdef WITH_PERFLIB
-	C->session.fft1d[GMT_FFT_PERFLIB] = &GMT_fft_1d_perflib;		/* Sun Performance Library */
-	//C->session.fft2d[GMT_FFT_PERFLIB] = &GMT_fft_2d_perflib;		/* Sun Performance Library */
-	C->session.fft2d[GMT_FFT_PERFLIB] = NULL;		/* Sun Performance Library */
-#endif
-#ifdef WITH_FFTPACK
-	C->session.fft1d[GMT_FFT_PACK] = &GMT_fft_1d_fftpack;		/* FFTPack */
-	C->session.fft2d[GMT_FFT_PACK] = &GMT_fft_2d_fftpack;
-#endif
-	C->session.fft1d[GMT_FFT_BRENNER] = &GMT_fft_1d_brenner;	/* The old GMT standby is always available */
-	C->session.fft2d[GMT_FFT_BRENNER] = &GMT_fft_2d_brenner;	/* The old GMT standby is always available */
 }

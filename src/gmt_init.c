@@ -3505,18 +3505,33 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		/* GMT GROUP */
 
 		case GMTCASE_GMT_FFT:
-			if (!strcmp (lower_value, "auto"))
-				C->current.setting.fft = GMT_FFT_AUTO;
-			else if (!strcmp (lower_value, "brenner"))
-				C->current.setting.fft = GMT_FFT_BRENNER;
-			else if (!strcmp (lower_value, "fftw"))
-				C->current.setting.fft = GMT_FFT_W;
-			else if (!strcmp (lower_value, "accelerate"))
-				C->current.setting.fft = GMT_FFT_ACCELERATE;
-			else if (!strcmp (lower_value, "fftpack"))
-				C->current.setting.fft = GMT_FFT_PACK;
-			else if (!strcmp (lower_value, "perflib"))
-				C->current.setting.fft = GMT_FFT_PERFLIB;
+			if (!strncmp (lower_value, "auto", 4))
+				C->current.setting.fft = k_fft_auto;
+			else if (!strncmp (lower_value, "br", 2))   /* complete name: brenner */
+				C->current.setting.fft = k_fft_brenner;
+			else if (!strncmp (lower_value, "fftw", 4)) /* complete name: fftw3 */
+				C->current.setting.fft = k_fft_fftw3;
+			else if (!strncmp (lower_value, "ac", 2))   /* complete name: accelerate */
+				C->current.setting.fft = k_fft_accelerate;
+			else if (!strncmp (lower_value, "kiss", 4)) /* complete name: kissfft */
+				C->current.setting.fft = k_fft_kiss;
+#ifdef GMT_COMPAT
+			else if (!strcmp (lower_value, "brenner")) {
+				GMT_report (C, GMT_MSG_COMPAT, "Norman Brenner's ancient Cooley-Tukey FFT "
+						"implementation has been superseded by Kiss FFT (kissfft).\n");
+				C->current.setting.fft = k_fft_kiss;
+			}
+			else if (!strcmp (lower_value, "fftpack")) {
+				GMT_report (C, GMT_MSG_COMPAT, "Support for Paul Swarztrauber's ancient "
+						"FFTPACK has been removed from GMT.  Choosing different FFT now.\n");
+				C->current.setting.fft = k_fft_auto;
+			}
+			else if (!strcmp (lower_value, "perflib")) {
+				GMT_report (C, GMT_MSG_COMPAT, "Support for Sun Performance Library "
+						"(Perflib) has been removed from GMT.  Choosing different FFT now.\n");
+				C->current.setting.fft = k_fft_auto;
+			}
+#endif
 			else
 				error = true;
 			break;
@@ -4327,18 +4342,14 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		/* GMT GROUP */
 
 		case GMTCASE_GMT_FFT:
-			if (C->current.setting.fft == GMT_FFT_AUTO)
+			if (C->current.setting.fft == k_fft_auto)
 				strcpy (value, "auto");
-			else if (C->current.setting.fft == GMT_FFT_BRENNER)
-				strcpy (value, "brenner");
-			else if (C->current.setting.fft == GMT_FFT_W)
-				strcpy (value, "fftw");
-			else if (C->current.setting.fft == GMT_FFT_ACCELERATE)
+			else if (C->current.setting.fft == k_fft_kiss)
+				strcpy (value, "kissfft");
+			else if (C->current.setting.fft == k_fft_fftw3)
+				strcpy (value, "fftw3");
+			else if (C->current.setting.fft == k_fft_accelerate)
 				strcpy (value, "accelerate");
-			else if (C->current.setting.fft == GMT_FFT_PACK)
-				strcpy (value, "fftpack");
-			else if (C->current.setting.fft == GMT_FFT_PERFLIB)
-				strcpy (value, "perflib");
 			else
 				strcpy (value, "undefined");
 			break;
@@ -5172,6 +5183,8 @@ void GMT_end (struct GMT_CTRL *C)
 	GMT_memtrack_report (C, &g_mem_keeper);
 #endif
 	Free_GMT_Ctrl (C);	/* Deallocate control structure */
+
+	GMT_fft_cleanup (); /* clean FFT resources */
 }
 
 struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, struct GMT_CTRL **Ccopy)
