@@ -49,7 +49,7 @@ int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
 	const char	*format = NULL;
 	int	nRGBA = 1;	/* 1 for BSQ; 3 for RGB and 4 for RGBA (If needed, value is updated bellow) */
-	int	complex = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
+	int	complex_mode = 0;	/* 0 real only. 1|2 if complex array is to hold real (1) and imaginary (2) parts */
 	int	nPixelSize, nBands, i, nReqBands = 0;
 	int	anSrcWin[4], xOrigin = 0, yOrigin = 0;
 	int	jump = 0, nXSize = 0, nYSize = 0, nX, nY, nBufXSize, nBufYSize;
@@ -144,8 +144,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		jump = atoi(prhs->P.jump);
 
 	if (prhs->Z.active) {
-		complex = prhs->Z.complex;
-		if (complex) incStep = 2;
+		complex_mode = prhs->Z.complex_mode;
+		if (complex_mode) incStep = 2;
 	}
 
 	/* Open gdal - */
@@ -306,7 +306,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			if (prhs->f_ptr.active)	/* We have a pointer with already allocated memory ready to use */
 				Ctrl->Float.data = prhs->f_ptr.grd;
 			else {
-				if (!complex)
+				if (!complex_mode)
 					Ctrl->Float.data = GMT_memory (C, NULL, n_alloc, float);
 				else
 					Ctrl->Float.data = GMT_memory (C, NULL, 2 * n_alloc, float);
@@ -360,7 +360,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			i_x_nXYSize= i * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
 
 		nXSize_withPad = nXSize + 2 * pad;
-		startColPos = pad + i_x_nXYSize + (complex > 1);	/* Take into account nBands, Padding and Complex */
+		startColPos = pad + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
 
 		switch ( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:

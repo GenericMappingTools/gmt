@@ -78,12 +78,70 @@ struct GMT_GRDFILE {
 
 	double scale;		/* scale to use for i/o */
 	double offset;		/* offset to use for i/o */
-	
+
 	FILE *fp;		/* File pointer for native files */
-	
+
 	void *v_row;		/* Void Row pointer for any format */
-	
+
 	struct GRD_HEADER header;	/* Full GMT header for the file */
 };
+
+#ifdef __APPLE__ /* Accelerate framework */
+#include <Accelerate/Accelerate.h>
+#undef I /* because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */
+#endif
+
+static inline void scale_and_offset_f (float *data, size_t length, float scale, float offset) {
+	/* Routine that scales and offsets the data in a vector
+	 *  data:   Single-precision real input vector
+	 *  length: The number of elements to process
+	 * This function uses the vDSP portion of the Accelerate framework if possible */
+#ifndef __APPLE__
+	size_t n;
+#endif
+	if (scale == 1.0) /* offset only */
+#ifdef __APPLE__ /* Accelerate framework */
+		vDSP_vsadd (data, 1, &offset, data, 1, length);
+#else
+		for (n = 0; n < length; ++n)
+			data[n] += offset;
+#endif
+	else if (offset == 0.0) /* scale only */
+#ifdef __APPLE__ /* Accelerate framework */
+		vDSP_vsmul (data, 1, &scale, data, 1, length);
+#else
+		for (n = 0; n < length; ++n)
+			data[n] *= scale;
+#endif
+	else /* scale + offset */
+#ifdef __APPLE__ /* Accelerate framework */
+		vDSP_vsmsa (data, 1, &scale, &offset, data, 1, length);
+#else
+		for (n = 0; n < length; ++n)
+			data[n] = data[n] * scale + offset;
+#endif
+}
+
+static inline void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, double scale, double offset) {
+	/* Routine that does the data conversion and sanity checking
+	 * before calling scale_and_offset_f() */
+	float scale_f  = (float)scale;
+	float offset_f = (float)offset;
+
+	/* Sanity checks */
+	if (!isnormal (scale)) {
+		//GMT_report (C, GMT_MSG_NORMAL, "Scale must be a non-zero normalized number (%g).", scale);
+		scale_f = 1.0f;
+	}
+	if (!isfinite (offset)) {
+		//GMT_report (C, GMT_MSG_NORMAL, "Offset must be a finite number (%g).", offset);
+		offset_f = 0.0f;
+	}
+	if (scale_f == 1.0 && offset_f == 0.0)
+		return; /* No work needed */
+
+	/* Call workhorse */
+	scale_and_offset_f (data, length, scale, offset);
+}
 
 #endif /* GMT_GRDIO_H */

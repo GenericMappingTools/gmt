@@ -82,7 +82,7 @@ struct GDALREAD_CTRL {
 	} R;
 	struct GD_Z {	/* Tell to store data in a complex array */
 		int active;
-		int complex; /* 1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+		int complex_mode; /* 1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
 	} Z;
 	struct GD_cp {	/* Send in a pointer with allocated chars */
 		int active;
