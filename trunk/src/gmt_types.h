@@ -156,8 +156,8 @@ struct GMT_SESSION {
 	int (*writeinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid write header functions */
 	int (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
 	int (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
-	int (*fft1d[N_GMT_FFT]) (struct GMT_CTRL *, float *, unsigned int, int, unsigned int);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
-	int (*fft2d[N_GMT_FFT]) (struct GMT_CTRL *, float *, unsigned int, unsigned int, int, unsigned int);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
+	int (*fft1d[k_n_fft_algorithms]) (struct GMT_CTRL *, float *, unsigned int, int, unsigned int);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
+	int (*fft2d[k_n_fft_algorithms]) (struct GMT_CTRL *, float *, unsigned int, unsigned int, int, unsigned int);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */
 	char *GSHHGDIR;			/* Path to the GSHHG directory */
 	char *SHAREDIR;			/* Path to the GMT share directory */

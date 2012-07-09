@@ -1205,7 +1205,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 #endif
-	
+
 	GMT_grd_init (GMT, GridA->header, options, true);
 	set_grid_radix_size (GMT, Ctrl, GridA);		/* This also sets the new pads */
 	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
@@ -1217,7 +1217,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	/* Check that no NaNs are present */
-	
+
 	stop = false;
 	for (ij = 0; !stop && ij < GridA->header->size; ij++) stop = GMT_is_fnan (GridA->data[ij]);
 	if (stop) {
@@ -1251,9 +1251,11 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 #endif
 	GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...");
-	
-	GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
 
+	if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+		Return (EXIT_FAILURE);
+
+#if 1
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case UP_DOWN_CONTINUE:
@@ -1296,11 +1298,12 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 				break;
 		}
 	}
-
+#endif
 	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...");
 
-		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
+		if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
+			Return (EXIT_FAILURE);
 
 		/* FFT computes an unnormalized transform, in that there is no
 		 * coefficient in front of the summation in the FT. In other words,

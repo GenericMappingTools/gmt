@@ -197,10 +197,10 @@ Controls how secondary month-, week-, and weekday-names are formatted.  Choose a
 BD(character).  If the leading BD(f), BD(a), or BD(c) are replaced with BD(F), BD(A), and BD(C) the entire annotation will be in upper case  [full].
 .TP
 .B GMT_FFT
-Determines which Fast Fourier Transform should be used among those that have been configured during installation.
-Choose from auto (pick the most suitable for the task among available algorithms), brenner (GMT's version of Normal Brenner's
-Fortran multi-dimensional FFT), fftw (The Fastest Fourier Transform in the West), accelerate (Use the Accelerate Framework under OS X), fftpack
-(use Paul N. Swarztrauber FFT pack translated from Fortran) or perflib (Sun Performance Library under Solaris) [auto].
+Determines which Fast Fourier Transform should be used among those that have
+been configured during installation. Choose from auto (pick the most suitable
+for the task among available algorithms), brenner (GMT's version of Normal Brenner's
+Fortran multi-dimensional FFT), fftw3 (The Fastest Fourier Transform in the West), accelerate (Use the Accelerate Framework under OS X), Kiss FFT [auto].
 .TP
 .B GMT_HISTORY
 Passes the history of past common command options via the hidden \.gmtcommands file.

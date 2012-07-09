@@ -49,6 +49,10 @@
 #	define USE_GDAL    /* Unfortunately, GMT uses this define and not HAVE_GDAL */
 #endif
 
+/* compile with FFTW3 support <fftw3.h> */
+#cmakedefine HAVE_FFTW3F
+#cmakedefine HAVE_FFTW3F_THREADS
+
 /* file locking */
 #cmakedefine FLOCK
 

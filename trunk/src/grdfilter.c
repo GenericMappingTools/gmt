@@ -25,6 +25,9 @@
  * Version:	5 API
 */
 
+/* OpenMP breaks grdfilter; currently disabled */
+#undef _OPENMP
+
 #define GMT_WITH_NO_PS
 #define THIS_MODULE k_mod_grdfilter /* I am grdfilter */
 

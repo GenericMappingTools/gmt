@@ -66,18 +66,20 @@
 #define GMT_SMALL	1.0e-4		/* Needed when results aren't exactly zero but close */
 
 /* Various allocation-length parameters */
-enum GMT_enum_length {	GMT_TINY_CHUNK	= 8U,
-			GMT_SMALL_CHUNK	= 64U,
-			GMT_CHUNK	= 2048U,
-			GMT_TEXT_LEN64	= 64U,		/* Intermediate length of texts */
-			GMT_TEXT_LEN256	= 256U,		/* Max size of some text items */
-			GMT_MAX_COLUMNS	= 4096U,	/* Limit on number of columns in data tables (not grids) */
-			GMT_BUFSIZ	= 4096U,	/* Size of char record for i/o */
-			GMT_MIN_MEMINC	= 2048U,	/* E.g., 16 kb of 8-byte doubles */
-			GMT_MAX_MEMINC	= 67108864U};	/* E.g., 512 Mb of 8-byte doubles */
-			
-/* The four plot length units [m just used internally] */		
-enum GMT_enum_unit {GMT_CM = 0,
+enum GMT_enum_length {
+	GMT_TINY_CHUNK  = 8U,
+	GMT_SMALL_CHUNK = 64U,
+	GMT_CHUNK       = 2048U,
+	GMT_TEXT_LEN64  = 64U,          /* Intermediate length of texts */
+	GMT_TEXT_LEN256 = 256U,         /* Max size of some text items */
+	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
+	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
+	GMT_MIN_MEMINC  = 2048U,        /* E.g., 16 kb of 8-byte doubles */
+	GMT_MAX_MEMINC  = 67108864U};   /* E.g., 512 Mb of 8-byte doubles */
+
+/* The four plot length units [m just used internally] */
+enum GMT_enum_unit {
+	GMT_CM = 0,
 	GMT_INCH,
 	GMT_M,
 	GMT_PT};
@@ -85,7 +87,7 @@ enum GMT_enum_unit {GMT_CM = 0,
 /* Handling of swap/no swap in i/o */
 enum GMT_swap_direction {
 	k_swap_none = 0,
-	k_swap_in = 1,
+	k_swap_in,
 	k_swap_out};
 
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
@@ -129,41 +131,48 @@ enum GMT_swap_direction {
 #define GMT_PENWIDTH	0.25	/* Default pen width in points */
 
 /* Various options for FFT calculations [Default is 0] */
-enum GMT_enum_fft {GMT_FFT_AUTO=0,	/* Automatically select best FFT algorithm */
-	GMT_FFT_ACCELERATE,		/* Select Accelerate Framework FFT [OS X only] */
-	GMT_FFT_W,			/* Select FFT in the West */
-	GMT_FFT_PERFLIB,		/* Select Sun's Performance library FFT [Solaris only] */
-	GMT_FFT_PACK,			/* Select FFT Pack */
-	GMT_FFT_BRENNER,		/* Select Normal Brenners old-school FFT */
-	N_GMT_FFT};
+enum FFT_implementations {
+	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
+	k_fft_accelerate,  /* Select Accelerate Framework vDSP FFT [OS X only] */
+	k_fft_fftw3,       /* Select FFTW-3 */
+	k_fft_kiss,        /* Select Kiss FFT */
+	k_fft_brenner,     /* Select Normal Brenners old-school FFT */
+	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
+};
 
 /* Various directions and modes to call the FFT */
-#define GMT_FFT_FWD		0
-#define GMT_FFT_INV		1
-#define GMT_FFT_REAL		0
-#define GMT_FFT_COMPLEX		1
+enum FFT_modes {
+	k_fft_fwd     = 0, /* forward Fourier transform */
+	k_fft_inv     = 1, /* inverse Fourier transform */
+	k_fft_real    = 0, /* real-input FT (currently unsupported) */
+	k_fft_complex = 1  /* complex-input Fourier transform */
+};
 
 /* Various algorithms for triangulations */
-enum GMT_enum_tri {GMT_TRIANGLE_WATSON = 0,	/* Select Watson's algorithm */
-	GMT_TRIANGLE_SHEWCHUK};			/* Select Shewchuk's algorithm */
+enum GMT_enum_tri {
+	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */
+	GMT_TRIANGLE_SHEWCHUK};  /* Select Shewchuk's algorithm */
 
 /* Various grid/image interpolation modes */
-enum GMT_enum_bcr {BCR_NEARNEIGHBOR = 0,	/* Nearest neighbor algorithm */
-	BCR_BILINEAR,				/* Bilinear spline */
-	BCR_BSPLINE,				/* B-spline */
-	BCR_BICUBIC};				/* Bicubic spline */
+enum GMT_enum_bcr {
+	BCR_NEARNEIGHBOR = 0, /* Nearest neighbor algorithm */
+	BCR_BILINEAR,         /* Bilinear spline */
+	BCR_BSPLINE,          /* B-spline */
+	BCR_BICUBIC};         /* Bicubic spline */
 
 /* Various grid/image boundary conditions */
-enum GMT_enum_bc {GMT_BC_IS_NOTSET = 0,		/* BC not yet set */
-	GMT_BC_IS_NATURAL,			/* Use natural BC */
-	GMT_BC_IS_PERIODIC,			/* Use periodic BC */
-	GMT_BC_IS_POLE,				/* N or S pole BC condition */
-	GMT_BC_IS_DATA};			/* Fill in BC with actual data */
+enum GMT_enum_bc {
+	GMT_BC_IS_NOTSET = 0, /* BC not yet set */
+	GMT_BC_IS_NATURAL,    /* Use natural BC */
+	GMT_BC_IS_PERIODIC,   /* Use periodic BC */
+	GMT_BC_IS_POLE,       /* N or S pole BC condition */
+	GMT_BC_IS_DATA};      /* Fill in BC with actual data */
 
-enum GMT_enum_alloc {GMT_ALLOCATED = 0,	/* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
-	GMT_REFERENCE,			/* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
-	GMT_READONLY,			/* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called . Consider read-only data */
-	GMT_CLOBBER};			/* Free item no matter what its allocation status */
+enum GMT_enum_alloc {
+	GMT_ALLOCATED = 0, /* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
+	GMT_REFERENCE,     /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
+	GMT_READONLY,      /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called . Consider read-only data */
+	GMT_CLOBBER};      /* Free item no matter what its allocation status */
 
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN

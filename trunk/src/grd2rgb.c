@@ -166,7 +166,8 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 		k += 2;
 	}
 
-	GMT_fft_1d (GMT, datac, n_pix, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+	if (GMT_fft_1d (GMT, datac, n_pix, k_fft_fwd, k_fft_complex))
+		return (EXIT_FAILURE);
 
 	/* Now compute the image's power spectrum */
 	for (k = 0, j = 0; k < n_pix; k += 2, j++) {
@@ -222,8 +223,8 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	GMT_free (GMT, datac);
 	GMT_free (GMT, work);
 	GMT_free (GMT, img_pow);
-	
-	return (0);
+
+	return (EXIT_SUCCESS);
 }
 
 int GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, int level) {

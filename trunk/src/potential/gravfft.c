@@ -687,8 +687,10 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 		if (!Ctrl->L.active) remove_plane__ (GMT, Out2);
 		if (!Ctrl->N.force_narray) taper_edges__ (GMT, Out2);
 
-		GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
-		GMT_fft_2d (GMT, Out2->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+		if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
+		if (GMT_fft_2d (GMT, Out2->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
 		do_admittance(GMT, Out, Out2, Ctrl, &K);
 		Return (EXIT_SUCCESS);
 	}
@@ -712,7 +714,8 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 			}
 		}
 
-		GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+		if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
 
 		/* put DC to one */
 		/*datac[ij_data_0(nx_2,ny_2)] = datac[ij_data_0(nx_2,ny_2) + 1] = 1.0;*/
@@ -749,9 +752,11 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 	}
 
 	if (Ctrl->Q.active || Ctrl->H.active) {
-		GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+		if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
 		do_isostasy__(GMT, Out, Ctrl, &K);
-		GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
+		if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
+			Return (EXIT_FAILURE);
 
 		scale_out *= (2.0 / Out->header->size);
 		for (m = 0; m < Out->header->size; m++)
@@ -789,7 +794,8 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 			for (m = 0; m < Out->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 
-		GMT_fft_2d (GMT, raised,  Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX);
+		if (GMT_fft_2d (GMT, raised,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
 
 		if (Ctrl->D.active || Ctrl->H.active)	/* "classical" anomaly */
 			do_parker (GMT, Out, Ctrl, &K, raised, n, Ctrl->misc.rho);
@@ -803,7 +809,8 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, " Inverse FFT...");
 
-	GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, GMT_FFT_INV, GMT_FFT_COMPLEX);
+	if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
+		Return (EXIT_FAILURE);
 
 	scale_out *= (2.0 / Out->header->size);
 	for (m = 0; m < Out->header->size; m+= 2)

@@ -188,8 +188,9 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 		detrend_and_hanning (C);
 
-		GMT_fft_1d (GMT, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX);
-		
+		if (GMT_fft_1d (GMT, C->datac, C->window, k_fft_fwd, k_fft_complex))
+			exit (EXIT_FAILURE);
+
 		/* Get one-sided estimates */
 
 		x_varp = spec_scale * (C->datac[0] * C->datac[0]);

@@ -47,7 +47,7 @@ FORMAT_TIME_LOGO		= %Y %b %d %H:%M:%S
 #
 # GMT Miscellaneous Parameters
 #
-GMT_FFT				= brenner
+GMT_FFT				= auto
 GMT_HISTORY			= true
 GMT_INTERPOLANT			= akima
 GMT_TRIANGULATE			= @GMT_TRIANGULATE@
