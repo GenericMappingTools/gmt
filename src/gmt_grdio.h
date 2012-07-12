@@ -141,7 +141,7 @@ static inline void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size
 		return; /* No work needed */
 
 	/* Call workhorse */
-	scale_and_offset_f (data, length, scale, offset);
+	scale_and_offset_f (data, length, scale_f, offset_f);
 }
 
 #endif /* GMT_GRDIO_H */
