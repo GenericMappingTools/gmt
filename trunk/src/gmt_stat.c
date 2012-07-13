@@ -45,6 +45,7 @@
  *	GMT_erfinv:	The inverse error function
  *	GMT_rand:	Uniformly distributed random numbers 0 < x < 1
  *	GMT_nrand:	Normally distributed random numbers from N(0,1)
+ *	GMT_lrand:	Laplace random number generator
  *	GMT_corrcoeff:	Correlation coefficient.
  *	GMT_psi:	Digamma (psi) function.
  *	GMT_PvQv:	Legendre functions Pv and Qv for imaginary v and real x (-1/+1).
@@ -1329,54 +1330,43 @@ double GMT_Fcrit (struct GMT_CTRL *C, double alpha, double nu1, double nu2)
 	return (F_mid);
 }
 
-#define GMT_RAND_IQ 127773
-#define GMT_RAND_IA 16807
-#define GMT_RAND_IM INT_MAX
-#define GMT_RAND_AM (1.0 / GMT_RAND_IM)
-#define GMT_RAND_IR 2836
-#define GMT_RAND_NTAB 32
-#define GMT_RAND_NDIV (1 + (GMT_RAND_IM - 1) / GMT_RAND_NTAB)
-#define GMT_RAND_EPS 2.2204460492503131E-16
+static inline uint64_t mix64 (uint64_t a, uint64_t b, uint64_t c) {
+	/* mix 3 64-bit values */
+	a -= b; a -= c; a ^= (c>>43);
+	b -= c; b -= a; b ^= (a<<9);
+	c -= a; c -= b; c ^= (b>>8);
+	a -= b; a -= c; a ^= (c>>38);
+	b -= c; b -= a; b ^= (a<<23);
+	c -= a; c -= b; c ^= (b>>5);
+	a -= b; a -= c; a ^= (c>>35);
+	b -= c; b -= a; b ^= (a<<49);
+	c -= a; c -= b; c ^= (b>>11);
+	a -= b; a -= c; a ^= (c>>12);
+	b -= c; b -= a; b ^= (a<<18);
+	c -= a; c -= b; c ^= (b>>22);
+	return c;
+}
 
-double GMT_rand (struct GMT_CTRL *C)
-{
-	/* Uniform random number generator based on ran1 of
-	 * Press et al, Numerical Recipes, 2nd edition,
-	 * converted from Fortran to C.  Will return values
-	 * x so that 0.0 < x < 1.0 occurs with equal probability.
-	 */
+double GMT_rand (struct GMT_CTRL *C) {
+	/* Uniform random number generator.  Will return values
+	 * x so that 0.0 < x < 1.0 occurs with equal probability. */
+	static unsigned seed = 0;
+	double random_val;
 
-	static int GMT_rand_iy = 0;
-	static int GMT_rand_seed = 0;
-	static int GMT_rand_iv[GMT_RAND_NTAB];
-
-	int j, k;
-
-	if (GMT_rand_iy == 0) {	/* First time initialization */
-		GMT_rand_seed = (int) time (NULL);		/* Seed value is positive sec since 1970 */
-		if (GMT_rand_seed <= 0) GMT_rand_seed = 1;	/* Make sure to prevent seed = 0 */
-		for (j = GMT_RAND_NTAB + 8 - 1; j >= 0; j--) {	/* Load shuffle table after 8 warm-ups */
-			k = GMT_rand_seed / GMT_RAND_IQ;
-			GMT_rand_seed = GMT_RAND_IA * (GMT_rand_seed - k * GMT_RAND_IQ) - GMT_RAND_IR * k;
-			if (GMT_rand_seed < 0) GMT_rand_seed += GMT_RAND_IM;
-			if (j < GMT_RAND_NTAB) GMT_rand_iv[j] = GMT_rand_seed;
-		}
-		GMT_rand_iy = GMT_rand_iv[0];
+	while (seed == 0) { /* repeat in case of unsigned overflow */
+		/* initialize random seed */
+		seed = (unsigned) mix64 (clock(), time(NULL), getpid());
+		srand (seed);
 	}
 
-	/* Starts here when not initializing */
+	/* generate random number */
+	random_val = rand () / (double) RAND_MAX;
 
-	k = GMT_rand_seed / GMT_RAND_IQ;
+	if (random_val == 0.0 || random_val >= 1.0)
+		/* Ensure range (0.0,1.0) */
+		return GMT_rand (C);
 
-	/* Compute GMT_rand_seed = mod (GMT_rand_seed * GMT_RAND_IA, GMT_RAND_IM) without overflowing using Schrage's method */
-
-	GMT_rand_seed = GMT_RAND_IA * (GMT_rand_seed - k * GMT_RAND_IQ) - GMT_RAND_IR * k;
-	if (GMT_rand_seed < 0) GMT_rand_seed += GMT_RAND_IM;
-
-	j = GMT_rand_iy / GMT_RAND_NDIV;	/* Will be in the range 0:NTAB-1 */
-	GMT_rand_iy = GMT_rand_iv[j];		/* Output previous shuffle value and fill table again */
-	GMT_rand_iv[j] = GMT_rand_seed;
-	return (MIN (GMT_RAND_AM * GMT_rand_iy, (1.0 - GMT_RAND_EPS)));	/* so we don't return 1.0 */
+	return random_val;
 }
 
 double GMT_nrand (struct GMT_CTRL *C) {
