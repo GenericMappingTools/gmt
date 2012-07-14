@@ -666,7 +666,7 @@ int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int d
 	}
 
 	/* All active resources are found consecutively from 0 to (API->n_objects-1); those with status == 0 (GMT_IS_UNUSED) are available for use. */
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 struct GMT_PALETTE * GMTAPI_Import_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode)
@@ -792,7 +792,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 	S_obj->data = P_obj;			/* Retain pointer to the allocated data so we use garbage collection later */
 	
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 bool col_check (struct GMT_TABLE *T, unsigned int *n_cols) {
@@ -1148,7 +1148,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
 	S_obj->data = D_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 	
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 struct GMT_TEXTSET * GMTAPI_Import_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode)
@@ -1375,7 +1375,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
 	S_obj->data = T_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 	
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 #ifdef USE_GDAL
@@ -2169,7 +2169,7 @@ int GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT
 	if ((*I_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 	
 	GMT_free_image (API->GMT, I_obj, true);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 #endif
 
@@ -2185,7 +2185,7 @@ int GMTAPI_Destroy_Grid (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_
 	if ((*G_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 	
 	GMT_free_grid (API->GMT, G_obj, true);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 int GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_DATASET **D_obj)
@@ -2200,7 +2200,7 @@ int GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, unsigned int mode, struct G
 	if ((*D_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 
 	GMT_free_dataset (API->GMT, D_obj);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 int GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_TEXTSET **T_obj)
@@ -2215,7 +2215,7 @@ int GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, unsigned int mode, struct G
 	if ((*T_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 
 	GMT_free_textset (API->GMT, T_obj);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 int GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_PALETTE **P_obj)
@@ -2230,7 +2230,7 @@ int GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_P
 	if ((*P_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 
 	GMT_free_palette (API->GMT, P_obj);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 int GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_MATRIX **M_obj)
@@ -2245,7 +2245,7 @@ int GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, unsigned int mode, struct GM
 	if ((*M_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 
 	GMT_free_matrix (API->GMT, M_obj, true);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 int GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_VECTOR **V_obj)
@@ -2260,7 +2260,7 @@ int GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, unsigned int mode, struct GM
 	if ((*V_obj)->alloc_mode == GMT_REFERENCE && mode == GMT_ALLOCATED) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
 
 	GMT_free_vector (API->GMT, V_obj, true);
-	return (GMT_Report_Error (API, GMT_OK));
+	return GMT_OK;
 }
 
 struct GMTAPI_DATA_OBJECT * GMTAPI_Make_DataObject (struct GMTAPI_CTRL *API, unsigned int family, unsigned int method, unsigned int geometry, void *resource, unsigned int direction)
