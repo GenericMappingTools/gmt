@@ -1195,7 +1195,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL 
 	GMT_chop (line);	/* Get rid of CR or LF */
 
 	if ((len = strlen(line)) != MGD77_RECORD_LENGTH) {
-		GMT_report (C, GMT_MSG_NORMAL, "Warning: Incorrect record length (%zu), skipped\n%s\n", len, line);
+		GMT_report (C, GMT_MSG_NORMAL, "Warning: Incorrect record length (%" PRIuS "), skipped\n%s\n", len, line);
 		return (MGD77_WRONG_DATA_REC_LEN);
 	}
 

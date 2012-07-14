@@ -4061,7 +4061,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t si
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not reallocate more memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
@@ -4071,7 +4071,7 @@ void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t si
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
 			PSL_exit (EXIT_FAILURE);
 		}
 	}

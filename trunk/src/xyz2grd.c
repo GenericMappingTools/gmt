@@ -513,7 +513,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->D.active) GMT_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %zu\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
 	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
 

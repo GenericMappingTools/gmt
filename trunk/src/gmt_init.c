@@ -3398,7 +3398,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = true;
 			break;
 		case GMTCASE_IO_NC4_CHUNK_SIZE:
-			if ( sscanf (value, "%zu , %zu", /* chunk size: lat,lon */
+			if ( sscanf (value, "%" SCNuS " , %" SCNuS, /* chunk size: lat,lon */
 					&C->current.setting.io_nc4_chunksize[0],
 					&C->current.setting.io_nc4_chunksize[1]) != 2 )
 				error = true;
@@ -4270,7 +4270,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "skip");
 			break;
 		case GMTCASE_IO_NC4_CHUNK_SIZE:
-			sprintf (value, "%zu,%zu", /* chunk size: lat,lon */
+			sprintf (value, "%" PRIuS ",%" PRIuS, /* chunk size: lat,lon */
 					C->current.setting.io_nc4_chunksize[0],
 					C->current.setting.io_nc4_chunksize[1]);
 			break;

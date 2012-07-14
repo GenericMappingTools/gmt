@@ -474,7 +474,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 				if ( strspn (p, "diu") == 0 ) {
 					/* no valid conversion specifier */
 					GMT_report (GMT, GMT_MSG_NORMAL,
-							"Syntax error: Use of unsupported conversion specifier at %zu in format string '%s'.\n",
+							"Syntax error: Use of unsupported conversion specifier at %" PRIuS " in format string '%s'.\n",
 							p - Ctrl->D.name + 1, Ctrl->D.name);
 					exit (EXIT_FAILURE);
 				}
