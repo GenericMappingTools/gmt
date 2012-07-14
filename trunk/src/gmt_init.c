@@ -4950,8 +4950,8 @@ void gmt_setshorthand (struct GMT_CTRL *C) {
 			C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		C->session.shorthand[n].suffix = strdup (a);
-		id = GMT_grd_format_decoder (C, b);
-		if (id == GMT_GRDIO_UNKNOWN_ID) {
+		if (GMT_grd_format_decoder (C, b, &id) != GMT_NOERROR) {
+			/* no valid type id */
 			GMT_report (C, GMT_MSG_NORMAL, "Unknown shorthand format [%s]\n", file, b);
 			GMT_exit (EXIT_FAILURE);
 		}

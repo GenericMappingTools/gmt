@@ -31,17 +31,20 @@
 
 #include "common_byteswap.h"
 
-int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{	/* Determine if file is an ESRI Interchange ASCII file */
+int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
 	char record[GMT_BUFSIZ];
 
-	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (C, header->name, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if ((fp = GMT_fopen (C, header->name, "r")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
 
-	fgets (record, GMT_BUFSIZ, fp);	/* Just get first line. Not using GMT_fgets since we may be reading a binary file */ 
+	fgets (record, GMT_BUFSIZ, fp);	/* Just get first line. Not using GMT_fgets since we may be reading a binary file */
 	GMT_fclose (C, fp);
-	if (strncmp (record, "ncols ", 6) ) {	/* Failed to find "ncols"; probably a binary file */
+	if (strncmp (record, "ncols ", 6) ) {
+		/* Failed to find "ncols"; probably a binary file */
 		char *file = NULL;
 		size_t name_len;
 
@@ -50,7 +53,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		GMT_chop_ext (file);
 		name_len = strlen (header->name);
 		if (name_len < strlen(file) + 4) {
-			/* The file extension had less than 3 chars, which means that 1) it's not an esri file. 
+			/* The file extension had less than 3 chars, which means that 1) it's not an esri file.
 			   2) would corrupt the heap with the later strcat (file, ".hdr");
 			      On Win this would later cause a crash upon freeing 'file' */
 			free (file);
@@ -62,7 +65,8 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			strcat (file, ".hdr");
 
 		if (!GMT_access (C, file, F_OK)) {	/* Now, if first line has BYTEORDER or ncols keywords we are in the game */
-			if ((fp = GMT_fopen (C, file, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+			if ((fp = GMT_fopen (C, file, "r")) == NULL)
+				return (GMT_GRDIO_OPEN_FAILED);
 			GMT_fgets (C, record, GMT_BUFSIZ, fp);	/* Just get first line */
 			GMT_fclose (C, fp);
 
@@ -82,8 +86,9 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 			free (file);
 		}
-		else {	/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem 
-			   for GTOPO30 (e.g W020N90.DEM) or N|SyyW|Exxx.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
+		else {
+			/* No header file; see if filename contains w/e/s/n information, as in W|ExxxN|Syy.dem
+			 * for GTOPO30 (e.g W020N90.DEM) or N|SyyW|Exxx.hgt for SRTM1|3 (e.g. N00E006.hgt)  */
 			size_t len;
 
 			while (GMT_chop_ext (file));	/* Remove all extensions so we know exactly where to look */
@@ -94,8 +99,9 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 				/* see http://dds.cr.usgs.gov/srtm/version1/SRTM30/GTOPO30_Documentation */
 				header->flags[0] = 'B';		/* GTOPO30 & SRTM30 are Big Endians */
 				header->flags[1] = '0';		/* Flag to let us know the file type */
-				strcpy (header->title, file);		/* Store the file name with all extensions removed.
-								   	We'll use this to create header from file name info */
+				/* Store the file name with all extensions removed.
+				 * We'll use this to create header from file name info */
+				strcpy (header->title, file);
 			}
 			else if (name_len > 3 && !(strncmp (&header->name[name_len-4], ".hgt", 4) && strncmp (&header->name[name_len-4], ".HGT", 4))) {
 				/* Probably a SRTM1|3 file. In read_esri_info we'll check further if it is a 1 or 3 sec */
@@ -103,11 +109,13 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 					(file[len-7] == 'N' || file[len-7] == 'n' || file[len-7] == 'S' || file[len-7] == 's')) {
 					header->flags[0] = 'B';	/* SRTM1|3 are Big Endians */
 					header->flags[1] = '1';	/* Flag to let us know the file type */
-					strcpy (header->title, file);	/* Store the file name with all extensions removed.
-								   	We'll use this to create header from file name info */
+					/* Store the file name with all extensions removed.
+					 * We'll use this to create header from file name info */
+					strcpy (header->title, file);
 				}
 			}
-			else {	/* Cannot do anything with this data */
+			else {
+				/* Cannot do anything with this data */
 				free (file);
 				return (-1);	/* Not this kind of file */
 			}
@@ -115,11 +123,10 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 
 	header->type = GMT_GRD_IS_EI;
-	return (header->type);
+	return GMT_NOERROR;
 }
 
-int read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
+int read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	/* Parse the contents of a .HDR file */
 	int nB;
 	char record[GMT_BUFSIZ];

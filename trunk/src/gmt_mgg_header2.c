@@ -164,32 +164,36 @@ static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 	gmt->wesn[YHI] = gmt_dms2degrees(mgg->latDeg, mgg->latMin, mgg->latSec);
 	gmt->inc[GMT_Y] = gmt_dms2degrees(0, 0, mgg->latSpacing);
 	gmt->wesn[YLO] = gmt->wesn[YHI] - (gmt->inc[GMT_Y] * (gmt->ny - one_or_zero));
- 
+
 	gmt->z_min = (double)mgg->minValue / (double)mgg->precision;
 	gmt->z_max = (double)mgg->maxValue / (double)mgg->precision;
 	gmt->z_scale_factor = 1.0;
 	gmt->z_add_offset = 0.0;
 }
 
-int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{	/* Determine if file is a GRD98 file */
+int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int ok;
 
-	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (C, header->name, C->current.io.r_mode)) == NULL) return (GMT_GRDIO_OPEN_FAILED);
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if ((fp = GMT_fopen (C, header->name, C->current.io.r_mode)) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
-	if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1)
+		return (GMT_GRDIO_READ_FAILED);
 
 	/* Swap header bytes if necessary; ok is 0|1 if successful and -1 if bad file */
 	ok = gmt_swap_mgg_header (&mggHeader);
 
 	/* Check the magic number and size of header */
-	if (ok == -1) return (-1);	/* Not this kind of file */
+	if (ok == -1)
+		return (-1);	/* Not this kind of file */
 	header->type = GMT_GRD_IS_RF;
-	return (header->type);
+	return GMT_NOERROR;
 }
 
 int GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)

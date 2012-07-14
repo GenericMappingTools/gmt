@@ -66,9 +66,8 @@
 int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
 int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
-int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{	/* Returns type GMT_GRD_IS_N? (=n?) for new NetCDF grid,
-	   type GMT_GRD_IS_C? (=c?) for old NetCDF grids and -1 upon error */
+int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	/* Returns GMT_NOERROR if NetCDF grid */
 	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = false;
 	nc_type z_type;
 	char varname[GRD_VARNAME_LEN80];
@@ -78,40 +77,51 @@ int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	if (varname[0]) {
 		j = 0;
 		while (varname[j] && varname[j] != '[' && varname[j] != '(') j++;
-		if (varname[j]) varname[j] = '\0';
+		if (varname[j])
+			varname[j] = '\0';
 	}
-	if (!strcmp (header->name, "=")) return (GMT_GRDIO_NC_NO_PIPE);
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_NC_NO_PIPE);
 
 	/* Open the file and look for the required variable */
-	if (GMT_access (C, header->name, F_OK)) return (GMT_GRDIO_FILE_NOT_FOUND);
-	if (nc_open (header->name, NC_NOWRITE, &ncid)) return (GMT_GRDIO_OPEN_FAILED);
-	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {	/* Old style GMT netCDF grid */
+	if (GMT_access (C, header->name, F_OK))
+		return (GMT_GRDIO_FILE_NOT_FOUND);
+	if (nc_open (header->name, NC_NOWRITE, &ncid))
+		return (GMT_GRDIO_OPEN_FAILED);
+	if (!nc_inq_dimid (ncid, "xysize", &z_id)) {
+		/* Old style GMT netCDF grid */
 		old = true;
-		if (nc_inq_varid (ncid, "z", &z_id)) return (GMT_GRDIO_NO_VAR);
+		if (nc_inq_varid (ncid, "z", &z_id))
+			return (GMT_GRDIO_NO_VAR);
 	}
-	else if (varname[0]) {	/* ?<varname> used */
-		if (nc_inq_varid (ncid, varname, &z_id)) return (GMT_GRDIO_NO_VAR);
+	else if (varname[0]) {
+		/* ?<varname> used */
+		if (nc_inq_varid (ncid, varname, &z_id))
+			return (GMT_GRDIO_NO_VAR);
 	}
-	else {			/* Look for first 2D grid */
+	else {
+		/* Look for first 2D grid */
 		nc_inq_nvars (ncid, &nvars);
 		for (j = 0; j < nvars && z_id < 0; j++) {
 			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
-			if (ndims == 2) z_id = j;
+			if (ndims == 2)
+				z_id = j;
 		}
-		if (z_id < 0) return (GMT_GRDIO_NO_2DVAR);
+		if (z_id < 0)
+			return (GMT_GRDIO_NO_2DVAR);
 	}
 
 	GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 	switch (z_type) {
-		case NC_BYTE:	header->type = old ? GMT_GRD_IS_CB : GMT_GRD_IS_NB; break;
-		case NC_SHORT:	header->type = old ? GMT_GRD_IS_CS : GMT_GRD_IS_NS; break;
-		case NC_INT:	header->type = old ? GMT_GRD_IS_CI : GMT_GRD_IS_NI; break;
-		case NC_FLOAT:	header->type = old ? GMT_GRD_IS_CF : GMT_GRD_IS_NF; break;
-		case NC_DOUBLE:	header->type = old ? GMT_GRD_IS_CD : GMT_GRD_IS_ND; break;
-		default:		header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
+		case NC_BYTE:   header->type = old ? GMT_GRD_IS_CB : GMT_GRD_IS_NB; break;
+		case NC_SHORT:  header->type = old ? GMT_GRD_IS_CS : GMT_GRD_IS_NS; break;
+		case NC_INT:    header->type = old ? GMT_GRD_IS_CI : GMT_GRD_IS_NI; break;
+		case NC_FLOAT:  header->type = old ? GMT_GRD_IS_CF : GMT_GRD_IS_NF; break;
+		case NC_DOUBLE: header->type = old ? GMT_GRD_IS_CD : GMT_GRD_IS_ND; break;
+		default:        header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
 	}
 	nc_close (ncid);
-	return (header->type);
+	return GMT_NOERROR;
 }
 
 void gmt_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units)

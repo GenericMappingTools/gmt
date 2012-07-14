@@ -38,12 +38,13 @@ int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	GDALAllRegister();
 	hDataset = GDALOpen(header->name, GA_ReadOnly);
 
-	if (hDataset == NULL) return (GMT_GRDIO_BAD_VAL);
+	if (hDataset == NULL)
+		return (GMT_GRDIO_BAD_VAL);
 	GMT_report (C, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
 	header->type = GMT_GRD_IS_GD;
 
-	return (header->type);
+	return GMT_NOERROR;
 }
 
 int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl) {
