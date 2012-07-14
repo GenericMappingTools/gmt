@@ -125,6 +125,8 @@ struct GRD_HEADER {
 	unsigned int z_chunksize[2];    /* chunk size (lat,lon) */
 	bool z_shuffle;                 /* if shuffle filter is turned on */
 	unsigned int z_deflate_level;   /* if deflate filter is in use */
+	bool z_scale_autoadust;         /* if z_scale_factor should be auto-detected */
+	bool z_offset_autoadust;        /* if z_add_offset should be auto-detected */
 
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
 	double wesn[4];                   /* Min/max x and y coordinates */

@@ -1984,16 +1984,21 @@ the given filename as follows:
 \vspace{\baselineskip}
 
 \noindent
-where everything in brackets is optional.  If you are reading a grid
-then no options are needed: just continue to pass
-the name of the grid file.  However, if you write another format you must
+where everything in brackets is optional.  If you are reading a
+grid then no options are needed: just continue to pass the name of
+the grid file.  However, if you write another format you must
 append the =\emph{ID} string, where \emph{ID} is the format code
-listed above.  In addition, should you want to (1) multiply the data by
-a scale factor, and (2) add a constant offset you must append the
-/\emph{scale}/\emph{offset} modifier.  Finally, if you need to indicate
-that a certain data value should be interpreted as a NaN (not-a-number)
-you must append the /\emph{nan} suffix to the scaling string (it cannot
-go by itself; note the nesting of the brackets!).
+listed above.  In addition, should you want to (1) multiply the
+data by a scale factor, and (2) add a constant offset you must
+append the /\emph{scale}/\emph{offset} modifier.  Finally, if you
+need to indicate that a certain data value should be interpreted
+as a NaN (not-a-number) you must append the /\emph{nan} suffix to
+the scaling string (it cannot go by itself; note the nesting of
+the brackets!). The /\emph{scale} and /\emph{offset} modifiers may
+be left empty to select default values (scale = 1, offset = 0), or
+you may specify \emph{a} for auto-adjusting the scale and/or
+offset of packed integer grids (=\emph{ID}/\emph{a} is a shorthand
+for =\emph{ID}/\emph{a}/\emph{a}).
 
 Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect \GMT\ programs that
@@ -2023,6 +2028,9 @@ and convert it to a \PM 1 range, give the name as
 \item To write a native binary short integer grid file to standard output after subtracting
 32000 and dividing its values by 10, give filename as \filename{=bs/0.1/-3200}.
 
+\item To write an 8-bit integer netCDF grid file with an
+  auto-adjusted offset, give filename as \filename{=nb//a}.
+
 \end{enumerate}
 
 Programs that both read and/or write more than one grid file may
@@ -2034,13 +2042,13 @@ character as part of their name (presumably, a small sacrifice).
 \index{grid file!suffix}
 
 One can also define special file suffixes to imply a specific file
-format; this approach represents a more intuitive and user-friendly
-way to specify the various file formats.  The user may create a file
-called \filename{.gmt\_io} in the current directory, home directory
-or in the directory \filename{$\sim$/.gmt} and define any
-number of custom formats.  The following is an example of a
-\filename{.gmt\_io} file:
-\index{.gmt\_io}
+format; this approach represents a more intuitive and
+user-friendly way to specify the various file formats.  The user
+may create a file called \filename{.gmt\_io} in the current
+directory or home directory, or a file \filename{gmt\_io} in the
+directory \filename{$\sim$/.gmt} and define any number of custom
+formats.  The following is an example of a \filename{.gmt\_io}
+file: \index{.gmt\_io}
 
 \vspace{\baselineskip}
 
@@ -2057,13 +2065,14 @@ MMM\=\# suffix \=format\_id \=scale \=offset \=NaNxxx\=Comments \kill
 \>byte \> bb \> - \> - \> 255 \> Native binary 1-byte grids \\
 \>bit \> bm \> - \> - \> - \> Native binary 0 or 1 grids \\
 \>mask \> bm \> - \> - \> 0 \> Native binary 1 or NaN masks \\
-\>faa \> bs \> 0.1 \> - \> 32767 \> Native binary gravity in 0.1 mGal
+\>faa \> bs \> 0.1 \> - \> 32767 \> Native binary gravity in 0.1 mGal \\
+\>ns \> ns \> a \> a \> - \> 16-bit integer netCDF grid with auto-scale and auto-offset
 \end{tabbing}
 
 These suffices can be anything that makes sense to the user.  To
 activate this mechanism, set parameter \textbf{IO\_GRIDFILE\_SHORTHAND} to TRUE in
 your \filename{gmt.conf} file.  Then, using the filename
-\filename{stuff.i2} is equivalent to saying \filename{stuff.i2=bs/1/0/32767},
+\filename{stuff.i2} is equivalent to saying \filename{stuff.i2=bs///32767},
 and the filename \filename{wet.mask} means wet.mask=bm/1/0/0.  For a
 file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the

@@ -122,26 +122,6 @@ static inline void scale_and_offset_f (float *data, size_t length, float scale, 
 #endif
 }
 
-static inline void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, double scale, double offset) {
-	/* Routine that does the data conversion and sanity checking
-	 * before calling scale_and_offset_f() */
-	float scale_f  = (float)scale;
-	float offset_f = (float)offset;
-
-	/* Sanity checks */
-	if (!isnormal (scale)) {
-		//GMT_report (C, GMT_MSG_NORMAL, "Scale must be a non-zero normalized number (%g).", scale);
-		scale_f = 1.0f;
-	}
-	if (!isfinite (offset)) {
-		//GMT_report (C, GMT_MSG_NORMAL, "Offset must be a finite number (%g).", offset);
-		offset_f = 0.0f;
-	}
-	if (scale_f == 1.0 && offset_f == 0.0)
-		return; /* No work needed */
-
-	/* Call workhorse */
-	scale_and_offset_f (data, length, scale_f, offset_f);
-}
+EXTERN_MSC void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, double scale, double offset);
 
 #endif /* GMT_GRDIO_H */
