@@ -4920,27 +4920,34 @@ int GMT_get_char_encoding (struct GMT_CTRL *C, char *name)
 	return (i);
 }
 
-void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and initialize shorthand notation */
+void gmt_setshorthand (struct GMT_CTRL *C) {
+	/* Read user's .gmt_io file and initialize shorthand notation */
 	unsigned int n = 0;
 	int id;
 	size_t n_alloc = 0;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ], a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], c[GMT_TEXT_LEN64], d[GMT_TEXT_LEN64], e[GMT_TEXT_LEN64];
 	FILE *fp = NULL;
 
-	C->session.n_shorthands = 0;	/* By default there are no shorthands unless .gmt_io is found */
+	C->session.n_shorthands = 0; /* By default there are no shorthands unless .gmt_io is found */
 
-	if (!GMT_getuserpath (C, ".gmt_io", file)) return;
-	if ((fp = fopen (file, "r")) == NULL) return;
+	if (!GMT_getuserpath (C, ".gmt_io", file)) {
+		if (!GMT_getsharepath (C, "", "gmt_io", "", file)) /* try non-hidden file in ~/.gmt */
+			return;
+	}
+	if ((fp = fopen (file, "r")) == NULL)
+		return;
 
-	GMT_set_meminc (C, GMT_TINY_CHUNK);	/* Only allocate a small amount */
+	GMT_set_meminc (C, GMT_TINY_CHUNK); /* Only allocate a small amount */
 	while (fgets (line, GMT_BUFSIZ, fp)) {
-		if (line[0] == '#' || line[0] == '\n') continue;
+		if (line[0] == '#' || line[0] == '\n')
+			continue;
 		if (sscanf (line, "%s %s %s %s %s", a, b, c, d, e) != 5) {
 			GMT_report (C, GMT_MSG_NORMAL, "Error decoding file %s.  Bad format? [%s]\n", file, line);
 			GMT_exit (EXIT_FAILURE);
 		}
 
-		if (n == n_alloc) C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
+		if (n == n_alloc)
+			C->session.shorthand = GMT_malloc (C, C->session.shorthand, n, &n_alloc, struct GMT_SHORTHAND);
 
 		C->session.shorthand[n].suffix = strdup (a);
 		id = GMT_grd_format_decoder (C, b);
@@ -4948,11 +4955,9 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 			GMT_report (C, GMT_MSG_NORMAL, "Unknown shorthand format [%s]\n", file, b);
 			GMT_exit (EXIT_FAILURE);
 		}
-		C->session.shorthand[n].id = id;
-		C->session.shorthand[n].scale = (strcmp (c, "-")) ? atof (c) : 1.0;
-		C->session.shorthand[n].offset = (strcmp (d, "-")) ? atof (d) : 0.0;
-		C->session.shorthand[n].nan = (strcmp (e, "-")) ? atof (e) : C->session.d_NaN;
-		n++;
+		snprintf (line, GMT_BUFSIZ, "%s/%s/%s/%s", b, c, d, e); /* ff/scale/offset/invalid */
+		C->session.shorthand[n].format = strdup (line);
+		++n;
 	}
 	fclose (fp);
 
@@ -4964,9 +4969,13 @@ void gmt_setshorthand (struct GMT_CTRL *C) {/* Read user's .gmt_io file and init
 void gmt_freeshorthand (struct GMT_CTRL *C) {/* Free memory used by shorthand arrays */
 	unsigned int i;
 
-	if (C->session.n_shorthands == 0) return;
+	if (C->session.n_shorthands == 0)
+		return;
 
-	for (i = 0; i < C->session.n_shorthands; i++) free (C->session.shorthand[i].suffix);
+	for (i = 0; i < C->session.n_shorthands; ++i) {
+		free (C->session.shorthand[i].suffix);
+		free (C->session.shorthand[i].format);
+	}
 	GMT_free (C, C->session.shorthand);
 }
 

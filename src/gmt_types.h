@@ -126,9 +126,8 @@ struct GMT_INTERNAL {
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */
-	double scale, offset, nan;
-	unsigned int id;
-	char *suffix;
+	char *suffix; /* suffix of file */
+	char *format; /* format: ff/scale/offset/invalid */
 };
 
 struct GMT_SESSION {
