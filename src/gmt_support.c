@@ -226,7 +226,8 @@ void gmt_treedelete (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, void *addr) {
 		x = c->l;	c->l = x->r;
 		x->l = t->l;	x->r = t->r;
 	}
-	if (M->do_log) fprintf (M->fp, "DEL: *p = x%lx %10zu bytes %s\n", (long)t->ptr, t->size, t->name);
+	if (M->do_log)
+		fprintf (M->fp, "DEL: *p = x%lx %10" PRIuS " bytes %s\n", (long)t->ptr, t->size, t->name);
 	if (t->name) free (t->name);
 	free (t);
 	if (addr < p->ptr) p->l = x; else p->r = x;
@@ -279,7 +280,8 @@ void gmt_memtrack_add (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, const char 
 	}
 
 	entry->size = size;
-	if (M->do_log) fprintf (M->fp, "%s: *p = x%lx %10zu bytes %s\n", mode[kind], (long)entry->ptr, entry->size, entry->name);
+	if (M->do_log)
+		fprintf (M->fp, "%s: *p = x%lx %10" PRIuS " bytes %s\n", mode[kind], (long)entry->ptr, entry->size, entry->name);
 	if (M->current > M->maximum) M->maximum = M->current;	/* Update total allocation */
 	if (size > M->largest) M->largest = size;		/* Update largest single item */
 }
@@ -308,7 +310,7 @@ void gmt_treereport (struct GMT_CTRL *C, struct MEMORY_ITEM *x) {
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot = gmt_memtrack_mem (C, x->size, &u);
-	GMT_report (C, GMT_MSG_NORMAL, "Memory not freed first allocated in %s: %.3f %s [%zu bytes]\n", x->name, tot, unit[u], x->size);
+	GMT_report (C, GMT_MSG_NORMAL, "Memory not freed first allocated in %s: %.3f %s [%" PRIuS " bytes]\n", x->name, tot, unit[u], x->size);
 }
 
 void gmt_treeprint (struct GMT_CTRL *C, struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x)
@@ -330,11 +332,11 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 	if (!M->active) return;	/* Not activated */
 	if (M->current > 0) {
 		tot = gmt_memtrack_mem (C, M->maximum, &u);
-		GMT_report (C, GMT_MSG_NORMAL, "Max total memory allocated was %.3f %s [%zu bytes]\n", tot, unit[u], M->maximum);
+		GMT_report (C, GMT_MSG_NORMAL, "Max total memory allocated was %.3f %s [%" PRIuS " bytes]\n", tot, unit[u], M->maximum);
 		tot = gmt_memtrack_mem (C, M->largest, &u);
-		GMT_report (C, GMT_MSG_NORMAL, "Single largest allocation was %.3f %s [%zu bytes]\n", tot, unit[u], M->largest);
+		GMT_report (C, GMT_MSG_NORMAL, "Single largest allocation was %.3f %s [%" PRIuS " bytes]\n", tot, unit[u], M->largest);
 		tot = gmt_memtrack_mem (C, M->current, &u);
-		if (M->current) GMT_report (C, GMT_MSG_NORMAL, "MEMORY NOT FREED: %.3f %s [%zu bytes]\n", tot, unit[u], M->current);
+		if (M->current) GMT_report (C, GMT_MSG_NORMAL, "MEMORY NOT FREED: %.3f %s [%" PRIuS " bytes]\n", tot, unit[u], M->current);
 		GMT_report (C, GMT_MSG_NORMAL, "Items allocated: %" PRIu64 " reallocated: %" PRIu64 " Freed: %" PRIu64 "\n", M->n_allocated, M->n_reallocated, M->n_freed);
 		excess = M->n_allocated - M->n_freed;
 		if (excess) GMT_report (C, GMT_MSG_NORMAL, "Items not properly freed: %" PRIu64 "\n", excess);
@@ -3254,7 +3256,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 #endif
 
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
-		GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%zu) - exceeding 32-bit counting?\n", nelem);
+		GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
 #ifdef DEBUG
 		GMT_report_func (C, GMT_MSG_NORMAL, where, "GMT_memory called\n");
 #endif
@@ -3274,7 +3276,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
+			GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
 			GMT_report_func (C, GMT_MSG_NORMAL, where, "GMT_memory [realloc] called\n");
 #endif
@@ -3295,7 +3297,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			mem = (double)(nelem * size);
 			k = 0;
 			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not allocate memory [%.2f %s, %zu items of %zu bytes]\n", mem, m_unit[k], nelem, size);
+			GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
 #ifdef DEBUG
 			GMT_report_func (C, GMT_MSG_NORMAL, where, "GMT_memory [calloc] called\n");
 #endif

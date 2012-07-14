@@ -103,6 +103,17 @@
 #	include "compat/inttypes.h"  /* msinttypes for VC++ */
 #endif /* HAVE_INTTYPES_H_ */
 
+/* Size prefixes for printf/scanf for size_t and ptrdiff_t */
+#ifdef _MSC_VER
+#	define PRIuS "Iu" /* size_t */
+#	define PRIdS "Id" /* ptrdiff_t */
+#else
+#	define PRIuS "zu" /* size_t */
+#	define PRIdS "zd" /* ptrdiff_t */
+#endif
+#define SCNuS PRIuS
+#define SCNdS PRIdS
+
 /*
  * Windows headers
  */

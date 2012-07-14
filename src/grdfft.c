@@ -119,7 +119,7 @@ struct F_INFO {
 	double hlambda[3];	/* High full-wavelength where Gauss amp = 0.5  for r, x, and y	*/
 	double bw_order;	/* Order, N, of Butterworth filter	*/
 	double (*filter) (struct F_INFO *, double, int);	/* Points to the correct filter function */
-	
+
 	bool do_this[3];	/* T/F this filter wanted for r, x, and y	*/
 	bool set_already;	/* true if we already filled in the structure */
 	unsigned int kind;	/* FILTER_EXP, FILTER_BW, FILTER_COS  */
@@ -142,9 +142,9 @@ struct K_XY {	/* Holds parameters needed to calculate kx, ky, kr */
 
 void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDFFT_CTRL *C = NULL;
-	
+
 	C = GMT_memory (GMT, NULL, 1, struct GRDFFT_CTRL);
-	
+
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->S.scale = 1.0;
@@ -235,7 +235,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 	i_data_start = GMT->current.io.pad[XLO];	/* For readability */
 	j_data_start = GMT->current.io.pad[YHI];
 	mx = h->mx;
-	
+
 	/* First reflect about xmin and xmax, point symmetric about edge point */
 
 	for (im = 1; im <= i_data_start; im++) {
@@ -323,7 +323,7 @@ unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct K_XY *
 	float *datac = Grid->data;
 
 	/* Differentiate in frequency domain by multiplying by kr [scale optional] */
-	
+
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0;	/* Derivative of the mean is zero */
 	for (k = 2; k < Grid->header->size; k += 2) {
@@ -401,7 +401,7 @@ unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, doubl
 	double rm;	/* Mantle density, SI units  */
 	double rw;	/* Water density, SI units  */
 	double ri;	/* Infill density, SI units  */
-	
+
 	float *datac = Grid->data;
 
 	te = par[0];	rl = par[1];	rm = par[2];	rw = par[3];	ri = par[4];
@@ -411,7 +411,7 @@ unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, doubl
 		Ctrl->S.scale *= airy_ratio;
 		return (5);	/* Number of parameters used */
 	}
-	
+
 	rigidity_d = (YOUNGS_MODULUS * pow (te, 3.0)) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
 	d_over_restoring_force = rigidity_d / ((rm - ri) * NORMAL_GRAVITY);
 
@@ -451,7 +451,7 @@ double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct K_XY *K)
 {
 	unsigned int j;
 	double freq, return_value = 1.0;
-		
+
 	for (j = 0; j < 3; j++) {
 		if (!(f_info->do_this[j])) continue;	/* Only do one of x, y, or r filtering */
 		switch (j) {
@@ -496,12 +496,12 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	bool descending;
 	double fourvals[4];
 	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
-	
+
 	/* Syntax is either -F[x|y]lc/hc/lp/hp (Cosine taper), -F[x|y]lo/hi (Gaussian), or 0F[x|y]lo/hi/order (Butterworth) */
-	
+
 	strcpy(line, c);
 	i = j = 0;	/* j is Filter type: r=0, x=1, y=2  */
-	
+
 	if (line[i] == 'x') {
 		j = 1;
 		i++;
@@ -510,10 +510,10 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 		j = 2;
 		i++;
 	}
-	
+
 	f_info->do_this[j] = true;
 	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
-	
+
 	n_tokens = pos = 0;
 	while ((GMT_strtok (&line[i], "/", &pos, p))) {
 		if (n_tokens > 3) {
@@ -530,7 +530,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 		}
 		n_tokens++;
 	}
-	
+
 	if (!(n_tokens == 2 || n_tokens == 3 || n_tokens == 4)) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
 		return (true);
@@ -551,15 +551,15 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 			GMT_report (GMT, GMT_MSG_NORMAL, "-F Pass/Cut specification error.\n");
 			return (true);
 		}
-	
+
 		/* Now everything is OK  */
-	
+
 		if (fourvals[0] >= 0.0 || fourvals[1] >= 0.0) {	/* Lower end values are set  */
 			f_info->lc[j] = (2.0 * M_PI)/fourvals[0];
 			f_info->lp[j] = (2.0 * M_PI)/fourvals[1];
 			if (fourvals[0] != fourvals[1]) f_info->ltaper[j] = 1.0/(f_info->lc[j] - f_info->lp[j]);
 		}
-	
+
 		if (fourvals[2] >= 0.0 || fourvals[3] >= 0.0) {	/* Higher end values are set  */
 			f_info->hp[j] = (2.0 * M_PI)/fourvals[2];
 			f_info->hc[j] = (2.0 * M_PI)/fourvals[3];
@@ -603,7 +603,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	uint64_t k, nk, nused, ifreq;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	double (*get_k) (uint64_t, struct K_XY *);
-	
+
 	float *datac = Grid->data;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -639,7 +639,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	/* Loop over it all, summing and storing, checking range for r */
 
 	r_delta_k = 1.0 / delta_k;
-	
+
 	for (nused = 0, k = 2; k < Grid->header->size; k += 2) {
 		freq = (*get_k)(k, K);
 		ifreq = lrint (fabs (freq) * r_delta_k);	/* Smallest value returned might be 0 when doing r spectrum*/
@@ -766,9 +766,9 @@ void fourt_stats (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned
 	}
 	*t = 1.0e-06 * (3000.0 + ntotal * (500.0 + 43.0 * sum2 + 68.0 * sumnot2 + 320.0 * nnot2));
 	*r = err_scale * 3.0 * pow (2.0, -FSIGNIF);
-	
+
 	return;
-} 
+}
 
 void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct FFT_SUGGESTION *fft_sug, bool do_print)
 {
@@ -785,8 +785,8 @@ void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct
 	fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
 	given_space += nx * ny;
 	given_space *= 8;
-	if (do_print) GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
-		nx, ny, given_time, given_err, given_space);
+	if (do_print)
+		GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", nx, ny, given_time, given_err, given_space);
 
 	best_err = s_err = t_err = given_err;
 	best_time = s_time = e_time = given_time;
@@ -843,11 +843,11 @@ void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct
 	}
 
 	if (do_print) {
-		GMT_report (GMT, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %zu\n",
+		GMT_report (GMT, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -881,7 +881,7 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 	size_t worksize;
 	double tdummy, edummy;
 	struct FFT_SUGGESTION fft_sug[3];
-		
+
 	/* Get dimensions as may be appropriate */
 	if (Ctrl->N.n_user_set) {
 		if (Ctrl->N.nx2 < Gin->header->nx || Ctrl->N.ny2 < Gin->header->ny) {
@@ -942,9 +942,9 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: grdfft <ingrid> [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
 	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
-	
+
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
-	
+
 	GMT_message (GMT, "\t<ingrid> is the input grid file.\n");
 	GMT_message (GMT, "\tOPTIONS:\n");
 	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D spectrum (see -E).\n");
@@ -976,7 +976,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
 	GMT_explain_options (GMT, "Vf.");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
-	
+
 	return (EXIT_FAILURE);
 }
 
@@ -1010,10 +1010,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 		f_info->lc[j] = f_info->lp[j] = -1.0;		/* Set negative, below valid frequency range  */
 		f_info->hp[j] = f_info->hc[j] = DBL_MAX;	/* Set huge positive, above valid frequency range  */
 	}
-	
+
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		GMT_memset (par, 5, double);
-		
+
 		switch (opt->option) {
 			case '<':	/* Input file (only one is accepted) */
 				Ctrl->In.active = true;
@@ -1234,7 +1234,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Out->header->inc[GMT_X]);
 	K.delta_ky = 2 * M_PI / (Ctrl->N.ny2 * Out->header->inc[GMT_Y]);
 	K.nx2 = Ctrl->N.nx2;	K.ny2 = Ctrl->N.ny2;
-	
+
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Give delta_kx, delta_ky units of 2pi/meters  */
 		K.delta_kx /= (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (Out->header->wesn[YLO] + Out->header->wesn[YHI])) );
 		K.delta_ky /= GMT->current.proj.DIST_M_PR_DEG;

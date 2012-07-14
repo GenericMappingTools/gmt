@@ -455,16 +455,17 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (ndims - in < 1) {
-			GMT_report (C, GMT_MSG_NORMAL, "NetCDF variable %s has %zu dimensions, cannot specify more than %d indices; ignoring remainder\n", varname, ndims, ndims-1);
+			GMT_report (C, GMT_MSG_NORMAL, "NetCDF variable %s has %" PRIuS " dimensions, cannot specify more than %d indices; ignoring remainder\n", varname, ndims, ndims-1);
 			for (j = in; j < ndims; j++) C->current.io.t_index[i][j] = 1;
 		}
-		if (ndims - in > 2) GMT_report (C, GMT_MSG_NORMAL, "NetCDF variable %s has %zu dimensions, showing only 2\n", varname, ndims);
+		if (ndims - in > 2)
+			GMT_report (C, GMT_MSG_NORMAL, "NetCDF variable %s has %" PRIuS " dimensions, showing only 2\n", varname, ndims);
 
 		/* Get information of the first two dimensions */
 		nc_inq_vardimid(C->current.io.ncid, C->current.io.varid[i], dimids);
 		nc_inq_dimlen(C->current.io.ncid, dimids[0], &n);
 		if (C->current.io.ndim != 0 && C->current.io.ndim != n) {
-			GMT_report (C, GMT_MSG_NORMAL, "NetCDF variable %s has different dimension (%zu) from others (%zu)\n", varname, n, C->current.io.ndim);
+			GMT_report (C, GMT_MSG_NORMAL, "NetCDF variable %s has different dimension (%" PRIuS ") from others (%" PRIuS ")\n", varname, n, C->current.io.ndim);
 			GMT_exit (EXIT_FAILURE);
 		}
 		C->current.io.ndim = n;
@@ -2652,7 +2653,7 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 static inline void fwrite_check (const void *ptr,
 		size_t size, size_t nitems, FILE *stream) {
 	if (fwrite (ptr, size, nitems, stream) != nitems) {
-		fprintf (stderr, "%s: error writing %zd bytes to stream.\n",
+		fprintf (stderr, "%s: error writing %" PRIuS " bytes to stream.\n",
 				__func__, size * nitems);
 		exit (EXIT_FAILURE);
 	}
@@ -2716,7 +2717,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *C,
 	/* allocate buffer on stack to improve disk i/o */
 	buffer = malloc (chunksize);
 	if (buffer == NULL) {
-		fprintf (stderr, "%s: error: cannot malloc %zu bytes.\n", __func__, chunksize);
+		fprintf (stderr, "%s: error: cannot malloc %" PRIuS " bytes.\n", __func__, chunksize);
 		exit(EXIT_FAILURE);
 	}
 
@@ -2760,7 +2761,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *C,
 						__func__, bytes_read - offset - extrabytes);
 #endif
 				if ( extrabytes != 0 )
-					fprintf (stderr, "%s: warning: the last %zu bytes were ignored during swapping.\n",
+					fprintf (stderr, "%s: warning: the last %" PRIuS " bytes were ignored during swapping.\n",
 							__func__, extrabytes);
 				C->current.io.status = GMT_IO_EOF;
 				free (buffer);
@@ -2771,7 +2772,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *C,
 		}
 		bytes_read += nbytes;
 #ifdef DEBUG_BYTESWAP
-		fprintf (stderr, "%s: read %zu bytes into buffer of size %zu.\n",
+		fprintf (stderr, "%s: read %" PRIuS " bytes into buffer of size %" PRIuS ".\n",
 				__func__, nbytes, chunksize);
 #endif
 
@@ -2779,8 +2780,8 @@ bool gmt_byteswap_file (struct GMT_CTRL *C,
 		extrabytes = nbytes % swapwidth;
 		if ( extrabytes != 0 ) {
 			/* this can only happen on EOF, ignore extra bytes while swapping. */
-			fprintf (stderr, "%s: warning: read buffer contains %zu bytes which are "
-					"not aligned with the swapwidth of %zu bytes.\n",
+			fprintf (stderr, "%s: warning: read buffer contains %" PRIuS " bytes which are "
+					"not aligned with the swapwidth of %" PRIuS " bytes.\n",
 					__func__, nbytes, extrabytes);
 			nbytes -= extrabytes;
 		}

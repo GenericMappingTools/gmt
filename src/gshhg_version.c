@@ -39,10 +39,12 @@
 #define VERSION_ATT_NAME "version"
 #define FAILURE_PREFIX "gshhg_version: "
 
-/* Suppress Visual Studio deprecation warnings */
-#	ifdef _MSC_VER
-#		pragma warning( disable : 4996 )
-#	endif
+#ifdef _MSC_VER
+#	pragma warning( disable : 4996 ) /* Suppress Visual Studio deprecation warnings */
+#	define PRIuS "Iu" /* size_t length specifier */
+#else
+#	define PRIuS "zu" /* size_t length specifier */
+#endif
 
 /* Get value from VERSION_ATT_NAME of netCDF file and populate gshhg_version,
  * gshhg_version_major, gshhg_version_minor, and gshhg_version_patch */
@@ -68,7 +70,7 @@ int gshhg_get_version (const char* filename, struct GSHHG_VERSION *gshhg_version
 	}
 	if (v_len == 0 || v_len > BUF_SIZE) {
 		nc_close(ncid);
-		fprintf(stderr, FAILURE_PREFIX "invalid version attribute length: %zd\n", v_len);
+		fprintf(stderr, FAILURE_PREFIX "invalid version attribute length: %" PRIuS "\n", v_len);
 		return 0;
 	}
 

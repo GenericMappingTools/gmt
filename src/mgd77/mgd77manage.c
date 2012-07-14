@@ -1158,7 +1158,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not read record #1 from %s.e77 - aborting\n", list[argno]);
 				e_error++;
 			}
-			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %" PRIu64, ID, date, &n_recs);
+			sscanf (&line[1], "%*s %s %*s %*s %*s %*s %*s %s %*s %" SCNu64, ID, date, &n_recs);
 			if (strcmp (In.NGDC_id, ID)) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s - aborting\n", efile, ID, In.NGDC_id);
 				e_error++;
@@ -1212,7 +1212,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 					sscanf (line, "%c-%c-%[^-]-%[^-]-%d", &YorN, &kind, ID, field, &item);
 				}
 				else				/* Data record */
-					sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
+					sscanf (line, "%c %s %s %" SCNu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in header records!\n", efile, ID, In.NGDC_id);
 					e_error++;
@@ -1346,7 +1346,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 								break;
 							case E77_HDR_GRID_OFFSET:	/* Range of bad values - set flags to BAD  */
 							case E77_HDR_FLAGRANGE:		/* Range of bad values - set flags to BAD  */
-								sscanf (answer, "%" PRIu64 "-%" PRIu64, &from, &to);
+								sscanf (answer, "%" SCNu64 "-%" SCNu64, &from, &to);
 								if (from < 1 || from > D->H.n_records || to < 1 || to > D->H.n_records || to < from) {
 									GMT_report (GMT, GMT_MSG_NORMAL, "Error: Record range %s is invalid.  Correction skipped\n", answer);
 									break;
@@ -1369,7 +1369,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				for (rec = 0, has_time = false; !has_time && rec < D->H.n_records; rec++) if (!GMT_is_dnan (tvar[rec])) has_time = true;
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fp_e)) {	/* Read until EOF */
-				sscanf (line, "%c %s %s %" PRIu64 " %s", &YorN, ID, timestamp, &rec, code);
+				sscanf (line, "%c %s %s %" SCNu64 " %s", &YorN, ID, timestamp, &rec, code);
 				if (strcmp (In.NGDC_id, ID)) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Error: E77 Conflict %s : ID = %s versus %s in data records - skipped\n", efile, ID, In.NGDC_id);
 					e_error++;
@@ -1619,7 +1619,8 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				MGD77_nc_status (GMT, nc_put_vara_double (In.nc_id, cdf_var_id, start, count, colvalue));
 		}
 		if (n_bad) {	/* Report what we found */
-			if (In.verbose_level | 1) fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
+			if (In.verbose_level | 1)
+				fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
 				gmt_module_name(GMT), In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
 		}
 

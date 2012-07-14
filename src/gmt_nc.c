@@ -194,7 +194,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			/* t_index will be determined later from t_value when the nc-file is opened */
 		}
 		else if (c != NULL && *c == '[') {
-			sscanf (c+1, "%zu,%zu,%zu", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
+			sscanf (c+1, "%" SCNuS ",%" SCNuS ",%" SCNuS "", &header->t_index[0], &header->t_index[1], &header->t_index[2]);
 			*c = '\0';
 		}
 	}
@@ -812,7 +812,7 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsi
 		/* memory needed for subset exceeds the cache size */
 		*n_contiguous_chunk_rows = (size_t) floor ( NC_CACHE_SIZE / (width * z_size) / chunksize[0] );
 #ifdef DEBUG
-		GMT_report (C, GMT_MSG_NORMAL, "processing %zu contiguous chunked rows (%.1f MiB)\n",
+		GMT_report (C, GMT_MSG_NORMAL, "processing %" PRIuS " contiguous chunked rows (%.1f MiB)\n",
 						 *n_contiguous_chunk_rows,
 						 *n_contiguous_chunk_rows * z_size * width * chunksize[yx_dim[0]] / 1048576.0f);
 #endif
