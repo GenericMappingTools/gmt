@@ -189,15 +189,14 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, ch
 
 	char type_code[3];
 	char *p;
-	int type_id;
+	int err; /* GMT_err_trap */
 
 	/* decode grid type */
 	strncpy (type_code, format, 2);
 	type_code[2] = '\0';
-	type_id = GMT_grd_format_decoder (Ctrl, type_code);
-	if (type_id < 0)
-		return (type_id);
-	header->type = type_id; /* update header type id */
+	err = GMT_grd_format_decoder (Ctrl, type_code, &header->type); /* update header type id */
+	if (err != GMT_NOERROR)
+		return err;
 
 	/* parse scale/offset/invalid if any */
 	p = strchr (format, '/');
@@ -304,34 +303,45 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
-		if ((val = GMT_is_nc_grid (C, header)) >= 0) return (GMT_NOERROR);
+		if ((val = GMT_is_nc_grid (C, header)) == GMT_NOERROR)
+			return (GMT_NOERROR);
 		/* Continue only when file was a pipe or when nc_open didn't like the file. */
-		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED) return (val);
+		if (val != GMT_GRDIO_NC_NO_PIPE && val != GMT_GRDIO_OPEN_FAILED)
+			return (val);
 		/* Then check for native binary GMT grid */
-		if (GMT_is_native_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_native_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 		/* Next check for Sun raster grid */
-		if (GMT_is_ras_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_ras_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 		/* Then check for Golden Software surfer grid */
-		if (GMT_is_srf_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_srf_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 		/* Then check for NGDC GRD98 grid */
-		if (GMT_is_mgg2_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_mgg2_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 		/* Then check for AGC grid */
-		if (GMT_is_agc_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_agc_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 		/* Then check for ESRI grid */
-		if (GMT_is_esri_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_esri_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 #ifdef USE_GDAL
 		/* Then check for GDAL grid */
-		if (GMT_is_gdal_grid (C, header) >= 0) return (GMT_NOERROR);
+		if (GMT_is_gdal_grid (C, header) == GMT_NOERROR)
+			return (GMT_NOERROR);
 #endif
 		return (GMT_GRDIO_UNKNOWN_FORMAT);	/* No supported format found */
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from C->current.setting.io_gridfile_format */
-		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1) strcpy (header->name, tmp);    /* Strip off variable name */
+		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1)
+			strcpy (header->name, tmp);    /* Strip off variable name */
 		/* parse grid format string: */
 		if ((val = parse_grd_format_scale (C, header, C->current.setting.io_gridfile_format)) != GMT_NOERROR)
 			return val;
 	}
-	if (header->type == GMT_GRD_IS_AF) header->nan_value = 0.0;	/* 0 is NaN in the AGC format */
+	if (header->type == GMT_GRD_IS_AF)
+		header->nan_value = 0.0; /* NaN value for AGC format */
 	return (GMT_NOERROR);
 }
 
@@ -744,31 +754,32 @@ void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc)
 	ij_inc[3] = -s_nx;	/* The node one row up relative to ij */
 }
 
-int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code) {
+int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code, int *type_id) {
 	/* Returns the integer grid format ID that goes with the specified 2-character code */
-
-	int id = -1;
-	unsigned int i, id_candidate;
+	int i;
+	unsigned id_candidate;
 
 	if (isdigit ((int)code[0])) {
 		/* File format number given, look for old code */
-		id_candidate = (unsigned int) abs (atoi (code));
-		for (i = 0; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
-			if (C->session.grdcode[i] == id_candidate)
-				id = i;
+		id_candidate = (unsigned) abs (atoi (code));
+		for (i = 0; i < GMT_N_GRD_FORMATS; i++) {
+			if (C->session.grdcode[i] == id_candidate) {
+				*type_id = i;
+				return GMT_NOERROR;
+			}
 		}
 	}
 	else {
 		/* Character code given */
-		for (i = 0; id < 0 && i < GMT_N_GRD_FORMATS; i++) {
-			if (strncmp (C->session.grdformat[i], code, 2) == 0)
-				id = i;
+		for (i = 0; i < GMT_N_GRD_FORMATS; i++) {
+			if (strncmp (C->session.grdformat[i], code, 2) == 0) {
+				*type_id = i;
+				return GMT_NOERROR;
+			}
 		}
 	}
-	if (id == -1)
-		return GMT_GRDIO_UNKNOWN_ID;
 
-	return id;
+	return GMT_GRDIO_UNKNOWN_ID;
 }
 
 /* gmt_grd_RI_verify -- routine to check grd R and I compatibility

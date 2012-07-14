@@ -219,17 +219,22 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	return (GMT_NOERROR);
 }
 
-int GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{	/* Determine if file is a Sun rasterfile */
+int GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	/* Determine if file is a Sun rasterfile */
 	FILE *fp = NULL;
 	struct rasterfile h;
-	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
-	if (GMT_read_rasheader (fp, &h)) return (GMT_GRDIO_READ_FAILED);
-	if (h.magic != RAS_MAGIC) return (GMT_GRDIO_NOT_RAS);
-	if (h.type != 1 || h.depth != 8) return (GMT_GRDIO_NOT_8BIT_RAS);
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
+	if (GMT_read_rasheader (fp, &h))
+		return (GMT_GRDIO_READ_FAILED);
+	if (h.magic != RAS_MAGIC)
+		return (GMT_GRDIO_NOT_RAS);
+	if (h.type != 1 || h.depth != 8)
+		return (GMT_GRDIO_NOT_8BIT_RAS);
 	header->type = GMT_GRD_IS_RB;
-	return (header->type);
+	return GMT_NOERROR;
 }
 
 int GMT_ras_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
@@ -513,21 +518,25 @@ int GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
+int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	uint64_t mx, status, size;
 	off_t nm;
 	double item_size;
 	struct stat buf;
 	struct GRD_HEADER t_head;
 
-	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (stat (header->name, &buf)) return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if (stat (header->name, &buf))
+		return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
 	strcpy (t_head.name, header->name);
-	if ((status = GMT_native_read_grd_info (C, &t_head))) return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
-	if (t_head.nx <= 0 || t_head.ny <= 0) return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
+	if ((status = GMT_native_read_grd_info (C, &t_head)))
+		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
+	if (t_head.nx <= 0 || t_head.ny <= 0)
+		return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
 	nm = GMT_get_nm (C, t_head.nx, t_head.ny);
-	if (nm <= 0) return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
+	if (nm <= 0)
+		return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
 	item_size = (double)((buf.st_size - GRD_HEADER_SIZE) / nm);	/* Estimate size of elements */
 	size = lrint (item_size);
 	if (!doubleAlmostEqualZero (item_size, (double)size))
@@ -562,7 +571,7 @@ int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 			return (GMT_GRDIO_BAD_VAL);
 			break;
 	}
-	return (header->type);
+	return GMT_NOERROR;
 }
 
 int GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
@@ -1131,13 +1140,15 @@ struct srf_header7 {	/* Surfer 7 file header structure */
 	int len_d;		/* Length in bytes of the DATA section */
 };
 
-int GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
+int GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	FILE *fp = NULL;
 	char id[5];
-	if (!strcmp (header->name, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
-	if (GMT_fread (id, sizeof (char), 4U, fp) < 4U) return (GMT_GRDIO_READ_FAILED);
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
+	if (GMT_fread (id, sizeof (char), 4U, fp) < 4U)
+		return (GMT_GRDIO_READ_FAILED);
 	GMT_fclose (C, fp);
 	if (!strncmp (id, "DSBB", 4U))
 		header->type = GMT_GRD_IS_SF;
@@ -1145,47 +1156,56 @@ int GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 		header->type = GMT_GRD_IS_SD;
 	else
 		return (GMT_GRDIO_BAD_VAL);	/* Neither */
-	return (header->type);
+	return GMT_NOERROR;
 }
 
-int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h)
-{
+int GMT_read_srfheader6 (FILE *fp, struct srf_header6 *h) {
 	/* Reads the header of a Surfer 6 gridfile */
 	/* if (GMT_fread (h, sizeof (struct srf_header6), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED); */
 
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
-	if (GMT_fread (h->id, 4*sizeof (char), 1U, fp) != 1U) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->nx, 2*sizeof (short int), 1U, fp) != 1U) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (h->wesn, sizeof (struct srf_header6) - ((uint64_t)h->wesn - (uint64_t)h->id), 1U, fp) != 1U) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (h->id, 4*sizeof (char), 1U, fp) != 1U)
+		return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (&h->nx, 2*sizeof (short int), 1U, fp) != 1U)
+		return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (h->wesn, sizeof (struct srf_header6) - ((uint64_t)h->wesn - (uint64_t)h->id), 1U, fp) != 1U)
+		return (GMT_GRDIO_READ_FAILED);
 
-	return (GMT_NOERROR);
+	return GMT_NOERROR;
 }
 
-int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h)
-{
+int GMT_read_srfheader7 (FILE *fp, struct srf_header7 *h) {
 	/* Reads the header of a Surfer 7 gridfile */
 
-	if (fseek (fp, (off_t)(3*sizeof(int)), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
+	if (fseek (fp, (off_t)(3*sizeof(int)), SEEK_SET))
+		return (GMT_GRDIO_SEEK_FAILED);	/* skip the first 12 bytes */
 	/* if (GMT_fread (h, sizeof (struct srf_header7), 1U, fp) < 1U) return (GMT_GRDIO_READ_FAILED); */
 
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must read it in parts */
-	if (GMT_fread (h->id2, 4*sizeof (char), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->len_g, 3*sizeof (int), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->x_min, 8*sizeof (double), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (h->id3, 4*sizeof (char), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
-	if (GMT_fread (&h->len_d, sizeof (int), 1U, fp) != 1) return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (h->id2, 4*sizeof (char), 1U, fp) != 1)
+		return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (&h->len_g, 3*sizeof (int), 1U, fp) != 1)
+		return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (&h->x_min, 8*sizeof (double), 1U, fp) != 1)
+		return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (h->id3, 4*sizeof (char), 1U, fp) != 1)
+		return (GMT_GRDIO_READ_FAILED);
+	if (GMT_fread (&h->len_d, sizeof (int), 1U, fp) != 1)
+		return (GMT_GRDIO_READ_FAILED);
 
-	return (GMT_NOERROR);
+	return GMT_NOERROR;
 }
 
-int GMT_write_srfheader (FILE *fp, struct srf_header6 *h)
-{
+int GMT_write_srfheader (FILE *fp, struct srf_header6 *h) {
 	/* if (GMT_fwrite (h, sizeof (struct srf_header6), 1U, fp) < 1U) return (GMT_GRDIO_WRITE_FAILED); */
 	/* UPDATE: Because srf_header6 is not 64-bit aligned we must write it in parts */
-	if (GMT_fwrite (h->id, 4*sizeof (char), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (&h->nx, 2*sizeof (short int), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-	if (GMT_fwrite (h->wesn, sizeof (struct srf_header6) - ((uint64_t)h->wesn - (uint64_t)h->id), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
-	return (GMT_NOERROR);
+	if (GMT_fwrite (h->id, 4*sizeof (char), 1U, fp) != 1)
+		return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (&h->nx, 2*sizeof (short int), 1U, fp) != 1)
+		return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_fwrite (h->wesn, sizeof (struct srf_header6) - ((uint64_t)h->wesn - (uint64_t)h->id), 1U, fp) != 1)
+		return (GMT_GRDIO_WRITE_FAILED);
+	return GMT_NOERROR;
 }
 
 int GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)

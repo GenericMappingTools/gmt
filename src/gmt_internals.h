@@ -86,12 +86,9 @@ EXTERN_MSC int GMT_genper_map_clip_path (struct GMT_CTRL *C, uint64_t np, double
 EXTERN_MSC double GMT_half_map_width (struct GMT_CTRL *C, double y);
 EXTERN_MSC void GMT_moment_interval (struct GMT_CTRL *C, struct GMT_MOMENT_INTERVAL *p, double dt_in, bool init); /* step a time axis by time units */
 EXTERN_MSC int64_t GMT_rd_from_iywd (struct GMT_CTRL *C, int iy, int iw, int id);
-EXTERN_MSC int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code);
-EXTERN_MSC int GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
 EXTERN_MSC void GMT_scale_eqrad (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, unsigned int size);
-int GMT_get_fill_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);
-int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_get_fill_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);
 EXTERN_MSC struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, uint64_t n_rows, bool alloc_only);
 EXTERN_MSC struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, unsigned int n_colors);
 EXTERN_MSC struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, unsigned int source_type);

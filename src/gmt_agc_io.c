@@ -37,7 +37,7 @@
 
 /* Public Functions:
 
-int GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
+int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
 int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 int GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
@@ -111,33 +111,45 @@ void SaveAGCHeader (char *remark, float *agchead)
 	}
 }
 
-int GMT_is_agc_grid (struct GMT_CTRL *C, char *file)
-{	/* Determine if file is an AGC grid file. */
+int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
 	int nx, ny;
 	off_t predicted_size;
 	float recdata[RECORDLENGTH], x_min, x_max, y_min, y_max, x_inc, y_inc;
 	struct stat buf;
 
-	if (!strcmp (file, "=")) return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (stat (file, &buf)) return (GMT_GRDIO_STAT_FAILED);	/* Inquiry about file failed somehow */
-	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
-	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
-	
+	if (!strcmp (header->name, "="))
+		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+		return (GMT_GRDIO_OPEN_FAILED);
+	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
+		return (GMT_GRDIO_READ_FAILED);
+
 	y_min = recdata[0];	y_max = recdata[1];
-	if (y_min >= y_max) return (GMT_GRDIO_BAD_VAL);
+	if (y_min >= y_max)
+		return (GMT_GRDIO_BAD_VAL);
 	x_min = recdata[2];	x_max = recdata[3];
-	if (x_min >= x_max) return (GMT_GRDIO_BAD_VAL);
+	if (x_min >= x_max)
+		return (GMT_GRDIO_BAD_VAL);
 	y_inc = recdata[4];	x_inc = recdata[5];
-	if (x_inc <= 0.0 || y_inc <= 0.0) return (GMT_GRDIO_BAD_VAL);
+	if (x_inc <= 0.0 || y_inc <= 0.0)
+		return (GMT_GRDIO_BAD_VAL);
 	nx = GMT_get_n (C, x_min, x_max, x_inc, 0);
-	if (nx <= 0) return (GMT_GRDIO_BAD_VAL);
+	if (nx <= 0)
+		return (GMT_GRDIO_BAD_VAL);
 	ny = GMT_get_n (C, y_min, y_max, y_inc, 0);
-	if (ny <= 0) return (GMT_GRDIO_BAD_VAL);
+	if (ny <= 0)
+		return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
 	predicted_size = lrint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
-	if (predicted_size == buf.st_size) return (GMT_GRD_IS_AF);	/* Yes, appears to be an AGC grid */
-	return (GMT_GRDIO_BAD_VAL);
+	if (predicted_size == buf.st_size) {
+		/* Yes, appears to be an AGC grid */
+		header->type = GMT_GRD_IS_AF;
+		header->nan_value = 0.0; /* NaN value for AGC format */
+		return GMT_NOERROR;
+	}
+	return GMT_GRDIO_BAD_VAL;
 }
 
 int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
