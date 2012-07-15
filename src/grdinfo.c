@@ -386,7 +386,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 			else
 				sprintf (record, "%s: Unknown registration! Probably not a GMT grid", G->header->name);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			if (G->header->type < GMT_N_GRD_FORMATS)
+			if (G->header->type != k_grd_unknown_fmt)
 				sprintf (record, "%s: Grid file format: %s", G->header->name, GMT->session.grdformat[G->header->type]);
 			else
 				sprintf (record, "%s: Unrecognized grid file format! Probably not a GMT grid", G->header->name);

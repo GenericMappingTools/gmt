@@ -1935,35 +1935,37 @@ Users who are considering this approach should contact the \GMT\ team.
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT 4 netCDF standard formats}} \\ \hline \hline
-nb & GMT netCDF format (byte)   (COARDS-compliant)		\\ \hline
-ns & GMT netCDF format (short)  (COARDS-compliant)		\\ \hline
-ni & GMT netCDF format (int)    (COARDS-compliant)		\\ \hline
-nf & GMT netCDF format (float)  (COARDS-compliant)		\\ \hline
-nd & GMT netCDF format (double) (COARDS-compliant) 		\\ \hline \hline
-\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT 3 netCDF legacy formats}} \\ \hline \hline
-cb & GMT netCDF format (byte)	(depreciated) \\ \hline
-cs & GMT netCDF format (short)	(depreciated) \\ \hline
-ci & GMT netCDF format (int)	(depreciated) \\ \hline
-cf & GMT netCDF format (float)	(depreciated) \\ \hline
-cd & GMT netCDF format (double)	(depreciated) \\ \hline \hline
-\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{GMT native binary formats}} \\ \hline \hline
-bm & GMT native, C-binary format (bit-mask)	\\ \hline
-bb & GMT native, C-binary format (byte)		\\ \hline
-bs & GMT native, C-binary format (short)	\\ \hline
-bi & GMT native, C-binary format (int)		\\ \hline
-bf & GMT native, C-binary format (float)	\\ \hline
-bd & GMT native, C-binary format (double)	\\ \hline \hline
-\multicolumn{1}{|c|}{\emph{ID}}	&	\multicolumn{1}{c|}{\emph{Miscellaneous grid formats}} \\ \hline \hline
-rb & SUN raster file format (8-bit standard)	\\ \hline
-rf & GEODAS grid format GRD98 (NGDC)		\\ \hline
-sf & Golden Software Surfer format 6 (float)	\\ \hline
-sd & Golden Software Surfer format 7 (double)	\\ \hline
-af & Atlantic Geoscience Center AGC (float)	\\ \hline
-ei & ESRI Arc/Info ASCII Grid Interchange format (integer)	\\ \hline
-ef & ESRI Arc/Info ASCII Grid Interchange format (float)	\\ \hline
-gd & Read-only via GDAL\footnote{Requires building \GMT\ with GDAL.} (float)	\\ \hline
+\begin{tabular}{ll} \hline
+\textbf{ID}} & \textbf{Explanation}} \\ \hline\hline
+& \emph{GMT 4 netCDF standard formats}\\
+nb & GMT netCDF format (8-bit integer) (COARDS, CF-1.5) \\
+ns & GMT netCDF format (16-bit integer) (COARDS, CF-1.5) \\
+ni & GMT netCDF format (32-bit integer) (COARDS, CF-1.5) \\
+nf & GMT netCDF format (32-bit float) (COARDS, CF-1.5) \\
+nd & GMT netCDF format (64-bit float) (COARDS, CF-1.5) \\ \hline
+& \emph{GMT 3 netCDF legacy formats}\\
+cb & GMT netCDF format (8-bit integer) (depreciated) \\
+cs & GMT netCDF format (16-bit integer) (depreciated) \\
+ci & GMT netCDF format (32-bit integer) (depreciated) \\
+cf & GMT netCDF format (32-bit float) (depreciated) \\
+cd & GMT netCDF format (64-bit float) (depreciated) \\ \hline
+& \emph{GMT native binary formats}\\
+bm & GMT native, C-binary format (bit-mask) \\
+bb & GMT native, C-binary format (8-bit integer) \\
+bs & GMT native, C-binary format (16-bit integer) \\
+bi & GMT native, C-binary format (32-bit integer) \\
+bf & GMT native, C-binary format (32-bit float) \\
+bd & GMT native, C-binary format (32-bit float) \\ \hline
+& \emph{Miscellaneous grid formats}\\
+rb & SUN raster file format (8-bit standard) \\
+rf & GEODAS grid format GRD98 (NGDC) \\
+sf & Golden Software Surfer format 6 (32-bit float) \\
+sd & Golden Software Surfer format 7 (64-bit float) \\
+af & Atlantic Geoscience Center AGC (32-bit float) \\
+ei & ESRI Arc/Info ASCII Grid Interchange format (ASCII integer) \\
+ef & ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only) \\
+gd & Read-only via GDAL\footnote{Requires building \GMT\ with
+  GDAL.} \\ \hline
 \end{tabular}
 \caption{\gmt\ grid file formats.}
 \label{tbl:grdformats}
@@ -2049,8 +2051,6 @@ directory or home directory, or a file \filename{gmt\_io} in the
 directory \filename{$\sim$/.gmt} and define any number of custom
 formats.  The following is an example of a \filename{.gmt\_io}
 file: \index{.gmt\_io}
-
-\vspace{\baselineskip}
 
 \noindent
 \begin{tabbing}

@@ -2286,7 +2286,7 @@ void table_RAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DAT
 }
 
 void table_RINT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT_DATASET *S[], bool *constant, double *factor, unsigned int last, unsigned int col)
-/*OPERATOR: RINT 1 1 rint (A) (nearest integer).  */
+/*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
 	uint64_t s, row;
 	double a = 0.0;

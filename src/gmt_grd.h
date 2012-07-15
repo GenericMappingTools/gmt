@@ -39,7 +39,7 @@
 #include "netcdf.h"
 
 /* netcdf convention */
-#define GMT_NC_CONVENTION "COARDS/CF-1.5"
+#define GMT_NC_CONVENTION "COARDS, CF-1.5"
 
 /* Nodes that are unconstrained are assumed to be set to NaN */
 
@@ -90,7 +90,7 @@ struct GRD_HEADER {
 	unsigned int ny;                /* Number of rows */
 	unsigned int registration;      /* 0 for node grids, 1 for pixel grids */
 /* This section is flexible. It is not copied to any grid header */
-	int type;                       /* Grid format */
+	unsigned int type;                       /* Grid format */
 	unsigned int bits;              /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	unsigned int complex_mode;      /* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
 	unsigned int mx, my;            /* Actual dimensions of the grid in memory, allowing for the padding */
