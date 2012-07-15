@@ -62,8 +62,34 @@ to the filename IT(outgrdfile).
 When reading files, BD(grdreformat) and other BD(GMT) programs will automatically recognize any type
 of netCDF grid file. These can be in either COARDS-compliant or pre-4.1 format, and contain floating-point or
 integer data. To read other types of grid files, append the =IT(id) suffix to the filename IT(ingrdfile).
-.br
-#include "grdreformat_man.i"
+.TS
+l l .
+ID	Explanation
+BD(nb)	GMT netCDF format (8-bit integer) (COARDS, CF-1.5)
+BD(ns)	GMT netCDF format (16-bit integer) (COARDS, CF-1.5)
+BD(ni)	GMT netCDF format (32-bit integer) (COARDS, CF-1.5)
+BD(nf)	GMT netCDF format (32-bit float) (COARDS, CF-1.5)
+BD(nd)	GMT netCDF format (64-bit float) (COARDS, CF-1.5)
+BD(cb)	GMT netCDF format (8-bit integer) (deprecated)
+BD(cs)	GMT netCDF format (16-bit integer) (deprecated)
+BD(ci)	GMT netCDF format (32-bit integer) (deprecated)
+BD(cf)	GMT netCDF format (32-bit float) (deprecated)
+BD(cd)	GMT netCDF format (64-bit float) (deprecated)
+BD(bm)	GMT native, C-binary format (bit-mask)
+BD(bb)	GMT native, C-binary format (8-bit integer)
+BD(bs)	GMT native, C-binary format (16-bit integer)
+BD(bi)	GMT native, C-binary format (32-bit integer)
+BD(bf)	GMT native, C-binary format (32-bit float)
+BD(bd)	GMT native, C-binary format (64-bit float)
+BD(rb)	SUN rasterfile format (8-bit standard)
+BD(rf)	GEODAS grid format GRD98 (NGDC)
+BD(sf)	Golden Software Surfer format 6 (32-bit float)
+BD(sd)	Golden Software Surfer format 7 (64-bit float, read-only)
+BD(af)	Atlantic Geoscience Center format AGC (32-bit float)
+BD(ei)	ESRI Arc/Info ASCII Grid Interchange format (ASCII integer)
+BD(ef)	ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only)
+BD(gd)	Import through GDAL
+.TE
 .SH GMT STANDARD NETCDF FILES
 The standard format used for grdfiles is based on netCDF and conforms to the COARDS conventions. Files written
 in this format can be read by numerous third-party programs and are platform-independent. Some disk-space

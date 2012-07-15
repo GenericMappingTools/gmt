@@ -4922,8 +4922,7 @@ int GMT_get_char_encoding (struct GMT_CTRL *C, char *name)
 
 void gmt_setshorthand (struct GMT_CTRL *C) {
 	/* Read user's .gmt_io file and initialize shorthand notation */
-	unsigned int n = 0;
-	int id;
+	unsigned int id, n = 0;
 	size_t n_alloc = 0;
 	char file[GMT_BUFSIZ], line[GMT_BUFSIZ], a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], c[GMT_TEXT_LEN64], d[GMT_TEXT_LEN64], e[GMT_TEXT_LEN64];
 	FILE *fp = NULL;

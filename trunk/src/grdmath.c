@@ -2263,7 +2263,7 @@ void grd_RAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID 
 }
 
 void grd_RINT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_GRID *stack[], bool *constant, double *factor, unsigned int last)
-/*OPERATOR: RINT 1 1 rint (A) (nearest integer).  */
+/*OPERATOR: RINT 1 1 rint (A) (round to integral value nearest to A).  */
 {
 	uint64_t node;
 	double a = 0.0;

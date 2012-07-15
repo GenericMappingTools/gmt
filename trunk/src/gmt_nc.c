@@ -118,7 +118,7 @@ int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 		case NC_INT:    header->type = old ? GMT_GRD_IS_CI : GMT_GRD_IS_NI; break;
 		case NC_FLOAT:  header->type = old ? GMT_GRD_IS_CF : GMT_GRD_IS_NF; break;
 		case NC_DOUBLE: header->type = old ? GMT_GRD_IS_CD : GMT_GRD_IS_ND; break;
-		default:        header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
+		default:        header->type = k_grd_unknown_fmt; break;
 	}
 	nc_close (ncid);
 	return GMT_NOERROR;
@@ -261,12 +261,12 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		GMT_err_trap (nc_inq_vardimid (ncid, z_id, dims));
 		switch (z_type) {
-			case NC_BYTE:	header->type = GMT_GRD_IS_NB; break;
-			case NC_SHORT:	header->type = GMT_GRD_IS_NS; break;
-			case NC_INT:	header->type = GMT_GRD_IS_NI; break;
-			case NC_FLOAT:	header->type = GMT_GRD_IS_NF; break;
-			case NC_DOUBLE:	header->type = GMT_GRD_IS_ND; break;
-			default:		header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
+			case NC_BYTE:   header->type = GMT_GRD_IS_NB; break;
+			case NC_SHORT:  header->type = GMT_GRD_IS_NS; break;
+			case NC_INT:    header->type = GMT_GRD_IS_NI; break;
+			case NC_FLOAT:  header->type = GMT_GRD_IS_NF; break;
+			case NC_DOUBLE: header->type = GMT_GRD_IS_ND; break;
+			default:        header->type = k_grd_unknown_fmt; break;
 		}
 
 		/* Get the ids of the x and y (and depth and time) coordinate variables */
@@ -281,7 +281,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		if (nc_inq_varid (ncid, "LatLon", &i) == NC_NOERR) nc_get_var_int (ncid, i, header->xy_dim);
 		header->nx = (int) lens[header->xy_dim[0]];
 		header->ny = (int) lens[header->xy_dim[1]];
-	}
+	} /* if (job == 'r' || job == 'u') */
 	else {
 		/* Define dimensions of z variable */
 		ndims = 2;
@@ -320,7 +320,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			if (C->current.setting.io_nc4_deflation_level)
 				GMT_err_trap (nc_def_var_deflate (ncid, z_id, true, true, C->current.setting.io_nc4_deflation_level));
 		}
-	}
+	} /* if (job == 'r' || job == 'u') */
 	header->z_id = z_id;
 	header->ncid = ncid;
 

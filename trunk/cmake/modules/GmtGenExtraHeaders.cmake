@@ -107,44 +107,6 @@ macro (gen_gmt_ellipsoids)
 	file (WRITE Ellipsoids.i "${_ellipsnames}\n")
 endmacro (gen_gmt_ellipsoids)
 
-macro (gen_gmt_grdkeys_h)
-	# gmt_grdkeys.h
-	grep (
-		"C->session.grdformat[id]"
-		_raw_grdkeys_list
-		${GMT_SRC}/src/gmt_customio.c
-		LITERALLY
-		)
-	list_regex_get ("not supported"
-		_raw_grdkeys_list
-		"${_raw_grdkeys_list}"
-		INVERT)
-	list_regex_replace (
-		"^[^=]+=[^a-z]+([a-z]+).+"
-		"\\\\1"
-		_grdkeys ${_raw_grdkeys_list}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _grdkeys)
-	string (TOUPPER "${_grdkeys}" _grdkeys)
-	set (_grdkeydef)
-	set (_keynum 0)
-	foreach (_key ${_grdkeys})
-		list (APPEND _grdkeydef "#define GMT_GRD_IS_${_key} ${_keynum}")
-		math (EXPR _keynum "${_keynum} + 1")
-	endforeach (_key ${_grdkeys})
-	string (REPLACE ";" "\n" _grdkeydef "${_grdkeydef}")
-	file (WRITE gmt_grdkeys.h "${_grdkeydef}\n")
-
-	# grdreformat_man.i
-	list_regex_replace (
-		"^[^=]+=[^a-z]+([a-z]+)[^=]+=[\t ]*(.+).#S"
-		"BD(\\\\1)  \\\\2"
-		_grdreformat_man ${_raw_grdkeys_list}
-		MATCHES_ONLY)
-	string (REPLACE ";" "\n.br\n" _grdreformat_man "${_grdreformat_man}")
-	file (WRITE grdreformat_man.i "${_grdreformat_man}\n.br\n")
-endmacro (gen_gmt_grdkeys_h)
-
 macro (gen_gmt_keywords_h)
 	# gmt_keycases.h
 	file2list (_gmtkeywords_file
@@ -194,8 +156,6 @@ macro (gen_gmt_dimensions_h)
 	list (LENGTH _file_lines GMT_N_ELLIPSOIDS)
 	file2list (_file_lines gmt_colornames.h)
 	list (LENGTH _file_lines GMT_N_COLOR_NAMES)
-	file2list (_file_lines gmt_grdkeys.h)
-	list (LENGTH _file_lines GMT_N_GRD_FORMATS)
 	file2list (_file_lines gmt_keycases.h)
 	list (LENGTH _file_lines GMT_N_KEYS)
 
@@ -362,8 +322,6 @@ elseif (GENERATE_COMMAND STREQUAL gen_ps_font_info)
 	gen_ps_font_info ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_ellipsoids)
 	gen_gmt_ellipsoids ()
-elseif (GENERATE_COMMAND STREQUAL gen_gmt_grdkeys_h)
-	gen_gmt_grdkeys_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_keywords_h)
 	gen_gmt_keywords_h ()
 elseif (GENERATE_COMMAND STREQUAL gen_gmt_dimensions_h)

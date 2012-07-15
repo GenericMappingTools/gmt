@@ -89,12 +89,12 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 		GMT_err_trap (nc_inq_varid (ncid, "z", &z_id));
 		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		switch (z_type) {
-			case NC_BYTE:	header->type = GMT_GRD_IS_CB; break;
-			case NC_SHORT:	header->type = GMT_GRD_IS_CS; break;
-			case NC_INT:	header->type = GMT_GRD_IS_CI; break;
-			case NC_FLOAT:	header->type = GMT_GRD_IS_CF; break;
-			case NC_DOUBLE:	header->type = GMT_GRD_IS_CD; break;
-			default:		header->type = GMT_GRDIO_UNKNOWN_TYPE; break;
+			case NC_BYTE:   header->type = GMT_GRD_IS_CB; break;
+			case NC_SHORT:  header->type = GMT_GRD_IS_CS; break;
+			case NC_INT:    header->type = GMT_GRD_IS_CI; break;
+			case NC_FLOAT:  header->type = GMT_GRD_IS_CF; break;
+			case NC_DOUBLE: header->type = GMT_GRD_IS_CD; break;
+			default:        header->type = k_grd_unknown_fmt; break;
 		}
 	}
 	header->z_id = z_id;

@@ -754,24 +754,20 @@ void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc)
 	ij_inc[3] = -s_nx;	/* The node one row up relative to ij */
 }
 
-int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code, int *type_id) {
+int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code, unsigned int *type_id) {
 	/* Returns the integer grid format ID that goes with the specified 2-character code */
-	int i;
-	unsigned id_candidate;
-
 	if (isdigit ((int)code[0])) {
 		/* File format number given, look for old code */
-		id_candidate = (unsigned) abs (atoi (code));
-		for (i = 0; i < GMT_N_GRD_FORMATS; i++) {
-			if (C->session.grdcode[i] == id_candidate) {
-				*type_id = i;
-				return GMT_NOERROR;
-			}
+		unsigned id_candidate = (unsigned) abs (atoi (code));
+		if (id_candidate > 0 && id_candidate < GMT_N_GRD_FORMATS) {
+			*type_id = id_candidate;
+			return GMT_NOERROR;
 		}
 	}
 	else {
 		/* Character code given */
-		for (i = 0; i < GMT_N_GRD_FORMATS; i++) {
+		unsigned i;
+		for (i = 1; i < GMT_N_GRD_FORMATS; i++) {
 			if (strncmp (C->session.grdformat[i], code, 2) == 0) {
 				*type_id = i;
 				return GMT_NOERROR;
@@ -1176,7 +1172,6 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 
 		/* Set the variables that are not initialized to 0/false/NULL */
 		header->z_scale_factor = 1.0;
-		header->type           = -1;
 		header->row_order      = k_nc_start_south; /* S->N */
 		header->z_id           = -1;
 		header->n_bands        = 1; /* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */

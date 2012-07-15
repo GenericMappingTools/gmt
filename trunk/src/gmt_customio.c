@@ -1815,12 +1815,22 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gr
 #include "gmt_esri_io.c"
 
 void GMT_grdio_init (struct GMT_CTRL *C) {
-	unsigned int id = 0;
+	unsigned int id;
+
+	/* First element is empty */
+
+	id                        = k_grd_unknown_fmt;
+	C->session.grdformat[id]  = "Unknown grid format";
+	C->session.readinfo[id]   = &GMT_dummy_grd_info;
+	C->session.updateinfo[id] = &GMT_dummy_grd_info;
+	C->session.writeinfo[id]  = &GMT_dummy_grd_info;
+	C->session.readgrd[id]    = &GMT_dummy_grd_info;
+	C->session.writegrd[id]   = &GMT_dummy_grd_info;
 
 	/* FORMAT: GMT netCDF-based (byte) grdio (COARDS compliant) */
 
-	C->session.grdcode[id]    = 15;
-	C->session.grdformat[id]  = "nb = GMT netCDF format (8-bit int), " GMT_NC_CONVENTION;
+	id                        = GMT_GRD_IS_NB;
+	C->session.grdformat[id]  = "nb = GMT netCDF format (8-bit integer), " GMT_NC_CONVENTION;
 	C->session.readinfo[id]   = &GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = &GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_nc_write_grd_info;
@@ -1829,9 +1839,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (short) grdio (COARDS compliant) */
 
-	id++;
-	C->session.grdcode[id]    = 16;
-	C->session.grdformat[id]  = "ns = GMT netCDF format (16-bit int), " GMT_NC_CONVENTION;;
+	id                        = GMT_GRD_IS_NS;
+	C->session.grdformat[id]  = "ns = GMT netCDF format (16-bit integer), " GMT_NC_CONVENTION;
 	C->session.readinfo[id]   = &GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = &GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_nc_write_grd_info;
@@ -1840,9 +1849,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (int) grdio (COARDS compliant) */
 
-	id++;
-	C->session.grdcode[id]    = 17;
-	C->session.grdformat[id]  = "ni = GMT netCDF format (32-bit int), " GMT_NC_CONVENTION;;
+	id                        = GMT_GRD_IS_NI;
+	C->session.grdformat[id]  = "ni = GMT netCDF format (32-bit integer), " GMT_NC_CONVENTION;
 	C->session.readinfo[id]   = &GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = &GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_nc_write_grd_info;
@@ -1851,9 +1859,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (float) grdio (COARDS compliant) */
 
-	id++;
-	C->session.grdcode[id]    = 18;
-	C->session.grdformat[id]  = "nf = GMT netCDF format (32-bit float), " GMT_NC_CONVENTION;;
+	id                        = GMT_GRD_IS_NF;
+	C->session.grdformat[id]  = "nf = GMT netCDF format (32-bit float), " GMT_NC_CONVENTION;
 	C->session.readinfo[id]   = &GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = &GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_nc_write_grd_info;
@@ -1862,9 +1869,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (double) grdio (COARDS compliant) */
 
-	id++;
-	C->session.grdcode[id]    = 19;
-	C->session.grdformat[id]  = "nd = GMT netCDF format (64-bit float), " GMT_NC_CONVENTION;;
+	id                        = GMT_GRD_IS_ND;
+	C->session.grdformat[id]  = "nd = GMT netCDF format (64-bit float), " GMT_NC_CONVENTION;
 	C->session.readinfo[id]   = &GMT_nc_read_grd_info;
 	C->session.updateinfo[id] = &GMT_nc_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_nc_write_grd_info;
@@ -1873,9 +1879,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (byte) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 7;
-	C->session.grdformat[id]  = "cb = GMT netCDF format (8-bit int) (deprecated)";
+	id                        = GMT_GRD_IS_CB;
+	C->session.grdformat[id]  = "cb = GMT netCDF format (8-bit integer) (deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1884,9 +1889,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (short) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 8;
-	C->session.grdformat[id]  = "cs = GMT netCDF format (16-bit int) (deprecated)";
+	id                        = GMT_GRD_IS_CS;
+	C->session.grdformat[id]  = "cs = GMT netCDF format (16-bit integer) (deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1895,9 +1899,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (int) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 9;
-	C->session.grdformat[id]  = "ci = GMT netCDF format (32-bit int) (deprecated)";
+	id                        = GMT_GRD_IS_CI;
+	C->session.grdformat[id]  = "ci = GMT netCDF format (32-bit integer) (deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1906,8 +1909,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (float) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 10;
+	id                        = GMT_GRD_IS_CF;
 	C->session.grdformat[id]  = "cf = GMT netCDF format (32-bit float) (deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
@@ -1917,8 +1919,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT netCDF-based (double) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 11;
+	id                        = GMT_GRD_IS_CD;
 	C->session.grdformat[id]  = "cd = GMT netCDF format (64-bit float) (deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
@@ -1928,8 +1929,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (bit) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 5;
+	id                        = GMT_GRD_IS_BM;
 	C->session.grdformat[id]  = "bm = GMT native, C-binary format (bit-mask)";
 	C->session.readinfo[id]   = &GMT_native_read_grd_info;
 	C->session.updateinfo[id] = &GMT_native_write_grd_info;
@@ -1939,9 +1939,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (byte) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 4;
-	C->session.grdformat[id]  = "bb = GMT native, C-binary format (8-bit int)";
+	id                        = GMT_GRD_IS_BB;
+	C->session.grdformat[id]  = "bb = GMT native, C-binary format (8-bit integer)";
 	C->session.readinfo[id]   = &GMT_native_read_grd_info;
 	C->session.updateinfo[id] = &GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_native_write_grd_info;
@@ -1950,9 +1949,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (short) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 2;
-	C->session.grdformat[id]  = "bs = GMT native, C-binary format (16-bit int)";
+	id                        = GMT_GRD_IS_BS;
+	C->session.grdformat[id]  = "bs = GMT native, C-binary format (16-bit integer)";
 	C->session.readinfo[id]   = &GMT_native_read_grd_info;
 	C->session.updateinfo[id] = &GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_native_write_grd_info;
@@ -1961,9 +1959,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (int) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 13;
-	C->session.grdformat[id]  = "bi = GMT native, C-binary format (32-bit int)";
+	id                        = GMT_GRD_IS_BI;
+	C->session.grdformat[id]  = "bi = GMT native, C-binary format (32-bit integer)";
 	C->session.readinfo[id]   = &GMT_native_read_grd_info;
 	C->session.updateinfo[id] = &GMT_native_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_native_write_grd_info;
@@ -1972,8 +1969,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (float) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 1;
+	id                        = GMT_GRD_IS_BF;
 	C->session.grdformat[id]  = "bf = GMT native, C-binary format (32-bit float)";
 	C->session.readinfo[id]   = &GMT_native_read_grd_info;
 	C->session.updateinfo[id] = &GMT_native_write_grd_info;
@@ -1983,8 +1979,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (double) grdio */
 
-	id++;
-	C->session.grdcode[id]    = 14;
+	id                        = GMT_GRD_IS_BD;
 	C->session.grdformat[id]  = "bd = GMT native, C-binary format (64-bit float)";
 	C->session.readinfo[id]   = &GMT_native_read_grd_info;
 	C->session.updateinfo[id] = &GMT_native_write_grd_info;
@@ -1994,8 +1989,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: SUN 8-bit standard rasterfile grdio */
 
-	id++;
-	C->session.grdcode[id]    = 3;
+	id                        = GMT_GRD_IS_RB;
 	C->session.grdformat[id]  = "rb = SUN rasterfile format (8-bit standard)";
 	C->session.readinfo[id]   = &GMT_ras_read_grd_info;
 	C->session.updateinfo[id] = &GMT_ras_write_grd_info;
@@ -2005,8 +1999,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: NOAA NGDC MGG grid format */
 
-	id++;
-	C->session.grdcode[id]    = 12;
+	id                        = GMT_GRD_IS_RF;
 	C->session.grdformat[id]  = "rf = GEODAS grid format GRD98 (NGDC)";
 	C->session.readinfo[id]   = &GMT_mgg2_read_grd_info;
 	C->session.updateinfo[id] = &GMT_mgg2_write_grd_info;
@@ -2016,9 +2009,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (float) grdio (Surfer format) */
 
-	id++;
-	C->session.grdcode[id]    = 6;
-	C->session.grdformat[id]  = "sf = Golden Software Surfer format 6 (float)";
+	id                        = GMT_GRD_IS_SF;
+	C->session.grdformat[id]  = "sf = Golden Software Surfer format 6 (32-bit float)";
 	C->session.readinfo[id]   = &GMT_srf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_srf_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_srf_write_grd_info;
@@ -2027,9 +2019,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (double) grdio (Surfer format) */
 
-	id++;
-	C->session.grdcode[id]    = 20;
-	C->session.grdformat[id]  = "sd = Golden Software Surfer format 7 (double, read-only)";
+	id                        = GMT_GRD_IS_SD;
+	C->session.grdformat[id]  = "sd = Golden Software Surfer format 7 (64-bit float, read-only)";
 	C->session.readinfo[id]   = &GMT_srf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_srf_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_srf_write_grd_info;
@@ -2038,9 +2029,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: GMT native binary (float) grdio (AGC format) */
 
-	id++;
-	C->session.grdcode[id]    = 21;
-	C->session.grdformat[id]  = "af = Atlantic Geoscience Center format AGC (float)";
+	id                        = GMT_GRD_IS_AF;
+	C->session.grdformat[id]  = "af = Atlantic Geoscience Center format AGC (32-bit float)";
 	C->session.readinfo[id]   = &GMT_agc_read_grd_info;
 	C->session.updateinfo[id] = &GMT_agc_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_agc_write_grd_info;
@@ -2049,9 +2039,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: ESRI Arc/Info ASCII Interchange Grid format (integer) */
 
-	id++;
-	C->session.grdcode[id]    = 23;
-	C->session.grdformat[id]  = "ei = ESRI Arc/Info ASCII Grid Interchange format (integer)";
+	id                        = GMT_GRD_IS_EI;
+	C->session.grdformat[id]  = "ei = ESRI Arc/Info ASCII Grid Interchange format (ASCII integer)";
 	C->session.readinfo[id]   = &GMT_esri_read_grd_info;
 	C->session.updateinfo[id] = &GMT_esri_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_esri_write_grd_info;
@@ -2060,9 +2049,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: ESRI Arc/Info ASCII Interchange Grid format (float) */
 
-	id++;
-	C->session.grdcode[id]    = 24;
-	C->session.grdformat[id]  = "ef = ESRI Arc/Info ASCII Grid Interchange format (float)";
+	id                        = GMT_GRD_IS_EF;
+	C->session.grdformat[id]  = "ef = ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only)";
 	C->session.readinfo[id]   = &GMT_esri_read_grd_info;
 	C->session.updateinfo[id] = &GMT_esri_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_esri_write_grd_info;
@@ -2071,10 +2059,9 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* FORMAT: Import via the GDAL interface */
 
-	id++;
-	C->session.grdcode[id]    = 22;
+	id                        = GMT_GRD_IS_GD;
 #ifdef USE_GDAL
-	C->session.grdformat[id]  = "gd = Import through GDAL (convert to float)";
+	C->session.grdformat[id]  = "gd = Import through GDAL";
 	C->session.readinfo[id]   = &GMT_gdal_read_grd_info;
 	C->session.updateinfo[id] = &GMT_gdal_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_gdal_write_grd_info;

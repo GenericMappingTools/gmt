@@ -72,7 +72,10 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "rfV.");
 
 	GMT_message (GMT, "\n	The following grid file formats are supported:\n\n");
-	for (i = 0; i < GMT_N_GRD_FORMATS; i++) if (!strstr (GMT->session.grdformat[i], "not supported")) GMT_message (GMT, "\t%s\n", GMT->session.grdformat[i]);
+	for (i = 1; i < GMT_N_GRD_FORMATS; i++) {
+		if (!strstr (GMT->session.grdformat[i], "not supported"))
+			GMT_message (GMT, "\t%s\n", GMT->session.grdformat[i]);
+	}
 #ifdef USE_GDAL
 	GMT_message (GMT, "\n	When <id>=gd for output it means the grid will be saved using the GDAL library.\n");
 	GMT_message (GMT, "	Specify <driver> and <dataType>. Driver names are as in GDAL (e.g netCDF, GTiFF, etc).\n");
