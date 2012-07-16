@@ -125,18 +125,21 @@ enum Grid_packing_mode {
 };
 
 void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *grid, unsigned pack_mode) {
-	size_t n_representations = 0; /* number of distinct values that a type can represent */
+	size_t n_representations = 0; /* number of distinct values >= 0 that a signed integral type can represent */
 
 	if (pack_mode == k_grd_pack && (header->z_scale_autoadust || header->z_offset_autoadust)) {
 		switch (Ctrl->session.grdformat[header->type][1]) {
 			case 'b':
-				n_representations = exp2 (8 * sizeof (int8_t));
+				n_representations = 128;         /* exp2 (8 * sizeof (int8_t)) / 2 */
 				break;
 			case 's':
-				n_representations = exp2 (8 * sizeof (int16_t));
+				n_representations = 32768;       /* exp2 (8 * sizeof (int16_t)) / 2 */
 				break;
 			case 'i':
-				n_representations = exp2 (8 * sizeof (int32_t));
+				/* A single precision float's significand has a precision of 24 bits.
+				 * In order to avoid round-off errors, we must not use all 2^32
+				 * n_representations of an int32_t. */
+				n_representations = 0x1000000;   /* exp2 (24) */
 				break;
 			/* default: do not auto-scale floating point */
 		}
@@ -155,7 +158,6 @@ void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *gri
 			double z_max = header->z_max - header->z_add_offset;
 			double z_min = fabs(header->z_min - header->z_add_offset);
 			double z_0_n_range = MAX (z_max, z_min); /* use [0,n] range because of signed int */
-			n_representations /= 2.0;                /* because of signed integer */
 			--n_representations;                     /* subtract 1 for NaN value */
 			header->z_scale_factor = z_0_n_range / n_representations;
 		}
