@@ -81,11 +81,14 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
  * Format : dummy
  * Purpose :
  *		Use this function to direct all unsupported formats to.
- * Functions : GMT_dummy_grd_info
+ * Functions : GMT_dummy_grd_info, GMT_dummy_grd_read
  *-----------------------------------------------------------*/
 
-int GMT_dummy_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-{
+int GMT_dummy_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	return (GMT_GRDIO_UNKNOWN_FORMAT);
+}
+
+int GMT_dummy_grd_read (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
 	return (GMT_GRDIO_UNKNOWN_FORMAT);
 }
 
@@ -1824,8 +1827,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	C->session.readinfo[id]   = &GMT_dummy_grd_info;
 	C->session.updateinfo[id] = &GMT_dummy_grd_info;
 	C->session.writeinfo[id]  = &GMT_dummy_grd_info;
-	C->session.readgrd[id]    = &GMT_dummy_grd_info;
-	C->session.writegrd[id]   = &GMT_dummy_grd_info;
+	C->session.readgrd[id]    = &GMT_dummy_grd_read;
+	C->session.writegrd[id]   = &GMT_dummy_grd_read;
 
 	/* FORMAT: GMT netCDF-based (byte) grdio (COARDS compliant) */
 
@@ -2072,8 +2075,8 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	C->session.readinfo[id]   = &GMT_dummy_grd_info;
 	C->session.updateinfo[id] = &GMT_dummy_grd_info;
 	C->session.writeinfo[id]  = &GMT_dummy_grd_info;
-	C->session.readgrd[id]    = &GMT_dummy_grd_info;
-	C->session.writegrd[id]   = &GMT_dummy_grd_info;
+	C->session.readgrd[id]    = &GMT_dummy_grd_read;
+	C->session.writegrd[id]   = &GMT_dummy_grd_read;
 #endif
 
 	/* ----------------------------------------------
