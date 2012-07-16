@@ -57,6 +57,7 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 {
 	int i;
 	struct GMT_CTRL *GMT = C->GMT;
+	char **grdformats = GMT_grdformats_sorted (GMT);
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]]\n\t [-N] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
@@ -71,16 +72,16 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t\t  Useful when creating files to be used by grdraster.\n");
 	GMT_explain_options (GMT, "rfV.");
 
-	GMT_message (GMT, "\n	The following grid file formats are supported:\n\n");
-	for (i = 1; i < GMT_N_GRD_FORMATS; i++) {
-		if (!strstr (GMT->session.grdformat[i], "not supported"))
-			GMT_message (GMT, "\t%s\n", GMT->session.grdformat[i]);
+	GMT_message (GMT, "\n	The following grid file formats are supported:\n");
+	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {
+		if (!strstr (grdformats[i], "not supported"))
+			GMT_message (GMT, "\t%s\n", grdformats[i]);
 	}
 #ifdef USE_GDAL
-	GMT_message (GMT, "\n	When <id>=gd for output it means the grid will be saved using the GDAL library.\n");
-	GMT_message (GMT, "	Specify <driver> and <dataType>. Driver names are as in GDAL (e.g netCDF, GTiFF, etc).\n");
-	GMT_message (GMT, "	<dataType> is u8|i8|u16|i16|u32|i32|float32; i|u stand for signed|unsigned integers.\n");
-	GMT_message (GMT, "	Both driver names and data types are case insensitive [Default is netCDF/float32].\n");
+	GMT_message (GMT, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
+	GMT_message (GMT, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
+	GMT_message (GMT, "	<dataType> is u8|i8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
+	GMT_message (GMT, "	Both driver names and data types are case insensitive.\n");
 #endif
 	return (EXIT_FAILURE);
 }

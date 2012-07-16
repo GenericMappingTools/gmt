@@ -266,7 +266,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		/* parse grid format string: */
 		if ((val = parse_grd_format_scale (C, header, &header->name[i])) != GMT_NOERROR)
 			return val;
-		if (val == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
+		if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
 			char *pch = strstr(&header->name[i+3], "::");
 			if (pch) {		/* The file name was omitted within the SUBDATASET. Must put it there for GDAL */
 				tmp[0] = '\0';
@@ -278,12 +278,12 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 			else
 				strcpy (header->name, &header->name[i+3]);
 			magic = 0;	/* We don't want it to try to prepend any path */
-		} /* if (val == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') */
-		else if ( val == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b' ) {	/* A Band request for GDAL */
+		} /* if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') */
+		else if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b') { /* A Band request for GDAL */
 			header->pocket = strdup(&header->name[i+4]);
 			header->name[i-1] = '\0';
 		}
-		else if ( val == GMT_GRD_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":") ) {
+		else if (header->type == GMT_GRD_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":")) {
 			char *pch;
 			pch = strstr(&header->name[i+2], ":");
 			header->pocket = strdup(++pch);
@@ -295,15 +295,17 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (val != GMT_GRD_IS_GD || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
-				if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);
+			if (header->type != GMT_GRD_IS_GD || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
+				if (!GMT_getdatapath (C, tmp, header->name))
+					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
 			strcpy (header->name, tmp);
 	} /* if (header->name[i]) */
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
-		if (!GMT_getdatapath (C, tmp, header->name)) return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
+		if (!GMT_getdatapath (C, tmp, header->name))
+			return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
 		if ((val = GMT_is_nc_grid (C, header)) == GMT_NOERROR)
 			return (GMT_NOERROR);

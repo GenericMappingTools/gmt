@@ -3,8 +3,8 @@
 .SH NAME
 grdreformat \- Convert between different grid formats
 .SH SYNOPSIS
-BD(grdreformat) IT(ingrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]] 
-IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]][:driver[/datatype]]] 
+BD(grdreformat) IT(ingrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]]]
+IT(outgrdfile)[IT(=id)[IT(/scale/offset)[IT(/NaNvalue)]][IT(:driver)[IT(/datatype)]]]
 [ OPT(N) ] [ GMT_Rgeo_OPT ] [ GMT_f_OPT ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 BD(grdreformat) reads a grid file in one format and writes it out using another format.  As an option the
@@ -38,11 +38,12 @@ is unnecessary since the IEEE NaN is used; however integers need a value which m
 The IT(scale) and IT(offset) modifiers may be left empty to select default values
 (scale = 1, offset = 0), or you may specify IT(a) for auto-adjusting the scale and/or
 offset of packed integer grids (=IT(id/a) is a shorthand for =IT(id/a/a)).
-When IT(id)=IT(gd) it means that file will be saved using the GDAL library. Than one can select which
-IT(driver) to use and the output data type. The driver names are those used by GDAL itself (e.g netCDF, GTiFF, etc)
-and the data type is one of IT(u8)|IT(i8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u'
-stand for signed and unsigned integers respectively. Default is IT(netCDF)/IT(float32). Note also that both
-driver names and data types are case insensitive.
+When IT(id)=IT(gd), the file will be saved using the GDAL library.  Append the format
+IT(:driver) and optionally the output IT(datatype).  The driver names are those used
+by GDAL itself (e.g., netCDF, GTiFF, etc.), and the data type is one of
+IT(u8)|IT(i8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u' denote
+signed and unsigned integers respectively.  The default type is IT(float32).  Note
+also that both driver names and data types are case insensitive.
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(N)
@@ -65,16 +66,16 @@ integer data. To read other types of grid files, append the =IT(id) suffix to th
 .TS
 l l .
 ID	Explanation
-BD(nb)	GMT netCDF format (8-bit integer) (COARDS, CF-1.5)
-BD(ns)	GMT netCDF format (16-bit integer) (COARDS, CF-1.5)
-BD(ni)	GMT netCDF format (32-bit integer) (COARDS, CF-1.5)
-BD(nf)	GMT netCDF format (32-bit float) (COARDS, CF-1.5)
-BD(nd)	GMT netCDF format (64-bit float) (COARDS, CF-1.5)
-BD(cb)	GMT netCDF format (8-bit integer) (deprecated)
-BD(cs)	GMT netCDF format (16-bit integer) (deprecated)
-BD(ci)	GMT netCDF format (32-bit integer) (deprecated)
-BD(cf)	GMT netCDF format (32-bit float) (deprecated)
-BD(cd)	GMT netCDF format (64-bit float) (deprecated)
+BD(nb)	GMT netCDF format (8-bit integer, COARDS, CF-1.5)
+BD(ns)	GMT netCDF format (16-bit integer, COARDS, CF-1.5)
+BD(ni)	GMT netCDF format (32-bit integer, COARDS, CF-1.5)
+BD(nf)	GMT netCDF format (32-bit float, COARDS, CF-1.5)
+BD(nd)	GMT netCDF format (64-bit float, COARDS, CF-1.5)
+BD(cb)	GMT netCDF format (8-bit integer, deprecated)
+BD(cs)	GMT netCDF format (16-bit integer, deprecated)
+BD(ci)	GMT netCDF format (32-bit integer, deprecated)
+BD(cf)	GMT netCDF format (32-bit float, deprecated)
+BD(cd)	GMT netCDF format (64-bit float, deprecated)
 BD(bm)	GMT native, C-binary format (bit-mask)
 BD(bb)	GMT native, C-binary format (8-bit integer)
 BD(bs)	GMT native, C-binary format (16-bit integer)
@@ -87,8 +88,8 @@ BD(sf)	Golden Software Surfer format 6 (32-bit float)
 BD(sd)	Golden Software Surfer format 7 (64-bit float, read-only)
 BD(af)	Atlantic Geoscience Center format AGC (32-bit float)
 BD(ei)	ESRI Arc/Info ASCII Grid Interchange format (ASCII integer)
-BD(ef)	ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only)
-BD(gd)	Import through GDAL
+BD(ef)	ESRI Arc/Info ASCII Grid Interchange format (ASCII float)
+BD(gd)	Import/export through GDAL
 .TE
 .SH GMT STANDARD NETCDF FILES
 The standard format used for grdfiles is based on netCDF and conforms to the COARDS conventions. Files written
