@@ -1708,7 +1708,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gr
 	type[0] = '\0';
 
 	if (header->pocket == NULL) {
-		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot to write with gdal without knowing which driver to use.\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot write with GDAL without knowing which driver to use.\n");
 		return (GMT_NOERROR);
 	}
 
@@ -1883,7 +1883,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: GMT netCDF-based (byte) grdio */
 
 	id                        = GMT_GRD_IS_CB;
-	C->session.grdformat[id]  = "cb = GMT netCDF format (8-bit integer) (deprecated)";
+	C->session.grdformat[id]  = "cb = GMT netCDF format (8-bit integer, deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1893,7 +1893,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: GMT netCDF-based (short) grdio */
 
 	id                        = GMT_GRD_IS_CS;
-	C->session.grdformat[id]  = "cs = GMT netCDF format (16-bit integer) (deprecated)";
+	C->session.grdformat[id]  = "cs = GMT netCDF format (16-bit integer, deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1903,7 +1903,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: GMT netCDF-based (int) grdio */
 
 	id                        = GMT_GRD_IS_CI;
-	C->session.grdformat[id]  = "ci = GMT netCDF format (32-bit integer) (deprecated)";
+	C->session.grdformat[id]  = "ci = GMT netCDF format (32-bit integer, deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1913,7 +1913,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: GMT netCDF-based (float) grdio */
 
 	id                        = GMT_GRD_IS_CF;
-	C->session.grdformat[id]  = "cf = GMT netCDF format (32-bit float) (deprecated)";
+	C->session.grdformat[id]  = "cf = GMT netCDF format (32-bit float, deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -1923,7 +1923,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: GMT netCDF-based (double) grdio */
 
 	id                        = GMT_GRD_IS_CD;
-	C->session.grdformat[id]  = "cd = GMT netCDF format (64-bit float) (deprecated)";
+	C->session.grdformat[id]  = "cd = GMT netCDF format (64-bit float, deprecated)";
 	C->session.readinfo[id]   = &GMT_cdf_read_grd_info;
 	C->session.updateinfo[id] = &GMT_cdf_update_grd_info;
 	C->session.writeinfo[id]  = &GMT_cdf_write_grd_info;
@@ -2053,7 +2053,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: ESRI Arc/Info ASCII Interchange Grid format (float) */
 
 	id                        = GMT_GRD_IS_EF;
-	C->session.grdformat[id]  = "ef = ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only)";
+	C->session.grdformat[id]  = "ef = ESRI Arc/Info ASCII Grid Interchange format (ASCII float)";
 	C->session.readinfo[id]   = &GMT_esri_read_grd_info;
 	C->session.updateinfo[id] = &GMT_esri_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_esri_write_grd_info;
@@ -2064,14 +2064,14 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	id                        = GMT_GRD_IS_GD;
 #ifdef USE_GDAL
-	C->session.grdformat[id]  = "gd = Import through GDAL";
+	C->session.grdformat[id]  = "gd = Import/export through GDAL";
 	C->session.readinfo[id]   = &GMT_gdal_read_grd_info;
 	C->session.updateinfo[id] = &GMT_gdal_write_grd_info;
 	C->session.writeinfo[id]  = &GMT_gdal_write_grd_info;
 	C->session.readgrd[id]    = &GMT_gdal_read_grd;
 	C->session.writegrd[id]   = &GMT_gdal_write_grd;
 #else
-	C->session.grdformat[id]  = "gd = Import through GDAL (not supported)";
+	C->session.grdformat[id]  = "gd = Import/export through GDAL (not supported)";
 	C->session.readinfo[id]   = &GMT_dummy_grd_info;
 	C->session.updateinfo[id] = &GMT_dummy_grd_info;
 	C->session.writeinfo[id]  = &GMT_dummy_grd_info;
@@ -2081,4 +2081,28 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 
 	/* ----------------------------------------------
 	 * ADD CUSTOM FORMATS BELOW AS THEY ARE NEEDED */
+}
+
+/* Comparator for qsort in GMT_grdformats_sorted() */
+int compare_grd_fmt_strings(const void* a, const void* b) {
+	const char **ia = (const char **)a;
+	const char **ib = (const char **)b;
+	return strncmp(*ia, *ib, 2);
+}
+
+/* This function sorts the grid formats alphabetically by their type id */
+char **GMT_grdformats_sorted (struct GMT_CTRL *Ctrl) {
+	static char *formats_sorted[GMT_N_GRD_FORMATS];
+	static bool sorted = false;
+
+	if (sorted)
+		return formats_sorted;
+
+	/* copy array with char pointers to type id strings: */
+	memcpy (formats_sorted, Ctrl->session.grdformat, GMT_N_GRD_FORMATS * sizeof(char*));
+	/* sort pointers beginning from the 2nd element: */
+	qsort (formats_sorted + 1, GMT_N_GRD_FORMATS - 1, sizeof(char*), &compare_grd_fmt_strings);
+	sorted = true;
+
+	return formats_sorted;
 }
