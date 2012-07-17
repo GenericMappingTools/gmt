@@ -15,8 +15,8 @@ BD(greenspline) uses the Green's function G(\fBx\fP; \fBx'\fP) for the chosen sp
 at regular [or arbitrary] output locations.  Mathematically, the solution is composed as
 IT(w)(BD(x)) = sum {\fIc\fP(\fIi\fP) G(\fBx'\fP; \fBx\fP(\fIi\fP))}, for \fIi\fP = 1, \fIn\fP, the number\"'
 of data points {BD(x)(IT(i)), IT(w)(IT(i))}.  Once the IT(n) coefficients IT(c)(IT(i))
-have been found then the sum can be evaluated at any output point BD(x).
-Choose between ten minimum curvature, regularized, or continuous curvature splines in tension for
+have been found the sum can be evaluated at any output point BD(x).
+Choose between minimum curvature, regularized, or continuous curvature splines in tension for
 either 1-D, 2-D, or 3-D Cartesian coordinates or spherical surface coordinates. After first removing a linear or planar trend
 (Cartesian geometries) or mean value (spherical surface) and normalizing these residuals,
 the least-squares matrix solution for the spline coefficients IT(c)(IT(i)) is found by
