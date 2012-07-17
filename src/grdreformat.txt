@@ -60,9 +60,9 @@ netCDF files that did not conform to these conventions. Although these files are
 deprecated. To write other than floating point COARDS-compliant netCDF files, append the =IT(id) suffix
 to the filename IT(outgrdfile).
 .br
-When reading files, BD(grdreformat) and other BD(GMT) programs will automatically recognize any type
-of netCDF grid file. These can be in either COARDS-compliant or pre-4.1 format, and contain floating-point or
-integer data. To read other types of grid files, append the =IT(id) suffix to the filename IT(ingrdfile).
+When reading files, BD(grdreformat) and other BD(GMT) programs will try to automatically
+recognize the type of the input grid file.  If this fails you may append the =IT(id)
+suffix to the filename IT(ingrdfile).
 .TS
 l l .
 ID	Explanation

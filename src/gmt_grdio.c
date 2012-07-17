@@ -181,7 +181,7 @@ void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *gri
 
 int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, char *format) {
 	/* parses format string after =-suffix: ff/scale/offset/invalid
-	 * ff:      can be one of [bcnsr][bsifd]
+	 * ff:      can be one of [abcegnrs][bsifd]
 	 * scale:   can be any non-zero normalized number or 'a' for scale and
 	 *          offset auto-adjust, defaults to 1.0 if omitted
 	 * offset:  can be any finite number or 'a' for offset auto-adjust, defaults to 0 if omitted
