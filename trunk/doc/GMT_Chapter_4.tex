@@ -1938,17 +1938,17 @@ Users who are considering this approach should contact the \GMT\ team.
 \begin{tabular}{ll} \hline
 \textbf{ID}} & \textbf{Explanation}} \\ \hline\hline
 & \emph{GMT 4 netCDF standard formats}\\
-nb & GMT netCDF format (8-bit integer) (COARDS, CF-1.5) \\
-ns & GMT netCDF format (16-bit integer) (COARDS, CF-1.5) \\
-ni & GMT netCDF format (32-bit integer) (COARDS, CF-1.5) \\
-nf & GMT netCDF format (32-bit float) (COARDS, CF-1.5) \\
-nd & GMT netCDF format (64-bit float) (COARDS, CF-1.5) \\ \hline
+nb & GMT netCDF format (8-bit integer, COARDS, CF-1.5) \\
+ns & GMT netCDF format (16-bit integer, COARDS, CF-1.5) \\
+ni & GMT netCDF format (32-bit integer, COARDS, CF-1.5) \\
+nf & GMT netCDF format (32-bit float, COARDS, CF-1.5) \\
+nd & GMT netCDF format (64-bit float, COARDS, CF-1.5) \\ \hline
 & \emph{GMT 3 netCDF legacy formats}\\
-cb & GMT netCDF format (8-bit integer) (depreciated) \\
-cs & GMT netCDF format (16-bit integer) (depreciated) \\
-ci & GMT netCDF format (32-bit integer) (depreciated) \\
-cf & GMT netCDF format (32-bit float) (depreciated) \\
-cd & GMT netCDF format (64-bit float) (depreciated) \\ \hline
+cb & GMT netCDF format (8-bit integer, depreciated) \\
+cs & GMT netCDF format (16-bit integer, depreciated) \\
+ci & GMT netCDF format (32-bit integer, depreciated) \\
+cf & GMT netCDF format (32-bit float, depreciated) \\
+cd & GMT netCDF format (64-bit float, depreciated) \\ \hline
 & \emph{GMT native binary formats}\\
 bm & GMT native, C-binary format (bit-mask) \\
 bb & GMT native, C-binary format (8-bit integer) \\
@@ -1963,8 +1963,8 @@ sf & Golden Software Surfer format 6 (32-bit float) \\
 sd & Golden Software Surfer format 7 (64-bit float) \\
 af & Atlantic Geoscience Center AGC (32-bit float) \\
 ei & ESRI Arc/Info ASCII Grid Interchange format (ASCII integer) \\
-ef & ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only) \\
-gd & Read-only via GDAL\footnote{Requires building \GMT\ with
+ef & ESRI Arc/Info ASCII Grid Interchange format (ASCII float) \\
+gd & Import/export via GDAL\footnote{Requires building \GMT\ with
   GDAL.} \\ \hline
 \end{tabular}
 \caption{\gmt\ grid file formats.}
