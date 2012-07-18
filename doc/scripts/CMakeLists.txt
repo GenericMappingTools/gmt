@@ -141,4 +141,15 @@ if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	endforeach (_fig ${_install_pdf})
 endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
+# Install target for realease documentation
+if (SVN AND HAVE_SVN_VERSION)
+	foreach (_fig ${_install_pdf})
+		add_custom_target (${_fig}_release
+			COMMAND ${CMAKE_COMMAND} -E copy_if_different
+			${_fig} ${GMT_RELEASE_PREFIX}/doc_release/pdf/${_fig}
+			DEPENDS ${_fig} svn_export_release)
+		add_depend_to_target (gmt_release ${_fig}_release)
+	endforeach (_fig ${_install_pdf})
+endif (SVN AND HAVE_SVN_VERSION)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
