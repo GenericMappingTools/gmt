@@ -301,7 +301,7 @@ int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, 
 	int status, use;
 	assert (mode == k_fft_complex); /* k_fft_real not implemented yet */
 	use = GMT_fft_1d_selection (C, n);
-	GMT_report (C, GMT_MSG_DEBUG, "1-D FFT using %s\n", GMT_fft_algo[use]);
+	GMT_report (C, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft1d[use] (C, data, n, direction, mode);
 	return status;
 }
@@ -315,7 +315,7 @@ int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int n
 	int status, use;
 	assert (mode == k_fft_complex); /* k_fft_real not implemented yet */
 	use = GMT_fft_2d_selection (C, nx, ny);
-	GMT_report (C, GMT_MSG_DEBUG, "2-D FFT using %s\n", GMT_fft_algo[use]);
+	GMT_report (C, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft2d[use] (C, data, nx, ny, direction, mode);
 	return status;
 }
@@ -331,9 +331,7 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
 			fftwf_plan_with_nthreads(n_cpu);
-#ifdef DEBUG
-			GMT_report (C, GMT_MSG_DEBUG, "FFTW3 with %d threads.\n", n_cpu);
-#endif
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Initialize FFTW3 with %d threads.\n", n_cpu);
 		}
 	}
 #endif /* HAVE_FFTW3_THREADS */

@@ -1250,7 +1250,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 		exit (-1);
 	}
 #endif
-	GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 
 	if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
 		Return (EXIT_FAILURE);
@@ -1259,39 +1259,39 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case UP_DOWN_CONTINUE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...") : GMT_message (GMT,  "upward continuation..."));
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...\n") : GMT_message (GMT,  "upward continuation...\n"));
 				par_count += do_continuation (Out, &Ctrl->par[par_count], &K);
 				break;
 			case AZIMUTHAL_DERIVATIVE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "azimuthal derivative...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "azimuthal derivative...\n");
 				par_count += do_azimuthal_derivative (Out, &Ctrl->par[par_count], &K);
 				break;
 			case DIFFERENTIATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "differentiate...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "differentiate...\n");
 				par_count += do_differentiate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case INTEGRATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "integrate...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "integrate...\n");
 				par_count += do_integrate (Out, &Ctrl->par[par_count], &K);
 				break;
 			case ISOSTASY:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "isostasy...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "isostasy...\n");
 				par_count += do_isostasy (Out, Ctrl, &Ctrl->par[par_count], &K);
 				break;
 			case FILTER_COS:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cosine filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cosine filter...\n");
 				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_EXP:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Gaussian filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Gaussian filter...\n");
 				do_filter (Out, &f_info, &K);
 				break;
 			case FILTER_BW:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Butterworth filter...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Butterworth filter...\n");
 				do_filter (Out, &f_info, &K);
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "spectrum...");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "spectrum...\n");
 				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->G.file, &K);
 				if (status < 0) Return (status);
 				par_count += status;
@@ -1300,7 +1300,7 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 #endif
 	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...");
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
 
 		if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
 			Return (EXIT_FAILURE);
@@ -1317,8 +1317,6 @@ int GMT_grdfft (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 	}
-
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Done\n");
 
 	Return (EXIT_SUCCESS);
 }
