@@ -296,7 +296,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and L1 scale */
 			int new_grid;
 			struct GMT_GRID *G2 = NULL;
-			
+
 			/* Note that this option rearranges the input grid, so if a memory location is passed then
 			 * the grid in the calling program is no longer the original values */
 			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* true if input is a read-only array */
@@ -460,7 +460,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 			else if (Ctrl->F.active) {
 				sprintf (record, "%s: zmin: %g", G->header->name, G->header->z_min);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 				sprintf (record, "%s: zmax: %g", G->header->name, G->header->z_max);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			 	sprintf (record, "%s: name: %s", G->header->name, G->header->z_units);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+				sprintf (record, "%s: name: %s", G->header->name, G->header->z_units);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 			else {
 				sprintf (record, "%s: z_min: ", G->header->name);
@@ -471,11 +471,22 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 
-			GMT_ascii_format_col (GMT, text, G->header->z_add_offset, GMT_Z);
-			if (isalpha ((int)text[strlen(text)-1])) text[strlen(text)-1] = '\0';	/* Chop of trailing WESN flag here */
-			sprintf (format, "%s: scale_factor: %s add_offset: %%s", G->header->name, GMT->current.setting.format_float_out);
-			sprintf (record, format, G->header->z_scale_factor, text);	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
-			if (n_nan) { sprintf (record, "%s: %" PRIu64 " nodes set to NaN", G->header->name, n_nan);	GMT_Put_Record (API, GMT_WRITE_TEXT, record); }
+			/* print scale and offset */
+			sprintf (format, "%s: scale_factor: %s add_offset: %s", G->header->name, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			sprintf (record, format, G->header->z_scale_factor, G->header->z_add_offset);
+			if (G->header->z_scale_factor != 1.0 || G->header->z_add_offset != 0) {
+				/* print packed z-range */
+				sprintf (format, "%s packed z-range: [%s,%s]", record,
+						GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+				sprintf (record, format,
+						(G->header->z_min - G->header->z_add_offset) / G->header->z_scale_factor,
+						(G->header->z_max - G->header->z_add_offset) / G->header->z_scale_factor);
+			}
+			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			if (n_nan) {
+				sprintf (record, "%s: %" PRIu64 " nodes set to NaN", G->header->name, n_nan);
+				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+			}
 			if (Ctrl->L.norm & 1) {
 				sprintf (record, "%s: median: ", G->header->name);
 				GMT_ascii_format_col (GMT, text, median, GMT_Z);	strcat (record, text);

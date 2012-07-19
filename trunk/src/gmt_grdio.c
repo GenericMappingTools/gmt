@@ -75,7 +75,6 @@
 struct GRD_PAD {
 	double wesn[4];
 	unsigned int pad[4];
-	// int expand;
 };
 
 /* These functions live in other files and are extern'ed in here */
@@ -605,9 +604,6 @@ int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 
 	int err;	/* Implied by GMT_err_trap */
 	double scale, offset, invalid;
-
-	/* Initialize grid information */
-	//GMT_grd_init (C, header, NULL, false);
 
 	/* Save parameters on file name suffix before issuing C->session.readinfo */
 	GMT_err_trap (GMT_grd_get_format (C, file, header, true));
@@ -1487,6 +1483,9 @@ void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, dou
 	float scale_f  = (float)scale;
 	float offset_f = (float)offset;
 
+	if (scale_f == 1.0 && offset_f == 0.0)
+		return; /* No work needed */
+
 	/* Sanity checks */
 	if (!isnormal (scale)) {
 		GMT_report (C, GMT_MSG_NORMAL, "Scale must be a non-zero normalized number (%g).", scale);
@@ -1496,8 +1495,6 @@ void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, dou
 		GMT_report (C, GMT_MSG_NORMAL, "Offset must be a finite number (%g).", offset);
 		offset_f = 0.0f;
 	}
-	if (scale_f == 1.0 && offset_f == 0.0)
-		return; /* No work needed */
 
 	/* Call workhorse */
 	scale_and_offset_f (data, length, scale_f, offset_f);
@@ -1555,7 +1552,6 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 	if ((fp = GMT_fopen (C, file, "rb")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_report (C, GMT_MSG_VERBOSE, "Reading img grid from file %s (scale = %g mode = %d lat = %g)\n", imgfile, scale, mode, lat);
-	//GMT_grd_init (C, Grid->header, NULL, false);
 	Grid->header->inc[GMT_X] = Grid->header->inc[GMT_Y] = min / 60.0;
 
 	if (init) {

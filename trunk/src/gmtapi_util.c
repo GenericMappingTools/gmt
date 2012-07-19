@@ -1425,8 +1425,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			I_obj->header->complex_mode = complex_mode;		/* Set the complex mode */
 			done = (mode == GMT_GRID_HEADER) ? false : true;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {		/* Must init header and read the header information from file */
-				//GMT_grd_init (API->GMT, I_obj->header, NULL, false);
-				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S_obj->filename, I_obj), S_obj->filename)) 
+				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S_obj->filename, I_obj), S_obj->filename))
 					return_null (API, GMT_BAD_PERMISSION);
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header, get out of here */
 			}
@@ -1522,7 +1521,6 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			I_obj = (image == NULL) ? GMT_create_image (API->GMT) : image;	/* Only allocate when not already allocated */
 			I_obj->header->complex_mode = complex_mode;	/* Set the complex mode */
 			if (mode != GMT_GRID_DATA) {
-				//GMT_grd_init (API->GMT, I_obj->header, NULL, false);
 				GMTAPI_info_to_grdheader (API->GMT, I_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
@@ -1544,7 +1542,6 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			I_obj = (image == NULL) ? GMT_create_image (API->GMT) : image;	/* Only allocate when not already allocated */
 			I_obj->header->complex_mode = complex_mode;	/* Set the complex mode */
 			if (mode != GMT_GRID_DATA) {
-				//GMT_grd_init (API->GMT, I_obj->header, NULL, false);
 				GMTAPI_info_to_grdheader (API->GMT, I_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
@@ -1565,7 +1562,6 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			I_obj = (image == NULL) ? GMT_create_image (API->GMT) : image;	/* Only allocate when not already allocated */
 			I_obj->header->complex_mode = complex_mode;	/* Set the complex mode */
 			if (mode != GMT_GRID_DATA) {
-				//GMT_grd_init (API->GMT, I_obj->header, NULL, false);
 				GMTAPI_info_to_grdheader (API->GMT, I_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
@@ -1737,7 +1733,6 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			G_obj = (grid == NULL) ? GMT_create_grid (API->GMT) : grid;	/* Only allocate when not already allocated */
 			G_obj->header->complex_mode = complex_mode;	/* Set the complex mode */
 			if (mode != GMT_GRID_DATA) {
-				//GMT_grd_init (API->GMT, G_obj->header, NULL, false);
 				GMTAPI_info_to_grdheader (API->GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
@@ -1761,7 +1756,6 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			G_obj = (grid == NULL) ? GMT_create_grid (API->GMT) : grid;	/* Only allocate when not already allocated */
 			G_obj->header->complex_mode = complex_mode;	/* Set the complex mode */
 			if (mode != GMT_GRID_DATA) {
-				//GMT_grd_init (API->GMT, G_obj->header, NULL, false);
 				GMTAPI_info_to_grdheader (API->GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
@@ -1784,7 +1778,6 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			G_obj = (grid == NULL) ? GMT_create_grid (API->GMT) : grid;	/* Only allocate when not already allocated */
 			G_obj->header->complex_mode = complex_mode;	/* Set the complex mode */
 			if (mode != GMT_GRID_DATA) {
-				//GMT_grd_init (API->GMT, G_obj->header, NULL, false);
 				GMTAPI_info_to_grdheader (API->GMT, G_obj->header, M_obj);	/* Populate a GRD header structure */
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header */
 			}
