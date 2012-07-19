@@ -10,7 +10,7 @@
 % files with GMT documentation.  It is the master
 % file that sets up the general layout of the book
 
-\documentclass{report}
+\documentclass[11pt]{report}
 \newcommand{\GMTTITLE}{Technical Reference and Cookbook}
 \input{GMT_macros}
 \makeindex
@@ -23,7 +23,6 @@
 \addcontentsline{toc}{chapter}{Front page}
 \clearpage
 
-\pagestyle{plain}
 \tableofcontents
 
 \clearpage
@@ -68,7 +67,6 @@
 \include{GMT_Appendix_Q}
 
 \clearpage
-\thispagestyle{headings}
 \printindex
 
 \end{document}
