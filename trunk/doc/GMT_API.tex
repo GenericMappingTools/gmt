@@ -6,7 +6,7 @@
 %       P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 %------------------------------------------
 %
-\documentclass{report}
+\documentclass[11pt]{report}
 \newcommand{\GMTTITLE}{C/C++ Application Programming Interface}
 \input{GMT_macros}
 \makeindex
@@ -19,15 +19,13 @@
 \addcontentsline{toc}{chapter}{Front page}
 \clearpage
 
-\thispagestyle{headings}
-
 \tableofcontents
-\thispagestyle{headings}
+
+\pagestyle{headings}
 
 \chapter{Introduction}
 \index{Introduction}
 \pagenumbering{arabic}
-\thispagestyle{headings}
 \index{Purpose of the GMT API}
 \index{GMT API!Purpose}
 
@@ -1446,9 +1444,7 @@ are unsigned ints, \texttt{ID} and \texttt{error} are (signed) integers,
 and \texttt{resource} are source or destination addresses.
 
 \clearpage
-\thispagestyle{headings}
 %\addcontentsline{toc}{chapter}{INDEX}
 \printindex
-\thispagestyle{headings}
 
 \end{document}

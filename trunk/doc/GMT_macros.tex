@@ -1,12 +1,21 @@
 \usepackage{ifpdf}
 \usepackage{graphicx}
 \usepackage{makeidx}
-\usepackage{a4wide}
-\usepackage{float}
+\usepackage[a4paper,left=3cm,scale=0.75]{geometry}
 \usepackage{GMT}
 \usepackage{times}
 \usepackage{color}
 \usepackage{mathptmx}
+\usepackage{verbatim}
+\makeatletter
+% adjust verbatim text
+\def\verbatim@font{\ttfamily
+                   \hyphenchar\font\m@ne
+                   \let\do\do@noligs
+                   \verbatim@nolig@list}
+\newcommand{\verbfontsize}{\small} % use small font for verbatim text
+\addto@hook\every@verbatim{\protected\verbfontsize}
+\makeatother
 \usepackage{moreverb}
 \def\verbatimtabsize{2\relax}
 \usepackage{tocbibind}
@@ -29,7 +38,7 @@
   \pdfcompresslevel=9
   \DeclareGraphicsExtensions{.pdf}
   \hypersetup{%
-    pdfauthor={Paul Wessel, Walter H. F. Smith},
+    pdfauthor={Paul Wessel, Walter H. F. Smith, Remko Scharroo, Joaquim F. Luis, Florian Wobbe},
     pdftitle={The Generic Mapping Tools Version \GMTDOCVERSION---\GMTTITLE},
     pdfsubject={GMT: Generic Mapping Tools},
     pdfkeywords={GMT, projections, mapping},
@@ -61,9 +70,11 @@
 
 \newcommand{\script}[2][script]{%
    \begingroup
-   \scriptsize\vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
+   \renewcommand{\verbfontsize}{\scriptsize} % use smaller font for scripts
+   \vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
    \verbatimtabinput{#1/#2.txt}%
    \vspace{-1.25\baselineskip}\noindent\hrulefill\vspace{0.25\baselineskip}%
+   \renewcommand{\verbfontsize}{\small} % reset to small font
    \endgroup
 }
 

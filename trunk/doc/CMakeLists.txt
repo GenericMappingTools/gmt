@@ -35,6 +35,7 @@ set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 
 set (_docs_depends
 	${_docs_inputs}
+	${_common_inputs}
 	${CMAKE_CURRENT_BINARY_DIR}/examples/done
 	#${CMAKE_CURRENT_BINARY_DIR}/fig/done
 	${CMAKE_CURRENT_BINARY_DIR}/scripts/done

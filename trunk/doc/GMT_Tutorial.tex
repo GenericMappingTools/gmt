@@ -6,7 +6,7 @@
 %	P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 %------------------------------------------
 %
-\documentclass{report}
+\documentclass[11pt]{report}
 \newcommand{\GMTTITLE}{A Map-making Tutorial}
 \input{GMT_macros}
 \makeindex
@@ -19,13 +19,13 @@
 \addcontentsline{toc}{chapter}{Front page}
 \clearpage
 
-\thispagestyle{headings}
-\tableofcontents 
+\tableofcontents
 %\addcontentsline{toc}{chapter}{Contents}
+
+\pagestyle{headings}
 
 \chapter*{INTRODUCTION} 
 \pagenumbering{arabic}
-\thispagestyle{headings}
 \addcontentsline{toc}{chapter}{INTRODUCTION}
 \index{Purpose of tutorial}
 
@@ -109,7 +109,6 @@ In addition, we recommend access to a \PS\ printer or equivalent
 any flavor of the \UNIX\ operating system, and more disk space and memory.
 
 \chapter{SESSION ONE} 
-\thispagestyle{headings}
 
 \section{Tutorial setup}
 \begin{enumerate}
@@ -621,7 +620,6 @@ pscoast -R0/360/-90/90 -JKs180/9i -B60g30/30g15 -Dc -A5000 \
 \index{Exercises|)}
 
 \chapter{SESSION TWO} 
-\thispagestyle{headings}
 
 \section{General Information}
 
@@ -1084,7 +1082,6 @@ word EOF.  We pipe the \PS\ directly through \progname{ghostview} (the -- tells
 \index{Exercises|)}
 
 \chapter{SESSION THREE}
-\thispagestyle{headings}
 
 \section{Contouring gridded data sets}
 
@@ -1421,7 +1418,6 @@ psmask -C -O >> map.ps
 \index{Exercises|)}
 
 \chapter{SESSION FOUR}
-\thispagestyle{headings}
 
 In our final session we will concentrate on color images and
 perspective views of gridded data sets.  Before we start that
@@ -1864,7 +1860,6 @@ appropriate \emph{dpi} for the final output device and let it rip.
 \index{Exercises|)}
 
 \chapter{References} 
-\thispagestyle{headings}
 
 \begin{enumerate}
 
@@ -1889,7 +1884,6 @@ Mapping Tools released, \emph{EOS Trans. AGU}, \emph{79}, 579, 1998.
 \end{enumerate}
 
 \clearpage
-\thispagestyle{headings}
 %\addcontentsline{toc}{chapter}{INDEX}
 \printindex
 
