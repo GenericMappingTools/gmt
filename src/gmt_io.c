@@ -433,12 +433,12 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		j = in = 0, by_value = false;
 		while (varnm[i][j] && varnm[i][j] != '(' && varnm[i][j] != '[') j++;
 		if (varnm[i][j] == '(') {
-			in = sscanf (&varnm[i][j+1], "%lf,%lf,%lf,%lf)", &t_value[1], &t_value[2], &t_value[3], &t_value[4]);
+			in = sscanf (&varnm[i][j+1], "%lf,%lf,%lf,%lf", &t_value[1], &t_value[2], &t_value[3], &t_value[4]);
 			varnm[i][j] = '\0';
 			by_value = true;
 		}
 		else if (varnm[i][j] == '[') {
-			in = sscanf (&varnm[i][j+1], "%ld,%ld,%ld,%ld]", &C->current.io.t_index[i][1], &C->current.io.t_index[i][2], &C->current.io.t_index[i][3], &C->current.io.t_index[i][4]);
+			in = sscanf (&varnm[i][j+1], "%" SCNuS ",%" SCNuS ",%" SCNuS ",%" SCNuS, &C->current.io.t_index[i][1], &C->current.io.t_index[i][2], &C->current.io.t_index[i][3], &C->current.io.t_index[i][4]);
 			varnm[i][j] = '\0';
 		}
 
