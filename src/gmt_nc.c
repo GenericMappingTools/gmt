@@ -1026,7 +1026,7 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 			dim2[0] = *height;
 			dim2[1] = last_col2 - first_col2 + 1;
 		}
-		assert (first_col >= 0 && last_col + 1 <= header->nx);
+		assert (last_col + 1 <= header->nx);
 	}
 
 	/* Do not read last column from global repeating grids */
