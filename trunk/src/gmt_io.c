@@ -188,7 +188,8 @@ int GMT_fclose (struct GMT_CTRL *C, FILE *stream)
 	if (stream == C->session.std[GMT_IN])  return (0);
 	if (stream == C->session.std[GMT_OUT]) return (0);
 	if (stream == C->session.std[GMT_ERR]) return (0);
-	if ((int64_t)stream == -C->current.io.ncid) {	/* Special treatment for netCDF files */
+	if ((size_t)stream == (size_t)-C->current.io.ncid) {
+		/* Special treatment for netCDF files */
 		nc_close (C->current.io.ncid);
 		GMT_free (C, C->current.io.varid);
 		GMT_free (C, C->current.io.add_offset);
@@ -393,7 +394,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	char file[GMT_BUFSIZ], path[GMT_BUFSIZ];
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
-	int64_t tmp_pointer;	/* To avoid 64-bit warnings */
+	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
 	double t_value[5], dummy[2];
 	char varnm[20][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256], units[GMT_TEXT_LEN256], varname[GMT_TEXT_LEN64], dimname[GMT_TEXT_LEN64];
 	struct GMT_TIME_SYSTEM time_system;
@@ -520,7 +521,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 	}
 
 	C->current.io.input = gmt_nc_input;
-	tmp_pointer = (int64_t)(-C->current.io.ncid);
+	tmp_pointer = (size_t)(-C->current.io.ncid);
 	return ((FILE *)tmp_pointer);
 }
 
@@ -4740,12 +4741,12 @@ bool GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern,
 	 * return true if the pattern was found and false otherwise.
 	 * out_string must be allocated and have space for the copying */
 	char *t = NULL;
-	uint64_t k;
+	size_t k;
 	if (!in_string || !pattern) return (false);	/* No string or pattern passed */
 	if (!(t = strstr (in_string, pattern))) return (false);	/* Option not present */
 	if (!out_string) return (true);	/* If NULL is passed as out_string then we just return true if we find the option */
 	out_string[0] = '\0';	/* Reset string to empty before we try to set it below */
-	k = (uint64_t)t - (uint64_t)in_string;	/* Position of pattern in in_string */
+	k = (size_t)t - (size_t)in_string; /* Position of pattern in in_string */
 	if (k && !(in_string[k-1] == ' ' || in_string[k-1] == '\t')) return (false);	/* Option not first or preceeded by whitespace */
 	t += 2;	/* Position of the argument */
 	if (t[0] == '\"')	/* Double quoted argument, must scan from next character until terminal quote */
