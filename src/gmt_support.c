@@ -2117,7 +2117,8 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 	 * 2 = Make B and F equal to low and high color
 	 */
 
-	unsigned int n = 0, i, nread, annot, id, k, n_cat_records = 0, color_model;
+	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model;
+	size_t k;
 	bool gap, error = false, close_file = false, check_headers = true;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz;
@@ -2285,8 +2286,8 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 
 		/* First determine if a label is given */
 
-		if ((k = (uint64_t)strchr (line, ';'))) {	/* OK, find the label and chop it off */
-			k -= (uint64_t)line;	/* Position of the column */
+		if ((k = strcspn(line, ";")) && line[k] != '\0') {
+			/* OK, find the label and chop it off */
 			X->range[n].label = GMT_memory (C, NULL, strlen (line) - k, char);
 			strcpy (X->range[n].label, &line[k+1]);
 			GMT_chop (X->range[n].label);	/* Strip off trailing return */

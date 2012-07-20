@@ -327,19 +327,19 @@ static void scrollHorizontal (Widget		w __attribute__((unused)),
 {
   Widget    canvas;
   Dimension width, height;
-  int64_t	previous, distance;
-  char	    msg[256];
+  int64_t   previous, distance;
+  char      msg[256];
   XPoint    index1, index2;
   GridPoint grid1, grid2;
 
   TextViewData *data = client_data;
-  int64_t	x = (int64_t)call_data;
+  size_t    x = (size_t)call_data;
 
 
   canvas = data->canvas;
   width  = XtWidth(canvas);
   height = XtHeight(canvas);
-  
+
   previous = data->xOffset;
   distance = abs(x - previous);
   data->xOffset = x;
@@ -376,13 +376,13 @@ static void scrollVertical (Widget	w __attribute__((unused)),
 {
   Widget    canvas;
   Dimension width, height;
-  int64_t	previous, distance;
-  char	    msg[256];
+  int64_t   previous, distance;
+  char      msg[256];
   XPoint    index1, index2;
   GridPoint grid1, grid2;
 
   TextViewData *data = client_data;
-  int	y = (int64_t)call_data;
+  size_t    y = (size_t)call_data;
 
   canvas = data->canvas;
   width  = XtWidth(canvas);

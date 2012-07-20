@@ -5606,13 +5606,13 @@ int gmt_strip_colonitem (struct GMT_CTRL *C, int axis, const char *in, const cha
 void gmt_handle_atcolon (struct GMT_CTRL *C, char *txt, int old)
 {	/* Way = 0: Replaces @:<size>: and @:: with @^<size>^ and @^^ to avoid trouble in -B:label: parsing;
 	 * Way = 1: Restores it the way it was. */
-	int pos, new;
+	int new;
 	char *item[2] = {"@:", "@^"}, mark[2] = {':', '^'}, *s = NULL;
-	
+
 	if (!txt || !txt[0]) return;	/* Nothing to do */
 	new = 1 - old;	/* The opposite of old */
 	while ((s = strstr (txt, item[old]))) {	/* As long as we keep finding these */
-		pos = ((int64_t)s - (int64_t)txt) + 1;	/* Skip past the @ character */
+		ptrdiff_t pos = ((size_t)s - (size_t)txt) + 1; /* Skip past the @ character */
 		if (txt[pos+1] == mark[old]) {			/* Either :: or ^^ */
 			txt[pos] = txt[pos+1] = mark[new];	/* Replace @:: with @^^ or vice versa */
 		}
