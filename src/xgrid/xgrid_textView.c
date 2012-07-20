@@ -327,7 +327,7 @@ static void scrollHorizontal (Widget		w __attribute__((unused)),
 {
   Widget    canvas;
   Dimension width, height;
-  int64_t   previous, distance;
+  size_t    previous, distance;
   char      msg[256];
   XPoint    index1, index2;
   GridPoint grid1, grid2;
@@ -376,7 +376,7 @@ static void scrollVertical (Widget	w __attribute__((unused)),
 {
   Widget    canvas;
   Dimension width, height;
-  int64_t   previous, distance;
+  size_t    previous, distance;
   char      msg[256];
   XPoint    index1, index2;
   GridPoint grid1, grid2;
@@ -391,7 +391,7 @@ static void scrollVertical (Widget	w __attribute__((unused)),
   previous = data->yOffset;
   distance = abs(y - previous);
   data->yOffset = y;
-  
+
   if (distance >= height) {
     /* Moved more than a full window: redraw the lot */
     XClearWindow(XtDisplay(canvas), XtWindow(canvas));

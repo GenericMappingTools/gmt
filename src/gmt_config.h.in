@@ -194,21 +194,35 @@
 #cmakedefine HAVE_Y1
 #cmakedefine HAVE_YN
 
-/* Sizes (some not available with universal builds on OSX) */
+/* Sizes */
 #cmakedefine SIZEOF__BOOL       @SIZEOF__BOOL@
 #cmakedefine SIZEOF_BOOL        @SIZEOF_BOOL@
 #cmakedefine SIZEOF_INT         @SIZEOF_INT@
 #cmakedefine SIZEOF_LONG        @SIZEOF_LONG@
 #cmakedefine SIZEOF_LONG_LONG   @SIZEOF_LONG_LONG@
 #cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
-#cmakedefine SIZEOF_INTMAX_T    @SIZEOF_INTMAX_T@
 #cmakedefine SIZEOF_MODE_T      @SIZEOF_MODE_T@
 #cmakedefine SIZEOF_OFF_T       @SIZEOF_OFF_T@
 #cmakedefine SIZEOF_SIZE_T      @SIZEOF_SIZE_T@
 #cmakedefine SIZEOF_WCHAR_T     @SIZEOF_WCHAR_T@
-#cmakedefine SIZEOF_WINT_T      @SIZEOF_WINT_T@
 #cmakedefine SIZEOF_VOID_P      @SIZEOF_VOID_P@
 #cmakedefine WORDS_BIGENDIAN
+
+/* Must redefine some sizes manually to allow for universal builds on OSX */
+#ifdef __APPLE__
+#	undef SIZEOF_LONG
+#	undef SIZEOF_SIZE_T
+#	undef SIZEOF_VOID_P
+#	ifdef __LP64__
+#		define SIZEOF_LONG      8
+#		define SIZEOF_SIZE_T    8
+#		define SIZEOF_VOID_P    8
+#	else /* !__LP64__ */
+#		define SIZEOF_LONG      4
+#		define SIZEOF_SIZE_T    4
+#		define SIZEOF_VOID_P    4
+#	endif /* __LP64__ */
+#endif /* __APPLE__ */
 
 /* Byte swapping functions */
 #cmakedefine HAVE___BUILTIN_BSWAP16
@@ -219,28 +233,28 @@
 #cmakedefine HAVE__BYTESWAP_UINT64 /* for 64 bit */
 
 /* Architecture type (32/64 bits) */
-#if !defined(__x86_64__) && !defined(__i836__) && SIZEOF_VOID_P == 4 /* on i386 */
-#	define __i836__ 1
-#elif !defined(__x86_64__) && !defined(__i836__) && SIZEOF_VOID_P == 8 /* on x86_64 */
+#if !defined(__x86_64__) && !defined(__i386__) && SIZEOF_VOID_P == 4 /* on i386 */
+#	define __i386__ 1
+#elif !defined(__x86_64__) && !defined(__i386__) && SIZEOF_VOID_P == 8 /* on x86_64 */
 #	define __x86_64__ 1
 #endif
 
-#if defined(__x86_64__) && defined(SIZEOF_LONG) && defined(SIZEOF_INT) && \
-		!(defined(__LP64__) || defined(__LLP64__)) /* Needed for universal binaries on OSX */
-#	if defined(__x86_64__) && SIZEOF_LONG == 8 && SIZEOF_INT == 4 /* 64 bit longs and pointers (most UNIX) */
+#if !(defined(__LP64__) || defined(__LLP64__)) && defined(__x86_64__) && \
+		defined(SIZEOF_LONG_LONG) && defined(SIZEOF_LONG) && defined(SIZEOF_INT)
+#	if SIZEOF_LONG == 8 && SIZEOF_INT == 4 /* 64 bit longs and pointers (most UNIX) */
 #		ifndef __LP64__
 #			define __LP64__ 1
 #		endif
-#	elif defined(__x86_64__) && SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
+#	elif SIZEOF_LONG_LONG == 8 && SIZEOF_LONG == 4 /* Win X64/IA-64 */
 #		ifndef __LLP64__
 #			define __LLP64__ 1
 #		endif
-#	endif /* defined(__x86_64__) && SIZEOF_LONG == 8 && SIZEOF_INT == 4 */
-#endif /* defined(__x86_64__) && defined(SIZEOF_LONG) && defined(SIZEOF_INT) &&
-		!(defined(__LP64__) || defined(__LLP64__)) */
+#	endif
+#endif /* !(defined(__LP64__) || defined(__LLP64__)) && defined(__x86_64__) &&
+		defined(SIZEOF_LONG_LONG) && defined(SIZEOF_LONG) && defined(SIZEOF_INT) */
 
 /* Enable 32 bit systems to use files of sizes beyond the usual limit of 2GB */
-#if defined(__i836__) && !defined _WIN32 /* on i386 with LFS support */
+#if defined(__i386__) && !defined _WIN32 /* on i386 with LFS support */
 #	define _LARGEFILE_SOURCE
 #	define _FILE_OFFSET_BITS 64
 #endif
