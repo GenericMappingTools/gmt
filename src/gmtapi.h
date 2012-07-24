@@ -15,7 +15,7 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
- 
+
 /*
  * The single include file for users who wish to develop applications
  * that require building blocks from the GMT Application Program Interface
@@ -29,16 +29,59 @@
 #ifndef _GMTAPI_H
 #define _GMTAPI_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+
+/*
+ * Visual C++ only implements C90, which has no bool type. C99 added support
+ * for bool via the <stdbool.h> header, but Visual C++ does not support this.
+ */
+#ifndef __bool_true_false_are_defined
+#	if defined _MSC_VER
+#		define bool _Bool
+#		define true 1
+#		define false 0
+#		define __bool_true_false_are_defined 1
+#	else
+#		include <stdbool.h>
+#	endif /* _MSC_VER */
+#endif /* !__bool_true_false_are_defined */
+
+/*
+ * When an application links to a DLL in Windows, the symbols that
+ * are imported have to be identified as such.
+ */
+#ifndef EXTERN_MSC
+#	ifdef _WIN32
+#		ifdef LIBRARY_EXPORTS
+#			define EXTERN_MSC extern __declspec(dllexport)
+#		else
+#			define EXTERN_MSC extern __declspec(dllimport)
+#		endif /* !LIBRARY_EXPORTS */
+#	else /* !_WIN32 */
+#		define EXTERN_MSC extern
+#	endif /* _WIN32 */
+#endif /* EXTERN_MSC */
+
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
 #endif
 
-/* Declaration modifiers for DLL support (MSC et al) */
-#include "declspec.h"
+#include "gmtapi_define.h"
+
+/* API mode */
+enum Api_mode {
+	_Api_mode_must_promote_to_int = -1,
+	k_mode_gmt, /* Need GMT but not PSL initialized */
+	k_mode_psl  /* Need GMT and PSL initialized */
+};
 
 /*=====================================================================================
  *	GMT API STRUCTURE DEFINITIONS
  *===================================================================================*/
+
+struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
@@ -69,7 +112,7 @@ struct GMTAPI_CTRL {
 	/* Master controller which holds all GMT API related information at run-time for a single session.
 	 * Users can run several GMT sessions concurrently; each session requires its own structure.
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
-	
+
 	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
 	unsigned int n_objects;		/* Number of currently active input and output data objects */
 	unsigned int unique_ID;		/* Used to create unique IDs for duration of session */
@@ -130,11 +173,6 @@ EXTERN_MSC int GMT_Destroy_Args				(struct GMTAPI_CTRL *C, int argc, char *argv[
 EXTERN_MSC int GMT_Update_Option			(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
 EXTERN_MSC int GMT_Delete_Option			(struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
 EXTERN_MSC int GMT_Parse_Common				(struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
-
-#ifdef DEBUG
-/* This function is available for testing purposes if --enable-debug was used during configuration */
-EXTERN_MSC int GMT_List_Args				(struct GMTAPI_CTRL *API, struct GMT_OPTION *head);
-#endif
 
 /* Macro to test if filename is a special name indicating memory location */
 
