@@ -492,7 +492,7 @@ if (WIN32 AND _debug_build)
 endif (WIN32 AND _debug_build)
 
 # Install public headers
-install (FILES declspec.h gmtapi.h
+install (FILES gmtapi.h gmtapi_define.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 

@@ -24,13 +24,6 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-/* API mode */
-enum Api_mode {
-	_Api_mode_must_promote_to_int = -1,
-	k_mode_gmt, /* Need GMT but not PSL initialized */
-	k_mode_psl  /* Need GMT and PSL initialized */
-};
-
 struct GMTAPI_CTRL; /* Forward declaration of GMTAPI_CTRL */
 
 /* name, purpose, Api_mode, and function pointer for each GMT module */
@@ -38,7 +31,7 @@ struct Gmt_moduleinfo {
 	const char *name;             /* Program name */
 	const char *component;        /* Component (core or supplement) */
 	const char *purpose;          /* Program purpose */
-	enum Api_mode api_mode; /* Either k_mode_gmt or k_mode_psl*/
+	int api_mode;                 /* Either k_mode_gmt or k_mode_psl*/
 	/* gmt module function pointer: */
 	int (*p_func)(struct GMTAPI_CTRL*, int, void*);
 };
