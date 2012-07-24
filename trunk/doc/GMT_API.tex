@@ -103,9 +103,9 @@ prefix \texttt{GMT\_}, e.g., \texttt{GMT\_blockmean}.
 \item ``\GMT\ application'' refers to a new application written by developers
 and may call one or more \GMT\ functions to create a new \GMT-compatible executable.
 \item In the API description that follows we will use the type \texttt{int} to mean
-a 4-byte integer.  Al integers used in the API are 4-byte integers with the exception
+a 4-byte integer.  All integers used in the API are 4-byte integers with the exception
 of one function where a longer integer is used.  Since different operating systems have their
-own way of defining 8-byte integers we use C99's \texttt{int64\_6} for this purpose; it is guaranteed to yield
+own way of defining 8-byte integers we use C99's \texttt{int64\_t} for this purpose; it is guaranteed to yield
 the correct type that the \GMT\ function expect.
 \end{enumerate}
 In version 5, the standard \GMT\ programs are themselves specific but overly simple examples
@@ -386,7 +386,7 @@ struct GMTAPI_CTRL * GMT_Create_Session (char *tag, unsigned int mode);
 \end{verbatim}
 and you will typically call it thus:
 \begin{verbatim}
-unsigned int mode = GMTAPI_GMT;
+unsigned int mode = k_mode_gmt;
 struct GMTAPI_CTRL *API = NULL;
 API = GMT_Create_Session ("Session name", mode);
 \end{verbatim}
@@ -395,7 +395,7 @@ pass this pointer to \emph{all} subsequent \GMT\ API functions.  The key task of
 is to set up the \GMT\ machinery and its internal variables used for map projections, plotting,
 etc.  The initialization also allocates space for internal structures used to register resources.
 If you expect to call modules that also require the PSL library, then set \texttt{mode} to
-GMTAPI\_GMTPSL (1); else simply pass GMTAPI\_GMT (0).  Should something go wrong then \texttt{API}
+\texttt{k\_mode\_psl}; else simply pass \texttt{k\_mode\_gmt}.  Should something go wrong then \texttt{API}
 will be returned as \texttt{NULL}.
 
 \section{Register input or output resources}
@@ -421,7 +421,7 @@ The basic registration machinery involves a direct or indirect call to
 
 \begin{verbatim}
 int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, \
-   unsigned int method, unsigned int geometry, \
+    unsigned int method, unsigned int geometry, \
     unsigned int direction, double wesn[], void *ptr);
 \end{verbatim}
 where \texttt{family} specifies what kind of resource is to be registered
