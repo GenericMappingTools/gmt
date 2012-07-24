@@ -488,30 +488,19 @@ int GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
  * Functions :	GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
 
-static inline size_t sizeof_native_grd_hdr1 () {
-	/* sizeof the first part of the native header */
-	static const size_t nh_size = 3 * sizeof (unsigned);
-	return nh_size;
-}
-
-static inline size_t sizeof_native_grd_hdr2 () {
-	/* sizeof the last part of the native header */
-	struct GRD_HEADER *header;
-	static const size_t nh_size = sizeof (struct GRD_HEADER) - ((size_t)header->wesn - (size_t)&header->nx);
-	return nh_size;
-}
-
-static inline size_t sizeof_native_grd_hdr () {
-	/* sizeof the complete native header */
-	return sizeof_native_grd_hdr1() + sizeof_native_grd_hdr2();
-}
+/* sizeof the fist part of the native header */
+#define SIZEOF_NATIVE_GRD_HDR1  12 /* 3 * sizeof (unsigned) */
+/* sizeof the last part of the native header */
+#define SIZEOF_NATIVE_GRD_HDR2 880 /* sizeof (struct GRD_HEADER) - (size_t)header->wesn */
+/* sizeof the complete native header */
+#define SIZEOF_NATIVE_GRD_HDR  892 /* SIZEOF_NATIVE_GRD_HDR1 + SIZEOF_NATIVE_GRD_HD */
 
 int GMT_native_read_grd_header (FILE *fp, struct GRD_HEADER *header)
 {
 	int err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must read it in parts */
-	if (GMT_fread (&header->nx, sizeof_native_grd_hdr1(), 1U, fp) != 1 ||
-			GMT_fread (header->wesn, sizeof_native_grd_hdr2(), 1U, fp) != 1)
+	if (GMT_fread (&header->nx, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
+			GMT_fread (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
 	err = GMT_GRDIO_READ_FAILED;
 	return (err);
 }
@@ -601,8 +590,8 @@ int GMT_native_write_grd_header (FILE *fp, struct GRD_HEADER *header)
 	int err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must write it in parts */
 
-	if (GMT_fwrite (&header->nx, sizeof_native_grd_hdr1(), 1U, fp) != 1 ||
-			GMT_fwrite (header->wesn, sizeof_native_grd_hdr2(), 1U, fp) != 1)
+	if (GMT_fwrite (&header->nx, SIZEOF_NATIVE_GRD_HDR1, 1U, fp) != 1 ||
+			GMT_fwrite (header->wesn, SIZEOF_NATIVE_GRD_HDR2, 1U, fp) != 1)
 		err = GMT_GRDIO_WRITE_FAILED;
 	return (err);
 }
@@ -612,7 +601,7 @@ int GMT_native_skip_grd_header (FILE *fp, struct GRD_HEADER *header)
 	int err = GMT_NOERROR;
 	/* Because GRD_HEADER is not 64-bit aligned we must estimate the # of bytes in parts */
 
-	if (fseek (fp, (off_t)sizeof_native_grd_hdr(), SEEK_SET))
+	if (fseek (fp, SIZEOF_NATIVE_GRD_HDR, SEEK_SET))
 		err = GMT_GRDIO_SEEK_FAILED;
 	return (err);
 }
