@@ -24,6 +24,7 @@
  */
 
 #include "gmt.h"
+#include "common_runpath.h"
 
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */
@@ -41,6 +42,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "For a brief description of GMT programs, type gmt --help\n\n");
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
+		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n");
 		return EXIT_FAILURE;
 	}
 
@@ -58,6 +60,18 @@ int main (int argc, char *argv[]) {
 		fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
 		if (GMT_Destroy_Session (&api_ctrl))
 			return EXIT_FAILURE;
+		return EXIT_SUCCESS;
+	}
+
+	/* Show the directory that contains the 'gmt' executable */
+	if (argc == 2 && !strcmp (argv[1], "--show-bindir")) {
+		char bindir [PATH_MAX+1], *pchar;
+
+		if ((pchar = GMT_runtime_bindir(bindir, argv)) == NULL) {
+			fprintf (stderr, "gmt: Not able to determine path to bin dir\n");
+			return EXIT_FAILURE;			
+		}
+		fprintf (stdout, "%s\n", pchar);
 		return EXIT_SUCCESS;
 	}
 
