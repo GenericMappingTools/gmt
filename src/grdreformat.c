@@ -175,16 +175,12 @@ int GMT_grdreformat (struct GMTAPI_CTRL *API, int mode, void *args)
 	type[1] = Grid->header->type;
 	strcpy (fname[1], Grid->header->name);
 
-	if (type[1] == GMT_GRD_IS_SD) {	/* Golden Surfer format 7 (double) is read-only */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Grid format sd (Golden Software Surfer format 7 (double)) is read-only!\n");
+	if (type[1] == GMT_GRD_IS_SD) {
+		/* Golden Surfer format 7 is read-only */
+		GMT_report (GMT, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRD_IS_SD]);
 		Return (EXIT_FAILURE);
 	}
-#ifdef USE_GDAL
-	if (type[1] == GMT_GRD_IS_GD) {	/* GDAL format is read-only */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Grid format gd (GDAL) is read-only!\n");
-		Return (EXIT_FAILURE);
-	}
-#endif	
+
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
