@@ -258,7 +258,13 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 
 	gmt_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
 
-	i = strcspn (header->name, "=");
+	/* Must reset scale and invalid value because sometimes headers from input grids are
+	 * 'recycled' and used for output grids that may have a different type and z-range: */
+	header->z_scale_factor = 1.0;
+	header->z_add_offset   = 0.0;
+	header->nan_value      = NAN;
+
+	i = strcspn (header->name, "="); /* get number of chars until first '=' or '\0' */
 
 	if (header->name[i]) {	/* Reading or writing when =suffix is present: get format type, scale, offset and missing value */
 		i++;
