@@ -150,7 +150,8 @@ void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *gri
 		if (header->z_offset_autoadust) {
 			/* shift to center values around 0 but shift only by integral value */
 			double z_range = header->z_max - header->z_min;
-			header->z_add_offset = rint(z_range / 2.0 + header->z_min);
+			if (isfinite (z_range))
+				header->z_add_offset = rint(z_range / 2.0 + header->z_min);
 		}
 		if (header->z_scale_autoadust) {
 			/* scale z-range to use all n_representations */
@@ -158,7 +159,8 @@ void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *gri
 			double z_min = fabs(header->z_min - header->z_add_offset);
 			double z_0_n_range = MAX (z_max, z_min); /* use [0,n] range because of signed int */
 			--n_representations;                     /* subtract 1 for NaN value */
-			header->z_scale_factor = z_0_n_range / n_representations;
+			if (isnormal (z_0_n_range))
+				header->z_scale_factor = z_0_n_range / n_representations;
 		}
 	}
 
@@ -1494,11 +1496,11 @@ void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, dou
 
 	/* Sanity checks */
 	if (!isnormal (scale)) {
-		GMT_report (C, GMT_MSG_NORMAL, "Scale must be a non-zero normalized number (%g).", scale);
+		GMT_report (C, GMT_MSG_NORMAL, "Scale must be a non-zero normalized number (%g).\n", scale);
 		scale_f = 1.0f;
 	}
 	if (!isfinite (offset)) {
-		GMT_report (C, GMT_MSG_NORMAL, "Offset must be a finite number (%g).", offset);
+		GMT_report (C, GMT_MSG_NORMAL, "Offset must be a finite number (%g).\n", offset);
 		offset_f = 0.0f;
 	}
 
