@@ -117,7 +117,10 @@
 #cmakedefine HAVE__VSNPRINTF_
 #cmakedefine HAVE__STAT
 #cmakedefine HAVE__STATI64
+#cmakedefine HAVE_STRCASECMP
+#cmakedefine HAVE_STRNCASECMP
 #cmakedefine HAVE_STRICMP
+#cmakedefine HAVE_STRNICMP
 #cmakedefine HAVE_STRDUP
 #cmakedefine HAVE_STRSEP
 #cmakedefine HAVE_STRTOD
