@@ -86,6 +86,6 @@
 
 /* Used in tools that sets grdheader information via a -D option */
 
-#define GMT_GRDEDIT	"-D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark>"
+#define GMT_GRDEDIT	"-D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark>"
 
 #endif /* GMT_SYNOPSIS_H */
