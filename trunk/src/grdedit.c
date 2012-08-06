@@ -44,7 +44,7 @@ struct GRDEDIT_CTRL {
 	struct A {	/* -A */
 		bool active;
 	} A;
-	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<title>/<remark> */
+	struct D {	/* -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		bool active;
 		char *information;
 	} D;
@@ -229,7 +229,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "(Use grdreformat to convert to GMT default format and work on that file)\n");
 		Return (EXIT_FAILURE);
 	}
-	
+
 	if (Ctrl->S.active && !GMT_grd_is_global (GMT, G->header)) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Shift only allowed for global grids\n");
 		Return (EXIT_FAILURE);
@@ -240,11 +240,19 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 	/* Decode grd information given, if any */
 
 	if (Ctrl->D.active) {
-		double scale_factor, add_offset;
+		double scale_factor, add_offset, nan_value;
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Decode and change attributes in file %s\n", Ctrl->In.file);
 		scale_factor = G->header->z_scale_factor;
 		add_offset = G->header->z_add_offset;
+		nan_value = G->header->nan_value;
 		GMT_decode_grd_h_info (GMT, Ctrl->D.information, G->header);
+		if (nan_value != G->header->nan_value) {
+			/* Must read data */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->In.file, G) == NULL)
+				Return (API->error);
+			/* Recalculate z_min/z_max */
+			GMT_grd_zminmax (GMT, G->header, G->data);
+		}
 		if (scale_factor != G->header->z_scale_factor || add_offset != G->header->z_add_offset) {
 			G->header->z_min = (G->header->z_min - add_offset) / scale_factor * G->header->z_scale_factor + G->header->z_add_offset;
 			G->header->z_max = (G->header->z_max - add_offset) / scale_factor * G->header->z_scale_factor + G->header->z_add_offset;

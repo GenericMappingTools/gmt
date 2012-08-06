@@ -912,16 +912,15 @@ int GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[
 }
 
 void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *h) {
+	/* Given input string, copy elements into string portions of h.
+		 By default use "/" as the field separator. However, if the first and
+		 last character of the input string is the same AND that character
+		 is non-alpha-numeric, use the first character as a separator. This
+		 is to allow "/" as part of the fields.
+		 If a field has an equals sign, skip it.
+		 This routine is usually called if -D<input> was given by user,
+		 and after GMT_grd_init() has been called. */
 
-/*	Given input string, copy elements into string portions of h.
-	By default use "/" as the field separator. However, if the first and
-	last character of the input string is the same AND that character
-	is non-alpha-numeric, use the first character as a separator. This
-	is to allow "/" as part of the fields.
-	If a field has an equals sign, skip it.
-	This routine is usually called if -D<input> was given by user,
-	and after GMT_grd_init() has been called.
-*/
 	char ptr[GMT_BUFSIZ], sep[] = "/";
 	unsigned int entry = 0, pos = 0;
 
@@ -963,19 +962,22 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 					strncpy (h->z_units, ptr, GRD_UNIT_LEN80);
 					break;
 				case 3:
-					h->z_scale_factor = atof (ptr);
+					h->z_scale_factor = strtod (ptr, NULL);
 					break;
 				case 4:
-					h->z_add_offset = atof (ptr);
+					h->z_add_offset = strtod (ptr, NULL);
 					break;
 				case 5:
+					h->nan_value = strtod (ptr, NULL);
+					break;
+				case 6:
 					if (strlen(ptr) >= GRD_TITLE_LEN80)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: Title string exceeds upper length of %d characters (truncated)\n",
 								GRD_TITLE_LEN80);
 					strncpy (h->title, ptr, GRD_TITLE_LEN80);
 					break;
-				case 6:
+				case 7:
 					if (strlen(ptr) >= GRD_REMARK_LEN160)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: Remark string exceeds upper length of %d characters (truncated)\n",
@@ -1106,7 +1108,8 @@ int GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, int row_no, flo
 		if (GMT_fread (G->v_row, G->size, n_items, G->fp) != n_items)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
 		for (col = 0; col < G->header.nx; col++) {
 			row[col] = GMT_decode (C, G->v_row, col, C->session.grdformat[G->header.type][1]);	/* Convert whatever to float */
-			if (G->check && row[col] == G->header.nan_value) row[col] = C->session.f_NaN;
+			if (G->check && row[col] == (float)G->header.nan_value) /* cast to avoid round-off errors */
+				row[col] = C->session.f_NaN;
 		}
 	}
 	GMT_scale_and_offset_f (C, row, G->header.nx, G->scale, G->offset);
@@ -1828,7 +1831,8 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
 	for (row = 0; row < h->ny; row++) {
 		for (col = 0, node = GMT_IJP (h, row, 0); col < h->nx; col++, node++) {
-			if (GMT_is_fnan (z[node])) continue;
+			if (isnan (z[node]))
+				continue;
 			/* Update z_min, z_max */
 			h->z_min = MIN (h->z_min, (double)z[node]);
 			h->z_max = MAX (h->z_max, (double)z[node]);
