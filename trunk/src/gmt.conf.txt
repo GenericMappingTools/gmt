@@ -268,12 +268,17 @@ Very large chunk sizes and sizes smaller than 128 should be avoided because they
 lead to unexpectedly bad performance.
 Note that a chunk of a single precision floating point variable of size 2896x2896
 completely fills the chunk cache of 32MiB.
-Set IO_NC4_CHUNK_SIZE to 0,0 for classic netCDF. [128,128]
+Specify the chunk size for each dimension separeted by a comma, or BD(a)uto for
+optimally chosen chunk sizes in the range [128,256].
+Set IO_NC4_CHUNK_SIZE to BD(c)lassic for classic netCDF. [auto]
 .TP
 .B IO_NC4_DEFLATION_LEVEL
-Sets the deflation level for netCDF4 files upon output. This produces netCDF version 4
+Sets the compression level for netCDF4 files upon output. This produces netCDF version 4
 files which can only be read with the netCDF 4 library. Values allowed are integers
-between 0 (no deflation) to 9 (maximum compression). [0]
+between 0 (no compression) to 9 (maximum compression). Enabling compression level 1 can
+dramatically improve performance and reduce the size of certain data. While higher
+compression levels further reduce the data size, they do so at the cost of extra
+processing time. [0]
 .TP
 .B IO_SEGMENT_MARKER
 This holds the character we expect to indicate a segment header in an incoming ASCII data or text table  [>].  If this

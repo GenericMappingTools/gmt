@@ -84,6 +84,11 @@ enum Netcdf_row_order {
 	k_nc_start_south = 1   /* The least dimension (i.e., lat or y) increases */
 };
 
+enum Netcdf_chunksize {
+	k_netcdf_io_classic = 0, /* netCDF classic format */
+	k_netcdf_io_chunked_auto /* netCDF 4 auto-determined optimal chunk size */
+};
+
 struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
 	unsigned int nx;                /* Number of columns */

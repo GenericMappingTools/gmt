@@ -369,7 +369,8 @@ int GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
 			grid[kk] = (float) tmp[actual_row[i]];
-			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
+			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+				grid[kk] = C->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			/* Update z min/max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -510,7 +511,7 @@ int GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	/* Read GRD header structure from native binary file.  This is used by
 	 * all the native binary formats in GMT */
 
-	int err;
+	int status;
 	FILE *fp = NULL;
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
@@ -522,11 +523,9 @@ int GMT_native_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_err_trap (GMT_native_read_grd_header (fp, header));
-
+	status = GMT_native_read_grd_header (fp, header);
 	GMT_fclose (C, fp);
-
-	return (GMT_NOERROR);
+	return status;
 }
 
 int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
@@ -669,7 +668,8 @@ int GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 			bit = actual_col[i] % 32;
 			ival = (tmp[word] >> bit) & 1;
 			grid[kk] = (float) ival;
-			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
+			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+				grid[kk] = C->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			/* Update z min/max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -911,7 +911,8 @@ int GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *g
 		for (i = 0; i < width_in; i++) {
 			kk = ij + inc * i;
 			grid[kk] = GMT_decode (C, tmp, k[i], type);	/* Convert whatever to float */
-			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
+			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+				grid[kk] = C->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			/* Update z_min, z_max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -1673,7 +1674,8 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	if (from_gdalread->nodata != 0) {	/* Data has a nodata value */
 		if (!GMT_is_dnan (from_gdalread->nodata)) {
 			for (j = 0; j < header->nm; j++)
-				if (grid[j] == header->nan_value) grid[j] = C->session.f_NaN;
+				if (grid[j] == (float)header->nan_value) /* cast to avoid round-off errors */
+					grid[j] = C->session.f_NaN;
 		}
 	}
 	header->nan_value = C->session.f_NaN;

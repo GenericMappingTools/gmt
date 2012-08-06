@@ -64,12 +64,12 @@ If OPT(S) is not set then we consider the input data to define closed polygon(s)
 To set all nodes inside and on the polygons coastline_*.xy to 0, and outside points
 to 1, do
 .sp
-grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc -V
+grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc=nb -V
 .br
 .sp
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 .sp
-grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc -V
+grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
 .br
 .sp
 To assign polygon IDs to the gridnodes using the insides of the polygons in plates.gmt, based on the attribute POL_ID, do

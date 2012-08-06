@@ -484,7 +484,9 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			if (n_nan) {
-				sprintf (record, "%s: %" PRIu64 " nodes set to NaN", G->header->name, n_nan);
+				float percent = 100.0f * n_nan / G->header->nm;
+				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN",
+							G->header->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 			if (Ctrl->L.norm & 1) {
@@ -503,8 +505,8 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_ascii_format_col (GMT, text, rms, GMT_Z);	strcat (record, text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
-			{
-				/* chunk size and deflation level */
+			if (strspn(GMT->session.grdformat[G->header->type], "nc") != 0) {
+				/* type is netCDF: report chunk size and deflation level */
 				bool chunked = G->header->z_chunksize[0] != 0;
 				if (chunked) {
 					sprintf (text, " chunk_size: %u,%u shuffle: %s deflation_level: %u",

@@ -44,6 +44,11 @@ by GDAL itself (e.g., netCDF, GTiFF, etc.), and the data type is one of
 IT(u8)|IT(i8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u' denote
 signed and unsigned integers respectively.  The default type is IT(float32).  Note
 also that both driver names and data types are case insensitive.
+.br
+Consider setting BD(IO_NC4_DEFLATION_LEVEL) to reduce file size and to further
+increase read/write performace.  Especially when working with subsets of global
+grids, masks, and grids with repeating grid values, the improvement is usually
+significant.
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(N)
@@ -164,8 +169,11 @@ To convert etopo2.nc to etopo2.i2 that can be used by BD(grdraster), try
 grdreformat etopo2.nc etopo2.i2=bs -N -V
 .br
 .sp
-To creat a dumb file saved as a 32 bits float GeoTiff using GDAL
+To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
+.br
+.sp
 grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 .SH "SEE ALSO"
+.IR gmt.conf (5),
 .IR gmt (1),
 .IR grdmath (1)

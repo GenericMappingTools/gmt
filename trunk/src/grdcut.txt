@@ -34,12 +34,13 @@ OPT(Zn) to consider a NaN to be outside the IT(z)-range.
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
-Suppose you have used BD(surface) to grid ship gravity in the region between 148E - 162E and 8N - 32N, and you 
-do not trust the gridding near the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then: 
+Suppose you have used BD(surface) to grid ship gravity in the region between 148E - 162E and 8N - 32N, and you
+do not trust the gridding near the edges, so you want to keep only the area between 150E - 160E and 10N - 30N, then:
 .sp
 grdcut grav_148_162_8_32.nc -Ggrav_150_160_10_30.nc -R150/160/10/30 -V
+.sp
 To return the subregion of a grid such that any boundary strips where all values are entirely
-above 0, try 
+above 0, try
 .sp
 grdcut bathy.nc -Gtrimmed_bathy.nc -Z-/0 -V
 .SH "SEE ALSO"
