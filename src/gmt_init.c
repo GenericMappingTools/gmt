@@ -2596,7 +2596,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 	int i, ival, case_val, manual;
 	bool error = false, tf_answer;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
-	
+
 	double dval;
 
 	if (!value) return (1);		/* value argument missing */
@@ -3398,9 +3398,21 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = true;
 			break;
 		case GMTCASE_IO_NC4_CHUNK_SIZE:
-			if ( sscanf (value, "%" SCNuS " , %" SCNuS, /* chunk size: lat,lon */
-					&C->current.setting.io_nc4_chunksize[0],
-					&C->current.setting.io_nc4_chunksize[1]) != 2 )
+				if (*lower_value == 'a') /* auto */
+				C->current.setting.io_nc4_chunksize[0] = k_netcdf_io_chunked_auto;
+			else if (*lower_value == 'c') /* classic */
+				C->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
+			else if ((i = sscanf (value, "%" SCNuS " , %" SCNuS, /* chunk size: lat,lon */
+						&C->current.setting.io_nc4_chunksize[0],
+						&C->current.setting.io_nc4_chunksize[1])) > 0) {
+				if (i == 1) /* use chunk size of lat for long as well */
+					C->current.setting.io_nc4_chunksize[1] = C->current.setting.io_nc4_chunksize[0];
+				if (C->current.setting.io_nc4_chunksize[0] <= k_netcdf_io_chunked_auto ||
+						C->current.setting.io_nc4_chunksize[1] <= k_netcdf_io_chunked_auto)
+					/* chunk size too small */
+					error = true;
+			}
+			else
 				error = true;
 			break;
 		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
@@ -4270,9 +4282,14 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 				strcpy (value, "skip");
 			break;
 		case GMTCASE_IO_NC4_CHUNK_SIZE:
-			sprintf (value, "%" PRIuS ",%" PRIuS, /* chunk size: lat,lon */
-					C->current.setting.io_nc4_chunksize[0],
-					C->current.setting.io_nc4_chunksize[1]);
+			if (C->current.setting.io_nc4_chunksize[0] == k_netcdf_io_chunked_auto)
+				strcpy (value, "auto");
+			else if (C->current.setting.io_nc4_chunksize[0] == k_netcdf_io_classic)
+				strcpy (value, "classic");
+			else
+				sprintf (value, "%" PRIuS ",%" PRIuS, /* chunk size: lat,lon */
+						 C->current.setting.io_nc4_chunksize[0],
+						 C->current.setting.io_nc4_chunksize[1]);
 			break;
 		case GMTCASE_IO_NC4_DEFLATION_LEVEL:
 			sprintf (value, "%u", C->current.setting.io_nc4_deflation_level);

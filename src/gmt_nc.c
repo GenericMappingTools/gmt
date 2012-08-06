@@ -220,10 +220,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 			break;
 		default:
-			if (C->current.setting.io_nc4_chunksize[0] != 0 &&
-					C->current.setting.io_nc4_chunksize[1] != 0 &&
+			/* create new nc-file */
+			if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic &&
 					header->ny >= C->current.setting.io_nc4_chunksize[0] &&
 					header->nx >= C->current.setting.io_nc4_chunksize[1]) {
+				/* if chunk size is smaller than grid size: create chunked nc4 file */
 				GMT_err_trap (nc_create (header->name, NC_NETCDF4, &ncid));
 			}
 			else {
@@ -306,20 +307,31 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		}
 
 		/* Variable name is given, or defaults to "z" */
-		if (!header->varname[0]) strcpy (header->varname, "z");
+		if (!header->varname[0])
+			strcpy (header->varname, "z");
 		GMT_err_trap (nc_def_var (ncid, header->varname, z_type, 2, dims, &z_id));
 
 		/* set deflation and chunking */
-		if (C->current.setting.io_nc4_chunksize[0] != 0 &&
-				C->current.setting.io_nc4_chunksize[1] != 0 &&
-				header->ny >= C->current.setting.io_nc4_chunksize[0] &&
-				header->nx >= C->current.setting.io_nc4_chunksize[1]) {
-			/* set chunk size */
-			GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, C->current.setting.io_nc4_chunksize));
-			/* set deflation level for z variable */
+		if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
+			if (C->current.setting.io_nc4_chunksize[0] == k_netcdf_io_chunked_auto &&
+					header->ny >= 256.0 && header->nx >= 256.0) {
+				/* special case: determine optimal chunk size in the range [128,256] */
+				size_t chunksize[2];
+				chunksize[0] = (size_t) ceil (header->ny / floor (header->ny / 128.0));
+				chunksize[1] = (size_t) ceil (header->nx / floor (header->nx / 128.0));
+				GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, chunksize));
+			}
+			else if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_chunked_auto &&
+							 header->ny >= C->current.setting.io_nc4_chunksize[0] &&
+							 header->nx >= C->current.setting.io_nc4_chunksize[1])
+				/* set chunk size from defaults */
+				GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, C->current.setting.io_nc4_chunksize));
+			/* else: use netCDF default chunk size, usually equals dimension length */
+
+			/* set deflation level and shuffle for z variable */
 			if (C->current.setting.io_nc4_deflation_level)
 				GMT_err_trap (nc_def_var_deflate (ncid, z_id, true, true, C->current.setting.io_nc4_deflation_level));
-		}
+		} /* C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic */
 	} /* if (job == 'r' || job == 'u') */
 	header->z_id = z_id;
 	header->ncid = ncid;
@@ -431,7 +443,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Store global attributes */
 		unsigned int row, col;
 		int reg;
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), (const char *) GMT_NC_CONVENTION));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
 		}
@@ -492,6 +504,10 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* Store values along x and y axes */
+		nc_inq_nvars (ncid, &nvars);
+		for (j = 0; j < nvars; j++) {
+			GMT_err_trap (nc_inq_varndims (ncid, j, &ndims));
+		}
 		GMT_err_trap (nc_enddef (ncid));
 		xy = GMT_memory (C, NULL,  MAX (header->nx,header->ny), double);
 		for (col = 0; col < header->nx; col++) xy[col] = GMT_grd_col_to_x (C, col, header);
@@ -1137,7 +1153,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		float *p_data = grid + row * (header->stride ? header->stride : width) * inc + off;
 		unsigned col;
 		for (col = 0; col < width * inc; col += inc) {
-			if (adj_nan_value && p_data[col] == header->nan_value) {
+			if (adj_nan_value && p_data[col] == (float)header->nan_value) { /* cast to avoid round-off errors */
 				p_data[col] = NAN;
 				continue;
 			}

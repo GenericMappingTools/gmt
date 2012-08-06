@@ -134,6 +134,11 @@ If you don't know what \fB\-N\fP options to use to make an intensity file for\"'
 BD(grdimage) or BD(grdview), a good first try is OPT(Ne)0.6.
 .br
 .sp
+Usually 255 shades are more than enough for visualization purposes.  You
+can save 75% disk space by appending =nb/a to the output filename
+IT(out_grdfile).
+.br
+.sp
 If you want to make several illuminated maps of subregions of a large  
 data set,
 and you need the illumination effects to be consistent across all the  
@@ -150,12 +155,12 @@ If you simply need the IT(x)- or IT(y)-derivatives of the grid, use
 BD(grdmath).
 #include "explain_grd_inout.txt"
 .SH EXAMPLES
-To make a file for illuminating the data in geoid.nc using exp- 
-normalized gradients
+To make a file for illuminating the data in geoid.nc using exp-
+normalized gradients in the range [-0.6,0.6]
 imitating light sources in the north and west directions:
 .br
 .sp
-grdgradient geoid.nc -A0/270 -Ggradients.nc -Ne0.6 -V
+grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
 .br
 .sp
 To find the azimuth orientations of seafloor fabric in the file  

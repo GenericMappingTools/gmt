@@ -270,7 +270,8 @@ int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i*inc;
 			grid[kk] = tmp[actual_col[i]];
-			if (check && grid[kk] == header->nan_value) grid[kk] = C->session.f_NaN;
+			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+				grid[kk] = C->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
