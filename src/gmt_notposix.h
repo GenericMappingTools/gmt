@@ -460,6 +460,13 @@
 #	define stat _stat
 #endif
 
+#if defined(HAVE_STRICMP) && !defined(HAVE_STRCASECMP)
+#	define strcasecmp stricmp
+#endif
+#if defined(HAVE_STRNICMP) && !defined(HAVE_STRNCASECMP)
+#	define strncasecmp strnicmp
+#endif
+
 #ifndef DECLARED_STRDUP
 	EXTERN_MSC char *strdup(const char *s);
 #endif
