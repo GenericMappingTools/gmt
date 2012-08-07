@@ -1144,10 +1144,8 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		assert (width == dim[1] + dim2[1]);
 
 	/* get stats */
-	if (isnan (header->z_min)) { /* if z_min == NaN, then z_max == NaN too */
-		header->z_min = DBL_MAX;
-		header->z_max = -DBL_MAX;
-	}
+	header->z_min = DBL_MAX;
+	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
 	for (row = 0; row < height; ++row) {
 		float *p_data = grid + row * (header->stride ? header->stride : width) * inc + off;

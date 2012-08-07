@@ -33,6 +33,7 @@
  *  GMT_strlcmp             Compares strings (ignoring case) until first reaches null character
  *  GMT_strtok              Reiterant replacement of strtok
  *  DOS_path_fix            Turn /c/dir/... paths into c:/dir/...
+ *  str(n)casecmp           Case-insensitive string comparison functions
  *  strtok_r                Reentrant string tokenizer from Gnulib (LGPL)
  *  strsep                  Reentrant string tokenizer that handles empty fields
  *  strsepz                 Like strsep but ignores empty fields
