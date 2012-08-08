@@ -461,8 +461,8 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 
 			/* Determine coordinates epoch and units (default is internal system) */
 			GMT_memcpy (&time_system, &C->current.setting.time_system, 1, struct GMT_TIME_SYSTEM);
-			units = strchr (string[i], '[') + 1;
-			if (!units || GMT_get_time_system (C, units, &time_system) || GMT_init_time_system_structure (C, &time_system))
+			units = strchr (string[i], '[');
+			if (!units || GMT_get_time_system (C, ++units, &time_system) || GMT_init_time_system_structure (C, &time_system))
 				GMT_report (C, GMT_MSG_NORMAL, "Warning: Time units [%s] in grid not recognised, defaulting to gmt.conf.\n", units);
 
 			/* Determine scale between grid and internal time system, as well as the offset (in internal units) */
