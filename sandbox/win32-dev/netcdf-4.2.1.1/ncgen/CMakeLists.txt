@@ -21,11 +21,14 @@
 # IN THE SOFTWARE.
 
 # sources of ncgen
-set (SRCS_NCGEN main.c cdata.c bindata.c genchar.c cvt.c data.c debug.c
-escapes.c genc.c genbin.c generr.c genlib.c getfill.c odom.c offsets.c
-semantics.c ncgentab.c dump.c util.c bytebuffer.c list.c data.h
-debug.h generr.h genlib.h includes.h ncgen.h odom.h offsets.h dump.h
-util.h bytebuffer.h list.h genf77.c f77data.c genj.c jdata.c nciter.h
-nciter.c ConvertUTF.c ConvertUTF.h)
+set (SRCS_NCGEN
+	generate.c main.c cdata.c bindata.c genchar.c cvt.c data.c debug.c
+	escapes.c genc.c genbin.c generr.c genlib.c getfill.c odom.c offsets.c
+	semantics.c ncgentab.c dump.c util.c bytebuffer.c list.c data.h
+	debug.h generr.h genlib.h includes.h ncgen.h odom.h offsets.h dump.h
+	util.h bytebuffer.h list.h genf77.c f77data.c genj.c jdata.c nciter.h
+	nciter.c ConvertUTF.c ConvertUTF.h
+	)
+
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

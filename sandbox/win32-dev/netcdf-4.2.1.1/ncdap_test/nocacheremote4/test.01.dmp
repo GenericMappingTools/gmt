@@ -1,0 +1,35 @@
+netcdf test {
+variables:
+	ubyte b ;
+		string b:Description = "A test byte" ;
+		string b:units = "unknown" ;
+	int i32 ;
+		string i32:Description = "A 32 bit test server int" ;
+		string i32:units = "unknown" ;
+	uint ui32 ;
+	short i16 ;
+	ushort ui16 ;
+	float f32 ;
+	double f64 ;
+	string s ;
+	string u ;
+data:
+
+ b = 0 ;
+
+ i32 = 1 ;
+
+ ui32 = 0 ;
+
+ i16 = 0 ;
+
+ ui16 = 0 ;
+
+ f32 = 0 ;
+
+ f64 = 1000 ;
+
+ s = "This is a data test string (pass 0)." ;
+
+ u = "http://www.dods.org" ;
+}

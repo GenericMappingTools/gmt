@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <netcdf.h>
 #include "utils.h"
 #include "nciter.h"
 
@@ -223,6 +224,7 @@ gs_pop(ncgiter_t *s)
     }
 }
 
+#ifdef UNUSED
 /* Return top value on stack without popping stack.  Defined for
  * completeness but not used (here). */
 static int 
@@ -236,6 +238,7 @@ gs_top(ncgiter_t *s)
 	return value;
     }
 }
+#endif
 
 /* Like netCDF-4 function nc_inq_grps(), but can be called from
  * netCDF-3 only code as well.  Maybe this is what nc_inq_grps()
@@ -348,7 +351,10 @@ nc_next_iter(nciter_t *iter,	/* returned opaque iteration state */
 	} else {		/* chunked storage */
 	    for(i = 0; i < iter->rank; i++) {
 		start[i] = 0;
-		count[i] = iter->chunksizes[i];
+		if(iter->chunksizes[i] <= iter->dimsizes[i])
+		    count[i] = iter->chunksizes[i];
+		else /* can happen for variables with only unlimited dimensions */
+		    count[i] = iter->dimsizes[i];
 	    }
 	}
 	iter->first = 0;
@@ -374,7 +380,10 @@ nc_next_iter(nciter_t *iter,	/* returned opaque iteration state */
 	    /* adjust count to stay in range of dimsizes */
 	    for(i = 0; i < iter->rank; i++) {
 		int leftover = iter->dimsizes[i] - start[i];
-		count[i] = iter->chunksizes[i];
+		if(iter->chunksizes[i] <= iter->dimsizes[i])
+		    count[i] = iter->chunksizes[i];
+		else /* can happen for variables with only unlimited dimensions */
+		    count[i] = iter->dimsizes[i];
 		if(leftover < count[i]) 
 		    count[i] = leftover;
 	    }
@@ -394,8 +403,7 @@ nc_free_iter(nciter_t *iterp) {
 	free(iterp->dimsizes);
     if(iterp->chunksizes)
 	free(iterp->chunksizes);
-    if(iterp)
-	free(iterp);
+    free(iterp);
     return NC_NOERR;
 }
 

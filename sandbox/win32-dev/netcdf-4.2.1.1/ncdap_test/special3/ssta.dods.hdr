@@ -1,0 +1,27 @@
+netcdf dods {
+dimensions:
+	T = 325 ;
+	Y = 30 ;
+	X = 42 ;
+variables:
+	float X(X) ;
+		X:pointwidth = 4.f ;
+		X:gridtype = 0 ;
+		X:units = "degree_east" ;
+	float T(T) ;
+		T:calendar = "360" ;
+		T:pointwidth = 1.f ;
+		T:gridtype = 0 ;
+		T:units = "months since 1960-01-01" ;
+	float Y(Y) ;
+		Y:pointwidth = 2.f ;
+		Y:gridtype = 0 ;
+		Y:units = "degree_north" ;
+	float ssta(T, Y, X) ;
+		ssta:long_name = "temperature anomaly" ;
+		ssta:units = "degC" ;
+		ssta:missing_value = -999.f ;
+
+// global attributes:
+		:Conventions = "IRIDL" ;
+}

@@ -1,20 +1,8 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
+/*! \file
+An example program demonstrating a simple 2D write.
 
-   This is a very simple example which writes a 2D array of
-   sample data. To handle this in netCDF we create two shared
-   dimensions, "x" and "y", and a netCDF variable, called "data".
-
-   This example demonstrates the netCDF C API. This is part of the
-   netCDF tutorial, which can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-tutorial
-
-   Full documentation of the netCDF C API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c
-
-   $Id$
 */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <netcdf.h>

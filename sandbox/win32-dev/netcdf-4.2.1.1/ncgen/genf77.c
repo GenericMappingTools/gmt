@@ -14,7 +14,7 @@
 /*MNEMONIC*/
 #define USEMEMORY 1
 
-extern List* vlenconstants;  /* List<Constant*>;*/
+static List* f77procs = NULL; /* bodies of generated procedures */
 
 /* Forward */
 static void genf77_definevardata(Symbol* vsym);
@@ -31,13 +31,15 @@ static const char* nfstype(nc_type nctype);
 static const char* ncftype(nc_type type);
 static const char* nfdtype(nc_type type);
 
-
 static void f77skip(void);
 static void f77comment(char* cmt);
 static void f77fold(Bytebuffer* lines);
 static void f77flush(void);
 
-static void genf77_write(Symbol*, Bytebuffer*, Odometer*, int, int);
+static void genf77_write(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+static void genf77_writevar(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+static void genf77_writeattr(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+
 
 #ifdef USE_NETCDF4
 static char* f77prefixed(List* prefix, char* suffix, char* separator);
@@ -50,15 +52,13 @@ void
 gen_ncf77(const char *filename)
 {
     int idim, ivar, iatt;
-    int ndims, nvars, natts, ngatts, ngrps, ntyps;
+    int ndims, nvars, natts, ngatts;
     char* cmode_string;
 
     ndims = listlength(dimdefs);
     nvars = listlength(vardefs);
     natts = listlength(attdefs);
     ngatts = listlength(gattdefs);
-    ngrps = listlength(grpdefs);
-    ntyps = listlength(typdefs);
 
     /* Construct the main program */
 
@@ -315,54 +315,66 @@ gen_ncf77(const char *filename)
     f77comment("leave define mode");
     codeline("stat = nf_enddef(ncid);");
     codeline("call check_err(stat)");
+    f77skip();
     f77flush();
 
-    /* Assign scalar variable data and non-unlimited arrays in-line */
-    if(nvars > 0) {
-	f77skip();
-	f77skip();
-	f77comment("assign scalar and fixed dimension variable data");
-        for(ivar = 0; ivar < nvars; ivar++) {
-	    Symbol* vsym = (Symbol*)listget(vardefs,ivar);
-	    if(vsym->data == NULL) continue;
-	    if(vsym->typ.dimset.ndims == 0)
-	        genf77_definevardata(vsym);
-	}
-	f77skip();
-    }
+    if(!header_only) {
+        /* Assign scalar variable data and non-unlimited arrays in-line */
+        if(nvars > 0) {
+            f77skip();
+            f77skip();
+            f77comment("assign scalar and fixed dimension variable data");
+            for(ivar = 0; ivar < nvars; ivar++) {
+                Symbol* vsym = (Symbol*)listget(vardefs,ivar);
+                if(vsym->data == NULL) continue;
+                if(vsym->typ.dimset.ndims == 0)
+                    genf77_definevardata(vsym);
+            }
+            f77skip();
+        }
+    
+        /* Invoke write procedures */
+        if(nvars > 0) {
+            List* calllist;
+            f77skip();
+            f77skip();
+            f77comment("perform variable data writes");
+            for(ivar = 0; ivar < nvars; ivar++) {
+                int i;
+                Symbol* vsym = (Symbol*)listget(vardefs,ivar);
+                /* Call the procedures for writing unlimited variables */
+                if(vsym->data != NULL
+                    && vsym->typ.dimset.ndims > 0) {
+                    genf77_definevardata(vsym);
+                }
+                /* dump any calls */
+                generator_getstate(f77_generator,(void*)&calllist);
+                ASSERT(calllist != NULL);
+                for(i=0;i<listlength(calllist);i++) {
+                    char* callstmt = (char*)listget(calllist,i);
+                    codeline(callstmt);
+                }       
+                listclear(calllist);
+            }
+        }
+    
+        /* Close the file */
+        codeline("stat = nf_close(ncid)");
+        codeline("call check_err(stat)");
+        codeline("end");
 
-    /* Invoke write procedures */
-    if(nvars > 0) {
-	f77skip();
-	f77skip();
-	f77comment("perform variable data writes");
-        for(ivar = 0; ivar < nvars; ivar++) {
-	    Symbol* vsym = (Symbol*)listget(vardefs,ivar);
-	    /* Call the procedures for writing unlimited variables */
-	    if(vsym->data != NULL
-		&& vsym->typ.dimset.ndims > 0) {
-	        bbprintf0(stmt,"call write_%s(ncid,%s_id)\n",
-	        		f77name(vsym),f77name(vsym));
-		codedump(stmt);
-	    }
-	}
-    }
-
-    /* Close the file */
-    codeline("stat = nf_close(ncid)");
-    codeline("call check_err(stat)");
-    codeline("end");
-
-    /* Generate the write procedures */
-    if(nvars > 0) {
-	f77skip();
-        for(ivar = 0; ivar < nvars; ivar++) {
-	    Symbol* vsym = (Symbol*)listget(vardefs,ivar);
-	    if(vsym->data == NULL) continue;
-	    if(vsym->typ.dimset.ndims > 0)
-	        genf77_definevardata(vsym);
-	}
-	f77skip();
+        /* Generate the write procedures */
+        if(listlength(f77procs) > 0) {
+	    int i;
+    	    f77skip();
+            for(i=0;i<listlength(f77procs);i++) {
+    	        Bytebuffer* proctext = (Bytebuffer*)listget(f77procs,i);
+    	        codedump(proctext);
+    	        bbFree(proctext);
+    	    }
+    	    listfree(f77procs); f77procs = NULL;
+	    f77skip();
+        }
     }
     f77flush();
 
@@ -466,62 +478,13 @@ f77name(Symbol* sym)
 static void
 genf77_defineattr(Symbol* asym)
 {
-    unsigned long len;
-    Datalist* list;
-    Symbol* basetype = asym->typ.basetype;
-    Bytebuffer* code = NULL; /* capture other decls*/
-
-    list = asym->data;
-    len = list==NULL?0:list->length;
-
-    bbprintf0(stmt,"* define %s\n",asym->name);
-    codedump(stmt);
-
-    code = bbNew();
-    f77data_attrdata(asym,code);	
-
-    /* Use the specialized put_att_XX routines if possible*/
-    switch (basetype->typ.typecode) {
-    case NC_BYTE:
-    case NC_SHORT:
-    case NC_INT:
-    case NC_FLOAT:
-    case NC_DOUBLE:
-	f77attrify(asym,code);
-	codedump(code);
-        bbClear(code);
-        bbprintf0(stmt,"stat = nf_put_att_%s(ncid, %s, %s, %s, %lu, %sval)\n",
-		nfstype(basetype->typ.typecode),
-		(asym->att.var == NULL?"NF_GLOBAL"
-			              :f77varncid(asym->att.var)),
-		f77escapifyname(asym->name),
-		nftype(basetype->typ.typecode),		
-	 	len,
-		ncftype(basetype->typ.typecode));
-	codedump(stmt);
-	break;
-
-    case NC_CHAR:
-	len = bbLength(code);
-	f77quotestring(code);	
-        bbprintf0(stmt,"stat = nf_put_att_text(ncid, %s, %s, %lu, ",
-		(asym->att.var == NULL?"NF_GLOBAL"
-			              :f77varncid(asym->att.var)),
-		f77escapifyname(asym->name),
-	 	len);
-	codedump(stmt);
-	codedump(code);
-	codeline(")");
-	break;
-
-
-    default: /* User defined type */
-        verror("Non-classic type: %s",nctypename(basetype->typ.typecode));
-	break;
-    }
-
+    Bytebuffer* code = bbNew();
+    List* oldstate = NULL;
+    generator_getstate(f77_generator,(void*)&oldstate);
+    listfree(oldstate);
+    generator_reset(f77_generator,(void*)listnew());
+    generate_attrdata(asym,f77_generator,(Writer)genf77_write,code);
     bbFree(code);
-    codeline("call check_err(stat)");
 }
 
 static void
@@ -543,12 +506,10 @@ f77fold(Bytebuffer* lines)
     char* s;
     char* line0;
     char* linen;
-    int linesize;
     static char trimchars[] = " \t\r\n";
 
     s = bbDup(lines);
     bbClear(lines);
-    linesize = 0;
     line0 = s;
     /* Start by trimming leading blanks and empty lines */
     while(*line0 && strchr(trimchars,*line0) != NULL) line0++;
@@ -759,92 +720,80 @@ ncftype(nc_type type)
 static void
 genf77_definevardata(Symbol* vsym)
 {
-    Dimset* dimset = &vsym->typ.dimset;
-    int isscalar = (dimset->ndims == 0);
-    Bytebuffer* code = NULL;
-    Datasrc* src = NULL;
-    Datalist* fillsrc = NULL;
-    nciter_t iter;
-    Odometer* odom = NULL;
-    size_t nelems;
-    int chartype = (vsym->typ.basetype->typ.typecode == NC_CHAR);
-
-    if(vsym->data == NULL) return;
-
-    code = bbNew();
-    /* give the buffer a running start to be large enough*/
-    bbSetalloc(code, nciterbuffersize);
-
-    if(!isscalar && chartype) {
-        gen_chararray(vsym,code,fillsrc);
-        genf77_write(vsym,code,NULL,0,0);
-    } else { /* not character constant */
-        src = datalist2src(vsym->data);
-        fillsrc = vsym->var.special._Fillvalue;
-    
-        /* Handle special cases first*/
-        if(isscalar) {
-            f77data_basetype(vsym->typ.basetype,src,code,fillsrc);
-            commify(code);
-            genf77_write(vsym,code,NULL,1,0);
-        } else { /* Non-scalar*/
-            int index;
-            /* Create an iterator to generate blocks of data */
-            nc_get_iter(vsym,nciterbuffersize,&iter);
-            /* Fill in the local odometer instance */
-            odom = newodometer(&vsym->typ.dimset,NULL,NULL);
-            for(index=0;;index++) {
-                nelems=nc_next_iter(&iter,odom->start,odom->count);
-                if(nelems == 0) break;
-                f77data_array(vsym,code,src,odom,/*index=*/0,fillsrc);
-                genf77_write(vsym,code,odom,0,index);
-            }
-        }
-        odometerfree(odom);
-    }
+    Bytebuffer* code = bbNew();
+    List* oldstate = NULL;
+    generator_getstate(f77_generator,(void*)&oldstate);
+    listfree(oldstate);
+    generator_reset(f77_generator,(void*)listnew());
+    generate_vardata(vsym,f77_generator,(Writer)genf77_write,code);
     bbFree(code);
 }
 
 static void
-genf77_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar,
-		int index)
+genf77_write(Generator* generator, Symbol* sym, Bytebuffer* code,
+             int rank, size_t* start, size_t* count)
+{
+    if(sym->objectclass == NC_ATT)
+	genf77_writeattr(generator,sym,code,rank,start,count);
+    else if(sym->objectclass == NC_VAR) {
+	genf77_writevar(generator,sym,code,rank,start,count);
+    }
+    else
+	PANIC("illegal symbol for genf77_write");
+}
+
+static void
+genf77_writevar(Generator* generator, Symbol* vsym, Bytebuffer* code,
+           int rank, size_t* start, size_t* count)
 {
     Dimset* dimset = &vsym->typ.dimset;
-    int rank = dimset->ndims;
     int typecode = vsym->typ.basetype->typ.typecode;
-    int chartype = (typecode == NC_CHAR);
     int i;
 
-    if(isscalar) {
-	if(chartype) {
-            bbprintf0(stmt,"stat = nf_put_var_%s(ncid, %s, %s)\n",
+    /* Deal with character variables specially */
+    if(typecode == NC_CHAR) {
+        f77quotestring(code);
+        bbprintf0(stmt,"stat = nf_put_var_%s(ncid, %s, %s)\n",
 	        nfstype(typecode),
 		f77varncid(vsym),
 		bbContents(code));
-            codedump(stmt);
-	} else {
-            bbprintf0(stmt,"data %s /%s/\n",
+        codedump(stmt);
+        codeline("call check_err(stat)");
+	f77skip();
+    } else if(rank == 0) {
+	commify(code); /* insert commas as needed */
+        bbprintf0(stmt,"data %s /%s/\n",
 			    f77name(vsym),bbContents(code));
-	    codedump(stmt);
-            bbprintf0(stmt,"stat = nf_put_var_%s(ncid, %s, %s)\n",
+	codedump(stmt);
+        bbprintf0(stmt,"stat = nf_put_var_%s(ncid, %s, %s)\n",
 	        nfstype(typecode),
 		f77varncid(vsym),
 		f77name(vsym));
-            codedump(stmt);
-	}
+        codedump(stmt);
         codeline("call check_err(stat)");
 	f77skip();
-    } else { /* array */
+    } else { /* rank > 0 && typecode != NC_CHAR*/
         char* dimstring;
+	int index = listlength(f77procs);
+	Bytebuffer* proctext;
+	Bytebuffer* save;
+	List* calllist;
 
-        /* Construct the procedure body */
-        f77skip();
-	if(index == 0)
-            bbprintf0(stmt,"subroutine write_%s(ncid,%s_id)\n",
-                        f77name(vsym),f77name(vsym));
-	else
-            bbprintf0(stmt,"subroutine write_%s_%d(ncid,%s_id)\n",
-                        f77name(vsym),f77name(vsym),index);
+	/* Generate the call to the procedure */
+        bbprintf0(stmt,"call write_%s_%d(ncid,%s_id_%d)\n",
+	        		f77name(vsym),index,f77name(vsym));
+	/* save in the generator state */
+	generator_getstate(generator,(void*)&calllist);
+	ASSERT(calllist != NULL);
+	listpush(calllist,(elem_t)bbDup(stmt));
+
+        /* Construct the procedure body and save it */
+	proctext = bbNew();
+	save = codebuffer;
+	codebuffer = proctext;
+	f77skip();
+        bbprintf0(stmt,"subroutine write_%s_%d(ncid,%s_id)\n",
+                        f77name(vsym),index,f77name(vsym));
         codedump(stmt);
         codeline("integer ncid");
         bbprintf0(stmt,"integer %s_id\n",f77name(vsym));
@@ -860,69 +809,129 @@ genf77_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar,
         codedump(stmt);
         f77skip();
 
-	if(typecode != NC_CHAR) {
-            /* Compute the dimensions (in reverse order for fortran) */
-	    bbClear(stmt);
-            for(i=rank-1;i>=0;i--) {
-                char tmp[32];
-                nprintf(tmp,sizeof(tmp),"%s%lu",
+        /* Compute the dimensions (in reverse order for fortran) */
+	bbClear(stmt);
+        for(i=rank-1;i>=0;i--) {
+            char tmp[32];
+            nprintf(tmp,sizeof(tmp),"%s%lu",
 			(i==(rank-1)?"":","),
-			odom->count[i]);
-                bbCat(stmt,tmp);
-            }
-            dimstring = bbDup(stmt);
-            commify(code);
-
-            bbprintf0(stmt,"%s %s(%s)\n",
+			count[i]);
+            bbCat(stmt,tmp);
+        }
+        dimstring = bbDup(stmt);
+        commify(code);
+        bbprintf0(stmt,"%s %s(%s)\n",
                                 nfdtype(typecode),
                                 f77name(vsym),
                                 dimstring);
-            efree(dimstring);
-	    codedump(stmt);
-
-            /* Generate the data // statement */
-            bbprintf0(stmt,"data %s /",f77name(vsym));
-            bbCatbuf(stmt,code);
-            bbCat(stmt,"/\n");
-	    codedump(stmt);
-        }
-
-        /* Set the values for the start and count sets
-           but in reverse order
-        */
-        for(i=0;i<dimset->ndims;i++) {
-            int reverse = (dimset->ndims - i) - 1;
-            bbprintf0(stmt,"%s_start(%d) = %lu\n",
-	            f77name(vsym),
-	            i+1,
-	            odom->start[reverse]+1); /* +1 for FORTRAN */
-            codedump(stmt);
-        }
-        for(i=0;i<dimset->ndims;i++) {
-            int reverse = (dimset->ndims - i) - 1;
-            bbprintf0(stmt,"%s_count(%d) = %lu\n",
-                f77name(vsym),
-                i+1,
-                odom->count[reverse]);
-            codedump(stmt);
-        }
-        bbprintf0(stmt,"stat = nf_put_vara_%s(ncid, %s, %s_start, %s_count, ",
-                nfstype(typecode),
-                f77varncid(vsym),
-                f77name(vsym),
-                f77name(vsym));
+        efree(dimstring);
         codedump(stmt);
-        if(typecode == NC_CHAR) {
-            f77quotestring(code);
-            codedump(code);
-        } else {
-            codeprintf("%s",f77name(vsym));
-        }
-        codeline(")");
-        codeline("call check_err(stat)");
-        /* Close off the procedure */
-        codeline("end");
+
+        /* Generate the data // statement */
+	commify(code); /* insert commas as needed */
+        bbprintf0(stmt,"data %s /",f77name(vsym));
+        bbCatbuf(stmt,code);
+        bbCat(stmt,"/\n");
+        codedump(stmt);
+
+	/* Set the values for the start and count sets
+	   but in reverse order
+	*/
+	for(i=0;i<dimset->ndims;i++) {
+	    int reverse = (dimset->ndims - i) - 1;
+	    bbprintf0(stmt,"%s_start(%d) = %lu\n",
+		    f77name(vsym),
+		    i+1,
+		    start[reverse]+1); /* +1 for FORTRAN */
+	    codedump(stmt);
+	}
+	for(i=0;i<dimset->ndims;i++) {
+	    int reverse = (dimset->ndims - i) - 1;
+	    bbprintf0(stmt,"%s_count(%d) = %lu\n",
+		f77name(vsym),
+		i+1,
+		count[reverse]);
+	    codedump(stmt);
+	}
+	bbprintf0(stmt,"stat = nf_put_vara_%s(ncid, %s, %s_start, %s_count, ",
+		nfstype(typecode),
+		f77varncid(vsym),
+		f77name(vsym),
+		f77name(vsym));
+	codedump(stmt);
+	if(typecode == NC_CHAR) {
+	    f77quotestring(code);
+	    codedump(code);
+	} else {
+	    codeprintf("%s",f77name(vsym));
+	}
+	codeline(")");
+	codeline("call check_err(stat)");
+	/* Close off the procedure */
+	codeline("end");
+        /* save the generated procedure(s) */
+	if(f77procs == NULL) f77procs = listnew();
+        listpush(f77procs,(elem_t)codebuffer);
+        codebuffer = save;
     }
+}
+
+static void
+genf77_writeattr(Generator* generator, Symbol* asym, Bytebuffer* code,
+	       int rank, size_t* start, size_t* count)
+{
+    Datalist* list;
+    Symbol* basetype = asym->typ.basetype;
+    size_t len = asym->data->length; /* default assumption */
+
+    list = asym->data;
+    len = list==NULL?0:list->length;
+
+    bbprintf0(stmt,"* define %s\n",asym->name);
+    codedump(stmt);
+
+    /* Use the specialized put_att_XX routines if possible*/
+    switch (basetype->typ.typecode) {
+    case NC_BYTE:
+    case NC_SHORT:
+    case NC_INT:
+    case NC_FLOAT:
+    case NC_DOUBLE:
+	f77attrify(asym,code);
+	codedump(code);
+	bbClear(code);
+	bbprintf0(stmt,"stat = nf_put_att_%s(ncid, %s, %s, %s, %lu, %sval)\n",
+		nfstype(basetype->typ.typecode),
+		(asym->att.var == NULL?"NF_GLOBAL"
+				      :f77varncid(asym->att.var)),
+		f77escapifyname(asym->name),
+		nftype(basetype->typ.typecode),		
+		len,
+		ncftype(basetype->typ.typecode));
+	codedump(stmt);
+	break;
+
+    case NC_CHAR:
+	len = bbLength(code);
+	f77quotestring(code);	
+	if(len==0) len++;
+	bbprintf0(stmt,"stat = nf_put_att_text(ncid, %s, %s, %lu, ",
+		(asym->att.var == NULL?"NF_GLOBAL"
+				      :f77varncid(asym->att.var)),
+		f77escapifyname(asym->name),
+		len);
+	codedump(stmt);
+	codedump(code);
+	codeline(")");
+	break;
+
+
+    default: /* User defined type */
+	verror("Non-classic type: %s",nctypename(basetype->typ.typecode));
+	break;
+    }
+
+    codeline("call check_err(stat)");
 }
 
 #endif /*ENABLE_F77*/

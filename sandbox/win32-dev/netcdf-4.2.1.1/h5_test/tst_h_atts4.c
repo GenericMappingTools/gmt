@@ -12,7 +12,7 @@
    $Id$
 */
 
-#include <err_macros.h>
+#include "h5_err_macros.h"
 #include <hdf5.h>
 
 #define MY_CHUNK_CACHE_SIZE 32000000

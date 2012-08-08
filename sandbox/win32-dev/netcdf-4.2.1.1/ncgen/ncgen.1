@@ -42,9 +42,9 @@ edit the CDL file to change the name of the dimensions, and use \fBncgen\fP
 to generate the corresponding netCDF file from the edited CDL file.
 .SH OPTIONS
 .IP "\fB-b\fP"
-Create a (binary) netCDF file.  If the \fB-o\fP option is absent, a default
-file name will be constructed from the netCDF name (specified after the
-\fBnetcdf\fP keyword in the input) by appending the `.nc' extension.  If a
+Create a (binary) netCDF file.  If the \fB-o\fP option is absent, a
+default file name will be constructed from the basename of the CDL
+file, with any suffix replaced by the `.nc' extension.  If a
 file already exists with the specified name, it will be overwritten.
 .IP "\fB-c\fP"
 Generate
@@ -60,10 +60,12 @@ matching the netCDF specification.
 The source code is written to
 standard output; equivalent to -lf77.
 .IP "\fB-o\fP \fRnetcdf_file\fP"
-Name for the binary netCDF file created.  If this option is specified, it implies
-the "\fB-b\fP" option.  (This option is necessary because netCDF files
+Name of the file to pass to calls to "nc_create()".
+If this option is specified it implies
+(in the absense of any explicit -l flag) the "\fB-b\fP" option.
+This option is necessary because netCDF files
 cannot be written directly to standard output, since standard output is not
-seekable.)
+seekable.
 .IP "\fB-k \fRfile_format\fP"
 The -k flag specifies the format of the file to be created and, by inference,
 the data model accepted by ncgen (i.e. netcdf-3 (classic) versus
@@ -77,8 +79,7 @@ The possible arguments are as follows.
 .IP "'4', 'hdf5-nc3', 'netCDF-4 classic model', 'enhanced-nc3' => netcdf-4 file format, netcdf-3 type model."
 .RE
 .RE
-If no -k is specified then it defaults to -k1 (i.e. classic).
-Note also that -v is accepted to mean the same thing as
+Note that -v is accepted to mean the same thing as
 -k for backward compatibility, but -k is preferred, to match
 the corresponding ncdump option. 
 .IP "\fB-x\fP"
@@ -101,6 +102,43 @@ The currently supported languages have the following flags.
 only the classic model is supported.
 .RE
 .RE
+.SH Choosing the output format
+The choice of output format is determined by three flags.
+.IP "\fB-k flag.\fP"
+.IP "\fB_Format attribute (see below).\fP"
+.IP "\fBOccurrence of netcdf-4 constructs in the input CDL.\fP"
+The term "netCDF-4 constructs" means
+constructs from the enhanced data model,
+not just special performance-related attributes such as
+ _ChunkSizes, _DeflateLevel, _Endianness, etc.
+.LP
+The rules are as follows, in order of application.
+.IP "\fB1.\fP"
+If either Fortran or Java output is specified,
+then -k flag value of 1 (classic model) will be used.
+Conflicts with the use of enhanced constructs
+in the CDL will report an error.
+.IP "\fB2.\fP"
+If both the -k flag and _Format attribute are specified,
+the _Format flag will be ignored.
+If no -k flag is specified, and a _Format attribute value
+is specified, then the -k flag value 
+will be set to that of the _Format attribute.
+Otherwise the -k flag is undefined.
+.IP "\fB3.\fP"
+If the -k option is defined and is consistent with the CDL,
+ncgen will output a file in the requested form,
+else an error will be reported.
+.IP "\fB4.\fP"
+If the -k flag is undefined,
+and if there are netCDF-4 constructs in the CDL,
+a -k flag value of 3 (enhanced model) will be used.
+.IP "\fB5.\fP"
+If special performance-related attributes are specified in the CDL, 
+a -k flag value of 4 (netCDF-4 classic model) will be used.
+.IP "\fB6.\fP"
+Otherwise ncgen will set the -k flag to 1 (classic model).
+.RE
 .SH EXAMPLES
 .LP
 Check the syntax of the CDL file `\fBfoo.cdl\fP':
@@ -121,7 +159,7 @@ netCDF function invocations necessary to create an equivalent binary netCDF
 file named `\fBx.nc\fP':
 .RS
 .HP
-ncgen -c -o x.nc foo.cdl
+ncgen -lc foo.cdl >x.c
 .RE
 .LP
 .SH USAGE
@@ -280,6 +318,9 @@ In particular, if the leading character off the name is a digit (0-9),
 then it must be preceded by the escape character.
 In addition, the characters ` !"#$%&()*,:;<=>?[]^`\'{}|~\\'
 must be escaped if they occur anywhere in a name.
+Note also that attribute names that begin with an underscore (`_')
+are reserved for the use of Unidata and should not be used in user
+defined attributes.
 .LP
 Note also that the words
 `variable',
@@ -288,7 +329,7 @@ Note also that the words
 `group',
 and `types'
 are legal CDL names, but be careful that there is a space
-between them and any following colon character.
+between them and any following colon character when used as a variable name.
 This is mostly an issue with attribute declarations.
 For example, consider this.
 .HP
@@ -345,9 +386,9 @@ so the names of variables, dimensions, and attributes must not be
 primitive type names.  In declarations, type names may be specified
 in either upper or lower case.
 .LP
-Bytes differ from characters in that they are intended to hold a full eight
+Bytes are intended to hold a full eight
 bits of data, and the zero byte has no special significance, as it
-does for character data.
+mays for character data.
 \fBncgen\fP converts \fBbyte\fP declarations to \fBchar\fP
 declarations in the output C code and to the nonstandard \fBBYTE\fP
 declaration in output Fortran code.
@@ -389,6 +430,24 @@ The unsigned counterparts of the above integer types
 are mapped to the corresponding unsigned C types.
 Their ranges are suitably modified to start at zero.
 .LP
+The technical interpretation of the char type is that it is an unsigned
+8-bit value. The encoding of the 256 possible values
+is unspecified by default. A variable of char type
+may be marked with an "_Encoding" attribute to indicate
+the character set to be used: US-ASCII, ISO-8859-1, etc.
+Note that specifying the encoding of UTF-8 is equivalent to
+specifying US-ASCII 
+This is because multi-byte UTF-8 characters cannot
+be stored in an 8-bit character. The only legal
+single byte UTF-8 values are by definition
+the 7-bit US-ASCII encoding with the top bit set to zero.
+.LP
+Strings are assumed by default to be encoded using UTF-8.
+Note that this means that multi-byte UTF-8 encodings may
+be present in the string, so it is possible that the number
+of distinct UTF-8 characters in a string is smaller than
+the number of 8-bit bytes used to store the string.
+.LP
 .SS "CDL Constants"
 .LP
 Constants assigned to attributes or variables may be of any of the
@@ -396,36 +455,21 @@ basic netCDF types.  The syntax for constants is similar to C syntax,
 except that type suffixes must be appended to shorts and floats to
 distinguish them from longs and doubles.
 .LP
-A \fIbyte\fP constant is represented by a single character or multiple
-character escape sequence enclosed in single quotes.  For example,
+A \fIbyte\fP constant is represented by
+ an integer constant with a `b' (or
+`B') appended.  In the old netCDF-2 API, byte constants could also be
+represented using single characters or standard C character escape
+sequences such as `a' or `\n'.  This is still supported for backward
+compatibility, but deprecated to make the distinction clear between
+the numeric byte type and the textual char type.  Example byte
+constants include:
 .RS
 .nf
- 'a'		// ASCII `a'
- '\\0'		// a zero byte
- '\\n'		// ASCII newline character
- '\\33'		// ASCII escape character (33 octal)
- '\\x2b'	// ASCII plus (2b hex)
- '\\377'	// 377 octal = 255 decimal, non-ASCII
+ 0b             // a zero byte
+ -1b            // -1 as an 8-bit byte
+ 255b           // also -1 as a signed 8-bit byte
 .fi
 .RE
-.LP
-Character constants are enclosed in double quotes.  A character array
-may be represented as a string enclosed in double quotes.  The usual C
-string escape conventions are honored.  For example
-.RS
-.nf
-"a"		// ASCII `a'
-"Two\\nlines\\n"	// a 10-character string with two embedded newlines
-"a bell:\\007"	// a string containing an ASCII bell
-.fi
-.RE
-Note that the netCDF character array "a" would fit in a one-element
-variable, since no terminating NULL character is assumed.  However, a zero
-byte in a character array is interpreted as the end of the significant
-characters by the \fBncdump\fP program, following the C convention.
-Therefore, a NULL byte should not be embedded in a character string unless
-at the end: use the \fIbyte\fP data type instead for byte arrays that
-contain the zero byte.
 .LP
 \fIshort\fP integer constants are intended for representing 16-bit
 signed quantities.  The form of a \fIshort\fP constant is an integer
@@ -503,12 +547,53 @@ the character 'U' or 'u' between the constant and any trailing
 size specifier.  Thus one could say
 10U, 100us, 100000ul, or 1000000ull, for example.
 .LP
+Single character constants may be enclosed in single quotes.
+If a sequence of one or more characters is enclosed
+in double quotes, then its interpretation must be inferred
+from the context. If the dataset is created using the netCDF
+classic model, then all such constants are interpreted
+as a character array, so each character in the constant
+is interpreted as if it were a single character.
+If the dataset is netCDF extended, then the constant may
+be interpreted as for the classic model or as a true string
+(see below) depending on the type of the attribute or variable
+into which the string is contained.
+.LP
+The interpretation of char constants is that those
+that are in the printable ASCII range (' '..'~') are assumed to
+be encoded as the 1-byte subset ofUTF-8, which is equivalent to US-ASCII.
+In all cases, the usual C string escape conventions are honored
+for values from 0 thru 127. Values greater than 127 are allowed,
+but their encoding is undefined.
+For netCDF extended, the use of the char type is deprecated
+in favor of the string type.
+.LP
+Some character constant examples are as follows.
+.RS
+.nf
+'a'		// ASCII `a'
+"a"		// equivalent to 'a'
+"Two\\nlines\\n"	// a 10-character string with two embedded newlines
+"a bell:\\007"	// a string containing an ASCII bell
+.fi
+.RE
+Note that the netCDF character array "a" would fit in a one-element
+variable, since no terminating NULL character is assumed.  However, a zero
+byte in a character array is interpreted as the end of the significant
+characters by the \fBncdump\fP program, following the C convention.
+Therefore, a NULL byte should not be embedded in a character string unless
+at the end: use the \fIbyte\fP data type instead for byte arrays that
+contain the zero byte.
+.LP
 \fIString\fP constants are, like character constants,
 represented using double quotes. This represents a potential
 ambiguity since a multi-character string may also indicate
 a dimensioned character value. Disambiguation usually occurs
 by context, but care should be taken to specify the\fIstring\fP
 type to ensure the proper choice.
+String constants are assumed to always be UTF-8 encoded. This
+specifically means that the string constant may actually
+contain multi-byte UTF-8 characters.
 .LP
 \fIOpaque\fP constants are represented as
 sequences of hexadecimal digits preceded by 0X or 0x: 0xaa34ffff,
@@ -633,22 +718,30 @@ for the variable.
 `_ChunkSizes' is a list of chunk sizes for each dimension of
 the variable
 .LP
+Note that attributes such as "add_offset" or "scale_factor"
+have no special meaning to ncgen.  These attributes are
+currently conventions, handled above the library layer by
+other utility packages, for example NCO.
+.LP
 .SS "Specifying Datalists"
 .LP
 Specifying datalists for variables in the `data:` section can be somewhat
 complicated. There are some rules that must be followed
 to ensure that datalists are parsed correctly by ncgen.
+.LP
+First, the top level is automatically assumed to be a list of items, so it should not be inside {...}.
+That means that if the variable is a scalar, there will be a single top-level element
+and if the variable is an array, there will be N top-level elements.
+For each element of the top level list, the following rules should be applied.
 .IP 1. 3
-The top level is automatically assumed to be a list of items, so it should not be inside {...}.
-.IP 2. 3
 Instances of UNLIMITED dimensions (other than the first dimension) must be surrounded by {...} in order to specify the size.
-.IP 3. 3
-Instances of vlens must be surrounded by {...} in order to specify the size.
-.IP 4. 3
+.IP 2. 3
 Compound instances must be embedded in {...}
-.IP 5. 3
+.IP 3. 3
 Non-scalar fields of compound instances must be embedded in {...}.
-.IP 6. 3
+.IP 4. 3
+Instances of vlens must be surrounded by {...} in order to specify the size.
+.LP
 Datalists associated with attributes are implicitly a vector (i.e., a list) of values of the type of the attribute and the above rules must apply with that in mind.
 .IP 7. 3
 No other use of braces is allowed.
@@ -685,60 +778,50 @@ and we have three strings of length 1, 3, 5.
 How do we assign the characters in the strings to the
 twenty elements?
 .LP
-The basic rule is "greedy" plus "right dimension rules".
-By this we mean the following.
+This is challenging because it is desirable to mimic
+the original ncgen (ncgen3).
+The core algorithm is notionally as follows.
 .IP 1. 3
-Use the size of the rightmost dimension (d4=4)
-and modify the constant list so that every string is less
-than or equal to this dimension size. Longer strings are decomposed.
-For our example, we get this.
-.in +5
-datalist: var= "1", "two", "thre", "e";
-.in -5
-
+Assume we have a set of dimensions D1..Dn,
+where D1 may optionally be an Unlimited dimension.
+It is assumed that the sizes of the Di are all known
+(including unlimited dimensions).
 .IP 2. 3
-Pad any short strings to the length of the right dimension.
-This produces the following.
-.in +5
-datalist: var= "1\\0\\0\\0", "two\\0", "thre", "e\\0\\0\\0";
-.in -5
-
+Given a sequence of string or character constants
+C1..Cm, our goal is to construct a single string
+whose length is the cross product of D1 thru Dn.
+Note that for purposes of this algorithm, character constants
+are treated as strings of size 1.
 .IP 3. 3
-Move the the next to the rightmost dimension (d5 in this case)
-and add fill values as needed, producing this.
-.in +5
-datalist: var= "1\\0\\0\\0", "two\\0", "thre", "e\\0\\0\\0", "\\0\\0\\0\\0";
-.in -5
-
-4. Repeat step 3 for successively more left dimensions until the
-first dimension is reached. If the first dimension is UNLIMITED,
-and has not had any previous value assigned to it, then
-do not pad, but instead use the length at that point
-as the unlimited length. In all other cases, pad to the
-specified length.
+Construct Dx = cross product of D1 thru D(n-1).
+.IP 4. 3
+For each constant Ci, add fill characters as needed
+so that its length is a multiple of Dn.
+.IP 5. 3
+Concatenate the modified C1..Cm to produce string S.
+.IP 6. 3
+Add fill characters to S to make its length be a multiple of Dn.
+.IP 8. 3
+If S is longer than the Dx * Dn, then truncate
+and generate a warning.
 .LP
-Note that the term "greedy" is used because the above algorithm
-causes the strings to be assigned to the "front" of the variable
-and fill values to the end.
-.LP
-There are several additional edge cases that must be dealt with.
+There are three other cases of note.
 .IP 1. 3
-Suppose we have only an unlimited dimension such as this case.
-.in +5
-.nf
-variables: char var(u);
-datalist: var="1", "two", "three";
-.fi
-.in -5
-In this case, we treat it like it was defined as this.
-.in +5
-.nf
-variables: char var(u,d1);
-datalist: var="1","t","w","o","t","h","r","e","e";
-.fi
-.in -5
-This means that u will have the length of nine.
+If there is only a single, unlimited dimension,
+then all of the constants are concatenated
+and fill characers are added to the
+end of the resulting string to make its
+length be that of the unlimited dimension.
+If the length is larger than
+the unlimited dimension, then it is truncated
+with a warning.
 .IP 2. 3
+For the case of  character typed vlen, "char(*) vlen_t" for example.
+we simply concatenate all the constants with no filling at all.
+.IP 3. 3
+For the case of a character typed attribute,
+we simply concatenate all the constants.
+.LP
 In netcdf-4, dimensions other than the first can be unlimited.
 Of course by the rules above, the interior unlimited instances
 must be delimited by {...}. For example.
@@ -748,19 +831,47 @@ variables: char var(u,u2);
 datalist: var={"1", "two"}, {"three"};
 .fi
 .in -5
-
 In this case u will have the effective length of two.
 Within each instance of u2, the rules above will apply, leading
 to this.
 .in +5
 datalist: var={"1","t","w","o"}, {"t","h","r","e","e"};
 .in -5
-
 The effective size of u2 will be the max of the two instance lengths
 (five in this case)
 and the shorter will be padded to produce this.
 .in +5
 datalist: var={"1","t","w","o","\\0"}, {"t","h","r","e","e"};
+.in -5
+.LP
+Consider an even more complicated case.        
+.in +5
+.nf
+variables: char var(u,u2,u3);
+datalist: var={{"1", "two"}}, {{"three"},{"four","xy"}};
+.fi
+.in -5
+In this case u again will have the effective length of two.
+The u2 dimensions will have a size = max(1,2) = 2;
+Within each instance of u2, the rules above will apply, leading to this.
+.in +5
+.nf
+datalist: var={{"1","t","w","o"}}, {{"t","h","r","e","e"},{"f","o","u","r","x","y"}};
+.fi
+.in -5
+The  effective  size  of u3 will be the max of the two instance lengths
+(six in this case) and the shorter ones will be padded to produce this.
+.in +5
+.nf
+datalist: var={{"1","t","w","o","\0","\0"}}, {{"t","h","r","e","e","\0"},{"f","o","u","r","x","y"}};
+.fi
+.in -5
+Note however that the first instance of u2 is less than the max length
+of u2, so we need to add a filler for another instance of u2, producing this.
+.in +5
+.nf
+datalist: var={{"1","t","w","o","\0","\0"},{"\0","\0","\0","\0","\0","\0"}}, {{"t","h","r","e","e","\0"},{"f","o","u","r","x","y"}};
+.fi
 .in -5
 
 .SH BUGS

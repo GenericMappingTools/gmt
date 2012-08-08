@@ -28,9 +28,7 @@ typedef struct {
     size_t to_get;   /* number of values to get on this access */
     int rank;	     /* number of dimensions */
     size_t inc;	     /* increment for right_dim element of start vector */
-    int chunked;     /* 1 if chunked, 0 if contiguous */
     size_t dimsizes[NC_MAX_VAR_DIMS];
-    size_t chunksizes[NC_MAX_VAR_DIMS]; /* ignored if not chunked */
 } nciter_t;
 
 /*

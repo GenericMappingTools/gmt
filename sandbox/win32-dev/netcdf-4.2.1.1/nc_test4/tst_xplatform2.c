@@ -295,7 +295,9 @@ main(int argc, char **argv)
    nc_vlen_t *vlen_of_comp_out;
    struct s2 *comp_array_of_comp_out;
    struct s3 *comp_array_of_vlen_of_comp_out;
+#if 0
    char zero = 0;
+#endif
 
    printf("\nTesting nested types across platforms.\n");
 

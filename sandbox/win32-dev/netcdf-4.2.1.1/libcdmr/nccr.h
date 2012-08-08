@@ -11,9 +11,9 @@
 /**************************************************/
 /*Forwards*/
 struct NC;
-struct NC_URL;
+struct NC_URI;
 struct NClist;
-struct NChashmap;
+struct Data;
 
 /**************************************************/
 /* The NCCR structure is subtype of NC_INFO_TYPE_T (libsrc4) */
@@ -21,10 +21,17 @@ struct NChashmap;
 typedef struct NCCDMR {
     struct NC*   controller; /* Parent instance of NCDAP3 or NCDAP4 */
     char* urltext; /* as given to open()*/
-    struct NC_URL* url;
+    struct NC_URI* uri;
     /* Track some flags */
     int controls;
-    /* Store curl state  info */
+    struct CCEconstraint* urlconstraint; /* constraint from url */
+    struct Header* ncstreamhdr; /* Parsed result */
+    struct Data* datahdr; /* Parsed result */
+    struct NClist* allvariables; /* set of all variables */
+    struct NClist* variables; /* set of visible variables */
+    /* provide a collection of the  ncStream nodes*/
+    struct NClist* streamnodes;
+    /* Store curl state info */
     struct NCCURLSTATE {
         CURL* curl;
         int curlflags;
@@ -46,34 +53,27 @@ typedef struct NCCDMR {
         char* cainfo; /* certificate authority */
 	char* capath; 
     } curl;
-    /* provide a index for ncstream nodes*/
-    NClist* nodeset;
 } NCCDMR;
 
 typedef struct NCCURLSTATE NCCURLSTATE;
 
+#ifdef NOTUSED
 typedef struct NCCR {
     NC_FILE_INFO_T info;
     NCCDMR*	   cdmr;
 } NCCR;
+#endif
 
 /**************************************************/
 /* Define various flags (powers of 2)*/
-#define SHOWFETCH (0x1)
-
+#define SHOWFETCH     (0x1)
+#define BIGENDIAN     (0x2)
+#define DATAVARS (0x4)
 
 /**************************************************/
 /* Give PSEUDOFILE a value */
 #define PSEUDOFILE "/tmp/pseudofileXXXXXX"
 
-/* Replacement for strdup (in libsrc) */
-#ifdef HAVE_STRDUP
-#define nulldup(s) ((s)==NULL?NULL:strdup(s))
-#else
-extern char* nulldup(const char*);
-#endif
-
-#define nulllen(s) (s==NULL?0:strlen(s))
 #define nullstring(s) (s==NULL?"(null)":s)
 
 /**********************************************************/
@@ -83,8 +83,5 @@ struct NClist;
 
 extern int nccrceparse(char*, int, struct NClist**, struct NClist**, char**);
 
-extern int crbuildnc(NCCR*, struct Header*);
-
 /**********************************************************/
-
 #endif /*NCCR_H*/

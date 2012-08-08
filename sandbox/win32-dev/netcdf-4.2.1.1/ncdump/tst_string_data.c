@@ -30,7 +30,7 @@ main(int argc, char **argv)
 
    int var_dims[VAR4_RANK];
    const char *desc_data[DIM4_LEN] = {
-       "first string", "second string", "third string", "", "last string"
+       "first string", "second string", "third string", "", "last \n\"string\""
    };
    const char *missing_val[ATT4_LEN] = {""};
    char *strings_in[DIM4_LEN];

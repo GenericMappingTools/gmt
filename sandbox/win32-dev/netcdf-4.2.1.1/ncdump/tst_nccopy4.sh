@@ -14,39 +14,48 @@ TESTFILES='tst_comp tst_comp2 tst_enum_data tst_fillbug
 
 echo "*** Testing netCDF-4 features of nccopy on ncdump/*.nc files"
 for i in $TESTFILES ; do
-    echo "*** copy $i.nc to copy_of_$i.nc ..."
+    echo "*** Test nccopy $i.nc copy_of_$i.nc ..."
     ./nccopy $i.nc copy_of_$i.nc
     ./ncdump -n copy_of_$i $i.nc > tmp.cdl
     ./ncdump copy_of_$i.nc > copy_of_$i.cdl
-    echo "*** compare " with copy_of_$i.cdl
+#    echo "*** compare " with copy_of_$i.cdl
     diff copy_of_$i.cdl tmp.cdl
     rm copy_of_$i.nc copy_of_$i.cdl tmp.cdl
 done
-echo "*** Create deflatable file for testing ..."
+# echo "*** Testing compression of deflatable files ..."
 ./tst_compress
-echo "*** Test nccopy -d1 can compress a file ..."
+echo "*** Test nccopy -d1 can compress a classic format file ..."
 ./nccopy -d1 tst_inflated.nc tst_deflated.nc
 if test `wc -c < tst_deflated.nc` -ge  `wc -c < tst_inflated.nc`; then
     exit 1
 fi
-echo "*** Test nccopy -d1 -s can compress even more ..."
+echo "*** Test nccopy -d1 can compress a netCDF-4 format file ..."
+./nccopy -d1 tst_inflated4.nc tst_deflated.nc
+if test `wc -c < tst_deflated.nc` -ge  `wc -c < tst_inflated4.nc`; then
+    exit 1
+fi
+echo "*** Test nccopy -d1 -s can compress a classic model netCDF-4 file even more ..."
 ./nccopy -d1 -s tst_inflated.nc tmp.nc
 if test `wc -c < tmp.nc` -ge  `wc -c < tst_inflated.nc`; then
     exit 1
 fi
-rm tst_deflated.nc tst_inflated.nc tmp.nc 
+echo "*** Test nccopy -d1 -s can compress a netCDF-4 file even more ..."
+./nccopy -d1 -s tst_inflated4.nc tmp.nc
+if test `wc -c < tmp.nc` -ge  `wc -c < tst_inflated4.nc`; then
+    exit 1
+fi
+rm tst_deflated.nc tst_inflated.nc tst_inflated4.nc tmp.nc 
 
 echo "*** Testing nccopy -d1 -s on ncdump/*.nc files"
 for i in $TESTFILES ; do
-    echo "*** nccopy -d1 -s $i.nc copy_of_$i.nc ..."
+    echo "*** Test nccopy -d1 -s $i.nc copy_of_$i.nc ..."
     ./nccopy -d1 -s $i.nc copy_of_$i.nc
     ./ncdump -n copy_of_$i $i.nc > tmp.cdl
     ./ncdump copy_of_$i.nc > copy_of_$i.cdl
-    echo "*** compare " with copy_of_$i.cdl
+#    echo "*** compare " with copy_of_$i.cdl
     diff copy_of_$i.cdl tmp.cdl
     rm copy_of_$i.nc copy_of_$i.cdl tmp.cdl
 done
-echo "*** Create chunkable file for testing ..."
 ./tst_chunking
 echo "*** Test that nccopy -c can chunk and unchunk files"
 ./nccopy tst_chunking.nc tmp.nc
@@ -60,6 +69,5 @@ diff tmp.cdl tmp-unchunked.cdl
 # echo "*** Test that nccopy compression with chunking can improve compression"
 rm tst_chunking.nc tmp.nc tmp.cdl tmp-chunked.nc tmp-chunked.cdl tmp-unchunked.nc tmp-unchunked.cdl
 
-echo
 echo "*** All nccopy tests passed!"
 exit 0

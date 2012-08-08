@@ -18,8 +18,8 @@ synth8.das synth8.dds synth8.dods \
 123.nc.das 123.nc.dds 123.nc.dods \
 1990-S1700101.HDF.WVC_Lat.das 1990-S1700101.HDF.WVC_Lat.dds 1990-S1700101.HDF.WVC_Lat.dods \
 1998-6-avhrr.dat.das 1998-6-avhrr.dat.dds 1998-6-avhrr.dat.dods \
-b31a.das b31a.dds b31a.dods \
 b31.das b31.dds b31.dods \
+b31a.das b31a.dds b31a.dods \
 bears.nc.das bears.nc.dds bears.nc.dods \
 ber-2002-10-01.nc.das ber-2002-10-01.nc.dds ber-2002-10-01.nc.dods \
 ceopL2AIRS2-2.nc.das ceopL2AIRS2-2.nc.dds ceopL2AIRS2-2.nc.dods \
@@ -36,8 +36,8 @@ in.nc.das in.nc.dds in.nc.dods \
 in_no_three_double_dmn.nc.das in_no_three_double_dmn.nc.dds in_no_three_double_dmn.nc.dods \
 in_v.nc.das in_v.nc.dds in_v.nc.dods \
 nestedDAS.das nestedDAS.dds nestedDAS.dods \
-NestedSeq2.das NestedSeq2.dds NestedSeq2.dods \
 NestedSeq.das NestedSeq.dds NestedSeq.dods \
+NestedSeq2.das NestedSeq2.dds NestedSeq2.dods \
 OverideExample.das OverideExample.dds OverideExample.dods \
 pbug0001b.das pbug0001b.dds pbug0001b.dods \
 saco1.nc.das saco1.nc.dds saco1.nc.dods \
@@ -47,10 +47,10 @@ test.02.das test.02.dds test.02.dods \
 test.03.das test.03.dds test.03.dods \
 test.04.das test.04.dds test.04.dods \
 test.05.das test.05.dds test.05.dods \
-test.06a.das test.06a.dds test.06a.dods \
 test.06.das test.06.dds test.06.dods \
-test.07a.das test.07a.dds test.07a.dods \
+test.06a.das test.06a.dds test.06a.dods \
 test.07.das test.07.dds test.07.dods \
+test.07a.das test.07a.dds test.07a.dods \
 test.21.das test.21.dds test.21.dods \
 test.22.das test.22.dds test.22.dods \
 test.23.das test.23.dds test.23.dods \

@@ -37,7 +37,6 @@ set (ENV{ZLIB_ROOT} "$ENV{HDF5_ROOT}")
 
 # Root directories of libs that are not in CMAKE_FIND_ROOT_PATH:
 #set (CURL_ROOT z:/software)
-#set (XDR_ROOT z:/software)
 
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 set (CMAKE_BUILD_TYPE Release)

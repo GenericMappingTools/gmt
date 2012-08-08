@@ -192,33 +192,6 @@ file_size(char* name)
    return stbuf.st_size;
 }
 
-/* Subtract the `struct timeval' values X and Y, storing the result in
-   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
-   function from the GNU documentation. */
-static int
-timeval_subtract (result, x, y)
-   struct timeval *result, *x, *y;
-{
-   /* Perform the carry for the later subtraction by updating Y. */
-   if (x->tv_usec < y->tv_usec) {
-      int nsec = (y->tv_usec - x->tv_usec) / MILLION + 1;
-      y->tv_usec -= MILLION * nsec;
-      y->tv_sec += nsec;
-   }
-   if (x->tv_usec - y->tv_usec > MILLION) {
-      int nsec = (x->tv_usec - y->tv_usec) / MILLION;
-      y->tv_usec += MILLION * nsec;
-      y->tv_sec -= nsec;
-   }
-
-   /* Compute the time remaining to wait.
-      `tv_usec' is certainly positive. */
-   result->tv_sec = x->tv_sec - y->tv_sec;
-   result->tv_usec = x->tv_usec - y->tv_usec;
-
-   /* Return 1 if result is negative. */
-   return x->tv_sec < y->tv_sec;
-}
 
 /* Check attribute number a of variable varid in copied file ncid2 to ensure
  * it is the same as the corresponding attribute in original file ncid1. */
@@ -325,7 +298,7 @@ cmp_file(char *file1, char *file2, int *meta_read_us, int *data_read_us,
       if ((ret = nc_open(file2, 0, &ncid2)))
 	 ERR1(ret);
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       *meta_read_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
    }
    if (verbose)
@@ -449,7 +422,7 @@ cmp_file(char *file1, char *file2, int *meta_read_us, int *data_read_us,
 	 *data_read_us += (MPI_Wtime() - ftime) * MILLION;
 #else
 	 if (gettimeofday(&end_time, NULL)) ERR;
-	 if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	 if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	 *data_read_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 #endif
 	 if (verbose)
@@ -521,7 +494,7 @@ int copy_file(char *file_name_in, char *file_name_out, int cmode_out,
       if ((ret = nc_open(file_name_in, 0, &ncid_in)))
 	 ERR1(ret);
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       *meta_read_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
    }
    if (verbose)
@@ -649,7 +622,7 @@ int copy_file(char *file_name_in, char *file_name_out, int cmode_out,
       *meta_write_us += (MPI_Wtime() - ftime) * MILLION;
 #else
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       *meta_write_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 #endif
       
@@ -754,7 +727,7 @@ int copy_file(char *file_name_in, char *file_name_out, int cmode_out,
 	 *data_read_us += (MPI_Wtime() - ftime) * MILLION;
 #else
 	 if (gettimeofday(&end_time, NULL)) ERR;
-	 if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	 if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	 *data_read_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 #endif
 	 if (verbose)
@@ -775,7 +748,7 @@ int copy_file(char *file_name_in, char *file_name_out, int cmode_out,
 	    *data_write_us += (MPI_Wtime() - ftime) * MILLION;
 #else
 	    if (gettimeofday(&end_time, NULL)) ERR;
-	    if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	    *data_write_us += (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 #endif
 	    if (verbose)
@@ -1050,10 +1023,10 @@ main(int argc, char **argv)
    argc -= optind;
    argv += optind;
 
-   /* If no file arguments left, print usage message. */
+   /* If no file arguments left, report and exit */
    if (argc < 1)
    {
-      usage();
+      printf("no file specified\n");
       return 0;
    }
 

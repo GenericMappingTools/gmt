@@ -7,19 +7,7 @@
 
 #include "config.h"
 
-#include <stdlib.h>
-#include <string.h>
-#include <curl/curl.h>
-
-#include "nclist.h"
-#include "ncbytes.h"
-#include "nclog.h"
-
-#include "netcdf.h"
-#include "ast.h"
-#include "crdebug.h"
-#include "nccrnode.h"
-#include "ncStreamx.h"
+#include "includes.h"
 
 /*Forward*/
 static int nccr_walk_Group(Group*, Group*, NClist*);
@@ -32,14 +20,14 @@ static int nccr_walk_EnumType(Group*, EnumType*, NClist*);
 static void annotate(Group*, CRnode*, Sort, NClist*);
 
 static void computepathname(CRnode* leaf);
-static char* getname(CRnode* node);
 
-static int skiptoheader(bytes_t* packet, size_t* offsetp);
+static int testmagicnumber(bytes_t* packet, char* magicno, size_t* offsetp);
+static int testpacketsize(bytes_t* packet, size_t* offsetp);
 
 /**************************************************/
 /* Define cdmremote magic numbers */
 
-#define MAGIC_START  "\x43\x44\x46\x53"
+#define MAGIC_START  "\x43\x44\x46\x53" /* "CDFS" */
 #define MAGIC_END    "\xed\xed\xde\xde"
 #define MAGIC_HEADER "\xad\xec\xce\xda" 
 #define MAGIC_DATA   "\xab\xec\xce\xba"
@@ -61,24 +49,49 @@ nccr_cvtasterr(ast_err err)
 }
 
 int
-nccr_decodeheader(bytes_t* packet, Header** hdrp)
+nccr_decodeheadermessage(bytes_t* packet, Header** hdrp)
 {
     int ncstat = NC_NOERR;    
     ast_err status = AST_NOERR;
     ast_runtime* rt = NULL;
     Header* protohdr = NULL;
     size_t offset;
+    bytes_t buf = *packet; /* So we can modify it */
 
-    /* Skip to the beginning of header */
-    ncstat = skiptoheader(packet,&offset);
-    if(ncstat != NC_NOERR) {THROWCHK(ncstat); goto done;}
+    /* Check for optional MAGIC_START */
+    offset = 0;
+    testmagicnumber(&buf,MAGIC_START,&offset);    
+    buf.nbytes -= offset; buf.bytes += offset;
+   
+    /* Check for MAGIC_HEADER */
+    offset = 0;
+    if(!testmagicnumber(&buf,MAGIC_HEADER,&offset)) {
+	nclog(NCLOGERR,"Curl data too short: %d\n",packet->nbytes);
+	ncstat = NC_ECURL;
+	goto done;
+    }
+    buf.nbytes -= offset; buf.bytes += offset;
+
+    /* pull out the packet length and verify */
+    offset = 0;
+    if(!testpacketsize(&buf,&offset)) {
+	nclog(NCLOGERR,"Curl data size mismatch\n");
+	THROWCHK((ncstat = NC_EINVAL));
+	goto done;
+    }
+    buf.nbytes -= offset; buf.bytes += offset;
 
     /* Now decode the buffer */
-    status = ast_byteio_new(AST_READ,packet->bytes+offset,packet->nbytes-offset,&rt);
+    status = ast_byteio_new(AST_READ,buf.bytes,buf.nbytes,&rt);
     if(status != AST_NOERR) goto done;
 
     status = Header_read(rt,&protohdr);
     if(status != AST_NOERR) goto done;
+
+    /* Verify optional MAGIC_END */
+    offset = 0;
+    testmagicnumber(&buf,MAGIC_END,&offset);
+    if(ncstat) {THROWCHK(ncstat); goto done;}
 
     status = ast_reclaim(rt);
     if(status != AST_NOERR) goto done;
@@ -111,6 +124,7 @@ nccr_walk_Header(Header* hdr, NClist* nodes)
     int ncstat = NC_NOERR;
     annotate(NULL,(CRnode*)hdr,_Header,nodes);
     nccr_walk_Group(NULL,hdr->root,nodes);
+    return ncstat;
 }
 
 static int
@@ -265,42 +279,30 @@ static void
 computepathname(CRnode* leaf)
 {
     int i;
-    NCbytes* accum = NULL;
-    NClist* path = NULL;
     CRnode* node;
+    NClist* path = nclistnew();
+    char* name;
 
-    /**
-     * This is a little tricky.
-     * In order to produce a pathname
-     * that matches what is send by the server,
-     * we need to not start the pathname with ".".
-     */
-    leaf->pathname = NULL;
-    path = nclistnew();
     for(node=leaf;;) {
 	if(node->flags.isroot) break;
         nclistinsert(path,0,(ncelem)node);
 	node = (CRnode*)node->group;
     }
 
-    accum = ncbytesnew();
-    ncbytesnull(accum);
+    leaf->pathname = NULL;
     for(i=0;i<nclistlength(path);i++) {
 	node = (CRnode*)nclistget(path,i);
-	char* name = getname(node);
+	name = nccr_getname(node);
 	if(name == NULL) goto done; /* node has no meaningful name */
-	if(i > 0) ncbytescat(accum,".");
-	ncbytescat(accum,name);
+	leaf->pathname = crpathappend(leaf->pathname,name);
     }    
-    leaf->pathname = ncbytesextract(accum);
-    ncbytesfree(accum);
     nclistfree(path);
 done:
     return;
 }
 
-static char*
-getname(CRnode* node)
+char*
+nccr_getname(CRnode* node)
 {
     switch(node->sort) {
     case _Attribute:
@@ -321,6 +323,21 @@ getname(CRnode* node)
 	return "";
     default:
 	return NULL;
+    }
+}
+
+DataType
+nccr_gettype(CRnode* node)
+{
+    switch(node->sort) {
+    case _Attribute:
+	return ((Attribute*)node)->type;
+    case _Variable:
+	return ((Variable*)node)->dataType;
+    case _Structure:
+	return ((Structure*)node)->dataType;
+    default:
+	return -1;
     }
 }
 
@@ -349,31 +366,32 @@ nccr_map_dimensions(NClist* nodes)
         CRnode* node = (CRnode*)nclistget(nodes,i);
 	switch (node->sort) {
 	case _Dimension:
+	    /* Map dimension references to the corresponding decl */
 	    dim = (Dimension*)node;
 	    for(j=0;j<nclistlength(dimdecls);j++) {
 	        Dimension* decl = (Dimension*)nclistget(dimdecls,j);
-		if(decl != dim
-		   && strcmp(decl->node.pathname,dim->node.pathname)==0) {
-		    /* Validate that these are really the same dimension */
-		    if(classifydim(decl) == classifydim(dim)
-		       && dimsize(decl) == dimsize(dim)) {
+		if(decl == dim) continue;
+		if(!crpathmatch(decl->node.pathname,dim->node.pathname))
+		    continue;
+	        /* Validate that these are really the same dimension */
+		if(classifydim(decl) == classifydim(dim)) {
+		    if(dimsize(decl) == dimsize(dim)) {
 		        node->dimdecl = (Dimension*)decl;
-		    } else {/* Fail */
-			return THROW(NC_EINVALCOORDS);
-			goto done;
-		    }
-		}
+		    } else goto fail;
+		} else goto fail;
 	    }
-	    ASSERT(node->dimdecl != NULL);
+	    ASSERT(node->flags.isdecl || node->dimdecl != NULL);
 	    break;
 	default:
 	   break; /* ignore */
 	}
     }
 
-done:
     nclistfree(dimdecls);
     return ncstat;
+
+fail:
+    return THROW(NC_EINVALCOORDS);
 }
 
 /**************************************************/
@@ -404,10 +422,14 @@ nccr_deref_dimensions(NClist* nodes)
 	    break;
 	}
 
+	/* Do the replacement */
 	if(count > 0 && dimset != NULL) {
-	    for(j=0;j<count;j++)
-		nclistpush(replaced,(ncelem)dimset[j]);
-	        dimset[j] = dimset[j]->node.dimdecl;
+	    for(j=0;j<count;j++) {
+		if(!dimset[j]->node.flags.isdecl) {
+		    nclistpush(replaced,(ncelem)dimset[j]);
+	            dimset[j] = dimset[j]->node.dimdecl;
+		}
+	    }
 	}
     }
     /*Remove the replaced from the nodeset */
@@ -422,34 +444,147 @@ nccr_deref_dimensions(NClist* nodes)
 }
 
 static int
-skiptoheader(bytes_t* packet, size_t* offsetp)
+testmagicnumber(bytes_t* packet, char* magicno, size_t* offsetp)
 {
-    int status = NC_NOERR;
-    unsigned long long vlen;
-    size_t size,offset;
+    size_t offset = 0;
+    size_t magiclen = strlen(magicno);
 
     /* Check the structure of the resulting data */
-    if(packet->nbytes < (strlen(MAGIC_HEADER) + strlen(MAGIC_HEADER))) {
-	nclog(NCLOGERR,"Curl data too short: %d\n",packet->nbytes);
-	status = NC_ECURL;
-	goto done;
-    }
-    if(memcmp(packet->bytes,MAGIC_HEADER,strlen(MAGIC_HEADER)) != 0) {
-	nclog(NCLOGERR,"MAGIC_HEADER missing\n");
-	status = NC_ECURL;
-	goto done;
-    }
-    offset = strlen(MAGIC_HEADER);
-    /* Extract the proposed count as a varint */
-    vlen = varint_decode(10,packet->bytes+offset,&size);
-    offset += size;
-    if(vlen != (packet->nbytes-offset)) {
-	nclog(NCLOGERR,"Curl data size mismatch\n");
-	status = NC_ECURL;
-	goto done;
-    }
+    if(packet->nbytes < magiclen) return 0;
+
+    if(memcmp(packet->bytes,magicno,magiclen) != 0) return 0;
+
+    offset = magiclen;
     if(offsetp) *offsetp = offset;
+    return 1;
+}
+
+static int
+testpacketsize(bytes_t* packet, size_t* offsetp)
+{
+    unsigned long long vlen;
+    size_t offset = 0;
+    size_t size;
+
+    /* Extract the proposed count as a varint */
+    vlen = varint_decode(packet->nbytes,packet->bytes,&size);
+    offset += size;
+    if(vlen != (packet->nbytes-offset)) return 0;
+    *offsetp = offset;
+    return 1;
+}
+
+
+/**************************************************/
+
+/* Extract the Data object and return the offset
+   in the buffer where data starts plus its expected
+   length.
+*/
+int
+nccr_decodedatamessage(bytes_t* packet, Data** datahdrp, size_t* datastart)
+{
+    int ncstat = NC_NOERR;    
+    ast_err status = AST_NOERR;
+    ast_runtime* rt = NULL;
+    Data* datahdr = NULL;
+    size_t delta, datahdrlen, cumoffset, pos0;
+    bytes_t buf = *packet;
+
+    cumoffset = 0;
+
+    /* Check for optional MAGIC_START */
+    delta = 0;
+    (void)testmagicnumber(&buf,MAGIC_START,&delta);    
+    buf.nbytes -= delta; buf.bytes += delta;
+    cumoffset += delta;
+
+    /* Check for MAGIC_DATA */
+    delta = 0;
+    if(!testmagicnumber(&buf,MAGIC_DATA,&delta)) {
+	nclog(NCLOGERR,"MAGIC_DATA not found\n");
+	THROWCHK((ncstat = NC_EINVAL));
+	goto done;
+    }
+    buf.nbytes -= delta; buf.bytes += delta;
+    cumoffset += delta;
+
+    /* pull out the Data Header length */
+    delta = 0;
+    datahdrlen = 0;
+    ncstat = nccr_decodedatacount(&buf,&delta,&datahdrlen);
+    if(ncstat != NC_NOERR) {THROWCHK(ncstat); goto done;}
+    buf.nbytes -= delta; buf.bytes += delta;
+    cumoffset += delta;
+
+    /* Now decode the buffer; but tracking the buffer position */
+
+    status = ast_byteio_new(AST_READ,buf.bytes,buf.nbytes,&rt);
+    if(status != AST_NOERR) goto done;
+
+    /* Capture the position before reading the Data Header */
+    status = ast_byteio_count(rt,&pos0);
+    if(status != AST_NOERR) goto done;	
+
+    /* Mark the rt with the datahdrlen */
+    ast_mark(rt,datahdrlen);
+
+    status = Data_read(rt,&datahdr);
+    if(status != AST_NOERR) goto done;
+
+    ast_unmark(rt);
+
+    /* Capture the position after reading the Data Header */
+    status = ast_byteio_count(rt,&delta);
+    if(status != AST_NOERR) goto done;	
+
+    /* get true delta */
+    delta = (delta - pos0);
+
+    status = ast_reclaim(rt);
+    if(status != AST_NOERR) goto done;
+
+    buf.nbytes -= delta; buf.bytes += delta;
+    cumoffset += delta;
+    
+#ifdef IGNORE
+    /* Read the data vlen at that position */
+    delta = 0;
+    ncstat = nccr_decodedatacount(&buf,&delta,datalen);
+    if(ncstat != NC_NOERR) {THROWCHK(ncstat); goto done;}
+    buf.nbytes -= delta; buf.bytes += delta;
+    cumoffset += delta;
+#endif
+
+    if(datastart) {
+	/* save cumulative offset */
+	*datastart = cumoffset;
+    }
+
+    if(datahdrp) *datahdrp = datahdr;
 
 done:
-    return status;    
+    if(status) ncstat =  nccr_cvtasterr(status);
+    return ncstat;
 }
+
+int
+nccr_decodedatacount(bytes_t* buf, size_t* offsetp, size_t* countp)
+{
+    int ncstat = NC_NOERR;    
+    ast_err status = AST_NOERR;
+    size_t offset = *offsetp;
+    size_t count = 0;
+    unsigned long long vlen;
+
+    /* Extract a vlen int indicating the length of the vdata */
+    vlen = varint_decode(buf->nbytes-offset,buf->bytes+offset,&offset);
+    count = (size_t)vlen;
+    /* return some values */
+    if(offsetp) *offsetp = offset;
+    if(countp) *countp = count;
+
+    if(status) ncstat =  nccr_cvtasterr(status);
+    return ncstat;
+}
+

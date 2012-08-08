@@ -1,0 +1,118 @@
+netcdf 500m {
+dimensions:
+	time = 2 ;
+	lat = 153 ;
+	lon = 106 ;
+	nSites = 4 ;
+	nProcParam = 7 ;
+variables:
+	float lat(lat) ;
+		lat:standard_name = "latitude" ;
+		lat:units = "degrees_north" ;
+	float lon(lon) ;
+		lon:standard_name = "longitude" ;
+		lon:units = "degrees_east" ;
+	float site_lat(nSites) ;
+		site_lat:long_name = "Contributing radar site latitudes" ;
+		site_lat:standard_name = "latitude" ;
+		site_lat:units = "degrees_north" ;
+	float site_lon(nSites) ;
+		site_lon:long_name = "Contributing radar site longitudes" ;
+		site_lon:standard_name = "longitude" ;
+		site_lon:units = "degrees_east" ;
+	char site_code(nSites) ;
+		site_code:long_name = "Contributing radar site code" ;
+		site_code:DODS:strlen = 25 ;
+		site_code:DODS:dimName = "nSites_maxStrlen" ;
+	char site_netCode(nSites) ;
+		site_netCode:long_name = "Contributing radar site network affiliation code" ;
+		site_netCode:DODS:strlen = 25 ;
+		site_netCode:DODS:dimName = "nSites_maxStrlen" ;
+	float procParams(nProcParam) ;
+		procParams:long_name = "RTV processing parameters" ;
+		procParams:comment = "\n",
+			"01) Maximum GDOP threshold\n",
+			"02) Maximum speed threshold (cm s-1)\n",
+			"03) Minimum number of sites required\n",
+			"04) Minimum number of radials required\n",
+			"05) Maximum angular gap to interpolate radial\n",
+			"    data over (degrees, 0 = no interpolation)\n",
+			"06) Maximum gap in range to interpolate radial\n",
+			"    data over (range-resolution, 0 = no interpolation)\n",
+			"07) Spatial search radius for radial solutions (km)" ;
+	int time(time) ;
+		time:standard_name = "time" ;
+		time:units = "seconds since 1970-01-01" ;
+		time:calendar = "gregorian" ;
+	short u(time, lat, lon) ;
+		u:standard_name = "surface_eastward_sea_water_velocity" ;
+		u:units = "m s-1" ;
+		u:_FillValue = -32768s ;
+		u:scale_factor = 0.01f ;
+		u:ancillary_variables = "DOPx" ;
+	short v(time, lat, lon) ;
+		v:standard_name = "surface_northward_sea_water_velocity" ;
+		v:units = "m s-1" ;
+		v:_FillValue = -32768s ;
+		v:scale_factor = 0.01f ;
+		v:ancillary_variables = "DOPy" ;
+	short DOPx(time, lat, lon) ;
+		DOPx:long_name = "longitudinal dilution of precision" ;
+		DOPx:comment = "The longitudinal dilution of precision (DOPx) represents the\n",
+			"contribution of the radars\' configuration geometry to\n",
+			"uncertainty in the eastward velocity estimate (u). DOPx is a\n",
+			"direct multiplier of the standard error in obtaining the\n",
+			"standard deviation for the eastward velocity estimate from the\n",
+			"least squares best fit. DOPx and DOPy are commonly used to\n",
+			"obtain the geometric dilution of precision\n",
+			"(GDOP = sqrt(DOPx^2 + DOPy^2)), a useful metric for filtering\n",
+			"errant velocities due to poor geometry." ;
+		DOPx:_FillValue = -32768s ;
+		DOPx:scale_factor = 0.01f ;
+	short DOPy(time, lat, lon) ;
+		DOPy:long_name = "latitudinal dilution of precision" ;
+		DOPy:comment = "The latitudinal dilution of precision (DOPy) represents the\n",
+			"contribution of the radars\' configuration geometry to\n",
+			"uncertainty in the northward velocity estimate (v). DOPy is a\n",
+			"direct multiplier of the standard error in obtaining the\n",
+			"standard deviation for the northward velocity estimate from the\n",
+			"least squares best fit. DOPx and DOPy are commonly used to\n",
+			"obtain the geometric dilution of precision\n",
+			"(GDOP = sqrt(DOPx^2 + DOPy^2)), a useful metric for filtering\n",
+			"errant velocities due to poor geometry." ;
+		DOPy:_FillValue = -32768s ;
+		DOPy:scale_factor = 0.01f ;
+
+// global attributes:
+		:netcdf_library_version = "netcdf library version 3.6.1 of Feb  3 2008 23:15:25 $" ;
+		:format_version = "HFRNet_1.0.0b2" ;
+		:product_version = "HFRNet_1.1.01" ;
+		:Conventions = "CF-1.1" ;
+		:title = "Near-Real Time Surface Ocean Velocity" ;
+		:institution = "Scripps Institution of Oceanography" ;
+		:source = "Surface Ocean HF-Radar" ;
+		:history = "13-Mar-2008 18:20:09:  NetCDF file created" ;
+		:references = "Terrill, E. et al., 2006. Data Management and Real-time\n",
+			"Distribution in the HF-Radar National Network. Proceedings\n",
+			"of the MTS/IEEE Oceans 2006 Conference, Boston MA,\n",
+			"September 2006." ;
+		:creator_name = "Mark Otero" ;
+		:creator_email = "motero@mpl.ucsd.edu" ;
+		:creator_url = "http://cordc.ucsd.edu/projects/mapping/" ;
+		:summary = "Surface ocean velocities estimated from HF-Radar are\n",
+			"representitive of the upper 0.3 - 2.5 meters of the\n",
+			"ocean.  The main objective of near-real time\n",
+			"processing is to produce the best product from\n",
+			"available data at the time of processing.  Radial\n",
+			"velocity measurements are obtained from individual\n",
+			"radar sites through the HF-Radar Network and\n",
+			"processed to create near-real time velocities\n",
+			"(RTVs)" ;
+		:geospatial_lat_min = 37.45549f ;
+		:geospatial_lat_max = 38.13873f ;
+		:geospatial_lon_min = -122.5935f ;
+		:geospatial_lon_max = -122.0469f ;
+		:grid_resolution = "500m" ;
+		:grid_projection = "equidistant cylindrical" ;
+		:regional_description = "California Coast, United States" ;
+}

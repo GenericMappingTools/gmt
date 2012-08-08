@@ -13,6 +13,13 @@ variables:
 
 // global attributes:
 		:Server = "DODS FreeFrom based on FFND release 4.2.3" ;
+		:DODS_Time.hours_variable = "GSO_AVHRR.hh" ;
+		:DODS_Time.minutes_variable = "GSO_AVHRR.mm" ;
+		:DODS_Time.seconds_variable = "GSO_AVHRR.ss" ;
+		:DODS_Time.gmt_time = "true" ;
+		:DODS_Date.year_variable = "GSO_AVHRR.year" ;
+		:DODS_Date.year_base = 1900 ;
+		:DODS_Date.year_day_variable = "GSO_AVHRR.day_num" ;
 data:
 
  GSO_AVHRR.satellite =

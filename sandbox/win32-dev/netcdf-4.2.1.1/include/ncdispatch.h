@@ -21,8 +21,7 @@
 #include "nc.h"
 #include "nc_uri.h"
 
-
-
+#define longtype ((sizeof(long) == sizeof(int) ? NC_INT : NC_INT64))
 
 extern int nc_get_vara_ubyte(int ncid, int varid,
                   const size_t* start, const size_t* count,
@@ -98,19 +97,6 @@ extern int nc_put_vara_ulonglong(int ncid, int varid,
 #define	NC_STRING 	12	/* char* */
 #endif
 
-#ifndef HAVE_LONGLONG
-/* ignore
-#define longlong long long
-#define ulonglong unsigned long long
-*/
-typedef long long longlong;
-typedef unsigned long long ulonglong;
-#endif
-
-#ifndef HAVE_UINT
-typedef unsigned int uint;
-#endif
-
 /* Define the range of Atomic types */
 #ifdef USE_NETCDF4
 #define ATOMICTYPEMAX NC_STRING
@@ -131,27 +117,48 @@ typedef struct NC_MPI_INFO {
 } NC_MPI_INFO;
 #endif
 
-/* Define known dispatch tables */
+/* Define known dispatch tables and initializers */
+
 /*Forward*/
 typedef struct NC_Dispatch NC_Dispatch;
 
-extern NC_Dispatch* NC3_dispatch_table;
+extern NC_Dispatch* NCSUBSTRATE_dispatch_table;
+extern int NCDISPATCH_initialize(void);
 
-#ifdef USE_NETCDF4
-extern NC_Dispatch* NC4_dispatch_table;
-#endif
+extern NC_Dispatch* NC3_dispatch_table;
+extern int NC3_initialize(void);
 
 #ifdef USE_DAP
 extern NC_Dispatch* NCD3_dispatch_table;
+extern int NCD3_initialize(void);
 #endif
 
-#if defined(USE_DAP) && defined(USE_NETCDF4)
+#ifdef USE_NETCDF4
+
+extern NC_Dispatch* NC4_dispatch_table;
+extern int NC4_initialize(void);
+
+#ifdef USE_DAP
 extern NC_Dispatch* NCD4_dispatch_table;
+extern int NCD4_initialize(void);
 #endif
 
-#if defined(USE_CDMREMOTE) && defined(USE_NETCDF4)
+#ifdef USE_CDMREMOTE
 extern NC_Dispatch* NCCR_dispatch_table;
+extern int NCCR_initialize(void);
 #endif
+
+#ifdef BUILD_RPC
+extern NC_Dispatch* NCRPC_dispatch_table;
+extern int NCRPC_initialize(void);
+#endif
+
+#endif /*USE_NETCDF4*/
+
+/* Vectors of ones and zeros */
+extern size_t nc_sizevector0[NC_MAX_DIMS];
+extern size_t nc_sizevector1[NC_MAX_DIMS];
+extern ptrdiff_t nc_ptrdiffvector1[NC_MAX_DIMS];
 
 /**************************************************/
 /* Forward */
@@ -161,7 +168,7 @@ struct nc_vlen_t;
 #define NC_NETCDF4 0x1000
 #define NC_CLASSIC_MODEL 0x0100
 #define NC_ENOPAR (-114)
-#endif /*USE_NETCDF4*/
+#endif /*!USE_NETCDF4*/
 
 struct NC;
 
@@ -330,9 +337,9 @@ typedef struct NCcommon {
 	int ext_ncid; /* uid << 16 */
 	int int_ncid; /* unspecified other id */
 	struct NC_Dispatch* dispatch;	
-#ifdef USE_DAP
-	struct NCDRNO* drno;
-#endif
+	void* dispatchdata; /* per-protocol instance data */
+	char* path; /* as specified at open or create */
+	int   substrate; /* ncid for another protocol on which to build */
 } NCcommon;
 
 extern int NC_atomictypelen(nc_type xtype);
@@ -360,14 +367,30 @@ extern int NCDAP_urlparse(const char* s, void** dapurl);
 extern void NCDAP_urlfree(void* dapurl);
 extern const char* NCDAP_urllookup(void* dapurl, const char* param);
 
-/* Misc */
-
-#ifndef nulldup
-#define nulldup(s) ((s)==NULL?NULL:strdup(s))
+/* Test for specific set of servers */
+#if defined(DLL_NETCDF) /* Defined when library is a DLL */
+# if defined(DLL_EXPORT) /* Define when building the library. */
+#  define MSC_NCDISPATCH_EXTRA __declspec(dllexport)
+# else
+#  define MSC_NCDISPATCH_EXTRA __declspec(dllimport)
+# endif
+MSC_NCDISPATCH_EXTRA extern const char* NC_findtestserver(const char*);
+#else
+extern const char* NC_findtestserver(const char*);
 #endif
 
-#define nulllen(s) (s==NULL?0:strlen(s))
+/* Ping a specific server */
+extern int NCDAP_ping(const char*);
+
+/* Misc */
+
+extern int NC_getshape(int ncid, int varid, int ndims, size_t* shape);
+extern int NC_is_recvar(int ncid, int varid, size_t* nrecs);
+
 #define nullstring(s) (s==NULL?"(null)":s)
+
+extern size_t* NC_coord_zero;
+extern size_t* NC_coord_one;
 
 #endif /* _DISPATCH_H */
 

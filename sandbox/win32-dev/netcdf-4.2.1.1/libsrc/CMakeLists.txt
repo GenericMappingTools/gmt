@@ -22,24 +22,10 @@
 
 # libnetcdf sources in libsrc
 set (SRCS_NETCDF ${SRCS_NETCDF}
-	#nc.h
-  ncx.h
-  onstack.h
-  rnd.h
-	#utf8proc.h
-  attr.c
-	dim.c
-  lookup3.c
-  nc.c
-  nc3dispatch.c
-  nclistmgr.c
-  ncx.c
-  posixio.c
-  putget.c
-  string.c
-  utf8proc.c
-  v1hpg.c
-	var.c
-)
+	v1hpg.c onstack.h
+	nclistmgr.c putget.c attr.c nc3dispatch.c nc.c var.c dim.c ncx.c
+	ncx.h lookup3.c pstdint.h ncio.c ncio.h
+	posixio.c
+	)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

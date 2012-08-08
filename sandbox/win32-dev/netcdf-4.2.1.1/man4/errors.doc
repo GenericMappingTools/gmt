@@ -1,0 +1,49 @@
+/** \file 
+Documentation of error handling.
+
+\page Programming Notes
+
+\section error_handling Error Handling
+
+Each netCDF function returns an integer status value. Non-zero values
+indicate error.
+
+The nc_strerror function is available to convert a returned integer
+error status into an error message string.
+
+If the returned status value indicates an error, you may handle it in
+any way desired, from printing an associated error message and exiting
+to ignoring the error indication and proceeding (not
+recommended!). For simplicity, the examples in this guide check the
+error status and call a separate function, handle_err(), to handle any
+errors. One possible definition of handle_err() can be found within
+the documentation of nc_strerror().
+
+Occasionally, low-level I/O errors may occur in a layer below the
+netCDF library. For example, if a write operation causes you to exceed
+disk quotas or to attempt to write to a device that is no longer
+available, you may get an error from a layer below the netCDF library,
+but the resulting write error will still be reflected in the returned
+status value.  
+
+\section ignored_if_null Ignored if NULL
+
+Many of the argurments of netCDF functions are pointers. For example,
+the nc_inq() functions takes four pointers:
+
+\code
+int nc_inq(int ncid, int *ndimsp, int *nvarsp, int *nattsp, int *unlimdimidp);
+\endcode
+
+A NULL may be passed for any of these pointers, and it will be
+ignored. For example, interested in the number of dimensions only, the
+following code will work:
+
+\code 
+int ndims;
+...
+if (nc_inq(ncid, &ndims, NULL, NULL, NULL))
+   return SOME_ERROR;
+\endcode
+
+*/

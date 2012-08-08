@@ -44,7 +44,7 @@ do
 	do
 	    for c2 in 128
 	    do
-		if test $d == -1; then
+		if test $d = -1; then
 		    file_out="pr_A1_${c0}_${c1}_${c2}.nc"
 		else
 		    file_out="pr_A1_z${d}_${c0}_${c1}_${c2}.nc"

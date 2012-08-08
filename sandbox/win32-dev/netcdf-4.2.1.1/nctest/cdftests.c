@@ -64,7 +64,7 @@ test_nccreate(path)
 	nerrs++;
     }
     /* this call should fail, since we're using NC_NOCLOBBER mode */
-    if ((ncid = nccreate(path, NC_NOCLOBBER)) != -1) {
+    if (nccreate(path, NC_NOCLOBBER) != -1) {
 	error("%s: nccreate failed to honor NC_NOCLOBBER mode", pname);
 	nerrs++;
     }
@@ -114,7 +114,7 @@ test_ncopen(path)
     (void) fprintf(stderr, "*** Testing %s ...\t\t", &pname[5]);
 
     /* Open a nonexistent file */
-    if((ncid0 = ncopen(xpath, NC_NOWRITE)) != -1) {
+    if(ncopen(xpath, NC_NOWRITE) != -1) {
 	error("%s: ncopen should fail opening nonexistent file",
 	      pname);
 	return ++nerrs;
@@ -148,7 +148,7 @@ test_ncopen(path)
        return ++nerrs;
     }
     
-    if((ncid0 = ncopen(TEMP_FILE_NAME, NC_NOWRITE)) != -1) {
+    if(ncopen(TEMP_FILE_NAME, NC_NOWRITE) != -1) {
 	error("%s: ncopen should fail opening non-netCDF file",
 	      pname);
 	return ++nerrs;

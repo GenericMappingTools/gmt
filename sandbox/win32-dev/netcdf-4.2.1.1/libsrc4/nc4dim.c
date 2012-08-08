@@ -120,11 +120,10 @@ NC4_def_dim(int ncid, const char *name, size_t len, int *idp)
    if ((retval = nc4_check_name(name, norm_name)))
       return retval;
 
-   /* For classic model, stick with the classic format restriction:
-    * dim length has to fit in a 32-bit signed int. For 64-bit offset,
-    * it has to fit in a 32-bit unsigned int. */
+   /* For classic model: dim length has to fit in a 32-bit unsigned
+    * int, as permitted for 64-bit offset format. */
    if (h5->cmode & NC_CLASSIC_MODEL)
-      if((unsigned long) len > X_INT_MAX) /* Backward compat */
+      if(len > X_UINT_MAX) /* Backward compat */
 	 return NC_EDIMSIZE;
 
    /* Make sure the name is not already in use. */
@@ -193,7 +192,6 @@ NC4_inq_dimid(int ncid, const char *name, int *idp)
 	 {
 	    if (idp)
 	       *idp = dim->dimid;
-	    finished++;
 	    return NC_NOERR;
 	 }
 

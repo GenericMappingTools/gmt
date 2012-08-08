@@ -42,7 +42,7 @@ EXTERNC int ncbytesappendn(NCbytes*,void*,unsigned int); /* Add at Tail */
 EXTERNC int ncbytesnull(NCbytes*);
 
 /* Concatenate a null-terminated string to the end of the buffer */
-EXTERNC int ncbytescat(NCbytes*,char*);
+EXTERNC int ncbytescat(NCbytes*,const char*);
 
 /* Set the contents of the buffer; mark the buffer as non-extendible */
 EXTERNC int ncbytessetcontents(NCbytes*, char*, unsigned int);

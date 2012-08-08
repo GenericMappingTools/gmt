@@ -6,15 +6,29 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#undef DEBUG
+#include "ocdebug.h"
+
+#ifdef DAPDEBUG
+#  define DEBUG
+#  if DAPDEBUG > 0
+#    define DEBUG1
+#  endif
+#  if DAPDEBUG > 1
+#    define DEBUG2
+#  endif
+#  if DAPDEBUG > 2
+#    define DEBUG3
+#  endif
+#endif
+
 #undef PARSEDEBUG
 
 #include <stdarg.h>
 #include <assert.h>
 
 /* Warning: setting CATCHERROR has significant performance impact */
-#undef CATCHERROR
-#ifdef DEBUG
+#define CATCHERROR
+#ifdef DAPDEBUG
 #undef CATCHERROR
 #define CATCHERROR
 #endif
@@ -42,6 +56,16 @@ extern int dapthrow(int err);
 #define THROW(e) (e)
 #define THROWCHK(e)
 #endif
+
+#ifdef DEBUG
+#define SHOWFETCH (1)
+#else
+#define SHOWFETCH FLAGSET(nccomm->controls,NCF_SHOWFETCH)
+#endif
+
+#define LOG0(level,msg) nclog(level,msg)
+#define LOG1(level,msg,a1) nclog(level,msg,a1)
+#define LOG2(level,msg,a1,a2) nclog(level,msg,a1,a2)
 
 #endif /*DEBUG_H*/
 

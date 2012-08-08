@@ -21,12 +21,12 @@ run_nc4_tests.sh $(man_MANS)
 
 # There is a netcdf classic and netcdf-4 test script, but don't run
 # them for DLL builds.
-if !BUILD_DLL
+#if !BUILD_DLL
 TESTS = run_tests.sh 
 if USE_NETCDF4
 TESTS += run_nc4_tests.sh
 endif # USE_NETCDF4
-endif # !BUILD_DLL
+#endif # !BUILD_DLL
 
 CLEANFILES = c0.nc c0_64.nc c0_4.nc c0_4c.nc
 

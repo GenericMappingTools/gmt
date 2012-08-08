@@ -32,8 +32,8 @@
  */
 /* "$Id$" */
 
-#ifndef CURLWRAP_H
-#define CURLWRAP_H
+#ifndef CRCURLWRAP_H
+#define CRCURLWRAP_H
 
 /*Forward*/
 struct NCCDMR;
@@ -42,7 +42,7 @@ struct bytes_t;
 extern int nccr_curlopen(CURL**);
 extern int nccr_curlclose(CURL*);
 
-extern int nccr_fetchurl(CURL* curl, char* url, struct bytes_t* buf, long* filetime);
+extern int nccr_fetchurl(struct NCCDMR*, CURL*, char* url, struct bytes_t* buf, long* filetime);
 extern long nccr_fetchhttpcode(CURL* curl);
 extern int nccr_fetchlastmodified(CURL* curl, char* url, long* filetime);
 
@@ -52,4 +52,5 @@ extern int nccr_set_ssl(CURL*, struct NCCDMR*);
 extern int nccr_set_user_password(CURL*, const char *userC, const char *passwordC);
 
 
-#endif /*CURLWRAP_H*/
+#endif /*CRCURLWRAP_H*/
+

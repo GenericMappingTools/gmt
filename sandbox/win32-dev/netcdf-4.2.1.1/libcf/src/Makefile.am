@@ -7,7 +7,8 @@
 
 # Initalize these.
 AM_CPPFLAGS = -I$(top_srcdir)/.. -I$(top_srcdir)/../include  -I${top_srcdir}/../liblib
-AM_LDFLAGS = ${lib_LTLIBRARIES} ${top_builddir}/../ncdump/nctime.o	\
+#AM_LDFLAGS = ${lib_LTLIBRARIES} ${top_builddir}/../ncdump/nctime.o
+AM_LDFLAGS = ${lib_LTLIBRARIES} 	\
 ${top_builddir}/../liblib/libnetcdf.la @EXTERN_LDFLAGS@ -lm
 
 # Tell automake that libcf.h is a header file we want to install.

@@ -4,6 +4,10 @@
 quiet=0
 leakcheck=0
 
+PARAMS="[log]"
+#PARAMS="${PARAMS}[fetch=memory]"
+#PARAMS="${PARAMS}[show=fetch]"
+
 OCLOGFILE=/dev/null
 
 # Capture arguments
@@ -23,12 +27,12 @@ case "$mode" in
 *3)
     EXPECTED="$expected3"
     TITLE="DAP to netCDF-3 translation"
-    PARAMS="[cache]"
+    PARAMS="${PARAMS}[cache]"
     ;;
 *4)
     EXPECTED="$expected4"
     TITLE="DAP to netCDF-4 translation"
-    PARAMS="[netcdf4][cache]"
+    PARAMS="${PARAMS}[netcdf4][cache]"
     ;;
 esac
 
@@ -70,7 +74,7 @@ echo '#DODSRC' >./.dodsrc
 
 for x in ${TESTSET} ; do
   url="${PARAMS}${TESTURL}/$x"
-  if test "x$quiet" = "x0" ; then echo "*** Testing: ${x}"; fi
+  if test "x$quiet" = "x0" ; then echo "*** Testing: ${x} ; url=$url" ; fi
   # determine if this is an xfailtest
   isxfail=0
   for t in ${XFAILTESTS} ; do
@@ -99,7 +103,7 @@ for x in ${TESTSET} ; do
     ;;
   2)
     xfailcount=`expr $xfailcount + 1`
-    echo "*** XFAIL: ${x}"
+    echo "*** XFAIL : ${x}"
     ;;
   esac
 

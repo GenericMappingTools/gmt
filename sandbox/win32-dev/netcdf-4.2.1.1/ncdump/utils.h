@@ -1,11 +1,29 @@
 /*********************************************************************
  *   Copyright 2011, University Corporation for Atmospheric Research
  *   See netcdf/COPYRIGHT file for copying and redistribution conditions.
- *   $Id$
+ *   
+ *   Stuff that's common to both ncdump and nccopy
+ *
  *********************************************************************/
 
 #include "config.h"
-#include <netcdf.h>
+
+#define	STREQ(a, b)	(*(a) == *(b) && strcmp((a), (b)) == 0)
+
+typedef int boolean;
+enum {false=0, true=1};
+
+struct safebuf_t;
+/* Buffer structure for implementing growable strings, used in
+ * preventing buffer overflows when the size needed for a character
+ * buffer cannot be easily predicted or limited to any specific
+ * maximum, such as when used in recursive function calls for nested
+ * vlens and nested compound types. */
+typedef struct safebuf_t {
+    size_t len;			/* current length of buffer */
+    size_t cl;			/* current length of string in buffer, < len-1 */
+    char *buf;
+} safebuf_t;
 
 extern char *progname;		/* for error messages */
 
@@ -37,8 +55,10 @@ void print_name(const char *name);
 
 /* Get dimid from a full dimension path name that may include group
  * names */
-extern int 
-nc_inq_dimid2(int ncid, const char *dimname, int *dimidp);
+extern int  nc_inq_dimid2(int ncid, const char *dimname, int *dimidp);
+
+/* Test if variable is a record variable */
+extern int  isrecvar ( int ncid, int varid );
 
 #ifdef __cplusplus
 }

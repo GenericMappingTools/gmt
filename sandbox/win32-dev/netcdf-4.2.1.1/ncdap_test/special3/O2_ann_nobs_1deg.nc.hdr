@@ -1,0 +1,39 @@
+netcdf O2_ann_nobs_1deg {
+dimensions:
+	Annual = 1 ;
+	Depth = 33 ;
+	Latitude = 180 ;
+	Longitude = 360 ;
+variables:
+	float Longitude(Longitude) ;
+		Longitude:long_name = "Longitude" ;
+		Longitude:cartesian_axis = "X" ;
+		Longitude:units = "degrees_east" ;
+		Longitude:ipositive = 1 ;
+	float Latitude(Latitude) ;
+		Latitude:long_name = "Latitude" ;
+		Latitude:cartesian_axis = "Y" ;
+		Latitude:units = "degrees_north" ;
+		Latitude:ipositive = 1 ;
+	float Depth(Depth) ;
+		Depth:long_name = "Depth" ;
+		Depth:cartesian_axis = "Z" ;
+		Depth:units = "m" ;
+		Depth:ipositive = -1 ;
+		Depth:positive = "down" ;
+	double Annual(Annual) ;
+		Annual:long_name = "Time" ;
+		Annual:cartesian_axis = "T" ;
+		Annual:units = "DAYS since 0000-01-01 00:00:00.0" ;
+		Annual:calendar = "Gregorian" ;
+		Annual:ipositive = 1 ;
+	float o00dd1(Annual, Depth, Latitude, Longitude) ;
+		o00dd1:units = "Number of observations" ;
+		o00dd1:missing_value = -1.e+34f ;
+		o00dd1:long_name = "dissolved oxygen" ;
+
+// global attributes:
+		:title = "World Ocean Atlas 2001 1x1 degree Annual means" ;
+		:Conventions = "COARDS" ;
+		:history = "Created by Mark Collier CSIRO Atmospheric Research 26 Mar 2003 (e-mail: mark.collier@csiro.au)" ;
+}

@@ -19,56 +19,54 @@ static void initdecodify(void);
 
 void
 expand_escapes(
-     char *termstring,		/* returned, with escapes expanded */
+     Bytebuffer *s, /* fill with contents of yytext, with escapes expanded */
      char *yytext,
      int yyleng)
 {
-    char *s, *t, *endp;
-    
+    char *t, *endp;
     yytext[yyleng-1]='\0';	/* don't copy quotes */
     /* expand "\" escapes, e.g. "\t" to tab character  */
-    s = termstring;
     t = yytext+1;
     while(*t) {
 	if (*t == '\\') {
 	    t++;
 	    switch (*t) {
 	      case 'a':
-		*s++ = '\007'; t++; /* will use '\a' when STDC */
+		bbAppend(s,'\007'); t++; /* will use '\a' when STDC */
 		break;
 	      case 'b':
-		*s++ = '\b'; t++;
+		bbAppend(s,'\b'); t++;
 		break;
 	      case 'f':
-		*s++ = '\f'; t++;
+		bbAppend(s,'\f'); t++;
 		break;
 	      case 'n':
-		*s++ = '\n'; t++;
+		bbAppend(s,'\n'); t++;
 		break;
 	      case 'r':
-		*s++ = '\r'; t++;
+		bbAppend(s,'\r'); t++;
 		break;
 	      case 't':
-		*s++ = '\t'; t++;
+		bbAppend(s,'\t'); t++;
 		break;
 	      case 'v':
-		*s++ = '\v'; t++;
+		bbAppend(s,'\v'); t++;
 		break;
 	      case '\\':
-		*s++ = '\\'; t++;
+		bbAppend(s,'\\'); t++;
 		break;
 	      case '?':
-		*s++ = '\177'; t++;
+		bbAppend(s,'\177'); t++;
 		break;
 	      case '\'':
-		*s++ = '\''; t++;
+		bbAppend(s,'\''); t++;
 		break;
 	      case '\"':
-		*s++ = '\"'; t++;
+		bbAppend(s,'\"'); t++;
 		break;
 	      case 'x':
 		t++; /* now t points to one or more hex digits */
-		*s++ = (char) strtol(t, &endp, 16);
+		bbAppend(s,(char) strtol(t, &endp, 16));
 		t = endp;
 		break;
 	      case '0':
@@ -80,18 +78,19 @@ expand_escapes(
 	      case '6':
 	      case '7':
 		/* t now points to octal digits */
-		*s++ = (char) strtol(t, &endp, 8);
+		bbAppend(s,(char) strtol(t, &endp, 8));
 		t = endp;
 		break;
 	      default:
-		*s++ = *t++;
+		bbAppend(s,*t); t++;
 		break;
 	    }
 	} else {
-	    *s++ = *t++;
+	    bbAppend(s,*t); t++;
 	}
     }
-    *s = '\0';
+    bbNull(s);
+    bbSetlength(s,strlen(bbContents(s)));
     return;
 }
 
@@ -101,7 +100,7 @@ expand_escapes(
  */
 /* ?? This seems redundant over expand_escapes*/
 void
-deescapify(char *name)
+deescapify(char* name)
 {
     const char *cp = name;
     char *sp;
@@ -203,13 +202,13 @@ escapifyname(char* s0)
 }
 
 void
-cquotestring(Bytebuffer* databuf)
+cquotestring(Bytebuffer* databuf, char quote)
 {
     char* escaped = escapify(bbContents(databuf),'"',bbLength(databuf));
     bbClear(databuf);
-    bbAppend(databuf,'"');
+    bbAppend(databuf,quote);
     bbCat(databuf,escaped);
-    bbAppend(databuf,'"');
+    bbAppend(databuf,quote);
 }
 
 /*

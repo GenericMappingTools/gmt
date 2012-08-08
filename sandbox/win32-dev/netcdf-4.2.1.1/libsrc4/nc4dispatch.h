@@ -9,6 +9,7 @@
 #ifndef _NC4DISPATCH_H
 #define _NC4DISPATCH_H
 
+#include "config.h"
 #include <stddef.h> /* size_t, ptrdiff_t */
 #include <errno.h>  /* netcdf functions sometimes return system errors */
 #include "ncdispatch.h"

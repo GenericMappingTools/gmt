@@ -1,0 +1,235 @@
+ifeq (0,${MAKELEVEL})
+  uname:=$(shell uname -s | tr '[:upper:]' '[:lower:]')
+  top_builddir:=$(shell pwd)
+  top_srcdir:=$(top_builddir)
+  MAKE := ${MAKE} uname=$(uname) \
+        top_srcdir=$(top_srcdir) top_builddir=$(top_builddir)
+  TOP_MAKEFILE := Makefile.unix
+endif
+
+# Override DESTDIR= on the make install command line to easily support
+# installing into a temporary location.  Example:
+#
+#    make install DESTDIR=/tmp/build/libpng
+#
+# If you're going to install into a temporary location
+# via DESTDIR, $(DESTDIR)$(prefix) must already exist before
+# you execute make install.
+DESTDIR=
+
+uname:=$(shell uname -s | tr '[:upper:]' '[:lower:]')
+top_builddir=$(shell pwd)
+top_srcdir=$(top_builddir)
+PLATFORM:=$(uname)
+STAMP:=stamp-$(PLATFORM)
+
+CC=gcc
+LD=gcc
+AR=ar
+O=o
+STATIC_O=stat.o
+EXEEXT=
+A=a
+SO=so
+
+ifeq ($(ENABLE_DEBUG),1)
+CPPFLAGS+=-D_DEBUG=1
+LDFLAGS+=-DEBUG
+CFLAGS+=-Wall -Werror -g
+OPTIM = -O0
+else
+CPPFLAGS+=-DNDEBUG
+CFLAGS+=-Wall -Werror
+OPTIM = -O2
+endif
+
+DYNAMICCFLAGS = -fpic
+DYNAMICCPPFLAGS = -DPIC
+STATICCFLAGS =
+STATICCPPFLAGS =
+
+SOMAJOR=0
+SOMINOR=0
+SOMICRO=0
+SHRNAME=libxdr.$(SO).$(SOMAJOR).$(SOMINOR).$(SOMICRO)
+SONAME=libxdr.$(SO).$(SOMAJOR)
+LIBNAME=libxdr.$(A)
+
+CFLAGS+=-fno-strict-aliasing
+#DEFS+=
+#LDFLAGS+=
+
+INCLUDES = -I$(top_srcdir) -I$(top_builddir)
+
+# compiling C code
+COMPILE_C=	$(CC) $(OPTIM) $(CPPFLAGS) $(DEFS) $(CFLAGS) $(INCLUDES)
+
+# linking C code
+LINK_C =	$(LD) $(LDFLAGS)
+DLL_LINK_C =	$(LD) -shared $(LDFLAGS)
+DLL_LDEXTRA =	-Wl,--soname -Wl,$(SONAME)
+EXE_LDEXTRA =	-L$(top_builddir)/$(PLATFORM)
+
+## Compilation rules
+$(PLATFORM)/%.$(O) : %.c
+	$(COMPILE_C) $(DYNAMICCPPFLAGS) $(DYNAMICCFLAGS) -o $@ -c $<
+
+$(PLATFORM)/%.$(STATIC_O) : %.c
+	$(COMPILE_C) $(STATICCPPFLAGS) $(STATICCFLAGS) -o $@ -c $<
+
+LIBXDR_HDRS = rpc/xdr.h rpc/types.h
+LIBXDR_HDRS_PRIVATE = lib/xdr_private.h
+LIBXDR_SRCS = lib/xdr.c lib/xdr_array.c lib/xdr_float.c lib/xdr_mem.c \
+	   lib/xdr_rec.c lib/xdr_reference.c lib/xdr_sizeof.c lib/xdr_stdio.c \
+	   lib/xdr_private.c
+LIBXDR_OBJS = $(LIBXDR_SRCS:%.c=$(PLATFORM)/%.$(O))
+LIBXDR_OBJS_STAT = $(LIBXDR_SRCS:%.c=$(PLATFORM)/%.$(STATIC_O))
+LIBXDR_DEPS =
+LIBXDR_LDFLAGS =
+LIBXDR_ARFLAGS = cr
+
+XDR_LIBRARIES = $(PLATFORM)/$(SHRNAME) $(PLATFORM)/$(LIBNAME)
+
+TEST_XDR_LIBS      = $(PLATFORM)/$(SONAME) $(LIBXDR_DEPS)
+TEST_XDR_LIBS_STAT = $(PLATFORM)/$(LIBNAME) $(LIBXDR_DEPS)
+TEST_HDRS = src/test/test_common.h src/test/test_data.h src/test/test_xdrs.h
+
+
+TEST_XDRMEM_HDRS = $(TEST_HDRS) $(LIBXDR_HDRS) $(GETOPT_HDRS)
+TEST_XDRMEM_SRCS = src/test/xdrmem_test.c \
+	src/test/test_common.c \
+	src/test/test_data.c \
+	src/test/test_xdrs.c \
+	$(GETOPT_SRCS) $(MKDTEMP_SRCS)
+TEST_XDRMEM_OBJS = $(TEST_XDRMEM_SRCS:%.c=$(PLATFORM)/%.$(O))
+TEST_XDRMEM_OBJS_STAT = $(TEST_XDRMEM_SRCS:%.c=$(PLATFORM)/%.$(STATIC_O))
+TEST_XDRMEM_LIBS = $(TEST_XDR_LIBS) -lm
+TEST_XDRMEM_LIBS_STAT = $(TEST_XDR_LIBS_STAT) -lm
+TEST_XDRMEM_LDFLAGS      =
+TEST_XDRMEM_LDFLAGS_STAT =
+
+
+TEST_XDRSTDIO_HDRS = $(TEST_HDRS) $(LIBXDR_HDRS) $(GETOPT_HDRS)
+TEST_XDRSTDIO_SRCS = src/test/xdrstdio_test.c \
+	src/test/test_common.c \
+	src/test/test_data.c \
+	src/test/test_xdrs.c \
+	$(GETOPT_SRCS) $(MKDTEMP_SRCS)
+TEST_XDRSTDIO_OBJS = $(TEST_XDRSTDIO_SRCS:%.c=$(PLATFORM)/%.$(O))
+TEST_XDRSTDIO_OBJS_STAT = $(TEST_XDRSTDIO_SRCS:%.c=$(PLATFORM)/%.$(STATIC_O))
+TEST_XDRSTDIO_LIBS = $(TEST_XDR_LIBS) -lm
+TEST_XDRSTDIO_LIBS_STAT = $(TEST_XDR_LIBS_STAT) -lm
+TEST_XDRSTDIO_LDFLAGS      =
+TEST_XDRSTDIO_LDFLAGS_STAT =
+
+
+TEST_XDRSIZEOF_HDRS = $(TEST_HDRS) $(LIBXDR_HDRS) $(GETOPT_HDRS)
+TEST_XDRSIZEOF_SRCS = src/test/xdrsizeof_test.c \
+	src/test/test_common.c \
+	src/test/test_data.c \
+	src/test/test_xdrs.c \
+	$(GETOPT_SRCS) $(MKDTEMP_SRCS)
+TEST_XDRSIZEOF_OBJS = $(TEST_XDRSIZEOF_SRCS:%.c=$(PLATFORM)/%.$(O))
+TEST_XDRSIZEOF_OBJS_STAT = $(TEST_XDRSIZEOF_SRCS:%.c=$(PLATFORM)/%.$(STATIC_O))
+TEST_XDRSIZEOF_LIBS = $(TEST_XDR_LIBS) -lm
+TEST_XDRSIZEOF_LIBS_STAT = $(TEST_XDR_LIBS_STAT) -lm
+TEST_XDRSIZEOF_LDFLAGS      =
+TEST_XDRSIZEOF_LDFLAGS_STAT =
+
+TEST_PROGS = $(PLATFORM)/xdrmem_test$(EXEEXT) \
+	$(PLATFORM)/xdrmem_test_static$(EXEEXT) \
+	$(PLATFORM)/xdrstdio_test$(EXEEXT) \
+	$(PLATFORM)/xdrstdio_test_static$(EXEEXT) \
+	$(PLATFORM)/xdrsizeof_test$(EXEEXT) \
+	$(PLATFORM)/xdrsizeof_test_static$(EXEEXT)
+
+TEST_OBJS = $(TEST_XDRMEM_OBJS) \
+	$(TEST_XDRSTDIO_OBJS) \
+	$(TEST_XDRSIZEOF_OBJS)
+TEST_OBJS_STAT = $(TEST_XDRMEM_OBJS_STAT) \
+	$(TEST_XDRSTDIO_OBJS_STAT) \
+	$(TEST_XDRSIZEOF_OBJS_STAT)
+
+all:
+	@if test $(MAKELEVEL) -eq 0 ; then \
+	  echo "Building for $(PLATFORM)" ;\
+	  $(MAKE) -f $(TOP_MAKEFILE) recursive-all ENABLE_DEBUG=$(ENABLE_DEBUG) ;\
+	fi
+
+recursive-all: $(XDR_LIBRARIES) $(TEST_PROGS)
+
+$(STAMP):
+	@for d in $(PLATFORM)/lib $(PLATFORM)/src/test; do\
+	  if ! test -d $$d ; then\
+	    mkdir -p $$d ;\
+	  fi;\
+	done
+	touch $(STAMP)
+
+$(PLATFORM)/$(SHRNAME): $(STAMP) $(DEFFILE) $(LIBXDR_OBJS)
+	$(DLL_LINK_C) $(DLL_LDEXTRA) $(LIBXDR_LDFLAGS) -o $@ $(LIBXDR_OBJS) $(LIBXDR_DEPS)
+	(cd $(PLATFORM) && ln -fs $(SHRNAME) $(SONAME))
+
+$(PLATFORM)/$(LIBNAME): $(STAMP) $(LIBXDR_OBJS_STAT)
+	$(AR) $(LIBXDR_ARFLAGS) $@ $(LIBXDR_OBJS_STAT)
+
+$(PLATFORM)/xdrmem_test$(EXEEXT): $(TEST_XDRMEM_OBJS) $(XDR_LIBRARIES)
+	$(LINK_C) $(EXE_LDEXTRA) $(TEST_XDRMEM_LDFLAGS) $(LDFLAGS) -o $@ \
+		$(TEST_XDRMEM_OBJS) $(TEST_XDRMEM_LIBS)
+
+$(PLATFORM)/xdrmem_test_static$(EXEEXT): $(TEST_XDRMEM_OBJS_STAT) $(XDR_LIBRARIES)
+	$(LINK_C) $(EXE_LDEXTRA) $(TEST_XDRMEM_LDFLAGS_STAT) $(LDFLAGS) -o $@ \
+		$(TEST_XDRMEM_OBJS_STAT) $(TEST_XDRMEM_LIBS_STAT)
+
+$(PLATFORM)/xdrstdio_test$(EXEEXT): $(TEST_XDRSTDIO_OBJS) $(XDR_LIBRARIES)
+	$(LINK_C) $(EXE_LDEXTRA) $(TEST_XDRSTDIO_LDFLAGS) $(LDFLAGS) -o $@ \
+		$(TEST_XDRSTDIO_OBJS) $(TEST_XDRSTDIO_LIBS)
+
+$(PLATFORM)/xdrstdio_test_static$(EXEEXT): $(TEST_XDRSTDIO_OBJS_STAT) $(XDR_LIBRARIES)
+	$(LINK_C) $(EXE_LDEXTRA) $(TEST_XDRSTDIO_LDFLAGS_STAT) $(LDFLAGS) -o $@ \
+		$(TEST_XDRSTDIO_OBJS_STAT) $(TEST_XDRSTDIO_LIBS_STAT)
+
+$(PLATFORM)/xdrsizeof_test$(EXEEXT): $(TEST_XDRSIZEOF_OBJS) $(XDR_LIBRARIES)
+	$(LINK_C) $(EXE_LDEXTRA) $(TEST_XDRSIZEOF_LDFLAGS) $(LDFLAGS) -o $@ \
+		$(TEST_XDRSIZEOF_OBJS) $(TEST_XDRSIZEOF_LIBS)
+
+$(PLATFORM)/xdrsizeof_test_static$(EXEEXT): $(TEST_XDRSIZEOF_OBJS_STAT) $(XDR_LIBRARIES)
+	$(LINK_C) $(EXE_LDEXTRA) $(TEST_XDRSIZEOF_LDFLAGS_STAT) $(LDFLAGS) -o $@ \
+		$(TEST_XDRSIZEOF_OBJS_STAT) $(TEST_XDRSIZEOF_LIBS_STAT)
+
+.PHONY: clean
+clean:
+	-rm -f $(LIBXDR_OBJS) $(LIBXDR_OBJS_STAT) $(TEST_OBJS) $(TEST_OBJS_STAT) $(STAMP)
+
+.PHONY: realclean
+realclean: clean
+	-rm -f $(PLATFORM)/$(SHRNAME) $(PLATFORM)/$(SONAME)
+	-rm -f $(PLATFORM)/$(LIBNAME)
+	-rm -f $(TEST_PROGS)
+	-rmdir $(PLATFORM)/lib
+	-rmdir $(PLATFORM)/src/test
+	-rmdir $(PLATFORM)/src
+	-rmdir $(PLATFORM)
+
+# dependencies
+$(PLATFORM)/lib/xdr.$(O):           lib/xdr.c           $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_array.$(O):     lib/xdr_array.c     $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_float.$(O):     lib/xdr_float.c     $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_mem.$(O):       lib/xdr_mem.c       $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_rec.$(O):       lib/xdr_rec.c       $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_reference.$(O): lib/xdr_reference.c $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_sizeof.$(O):    lib/xdr_sizeof.c    $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_stdio.$(O):     lib/xdr_stdio.c     $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+$(PLATFORM)/lib/xdr_private.$(O):   lib/xdr_private.c   $(LIBXDR_HDRS) $(LIBXDR_HDRS_PRIVATE)
+
+$(PLATFORM)/src/test/test_common.$(O): src/test/test_common.c $(TEST_HDRS) $(LIBXDR_HDRS) $(GETOPT_HDRS)
+$(PLATFORM)/src/test/test_data.$(O): src/test/test_data.c $(TEST_HDRS) $(LIBXDR_HDRS) $(GETOPT_HDRS)
+$(PLATFORM)/src/test/test_xdrs.$(O): src/test/test_xdrs.c $(TEST_HDRS) $(LIBXDR_HDRS) $(GETOPT_HDRS)
+$(PLATFORM)/src/test/xdrmem_test.$(O): src/test/xdrmem_test.c $(TEST_XDRMEM_HDRS) $(GETOPT_HDRS)
+$(PLATFORM)/src/test/xdrstdio_test.$(O): src/test/xdrstdio_test.c $(TEST_XDRSTDIO_HDRS) $(GETOPT_HDRS)
+$(PLATFORM)/src/test/xdrsizeof_test.$(O): src/test/xdrsizeof_test.c $(TEST_XDRSTDIO_HDRS) $(GETOPT_HDRS)
+$(PLATFORM)/src/getopt.$(O):         src/getopt.c src/getopt.h
+$(PLATFORM)/src/getopt1.$(O):        src/getopt1.c src/getopt.h
+$(PLATFORM)/src/mkdtemp.$(O):        src/mkdtemp.c
+
+

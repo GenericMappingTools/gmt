@@ -9,9 +9,6 @@
 #define MAX(x,y) ((x)>(y)?(x):(y))
 
 
-/* Unix replacements */
-extern char* nulldup(const char* s);
-
 extern void expe2d(char*);
 extern int pow2(int);
 extern void tztrim(char*);
@@ -45,8 +42,12 @@ extern char* poolalloc(size_t);
 extern char* pooldup(char*);
 extern char* poolcat(const char* s1, const char* s2);
 
-extern size_t arraylength(Dimset* dimset);
-extern size_t subarraylength(Dimset* dimset, int start);
+/* compute the total n-dimensional size as 1 long array;
+   if stop == 0, then stop = dimset->ndims.
+*/
+extern size_t crossproduct(Dimset* dimset, int start, int stop);
+extern int findunlimited(Dimset* dimset, int start);
+extern int findlastunlimited(Dimset* dimset);
 
 extern unsigned char* makebytestring(char* s, size_t* lenp);
 extern int getpadding(int offset, int alignment);

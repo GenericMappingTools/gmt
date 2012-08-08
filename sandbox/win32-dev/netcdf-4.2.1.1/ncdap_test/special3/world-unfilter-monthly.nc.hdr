@@ -1,0 +1,49 @@
+netcdf world-unfilter-monthly {
+dimensions:
+	time = 205 ;
+	depth = 1 ;
+	latitude = 140 ;
+	longitude = 400 ;
+variables:
+	int time(time) ;
+		time:units = "day since 1992-10-15 00:00:00" ;
+	float depth(depth) ;
+		depth:units = "meter" ;
+	float latitude(latitude) ;
+		latitude:units = "degrees_north" ;
+	float longitude(longitude) ;
+		longitude:units = "degrees_east" ;
+	float u(time, depth, latitude, longitude) ;
+		u:units = "meter/sec" ;
+		u:long_name = "Ocean Surface Zonal Currents" ;
+		u:missing_value = nan ;
+	float v(time, depth, latitude, longitude) ;
+		v:units = "meter/sec" ;
+		v:long_name = "Ocean Surface Meridional Currents" ;
+		v:missing_value = nan ;
+	float u_anom(time, depth, latitude, longitude) ;
+		u_anom:units = "meter/sec" ;
+		u_anom:long_name = "Ocean Surface Zonal Currents Anomaly" ;
+		u_anom:missing_value = nan ;
+	float v_anom(time, depth, latitude, longitude) ;
+		v_anom:units = "meter/sec" ;
+		v_anom:long_name = "Ocean Surface Meridional Currents Anomaly" ;
+		v_anom:missing_value = nan ;
+
+// global attributes:
+		:VARIABLE = "Ocean Surface Currents" ;
+		:DATATYPE = "Monthly Mean" ;
+		:DATASUBTYPE = "unfiltered" ;
+		:GEORANGE = "20.5E to 419.5E, 69.5S to 69.5N" ;
+		:PERIOD = "1992-10-21 to 2009-10-22" ;
+		:ANOM_MEAN_PERIOD = "1993-01-01 to 2008-12-31" ;
+		:version = 2006.f ;
+		:description = "Sea Surface Velocity" ;
+		:source = "Gary Lagerloef, ESR (lager@esr.org) Fabrice Bonjean (bonjean@esr.org) and Kathleen Dohan (kdohan@esr.org)" ;
+		:contact = "Kathleen Dohan (kdohan@esr.org) or John T. Gunn (gunn@esr.org)" ;
+		:company = "Earth & Space Research, Seattle, WA" ;
+		:reference1 = "Bonjean F. and G.S.E. Lagerloef, 2002 ,\"Diagnostic model and analysis of the surface currents in the tropical Pacific ocean\", J. Phys. Oceanogr., 32, 2,938-2,954" ;
+		:date = "26-Oct-2009" ;
+		:CREATION_DATE = "06:43 26-Oct-2009" ;
+		:note = "Longitude extends from 20.5 E to 419.5 E to avoid a break in major ocean basins. Data repeats in overlap region." ;
+}

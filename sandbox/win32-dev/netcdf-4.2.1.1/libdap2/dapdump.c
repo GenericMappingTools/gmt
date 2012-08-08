@@ -9,8 +9,11 @@
 #endif
 #include "ncdap3.h"
 #include "dapdump.h"
+#include "dceconstraints.h"
 
 #define CHECK(n) if((n) != NC_NOERR) {return (n);} else {}
+
+static void dumptreer(CDFnode* root, NCbytes* buf, int indent, int visible);
 
 int
 dumpmetadata(int ncid, NChdr** hdrp)
@@ -196,13 +199,23 @@ dumpdata1(nc_type nctype, size_t index, char* data)
 char*
 dumpprojections(NClist* projections)
 {
-    return dcelisttostring(projections,",");
+    char* tmp;
+    int v = dceverbose;
+    dceverbose = 1;
+    tmp = dcelisttostring(projections,",");
+    dceverbose = v;
+    return tmp;
 }
 
 char*
 dumpprojection(DCEprojection* proj)
 {
-    return dcetostring((DCEnode*)proj);
+    char* tmp;
+    int v = dceverbose;
+    dceverbose = 1;
+    tmp = dcetostring((DCEnode*)proj);
+    dceverbose = v;
+    return tmp;
 }
 
 char*
@@ -220,7 +233,12 @@ dumpselection(DCEselection* sel)
 char*
 dumpconstraint(DCEconstraint* con)
 {
-    return dcetostring((DCEnode*)con);
+    char* tmp;
+    int v = dceverbose;
+    dceverbose = 1;
+    tmp = dcetostring((DCEnode*)con);
+    dceverbose = v;
+    return tmp;
 }
 
 char*
@@ -242,7 +260,7 @@ dumppath(CDFnode* leaf)
     for(i=0;i<nclistlength(path);i++) {
 	CDFnode* node = (CDFnode*)nclistget(path,i);
 	if(i > 0) ncbytescat(buf,".");
-	ncbytescat(buf,node->name);
+	ncbytescat(buf,node->ncbasename);
     }
     result = ncbytesdup(buf);
     ncbytesfree(buf);
@@ -257,8 +275,6 @@ dumpindent(int indent, NCbytes* buf)
     int i;
     for(i=0;i<indent;i++) ncbytescat(buf,indentstr);
 }
-
-static void dumptreer(CDFnode* root, NCbytes* buf, int indent, int visible);
 
 static void
 dumptreer1(CDFnode* root, NCbytes* buf, int indent, char* tag, int visible)
@@ -285,7 +301,7 @@ dumptreer1(CDFnode* root, NCbytes* buf, int indent, char* tag, int visible)
     }
     dumpindent(indent,buf);
     ncbytescat(buf,"} ");
-    ncbytescat(buf,root->name);
+    ncbytescat(buf,root->ncbasename);
 }
 
 static void
@@ -293,6 +309,8 @@ dumptreer(CDFnode* root, NCbytes* buf, int indent, int visible)
 {
     int i;
     char* primtype = NULL;
+    NClist* dimset = NULL;
+
     if(visible && !root->visible) return;
     switch (root->nctype) {
     case NC_Dataset:
@@ -307,7 +325,7 @@ dumptreer(CDFnode* root, NCbytes* buf, int indent, int visible)
     case NC_Grid:
 	dumptreer1(root,buf,indent,"Grid",visible);
 	break;
-    case NC_Primitive:
+    case NC_Atomic:
 	switch (root->etype) {
 	case NC_BYTE: primtype = "byte"; break;
 	case NC_CHAR: primtype = "char"; break;
@@ -326,18 +344,20 @@ dumptreer(CDFnode* root, NCbytes* buf, int indent, int visible)
 	dumpindent(indent,buf);
 	ncbytescat(buf,primtype);
 	ncbytescat(buf," ");
-	ncbytescat(buf,root->name);
+	ncbytescat(buf,root->ncbasename);
 	break;
     default: break;    
     }
 
-    if(nclistlength(root->array.dimensions) > 0) {
-	for(i=0;i<nclistlength(root->array.dimensions);i++) {
-	    CDFnode* dim = (CDFnode*)nclistget(root->array.dimensions,i);
+    if(nclistlength(root->array.dimsetplus) > 0) dimset = root->array.dimsetplus;
+    else if(nclistlength(root->array.dimset0) > 0) dimset = root->array.dimset0;
+    if(dimset != NULL) {
+	for(i=0;i<nclistlength(dimset);i++) {
+	    CDFnode* dim = (CDFnode*)nclistget(dimset,i);
 	    char tmp[64];
 	    ncbytescat(buf,"[");
-	    if(dim->name != NULL) {
-		ncbytescat(buf,dim->name);
+	    if(dim->ncbasename != NULL) {
+		ncbytescat(buf,dim->ncbasename);
 	        ncbytescat(buf,"=");
 	    }
 	    snprintf(tmp,sizeof(tmp),"%lu",(unsigned long)dim->dim.declsize);
@@ -386,7 +406,7 @@ dumpnode(CDFnode* node)
     case NC_Sequence: nctype = "Sequence"; break;
     case NC_Structure: nctype = "Structure"; break;
     case NC_Grid: nctype = "Grid"; break;
-    case NC_Primitive:
+    case NC_Atomic:
 	switch (node->etype) {
 	case NC_BYTE: primtype = "byte"; break;
 	case NC_CHAR: primtype = "char"; break;
@@ -406,15 +426,15 @@ dumpnode(CDFnode* node)
     default: break;    
     }
     snprintf(tmp,sizeof(tmp),"%s %s {\n",
-		(nctype?nctype:primtype),node->name);
+		(nctype?nctype:primtype),node->ocname);
     ncbytescat(buf,tmp);
-    snprintf(tmp,sizeof(tmp),"dds=%lx\n",(unsigned long)node->dds);
+    snprintf(tmp,sizeof(tmp),"ocnode=%lx\n",(unsigned long)node->ocnode);
     ncbytescat(buf,tmp);
     snprintf(tmp,sizeof(tmp),"container=%s\n",
-		(node->container?node->container->name:"null"));
+		(node->container?node->container->ocname:"null"));
     ncbytescat(buf,tmp);
     snprintf(tmp,sizeof(tmp),"root=%s\n",
-		(node->root?node->root->name:"null"));
+		(node->root?node->root->ocname:"null"));
     ncbytescat(buf,tmp);
     snprintf(tmp,sizeof(tmp),"ncbasename=%s\n",node->ncbasename);
     ncbytescat(buf,tmp);
@@ -437,24 +457,23 @@ dumpnode(CDFnode* node)
     snprintf(tmp,sizeof(tmp),"visible=%d\n",node->visible);
     ncbytescat(buf,tmp);
     snprintf(tmp,sizeof(tmp),"attachment=%s\n",
-		(node->attachment?node->attachment->name:"null"));
+		(node->attachment?node->attachment->ocname:"null"));
     ncbytescat(buf,tmp);
-    snprintf(tmp,sizeof(tmp),"rank=%u\n",nclistlength(node->array.dimensions));
+    snprintf(tmp,sizeof(tmp),"rank=%u\n",nclistlength(node->array.dimset0));
     ncbytescat(buf,tmp);
-    for(i=0;i<nclistlength(node->array.dimensions);i++) {
-	CDFnode* dim = (CDFnode*)nclistget(node->array.dimensions,i);
+    for(i=0;i<nclistlength(node->array.dimset0);i++) {
+	CDFnode* dim = (CDFnode*)nclistget(node->array.dimset0,i);
         snprintf(tmp,sizeof(tmp),"dims[%d]={\n",i);
         ncbytescat(buf,tmp);
-	snprintf(tmp,sizeof(tmp),"    name=%s\n",dim->name);
+	snprintf(tmp,sizeof(tmp),"    ocname=%s\n",dim->ocname);
+        ncbytescat(buf,tmp);
+	snprintf(tmp,sizeof(tmp),"    ncbasename=%s\n",dim->ncbasename);
         ncbytescat(buf,tmp);
 	snprintf(tmp,sizeof(tmp),"    dimflags=%u\n",
 			(unsigned int)dim->dim.dimflags);
         ncbytescat(buf,tmp);
 	snprintf(tmp,sizeof(tmp),"    declsize=%lu\n",
 		    (unsigned long)dim->dim.declsize);
-        ncbytescat(buf,tmp);
-	snprintf(tmp,sizeof(tmp),"    declsize0=%lu\n",
-		    (unsigned long)dim->dim.declsize0);
         ncbytescat(buf,tmp);
         snprintf(tmp,sizeof(tmp),"    }\n");
         ncbytescat(buf,tmp);
@@ -490,18 +509,19 @@ dumpcachenode(NCcachenode* node)
 
     if(node == NULL) return strdup("cachenode{null}");
     buf = ncbytesnew();
+    result = buildconstraintstring3(node->constraint);
     snprintf(tmp,sizeof(tmp),"cachenode%s(%lx){size=%lu; constraint=%s; vars=",
 		node->prefetch?"*":"",
 		(unsigned long)node,
 		(unsigned long)node->xdrsize,
-		buildconstraintstring3(node->constraint));
+	        result);
     ncbytescat(buf,tmp);
     if(nclistlength(node->vars)==0)
 	ncbytescat(buf,"null");
     else for(i=0;i<nclistlength(node->vars);i++) {
 	CDFnode* var = (CDFnode*)nclistget(node->vars,i);
 	if(i > 0) ncbytescat(buf,",");
-	ncbytescat(buf,makesimplepathstring3(var));
+	ncbytescat(buf,makecdfpathstring3(var,"."));
     }
     ncbytescat(buf,"}");
     result = ncbytesdup(buf);
@@ -546,7 +566,27 @@ dumpcache(NCcache* cache)
 char*
 dumpslice(DCEslice* slice)
 {
-    return dcetostring((DCEnode*)slice);
+	char buf[8192];
+	char tmp[8192];
+        size_t last = (slice->first+slice->length)-1;
+	buf[0] = '\0';
+	if(last > slice->declsize && slice->declsize > 0)
+	    last = slice->declsize - 1;
+        if(slice->count == 1) {
+            snprintf(tmp,sizeof(tmp),"[%lu]",
+	        (unsigned long)slice->first);
+        } else if(slice->stride == 1) {
+            snprintf(tmp,sizeof(tmp),"[%lu:%lu]",
+	            (unsigned long)slice->first,
+	            (unsigned long)last);
+        } else {
+	   snprintf(tmp,sizeof(tmp),"[%lu:%lu:%lu]",
+		    (unsigned long)slice->first,
+		    (unsigned long)slice->stride,
+		    (unsigned long)last);
+        }
+	strcat(buf,tmp);
+	return strdup(tmp);
 }
 
 char*
@@ -563,4 +603,30 @@ dumpslices(DCEslice* slice, unsigned int rank)
     result = ncbytesdup(buf);
     ncbytesfree(buf);
     return result;
+}
+
+void
+dumpraw(void* o)
+{
+    fprintf(stderr,"%s\n",dcerawtostring(o));
+    fflush(stderr);
+}
+
+void
+dumplistraw(NClist* l)
+{
+    fprintf(stderr,"%s\n",dcerawlisttostring(l));
+    fflush(stderr);
+}
+
+/* For debugging */
+void
+dumpstringlist(NClist* l)
+{
+    int i;
+    for(i=0;i<nclistlength(l);i++) {
+	const char* s = (const char*)nclistget(l,i);
+	fprintf(stderr,"[%d]: |%s|\n",i,s);
+    }
+    fflush(stderr);
 }

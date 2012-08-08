@@ -28,7 +28,7 @@ main(int argc, char **argv) {
     float fvar_data[NVALS];
     int r, i;
 
-    printf("*** creating chunkable test file %s...\n", FILE_NAME);
+    printf("*** Creating chunkable test file %s...", FILE_NAME);
 
     if (nc_create(FILE_NAME, NC_CLOBBER, &ncid)) ERR;
     for(r = 0; r < VAR_RANK; r++) {

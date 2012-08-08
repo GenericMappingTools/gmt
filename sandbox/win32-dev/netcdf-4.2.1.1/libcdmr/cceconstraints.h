@@ -13,10 +13,9 @@
 #define NC_MAX_VAR_DIMS 1024
 #endif
 
+struct CRpath; /* Forward */
+
 /* Provide a universal cast type containing common fields */
-
-struct CDFnode; /* Forward */
-
 typedef struct CCEnode {
     CEsort sort;    
 } CCEnode;
@@ -38,68 +37,25 @@ typedef struct CCEsegment {
     int slicesdeclized; /*1=>slice declsize defined */
     size_t rank;
     CCEslice slices[NC_MAX_VAR_DIMS];    
-    struct CDFnode* cdfnode;
+    struct CRnode* decl;
 } CCEsegment;
-
-typedef struct CCEfcn {
-    CCEnode node;
-    char* name; 
-    NClist* args;
-} CCEfcn;
-
-typedef struct CCEvar {
-    CCEnode node;
-    NClist* segments;
-    struct CDFnode* cdfnode;
-    struct CDFnode* cdfleaf;
-} CCEvar;
-
-typedef struct CCEconstant {
-    CCEnode node;
-    CEsort discrim;
-    char* text;
-    long long intvalue;
-    double floatvalue;
-} CCEconstant;
-
-typedef struct CCEvalue {
-    CCEnode node;
-    CEsort discrim;
-    /* Do not bother with a union */
-    CCEconstant* constant;
-    CCEvar* var;
-    CCEfcn* fcn;
-} CCEvalue;
-
-typedef struct CCEselection {
-    CCEnode node;
-    CEsort operator;
-    CCEvalue* lhs;
-    NClist* rhs;
-} CCEselection;
 
 typedef struct CCEprojection {
     CCEnode node;
-    CEsort discrim;
-    /* Do not bother with a union */
-    CCEvar* var;
-    CCEfcn* fcn;
+    NClist* segments;
+    struct CRnode* decl; /* maps to matching stream node */
 } CCEprojection;
 
 typedef struct CCEconstraint {
     CCEnode node;
     NClist* projections;
-    NClist* selections;
 } CCEconstraint;
 
 
-extern int cceparseconstraints(char* constraints, CCEconstraint* CCEonstraint);
-extern int cceslicemerge(CCEslice* dst, CCEslice* src);
-extern int ccemergeprojections(NClist* dst, NClist* src);
+extern int cdmparseconstraint(char* constraints, CCEconstraint*);
+extern int cceslicemerge(CCEslice* target, size_t first, size_t length, ptrdiff_t stride);
 
 extern char* ccebuildprojectionstring(NClist* projections);
-extern char* ccebuildselectionstring(NClist* selections);
-extern char* ccebuildconstraintstring(CCEconstraint* constraints);
 
 extern CCEnode* cceclone(CCEnode* node);
 extern NClist* cceclonelist(NClist* list);
@@ -117,10 +73,17 @@ extern NClist* cceallnodes(CCEnode* node, CEsort which);
 extern CCEnode* ccecreate(CEsort sort);
 
 extern void ccemakewholeslice(CCEslice* slice, size_t declsize);
+extern void ccemakewholesegment(CCEsegment* seg, CRnode* node);
 
 extern int cceiswholesegment(CCEsegment*);
 extern int cceiswholeslice(CCEslice*);
 extern int cceiswholeseglist(NClist*);
 extern int ccesamepath(NClist* list1, NClist* list2);
+extern CRpath* crsegment2path(NClist* segments);
+
+extern int pathmatch(NClist* segments, struct CRpath* path);
+
+extern int ccerestrictprojection(CCEprojection*,size_t,const size_t*,const size_t*,const ptrdiff_t*);
 
 #endif /*CCECONSTRAINTS_H*/
+

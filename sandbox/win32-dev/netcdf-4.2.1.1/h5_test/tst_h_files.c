@@ -7,7 +7,7 @@
    tests don't work, than netCDF-4 won't work either.
 */
 
-#include <err_macros.h>
+#include "h5_err_macros.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
@@ -88,7 +88,7 @@ main()
 	 if ((typeid = H5Topen(grpid, obj_name)) < 0) ERR;
 	 if ((class = H5Tget_class(typeid)) < 0) ERR;
 	 if (class != H5T_OPAQUE) ERR;
-	 if (!(type_size = H5Tget_size(typeid))) ERR;
+	 if (!(H5Tget_size(typeid))) ERR;
       }
 
       /* Close everything. */
@@ -152,7 +152,7 @@ main()
       /* Once open for read only access, the file can't be opened again
        * for write access. */
       if ((fileid = H5Fopen(FILE_NAME, H5F_ACC_RDONLY, H5P_DEFAULT)) < 0) ERR;
-      if ((fileid2 = H5Fopen(FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT)) >= 0) ERR;
+      if (H5Fopen(FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT) >= 0) ERR;
       if (H5Fclose(fileid) < 0) ERR;
 
       /* But you can open the file for read/write access, and then open

@@ -10,6 +10,7 @@
 
 /*Forward*/
 struct Group;
+struct CRpath;
 
 typedef enum Sort {
 _Null		= 0,
@@ -29,18 +30,18 @@ _Error		= 13
 } Sort;
 
 /*
-This serves as the castable supertypefor all ncStream messages.
+This serves as the castable supertype for all ncStream messages.
 */
 typedef struct CRnode {
     uint32_t uid;
     Sort sort;
     int32_t ncid;
     struct Group* group;
-    char* pathname;
+    struct CRpath* pathname;
     struct {
 	int isroot; /* Mark root group */
 	int isdecl; /* Mark dimension decls */
-	int elided; /* Mark variables not in the projections */
+	int visible; /* Mark variables as invisible */
     } flags;
     struct Dimension* dimdecl; /*sort=_Dimension; maps dimension to
 				 dimension decl */

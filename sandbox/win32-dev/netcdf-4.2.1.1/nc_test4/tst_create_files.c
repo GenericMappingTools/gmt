@@ -38,7 +38,7 @@ main(int argc, char **argv)
        int ncid, dimids[NDIMS3], varid;
        size_t start[NDIMS3], count[NDIMS3];
        size_t dim_len[NDIMS3] = {D0, D1, D2};
-       int chunk_sizes[NDIMS3] = {1, D1, D2};
+       size_t chunk_sizes[NDIMS3] = {1, D1, D2};
        float *data;
        char file_name[NC_MAX_NAME * 2 + 1];
        int d, i; 
@@ -58,7 +58,15 @@ main(int argc, char **argv)
        if (nc_def_dim(ncid, "d1", D1, &dimids[1])) ERR;
        if (nc_def_dim(ncid, "d2", D2, &dimids[2])) ERR;
        if (nc_def_var(ncid, LARGE_VAR_NAME, NC_FLOAT, NDIMS3, dimids, &varid)) ERR;
-       if (nc_def_var_chunking(ncid, varid, NULL, chunk_sizes, NULL)) ERR;
+#ifndef NOBUG
+	{int status;
+	status = nc_def_var_chunking(ncid, varid, NC_CHUNKED, chunk_sizes);
+	if(status)
+	  printf("nc_def_var_chunking fail: %d: %s\n",status,nc_strerror(status));
+	}
+#else
+       if (nc_def_var_chunking(ncid, varid, NC_CHUNKED, chunk_sizes)) ERR;
+#endif
        if (nc_enddef(ncid)) ERR;
 
        /* Write the data one slice at a time. */

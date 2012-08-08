@@ -16,7 +16,7 @@ AM_LDFLAGS += ${top_builddir}/liblib/libnetcdf.la
 # generated in a pressurized chamber that exactly simulated the
 # atmosphere on the surface of Mars.
 EXTRA_DIST = ref_nctest_classic.nc ref_nctest_64bit_offset.nc	\
-compare_test_files.sh
+compare_test_files.sh run_valgrind_tests.sh
 
 CLEANFILES = nctest_classic.nc nctest_64bit_offset.nc	\
 nctest_netcdf4.nc test2.nc temp.tmp tst_*.nc

@@ -1,0 +1,681 @@
+\input texinfo @c -*-texinfo-*-
+@comment $Id$
+@c %**start of header
+@setfilename netcdf-internal.info
+@settitle Documentation for NetCDF Library Internals
+@setcontentsaftertitlepage
+@c %**end of header
+@setchapternewpage off
+
+@html
+<link rel=stylesheet type=text/css href=http://www.unidata.ucar.edu/themes/Unidata/style/style.css>
+@end html
+
+@dircategory netCDF scientific data format
+@direntry
+* netcdf-internal: (netcdf-internal).         Documentation for NetCDF Library Internals
+@end direntry
+
+@titlepage
+@title Documentation for NetCDF Library Internals
+@author Ed Hartnett
+@author Unidata Program Center
+
+@page
+@vskip Opt plus 1filll
+
+This is internal documentation of the netCDF library.
+
+Copyright @copyright{} 2004, Unidata Program Center
+@end titlepage
+
+@ifnottex
+@node Top, C Code, (dir), (dir)
+@top NetCDF Library Internals
+@end ifnottex
+
+The most recent update of this documentation was released with version
+3.6.0 of netCDF.
+
+The netCDF data model is described in The NetCDF Users' Guide
+(@pxref{Top, The NetCDF Users Guide,, netcdf, The NetCDF
+Users' Guide}).
+
+Reference guides are available for the C (@pxref{Top, The NetCDF Users
+Guide for C,, netcdf-c, The NetCDF Users' Guide for C}), C++
+(@pxref{Top, The NetCDF Users' Guide for C++,, netcdf-cxx, The NetCDF
+Users Guide for C++}), FORTRAN 77 (@pxref{Top, The NetCDF Users' Guide
+for FORTRAN 77,, netcdf-f77, The NetCDF Users Guide for FORTRAN 77}),
+and FORTRAN (@pxref{Top, The NetCDF Users' Guide for FORTRAN 90,,
+netcdf-f90, The NetCDF Users' Guide for FORTRAN 90}).
+
+@menu
+* C Code::                      
+* Derivitive Works::            
+* Concept Index::               
+
+@detailmenu
+ --- The Detailed Node Listing ---
+
+C Code
+
+* libsrc directory::            
+* nc_test directory::           
+* nctest directory::            
+* cxx directory::               
+* man directory::               
+* ncgen and ncgen4 directories::             
+* ncdump directory::            
+* fortran directory::           
+
+@end detailmenu
+@end menu
+
+@node C Code, Derivitive Works, Top, Top
+@chapter C Code
+
+The netCDF library is implemented in C in a bunch of directories under
+netcdf-3.
+
+@menu
+* libsrc directory::            
+* nc_test directory::           
+* nctest directory::            
+* cxx directory::               
+* man directory::               
+* ncgen and ncgen4 directories::             
+* ncdump directory::            
+* fortran directory::           
+@end menu
+
+@node libsrc directory, nc_test directory, C Code, C Code
+@section libsrc directory
+
+The libsrc directory holds the core library C code.
+
+@subsection m4 Files
+
+The m4 macro processor is used as a pre-pre-processor for attr.m4,
+putget.m4, ncx.m4, t_ncxx.m4. The m4 macros are used to deal with the
+6 different netcdf data types.
+
+@table @code
+
+@item attr.m4
+Attribute functions.
+
+@item putget.m4
+Contains putNCvx_@var{type}_@var{type}, putNCv_@var{type}_@var{type},
+getNCvx_@var{type}_@var{type}, getNCv_@var{type}_@var{type}, plus a
+bunch of other important internal functions dealing with reading and writing
+data. External functions nc_put_var@var{X}_@var{type} and
+nc_get_var@var{X}_@var{type}, are implemented.
+
+@item ncx.m4
+Contains netCDF implementation of XDR. Bit-fiddling on VAXes and other
+fun stuff.
+
+@item t_ncxx.m4
+Test program for netCDF XDR library.
+
+@end table
+
+@subsection C Header Files
+
+@table @code
+
+@item netcdf.h 
+The formal definition of the netCDF API. 
+
+@item nc.h
+Private data structures, objects and interfaces.
+
+@item ncio.h
+I/O abstraction interface, including struct ncio.
+
+@item ncx.h
+External data representation interface.
+
+@item fbits.h
+Preprocessor macros for dealing with flags: fSet, fClr, fIsSet, fMask,
+pIf, pIff.
+
+@item ncconfig.h
+Generated automatically by configure.
+
+@item onstack.h
+This file provides definitions which allow us to "allocate" arrays on
+the stack where possible. (Where not possible, malloc and free are
+used.)
+
+@item rnd.h
+Some rounding macros.
+
+@end table
+
+@subsection C Code Files
+
+@table @code
+
+@item nc.c 
+Holds nc_open, nc_create, nc_enddef, nc_close, nc_delete, nc_abort,
+nc_redef, nc_inq, nc_sync,, nc_set_fill. It also holds a lot if
+internal functions.
+
+@item attr.c
+Generated from attr.m4, contains attribute functions.
+
+@item dim.c
+Dimension functions.
+
+@item var.c
+Variable function
+
+@item v1hpg.c
+This module defines the external representation of the "header" of a
+netcdf version one file. For each of the components of the NC
+structure, There are (static) ncx_len_XXX(), ncx_put_XXX() and
+v1h_get_XXX() functions. These define the external representation of
+the components. The exported entry points for the whole NC structure
+are built up from these.
+
+Although the name of this file implies that it should only apply to
+data version 1, it was modified by the 64-bit offset people, so that
+it actually handles version 2 data as well.
+
+@item v2i.c
+Version 2 API implemented in terms of version 3 API.
+
+@item error.c
+Contains nc_strerror.
+
+@item ncio.c
+Just decides whether to use ffio.c (for Crays) or posixio.c (for
+everyone else). (See below).
+
+@item posixio.c
+@itemx ffio.c
+Some file I/O, and a Cray-specific implementation. These two files
+have some functions with the same name and signatures, for example
+ncio_open. If building on a Cray, ffio.c is used. If building on a
+posix system, posixio.c is used.
+
+One of the really complex functions in posixio.c is px_get, which
+reads data from a netCDF file in perhaps a super-efficient manner?
+
+There are functions for the rel, get, move, sync, free operations, one
+set of functions (with _spx_) if NC_SHARE is in use, and another set
+(with _px_) when NC_SHARE is not in use.
+
+See also the section I/O Layering below.
+
+@item putget.c
+Generated from putget.m4.
+
+@item string.c
+NC_string structures are manipulated here. Also contains NC_check_name.
+
+@item imap.c
+Check map functionality?
+
+@item libvers.c
+Implements nc_inq_libvers.
+
+@item ncx.c
+@itemx ncx_cray.c
+Created from ncx.m4, this file contains implementation of netCDF XDR,
+and a Cray-specific implementation.
+
+@item t_nc.c
+@itemx t_ncio.c
+@itemx t_ncx.c
+There are extra tests, activated with make full_test, in . They didn't
+compile on my cygwin system, but worked fine on linux. See the extra
+tests section below.
+
+@end table
+
+@subsection Makefile
+
+Let us not neglect the Makefile, hand-crafted by Glenn and Steve to
+stand the test of many different installation platforms.
+
+@subsection I/O Layering
+
+Here's some discussion from Glenn (July, 1997) in the support archive:
+
+@example
+Given any platform specific I/O system which is capable of
+random access, it is straightforward to write an ncio
+implementation which uses that I/O system. A competent C
+programmer can do it in less than a day. The interface is
+defined in ncio.h. There are two implementations (buffered and
+unbuffered) in posixio.c, another in ffio.c, and another contributed
+mmapio.c (in pub/netcdf/contrib at our ftp site)
+which can be used as examples. (The buffered version in posixio.c has
+gotten unreadable at this point, I'm sorry to say.)
+
+A brief outline of the ncio interface follows.
+
+There are  2 public 'constructors':
+	ncio_create()
+and
+	ncio_open().
+The first creates a new file and the second opens an existing one.
+
+There is a public 'destructor',
+	ncio_close()
+which closes the descriptor and calls internal function ncio.free()
+to free any allocated resources.
+
+The 'constructors' return a data structure which includes
+4 other 'member functions'
+
+	ncio.get() - converts a file region specified by an offset
+		and extent to a memory pointer. The region may be
+		locked until the corresponding call to rel().
+
+	ncio.rel() - releases the region specified by offset.
+
+	ncio.move() - Copy one region to another without making anything
+		available to higher layers. May be just implemented in
+		terms of get() and rel(), or may be tricky to be efficient.
+		Only used in by nc_enddef() after redefinition.
+and
+	ncio.sync() - Flush any buffers to disk. May be a no-op on
+		if I/O is unbuffered.
+
+The interactions between layers and error semantics are more clearly defined
+for ncio than they were for the older xdr stream based system. The functions
+all return the system error indication (errno.h) or 0 for no error.
+
+The sizehint parameter to ncio_open() and ncio_create() is a contract between
+the upper layers and ncio. It a negotiated value passed. A suggested value
+is passed in by reference, and may be modified upon return. The upper layers
+use the returned value as a maximum extent for calls to ncio.get().
+
+In the netcdf distribution, there is test program 't_ncio.c',
+which can be used to unit test an ncio implementation. The program
+is script driven, so a variety of access patterns can be tested
+by feeding it different scripts.
+@end example
+
+And some more:
+
+@example
+For netcdf I/O on the CRAY, we can identify a couple of levels of buffering.
+
+There is a "contract" between the higher layers of
+netcdf and the "ncio" layer which says "we won't request more than
+'chunksize' bytes per request. This controls the maximum size of
+the buffer used internal to the ncio implementation for system
+read and write.
+
+On the Cray, the ncio implementation is usually 'ffio.c', which uses the
+cray specific ffio library. This is in contrast to the implementation
+used on most other systems, 'posixio.c', which used POSIX read(), write(),
+lseek() calls. The ffio library has all sorts of controls (which I don't
+pretend
+to understand), including the bufa directive you cite above.
+If you are using some sort of assign statement external to netcdf, it
+is probably being overridden by the following code sequence from
+ffio.c:
+
+        ControlString = getenv("NETCDF_FFIOSPEC");
+        if(ControlString == NULL)
+        @{
+                 ControlString="bufa:336:2";
+        @}
+	fd = ffopens(path, oflags, 0, 0, &stat, ControlString);
+
+EG, if the NETCDF_FFIOSPEC environment variable is not set, use the
+default shown. Otherwise, use the environment variable.
+
+Currently for ffio, the "chunksize" contract  is set to the st_oblksize
+member of struct ffc_stat_s obtained from a fffcntl(). You can check
+this by putting a breakpoint in ffio.c:blksize().
+
+As you may be able to tell from ffio.c, we have stubbed out interlayer
+communication to allow this to be set as the *sizehintp argument to
+ncio_open() and ncio_create(). In netcdf-3.4, we intend to fully implement this
+and expose this parameter to the user. 
+@end example
+
+In 2004, while on an unrelated research expedition to find the
+Brazillian brown-toed tree frog, Russ Rew found a sealed tomb. Within - a
+bronze statue of the terrible Monkey God. While scratching the netCDF logo
+in the Monkey God's forehead, Russ discovered a secret compartment,
+containing an old, decaying scroll. 
+
+Naturally he brought it back to Unidata's History and Antiquities
+Division, on the 103rd floor of UCAR Tower #2. Within the scroll, written in
+blood, Unidata archeologists found the following:
+
+@example
+Internal to the netcdf implementation, there is a parameterized
+contract between the upper layers and the i/o layer regarding the
+maximum amount of data to be transferred between the layers in a
+single call. Call this the "chunksize." If the file is opened for
+synchronous operations (NC_SHARE), this is to the amount of data
+transferred from the file in a single i/o call, and, typically, the
+size of the allocated buffer in the i/o layer. In the more usual
+buffered case (NC_NOSHARE), accesses to the underlying file system are
+alighned on chunksize boundaries and the size of the allocated buffer
+is twice this number.
+
+So, the chunksize controls a space versus time tradeoff, memory
+allocated in the netcdf library versus number of system calls. It also
+controls the relationship between outer and inner loop counters for
+large data accesses. A large chunksize would have a small (1?) outer
+look counter and a larger inner loop counter, reducing function call
+overhead. (Generally this effect is much less significant than the
+memory versus system call effect.)
+
+May the curse of the Monkey God devour any who desecrate the chunksize
+parameter.
+@end example
+
+@subsection Extra Tests
+
+According to Russ make full_test runs three tests:
+
+@table @code
+
+@item test
+the library blunder test which is a quick test of the library
+implementation
+
+@item nctest
+the test of the netCDF-2 interface, which is still used in a lot of
+third-party netCDF software.
+
+@item test_ncx
+a test of the XDR-replacement library.  netCDF-2 used the
+industry-standard XDR library, but netCDF-3 uses our own replacement
+for it that Glenn wrote as ncx.c and ncxx.c.
+
+@end table
+
+The latter test seems to work if you run something like
+ 
+@example
+c89 t_ncxx.c ncx.o -o t_ncx
+@end example
+ 
+first to create the "t_ncx" executable, then run "make test_ncx" and
+it will run the two tests "t_ncx" and "t_ncxx":
+ 
+@example
+$ make test_ncx
+c89 -o t_ncxx -g  t_ncxx.o ncx.o 
+./t_ncx
+./t_ncxx
+@end example
+
+which produce no output if they succeed.
+
+@node nc_test directory, nctest directory, libsrc directory, C Code
+@section nc_test directory
+
+This runs the version 3 tests suite.
+
+The main program, nc_test, can be run with a command line option to
+create a farly rich test file. It's then called again without the
+option to read the file and also engage in a bunch of test writes to
+scratch.nc.
+
+@node nctest directory, cxx directory, nc_test directory, C Code
+@section nctest directory
+
+This runs the version 2 test suite.
+
+@node cxx directory, man directory, nctest directory, C Code
+@section cxx directory
+
+This directory contains the C++ interface to netCDF.
+
+@node man directory, ncgen and ncgen4 directories, cxx directory, C Code
+@section man directory
+
+This directory holds the .m4 file that is used to generate both the C
+and fortran man pages. I wish I had known about this directory before
+I introducted the doc directory! I have moved all the docs
+into the man directory, and tried to delete the doc directory. But cvs
+won't let me. It intends that I always remember my sins. Thanks cvs,
+you're like a conscience.
+
+@node ncgen and ncgen4 directories, ncdump directory, man directory, C Code
+@section ncgen and ncgen4 directories
+
+The ncgen directory is the home of ncgen, of course.
+This program uses lex and yacc to parse the CDL input file.
+Note that the ncgen program used to called ncgen4, so this
+version of ncgen can in fact handle the full netCDF-4 enhanced
+data model as CDL input.  The old ncgen is still available,
+but is now called ncgen3.
+
+lex and yacc files:
+@table @code
+
+@item ncgen.l
+Input for flex, the output of which is renamed ncgenyy.c and #included
+by ncgentab.c.
+
+@item ncgen.y
+Input for yacc, the output of which is reanmed ncgentab.c.
+
+@end table
+
+Header files:
+
+@table @code
+
+@item ncgen.h
+Defines a bunch of extern variables, like ncid, ndims, nvars,
+... *dims, *vars, *atts.
+
+@item ncgentab.h
+Long list of defines generared by yacc?
+
+@item genlib.h
+Prototypes for all the ncgen functions.
+
+@item generic.h
+Defines union generic, which can hold any type of value (used for
+handling fill values).
+
+@end table
+
+Code files:
+
+@table @code
+
+@item main.c
+Main entry point. Handles command line options and then calls yyparse.
+
+@item ncgentab.c
+This is generated from ncgen.y by yacc.
+
+@item ncgenyy.c
+This is included in ncgentab.c, and not, therefore, on the compile
+list in the makefile, since it's compiled as part of ncgentab.c.
+
+@item genlib.c
+Bunch of functions for ncgen, including ones to write appropriate
+fortran or C code for a netcdf file. Neat! Also the gen_netcdf
+function, which actually writes out the netcdf file being generated
+by ncgen. Also has emalloc function.
+
+@item getfill.c
+A few functions dealing with fill values and their defaults.
+
+@item init.c
+
+@item load.c
+
+@item escapes.c
+Contains one functions, expand_escapes, expands escape characters,
+like \t, in input.
+
+@end table
+
+@node ncdump directory, fortran directory, ncgen and ncgen4 directories, C Code
+@section ncdump directory
+
+This directory holds ncdump, of course! No m4 or any of that stuff
+here - just plain old C.
+
+@node fortran directory,  , ncdump directory, C Code
+@section fortran directory
+
+Amazingly, the fortran interface is actually C code! Steve gets some
+package involving cfortran.h, which defines a C function of the exact
+signature which will be produced by a fortran program calling a C
+function. So _nf_open will map to nc_open.
+
+@node Derivitive Works, Concept Index, C Code, Top
+@chapter Derivitive Works
+
+At Unidata, the creative energies are simply enourmous. NetCDF has
+spawned a host of derivitive works, some samples of which are listed
+below.
+
+@section From ``A Tale of Two Data Formats,'' the bestselling novel
+
+@example
+It was the best of times, it was the worst of times,
+it was the age of webpages, it was the age of ftp,
+it was the epoch of free software, it was the epoch of Microsoft,
+it was the season of C, it was the season of Java,
+it was the spring of hope, it was the winter of despair,
+we had everything before us, we had nothing before us,
+we were all going direct to HDF5, we were all going direct
+the other way--
+@end example
+
+@section ``The Marriage of NetCDF,'' an Opera in Three Acts
+
+The massive response to this opera has been called the ``Marriage
+Phenomenon'' by New York Times Sunday Arts and Leisure Section Editor
+Albert Winklepops. The multi-billion dollar marketing empire that
+sprang from the opera after it's first season at the Cambridge Theatre
+in London's West End is headquartered in little-known Boulder,
+Colorado (most famous resident: Mork from Ork).
+
+@example
+Dr. Rew:
+[enters stage left and moves downstage center for aria]
+I've developed a format,
+a great data format,
+and it must take over the world!
+
+But it might be surpassed,
+by that pain in the ass,
+that data format
+from Illinois!
+
+Mike Folk:
+[enters stage right and moves downstage center]
+I've a nice data format,
+a real data format,
+with plenty of features,
+yoh-hoooo
+
+But scientists don't use it,
+they say it's confusing,
+A simpler API
+would dooooo...
+@end example
+
+@contents
+
+@node Transcript from Jerry Springer Show
+@section Transcript from Jerry Springer Show, aired 12/12/03, 
+
+@subsection show title:``I've Beed Dumped for a Newer Data Format''
+
+@example
+[Announcer]: ...live today from Boulder, Colorado, the Jerry Springer Show!
+
+[Audience]: (chanting) Jer-ry! Jer-ry!
+
+[Jerry]: Hello and welcome to the Jerry Springer show - today we have
+some very special guests, starting with netCDF, a data format from
+right here in Boulder.
+
+[Audience]: (applause)
+
+[netCDF]: Hi Jerry!
+
+[Jerry]: Hello netCDF, and welcome to the show. You're here to tell us
+something, right?
+
+[netCDF]: (sobbing) I think I'm going to be abandoned for a newer,
+younger data format.
+
+[Audience]: (gasps)
+
+[Jerry]: Well, netCDF, we've brought in WRF, a professional model,
+also from right here in Boulder.
+
+[Audience]: (applause)
+
+[Jerry]: Now WRF, you've been involved in an intimate relationship
+with netCDF for how long now?
+
+[WRF]: Oh yea, like, a looong time. But, you know, I got "intimate
+relationships" with lots of data formats, if you know what I mean!
+(winking)
+
+[Audience]: (laughter)
+
+[Jerry]: Hmmm, well I suppose that as a professional model, you must
+be quite attractive to data formats. I'm sure lots of data formats are
+interested in you. Is that correct?
+
+[WRF]: Oh yea Jerry. Like you sez, I'm, you know, like, "attractive."
+Oh yea! (flexes beefy arm muscles)
+
+[Audience]: (booing from men, wooo-hooing from women)
+
+[Jerry]: (to audience) Settle down now. Let's hear what WRF has to say
+to netCDF. (to WRF) WRF, how do you feel about the fact that netCDF is
+worried about younder data formats? Do you think she's right to be
+worried?
+
+[WRF]: Hey baby, what can I say? I'm a love machine! (gyrates flabby
+hips)
+
+[Audience]: (more booing, shouts of "sit down lard-ass!")
+
+[WRF]: (appologetically, kneels in front of netCDF) But I'll always
+love you baby! Just 'cause there are other formats in my life, like,
+it doesn't mean that I can't love you, you know?
+
+[Audience]: (sighing) Ahhhhhh...
+
+[Jerry]: Now we have a suprise guest, flow all the way here from
+Champagne-Urbana, Illinois, to appear as a guest on this show. Her
+name is HDF5, and she's a professional data format.
+
+[HDF5]: (flouning in, twirling a red handbag, and winking to WRF) Hi-ya, hon.
+
+[Audience]: (booing, shouts of "dumb slut!")
+
+[netCDF]: (screaming to HDF5) I can't believe you have the nerve to
+come here, you hoe! (WRF jumps up in alarm and backs away)
+
+[Jerry]: (to security) Steve, you better get between these two before
+someone gets hurt...
+
+@end example
+
+
+@node Concept Index,  , Derivitive Works, Top
+@chapter Concept Index
+
+@printindex cp
+
+@bye
+End:
+

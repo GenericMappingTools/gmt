@@ -46,6 +46,9 @@ EXTERNC ncelem* nclistdup(NClist*);
 /* Look for value match */
 EXTERNC int nclistcontains(NClist*, ncelem);
 
+/* Remove element by value; only removes first encountered */
+EXTERNC int nclistelemremove(NClist* l, ncelem elem);
+
 /* remove duplicates */
 EXTERNC int nclistunique(NClist*);
 

@@ -1,0 +1,44 @@
+netcdf duacs_global_nrt_msla_merged_h_lr {
+dimensions:
+	time = 1607 ;
+	NbLongitudes = 360 ;
+	NbLatitudes = 181 ;
+	LatLon = 2 ;
+variables:
+	int LatLon(LatLon) ;
+		LatLon:_FillValue = 2147483647 ;
+		LatLon:long_name = "No sense but necessary for some automatic tools" ;
+		LatLon:units = "count" ;
+	double NbLatitudes(NbLatitudes) ;
+		NbLatitudes:_FillValue = 1.84467440737096e+19 ;
+		NbLatitudes:long_name = "Latitudes" ;
+		NbLatitudes:units = "degrees_north" ;
+	double NbLongitudes(NbLongitudes) ;
+		NbLongitudes:_FillValue = 1.84467440737096e+19 ;
+		NbLongitudes:long_name = "Longitudes" ;
+		NbLongitudes:units = "degrees_east" ;
+	double LatLonMin(LatLon) ;
+		LatLonMin:_FillValue = 1.84467440737096e+19 ;
+		LatLonMin:long_name = "Latitude/Longitude of south/ouest corner" ;
+		LatLonMin:units = "degree" ;
+	double LatLonStep(LatLon) ;
+		LatLonStep:_FillValue = 1.84467440737096e+19 ;
+		LatLonStep:long_name = "latitude/longitude steps" ;
+		LatLonStep:units = "degree" ;
+	int time(time) ;
+		time:units = "days since 1950-01-01" ;
+		time:_CoordinateAxisType = "time" ;
+	float Grid_0001(time, NbLongitudes, NbLatitudes) ;
+		Grid_0001:_FillValue = 1.844674e+19f ;
+		Grid_0001:long_name = "H - Low Resolution Product" ;
+		Grid_0001:units = "cm" ;
+		Grid_0001:Date_CNES_JD = 19736. ;
+		Grid_0001:date = "2004-01-14 00:00:00.000000 UTC" ;
+
+// global attributes:
+		:FileType = "GRID_DOTS" ;
+		:OriginalName = "msla_oer_merged_h_19736_lr.nc" ;
+		:CreatedBy = "SSALTO/DUACS" ;
+		:CreatedOn = "20-JAN-2004 05:37:54:000000" ;
+		:title = "SSALTO/DUACS - NRT MSLA - Merged Product" ;
+}

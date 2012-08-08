@@ -3,8 +3,6 @@
 # This forms the basis for the nc-config utility, which tells you
 # various things about the netCDF installation. This code was
 # contributed by netCDF user Arlindo DaSilva. Thanks Arlindo!
-#
-# $Id$
 
 prefix=@prefix@
 exec_prefix=${prefix}
@@ -12,23 +10,38 @@ libdir=${exec_prefix}/lib
 includedir=${prefix}/include
 
 cc="@CC@"
-cxx="@CXX@"
-fc="@FC@"
 cflags=" -I${includedir} @CPPFLAGS@" 
-fflags="@FFLAGS@ @MOD_FLAG@${includedir}"
 libs="-L${libdir} @NC_LIBS@"
-flibs="-L${libdir} @NC_FLIBS@"
 has_dap="@HAS_DAP@"
 has_nc2="@HAS_NC2@"
 has_nc4="@HAS_NC4@"
 has_hdf4="@HAS_HDF4@"
 has_pnetcdf="@HAS_PNETCDF@"
 has_hdf5="@HAS_HDF5@"
-has_f77="@HAS_F77@"
-has_f90="@HAS_F90@"
-has_cxx="@HAS_CXX@"
 has_szlib="@HAS_SZLIB@"
 version="@PACKAGE_NAME@ @PACKAGE_VERSION@"
+
+has_f90="no"
+if type -p nf-config > /dev/null 2>&1; then
+  fc=`nf-config --fc`
+  fflags=`nf-config --fflags`
+  flibs=`nf-config --flibs`
+  has_f90=`nf-config --has-f90`
+fi
+
+has_cxx="no"
+has_cxx4="no"
+if type -p ncxx4-config > /dev/null 2>&1; then
+  cxx4=`ncxx4-config --cxx`
+#  cxxflags=`ncxx4-config --cxxflags`
+#  cxxlibs=`ncxx4-config --cxxlibs`
+  has_cxx4="yes"
+elif type -p ncxx-config > /dev/null 2>&1; then
+  cxx=`ncxx-config --cxx`
+#  cxxflags=`ncxx-config --cxxflags`
+#  cxxlibs=`ncxx-config --cxxlibs`
+  has_cxx="yes"
+fi
 
 usage()
 {
@@ -40,28 +53,44 @@ Available values for OPTION include:
   --help        display this help message and exit
   --all         display all options
   --cc          C compiler
-  --cxx         C++ compiler
-  --fc          Fortran compiler
   --cflags      pre-processor and compiler flags
-  --fflags      flags needed to compile a Fortran program
   --has-dap     whether OPeNDAP is enabled in this build
   --has-nc2     whether NetCDF-2 API is enabled
   --has-nc4     whether NetCDF-4/HDF-5 is enabled in this build
   --has-hdf5    whether HDF5 is used in build (always the same as --has-nc4)
   --has-hdf4    whether HDF4 was used in build
   --has-pnetcdf whether parallel-netcdf (a.k.a. pnetcdf) was used in build
-  --has-f77     whether Fortran 77 API is enabled in this build
-  --has-f90     whether Fortran 90 API is enabled in this build
-  --has-c++     whether C++ API is enabled in this build
   --has-szlib   whether szlib is included in build
   --libs        library linking information for netcdf
-  --flibs       libraries needed to link a Fortran program
   --prefix      Install prefix
   --includedir  Include directory
   --version     Library version
 
 EOF
+# When supported by ncxx4-config and ncxx-config, add
+#  --cxxflags    flags needed to compile a netCDF-4 C++ program
+#  --cxxlibs     libraries needed to link a netCDF-4 C++ program
+if type -p ncxx4-config > /dev/null 2>&1; then
+    cat <<EOF
+  --cxx4         C++ compiler for netCDF-4 C++ library
+  --has-c++4     whether netCDF-4 C++ API is installed
+EOF
+elif type -p ncxx-config > /dev/null 2>&1; then
+    cat <<EOF
+  --cxx         C++ compiler
+  --has-c++     whether C++ API is installed
 
+EOF
+fi
+if type -p nf-config > /dev/null 2>&1; then
+    cat <<EOF
+  --fc          Fortran compiler
+  --fflags      flags needed to compile a Fortran program
+  --flibs       libraries needed to link a Fortran program
+  --has-f90     whether Fortran 90 API is installed
+
+EOF
+fi
     exit $1
 }
 
@@ -74,13 +103,16 @@ all()
         echo "  --cflags    -> $cflags"
         echo "  --libs      -> $libs"
         echo
-        echo "  --cxx       -> $cxx"
         echo "  --has-c++   -> $has_cxx"
+        echo "  --cxx       -> $cxx"
+#	echo "  --cxxflags  -> $cxxflags"
+#	echo "  --cxxlibs   -> $cxxlibs"
+        echo "  --has-c++4  -> $has_cxx4"
+        echo "  --cxx4      -> $cxx4"
         echo
         echo "  --fc        -> $fc"
         echo "  --fflags    -> $fflags"
         echo "  --flibs     -> $flibs"
-        echo "  --has-f77   -> $has_f77"
         echo "  --has-f90   -> $has_f90"
         echo
         echo "  --has-dap   -> $has_dap"
@@ -124,29 +156,9 @@ while test $# -gt 0; do
 	echo $cc
 	;;
 
-    --cxx)
-	echo $cxx
-	;;
-
-    --fc)
-	echo $fc
-	;;
-
     --cflags)
 	echo $cflags
 	;;
-
-    --fflags)
-	echo $fflags
-	;;
-
-     --libs)
-       	echo $libs
-       	;;
-
-    --flibs)
-       	echo $flibs
-       	;;
 
     --has-dap)
        	echo $has_dap
@@ -160,6 +172,10 @@ while test $# -gt 0; do
        	echo $has_nc4
        	;;
 
+    --has-hdf5)
+       	echo $has_hdf5
+       	;;
+
     --has-hdf4)
        	echo $has_hdf4
        	;;
@@ -168,24 +184,12 @@ while test $# -gt 0; do
        	echo $has_pnetcdf
        	;;
 
-    --has-hdf5)
-       	echo $has_hdf5
-       	;;
-
-    --has-f77)
-       	echo $has_f77
-       	;;
-
-    --has-f90)
-       	echo $has_f90
-       	;;
-
-    --has-c++)
-       	echo $has_cxx
-       	;;
-
     --has-szlib)
        	echo $has_szlib
+       	;;
+
+     --libs)
+       	echo $libs
        	;;
 
     --prefix)
@@ -199,6 +203,46 @@ while test $# -gt 0; do
     --version)
 	echo $version
 	;;
+
+    --has-c++)
+       	echo $has_cxx
+       	;;
+
+    --cxx)
+	echo $cxx
+	;;
+
+    --has-c++4)
+       	echo $has_cxx4
+       	;;
+
+    --cxx4)
+	echo $cxx4
+	;;
+
+#    --cxxflags)
+#	echo $cxxflags
+#	;;
+#
+#    --cxxlibs)
+#	echo $cxxlibs
+#	;;
+
+    --fc)
+	echo $fc
+	;;
+
+    --fflags)
+	echo $fflags
+	;;
+
+    --flibs)
+       	echo $flibs
+       	;;
+
+    --has-f90)
+       	echo $has_f90
+       	;;
 
     *)
         echo "unknown option: $1"

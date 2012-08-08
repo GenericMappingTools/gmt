@@ -1,0 +1,99 @@
+PARMS=""; ARGS=""; CON="" ; CE="";  OCON="" ; VAR=""
+alias q0=;alias qq=;alias qv=;alias q=;alias  qh=;alias qqh=;alias qall=;alias qv=;alias qo=;
+
+TOP="/home/dmh/mach/major"
+
+PROG=./ncd
+#PROG="$TOP/ncdump/ncdump"
+
+P=`pwd`
+
+T="synth4"
+
+F="file://$TOP/ncdap_test/testdata3/$T"
+#F="http://motherlode.ucar.edu:8081/dts/$T"
+F="http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/coads_climatology.nc"
+#F="http://nomads.ncep.noaa.gov:9090/dods/gfs_hd/gfs_hd20120801/gfs_hd_00z"
+VAR=lat
+
+PARMS="[log]"
+#PARMS="${PARMS}[netcdf3]"
+PARMS="${PARMS}[fetch=disk]"
+#PARMS="${PARMS}[cache]"
+#PARMS="${PARMS}[prefetch]"
+#PARMS="${PARMS}[nocache]"
+#PARMS="${PARMS}[noprefetch]"
+#PARMS="${PARMS}[wholevar]"
+#PARMS="${PARMS}[show=fetch]"
+
+# Pick in order
+if test "x$PROG" = x ; then
+for f in ../ncdump/.libs/lt-ncdump ../ncdump/.libs/ncdump ../ncdump/ncdump ./ncd ; do
+ if test -f $f ; then
+  PROG="$f"
+  break;
+ fi
+done
+fi
+if test "x$PROG" = x ; then
+ echo "cannot locate ncdump; defaulting"
+ PROG="../ncdump/ncdump"
+fi
+
+U="${PARMS}$F"
+if test "x$CON" != "x" ; then U="${PARMS}$F?$CON"; fi
+UALL="${PARMS}$F"
+#ARGS="-h $ARGS"
+#ARGS="-w $ARGS"
+#ARGS="-c $ARGS"
+
+VARGS="--leak-check=full"
+
+alias qq="gdb --args $PROG $ARGS '$U'"
+alias qv="valgrind $VARGS PROG $ARGS '$U'"
+alias q0="$PROG $ARGS '$U'"
+alias qh="$PROG -h $ARGS '$U'"
+alias qvar="$PROG -v $VAR $ARGS '$U'"
+alias qqh="gdb --args $PROG -h $ARGS '$U'"
+alias qall="$PROG -h $ARGS '${UALL}'"
+alias qv="valgrind $VARGS $PROG $ARGS '$U'"
+if test "x$CON" = "x" ; then
+alias qo="~/svn/oc/octest -p dds -p datadds -DN -DX1 $F"
+else
+alias qo="~/svn/oc/octest -p dds -p datadds -DN -DX1 -C $CON $F"
+fi
+
+if test 1 = 0; then
+F="http://nomads.ncep.noaa.gov:9090/dods/gfs_hd/gfs_hd20110908/gfs_hd_00z"
+CON="absvprs[0:10][6:6][0:10][0:10]" 
+CON="absvprs[0:1:64][6:1:6][0:1:360][0:1:719]" 
+F="http://ferret.pmel.noaa.gov/geoide/dodsC/ct_flux"
+F="http://motherlode.ucar.edu:9080/thredds/dodsC/fmrc/NCEP/GFS/Alaska_191km/NCEP-GFS-Alaska_191km_fmrc.ncx"
+F="file:///home/dmh/nc/oc/dataset-duacs-nrt-over30d-global-merged-madt-h"
+F="http://oceanwatch.pfeg.noaa.gov/opendap/GLOBEC/GLOBEC_cetaceans"
+CON="number&number>6"
+F="http://dapper.pmel.noaa.gov/dapper/argo/argo_all.cdp"
+#CON="&location.LATITUDE<1&location.LATITUDE>-1"
+F="http://test.opendap.org:8080/dods/dts/test.03"
+#CON="s0,s1"
+F="http://oceanwatch.pfeg.noaa.gov/opendap/GLOBEC/GLOBEC_cetaceans"
+CON="lat,lon&lat>42.0&lat<=42.5"
+CON="number&number>6"
+F="http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc"
+F="http://ceda.ac.uk/dap/neodc/casix/seawifs_plankton/data/monthly/PSC_monthly_1998.nc"
+F="http://test.opendap.org:8080/dods/dts/test.02"
+F="http://test.opendap.org/opendap/data/nc/coads_climatology.nc"
+F="file://${TOP}/ncdap_test/testdata3/test.PointFile"
+F="file://${TOP}/ncdap_test/testdata3/synth1"
+F="http://dods.ndbc.noaa.gov/thredds/dodsC/data/stdmet/46029/46029h9999.nc"
+CON="wind_dir[1:10][0:0][0:0]"
+F="http://nomads.ncep.noaa.gov:9090/dods/gens/gens20111011/gep20_00z"
+CON="ens,time,lat,lon,prmslmsl[0:1:0][0:1:64][0:1:10][0:1:10]"
+F="http://esrl.noaa.gov/psd/thredds/dodsC/Datasets/noaa.oisst.v2/sst.wkmean.1990-present.nc"
+F="http://motherlode.ucar.edu:8080/thredds/dodsC/station/metar/Surface_METAR_20111122_0000.nc"
+CON="weather[0:10]"
+F="http://nomad1.ncep.noaa.gov:9090/dods/reanalyses/reanalysis-1/6hr/pgb/pgb"
+VAR=hgtprs
+fi
+
+

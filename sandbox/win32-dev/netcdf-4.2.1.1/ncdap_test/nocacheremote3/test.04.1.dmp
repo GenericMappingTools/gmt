@@ -1,0 +1,7 @@
+netcdf test {
+variables:
+	int types.i32 ;
+data:
+
+ types.i32 = 1 ;
+}

@@ -1,0 +1,35 @@
+rm -f tmp1 tmp2
+cp translation.html tmp1
+sed -e 's|[&]gt;|>|g' -e 's|[&]lt;|<|g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|&#8209;|-|g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<p>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<html>||g' -e 's|</html>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<body>||g' -e 's|</body>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<ol>|@enumerate|g' -e 's|</ol>|@end enumerate|g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<ul>|@itemize|g' -e 's|</ul>|@end itemize|g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<li>|@item |g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<pre>|@verbatim|g' -e 's|</pre>|@end verbatim|g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<a[^>]*>||g' -e 's|</a>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<h1>|@subsection |g' -e 's|</h1>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<h2>|@subsubsection |g' -e 's|</h2>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<h3>|@subsubsection |g' -e 's|</h3>||g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<table[^>]*>|@table @emph|g' -e 's|</table>|@end table|g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+sed -e 's|<tr>|@item |g' -e 's|<td>| |g' -e 's|<th>| |g' <tmp1 >tmp2
+rm tmp1; mv tmp2 tmp1
+mv tmp1 ../man4/translation.texi
+rm -fr tmp1 tmp2
+scp translation.html conan:/content/staff/dmh/daptranslation.html

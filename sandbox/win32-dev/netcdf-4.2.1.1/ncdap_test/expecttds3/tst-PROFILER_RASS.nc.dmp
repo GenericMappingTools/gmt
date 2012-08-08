@@ -1,0 +1,213 @@
+netcdf tst-PROFILER_RASS.nc {
+dimensions:
+	recNum = UNLIMITED ; // (8 currently)
+	level = 22 ;
+	staNamLen = 6 ;
+variables:
+	int level(level) ;
+		level:long_name = "Height above station" ;
+		level:units = "meter" ;
+	int wmoStaNum(recNum) ;
+		wmoStaNum:long_name = "WMO numeric station ID" ;
+	char staName(recNum, staNamLen) ;
+		staName:long_name = "Alphanumeric station name" ;
+		staName:reference = "station table" ;
+	float staLat(recNum) ;
+		staLat:long_name = "Station latitude" ;
+		staLat:units = "degree" ;
+		staLat:valid_range = 0.f, 90.f ;
+	float staLon(recNum) ;
+		staLon:long_name = "Station longitude" ;
+		staLon:units = "degree" ;
+		staLon:valid_range = -180.f, -50.f ;
+	float staElev(recNum) ;
+		staElev:long_name = "Station elevation" ;
+		staElev:units = "meter" ;
+	double timeObs(recNum) ;
+		timeObs:long_name = "Time of observation" ;
+		timeObs:_FillValue = 1.e+38 ;
+		timeObs:units = "seconds since 1970-1-1 00:00:00.0" ;
+	float windSpeedSfc(recNum) ;
+		windSpeedSfc:long_name = "Wind speed - surface" ;
+		windSpeedSfc:_FillValue = 1.e+38f ;
+		windSpeedSfc:units = "meter/sec" ;
+	float windDirSfc(recNum) ;
+		windDirSfc:long_name = "Wind direction - surface" ;
+		windDirSfc:_FillValue = 1.e+38f ;
+		windDirSfc:units = "degree" ;
+	float pressure(recNum) ;
+		pressure:long_name = "Pressure reduced to MSL" ;
+		pressure:_FillValue = 1.e+38f ;
+		pressure:units = "hectopascal" ;
+	float temperature(recNum) ;
+		temperature:long_name = "Temperature - surface" ;
+		temperature:_FillValue = 1.e+38f ;
+		temperature:units = "kelvin" ;
+	float rainRate(recNum) ;
+		rainRate:long_name = "Rainfall rate - surface" ;
+		rainRate:_FillValue = 1.e+38f ;
+		rainRate:units = "kg/meter**2/second" ;
+	float relHumidity(recNum) ;
+		relHumidity:long_name = "Relative Humidity - surface" ;
+		relHumidity:_FillValue = 1.e+38f ;
+		relHumidity:units = "percent" ;
+	char submode(recNum) ;
+		submode:long_name = "NOAA wind profiler submode" ;
+	byte qualityCode(recNum, level) ;
+		qualityCode:long_name = "NOAA wind profiler quality control test results" ;
+		qualityCode:noBitsSet = "Good" ;
+		qualityCode:bit1Set = "Reserved" ;
+		qualityCode:bit2Set = "Test results inconclusive" ;
+		qualityCode:bit3Set = "Test B performed and failed" ;
+		qualityCode:bit4Set = "Test A performed and failed" ;
+		qualityCode:bit5Set = "Reserved" ;
+		qualityCode:bit6Set = "Reserved" ;
+		qualityCode:bit7Set = "Reserved" ;
+		qualityCode:bit8Set = "Reserved" ;
+		qualityCode:bits1To8Set = "Missing" ;
+		qualityCode:LeastSignificantBit = "bit1" ;
+	float consensusNum(recNum, level) ;
+		consensusNum:long_name = "Virtual temperature consensus num" ;
+		consensusNum:_FillValue = 1.e+38f ;
+	float peakPower(recNum, level) ;
+		peakPower:long_name = "Spectral peak power" ;
+		peakPower:_FillValue = 1.e+38f ;
+		peakPower:units = "dB" ;
+	float virtualTemp(recNum, level) ;
+		virtualTemp:long_name = "Virtual temperature" ;
+		virtualTemp:_FillValue = 1.e+38f ;
+		virtualTemp:units = "kelvin" ;
+	float specWidth(recNum, level) ;
+		specWidth:long_name = "Spectral width" ;
+		specWidth:units = "meter2/sec2" ;
+		specWidth:_FillValue = 1.e+38f ;
+
+// global attributes:
+		:avgTimePeriod = "6 minutes" ;
+		:title = "RASS data : selected by ob time : time range from 1258643520 to 1258643880" ;
+data:
+
+ level = 500, 750, 1000, 1250, 1500, 1750, 2000, 2250, 2500, 2750, 3000, 
+    3250, 3500, 3750, 4000, 4250, 4500, 4750, 5000, 5250, 5500, 5750 ;
+
+ wmoStaNum = 74546, 74648, 74735, 72246, 74542, 74533, 74649, 74640 ;
+
+ staName =
+  "HBRK1 ",
+  "HKLO2 ",
+  "JTNT2 ",
+  "LDBT2 ",
+  "NDSK1 ",
+  "PLTC2 ",
+  "PRCO2 ",
+  "VCIO2 " ;
+
+ staLat = 38.31, 35.68, 33.01, 30.09, 37.3, 40.18, 34.97, 36.07 ;
+
+ staLon = -97.3, -95.86, -100.98, -96.78, -95.6, -104.73, -97.51, -99.21 ;
+
+ staElev = 447, 219, 707, 122, 265, 1524, 331, 648 ;
+
+ timeObs = 1258643880, 1258643880, 1258643880, 1258643880, 1258643880, 
+    1258643880, 1258643880, 1258643880 ;
+
+ windSpeedSfc = _, _, _, _, _, _, _, _ ;
+
+ windDirSfc = _, _, _, _, _, _, _, _ ;
+
+ pressure = _, _, _, _, _, _, _, _ ;
+
+ temperature = _, _, _, _, _, _, _, _ ;
+
+ rainRate = _, _, _, _, _, _, _, _ ;
+
+ relHumidity = _, _, _, _, _, _, _, _ ;
+
+ submode = "AAAAAAAA" ;
+
+ qualityCode =
+  8, 8, 8, 0, 8, 8, 0, 8, 8, 8, 8, 8, 0, 8, 8, 8, 8, 8, 8, 0, 8, 0,
+  0, 0, 0, 8, 0, 8, 8, 8, 8, 8, 8, 8, 0, 8, 8, 8, 8, 0, 8, 8, 8, 8,
+  0, 8, 0, 8, 8, 8, 0, 8, 8, 8, 8, 8, 8, 0, 8, 8, 8, 8, 8, 8, 8, 8,
+  8, 8, 8, 8, 0, 0, 0, 8, 0, 8, 8, 8, 8, 0, 0, 0, 0, 8, 8, 0, 8, 8,
+  -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, 
+    -127, -127, -127, -127, -127, -127, -127, -127, -127, -127,
+  -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, 
+    -127, -127, -127, -127, -127, -127, -127, -127, -127, -127,
+  0, 0, 0, 8, 0, 8, 8, 8, 8, 0, 8, 8, 8, 8, 0, 8, 8, 8, 0, 8, 8, 8,
+  -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, -127, 
+    -127, -127, -127, -127, -127, -127, -127, -127, -127, -127 ;
+
+ consensusNum =
+  8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+  9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 
+    10, 10, 10,
+  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 
+    10, 10, 10,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 
+    10, 10, 10,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ;
+
+ peakPower =
+  10.9695, 3.9535, -6.718999, 3.4205, 12.626, 12.2755, 10.42, 10.706, 
+    12.5405, 10.811, 12.397, 12.7035, 3.4205, 10.8025, 10.943, 10.536, 
+    12.555, 13.728, 8.145499, 11.519, 11.5995, 13.496,
+  4.292, 4.418, 8.414, 8.52, 7.243, 6.401, 8.699499, 7.235, 12.627, 10.244, 
+    8.53, 9.263, 8.7765, 8.372499, 9.683499, 11.2495, 10.01, 9.117999, 
+    10.565, 10.252, 8.299, 9.178999,
+  9.506999, 5.539999, 6.6125, 4.563499, 11.741, 10.6795, 9.117999, 9.523499, 
+    10.2635, 7.060999, 9.505499, 11.5735, 8.0425, 12.365, 10.1975, 10.4875, 
+    12.8755, 10.1035, 12.9655, 10.9295, 7.949999, 8.511999,
+  22.51, 18.15, 11.816, 3.887, 8.307, -7.143, 0.423, 0.6760001, 6.805, 7.1, 
+    8.344001, 13.151, 6.903, 4.302, 6.903, 7.194, 8.115001, 10.053, 4.222, 
+    8.486, 13.276, 8.568001,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  15.5485, 9.740499, 11.9825, 7.186999, 9.173499, 4.2545, 11.527, 13.561, 
+    9.115999, 9.2175, 9.0685, 9.308499, 7.625999, 8.6985, 9.166499, 9.315, 
+    5.896999, 9.343499, 9.596, 7.643, 7.92, 8.493999,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ;
+
+ virtualTemp =
+  225.9625, 233.3025, 238.7675, 305, 228.54, 251.7725, 244.1, 227.625, 
+    273.1225, 229.2325, 231.335, 272.75, 301.9225, 259.9475, 233.525, 273.1, 
+    273.2125, 272.54, 251.665, 265.8825, 228.8225, 267.1125,
+  236.0975, 237.6025, 227.115, 301.9875, 234.9575, 248.9125, 247.73, 247.865, 
+    289.9, 253.0425, 286.025, 263.39, 233.3675, 254.7275, 276.31, 245.28, 
+    249.0525, 233.1575, 248.665, 310.9225, 267.0925, 251.555,
+  240.4025, 305.485, 235.6275, 247.9875, 246.39, 281.8775, 252.765, 297.845, 
+    302.615, 266.59, 303.8575, 306.22, 250.555, 240.9625, 230.0625, 255.3125, 
+    306.62, 305.955, 306.57, 305.7675, 305.4675, 303.2675,
+  289.7425, 288.6975, 287.0275, 269.2825, 233.025, 230.94, 231.6325, 240.46, 
+    232.2225, 308.2625, 273.9325, 264.9025, 258.2325, 230.35, 234.7275, 
+    231.58, 234.385, 248.3775, 259.535, 235.235, 258.37, 282.27,
+  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+  276.2125, 276.2125, 276.2075, 233.2425, 276.0925, 284.46, 245.17, 247.3975, 
+    242.915, 264.0775, 247.3875, 282.49, 227.9, 275.3775, 260.0075, 243.205, 
+    277.9525, 232.1, 263.625, 247.18, 288.1125, 235.155,
+  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 ;
+
+ specWidth =
+  2.7528, 0.0182, 0.1959, 0.2346, 0.1456, 0.2125, 0.3251, 0.0159, 0.0152, 
+    0.1146, 0.1654, 0.1776, 0.1988, 0.0317, 0.0059, 0.0725, 0.0113, 0.3267, 
+    0.0189, 0.0298, 0.1321, 0.3,
+  0.00305, 0.3954, 0.4293, 0.78695, 0.06055, 0.03035, 0.00815, 0.0556, 
+    0.95655, 0.24445, 0.158, 0.0472, 0.01685, 0.2111, 0.307, 0.0163, 0.1226, 
+    0.48015, 0.055, 0.0323, 0.2368, 0.05185,
+  0.48635, 0.3438, 0.161075, 0.28415, 0.54875, 0.565425, 0.171925, 0.04275, 
+    0.051275, 0.2744, 0.139225, 0.24545, 0.276525, 0.083825, 0.108075, 
+    0.16855, 0.3694, 0.034325, 0.02675, 0.011875, 0.481575, 0.0354,
+  1.27435, 1.1055, 0.61795, 0.00775, 0.50425, 0.21415, 0.0435, 0.038, 
+    0.19175, 0.1464, 0.39015, 0.17105, 0.18535, 0.3372, 0.17865, 0.18645, 
+    0.00675, 0.0318, 0.23215, 0.0018, 1.5776, 0.02715,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,
+  0.0002, 0.0103, 0.06465, 0.7254, 0.0279, 0.007999999, 0.17365, 1.0163, 
+    0.31035, 0.0879, 0.0314, 0.25205, 0.06335, 0.30345, 0.2648, 0.1969, 
+    0.1777, 0.11085, 0.13915, 0.0035, 0.0059, 0.0332,
+  _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ ;
+}

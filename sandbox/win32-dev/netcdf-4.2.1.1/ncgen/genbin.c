@@ -6,19 +6,17 @@
 
 #include "includes.h"
 #include <ctype.h>	/* for isprint() */
-#include "nciter.h"
-#include "offsets.h"
 
 #ifdef ENABLE_BINARY
 
 #undef TRACE
 
-extern List* vlenconstants;
-
 /* Forward*/
-static void genbin_defineattr(Symbol* asym,Bytebuffer*);
+static void genbin_defineattr(Symbol* asym);
 static void genbin_definevardata(Symbol* vsym);
-static void genbin_write(Symbol*,Bytebuffer*,Odometer*,int);
+static int  genbin_write(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+static int genbin_writevar(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+static int genbin_writeattr(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
 
 #ifdef USE_NETCDF4
 static void genbin_deftype(Symbol* tsym);
@@ -33,10 +31,10 @@ gen_netcdf(const char *filename)
 {
     int stat, ncid;
     int idim, ivar, iatt;
-    int ndims, nvars, natts, ngatts, ntyps, ngrps;
+    int ndims, nvars, natts, ngatts;
 
 #ifdef USE_NETCDF4
-    int igrp;
+    int ntyps, ngrps, igrp;
 #endif
 
     Bytebuffer* databuf = bbNew();
@@ -45,8 +43,10 @@ gen_netcdf(const char *filename)
     nvars = listlength(vardefs);
     natts = listlength(attdefs);
     ngatts = listlength(gattdefs);
+#ifdef USE_NETCDF4
     ntyps = listlength(typdefs);
     ngrps = listlength(grpdefs);
+#endif /*USE_NETCDF4*/
 
     /* create netCDF file, uses NC_CLOBBER mode */
     cmode_modifier |= NC_CLOBBER;
@@ -89,7 +89,7 @@ gen_netcdf(const char *filename)
             Symbol* dsym = (Symbol*)listget(dimdefs,idim);
 	    stat = nc_def_dim(dsym->container->ncid,
 			      dsym->name,
-			      dsym->dim.declsize,
+			      (dsym->dim.isunlimited?NC_UNLIMITED:dsym->dim.declsize),
 			      &dsym->ncid);
 	    check_err(stat,__LINE__,__FILE__);
        }
@@ -123,9 +123,6 @@ gen_netcdf(const char *filename)
     }
 
 #ifdef USE_NETCDF4
-    /* Collect vlen data*/
-    bindata_vlenconstants(vlenconstants);
-
     /* define special variable properties */
     if(nvars > 0) {
 	for(ivar = 0; ivar < nvars; ivar++) {
@@ -139,8 +136,7 @@ gen_netcdf(const char *filename)
     if(ngatts > 0) {
 	for(iatt = 0; iatt < ngatts; iatt++) {
 	    Symbol* gasym = (Symbol*)listget(gattdefs,iatt);
-	    bbClear(databuf);
-	    genbin_defineattr(gasym,databuf);	    
+	    genbin_defineattr(gasym);	    
 	}
     }
     
@@ -148,8 +144,7 @@ gen_netcdf(const char *filename)
     if(natts > 0) {
 	for(iatt = 0; iatt < natts; iatt++) {
 	    Symbol* asym = (Symbol*)listget(attdefs,iatt);
-	    bbClear(databuf);
-	    genbin_defineattr(asym,databuf);
+	    genbin_defineattr(asym);
 	}
     }
 
@@ -162,15 +157,17 @@ gen_netcdf(const char *filename)
     stat = nc_enddef(rootgroup->ncid);
     check_err(stat,__LINE__,__FILE__);
 
-    /* Load values into those variables with defined data */
-    if(nvars > 0) {
-        for(ivar = 0; ivar < nvars; ivar++) {
-	    Symbol* vsym = (Symbol*)listget(vardefs,ivar);
-	    if(vsym->data != NULL) {
-	        bbClear(databuf);
-		genbin_definevardata(vsym);
-	    }
-	}
+    if(!header_only) {
+        /* Load values into those variables with defined data */
+        if(nvars > 0) {
+            for(ivar = 0; ivar < nvars; ivar++) {
+                Symbol* vsym = (Symbol*)listget(vardefs,ivar);
+                if(vsym->data != NULL) {
+                    bbClear(databuf);
+                    genbin_definevardata(vsym);
+                }
+            }
+        }
     }
     bbFree(databuf);
 }
@@ -256,7 +253,6 @@ genbin_deftype(Symbol* tsym)
     case NC_ENUM: {
         Bytebuffer* datum;
         Datalist* ecdl;
-        Datasrc* esrc;
 	stat = nc_def_enum(tsym->container->ncid,
 			   tsym->typ.basetype->typ.typecode,
 			   tsym->name,
@@ -266,14 +262,12 @@ genbin_deftype(Symbol* tsym)
         ecdl = builddatalist(1);
         dlextend(ecdl); /* make room for one constant*/
 	ecdl->length = 1;
-	esrc = datalist2src(ecdl);
 	for(i=0;i<listlength(tsym->subnodes);i++) {
 	    Symbol* econst = (Symbol*)listget(tsym->subnodes,i);
 	    ASSERT(econst->subclass == NC_ECONST);
-	    ecdl->data[0] = econst->typ.econst;		
-	    esrc->index = 0;
+	    generator_reset(bin_generator,NULL);
 	    bbClear(datum);
-	    bindata_basetype(econst->typ.basetype,esrc,datum,NULL);
+	    generate_basetype(econst->typ.basetype,&econst->typ.econst,datum,NULL,bin_generator);
 	    stat = nc_insert_enum(tsym->container->ncid,
 				  tsym->ncid,
 				  econst->name,
@@ -281,8 +275,6 @@ genbin_deftype(Symbol* tsym)
 	    check_err(stat,__LINE__,__FILE__);	
 	}
 	bbFree(datum);
-	ecdl->length = 0;
-	freedatasrc(esrc);
 	} break;
     case NC_VLEN:
 	stat = nc_def_vlen(tsym->container->ncid,
@@ -309,11 +301,11 @@ genbin_deftype(Symbol* tsym)
 				efield->typ.basetype->ncid);
 	    } else {
 		int j;
-		Bytebuffer* dimbuf = bbNew();
+		int dimsizes[NC_MAX_VAR_DIMS];
 		/* Generate the field dimension constants*/
 		for(j=0;j<efield->typ.dimset.ndims;j++) {
 		     unsigned int size = efield->typ.dimset.dimsyms[j]->dim.declsize;
-		     bbAppendn(dimbuf,(char*)&size,sizeof(size));
+		     dimsizes[j] = size;
 		}
 	        stat = nc_insert_array_compound(
 				tsym->container->ncid,
@@ -322,8 +314,7 @@ genbin_deftype(Symbol* tsym)
 			        efield->typ.offset,
 				efield->typ.basetype->ncid,
 				efield->typ.dimset.ndims,
-				(int*)bbContents(dimbuf));
-		bbFree(dimbuf);
+				dimsizes);
 	    }
             check_err(stat,__LINE__,__FILE__);	
 	}
@@ -334,7 +325,84 @@ genbin_deftype(Symbol* tsym)
 #endif /*USE_NETCDF4*/
 
 static void
-genbin_defineattr(Symbol* asym,Bytebuffer* databuf)
+genbin_defineattr(Symbol* asym)
+{
+    Bytebuffer* databuf = bbNew();
+    generator_reset(bin_generator,NULL);
+    generate_attrdata(asym,bin_generator,(Writer)genbin_write,databuf);
+}
+
+
+/* Following is patterned after the walk functions in semantics.c */
+static void
+genbin_definevardata(Symbol* vsym)
+{
+    Bytebuffer* databuf;
+    if(vsym->data == NULL) return;
+    databuf = bbNew();
+    generator_reset(bin_generator,NULL);
+    generate_vardata(vsym,bin_generator,(Writer)genbin_write,databuf);
+}
+
+static int
+genbin_write(Generator* generator, Symbol* sym, Bytebuffer* memory,
+             int rank, size_t* start, size_t* count)
+{
+    if(sym->objectclass == NC_ATT)
+	return genbin_writeattr(generator,sym,memory,rank,start,count);
+    else if(sym->objectclass == NC_VAR)
+	return genbin_writevar(generator,sym,memory,rank,start,count);
+    else
+	PANIC("illegal symbol for genc_write");
+    return NC_EINVAL;
+}
+
+static int
+genbin_writevar(Generator* generator, Symbol* vsym, Bytebuffer* memory,
+                int rank, size_t* start,
+#ifdef USE_NOFILL
+	        size_t* indices
+#else
+	        size_t* count
+#endif
+	       )
+{
+    int stat = NC_NOERR;
+    char* data = bbContents(memory);
+#ifdef USE_NOFILL
+    size_t count[NC_MAX_VAR_DIMS];    
+    { int i; for(i=0;i<rank;i++) count[i] = indices[i] - start[i];}
+#endif
+
+#ifdef DEBUG
+    {
+    int i;
+    fprintf(stderr,"startset = [");
+    for(i=0;i<rank;i++)
+	fprintf(stderr,"%s%lu",(i>0?", ":""),(unsigned long)start[i]);
+    fprintf(stderr,"] ");
+    fprintf(stderr,"countset = [");
+    for(i=0;i<rank;i++)
+	fprintf(stderr,"%s%lu",(i>0?", ":""),(unsigned long)count[i]);
+    fprintf(stderr,"]\n");
+    fflush(stderr);
+    }
+#endif
+	
+    if(rank == 0) {
+	size_t count[1] = {0};
+        stat = nc_put_var1(vsym->container->ncid, vsym->ncid, count, data);
+    } else {
+        stat = nc_put_vara(vsym->container->ncid, vsym->ncid, start, count, data);
+    }
+    check_err(stat,__LINE__,__FILE__);
+    bbClear(memory);
+    return stat;
+}
+
+static int
+genbin_writeattr(Generator* generator, Symbol* asym, Bytebuffer* databuf,
+           int rank, size_t* start, size_t* count)
 {
     int stat;
     size_t len;
@@ -342,16 +410,12 @@ genbin_defineattr(Symbol* asym,Bytebuffer* databuf)
     int varid, grpid, typid;
     Symbol* basetype = asym->typ.basetype;
 
-    bbClear(databuf);
-
-    grpid = asym->container->ncid,
+    grpid = asym->container->ncid;
     varid = (asym->att.var == NULL?NC_GLOBAL : asym->att.var->ncid);
     typid = basetype->ncid;
 
     list = asym->data;
     len = list->length;
-
-    bindata_attrdata(asym,databuf);
 
     /* Use the specialized put_att_XX routines if possible*/
     if(isprim(basetype->typ.typecode)) {
@@ -364,10 +428,8 @@ genbin_defineattr(Symbol* asym,Bytebuffer* databuf)
             case NC_CHAR: {
                 char* data = (char*)bbContents(databuf);
 		size_t slen = bbLength(databuf);
-#ifdef IGNORE
 		/* Revise length if slen == 0 */
 		if(slen == 0) {bbAppend(databuf,'\0'); slen++;}
-#endif
                 stat = nc_put_att_text(grpid,varid,asym->name,slen,data);
                 check_err(stat,__LINE__,__FILE__);  
             } break;
@@ -429,114 +491,20 @@ genbin_defineattr(Symbol* asym,Bytebuffer* databuf)
 	}
     } else { /* use the generic put_attribute for user defined types*/
 	const char* data;
-	char out[4096];
 	data = (const char*)bbContents(databuf);
         stat = nc_put_att(grpid,varid,asym->name,typid,
 			        len,(void*)data);
         check_err(stat,__LINE__,__FILE__);
-	memset(out,0x77,sizeof(out));
-	stat = nc_get_att(grpid,varid,asym->name,&out);
-        check_err(stat,__LINE__,__FILE__);
+#ifdef DEBUG
+	{
+	    char out[4096];
+	    memset(out,0x77,sizeof(out));
+	    stat = nc_get_att(grpid,varid,asym->name,&out);
+            check_err(stat,__LINE__,__FILE__);
+	}
+#endif
     }
-}
-
-
-/* Following is patterned after the walk functions in semantics.c */
-static void
-genbin_definevardata(Symbol* vsym)
-{
-    int varid, grpid;
-    int rank;
-    Bytebuffer* memory;
-    nciter_t iter;
-    Odometer* odom = NULL;
-    size_t nelems;
-    int chartype = (vsym->typ.basetype->typ.typecode == NC_CHAR);
-    Datalist* fillsrc = vsym->var.special._Fillvalue;
-    int isscalar = (vsym->typ.dimset.ndims == 0);
-
-    grpid = vsym->container->ncid,
-    varid = vsym->ncid;
-    rank = vsym->typ.dimset.ndims;
-
-    memory = bbNew();
-    /* give the buffer a running start to be large enough*/
-    bbSetalloc(memory, nciterbuffersize);
-
-    if(vsym->data == NULL) return;
-
-    /* Generate character constants separately */    
-    if(!isscalar && chartype) {
-        gen_chararray(vsym,memory,fillsrc);
-	/* generate a corresponding odometer */
-        odom = newodometer(&vsym->typ.dimset,NULL,NULL);
-        genbin_write(vsym,memory,odom,0);
-    } else { /* not character constant */
-        Datasrc* src = datalist2src(vsym->data);
-        if(isscalar) { /*scalar */
-            bindata_basetype(vsym->typ.basetype,src,memory,fillsrc); /*scalar*/
-            if(bbLength(memory) > 0)
-                genbin_write(vsym,memory,odom,1);
-        } else { /* This is the heavy lifing */
-            /* Create an iterator to generate blocks of data */
-            nc_get_iter(vsym,nciterbuffersize,&iter);
-            /* Fill in the local odometer instance */
-            odom = newodometer(&vsym->typ.dimset,NULL,NULL);
-            for(;;) {
-                nelems=nc_next_iter(&iter,odom->start,odom->count);
-                if(nelems == 0) break;
-if(debug > 0) {/*dump the iteration info*/
-int i;
-fprintf(stderr,"iter: %s->start[",vsym->name);
-for(i=0;i<odom->rank;i++)
-fprintf(stderr,"%s%lu",(i==0?"":","),(unsigned long)odom->start[i]);
-fprintf(stderr,"]\n      %s->count[",vsym->name);
-for(i=0;i<odom->rank;i++)
-fprintf(stderr,"%s%lu",(i==0?"":","),(unsigned long)odom->count[i]);
-fprintf(stderr,"]\n");
-}
-                bindata_array(vsym,memory,src,odom,/*index=*/0,fillsrc);
-                /* Dump this chunk of (non-scalar) memory */
-                genbin_write(vsym,memory,odom,0);
-            }
-            /* Write any residual data */
-            if(bbLength(memory) > 0)
-                genbin_write(vsym,memory,odom,0);
-        }
-    }
-    odometerfree(odom);
-    bbFree(memory);
-}
-
-static void
-genbin_write(Symbol* vsym, Bytebuffer* memory, Odometer* odom, int scalar)
-{
-    int stat = NC_NOERR;
-
-if(!scalar && debug > 0) {
-    int i;
-    fprintf(stderr,"startset = [");
-    for(i=0;i<odom->rank;i++)
-	fprintf(stderr,"%s%lu",(i>0?", ":""),(unsigned long)odom->start[i]);
-    fprintf(stderr,"] ");
-    fprintf(stderr,"countset = [");
-    for(i=0;i<odom->rank;i++)
-	fprintf(stderr,"%s%lu",(i>0?", ":""),(unsigned long)odom->count[i]);
-    fprintf(stderr,"]\n");
-    fflush(stderr);
-}
-	
-    if(scalar) {
-	size_t count[1] = {1};
-        stat = nc_put_var1(vsym->container->ncid, vsym->ncid, count,
-                           bbContents(memory));
-    } else {
-        stat = nc_put_vara(vsym->container->ncid, vsym->ncid,
-                       odom->start, odom->count,
-                       bbContents(memory));
-    }
-    check_err(stat,__LINE__,__FILE__);
-    bbClear(memory);
+    return stat;
 }
 
 #endif /*ENABLE_BINARY*/

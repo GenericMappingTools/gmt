@@ -6,7 +6,6 @@
 
 #ifndef _ONSTACK_H_
 #define _ONSTACK_H_
-/* include after ncconfig.h */
 /**
  * This file provides definitions which allow us to
  * "allocate" arrays on the stack where possible.

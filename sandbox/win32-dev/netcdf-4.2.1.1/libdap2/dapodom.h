@@ -9,34 +9,27 @@
 
 typedef struct Dapodometer {
     int            rank;
-    DCEslice        slices[NC_MAX_VAR_DIMS];
     size_t         index[NC_MAX_VAR_DIMS];
+    size_t         start[NC_MAX_VAR_DIMS];
+    size_t         count[NC_MAX_VAR_DIMS];
+    size_t         stride[NC_MAX_VAR_DIMS];
+    size_t         stop[NC_MAX_VAR_DIMS];
+    size_t         declsize[NC_MAX_VAR_DIMS];
 } Dapodometer;
 
-/* Odometer operators*/
-extern Dapodometer* newdapodometer(DCEslice* slices, unsigned int first, unsigned int count);
+extern Dapodometer* dapodom_fromsegment(DCEsegment* segment, size_t start, size_t stop);
 
-extern Dapodometer* newsimpledapodometer(struct DCEsegment*,unsigned int);
+extern Dapodometer* dapodom_new(size_t rank,
+                                const size_t* start, const size_t* count,
+				const ptrdiff_t* stride, const size_t* size);
 
-extern Dapodometer* newdapodometer1(unsigned int count);
-extern Dapodometer* newdapodometer2(const size_t*, const size_t*,
-                      const ptrdiff_t*, unsigned int, unsigned int);
-extern Dapodometer* newdapodometer3(int, size_t*);
+extern void dapodom_free(Dapodometer*);
 
-extern void freedapodometer(Dapodometer*);
-extern char* dapodometerprint(Dapodometer* odom);
+extern int dapodom_more(Dapodometer* odom);
+extern int dapodom_next(Dapodometer* odo);
 
-extern int dapodometermore(Dapodometer* odom);
-extern int dapodometerincr(Dapodometer* odo);
-extern int dapodometerincrith(Dapodometer* odo,int);
-extern size_t dapodometercount(Dapodometer* odo);
-extern void dapodometerreset(Dapodometer*);
-extern Dapodometer* dapodometersplit(Dapodometer* odom, int tail);
+extern off_t dapodom_count(Dapodometer* odo);
 
-extern size_t dapodometerspace(Dapodometer* odom, unsigned int wheel);
-extern size_t dapodometerpoints(Dapodometer*);
-
-extern size_t* dapodometerindices(Dapodometer*);
-extern int dapodometervarmcount(Dapodometer*, const ptrdiff_t*, const size_t*);
+extern size_t dapodom_varmcount(Dapodometer*, const ptrdiff_t*, const size_t*);
 
 #endif /*DAPODOM_H*/

@@ -15,7 +15,9 @@
 #include "cceparselex.h"
 
 /* Forward */
+#ifdef PARSEDEBUG
 static void dumptoken(CCElexstate* lexstate);
+#endif
 static int tohex(int c);
 static void ceaddyytext(CCElexstate* lex, int c);
 
@@ -175,6 +177,8 @@ tohex(int c)
     return -1;
 }
 
+
+#ifdef PARSEDEBUG
 static void
 dumptoken(CCElexstate* lexstate)
 {
@@ -189,6 +193,7 @@ dumptoken(CCElexstate* lexstate)
 	break;
     }
 }
+#endif
 
 static void
 ccelexinit(char* input, CCElexstate** lexstatep)

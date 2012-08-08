@@ -8,6 +8,8 @@
 #define _NCX_H_
 
 #include "ncdispatch.h"
+#include "ncio.h"
+#include "fbits.h"
 
 /*
  * An external data representation interface.
@@ -30,12 +32,7 @@
 #include <stddef.h> /* size_t */
 #include <errno.h>
 #include <sys/types.h> /* off_t */
-
-/* Define uchar if it is not defined on this system. */
-#ifndef HAVE_UCHAR
-typedef unsigned char uchar;
-#endif
-
+#include <ncdispatch.h>
 #define longlong long long
 
 #if defined(_CRAY) && !defined(_CRAYIEEE) && !defined(__crayx1)
@@ -97,6 +94,9 @@ typedef unsigned char uchar;
 #define X_INT_MIN	(-2147483647-1)
 #define X_INT_MAX	2147483647
 #define X_UINT_MAX	4294967295U
+#define X_LONGLONG_MIN	(-9223372036854775807LL-1LL)
+#define X_LONGLONG_MAX	9223372036854775807LL
+#define X_ULONGLONG_MAX	18446744073709551615ULL
 #define X_FLOAT_MAX	3.402823466e+38f
 #define X_FLOAT_MIN	(-X_FLOAT_MAX)
 #define X_FLT_MAX	X_FLOAT_MAX	/* alias compatible with limits.h */

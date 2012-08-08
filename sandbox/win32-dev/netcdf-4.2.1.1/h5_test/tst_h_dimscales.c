@@ -8,7 +8,7 @@
 
    $Id$
 */
-#include <err_macros.h>
+#include "h5_err_macros.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
@@ -223,7 +223,6 @@ main()
 	       if (datasetid > 0)
 	       {
 		  H5Dclose(datasetid);
-		  datasetid = 0;
 	       }
 	       
 	       if ((datasetid = H5Dopen(grpid, obj_name)) < 0) ERR;

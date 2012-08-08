@@ -206,7 +206,9 @@ main(int argc, char **argv)
    char attstr_in[MAX_ATTSTRING_LEN];
    int dimids[NUM_GOOD];
    int varids[NUM_GOOD];
+#if 0
    int attnums[NUM_GOOD];
+#endif
    char *testfile = FILE_NAME;
    int formats[] = {
        NC_FORMAT_CLASSIC
@@ -250,7 +252,9 @@ main(int argc, char **argv)
 	   if ((res = nc_put_att_double(ncid, NC_GLOBAL, valid[i], NC_DOUBLE, 
 					NATTVALS, attvals)))
 	       ERR;
+#if 0
 	   attnums[i] = i;
+#endif
        }
        
        /* Try defining dimensions, variables, and attributes with various

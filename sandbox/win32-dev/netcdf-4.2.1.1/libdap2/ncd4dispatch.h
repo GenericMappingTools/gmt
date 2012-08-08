@@ -55,7 +55,7 @@ NCD4_open(const char *path, int mode,
          struct NC_Dispatch* dispatch, NC** ncp);
 
 EXTERNL int
-NCD4_close(int ncid);
+NCD4_abort(int ncid);
 
 EXTERNL int
 NCD4_get_vara(int ncid, int varid,
@@ -71,10 +71,6 @@ extern int NCD4_abort(int ncid);
 /* End _var */
 
 extern int NCD4_initialize(void);
-
-extern ptrdiff_t dapsinglestride3[NC_MAX_VAR_DIMS];
-extern size_t dapzerostart3[NC_MAX_VAR_DIMS];
-extern size_t dapsinglecount3[NC_MAX_VAR_DIMS];
 
 #if defined(__cplusplus)
 }

@@ -18,10 +18,12 @@
 #include "nclist.h"
 #include "nchashmap.h"
 #include "nclog.h"
+#include "nc_uri.h"
+
+#include "fbits.h"
 #include "dceconstraints.h"
 
 #include "oc.h"
-#include "ocuri.h"
 
 #include "nc.h"
 #include "netcdf.h"
@@ -82,31 +84,13 @@ struct NCsegment;
 
 
 /**************************************************/
-/* The NCDAP3 structure is an extension of the NC structure (libsrc/nc.h) */
-
-typedef struct NCDAP3 {
-    NC nc; /* Used to store meta-data */
-    NCDAPCOMMON dap;
-} NCDAP3;
-
-/**************************************************/
 
 extern struct NCTMODEL nctmodels[];
 
 /**************************************************/
 /* Import some internal procedures from libsrc*/
 
-#ifdef IGNORE
-extern void drno_add_to_NCList(struct NC *ncp);
-extern void drno_del_from_NCList(struct NC *ncp);
-extern void drno_free_NC(struct NC *ncp);
-extern struct NC* drno_new_NC(const size_t *chunkp);
-extern void drno_set_numrecs(NC* ncp, size_t size);
-extern size_t drno_get_numrecs(NC* ncp);
-extern int drno_ncio_open(NC* ncp, const char* path, int mode);
-#endif
-
- /* Internal, but non-static procedures */
+/* Internal, but non-static procedures */
 extern NCerror computecdfvarnames3(NCDAPCOMMON*,CDFnode*,NClist*);
 extern NCerror computecdfnodesets3(NCDAPCOMMON* drno);
 extern NCerror computevarnodes3(NCDAPCOMMON*, NClist*, NClist*);
@@ -124,7 +108,7 @@ extern void dereference3(NCconstraint* constraint);
 extern NCerror rereference3(NCconstraint*, NClist*);
 */
 
-extern NCerror buildvaraprojection3(struct Getvara*,
+extern NCerror buildvaraprojection3(CDFnode*,
 		     const size_t* startp, const size_t* countp, const ptrdiff_t* stridep,
 		     struct DCEprojection** projectionlist);
 
@@ -138,42 +122,32 @@ extern NCerror nc3d_getvarx(int ncid, int varid,
 /**************************************************/
 
 /* From: ncdap3.c*/
+extern size_t dap_one[NC_MAX_VAR_DIMS];
+extern size_t dap_zero[NC_MAX_VAR_DIMS];
+
 extern NCerror nc3d_open(const char* path, int mode, int* ncidp);
 extern int nc3d_close(int ncid);
 extern int nc3dinitialize(void);
 extern NCerror regrid3(CDFnode* ddsroot, CDFnode* template, NClist*);
-extern NCerror imprint3(CDFnode* dstroot, CDFnode* srcroot);
-extern void unimprint3(CDFnode* root);
-extern NCerror imprintself3(CDFnode* root);
 extern void setvisible(CDFnode* root, int visible);
+extern NCerror mapnodes3(CDFnode* dstroot, CDFnode* srcroot);
+extern void unmap3(CDFnode* root);
 
 /* From: ncdap3a.c*/
 extern NCerror fetchtemplatemetadata3(NCDAPCOMMON* nccomm);
 extern NCerror fetchconstrainedmetadata3(NCDAPCOMMON* nccomm);
 extern void applyclientparamcontrols3(NCDAPCOMMON*);
 extern NCerror suppressunusablevars3(NCDAPCOMMON*);
-extern NCerror addstringdims(NCDAP3* drno);
-extern NCerror defseqdims(NCDAP3* drno);
+extern NCerror addstringdims(NCDAPCOMMON* drno);
+extern NCerror defseqdims(NCDAPCOMMON* drno);
 extern NCerror fixzerodims3(NCDAPCOMMON*);
 extern void estimatevarsizes3(NCDAPCOMMON*);
-extern NCerror defrecorddim3(NCDAP3*);
-extern NClist* getalldims3(NClist* vars, int visibleonly);
-extern NCerror showprojection3(NCDAP3*, CDFnode* var);
+extern NCerror defrecorddim3(NCDAPCOMMON*);
+extern NCerror showprojection3(NCDAPCOMMON*, CDFnode* var);
 
 
 /* From: dapcvt.c*/
 extern NCerror dapconvert3(nc_type, nc_type, char*, char*, size_t);
 extern int dapcvtattrval3(nc_type, void*, NClist*);
-
-#ifdef IGNORE
-/* allow access url parse and params without exposing ocuri.h */
-extern int NCDAP_urlparse(const char* s, void** dapurl);
-extern void NCDAP_urlfree(void* dapurl);
-extern const char* NCDAP_urllookup(void* dapurl, const char* param);
-#endif
-
-extern size_t dapzerostart3[NC_MAX_VAR_DIMS];
-extern size_t dapsinglecount3[NC_MAX_VAR_DIMS];
-extern ptrdiff_t dapsinglestride3[NC_MAX_VAR_DIMS];
 
 #endif /*NCDAP3_H*/

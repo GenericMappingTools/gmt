@@ -131,6 +131,7 @@ main(int argc, char **argv)
 		   amat) < 0) ERR;
 
       /* Write dimension values for both xdim, ydim */
+      {
       short xydimMat[ nrowCur >= ncolCur ? nrowCur : ncolCur];
       for (ii = 0; ii < nrowCur; ii++) 
 	 xydimMat[ii] = 0;    /*#### 100 * ii; */
@@ -146,6 +147,7 @@ main(int argc, char **argv)
       if (H5Dwrite(ydimId, H5T_NATIVE_SHORT, H5S_ALL, H5S_ALL,
 		   H5P_DEFAULT, xydimMat) < 0) ERR;
       if (H5Dclose(ydimId) < 0) ERR;
+      }
 
       if (H5Dclose(dsId) < 0) ERR;
       if (H5Gclose(grpaId) < 0) ERR;

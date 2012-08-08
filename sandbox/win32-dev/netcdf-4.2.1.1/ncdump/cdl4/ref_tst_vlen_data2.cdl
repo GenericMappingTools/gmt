@@ -1,0 +1,129 @@
+netcdf secondFile {
+
+group: pfSystem {
+  types:
+
+   byte enum daysofWeekType { Monday = 3, Tuesday = 1, Wednesday = 7, Thursday= 9, Friday = 2 } ;
+    compound pfCoilType {
+      string name ;
+      string turns ;
+      string polarity ;
+    }; // pfCoilType
+    pfCoilType(*) vlen_t ;
+    compound pfCircuitType {
+      int id ;
+      string name ;
+      string description ;
+      vlen_t pfCoils ;
+    }; // pfCircuitType
+    int(*) vlen_int ;
+    vlen_int(*) vlen_int_vec
+    string(*) vlen_string ;
+    vlen_string(*) vlen_string_vec ;
+
+    compound singleCompoundType {
+      int scalarAtomicInt ;
+      int fixedLengthVectorAtomicInt(5) ;
+      string scalarString ;
+      string fixedLengthVectorString(5) ;
+      vlen_int vlenScalarInt ;
+      vlen_int vlenInt ;
+      vlen_int fixedLengthVectorVlenInt(3) ;
+      vlen_int_vec vlenVlenInt ;
+      vlen_string vlenScalarString ;
+      vlen_string vlenString ;
+      vlen_string fixedLengthVectorVlenString(3) ;
+      vlen_string_vec vlenVlenString ;
+      daysofWeekType daysOfWeek(10) ;
+    };
+
+    singleCompoundType(*) vlen_CompoundType;
+
+  dimensions:
+  	pfCircuitCount = 10 ;
+  	vlenDim = 3 ;
+        dayCount = 10 ;
+  variables:
+	daysofWeekType daysOfWeek(dayCount) ;
+	int scalarAtomicInt;
+	double scalarAtomicDouble;
+	int fixedLengthVectorAtomicInt(pfCircuitCount) ;
+	double fixedLengthVectorAtomicDouble(pfCircuitCount) ;
+	string scalarString ;
+	string fixedLengthVectorString(pfCircuitCount);
+	vlen_int vlenInt, vlenScalarInt, fixedLengthVectorVlenInt(vlenDim) ;
+	vlen_int_vec vlenVlenInt ;
+	vlen_string vlenString,vlenScalarString, fixedLengthVectorVlenString(vlenDim) ;
+	vlen_string_vec vlenVlenString ;
+//	singleCompoundType singleCompound ;
+//	vlen_CompoundType vlenCompound ;
+  data:
+
+   daysOfWeek = Monday, Thursday, Friday, Monday, Monday, Friday, Thursday, Thursday, Thursday, Tuesday ;
+   scalarAtomicInt = 10 ;
+   scalarAtomicDouble = 10.234 ;
+   fixedLengthVectorAtomicInt = -1,2,-3,4,-5,6,-7,8,-9,10;
+   fixedLengthVectorAtomicDouble = 1.1,2.2,3.3,4.4,5.5,6.6,7.7,8.8,9.9,10.1;
+   scalarString = "This is some data" ;
+   fixedLengthVectorString = "data1","data22","data333","data4444","data5","data6","data7","data8","data9","data10" ;
+   vlenInt = {9,2,4,6,8,0,-3};
+   vlenString = {"One", "Two", "Three", "Four", "Five", "Six", "Seven"};
+   vlenScalarInt = {3967};
+   vlenScalarString = {"Twenty"};
+   fixedLengthVectorVlenInt =  {20,3,4,6}, {120,103,104}, {220,203};
+   vlenVlenInt =  {{20,3,4,6}, {120,103,104}, {220,203}};
+   fixedLengthVectorVlenString = {"One","Two","Three","Four"},{"2One","2Two"},{"4One","4Two","4Three","4Four","4Five"};
+   vlenVlenString = {{"One","Two","Three","Four"},{"2One","2Two"},{"4One","4Two","4Three","4Four","4Five"}};
+
+//   singleCompound = 
+//      {13, 
+//       {1,2,3,4,5},
+//       "OHME",
+//       {"One","Two","Three","Four","Five"},
+//       {11},
+//       {21,22,23},
+//       {{111,112,113,114}, {121,122}, {131,132,133,134,135}},
+//       {{211,212,213,214}, {221,222}, {231,232,233,234,235},{241,242,243,244,245,246,247}},
+//       {"11s"},
+//       {"21s","22s","23s"},
+//       {{"111s","112s","113s"},{"121s","122s"},{"131s","132s","133s","134s","135s"}},
+//       {{"211s","212s","213s"},{"221s","222s"},{"231s","232s","233s","234s","235s"},{"241s","242s","243s","244s","245s","246s","247s"}},
+//       {Monday, Thursday, Friday, Monday, Monday, Friday, Thursday, Thursday, Thursday, Tuesday}
+//       };
+
+
+//   vlenCompound = 
+//      {
+//      {13, 
+//       {1,2,3,4,5},
+//       "OHME",
+//       {"One","Two","Three","Four","Five"},
+//       {11},
+//       {21,22,23},
+//       {{111,112,113,114}, {121,122}, {131,132,133,134,135}},
+//       {{211,212,213,214}, {221,222}, {231,232,233,234,235},{241,242,243,244,245,246,247}},
+//       {"11s"},
+//       {"21s","22s","23s"},
+//       {{"111s","112s","113s"},{"121s","122s"},{"131s","232s","133s","134s","135s"}},
+//       {{"211s","212s","213s"},{"221s","222s"},{"231s","232s","233s","234s","235s"},{"241s","242s","243s","244s","245s","246s","247s"}},
+//       {Monday, Thursday, Friday, Monday, Monday, Friday, Thursday, Thursday, Thursday, Tuesday}
+//       },
+//       {10, 
+//       {10,20,30,40,50},
+//       "OHME2",
+//       {"One","Two","Three","Four","Five"},
+//       {110},
+//       {210,220,230},
+//       {{1110,1120,1130,1140}, {1210,1220}, {1310,1320,1330,1340,1350}},
+//       {{211,212,213,214}, {221,222}, {231,232,233,234,235},{241,242,243,244,245,246,247}},
+//       {"110s"},
+//       {"210s","220s","230s"},
+//       {{"1110s","1120s","1130s"},{"1210s","1220s"},{"1310s","1320s","1330s","1340s","1350s"}},
+//       {{"2110s","2120s","2130s"},{"2210s","2220s"},{"2310s","2320s","2330s","2340s","2350s"},{"2410s","2420s","2430s","2440s","2450s","2460s","2470s"}},
+//       {Monday, Thursday, Friday, Monday, Monday, Friday, Thursday, Thursday, Thursday, Tuesday} 
+//       }
+//       };
+//
+  } // group pfSystem
+
+}

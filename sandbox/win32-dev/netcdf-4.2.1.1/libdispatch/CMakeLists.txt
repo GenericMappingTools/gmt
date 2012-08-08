@@ -21,23 +21,12 @@
 # IN THE SOFTWARE.
 
 # libnetcdf sources in libdispatch
-set (SRCS_NETCDF ${SRCS_NETCDF} 
-	#ncbytes.h
-  att.c
-  copy.c
-  dim.c
-  dispatch.c
-  error.c
-  file.c
-  nc4.c
-  nc_uri.c
-  ncbytes.c
-  nchashmap.c
-  nclist.c
-  nclog.c
-  parallel.c
-  v2i.c
-  var.c
-)
+set (SRCS_NETCDF ${SRCS_NETCDF}
+	dparallel.c dcopy.c dfile.c ddim.c datt.c dattinq.c dattput.c dattget.c
+	derror.c dvar.c dvarget.c dvarput.c dvarinq.c ddispatch.c dnclog.c dstring.c
+	dutf8proc.c utf8proc_data.h nc_uri.c nclist.c ncbytes.c nchashmap.c nctime.c
+	dsubstrate.c
+	dgroup.c dvlen.c dcompound.c dtype.c denum.c dopaque.c ncaux.c
+	)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

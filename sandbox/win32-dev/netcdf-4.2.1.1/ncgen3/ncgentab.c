@@ -80,10 +80,10 @@
 #ifdef sccs
 static char SccsId[] = "$Id$";
 #endif
-#include        <config.h>
+#include        "config.h"
 #include        <string.h>
 #include	<stdlib.h>
-#include	<netcdf.h>
+#include	"netcdf.h"
 #include 	"generic.h"
 #include        "ncgen.h"
 #include	"genlib.h"	/* for grow_darray() et al */

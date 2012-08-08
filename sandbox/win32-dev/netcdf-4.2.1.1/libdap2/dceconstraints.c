@@ -4,9 +4,7 @@
  *   $Header: /upc/share/CVS/netcdf-3/libncdap3/constraints3.c,v 1.40 2010/05/27 21:34:07 dmh Exp $
  *********************************************************************/
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,18 +22,19 @@
 
 #define DEBUG
 
-#ifndef nulldup
-#define nulldup(s) ((s)==NULL?NULL:strdup(s))
-#endif
-#ifndef nullfree
-#define nullfree(s) {if((s)!=NULL) {free(s);} else {}}
-#endif
+#define LBRACE "{"
+#define RBRACE "}"
+
+int dceverbose = 0;
 
 static char* opstrings[] = OPSTRINGS ;
 
-static int mergeprojection(DCEprojection* dst, DCEprojection* src);
 static void ceallnodesr(DCEnode* node, NClist* allnodes, CEsort which);
+static void dcedump(DCEnode* node, NCbytes* buf);
+static void dcedumpraw(DCEnode* node, NCbytes* buf);
+static void dcedumprawlist(NClist* list, NCbytes* buf);
 
+#if 0 /*not currently used */
 /* Parse incoming url constraints, if any,
    to check for syntactic correctness
 */ 
@@ -62,6 +61,7 @@ fprintf(stderr,"constraint: %s",dcetostring((DCEnode*)dapconstraint));
 #endif
     return ncstat;
 }
+#endif
 
 /* Worksheet
 
@@ -137,12 +137,18 @@ dceslicemerge(DCEslice* dst, DCEslice* src)
     int err = NC_NOERR;
     DCEslice tmp;
 
-    tmp.stride   = (dst->stride * src->stride);
-    tmp.first    = (dst->first+((src->first)*(dst->stride)));
-    tmp.length   = (((src->length - 1) / src->stride) * tmp.stride) + 1;
-    tmp.stop     = tmp.first + tmp.length;
-    tmp.count    = tmp.length / tmp.stride;
-    tmp.declsize = dst->declsize;
+    tmp.node.sort = CES_SLICE;
+    tmp.stride    = (dst->stride * src->stride);
+    tmp.first     = (dst->first+((src->first)*(dst->stride)));
+    tmp.length    = (((src->length - 1) / src->stride) * tmp.stride) + 1;
+    tmp.stop      = tmp.first + tmp.length;
+    tmp.count     = tmp.length / tmp.stride;
+    /* use max declsize */
+    if(dst->declsize > src->declsize) {
+        tmp.declsize  = dst->declsize;
+    } else {
+        tmp.declsize  = src->declsize;
+    }
     if(tmp.length % tmp.stride != 0) tmp.count++;
     if(tmp.first >= dst->stop || tmp.stop > dst->stop)
 	err = NC_EINVALCOORDS;
@@ -156,9 +162,10 @@ dceslicemerge(DCEslice* dst, DCEslice* src)
 Given two projection lists, merge
 src into dst taking
 overlapping projections into acct.
+Dst will be modified.
 */
 int
-dapmergeprojections(NClist* dst, NClist* src)
+dcemergeprojectionlists(NClist* dst, NClist* src)
 {
     int i;
     NClist* cat = nclistnew();
@@ -197,7 +204,7 @@ fprintf(stderr,"dapmergeprojection: src = %s\n",dcetostring((DCEnode*)src));
 	    if(dcesamepath(target->var->segments,
 			   p2->var->segments)!=0) continue;
 	    /* This entry matches our current target; merge  */
-	    ncstat = mergeprojection(target,p2);
+	    ncstat = dcemergeprojections(target,p2);
 	    /* null out this merged entry and release it */
 	    nclistset(cat,i,(ncelem)NULL);	    
 	    dcefree((DCEnode*)p2);	    
@@ -209,30 +216,32 @@ fprintf(stderr,"dapmergeprojection: src = %s\n",dcetostring((DCEnode*)src));
     return ncstat;
 }
 
-static int
-mergeprojection(DCEprojection* dst, DCEprojection* src)
+/* Modify merged projection to include "addition" projection */
+int
+dcemergeprojections(DCEprojection* merged, DCEprojection* addition)
 {
     int ncstat = NC_NOERR;
     int i,j;
 
-    /* merge segment by segment;
-       |dst->segments| == |src->segments|
-       by construction
-    */
-    assert((dst->discrim == CES_VAR && src->discrim == CES_VAR));
-    assert((nclistlength(dst->var->segments) == nclistlength(src->var->segments)));    
-    for(i=0;i<nclistlength(dst->var->segments);i++) {
-	DCEsegment* dstseg = (DCEsegment*)nclistget(dst->var->segments,i);
-	DCEsegment* srcseg = (DCEsegment*)nclistget(src->var->segments,i);
-	for(j=0;j<dstseg->rank;j++) {
-	    dceslicemerge(dstseg->slices+j,
-			  srcseg->slices+j);
+    ASSERT((merged->discrim == CES_VAR && addition->discrim == CES_VAR));
+    ASSERT((nclistlength(merged->var->segments) == nclistlength(addition->var->segments)));    
+    for(i=0;i<nclistlength(merged->var->segments);i++) {
+	DCEsegment* mergedseg = (DCEsegment*)nclistget(merged->var->segments,i);
+	DCEsegment* addedseg = (DCEsegment*)nclistget(addition->var->segments,i);
+	/* If one segment has larger rank, then copy the extra slices unchanged */
+	for(j=0;j<addedseg->rank;j++) {
+	    if(j < mergedseg->rank)
+	        dceslicemerge(mergedseg->slices+j,addedseg->slices+j);
+	    else
+		mergedseg->slices[j] = addedseg->slices[j];
 	}
+	if(addedseg->rank > mergedseg->rank)
+	    mergedseg->rank = addedseg->rank;
     }
     return ncstat;
 }
 
-/* Convert an DCEprojection instance into a string
+/* Convert a DCEprojection instance into a string
    that can be used with the url
 */
 
@@ -479,34 +488,82 @@ dcetostring(DCEnode* node)
     return s;
 }
 
+/* Mostly for debugging */
+char*
+dcerawtostring(void* node)
+{
+    char* s;
+    NCbytes* buf = ncbytesnew();
+    dcedumpraw((DCEnode*)node,buf);
+    s = ncbytesextract(buf);
+    ncbytesfree(buf);
+    return s;
+}
+
+char*
+dcerawlisttostring(NClist* list)
+{
+    char* s;
+    NCbytes* buf = ncbytesnew();
+    dcedumprawlist(list,buf);
+    s = ncbytesextract(buf);
+    ncbytesfree(buf);
+    return s;
+}
+
+/* For debugging */
+#ifdef DEBUG
+static char*
+dimdecl(size_t declsize)
+{
+    static char tag[16];
+    tag[0] = '\0';
+    if(dceverbose) 
+        snprintf(tag,sizeof(tag),"/%lu",(unsigned long)declsize);
+    return tag;
+}
+#else
+static char*
+dimdecl(size_t declsize)
+{
+    return "";
+}
+#endif
+
 void
 dcetobuffer(DCEnode* node, NCbytes* buf)
+{
+    dcedump(node,buf);
+}
+
+static void
+dcedump(DCEnode* node, NCbytes* buf)
 {
     int i;
     char tmp[1024];
 
     if(buf == NULL) return;
-    if(node == NULL) {ncbytesappend(buf,'?'); return;}
+    if(node == NULL) {ncbytescat(buf,"<null>"); return;}
 
     switch (node->sort) {
 
     case CES_SLICE: {
 	    DCEslice* slice = (DCEslice*)node;
 	    size_t last = (slice->first+slice->length)-1;
-	    if(last > slice->declsize && slice->declsize > 0)
-	        last = slice->declsize - 1;
             if(slice->count == 1) {
-                snprintf(tmp,sizeof(tmp),"[%lu]",
-	            (unsigned long)slice->first);
+                snprintf(tmp,sizeof(tmp),"[%lu%s]",
+	            (unsigned long)slice->first,dimdecl(slice->declsize));
             } else if(slice->stride == 1) {
-                snprintf(tmp,sizeof(tmp),"[%lu:%lu]",
+                snprintf(tmp,sizeof(tmp),"[%lu:%lu%s]",
 	            (unsigned long)slice->first,
-	            (unsigned long)last);
+	            (unsigned long)last,
+	            dimdecl(slice->declsize));
             } else {
-	        snprintf(tmp,sizeof(tmp),"[%lu:%lu:%lu]",
+	        snprintf(tmp,sizeof(tmp),"[%lu:%lu:%lu%s]",
 		    (unsigned long)slice->first,
 		    (unsigned long)slice->stride,
-		    (unsigned long)last);
+		    (unsigned long)last,
+	            dimdecl(slice->declsize));
 	    }
             ncbytescat(buf,tmp);
     } break;
@@ -515,9 +572,13 @@ dcetobuffer(DCEnode* node, NCbytes* buf)
 	DCEsegment* segment = (DCEsegment*)node;
         int rank = segment->rank;
 	char* name = (segment->name?segment->name:"<unknown>");
-	ncbytescat(buf,nulldup(name));
-        if(!dceiswholesegment(segment)) {
-	    for(i=0;i<rank;i++) {
+	name = nulldup(name);
+	ncbytescat(buf,name);
+	nullfree(name);
+        if(dceverbose && dceiswholesegment(segment))
+	    ncbytescat(buf,"*");
+        if(dceverbose || !dceiswholesegment(segment)) {
+            for(i=0;i<rank;i++) {
 	        DCEslice* slice = segment->slices+i;
                 dcetobuffer((DCEnode*)slice,buf);
 	    }
@@ -633,6 +694,7 @@ dcelisttobuffer(NClist* list, NCbytes* buf, char* sep)
     if(sep == NULL) sep = ",";
     for(i=0;i<nclistlength(list);i++) {
 	DCEnode* node = (DCEnode*)nclistget(list,i);
+	if(node == NULL) continue;
 	if(i>0) ncbytescat(buf,sep);
 	dcetobuffer((DCEnode*)node,buf);
     }
@@ -782,21 +844,12 @@ dcecreate(CEsort sort)
     return node;
 }
 
-void
-dcemakewholeslice(DCEslice* slice, size_t declsize)
-{
-    slice->first = 0;
-    slice->stride = 1;
-    slice->length = declsize;
-    slice->stop = declsize;
-    slice->declsize = declsize;
-    slice->count = declsize;
-}
-
 int
 dceiswholeslice(DCEslice* slice)
 {
-    if(slice->first != 0 || slice->stride != 1) return 0;
+    if(slice->first != 0
+       || slice->stride != 1
+       || slice->stop != slice->declsize) return 0;
     return 1;
 }
 
@@ -813,16 +866,27 @@ dceiswholesegment(DCEsegment* seg)
     return whole;
 }
 
-int
-dceiswholevar(DCEvar* var)
+void
+dcemakewholeslice(DCEslice* slice, size_t declsize)
 {
-    int i,whole;
-    whole = 1; /* assume so */
-    for(i=0;i<nclistlength(var->segments);i++) {
-        DCEsegment* segment = (DCEsegment*)nclistget(var->segments,i);
-	if(!dceiswholesegment(segment)) {whole = 0; break;}	
-    }
-    return whole;
+    slice->first = 0;
+    slice->stride = 1;
+    slice->length = declsize;
+    slice->stop = declsize;
+    slice->declsize = declsize;
+    slice->count = declsize;
+}
+
+/* Remove slicing from terminal segment of p */
+void
+dcemakewholeprojection(DCEprojection* p)
+{
+    /* Remove the slicing (if any) from the last segment */
+    if(p->discrim == CES_VAR && p->var != NULL && p->var->segments != NULL) {
+        int lastindex = nclistlength(p->var->segments) - 1;
+        DCEsegment* lastseg = (DCEsegment*)nclistget(p->var->segments,lastindex);
+        lastseg->rank = 0;
+    }   
 }
 
 int
@@ -837,4 +901,247 @@ dcesamepath(NClist* list1, NClist* list2)
 	if(strcmp(s1->name,s2->name) != 0) return 0;
     }
     return 1;
+}
+
+void
+dcesegment_transpose(DCEsegment* segment,
+				 size_t* start,
+				 size_t* count,
+				 size_t* stride,
+				 size_t* sizes
+				)
+{
+    int i;
+    if(segment != NULL && sizes != NULL) {
+        for(i=0;i<segment->rank;i++) {
+	    if(start != NULL) start[i] = segment->slices[i].first;
+	    if(count != NULL) count[i] = segment->slices[i].count;
+	    if(stride != NULL) stride[i] = (size_t)segment->slices[i].stride;
+	    if(sizes != NULL) sizes[i] = segment->slices[i].declsize;
+	}
+    }	
+}
+
+/* Compute segment size for subset of slices */
+size_t
+dcesegmentsize(DCEsegment* seg, size_t start, size_t stop)
+{
+    int i, count;
+    if(!seg->slicesdefined) return 0; /* actually, we don't know */
+    for(count=1,i=start;i<stop;i++) {
+	count *= seg->slices[i].count;
+    }
+    return count;
+}
+
+/* Return the index of the leftmost slice
+   starting at start and upto, but not including
+   stop, such that it and all slices to the right
+   are "safe". Safe means dceiswholeslice() is true.
+   In effect, we can read the safe index set as a
+   single chunk. Return stop if there is no safe index.
+*/
+
+size_t
+dcesafeindex(DCEsegment* seg, size_t start, size_t stop)
+{
+    size_t safe;
+    if(!seg->slicesdefined) return stop; /* actually, we don't know */
+    if(stop == 0) return stop;
+    /* watch out because safe is unsigned */
+    for(safe=stop-1;safe>start;safe--) {
+	if(!dceiswholeslice(&seg->slices[safe])) return safe+1;
+    }
+    return dceiswholeslice(&seg->slices[start]) ? start /*every slice is safe*/
+                                                 : start+1 ;
+}
+
+
+static const char*
+dcesortname(CEsort sort)
+{
+    switch (sort) {
+    case CES_SLICE: return "SLICE";
+    case CES_SEGMENT: return "SEGMENT";
+    case CES_VAR: return "VAR";
+    case CES_FCN: return "FCN";
+    case CES_CONST: return "CONST";
+    case CES_VALUE: return "VALUE";
+    case CES_PROJECT: return "PROJECT";
+    case CES_SELECT: return "SELECT";
+    case CES_CONSTRAINT: return "CONSTRAINT";
+    case CES_STR: return "STR";
+    case CES_INT: return "INT";
+    case CES_FLOAT: return "FLOAT";
+    default: break;
+    }
+    return "UNKNOWN";
+}
+
+static void
+dcedumpraw(DCEnode* node, NCbytes* buf)
+{
+    int i;
+    char tmp[1024];
+
+    if(buf == NULL) return;
+    if(node == NULL) {ncbytescat(buf,"<null>"); return;}
+
+    ncbytescat(buf,LBRACE);
+    ncbytescat(buf,(char*)dcesortname(node->sort));
+
+    switch (node->sort) {
+
+    case CES_SLICE: {
+	    DCEslice* slice = (DCEslice*)node;
+	    snprintf(tmp,sizeof(tmp),
+		    " [first=%lu count=%lu stride=%lu len=%lu stop=%lu size=%lu]",
+		    (unsigned long)slice->first,
+		    (unsigned long)slice->count,
+		    (unsigned long)slice->stride,
+		    (unsigned long)slice->length,
+		    (unsigned long)slice->stop,
+		    (unsigned long)slice->declsize);
+            ncbytescat(buf,tmp);
+    } break;
+
+    case CES_SEGMENT: {
+	DCEsegment* segment = (DCEsegment*)node;
+        int rank = segment->rank;
+	char* name = (segment->name?segment->name:"<unknown>");
+	ncbytescat(buf," name=");
+	ncbytescat(buf,name);
+        snprintf(tmp,sizeof(tmp)," rank=%lu",(unsigned long)rank);
+	ncbytescat(buf,tmp);
+        ncbytescat(buf," defined=");
+        ncbytescat(buf,(segment->slicesdefined?"1":"0"));
+        ncbytescat(buf," declized=");
+        ncbytescat(buf,(segment->slicesdeclized?"1":"0"));
+	if(rank > 0) {
+            ncbytescat(buf," slices=");
+            for(i=0;i<rank;i++) {
+	        DCEslice* slice = segment->slices+i;
+                dcedumpraw((DCEnode*)slice,buf);
+	    }
+	}
+    } break;
+
+    case CES_VAR: {
+	DCEvar* var = (DCEvar*)node;
+        ncbytescat(buf," segments=");
+	dcedumprawlist(var->segments,buf);
+    } break;
+
+    case CES_FCN: {
+	DCEfcn* fcn = (DCEfcn*)node;
+	ncbytescat(buf," name=");
+        ncbytescat(buf,fcn->name);
+        ncbytescat(buf,"args=");
+	dcedumprawlist(fcn->args,buf);
+    } break;
+
+    case CES_CONST: {
+	DCEconstant* value = (DCEconstant*)node;
+	ncbytescat(buf," discrim=");
+	ncbytescat(buf,dcesortname(value->discrim));
+	ncbytescat(buf," value=");
+        switch (value->discrim) {
+        case CES_STR:
+	    ncbytescat(buf,"|");
+	    ncbytescat(buf,value->text);
+	    ncbytescat(buf,"|");
+	    break;		
+        case CES_INT:
+            snprintf(tmp,sizeof(tmp),"%lld",value->intvalue);
+            ncbytescat(buf,tmp);
+    	break;
+        case CES_FLOAT:
+            snprintf(tmp,sizeof(tmp),"%g",value->floatvalue);
+            ncbytescat(buf,tmp);
+	    break;
+        default: assert(0);
+	}
+    } break;
+
+    case CES_VALUE: {
+	DCEvalue* value = (DCEvalue*)node;
+	ncbytescat(buf," discrim=");
+	ncbytescat(buf,dcesortname(value->discrim));
+        switch (value->discrim) {
+        case CES_CONST:
+    	    dcedumpraw((DCEnode*)value->constant,buf);
+      	    break;		
+        case CES_VAR:
+    	    dcedumpraw((DCEnode*)value->var,buf);
+    	    break;
+        case CES_FCN:
+    	    dcedumpraw((DCEnode*)value->fcn,buf);
+    	    break;
+        default: assert(0);
+        }
+    } break;
+
+    case CES_PROJECT: {
+	DCEprojection* target = (DCEprojection*)node;
+	ncbytescat(buf," discrim=");
+	ncbytescat(buf,dcesortname(target->discrim));
+	switch (target->discrim) {
+	case CES_VAR:
+	    dcedumpraw((DCEnode*)target->var,buf);
+	    break;
+	case CES_FCN:
+	    dcedumpraw((DCEnode*)target->fcn,buf);
+	    break;
+	default: assert(0);
+	}
+    } break;
+
+    case CES_SELECT: {
+	DCEselection* sel = (DCEselection*)node;
+	ncbytescat(buf," ");
+	dcedumpraw((DCEnode*)sel->lhs,buf);
+        if(sel->operator == CES_NIL) break;
+        ncbytescat(buf,opstrings[(int)sel->operator]);
+        if(nclistlength(sel->rhs) > 1)
+            ncbytescat(buf,"{");
+	dcedumprawlist(sel->rhs,buf);
+        if(nclistlength(sel->rhs) > 1)
+	    ncbytescat(buf,"}");
+    } break;
+
+    case CES_CONSTRAINT: {
+	DCEconstraint* con = (DCEconstraint*)node;
+        if(con->projections != NULL && nclistlength(con->projections) > 0) {
+	    ncbytescat(buf,"projections=");	
+            dcedumprawlist(con->projections,buf);
+	}
+        if(con->selections != NULL && nclistlength(con->selections) > 0) {
+	    ncbytescat(buf,"selections=");	
+            dcedumprawlist(con->selections,buf);
+	}
+    } break;
+
+    case CES_NIL: {
+	ncbytescat(buf,"<nil>");
+    } break;
+
+    default:
+	assert(0);
+    }
+    ncbytescat(buf,RBRACE);
+}
+
+static void
+dcedumprawlist(NClist* list, NCbytes* buf)
+{
+    int i;
+    if(list == NULL || buf == NULL) return;
+    ncbytescat(buf,"(");
+    for(i=0;i<nclistlength(list);i++) {
+	DCEnode* node = (DCEnode*)nclistget(list,i);
+	if(node == NULL) continue;
+	if(i>0) ncbytescat(buf,",");
+	dcedumpraw((DCEnode*)node,buf);
+    }
+    ncbytescat(buf,")");
 }

@@ -38,7 +38,7 @@
 
 ------------------------------------------------------------------------ */
 
-#include <config.h>
+#include "config.h"
 #include "ConvertUTF.h"
 #ifdef CVTUTF_DEBUG
 #include <stdio.h>

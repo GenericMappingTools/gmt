@@ -13,10 +13,18 @@ srcdir=`dirname $0`
 # Do a hack to remove e.g. c: for CYGWIN
 cd `pwd`
 builddir=`pwd`/..
+
 # Hack for CYGWIN
 cd $srcdir
 srcdir=`pwd`
+if [ `uname | cut -d "_" -f 1` = "MINGW32" ]; then
+    srcdir=`pwd | sed 's/\/c\//c:\//g'`
+    builddir=`echo $builddir | sed 's/\/c\//c:\//g'`
+fi
+
+
 cd ${builddir}/ncdap_test
+
 
 exec sh $X ${srcdir}/tst_ncdap.sh "$srcdir" "$builddir" "file3" $grind
 

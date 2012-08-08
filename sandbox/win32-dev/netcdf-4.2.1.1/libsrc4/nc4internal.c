@@ -1,6 +1,5 @@
-/*
-This file is part of netcdf-4, a netCDF-like interface for HDF5, or a
-HDF5 backend for netCDF, depending on your point of view.
+/** \file \internal
+Internal netcdf-4 functions.
 
 This file contains functions internal to the netcdf4 library. None of
 the functions in this file are exposed in the exetnal API. These
@@ -8,13 +7,11 @@ functions all relate to the manipulation of netcdf-4's in-memory
 buffer of metadata information, i.e. the linked list of NC_FILE_INFO_T
 structs.
 
-Copyright 2003-2005, University Corporation for Atmospheric
+Copyright 2003-2011, University Corporation for Atmospheric
 Research. See the COPYRIGHT file for copying and redistribution
 conditions.
 
-$Id$
 */
-
 #include "config.h"
 #include "nc4internal.h"
 #include "nc.h" /* from libsrc */
@@ -125,7 +122,7 @@ find_var_shape_grp(NC_GRP_INFO_T *grp, int varid, int *ndims,
 	       dim in the space. */
 	    if ((dataset_ndims = H5Sget_simple_extent_ndims(spaceid)) < 0)
 	       BAIL(NC_EHDFERR);
-	    if (dataset_ndims != *ndims)
+	    if (ndims && dataset_ndims != *ndims)
 	       BAIL(NC_EHDFERR);
 	    if (!(h5dimlen = malloc(dataset_ndims * sizeof(hsize_t))))
 	       BAIL(NC_ENOMEM);

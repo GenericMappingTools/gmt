@@ -4,7 +4,6 @@
  *   $Header: /upc/share/CVS/netcdf-3/libncdap4/constraints4.c,v 1.9 2010/04/13 03:36:31 dmh Exp $
  *********************************************************************/
 #include "ncdap4.h"
-#include "dapodom.h"
 
 #ifdef DEBUG
 #include "dapdump.h"
@@ -13,7 +12,8 @@
 /* In order to construct the projection,
 we need to make sure to match the relevant dimensions
 against the relevant nodes in which the ultimate target
-is contained.
+is contained. For netcdf4, we only need to do this
+for one level.
 */
 NCerror
 buildvaraprojection4(Getvara* getvar,
@@ -31,7 +31,7 @@ buildvaraprojection4(Getvara* getvar,
     segment = (DCEsegment*)dcecreate(CES_SEGMENT);
     segment->cdfnode = var;
     ASSERT((segment->cdfnode != NULL));
-    segment->name = nulldup(segment->cdfnode->name);
+    segment->name = nulldup(segment->cdfnode->ocname);
     segment->slicesdefined = 0; /* temporary */
     segment->slicesdeclized = 0; /* temporary */
     segments = nclistnew();
@@ -40,12 +40,11 @@ buildvaraprojection4(Getvara* getvar,
     projection = (DCEprojection*)dcecreate(CES_PROJECT);
     projection->discrim = CES_VAR;
     projection->var = (DCEvar*)dcecreate(CES_VAR);
-    projection->var->cdfleaf = var;
     projection->var->segments = segments;
 
     /* All slices are assigned to the first (and only segment) */
-    dimset = var->array.dimensions;
-    segment->rank = nclistlength(var->array.dimensions);
+    dimset = var->array.dimset0;
+    segment->rank = nclistlength(var->array.dimset0);
     for(i=0;i<segment->rank;i++) { 
         DCEslice* slice = &segment->slices[i];
 	CDFnode* dim = (CDFnode*)nclistget(dimset,i);
@@ -65,6 +64,7 @@ buildvaraprojection4(Getvara* getvar,
     return ncstat;
 }
 
+#ifdef IGNORE
 /* Compute the set of prefetched data;
    note that even if caching is off, we will
    still prefetch the small variables.
@@ -111,8 +111,8 @@ prefetchdata4(NCDAPCOMMON* nccomm)
     /* Construct the projections for this set of vars */
     newconstraint = (DCEconstraint*)dcecreate(CES_CONSTRAINT);
     /* Initially, the constraints are same as the merged constraints */
-    newconstraint->projections = dceclonelist(constraint->projections);
-    restrictprojection34(vars,newconstraint->projections);
+    newconstraint = dceclone((DCEnode*)constraint);
+    canonicalprojection34(vars,newconstraint->projections);
     /* similar for selections */
     newconstraint->selections = dceclonelist(constraint->selections);
  
@@ -132,7 +132,7 @@ ncbytescat(buf," ");
 ncbytescat(buf,makesimplepathstring3(var));
 }
 ncbytescat(buf,"\n");
-oc_log(OCLOGNOTE,ncbytescontents(buf));
+nclog(NCLOGNOTE,ncbytescontents(buf));
 ncbytesfree(buf);
 }
 
@@ -143,7 +143,6 @@ done:
     return THROW(ncstat);
 }
 
-#ifdef IGNORE
 /* Based on the tactic, determine the set of variables to add */
 static void
 computevarset4(NCDAP4* drno, Getvara* getvar, NClist* varlist)

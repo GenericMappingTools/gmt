@@ -17,15 +17,15 @@
 #include "nclist.h"
 #include "nchashmap.h"
 #include "nclog.h"
+#include "nc_uri.h"
 #include "dceconstraints.h"
 
+#include "oc.h"
+
+#include "nc.h"
 #include "netcdf.h"
 #include "ncdispatch.h"
 #include "nc4internal.h"
-#include "nc.h"
-
-#include "oc.h"
-#include "ocuri.h"
 
 #include "nccommon.h"
 #include "ncdap3.h"
@@ -55,8 +55,6 @@ typedef struct NCDAP4 {
 #include "constraints4.h"
 
 /**************************************************/
-
-extern ptrdiff_t dapsinglestride4[NC_MAX_VAR_DIMS];
 
 extern int lnc4_redef(int ncid);
 extern int lnc4_enddef(int ncid);

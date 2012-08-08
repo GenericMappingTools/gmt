@@ -1,0 +1,27 @@
+/*! \file
+Documentation for the dispatch system
+
+\internal
+
+\defgroup dispatch The Dispatch Layer
+
+The dispatch layer is a way to add read/write modules to the netCDF
+library.
+
+Dispatch modules, plugged into the netCDF library, will allow netCDF
+programs to read and write other, perhaps quite local, formats.
+
+This should be of particular interest to anyone contemplating the
+conversion of large data collections to netCDF in order to gain access
+to those data in netCDF-oriented tools and software systems. Instead
+of converting the data, a read module could be written which would
+read the data as if it were in netCDF. This would give netCDF tools
+read-only access to data in this format, transparently to the tool.
+
+This mechanism is already used within the netCDF library to handle the
+netCDF-4/HDF5 files, and the remote data access features. 
+
+Conceptually, the dispatch layer provides the same capabilities as the
+IOSP in the netCDF-Java library. However, unlike Java, C does not
+provide the advanced features to make this seemless.
+*/

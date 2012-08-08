@@ -19,7 +19,7 @@ typedef long long   int64_t;
 #define true 1
 #define false 0
 #define TRUE 1
-#define FALSE 1
+#define FALSE 0
 #endif
 
 typedef unsigned int bool_t;
@@ -130,13 +130,13 @@ extern ast_err ast_repeat_append(ast_runtime*,ast_sort,void*,void*);
 extern ast_err ast_write_tag(ast_runtime*, const unsigned int, const unsigned int);
 
 /* Procedure to write out count */
-extern ast_err ast_write_count(ast_runtime*, const size_t);
+extern ast_err ast_write_size(ast_runtime*, const size_t);
 
 /* Procedure to extract tags */
-extern ast_err ast_read_tag(ast_runtime* rt, int* wiretypep, int* fieldnop);
+extern ast_err ast_read_tag(ast_runtime* rt, uint32_t* wiretypep, uint32_t* fieldnop);
 
 /* Procedure to extract count */
-extern ast_err ast_read_count(ast_runtime* rt, size_t* countp);
+extern ast_err ast_read_size(ast_runtime* rt, size_t* countp);
 
 /* Procedure to skip an unknown field */
 extern ast_err ast_skip_field(ast_runtime* rt, int wiretype, int fieldno);

@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "ncdap4.h"
 #include "nc.h"
+#include "ncdap4.h"
 #include "ncd4dispatch.h"
 #include "ncdispatch.h"
 
@@ -27,15 +27,12 @@ static int NCD4_put_vara(int ncid, int varid,
             const void *value0,
 	    nc_type memtype);
 
-extern ptrdiff_t dapsinglestride3[NC_MAX_VAR_DIMS];
-extern size_t dapzerostart3[NC_MAX_VAR_DIMS];
-extern size_t dapsinglecount3[NC_MAX_VAR_DIMS];
-
 NC_Dispatch NCD4_dispatch_base = {
 
 NC_DISPATCH_NC4|NC_DISPATCH_NCD,
 
-NCD4_new_nc,
+/* Note: we are using the standard substrate struct NC creator */
+NULL,
 
 NCD4_create,
 NCD4_open,
@@ -122,18 +119,18 @@ NULL, /*get_var_chunk_cache*/
 
 };
 
-NC_Dispatch NCD4_dispatcher;
+NC_Dispatch* NCD4_dispatch_table = NULL; /* moved here from ddispatch.c */
+
+NC_Dispatch NCD4_dispatcher; /* overlay result */
+
 
 int
 NCD4_initialize(void)
 {
-    int i;
-    /* Create our dispatch table as the merge of NC4 table
-       plus some overrides */
-    NC_dispatch_overlay(&NCD4_dispatch_base, NC4_dispatch_table, &NCD4_dispatcher);    
+    /* Create our dispatch table as the merge of NCD4 table and NCSUBSTRATE */
+    /* watch the order because we want NCD4 to overwrite NCSUBSTRATE */
+    NC_dispatch_overlay(&NCD4_dispatch_base, NCSUBSTRATE_dispatch_table, &NCD4_dispatcher);    
     NCD4_dispatch_table = &NCD4_dispatcher;
-    for(i=0;i<NC_MAX_VAR_DIMS;i++)
-	{dapzerostart3[i] = 0; dapsinglecount3[i] = 1; dapsinglestride3[i] = 1;}
     return NC_NOERR;
 }
 
@@ -175,10 +172,10 @@ NCD4_sync(int ncid)
 }
 
 int
-NCD4_abort(int ncid)
+NCD4_close(int ncid)
 {
-    LOG((1, "nc_abort: ncid 0x%x", ncid));
-    /* Turn into close */
-    return NCD4_close(ncid);
+    LOG((1, "nc_close: ncid 0x%x", ncid));
+    /* Turn into abort */
+    return NCD4_abort(ncid);
 }
 

@@ -23,7 +23,7 @@
 # libnetcdf sources in libsrc4
 set (SRCS_NETCDF ${SRCS_NETCDF}
 	#error.h
-  nc4internal.h
+	#nc4internal.h
 	#netcdf.h
 	#netcdf3.h
   error4.c

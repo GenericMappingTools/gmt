@@ -21,18 +21,18 @@ extern List* vlenconstants;  /* List<Constant*>;*/
 /* Forward */
 static void genj_definevardata(Symbol* vsym);
 
-static void genj_defineattribute(Symbol* asym);
-static void genj_definevardata(Symbol*);
-
-static void genj_write(Symbol*, Bytebuffer*, Odometer*, int, int);
-
 static const char* jtypeallcaps(nc_type type);
 static const char* jtypecap(nc_type type);
 static const char* jtype(nc_type type);
 static const char* jarraytype(nc_type type);
 static const char* jname(Symbol* sym);
 
-static void computemaxunlimited(void);
+static void genj_defineattr(Symbol* asym);
+static void genj_definevardata(Symbol*);
+static void genj_write(Generator*,Symbol* sym, Bytebuffer* code,
+                       int rank, size_t* start, size_t* count);
+static void genj_writevar(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+static void genj_writeattr(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
 
 /*
  * Generate code for creating netCDF from in-memory structure.
@@ -41,15 +41,12 @@ void
 gen_ncjava(const char *filename)
 {
     int idim, ivar, iatt, maxdims;
-    int ndims, nvars, natts, ngatts, ngrps, ntyps;
-    char* cmode_string;
+    int ndims, nvars, natts, ngatts;
 
     ndims = listlength(dimdefs);
     nvars = listlength(vardefs);
     natts = listlength(attdefs);
     ngatts = listlength(gattdefs);
-    ngrps = listlength(grpdefs);
-    ntyps = listlength(typdefs);
 
     /* Construct the main class */
     codeline("import java.util.*;");
@@ -104,15 +101,6 @@ gen_ncjava(const char *filename)
     /* create netCDF file, uses NC_CLOBBER mode */
     codeline("");
     codelined(1,"/* enter define mode */");
-
-    if(!cmode_modifier) {
-	cmode_string = "NC_CLOBBER";
-    } else if(cmode_modifier & NC_64BIT_OFFSET) {
-	cmode_string = "NC_CLOBBER|NC_64BIT_OFFSET";
-    } else {
-        derror("unknown cmode modifier");
-	cmode_string = "NC_CLOBBER";
-    }
 
     bbprintf0(stmt,
                 "%sNetcdfFileWriteable ncfile = NetcdfFileWriteable.createNew(\"%s\", %s);\n",
@@ -175,7 +163,7 @@ gen_ncjava(const char *filename)
         codelined(1,"/* assign global attributes */");
         for(iatt = 0; iatt < ngatts; iatt++) {
             Symbol* gasym = (Symbol*)listget(gattdefs,iatt);
-            genj_defineattribute(gasym);            
+            genj_defineattr(gasym);            
         }
         codeline("");
         codeflush();
@@ -187,7 +175,7 @@ gen_ncjava(const char *filename)
         codelined(1,"/* assign per-variable attributes */");
         for(iatt = 0; iatt < natts; iatt++) {
             Symbol* asym = (Symbol*)listget(attdefs,iatt);
-            genj_defineattribute(asym);
+            genj_defineattr(asym);
         }
         codeline("");
         codeflush();
@@ -195,19 +183,19 @@ gen_ncjava(const char *filename)
 
     codelined(1,"ncfile.create();"); /* equiv to nc_enddef */
 
-    /* Load values into those variables with defined data */
-
-    if(nvars > 0) {
-        codeline("");
-        codelined(1,"/* assign variable data */");
-        for(ivar = 0; ivar < nvars; ivar++) {
-            Symbol* vsym = (Symbol*)listget(vardefs,ivar);
-            if(vsym->data != NULL) genj_definevardata(vsym);
+    if(!header_only) {
+        /* Load values into those variables with defined data */
+        if(nvars > 0) {
+            codeline("");
+            codelined(1,"/* assign variable data */");
+            for(ivar = 0; ivar < nvars; ivar++) {
+                Symbol* vsym = (Symbol*)listget(vardefs,ivar);
+                if(vsym->data != NULL) genj_definevardata(vsym);
+            }
+            codeline("");
         }
-        codeline("");
-        /* compute the max actual size of the unlimited dimension*/
-        if(usingclassic) computemaxunlimited();
     }
+
     codeflush();
 
 }
@@ -223,129 +211,6 @@ cl_java(void)
     codelined(1,"}"); /* main */
     codeline("}"); /* class Main */
     codeflush();
-}
-
-static void
-computemaxunlimited(void)
-{
-    int i;
-    unsigned long maxsize;
-    Symbol* udim = rootgroup->grp.unlimiteddim;
-    if(udim == NULL) return; /* there is no unlimited dimension*/
-    /* Look at each variable and see what*/
-    /* size it gives to the unlimited dim (if any)*/
-    maxsize = 0;
-    for(i=0;i<listlength(vardefs);i++) {
-        Symbol* dim;
-        Symbol* var = (Symbol*)listget(vardefs,i);      
-        if(var->typ.dimset.ndims == 0) continue; /* rank == 0*/
-        dim = var->typ.dimset.dimsyms[0];
-        if(dim->dim.declsize != NC_UNLIMITED) continue; /* var does not use unlimited*/
-        if(var->typ.dimset.dimsyms[0]->dim.declsize > maxsize)
-            maxsize = var->typ.dimset.dimsyms[0]->dim.declsize;
-    }
-}
-
-/*
- * Return java type name for netCDF type, given type code.
- */
-static void
-genj_defineattribute(Symbol* asym)
-{
-    unsigned long len;
-    Symbol* basetype = asym->typ.basetype;
-    Datalist* list;
-    Bytebuffer* code = NULL; /* capture other decls*/
-    nc_type typecode = basetype->typ.typecode;
-
-    list = asym->data;
-    len = list == NULL?0:list->length;
-
-    codeprintf("%s/* attribute: %s */\n",indented(1),asym->name);
-
-    code = bbNew();
-
-    if(typecode == NC_CHAR) {
-        gen_charattr(asym,code);
-    } else {
-        Datasrc* src = datalist2src(asym->data);
-        while(srcmore(src)) {
-            jdata_basetype(asym->typ.basetype,src,code,NULL);
-	}
-    }
-
-    /* Handle NC_CHAR specially */
-    if(typecode == NC_CHAR) {
-        /* revise the length count */
-        len = bbLength(code);
-        if(len == 0) {
-	    bbAppend(code,'\0'); len++;
-	    bbClear(code);
-	    bbCat(code,"\"\"");
-	} else
-            jquotestring(code,'"');
-	bbNull(code);
-    } else {
-        char* code2;
-	commify(code);
-        /* Convert to constant */
-        code2 = bbDup(code);
-        bbClear(code);
-        bbprintf0(stmt,"new %s[]",
-                jarraytype(typecode));
-        bbCatbuf(code,stmt);
-        bbCat(code,"{");
-        bbCat(code,code2);
-        bbCat(code,"}");
-        efree(code2);
-    }
-    switch (typecode) {
-    case NC_BYTE:
-    case NC_SHORT:
-    case NC_INT:
-    case NC_FLOAT:
-    case NC_DOUBLE:
-	codelined(1,"{");
-	bbprintf0(stmt,"%sArray data = Array.factory(%s.class, new int[]{%lu}, ",
-		indented(1),
-		jtype(basetype->typ.typecode),
-		len);
-	codedump(stmt);
-        codedump(code);
-	codeline(");");
-	if(asym->att.var == NULL) {
-            bbprintf0(stmt,"%sncfile.addGlobalAttribute(\"%s\",data);\n",
-                indented(1),jescapifyname(asym->name));
-	} else {
-            bbprintf0(stmt,"%sncfile.addVariableAttribute(\"%s\",\"%s\",data);\n",
-		indented(1),
-		jescapifyname(asym->att.var->name),
-                jescapifyname(asym->name));
-	}
-        codedump(stmt);
-	codelined(1,"}");
-        codeflush();
-        break;
-
-    case NC_CHAR:
-	if(asym->att.var == NULL) {
-            bbprintf0(stmt,"%sncfile.addGlobalAttribute(\"%s\",%s);\n",
-		indented(1),
-                jescapifyname(asym->name),
-		bbContents(code));
-	} else {
-            bbprintf0(stmt,"%sncfile.addVariableAttribute(\"%s\",\"%s\",%s);\n",
-		indented(1),
-		jescapifyname(asym->att.var->name),
-                jescapifyname(asym->name),
-		bbContents(code));
-	}
-        codedump(stmt);
-        codeflush();
-        break;
-
-    default: break;
-    }
 }
 
 const char* 
@@ -540,84 +405,65 @@ jstype(nc_type nctype)
 }
 
 static void
+genj_defineattr(Symbol* asym)
+{
+    Bytebuffer* code; /* capture so we can dump vlens first */
+    ASSERT(asym->data != NULL);
+    code = bbNew();
+    generator_reset(j_generator,NULL);
+    generate_attrdata(asym,j_generator,(Writer)genj_write,code);
+    bbFree(code);
+}
+
+
+static void
 genj_definevardata(Symbol* vsym)
 {
-    Dimset* dimset = &vsym->typ.dimset;
-    int isscalar = (dimset->ndims == 0);
-    Bytebuffer* code;
-    Datasrc* src = NULL;
-    Datalist* fillsrc = NULL;
-    nciter_t iter;
-    Odometer* odom = NULL;
-    size_t nelems;
-    int chartype = (vsym->typ.basetype->typ.typecode == NC_CHAR);
-
+    Bytebuffer* code; /* capture so we can dump vlens first */
     if(vsym->data == NULL) return;
-
     code = bbNew();
-    /* give the buffer a running start to be large enough*/
-    bbSetalloc(code, nciterbuffersize);
-
-    if(!isscalar && chartype) {
-        gen_chararray(vsym,code,fillsrc);
-        genj_write(vsym,code,NULL,0,0);
-    } else { /* not character constant */
-        src = datalist2src(vsym->data);
-        fillsrc = vsym->var.special._Fillvalue;
-    
-        /* Handle special cases first*/
-        if(isscalar) {
-            jdata_basetype(vsym->typ.basetype,src,code,fillsrc);
-            commify(code);
-            genj_write(vsym,code,NULL,1,0);
-         } else { /* Non-scalar*/
-            int index;
-            /* Create an iterator to generate blocks of data */
-            nc_get_iter(vsym,nciterbuffersize,&iter);
-            /* Fill in the local odometer instance */
-            odom = newodometer(&vsym->typ.dimset,NULL,NULL);
-            for(index=0;;index++) {
-                nelems=nc_next_iter(&iter,odom->start,odom->count);
-                if(nelems == 0) break;
-                jdata_array(vsym,code,src,odom,/*index=*/0,fillsrc);
-                genj_write(vsym,code,odom,0,index);
-            }
-        }
-        odometerfree(odom);
-    }
+    generator_reset(j_generator,NULL);
+    generate_vardata(vsym,j_generator,(Writer)genj_write,code);
     bbFree(code);
 }
 
 static void
-genj_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar, int index)
+genj_write(Generator* generator, Symbol* sym, Bytebuffer* code,
+           int rank, size_t* start, size_t* count)
+{
+    if(sym->objectclass == NC_ATT)
+	genj_writeattr(generator,sym,code,rank,start,count);
+    else if(sym->objectclass == NC_VAR)
+	genj_writevar(generator,sym,code,rank,start,count);
+    else
+	PANIC("illegal symbol for genj_write");
+}
+
+static void
+genj_writevar(Generator* generator, Symbol* vsym, Bytebuffer* code,
+              int rank, size_t* start, size_t* count)
 {
     Dimset* dimset = &vsym->typ.dimset;
-    int rank = dimset->ndims;
     int typecode = vsym->typ.basetype->typ.typecode;
-    int chartype = (typecode == NC_CHAR);
     int i;
 
     codeline("");
     codelined(1,"{"); /* Enclose in {...} for scoping */
 
-    if(isscalar) {
-        /* Construct the data Array */
+    if(rank == 0) {
         bbprintf0(stmt,"%sArray%s.D0 data = new Array%s.D0();\n",
 		indented(1),jtypecap(typecode), jtypecap(typecode));
         codedump(stmt);
-	if(chartype) {
-#ifdef IGNORE
-	    jquotestring(code,'"');
-            bbprintf0(stmt,"%sdata.set(%s.charAt(0));\n",
-		indented(1),bbContents(code));
-#else
-            bbprintf0(stmt,"%sdata.set((char)%s);\n",
-		indented(1),bbContents(code));
-#endif
+        if(typecode == NC_CHAR) {
+            /* Construct the data Array */
+            jquotestring(code,'\'');
+	    bbprintf0(stmt,"%sdata.set((char)%s);\n",
+			  indented(1),bbContents(code));
 	} else {
+	    commify(code);
             bbprintf0(stmt,"%sdata.set((%s)%s);\n",
-		indented(1),jtype(typecode),bbContents(code));
-	}
+	 	      indented(1),jtype(typecode),bbContents(code));
+        }
 	codedump(stmt);
         /* do the actual write */
         bbprintf0(stmt,"%sncfile.write(\"%s\",data);\n",
@@ -630,10 +476,7 @@ genj_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar, int ind
 	for(i=0;i<rank;i++) {
             Symbol* dsym = dimset->dimsyms[i];
 	    char tmp[32];
-	    if(i==0 && dsym->dim.declsize == NC_UNLIMITED)
-	        nprintf(tmp,sizeof(tmp),"%lu",dsym->dim.unlimitedsize);
-	    else
-	        nprintf(tmp,sizeof(tmp),"%lu",dsym->dim.declsize);
+	    nprintf(tmp,sizeof(tmp),"%lu",dsym->dim.declsize);
 	    if(i>0) {bbCat(dimbuf,", ");}
 	    bbCat(dimbuf,tmp);
 	}
@@ -669,10 +512,10 @@ genj_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar, int ind
                     indented(2),jtypecap(typecode));
 	codedump(stmt);
         bbFree(dimbuf);
-	/* Construct the origin set from the odometer start set */
+	/* Construct the origin set from the start set */
         bbprintf0(stmt,"%sint[] origin = new int[]{",indented(1));
 	for(i=0;i<rank;i++) {
-	    bbprintf(stmt,"%s%lu",(i>0?", ":""),odom->start[i]);
+	    bbprintf(stmt,"%s%lu",(i>0?", ":""),start[i]);
 	}
 	bbCat(stmt,"};\n");
 	codedump(stmt);
@@ -682,5 +525,98 @@ genj_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar, int ind
 	codedump(stmt);
     }
     codelined(1,"}"); /* Enclose in {...} for scoping */
+    codeflush();
 }
+
+static void
+genj_writeattr(Generator* generator, Symbol* asym, Bytebuffer* code,
+               int rank, size_t* start, size_t* count)
+{
+    Symbol* basetype = asym->typ.basetype;
+    nc_type typecode = basetype->typ.typecode;
+    size_t len = asym->data->length; /* default assumption */
+    Datalist* list;
+
+    list = asym->data;
+    len = list == NULL?0:list->length;
+
+    codeprintf("%s/* attribute: %s */\n",indented(1),asym->name);
+
+    /* Handle NC_CHAR specially */
+    if(typecode == NC_CHAR) {
+        /* revise the length count */
+        len = bbLength(code);
+        if(len == 0) {
+	    bbAppend(code,'\0'); len++;
+	    bbClear(code);
+	    bbCat(code,"\"\"");
+	    len++;
+	} else
+            jquotestring(code,'"');
+	bbNull(code);
+    } else { /* not NC_CHAR*/
+        char* code2;
+	commify(code);
+        /* Convert to constant */
+        code2 = bbDup(code);
+        bbClear(code);
+        bbprintf0(stmt,"new %s[]",
+                jarraytype(typecode));
+        bbCatbuf(code,stmt);
+        bbCat(code,"{");
+        bbCat(code,code2);
+        bbCat(code,"}");
+        efree(code2);
+    }
+    switch (typecode) {
+    case NC_BYTE:
+    case NC_SHORT:
+    case NC_INT:
+    case NC_FLOAT:
+    case NC_DOUBLE:
+	codelined(1,"{");
+	bbprintf0(stmt,"%sArray data = Array.factory(%s.class, new int[]{%lu}, ",
+		indented(1),
+		jtype(basetype->typ.typecode),
+		len);
+	codedump(stmt);
+        codedump(code);
+	codeline(");");
+	if(asym->att.var == NULL) {
+            bbprintf0(stmt,"%sncfile.addGlobalAttribute(\"%s\",data);\n",
+                indented(1),jescapifyname(asym->name));
+	} else {
+            bbprintf0(stmt,"%sncfile.addVariableAttribute(\"%s\",\"%s\",data);\n",
+		indented(1),
+		jescapifyname(asym->att.var->name),
+                jescapifyname(asym->name));
+	}
+        codedump(stmt);
+	codelined(1,"}");
+        codeflush();
+        break;
+
+    case NC_CHAR:
+	if(asym->att.var == NULL) {
+            bbprintf0(stmt,"%sncfile.addGlobalAttribute(\"%s\",%s);\n",
+		indented(1),
+                jescapifyname(asym->name),
+		bbContents(code));
+	} else {
+            bbprintf0(stmt,"%sncfile.addVariableAttribute(\"%s\",\"%s\",%s);\n",
+		indented(1),
+		jescapifyname(asym->att.var->name),
+                jescapifyname(asym->name),
+		bbContents(code));
+	}
+        codedump(stmt);
+        codeflush();
+        break;
+
+    default: break;
+    }
+    codeflush();
+}
+
+
 #endif /*ENABLE_JAVA*/

@@ -92,7 +92,7 @@ main(int argc, char **argv)
 
       for (i = 0; i < NUM_TRIES; i++)
       {
-	 printf("...trying sizehint of %ld\n", sizehint);
+	 printf(", trying sizehint of %ld ...", sizehint);
 	 if (create_file(FILE_NAME, NC_NOFILL, &sizehint)) ERR;
 	 if (nc_open(FILE_NAME, 0, &ncid)) ERR;
 	 if (nc_get_var1(ncid, 0, idx, &data)) ERR;

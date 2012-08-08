@@ -42,13 +42,13 @@ chunkspec_parse(int ncid, const char *spec) {
     size_t ndims = 0;
     int idim;
     int ret;
+    int comma_seen = 0;
 
     chunkspecs.ndims = 0;
     if (!spec || *spec == '\0')
 	return NC_NOERR; 
     /* Count unescaped commas, handle consecutive unescaped commas as error */
     for(cp = spec; *cp; cp++) {
-	int comma_seen = 0;
 	if(*cp == ',' && *pp != '\\') {
 	    if(comma_seen) {	/* consecutive commas detected */
 		return(NC_EINVAL);
@@ -65,7 +65,6 @@ chunkspec_parse(int ncid, const char *spec) {
     chunkspecs.dimids = (int *) emalloc(ndims * sizeof(int));
     chunkspecs.chunksizes = (size_t *) emalloc(ndims * sizeof(size_t));
     /* Look up dimension ids and assign chunksizes */
-    cp = spec;
     pp = spec;
     np = spec;
     idim = 0;
@@ -111,8 +110,7 @@ chunkspec_parse(int ncid, const char *spec) {
 	    }
 	    chunkspecs.chunksizes[idim] = chunksize;
 	    idim++;
-	    if(dimname)
-		free(dimname);
+	    free(dimname);
 	    if(*cp == '\0')
 		break;
 	    /* set np to point to first char after comma */

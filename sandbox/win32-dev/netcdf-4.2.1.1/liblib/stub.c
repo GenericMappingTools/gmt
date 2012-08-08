@@ -3,13 +3,11 @@
  *   See netcdf/COPYRIGHT file for copying and redistribution conditions.
  *********************************************************************/
 
-/* $Id$ */
-/* $Header: /upc/share/CVS/netcdf-3/liblib/stub.c,v 1.8 2010/05/25 13:53:02 ed Exp $ */
-
 #include "config.h"
 #include "ncdispatch.h"
 
 extern int NC3_initialize(void);
+
 #ifdef USE_NETCDF4
 extern int NC4_initialize(void);
 #endif
@@ -25,29 +23,47 @@ extern int NCD4_initialize(void);
 extern int NCCR_initialize(void);
 #endif
 
+#ifdef BUILD_RPC
+extern int NCRPC_initialize(void);
+#endif
+
 int
 NC_initialize(void)
 {
     int stat = NC_NOERR;
 
-    if((stat = NC3_initialize())) return stat;
+    /* Allow libdispatch to do initialization */
+    if((stat = NCDISPATCH_initialize())) return stat;
 
-#ifdef USE_NETCDF4
-    if((stat = NC4_initialize())) return stat;
-#endif
+    /* Initialize each active protocol */
+
+    if((stat = NC3_initialize())) return stat;
 
 #ifdef USE_DAP
     if((stat = NCD3_initialize())) return stat;
 #endif
 
-#if defined(USE_DAP) && defined(USE_NETCDF4)
+#ifdef USE_NETCDF4
+    if((stat = NC4_initialize())) return stat;
+
+    /* if((stat = NCD_initialize())) return stat; */
+
+#ifdef USE_DAP
+#ifdef NOTUSED
     if((stat = NCD4_initialize())) return stat;
 #endif
+#endif
 
-/* cdmremote => netcdf4 */
 #ifdef USE_CDMREMOTE
     if((stat = NCCR_initialize())) return stat;
 #endif
+
+#ifdef USE_RPC
+    if((stat = NCRPC_initialize())) return stat;
+#endif
+
+#endif /* USE_NETCDF4 */
+
 
     return NC_NOERR;
 }

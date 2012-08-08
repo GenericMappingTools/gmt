@@ -74,17 +74,22 @@ main(int argc, char **argv)
 
       int ncid, x_dimid, y_dimid, varid1, varid2;
       int nvars, ndims, ngatts, unlimdimid, dimids_in[2], natts;
-      double data_outx[NX], data_outy[NY];
-      int x, y, retval;
       size_t len_in;
       char name_in[NC_MAX_NAME + 1];
       nc_type xtype_in;
+#if 0
+      int x, y;
+      double data_outx[NX], data_outy[NY];
+      int retval;
+#endif
 
+#if 0
       /* Create some pretend data. */
       for (x = 0; x < NX; x++)
      	 data_outx[x] = x;
       for (y = 0; y < NY; y++)
      	 data_outy[y] = y;
+#endif
      
       /* Create file with two dims, two 1D vars. */
       if (nc_create(FILE_NAME, NC_NETCDF4, &ncid)) ERR;

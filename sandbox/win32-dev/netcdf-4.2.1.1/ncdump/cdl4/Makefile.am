@@ -15,13 +15,10 @@ ref_tst_enum_data.cdl ref_tst_group_data.cdl \
 ref_tst_nans.cdl ref_tst_opaque_data.cdl ref_tst_small.cdl \
 ref_tst_solar_1.cdl ref_tst_solar_2.cdl ref_tst_special_atts.cdl \
 ref_tst_string_data.cdl ref_tst_unicode.cdl ref_tst_utf8.cdl \
-ref_tst_vlen_data.cdl ref_typescope.cdl sfc_pres_temp.cdl \
+ref_typescope.cdl sfc_pres_temp.cdl \
 simple_xy.cdl small.cdl small2.cdl test0.cdl tst_ncml.cdl \
 bigf1.cdl bigf2.cdl bigf3.cdl bigr1.cdl bigr2.cdl bigr3.cdl \
 n3time.cdl ref_tst_special_atts3.cdl ref_tst_unlim2.cdl ref_tst_chardata.cdl \
-ref_solar.cdl unlimtest1.cdl unlimtest2.cdl
-
-
-
-
-
+ref_solar.cdl unlimtest1.cdl unlimtest2.cdl \
+ref_tst_opaque_data.cdl  \
+ref_tst_vlen_data.cdl ref_tst_vlen_data2.cdl

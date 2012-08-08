@@ -1,0 +1,765 @@
+netcdf tst-upc-nmm-point.nc {
+dimensions:
+	record = UNLIMITED ; // (1 currently)
+	profile = 1 ;
+	station = 1 ;
+	station_description_strlen = 33 ;
+	station_id_strlen = 9 ;
+	time_strlen = 20 ;
+variables:
+	double latitude(station) ;
+		latitude:units = "degrees_north" ;
+		latitude:long_name = "station latitude" ;
+	double longitude(station) ;
+		longitude:units = "degrees_east" ;
+		longitude:long_name = "station longitude" ;
+	char station_id(station, station_id_strlen) ;
+		station_id:long_name = "station identifier" ;
+	char station_description(station, station_description_strlen) ;
+		station_description:long_name = "station description" ;
+	int numProfiles(station) ;
+		numProfiles:long_name = "number of profiles in linked list for this station" ;
+	int firstProfile(station) ;
+		firstProfile:long_name = "index of first profile in linked list for this station" ;
+	int numChildren(profile) ;
+		numChildren:long_name = "number of children in linked list for this profile" ;
+	int numProfilesTotal ;
+		numProfilesTotal:long_name = "number of valid profiles" ;
+	int firstChild(profile) ;
+		firstChild:long_name = "record number of first obs in linked list for this profile" ;
+	char time(profile, time_strlen) ;
+		time:long_name = "ISO-8601 Date - time of observation" ;
+	int station_index(profile) ;
+		station_index:long_name = "index of parent station" ;
+	int nextProfile(profile) ;
+		nextProfile:long_name = "index of next profile in linked list for this station" ;
+	int profile_index(record) ;
+		profile_index:long_name = "index of parent profile" ;
+	int nextChild(record) ;
+		nextChild:long_name = "record number of next obs in linked list for this profile" ;
+	float Absolute_vorticity(record) ;
+		Absolute_vorticity:units = "1/s" ;
+		Absolute_vorticity:long_name = "Absolute_vorticity @ isobaric" ;
+	float Accumulated_snow(record) ;
+		Accumulated_snow:units = "kg/m^2" ;
+		Accumulated_snow:long_name = "Accumulated_snow @ surface" ;
+	float Albedo(record) ;
+		Albedo:units = "%" ;
+		Albedo:long_name = "Albedo @ surface" ;
+	float Best_4-layer_lifted_index(record) ;
+		Best_4-layer_lifted_index:units = "K" ;
+		Best_4-layer_lifted_index:long_name = "Best_4-layer_lifted_index @ layer_between_two_pressure_difference_from_ground" ;
+	float Blackadars_mixing_length_scale(record) ;
+		Blackadars_mixing_length_scale:units = "m" ;
+		Blackadars_mixing_length_scale:long_name = "Blackadars_mixing_length_scale @ hybrid" ;
+	float Canopy_conductance(record) ;
+		Canopy_conductance:units = "m/s" ;
+		Canopy_conductance:long_name = "Canopy_conductance @ surface" ;
+	float Categorical_freezing_rain(record) ;
+		Categorical_freezing_rain:units = "yes=1;no=0" ;
+		Categorical_freezing_rain:long_name = "Categorical_freezing_rain @ surface" ;
+	float Categorical_ice_pellets(record) ;
+		Categorical_ice_pellets:units = "yes=1;no=0" ;
+		Categorical_ice_pellets:long_name = "Categorical_ice_pellets @ surface" ;
+	float Categorical_rain(record) ;
+		Categorical_rain:units = "yes=1;no=0" ;
+		Categorical_rain:long_name = "Categorical_rain @ surface" ;
+	float Categorical_snow(record) ;
+		Categorical_snow:units = "yes=1;no=0" ;
+		Categorical_snow:long_name = "Categorical_snow @ surface" ;
+	float Cloud_Ice(record) ;
+		Cloud_Ice:units = "kg/kg" ;
+		Cloud_Ice:long_name = "Cloud_Ice @ isobaric" ;
+	float Cloud_water(record) ;
+		Cloud_water:units = "kg/kg" ;
+		Cloud_water:long_name = "Cloud_water @ isobaric" ;
+	float Convective_Avail_Pot_Energy(record) ;
+		Convective_Avail_Pot_Energy:units = "J/kg" ;
+		Convective_Avail_Pot_Energy:long_name = "Convective_Avail_Pot_Energy @ layer_between_two_pressure_difference_from_ground" ;
+	float Convective_Avail_Pot_Energy_surface(record) ;
+		Convective_Avail_Pot_Energy_surface:units = "J/kg" ;
+		Convective_Avail_Pot_Energy_surface:long_name = "Convective_Avail_Pot_Energy @ surface" ;
+	float Convective_cloud_cover(record) ;
+		Convective_cloud_cover:units = "%" ;
+		Convective_cloud_cover:long_name = "Convective_cloud_cover @ entire_atmosphere" ;
+	float Convective_cloud_efficiency(record) ;
+		Convective_cloud_efficiency:units = "" ;
+		Convective_cloud_efficiency:long_name = "Convective_cloud_efficiency @ entire_atmosphere" ;
+	float Convective_inhibition(record) ;
+		Convective_inhibition:units = "J/kg" ;
+		Convective_inhibition:long_name = "Convective_inhibition @ layer_between_two_pressure_difference_from_ground" ;
+	float Convective_inhibition_surface(record) ;
+		Convective_inhibition_surface:units = "J/kg" ;
+		Convective_inhibition_surface:long_name = "Convective_inhibition @ surface" ;
+	float Convective_precip_rate(record) ;
+		Convective_precip_rate:units = "kg/m^2/s" ;
+		Convective_precip_rate:long_name = "Convective_precip_rate @ surface" ;
+	float Convective_precipitation(record) ;
+		Convective_precipitation:units = "kg/m^2" ;
+		Convective_precipitation:long_name = "Convective_precipitation @ surface" ;
+	float Deep_convective_heating(record) ;
+		Deep_convective_heating:units = "K/s" ;
+		Deep_convective_heating:long_name = "Deep_convective_heating @ hybrid" ;
+	float Derived_radar_reflectivity(record) ;
+		Derived_radar_reflectivity:units = "dbZ" ;
+		Derived_radar_reflectivity:long_name = "Derived_radar_reflectivity @ isobaric" ;
+	float Derived_radar_reflectivity_height_above_ground(record) ;
+		Derived_radar_reflectivity_height_above_ground:units = "dbZ" ;
+		Derived_radar_reflectivity_height_above_ground:long_name = "Derived_radar_reflectivity @ height_above_ground" ;
+	float Derived_radar_reflectivity_hybrid(record) ;
+		Derived_radar_reflectivity_hybrid:units = "dbZ" ;
+		Derived_radar_reflectivity_hybrid:long_name = "Derived_radar_reflectivity @ hybrid" ;
+	float Dew_point_temperature(record) ;
+		Dew_point_temperature:units = "K" ;
+		Dew_point_temperature:long_name = "Dew_point_temperature @ isobaric" ;
+	float Dew_point_temperature_height_above_ground(record) ;
+		Dew_point_temperature_height_above_ground:units = "K" ;
+		Dew_point_temperature_height_above_ground:long_name = "Dew_point_temperature @ height_above_ground" ;
+	float Direct_evaporation_cease_soil_moisture(record) ;
+		Direct_evaporation_cease_soil_moisture:units = "fraction" ;
+		Direct_evaporation_cease_soil_moisture:long_name = "Direct_evaporation_cease_soil_moisture @ surface" ;
+	float Drag_coefficient(record) ;
+		Drag_coefficient:units = "non-dim" ;
+		Drag_coefficient:long_name = "Drag_coefficient @ surface" ;
+	float Evaporation(record) ;
+		Evaporation:units = "kg/m^2" ;
+		Evaporation:long_name = "Evaporation @ surface" ;
+	float Exchange_coefficient(record) ;
+		Exchange_coefficient:units = "(kg/m^3)(m/s)" ;
+		Exchange_coefficient:long_name = "Exchange_coefficient @ surface" ;
+	float Friction_velocity(record) ;
+		Friction_velocity:units = "m/s" ;
+		Friction_velocity:long_name = "Friction_velocity @ surface" ;
+	float Geopotential_height(record) ;
+		Geopotential_height:units = "gpm" ;
+		Geopotential_height:long_name = "Geopotential_height @ isobaric" ;
+	float Geopotential_height_cloud_base(record) ;
+		Geopotential_height_cloud_base:units = "gpm" ;
+		Geopotential_height_cloud_base:long_name = "Geopotential_height @ cloud_base" ;
+	float Geopotential_height_cloud_tops(record) ;
+		Geopotential_height_cloud_tops:units = "gpm" ;
+		Geopotential_height_cloud_tops:long_name = "Geopotential_height @ cloud_tops" ;
+	float Geopotential_height_highest_tropospheric_freezing(record) ;
+		Geopotential_height_highest_tropospheric_freezing:units = "gpm" ;
+		Geopotential_height_highest_tropospheric_freezing:long_name = "Geopotential_height @ highest_tropospheric_freezing" ;
+	float Geopotential_height_lowest_level_of_wet_bulb_zero(record) ;
+		Geopotential_height_lowest_level_of_wet_bulb_zero:units = "gpm" ;
+		Geopotential_height_lowest_level_of_wet_bulb_zero:long_name = "Geopotential_height @ lowest_level_of_wet_bulb_zero" ;
+	float Geopotential_height_surface(record) ;
+		Geopotential_height_surface:units = "gpm" ;
+		Geopotential_height_surface:long_name = "Geopotential_height @ surface" ;
+	float Geopotential_height_zeroDegC_isotherm(record) ;
+		Geopotential_height_zeroDegC_isotherm:units = "gpm" ;
+		Geopotential_height_zeroDegC_isotherm:long_name = "Geopotential_height @ zeroDegC_isotherm" ;
+	float Ground_heat_flux(record) ;
+		Ground_heat_flux:units = "W/m^2" ;
+		Ground_heat_flux:long_name = "Ground_heat_flux @ surface" ;
+	float High_level_cloud_cover(record) ;
+		High_level_cloud_cover:units = "%" ;
+		High_level_cloud_cover:long_name = "High_level_cloud_cover @ high_cloud_layer" ;
+	float Horizontal_moisture_divergence(record) ;
+		Horizontal_moisture_divergence:units = "kg/kg/s" ;
+		Horizontal_moisture_divergence:long_name = "Horizontal_moisture_divergence @ isobaric" ;
+	float Humidity_parameter_in_canopy_conductance(record) ;
+		Humidity_parameter_in_canopy_conductance:units = "fraction" ;
+		Humidity_parameter_in_canopy_conductance:long_name = "Humidity_parameter_in_canopy_conductance @ surface" ;
+	float Ice_concentration_ice1no_ice0(record) ;
+		Ice_concentration_ice1no_ice0:units = "fraction" ;
+		Ice_concentration_ice1no_ice0:long_name = "Ice_concentration_ice1no_ice0 @ surface" ;
+	float Land_cover_land1sea0(record) ;
+		Land_cover_land1sea0:units = "" ;
+		Land_cover_land1sea0:long_name = "Land_cover_land1sea0 @ surface" ;
+	float Large_scale_condensation_heating(record) ;
+		Large_scale_condensation_heating:units = "K/s" ;
+		Large_scale_condensation_heating:long_name = "Large_scale_condensation_heating @ hybrid" ;
+	float Large_scale_precipitation(record) ;
+		Large_scale_precipitation:units = "kg/m^2" ;
+		Large_scale_precipitation:long_name = "Large_scale_precipitation @ surface" ;
+	float Latent_heat_flux(record) ;
+		Latent_heat_flux:units = "W/m^2" ;
+		Latent_heat_flux:long_name = "Latent_heat_flux @ surface" ;
+	float Longwave_radiative_heating(record) ;
+		Longwave_radiative_heating:units = "K/s" ;
+		Longwave_radiative_heating:long_name = "Longwave_radiative_heating @ hybrid" ;
+	float Low_level_cloud_cover(record) ;
+		Low_level_cloud_cover:units = "%" ;
+		Low_level_cloud_cover:long_name = "Low_level_cloud_cover @ low_cloud_layer" ;
+	float Maximum_Composite_radar_reflectivity(record) ;
+		Maximum_Composite_radar_reflectivity:units = "dbZ" ;
+		Maximum_Composite_radar_reflectivity:long_name = "Maximum_Composite_radar_reflectivity @ entire_atmosphere" ;
+	float Mean_sea_level_pressure_NAM_model(record) ;
+		Mean_sea_level_pressure_NAM_model:units = "Pa" ;
+		Mean_sea_level_pressure_NAM_model:long_name = "Mean_sea_level_pressure_NAM_model @ msl" ;
+	float Meridional_momentum_flux(record) ;
+		Meridional_momentum_flux:units = "N/m^2" ;
+		Meridional_momentum_flux:long_name = "Meridional_momentum_flux @ surface" ;
+	float Mid_level_cloud_cover(record) ;
+		Mid_level_cloud_cover:units = "%" ;
+		Mid_level_cloud_cover:long_name = "Mid_level_cloud_cover @ middle_cloud_layer" ;
+	float Moisture_availability(record) ;
+		Moisture_availability:units = "%" ;
+		Moisture_availability:long_name = "Moisture_availability @ layer_between_two_depths_below_surface" ;
+	float Non-convective_cloud(record) ;
+		Non-convective_cloud:units = "%" ;
+		Non-convective_cloud:long_name = "Non-convective_cloud @ entire_atmosphere" ;
+	float Number_of_soil_layers_in_root_zone(record) ;
+		Number_of_soil_layers_in_root_zone:units = "non-dim" ;
+		Number_of_soil_layers_in_root_zone:long_name = "Number_of_soil_layers_in_root_zone @ surface" ;
+	float Parcel_lifted_index_to_500_hPa(record) ;
+		Parcel_lifted_index_to_500_hPa:units = "K" ;
+		Parcel_lifted_index_to_500_hPa:long_name = "Parcel_lifted_index_to_500_hPa @ layer_between_two_pressure_difference_from_ground" ;
+	float Planetary_boundary_layer_height(record) ;
+		Planetary_boundary_layer_height:units = "m" ;
+		Planetary_boundary_layer_height:long_name = "Planetary_boundary_layer_height @ surface" ;
+	float Plant_canopy_surface_water(record) ;
+		Plant_canopy_surface_water:units = "kg/m^2" ;
+		Plant_canopy_surface_water:long_name = "Plant_canopy_surface_water @ surface" ;
+	float Potential_evaporation_rate(record) ;
+		Potential_evaporation_rate:units = "W/m^2" ;
+		Potential_evaporation_rate:long_name = "Potential_evaporation_rate @ surface" ;
+	float Precipitable_water(record) ;
+		Precipitable_water:units = "kg/m^2" ;
+		Precipitable_water:long_name = "Precipitable_water @ entire_atmosphere" ;
+	float Precipitation_rate(record) ;
+		Precipitation_rate:units = "kg/m^2/s" ;
+		Precipitation_rate:long_name = "Precipitation_rate @ surface" ;
+	float Pressure_of_level_from_which_parcel_was_lifted(record) ;
+		Pressure_of_level_from_which_parcel_was_lifted:units = "Pa" ;
+		Pressure_of_level_from_which_parcel_was_lifted:long_name = "Pressure_of_level_from_which_parcel_was_lifted @ layer_between_two_pressure_difference_from_ground" ;
+	float Pressure_reduced_to_MSL(record) ;
+		Pressure_reduced_to_MSL:units = "Pa" ;
+		Pressure_reduced_to_MSL:long_name = "Pressure_reduced_to_MSL @ msl" ;
+	float Pressure(record) ;
+		Pressure:units = "Pa" ;
+		Pressure:long_name = "Pressure @ cloud_base" ;
+	float Pressure_cloud_tops(record) ;
+		Pressure_cloud_tops:units = "Pa" ;
+		Pressure_cloud_tops:long_name = "Pressure @ cloud_tops" ;
+	float Pressure_convective_cloud_bottom(record) ;
+		Pressure_convective_cloud_bottom:units = "Pa" ;
+		Pressure_convective_cloud_bottom:long_name = "Pressure @ convective_cloud_bottom" ;
+	float Pressure_convective_cloud_top(record) ;
+		Pressure_convective_cloud_top:units = "Pa" ;
+		Pressure_convective_cloud_top:long_name = "Pressure @ convective_cloud_top" ;
+	float Pressure_deep_convective_cloud_bottom(record) ;
+		Pressure_deep_convective_cloud_bottom:units = "Pa" ;
+		Pressure_deep_convective_cloud_bottom:long_name = "Pressure @ deep_convective_cloud_bottom" ;
+	float Pressure_deep_convective_cloud_top(record) ;
+		Pressure_deep_convective_cloud_top:units = "Pa" ;
+		Pressure_deep_convective_cloud_top:long_name = "Pressure @ deep_convective_cloud_top" ;
+	float Pressure_grid_scale_cloud_bottom(record) ;
+		Pressure_grid_scale_cloud_bottom:units = "Pa" ;
+		Pressure_grid_scale_cloud_bottom:long_name = "Pressure @ grid_scale_cloud bottom" ;
+	float Pressure_grid_scale_cloud_top(record) ;
+		Pressure_grid_scale_cloud_top:units = "Pa" ;
+		Pressure_grid_scale_cloud_top:long_name = "Pressure @ grid_scale_cloud_top" ;
+	float Pressure_shallow_convective_cloud_bottom(record) ;
+		Pressure_shallow_convective_cloud_bottom:units = "Pa" ;
+		Pressure_shallow_convective_cloud_bottom:long_name = "Pressure @ shallow_convective_cloud_bottom" ;
+	float Pressure_shallow_convective_cloud_top(record) ;
+		Pressure_shallow_convective_cloud_top:units = "Pa" ;
+		Pressure_shallow_convective_cloud_top:long_name = "Pressure @ shallow_convective_cloud_top" ;
+	float Pressure_surface(record) ;
+		Pressure_surface:units = "Pa" ;
+		Pressure_surface:long_name = "Pressure @ surface" ;
+	float Pressure_tropopause(record) ;
+		Pressure_tropopause:units = "Pa" ;
+		Pressure_tropopause:long_name = "Pressure @ tropopause" ;
+	float Pressure_vertical_velocity(record) ;
+		Pressure_vertical_velocity:units = "Pa/s" ;
+		Pressure_vertical_velocity:long_name = "Pressure_vertical_velocity @ isobaric" ;
+	float Rain_water_mixing_ratio(record) ;
+		Rain_water_mixing_ratio:units = "kg/kg" ;
+		Rain_water_mixing_ratio:long_name = "Rain_water_mixing_ratio @ isobaric" ;
+	float Relative_humidity(record) ;
+		Relative_humidity:units = "%" ;
+		Relative_humidity:long_name = "Relative_humidity @ isobaric" ;
+	float Relative_humidity_layer_between_two_pressure_difference_from_ground(record) ;
+		Relative_humidity_layer_between_two_pressure_difference_from_ground:units = "%" ;
+		Relative_humidity_layer_between_two_pressure_difference_from_ground:long_name = "Relative_humidity @ layer_between_two_pressure_difference_from_ground" ;
+	float Relative_humidity_height_above_ground(record) ;
+		Relative_humidity_height_above_ground:units = "%" ;
+		Relative_humidity_height_above_ground:long_name = "Relative_humidity @ height_above_ground" ;
+	float Relative_humidity_surface(record) ;
+		Relative_humidity_surface:units = "%" ;
+		Relative_humidity_surface:long_name = "Relative_humidity @ surface" ;
+	float Sensible_heat_flux(record) ;
+		Sensible_heat_flux:units = "W/m^2" ;
+		Sensible_heat_flux:long_name = "Sensible_heat_flux @ surface" ;
+	float Snow_cover(record) ;
+		Snow_cover:units = "%" ;
+		Snow_cover:long_name = "Snow_cover @ surface" ;
+	float Snow_mixing_ratio(record) ;
+		Snow_mixing_ratio:units = "kg/kg" ;
+		Snow_mixing_ratio:long_name = "Snow_mixing_ratio @ isobaric" ;
+	float Soil_moisture_content(record) ;
+		Soil_moisture_content:units = "kg/m^2" ;
+		Soil_moisture_content:long_name = "Soil_moisture_content @ layer_between_two_depths_below_surface" ;
+	float Soil_moisture_parameter_in_canopy_conductance(record) ;
+		Soil_moisture_parameter_in_canopy_conductance:units = "fraction" ;
+		Soil_moisture_parameter_in_canopy_conductance:long_name = "Soil_moisture_parameter_in_canopy_conductance @ surface" ;
+	float Soil_porosity(record) ;
+		Soil_porosity:units = "fraction" ;
+		Soil_porosity:long_name = "Soil_porosity @ surface" ;
+	float Soil_temperature(record) ;
+		Soil_temperature:units = "K" ;
+		Soil_temperature:long_name = "Soil_temperature @ layer_between_two_depths_below_surface" ;
+	float Soil_temperature_depth_below_surface(record) ;
+		Soil_temperature_depth_below_surface:units = "K" ;
+		Soil_temperature_depth_below_surface:long_name = "Soil_temperature @ depth_below_surface" ;
+	float Soil_type_Zobler(record) ;
+		Soil_type_Zobler:units = "0..9" ;
+		Soil_type_Zobler:long_name = "Soil_type_Zobler @ surface" ;
+	float Solar_parameter_in_canopy_conductance(record) ;
+		Solar_parameter_in_canopy_conductance:units = "fraction" ;
+		Solar_parameter_in_canopy_conductance:long_name = "Solar_parameter_in_canopy_conductance @ surface" ;
+	float Solar_radiative_heating(record) ;
+		Solar_radiative_heating:units = "K/s" ;
+		Solar_radiative_heating:long_name = "Solar_radiative_heating @ hybrid" ;
+	float Specific_humidity(record) ;
+		Specific_humidity:units = "kg/kg" ;
+		Specific_humidity:long_name = "Specific_humidity @ isobaric" ;
+	float Specific_humidity_height_above_ground(record) ;
+		Specific_humidity_height_above_ground:units = "kg/kg" ;
+		Specific_humidity_height_above_ground:long_name = "Specific_humidity @ height_above_ground" ;
+	float Specific_humidity_surface(record) ;
+		Specific_humidity_surface:units = "kg/kg" ;
+		Specific_humidity_surface:long_name = "Specific_humidity @ surface" ;
+	float Storm_relative_helicity(record) ;
+		Storm_relative_helicity:units = "m^2/s^2" ;
+		Storm_relative_helicity:long_name = "Storm_relative_helicity @ layer_between_two_heights_above_ground" ;
+	float Stream_function(record) ;
+		Stream_function:units = "m^2/s" ;
+		Stream_function:long_name = "Stream_function @ isobaric" ;
+	float Surface_lifted_index(record) ;
+		Surface_lifted_index:units = "K" ;
+		Surface_lifted_index:long_name = "Surface_lifted_index @ layer_between_two_isobaric" ;
+	float Surface_roughness(record) ;
+		Surface_roughness:units = "m" ;
+		Surface_roughness:long_name = "Surface_roughness @ surface" ;
+	float Surface_wind_gust(record) ;
+		Surface_wind_gust:units = "m/s" ;
+		Surface_wind_gust:long_name = "Surface_wind_gust @ surface" ;
+	float Temperature(record) ;
+		Temperature:units = "K" ;
+		Temperature:long_name = "Temperature @ isobaric" ;
+	float Temperature_layer_between_two_pressure_difference_from_ground(record) ;
+		Temperature_layer_between_two_pressure_difference_from_ground:units = "K" ;
+		Temperature_layer_between_two_pressure_difference_from_ground:long_name = "Temperature @ layer_between_two_pressure_difference_from_ground" ;
+	float Temperature_cloud_tops(record) ;
+		Temperature_cloud_tops:units = "K" ;
+		Temperature_cloud_tops:long_name = "Temperature @ cloud_tops" ;
+	float Temperature_height_above_ground(record) ;
+		Temperature_height_above_ground:units = "K" ;
+		Temperature_height_above_ground:long_name = "Temperature @ height_above_ground" ;
+	float Temperature_surface(record) ;
+		Temperature_surface:units = "K" ;
+		Temperature_surface:long_name = "Temperature @ surface" ;
+	float Temperature_parameter_in_canopy_conductance(record) ;
+		Temperature_parameter_in_canopy_conductance:units = "fraction" ;
+		Temperature_parameter_in_canopy_conductance:long_name = "Temperature_parameter_in_canopy_conductance @ surface" ;
+	float Temperature_tendency_by_all_radiation(record) ;
+		Temperature_tendency_by_all_radiation:units = "K/s" ;
+		Temperature_tendency_by_all_radiation:long_name = "Temperature_tendency_by_all_radiation @ hybrid" ;
+	float Total_cloud_cover(record) ;
+		Total_cloud_cover:units = "%" ;
+		Total_cloud_cover:long_name = "Total_cloud_cover @ entire_atmosphere" ;
+	float Total_column_cloud_ice(record) ;
+		Total_column_cloud_ice:units = "kg/m/m" ;
+		Total_column_cloud_ice:long_name = "Total_column_cloud_ice @ entire_atmosphere" ;
+	float Total_column_cloud_water(record) ;
+		Total_column_cloud_water:units = "kg/m/m" ;
+		Total_column_cloud_water:long_name = "Total_column_cloud_water @ entire_atmosphere" ;
+	float Total_column_condensate(record) ;
+		Total_column_condensate:units = "kg/m/m" ;
+		Total_column_condensate:long_name = "Total_column_condensate @ entire_atmosphere" ;
+	float Total_column_rain(record) ;
+		Total_column_rain:units = "kg/m/m" ;
+		Total_column_rain:long_name = "Total_column_rain @ entire_atmosphere" ;
+	float Total_column_snow(record) ;
+		Total_column_snow:units = "kg/m/m" ;
+		Total_column_snow:long_name = "Total_column_snow @ entire_atmosphere" ;
+	float Total_precipitation(record) ;
+		Total_precipitation:units = "kg/m^2" ;
+		Total_precipitation:long_name = "Total_precipitation @ surface" ;
+	float Transpiration_stress-onset_soil_moisture(record) ;
+		Transpiration_stress-onset_soil_moisture:units = "fraction" ;
+		Transpiration_stress-onset_soil_moisture:long_name = "Transpiration_stress-onset_soil_moisture @ surface" ;
+	float Turbulent_kinetic_energy(record) ;
+		Turbulent_kinetic_energy:units = "J/kg" ;
+		Turbulent_kinetic_energy:long_name = "Turbulent_kinetic_energy @ isobaric" ;
+	float u-component_of_storm_motion(record) ;
+		u-component_of_storm_motion:units = "m/s" ;
+		u-component_of_storm_motion:long_name = "u-component_of_storm_motion @ layer_between_two_heights_above_ground" ;
+	float u_wind(record) ;
+		u_wind:units = "m/s" ;
+		u_wind:long_name = "u_wind @ isobaric" ;
+	float u_wind_layer_between_two_pressure_difference_from_ground(record) ;
+		u_wind_layer_between_two_pressure_difference_from_ground:units = "m/s" ;
+		u_wind_layer_between_two_pressure_difference_from_ground:long_name = "u_wind @ layer_between_two_pressure_difference_from_ground" ;
+	float u_wind_height_above_ground(record) ;
+		u_wind_height_above_ground:units = "m/s" ;
+		u_wind_height_above_ground:long_name = "u_wind @ height_above_ground" ;
+	float Upward_long_wave_flux(record) ;
+		Upward_long_wave_flux:units = "W/m^2" ;
+		Upward_long_wave_flux:long_name = "Upward_long_wave_flux @ atmosphere_top" ;
+	float Upward_long_wave_flux_surface(record) ;
+		Upward_long_wave_flux_surface:units = "W/m^2" ;
+		Upward_long_wave_flux_surface:long_name = "Upward_long_wave_flux @ surface" ;
+	float Upward_short_wave_flux(record) ;
+		Upward_short_wave_flux:units = "W/m^2" ;
+		Upward_short_wave_flux:long_name = "Upward_short_wave_flux @ atmosphere_top" ;
+	float Upward_short_wave_flux_surface(record) ;
+		Upward_short_wave_flux_surface:units = "W/m^2" ;
+		Upward_short_wave_flux_surface:long_name = "Upward_short_wave_flux @ surface" ;
+	float v-component_of_storm_motion(record) ;
+		v-component_of_storm_motion:units = "m/s" ;
+		v-component_of_storm_motion:long_name = "v-component_of_storm_motion @ layer_between_two_heights_above_ground" ;
+	float v_wind(record) ;
+		v_wind:units = "m/s" ;
+		v_wind:long_name = "v_wind @ isobaric" ;
+	float v_wind_layer_between_two_pressure_difference_from_ground(record) ;
+		v_wind_layer_between_two_pressure_difference_from_ground:units = "m/s" ;
+		v_wind_layer_between_two_pressure_difference_from_ground:long_name = "v_wind @ layer_between_two_pressure_difference_from_ground" ;
+	float v_wind_height_above_ground(record) ;
+		v_wind_height_above_ground:units = "m/s" ;
+		v_wind_height_above_ground:long_name = "v_wind @ height_above_ground" ;
+	float Vegetation(record) ;
+		Vegetation:units = "%" ;
+		Vegetation:long_name = "Vegetation @ surface" ;
+	float Vegetation_type_as_in_SiB(record) ;
+		Vegetation_type_as_in_SiB:units = "0..13" ;
+		Vegetation_type_as_in_SiB:long_name = "Vegetation_type_as_in_SiB @ surface" ;
+	float Visibility(record) ;
+		Visibility:units = "m" ;
+		Visibility:long_name = "Visibility @ surface" ;
+	float Volumetric_soil_moisture(record) ;
+		Volumetric_soil_moisture:units = "fraction" ;
+		Volumetric_soil_moisture:long_name = "Volumetric_soil_moisture @ layer_between_two_depths_below_surface" ;
+	float Wilting_point(record) ;
+		Wilting_point:units = "fraction" ;
+		Wilting_point:long_name = "Wilting_point @ surface" ;
+	float Zonal_momentum_flux(record) ;
+		Zonal_momentum_flux:units = "N/m^2" ;
+		Zonal_momentum_flux:long_name = "Zonal_momentum_flux @ surface" ;
+	double depth_below_surface(record) ;
+		depth_below_surface:units = "cm" ;
+		depth_below_surface:long_name = "Depth below land surface" ;
+
+// global attributes:
+		:Conventions = "Unidata Observation Dataset v1.0" ;
+		:cdm_datatype = "Profile" ;
+		:title = "Extract Profiler data from Grid file /data/ldm/pub/rtmodel/09111906_nmm.GrbF03000" ;
+		:desc = "Extracted by THREDDS/Netcdf Subset Service" ;
+		:geospatial_lat_min = "48.0" ;
+		:geospatial_lat_max = "48.001" ;
+		:geospatial_lon_min = "-124.0" ;
+		:geospatial_lon_max = "-123.999" ;
+		:zaxis_coordinate = "depth_below_surface" ;
+		:time_coverage_start = "2009-11-20T12:00:00Z" ;
+		:time_coverage_end = "2009-11-20T12:00:00Z" ;
+data:
+
+ latitude = 48 ;
+
+ longitude = -124 ;
+
+ station_id =
+  "GridPoint" ;
+
+ station_description =
+  "Grid Point at lat/lon=48.0,-124.0" ;
+
+ numProfiles = 1 ;
+
+ firstProfile = 0 ;
+
+ numChildren = 1 ;
+
+ numProfilesTotal = 1 ;
+
+ firstChild = 0 ;
+
+ time =
+  "2009-11-20T12:00:00Z" ;
+
+ station_index = 0 ;
+
+ nextProfile = -1 ;
+
+ profile_index = 0 ;
+
+ nextChild = -1 ;
+
+ Absolute_vorticity = 4.999997e-05 ;
+
+ Accumulated_snow = NaNf ;
+
+ Albedo = NaNf ;
+
+ Best_4-layer_lifted_index = NaNf ;
+
+ Blackadars_mixing_length_scale = NaNf ;
+
+ Canopy_conductance = NaNf ;
+
+ Categorical_freezing_rain = NaNf ;
+
+ Categorical_ice_pellets = NaNf ;
+
+ Categorical_rain = NaNf ;
+
+ Categorical_snow = NaNf ;
+
+ Cloud_Ice = 0 ;
+
+ Cloud_water = 0 ;
+
+ Convective_Avail_Pot_Energy = NaNf ;
+
+ Convective_Avail_Pot_Energy_surface = NaNf ;
+
+ Convective_cloud_cover = NaNf ;
+
+ Convective_cloud_efficiency = NaNf ;
+
+ Convective_inhibition = NaNf ;
+
+ Convective_inhibition_surface = NaNf ;
+
+ Convective_precip_rate = NaNf ;
+
+ Convective_precipitation = NaNf ;
+
+ Deep_convective_heating = NaNf ;
+
+ Derived_radar_reflectivity = -9.375 ;
+
+ Derived_radar_reflectivity_height_above_ground = 27.375 ;
+
+ Derived_radar_reflectivity_hybrid = NaNf ;
+
+ Dew_point_temperature = 209.875 ;
+
+ Dew_point_temperature_height_above_ground = NaNf ;
+
+ Direct_evaporation_cease_soil_moisture = NaNf ;
+
+ Drag_coefficient = NaNf ;
+
+ Evaporation = NaNf ;
+
+ Exchange_coefficient = NaNf ;
+
+ Friction_velocity = NaNf ;
+
+ Geopotential_height = 8880.094 ;
+
+ Geopotential_height_cloud_base = NaNf ;
+
+ Geopotential_height_cloud_tops = NaNf ;
+
+ Geopotential_height_highest_tropospheric_freezing = NaNf ;
+
+ Geopotential_height_lowest_level_of_wet_bulb_zero = NaNf ;
+
+ Geopotential_height_surface = NaNf ;
+
+ Geopotential_height_zeroDegC_isotherm = NaNf ;
+
+ Ground_heat_flux = NaNf ;
+
+ High_level_cloud_cover = NaNf ;
+
+ Horizontal_moisture_divergence = NaNf ;
+
+ Humidity_parameter_in_canopy_conductance = NaNf ;
+
+ Ice_concentration_ice1no_ice0 = NaNf ;
+
+ Land_cover_land1sea0 = NaNf ;
+
+ Large_scale_condensation_heating = NaNf ;
+
+ Large_scale_precipitation = NaNf ;
+
+ Latent_heat_flux = NaNf ;
+
+ Longwave_radiative_heating = NaNf ;
+
+ Low_level_cloud_cover = NaNf ;
+
+ Maximum_Composite_radar_reflectivity = NaNf ;
+
+ Mean_sea_level_pressure_NAM_model = NaNf ;
+
+ Meridional_momentum_flux = NaNf ;
+
+ Mid_level_cloud_cover = NaNf ;
+
+ Moisture_availability = NaNf ;
+
+ Non-convective_cloud = NaNf ;
+
+ Number_of_soil_layers_in_root_zone = NaNf ;
+
+ Parcel_lifted_index_to_500_hPa = NaNf ;
+
+ Planetary_boundary_layer_height = NaNf ;
+
+ Plant_canopy_surface_water = NaNf ;
+
+ Potential_evaporation_rate = NaNf ;
+
+ Precipitable_water = NaNf ;
+
+ Precipitation_rate = NaNf ;
+
+ Pressure_of_level_from_which_parcel_was_lifted = NaNf ;
+
+ Pressure_reduced_to_MSL = NaNf ;
+
+ Pressure = NaNf ;
+
+ Pressure_cloud_tops = NaNf ;
+
+ Pressure_convective_cloud_bottom = NaNf ;
+
+ Pressure_convective_cloud_top = NaNf ;
+
+ Pressure_deep_convective_cloud_bottom = NaNf ;
+
+ Pressure_deep_convective_cloud_top = NaNf ;
+
+ Pressure_grid_scale_cloud_bottom = NaNf ;
+
+ Pressure_grid_scale_cloud_top = NaNf ;
+
+ Pressure_shallow_convective_cloud_bottom = NaNf ;
+
+ Pressure_shallow_convective_cloud_top = NaNf ;
+
+ Pressure_surface = NaNf ;
+
+ Pressure_tropopause = NaNf ;
+
+ Pressure_vertical_velocity = -0.0625 ;
+
+ Rain_water_mixing_ratio = 0 ;
+
+ Relative_humidity = 56.5 ;
+
+ Relative_humidity_layer_between_two_pressure_difference_from_ground = NaNf ;
+
+ Relative_humidity_height_above_ground = NaNf ;
+
+ Relative_humidity_surface = NaNf ;
+
+ Sensible_heat_flux = NaNf ;
+
+ Snow_cover = NaNf ;
+
+ Snow_mixing_ratio = 2.1e-05 ;
+
+ Soil_moisture_content = NaNf ;
+
+ Soil_moisture_parameter_in_canopy_conductance = NaNf ;
+
+ Soil_porosity = NaNf ;
+
+ Soil_temperature = NaNf ;
+
+ Soil_temperature_depth_below_surface = NaNf ;
+
+ Soil_type_Zobler = NaNf ;
+
+ Solar_parameter_in_canopy_conductance = NaNf ;
+
+ Solar_radiative_heating = NaNf ;
+
+ Specific_humidity = 6.6e-05 ;
+
+ Specific_humidity_height_above_ground = NaNf ;
+
+ Specific_humidity_surface = NaNf ;
+
+ Storm_relative_helicity = 122 ;
+
+ Stream_function = 9.309e+08 ;
+
+ Surface_lifted_index = NaNf ;
+
+ Surface_roughness = NaNf ;
+
+ Surface_wind_gust = NaNf ;
+
+ Temperature = 222.4375 ;
+
+ Temperature_layer_between_two_pressure_difference_from_ground = NaNf ;
+
+ Temperature_cloud_tops = NaNf ;
+
+ Temperature_height_above_ground = NaNf ;
+
+ Temperature_surface = NaNf ;
+
+ Temperature_parameter_in_canopy_conductance = NaNf ;
+
+ Temperature_tendency_by_all_radiation = NaNf ;
+
+ Total_cloud_cover = NaNf ;
+
+ Total_column_cloud_ice = NaNf ;
+
+ Total_column_cloud_water = NaNf ;
+
+ Total_column_condensate = NaNf ;
+
+ Total_column_rain = NaNf ;
+
+ Total_column_snow = NaNf ;
+
+ Total_precipitation = NaNf ;
+
+ Transpiration_stress-onset_soil_moisture = NaNf ;
+
+ Turbulent_kinetic_energy = 0.02 ;
+
+ u-component_of_storm_motion = NaNf ;
+
+ u_wind = 20.875 ;
+
+ u_wind_layer_between_two_pressure_difference_from_ground = NaNf ;
+
+ u_wind_height_above_ground = NaNf ;
+
+ Upward_long_wave_flux = NaNf ;
+
+ Upward_long_wave_flux_surface = NaNf ;
+
+ Upward_short_wave_flux = NaNf ;
+
+ Upward_short_wave_flux_surface = NaNf ;
+
+ v-component_of_storm_motion = NaNf ;
+
+ v_wind = 41.9375 ;
+
+ v_wind_layer_between_two_pressure_difference_from_ground = NaNf ;
+
+ v_wind_height_above_ground = NaNf ;
+
+ Vegetation = NaNf ;
+
+ Vegetation_type_as_in_SiB = NaNf ;
+
+ Visibility = NaNf ;
+
+ Volumetric_soil_moisture = NaNf ;
+
+ Wilting_point = NaNf ;
+
+ Zonal_momentum_flux = NaNf ;
+
+ depth_below_surface = 0 ;
+}

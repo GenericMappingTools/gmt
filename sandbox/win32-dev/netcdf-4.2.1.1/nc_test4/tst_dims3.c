@@ -13,6 +13,7 @@
 int
 main(int argc, char **argv)
 {
+nc_set_log_level(0);
    printf("\n*** Testing netcdf-4 dimensions even more.\n");
    printf("*** testing netcdf-4 dimension inheritance...");
    {
@@ -78,7 +79,7 @@ main(int argc, char **argv)
    SUMMARIZE_ERR;
    printf("*** testing a scalar coordinate dimension...");
    {
-      int ncid, dimid, varid;
+      int ncid, dimid, varid, stat;
       float data = 42.5;
       
       /* Create a scalar coordinate dimension. The only reason that
@@ -92,7 +93,8 @@ main(int argc, char **argv)
       if (nc_def_dim(ncid, "scalar", 0, &dimid)) ERR_RET;
       if (nc_def_var(ncid, "scalar", NC_FLOAT, 0, &dimid, &varid)) ERR_RET;
       if (nc_put_var_float(ncid, varid, &data)) ERR_RET;
-      if (nc_close(ncid)) ERR_RET;
+      if (nc_close(ncid))
+	ERR_RET;
    }
    SUMMARIZE_ERR;
    FINAL_RESULTS;

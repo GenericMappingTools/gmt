@@ -16,6 +16,7 @@ variables:
 
 // global attributes:
 		:history = "FERRET V3.20 (development) 24-Jan-95" ;
+		:DODS_EXTRA.Unlimited_Dimension = "TIME" ;
 data:
 
  TIME = 366, 1096.485, 1826.97, 2557.455, 3287.94, 4018.425, 4748.91, 

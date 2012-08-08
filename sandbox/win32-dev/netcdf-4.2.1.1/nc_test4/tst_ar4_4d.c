@@ -244,10 +244,10 @@ main(int argc, char **argv)
    argc -= optind;
    argv += optind;
       
-   /* If no file arguments left, print usage message. */
+   /* If no file arguments left, report and exit */
    if (argc < 1)
    {
-      usage();
+      printf("no file specified\n");
       return 0;
    }
       

@@ -18,6 +18,8 @@ convert1(Constant* src, Constant* dst)
     unsigned char* bytes = NULL;
     size_t bytelen;
 
+    dst->lineno = src->lineno;
+
     /* Need to translate all possible sources to all possible sinks.*/
     /* Rather than have a nested switch, combine the src and target into*/
     /* a single value so we can do a single n*n-way switch*/
@@ -47,7 +49,6 @@ convert1(Constant* src, Constant* dst)
     }
 
     if(src->nctype == NC_OPAQUE) {
-	ASSERT(src->value.opaquev.len >= 16);
         bytes = makebytestring(src->value.opaquev.stringv,&bytelen);
     }
 
@@ -522,8 +523,10 @@ case CASE(NC_OPAQUE,NC_DOUBLE):
     tmp.doublev = *(double*)bytes;
     break;
 case CASE(NC_OPAQUE,NC_OPAQUE):
-    tmp.opaquev.stringv = nulldup(src->value.opaquev.stringv);
+    tmp.opaquev.stringv = (char*)malloc(src->value.opaquev.len+1);
+    memcpy(tmp.opaquev.stringv,src->value.opaquev.stringv,src->value.opaquev.len);
     tmp.opaquev.len = src->value.opaquev.len;
+    tmp.opaquev.stringv[tmp.opaquev.len] = '\0';
     break;
 
     /* We are missing all CASE(X,NC_ECONST) cases*/
@@ -541,6 +544,7 @@ case CASE(NC_OPAQUE,NC_OPAQUE):
     dst->value = tmp;
 }
 
+#ifdef IGNORE
 /* Force an Opaque or string to conform to a given length*/
 void
 setprimlength(Constant* prim, unsigned long len)
@@ -563,15 +567,16 @@ setprimlength(Constant* prim, unsigned long len)
             prim->value.stringv.len = len;
 	}
     } else if(prim->nctype == NC_OPAQUE) {
+	/* Note that expansion/contraction is in terms of whole
+           bytes = 2 nibbles */
+	ASSERT((len % 2) == 0);
         if(prim->value.opaquev.len == len) { 
 	    /* do nothing*/
         } else if(prim->value.opaquev.len > len) { /* truncate*/
-	    if((len % 2) != 0) len--;
 	    prim->value.opaquev.stringv[len] = '\0';
 	    prim->value.opaquev.len = len;
         } else {/* prim->value.opaquev.len < len => expand*/
 	    char* s;
-	    if((len % 2) != 0) len++;
 	    s = (char*)emalloc(len+1);
 	    memset(s,'0',len);
 	    memcpy(s,prim->value.opaquev.stringv,prim->value.opaquev.len);
@@ -582,6 +587,7 @@ setprimlength(Constant* prim, unsigned long len)
         }
     }
 }
+#endif
 
 Datalist*
 convertstringtochars(Constant* str)

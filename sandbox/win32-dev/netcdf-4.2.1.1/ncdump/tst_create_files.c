@@ -184,13 +184,14 @@ main(int argc, char **argv)
    SUMMARIZE_ERR;
    printf("*** creating file with VLEN %s...", FILE_NAME_2);
 #define ATT_NAME2 "equally_unimaginatively_named_attribute_YAWN"
-
+#define ATT_NAME3 "for_testing_unsigned_short_attribute_bug"
    {
       int ncid;
       int i, j;
       nc_type typeid;
       nc_vlen_t data[DIM_LEN];
       int *phoney;
+      unsigned short us_att[ATT_LEN] = {0, 32768, 65535};
 
       /* Create phoney data. */
       for (i=0; i<DIM_LEN; i++)
@@ -208,6 +209,9 @@ main(int argc, char **argv)
       
       if (nc_def_vlen(ncid, VLEN_TYPE_NAME, NC_INT, &typeid)) ERR;
       if (nc_put_att(ncid, NC_GLOBAL, ATT_NAME2, typeid, DIM_LEN, data)) ERR;
+
+      /* Test fix of ncdump bug displaying unsigned short attributes */
+      if (nc_put_att(ncid, NC_GLOBAL, ATT_NAME3, NC_USHORT, ATT_LEN, us_att)) ERR;
 
       if (nc_close(ncid)) ERR;
 

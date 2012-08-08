@@ -175,7 +175,6 @@ create_file()
       size_t aa_startset[1] = {0} ;
       size_t aa_countset[1] = {4} ;
       stat = nc_put_vara(ncid, aa_id, aa_startset, aa_countset, aa_data);
-      stat = nc_put_vara(ncid, aa_id, aa_startset, aa_countset, aa_data);
       check_err(stat,__LINE__,__FILE__);
    }
 
@@ -184,7 +183,6 @@ create_file()
       size_t bb_startset[2] = {0, 0} ;
       size_t bb_countset[2] = {3, 3} ;
       stat = nc_put_vara(ncid, bb_id, bb_startset, bb_countset, bb_data);
-      stat = nc_put_vara(ncid, bb_id, bb_startset, bb_countset, bb_data);
       check_err(stat,__LINE__,__FILE__);
    }
 
@@ -192,7 +190,6 @@ create_file()
       short dd_data[3] = {1, 2, -32767} ;
       size_t dd_startset[1] = {0} ;
       size_t dd_countset[1] = {3} ;
-      stat = nc_put_vara(ncid, dd_id, dd_startset, dd_countset, dd_data);
       stat = nc_put_vara(ncid, dd_id, dd_startset, dd_countset, dd_data);
       check_err(stat,__LINE__,__FILE__);
    }

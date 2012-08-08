@@ -22,7 +22,7 @@
 
 #define FILE_NAME "large_files.nc"
 
-void
+static void
 check_err(const int stat, const int line, const char *file) {
     if (stat != NC_NOERR) {
 	   (void) fprintf(stderr, "line %d of %s: %s\n", line, file, nc_strerror(stat));
@@ -46,8 +46,8 @@ main(int argc, char **argv) {
    int k_dim;
    int n_dim;
 
-#define NUMRECS 1
-#define I_LEN 4104
+#define NUMRECS 2
+#define I_LEN 4106
 #define J_LEN 1023
 #define K_LEN 1023
 #define N_LEN 2
@@ -94,6 +94,11 @@ main(int argc, char **argv) {
 
    /* define variables */
 
+   x_dims[0] = rec_dim;
+   x_dims[1] = n_dim;
+   stat = nc_def_var(ncid, "x", NC_BYTE, RANK_x, x_dims, &x_id);
+   check_err(stat,__LINE__,__FILE__);
+
    var1_dims[0] = rec_dim;
    var1_dims[1] = i_dim;
    var1_dims[2] = j_dim;
@@ -101,10 +106,6 @@ main(int argc, char **argv) {
    stat = nc_def_var(ncid, "var1", NC_BYTE, RANK_var1, var1_dims, &var1_id);
    check_err(stat,__LINE__,__FILE__);
 
-   x_dims[0] = rec_dim;
-   x_dims[1] = n_dim;
-   stat = nc_def_var(ncid, "x", NC_BYTE, RANK_x, x_dims, &x_id);
-   check_err(stat,__LINE__,__FILE__);
    /* don't initialize variables with fill values */
    stat = nc_set_fill(ncid, NC_NOFILL, 0);
    check_err(stat,__LINE__,__FILE__);
@@ -126,18 +127,18 @@ main(int argc, char **argv) {
 	   for(i=0; i<I_LEN; i++) {
 	       for(j=0; j<J_LEN; j++) {
 		   for (k=0; k<K_LEN; k++) {
-		       var1[j][k] = n;
-		       n++;
-		       n %= 256;
+		       var1[j][k] = (signed char) n;
+                   n++;
+                   n %= 256;
 		   }
 	       }
 	       var1_start[1] = i;
 	       stat = nc_put_vara_schar(ncid, var1_id, var1_start, var1_count, &var1[0][0]);
 	       check_err(stat,__LINE__,__FILE__);
 	   }
-       }
        stat = nc_put_vara_schar(ncid, x_id, x_start, x_count, x);
        check_err(stat,__LINE__,__FILE__);
+       }
    }
 
    stat = nc_close(ncid);
@@ -171,7 +172,7 @@ main(int argc, char **argv) {
 			   return 1;
 		       }
 		       n++;
-		       n %= 256;
+                   n %= 256;
 		   }
 	       }
 	   }

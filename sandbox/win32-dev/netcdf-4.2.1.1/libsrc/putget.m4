@@ -238,7 +238,7 @@ fill_NC_var(NC *ncp, const NC_var *varp, size_t varsize, size_t recno)
 		const size_t chunksz = MIN(remaining, ncp->chunk);
 		size_t ii;
 
-		status = ncp->nciop->get(ncp->nciop, offset, chunksz,
+		status = ncio_get(ncp->nciop, offset, chunksz,
 				 RGN_WRITE, &xp);	
 		if(status != NC_NOERR)
 		{
@@ -266,7 +266,7 @@ fill_NC_var(NC *ncp, const NC_var *varp, size_t varsize, size_t recno)
 
 		}
 
-		status = ncp->nciop->rel(ncp->nciop, offset, RGN_MODIFIED);
+		status = ncio_rel(ncp->nciop, offset, RGN_MODIFIED);
 
 		if(status != NC_NOERR)
 		{
@@ -360,12 +360,12 @@ NCtouchlast(NC *ncp, const NC_var *const *varpp, size_t recno)
 		void *xp;
 
 
-		status = ncp->nciop->get(ncp->nciop, offset, varp->xsz,
+		status = ncio_get(ncp->nciop, offset, varp->xsz,
 				 RGN_WRITE, &xp);	
 		if(status != NC_NOERR)
 			return status;
 		(void)memset(xp, 0, varp->xsz);
-		status = ncp->nciop->rel(ncp->nciop, offset, RGN_MODIFIED);
+		status = ncio_rel(ncp->nciop, offset, RGN_MODIFIED);
 	}
 	return status;
 }
@@ -519,7 +519,7 @@ NCcoordck(NC *ncp, const NC_var *varp, const size_t *coord)
 
 	if(IS_RECVAR(varp))
 	{
-		if(*coord > X_INT_MAX)
+		if(*coord > X_UINT_MAX) /* rkr: bug fix from previous X_INT_MAX */
 			return NC_EINVALCOORDS; /* sanity check */
 		if(NC_readonly(ncp) && *coord >= NC_get_numrecs(ncp))
 		{
@@ -671,7 +671,7 @@ putNCvx_$1_$2(NC *ncp, const NC_var *varp,
 		size_t extent = MIN(remaining, ncp->chunk);
 		size_t nput = ncx_howmany(varp->type, extent);
 
-		int lstatus = ncp->nciop->get(ncp->nciop, offset, extent,
+		int lstatus = ncio_get(ncp->nciop, offset, extent,
 				 RGN_WRITE, &xp);	
 		if(lstatus != NC_NOERR)
 			return lstatus;
@@ -683,7 +683,7 @@ putNCvx_$1_$2(NC *ncp, const NC_var *varp,
 			status = lstatus;
 		}
 
-		(void) ncp->nciop->rel(ncp->nciop, offset,
+		(void) ncio_rel(ncp->nciop, offset,
 				 RGN_MODIFIED);	
 
 		remaining -= extent;
@@ -778,7 +778,7 @@ getNCvx_$1_$2(const NC *ncp, const NC_var *varp,
 		size_t extent = MIN(remaining, ncp->chunk);
 		size_t nget = ncx_howmany(varp->type, extent);
 
-		int lstatus = ncp->nciop->get(ncp->nciop, offset, extent,
+		int lstatus = ncio_get(ncp->nciop, offset, extent,
 				 0, (void **)&xp);	/* cast away const */
 		if(lstatus != NC_NOERR)
 			return lstatus;
@@ -787,7 +787,7 @@ getNCvx_$1_$2(const NC *ncp, const NC_var *varp,
 		if(lstatus != NC_NOERR && status == NC_NOERR)
 			status = lstatus;
 
-		(void) ncp->nciop->rel(ncp->nciop, offset, 0);	
+		(void) ncio_rel(ncp->nciop, offset, 0);	
 
 		remaining -= extent;
 		if(remaining == 0)

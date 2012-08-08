@@ -1,16 +1,11 @@
 netcdf NestedSeq2 {
 dimensions:
-	unlimited = UNLIMITED ; // (0 currently)
 	person1 = 5 ;
 	person2 = 5 ;
 variables:
 	int person1.age(person1) ;
 	int person1.size(person1) ;
-	short person1.stuff.foo(unlimited) ;
-	short person1.stuff.bar(unlimited) ;
 	int person2.age(person2) ;
-	short person2.stuff.foo(unlimited) ;
-	short person2.stuff.bar(unlimited) ;
 	int person2.size(person2) ;
 data:
 

@@ -10,7 +10,7 @@
 
    $Id$
 */
-#include <err_macros.h>
+#include "h5_err_macros.h"
 #include <hdf5.h>
 
 #define FILE_NAME "tst_h_compounds.h5"

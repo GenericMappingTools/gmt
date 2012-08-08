@@ -522,13 +522,14 @@ test_nc_def_dim(void)
     IF (dimid != 0) 
 	error("Unexpected recdim");
     err = nc_inq_dimlen(ncid, dimid, &length);
+    IF (err)
+	error("nc_inq_dimlen: %s", nc_strerror(err));
     IF (length != 0) 
 	error("Unexpected length");
     err = nc_def_dim(ncid, "abc", NC_UNLIMITED, &dimid);
     IF (err != NC_EUNLIMIT)
         error("2nd unlimited dimension: status = %d", err);
-
-        /* define-mode tests: remaining dims */
+    /* define-mode tests: remaining dims */
     for (i = 1; i < NDIMS; i++) {
         err = nc_def_dim(ncid, dim_name[i-1], dim_len[i], &dimid);
 	IF (err != NC_ENAMEINUSE)
@@ -536,9 +537,12 @@ test_nc_def_dim(void)
 	err = nc_def_dim(ncid, BAD_NAME, dim_len[i], &dimid);
 	IF (err != NC_EBADNAME)
 	    error("bad name: status = %d", err);
-        err = nc_def_dim(ncid, dim_name[i], NC_UNLIMITED-1, &dimid);
-	IF (err != NC_EDIMSIZE)
-	    error("bad size: status = %d", err);
+	/* Fix: dmh 11/4/2011: works only if sizeof(long) > 4 */
+	if(sizeof(long) > 4) {
+            err = nc_def_dim(ncid, dim_name[i], NC_UNLIMITED-1, &dimid);
+    	    IF (err != NC_EDIMSIZE)
+	        error("bad size: status = %d", err);
+	}
         err = nc_def_dim(ncid, dim_name[i], dim_len[i], &dimid);
         IF (err) 
 	    error("nc_def_dim: %s", nc_strerror(err));
@@ -598,6 +602,8 @@ test_nc_rename_dim(void)
     IF (err)
         error("nc_rename_dim: %s", nc_strerror(err));
     err = nc_inq_dimname(ncid, 2, name);
+    IF (err)
+        error("nc_inq_dimname: %s", nc_strerror(err));
     IF (strcmp(name, "abc") != 0)
         error("Unexpected name: %s", name);
     err = nc_rename_dim(ncid, 0, "abc");
@@ -2005,8 +2011,10 @@ nc_get_file_version(char *path, int *version)
 
    /* Figure out if this is a netcdf or hdf5 file. */
    if (!(fp = fopen(path, "r")) ||
-       fread(magic, MAGIC_NUM_LEN, 1, fp) != 1)
-      return errno;
+       fread(magic, MAGIC_NUM_LEN, 1, fp) != 1) {
+     fclose(fp);
+     return errno;
+   }
    fclose(fp);
    if (strncmp(magic, "CDF", MAGIC_NUM_LEN-1)==0)
    {
@@ -2070,6 +2078,6 @@ test_nc_set_default_format(void)
     }
 
     /* Remove the left-over file. */
-    if ((err = remove(scratch)))
+    if (remove(scratch))
        error("remove of %s failed", scratch);
 }

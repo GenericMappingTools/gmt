@@ -330,6 +330,7 @@ variables:
 		:history = "History global attribute.\n",
 			"" ;
 		:julian_day = 200000.04 ;
+		:DODS_EXTRA.Unlimited_Dimension = "time" ;
 data:
 
  lat = _, _ ;

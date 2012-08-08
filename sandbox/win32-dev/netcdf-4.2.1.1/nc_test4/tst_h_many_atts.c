@@ -6,7 +6,6 @@
    but they use HDF5 the same way that netCDF-4 does, so if these
    tests don't work, than netCDF-4 won't work either.
 
-   $Id$
 */
 #include <config.h>
 #include <nc_tests.h>
@@ -18,34 +17,6 @@
 
 #define FILE_NAME "tst_h_many_atts.h5"
 #define GRP_NAME "group1"
-
-/* Subtract the `struct timeval' values X and Y, storing the result in
-   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
-   function from the GNU documentation. */
-int
-timeval_subtract (result, x, y)
-   struct timeval *result, *x, *y;
-{
-   /* Perform the carry for the later subtraction by updating Y. */
-   if (x->tv_usec < y->tv_usec) {
-      int nsec = (y->tv_usec - x->tv_usec) / 1000000 + 1;
-      y->tv_usec -= 1000000 * nsec;
-      y->tv_sec += nsec;
-   }
-   if (x->tv_usec - y->tv_usec > 1000000) {
-      int nsec = (x->tv_usec - y->tv_usec) / 1000000;
-      y->tv_usec += 1000000 * nsec;
-      y->tv_sec -= nsec;
-   }
-
-   /* Compute the time remaining to wait.
-      `tv_usec' is certainly positive. */
-   result->tv_sec = x->tv_sec - y->tv_sec;
-   result->tv_usec = x->tv_usec - y->tv_usec;
-
-   /* Return 1 if result is negative. */
-   return x->tv_sec < y->tv_sec;
-}
 
 int
 main()
@@ -88,7 +59,7 @@ main()
 	 if((i + 1) % 1000 == 0) 
 	 {		/* only print every 1000th attribute name */
 	    if (gettimeofday(&end_time, NULL)) ERR;
-	    if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	    if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	    sec = diff_time.tv_sec + 1.0e-6 * diff_time.tv_usec;
 	    printf("%i\t%.3g sec\n", i + 1, sec);
 	 }

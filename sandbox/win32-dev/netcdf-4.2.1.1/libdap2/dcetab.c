@@ -77,9 +77,7 @@
 /* Line 189 of yacc.c  */
 #line 11 "dce.y"
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 #include <stdlib.h>
 #include "netcdf.h"
 #include "ncbytes.h"

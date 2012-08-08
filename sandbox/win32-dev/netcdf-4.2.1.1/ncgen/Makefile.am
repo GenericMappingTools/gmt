@@ -9,7 +9,7 @@ LDADD = ${top_builddir}/liblib/libnetcdf.la
 # Build ncgen from the listed sources.
 bin_PROGRAMS = ncgen
 
-ncgen_SOURCES=main.c cdata.c bindata.c genchar.c cvt.c data.c debug.c	\
+ncgen_SOURCES=generate.c main.c cdata.c bindata.c genchar.c cvt.c data.c debug.c	\
 escapes.c genc.c genbin.c generr.c genlib.c getfill.c odom.c offsets.c	\
 semantics.c ncgentab.c dump.c util.c bytebuffer.c list.c data.h		\
 debug.h generr.h genlib.h includes.h ncgen.h odom.h offsets.h dump.h	\
@@ -25,12 +25,12 @@ run_tests.sh run_nc4_tests.sh c0.cdl ref_camrun.cdl
 
 # This shell script causes ncgen to build a classic and a 64-bit
 # offset file from a cdl file shipped with the distribution.
-if !BUILD_DLL
+#if !BUILD_DLL
 TESTS = run_tests.sh 
 if USE_NETCDF4
 TESTS += run_nc4_tests.sh
 endif # USE_NETCDF4
-endif # !BUILD_DLL
+#endif # !BUILD_DLL
 
 CLEANFILES = c0.nc c0_64.nc c0_4.nc c0_4c.nc ref_camrun.c
 

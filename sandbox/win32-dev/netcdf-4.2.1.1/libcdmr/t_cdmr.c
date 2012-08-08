@@ -4,7 +4,6 @@
    How about a short, but meaningful, netCDF program?
 
    Ed Hartnett, 6/19/4
-   $Id$
 */
 
 #include <stdio.h>

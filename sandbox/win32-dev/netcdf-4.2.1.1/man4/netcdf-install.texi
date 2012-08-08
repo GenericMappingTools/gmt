@@ -42,7 +42,7 @@ This document describes how to build and install the netCDF library,
 version @value{VERSION} on Unix and Windows systems. This document was
 last updated on @value{UPDATED}.
 
-The current stable release of netCDF, version 4.1.2, can be obtained
+The current stable release of netCDF, version 4.1.3, can be obtained
 from the netCDF web page at @uref{@value{netcdf-url}}. Instructions
 for installing the current stable release version of netCDF can be
 found at @uref{@value{docs-url}}.
@@ -136,24 +136,24 @@ such as rpm, yum, adept, and others. NetCDF is available from many
 different repositories, including the default Red Hat and Ubuntu
 repositories.
 
-Another way to get netCDF is to get a pre-built binary
-distribution. To get them, see @uref{@value{netcdf-binaries-url}}.
+We no longer support pre-built binary distributions from Unidata.
 
-To install the binary distribution, uncompress and unpack the tar
-file. You will end up with 4 subdirectories, lib, include, man, and
-bin. 
+After installing a binary distribution from one of the package
+management systems, you will end up with files in 4 subdirectories,
+lib, include, man, and bin.
 
 The lib subdirectory holds the netCDF libraries (C, Fortran, and
 C++). The include directory holds the necessary netcdf.h file (for C),
 netcdf.inc (for Fortran), netcdfcpp.h (for C++), and the .mod files
-(for Fortran 90). The bin directory holds the ncgen and ncdump
-utilities, and the man directory holds the netCDF documentation.
+(for Fortran 90). The bin directory holds the ncgen, ncdump, nccopy,
+and nc-config utilities, and the man directory holds the netCDF
+documentation.
 
-You can have these directories anywhere you like, and use netCDF. But
-when compiling a netCDF program, you will have to tell the linker
+When compiling a netCDF program, you will have to tell the linker
 where to find the library (e.g. with the -L option of most C
 compilers), and you will also have to tell the C pre-processor where
-to find the include file (e.g. with the -I option).
+to find the include file (e.g. with the -I option).  The nc-config
+utility can be used to determine the right options to use.
 
 If you are using shared libraries, you will also have to specify the
 library location for run-time dynamic linking. See your compiler
@@ -498,7 +498,7 @@ zlib and HDF5 libraries must also be built with 64-bit options.
 @table @code
 
 @item AIX
-Set -q64 option in all compilers, and set NMFLAGS to -X64, and ARFLAGS
+Set -q64 option in all compilers, and set NMFLAGS to -X64, and AR_FLAGS
 to '-X64 cru'. Alternatively, set environment variable OBJECT_MODE to
 64 before running configure.
 
@@ -1000,7 +1000,7 @@ option on all AIX compilers by setting CFLAGS, FFLAGS, and CXXFLAGS to
 The following is also necessary on an IBM AIX SP system for 64-bit
 mode:
 @example
-    ARFLAGS='-X64 cru'
+    AR_FLAGS='-X64 cru'
     NMFLAGS='-X64'
 @end example
 

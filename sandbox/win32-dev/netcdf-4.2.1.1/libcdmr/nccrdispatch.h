@@ -49,8 +49,9 @@ extern "C" {
 
 /**/
 
-EXTERNL int
-NCCR_new_nc(NC**);
+#ifdef NOTUSED
+EXTERNL int NCCR_new_nc(NC**);
+#endif
 
 /* WARNING: this signature differs from external nc_open API*/
 EXTERNL int
@@ -62,10 +63,10 @@ NCCR_open(const char *path, int mode,
 EXTERNL int
 NCCR_close(int ncid);
 
-EXTERNL int
-NCCR_get_vara(int ncid, int varid,
+EXTERNL int NCCR_getvarx(int ncid, int varid,
 	      const size_t* startp,
 	      const size_t* countp,
+	      const ptrdiff_t* stridep,
 	      void* data,
 	      nc_type externaltype0);
 

@@ -12,8 +12,6 @@
 
 #undef TRACE
 
-extern List* vlenconstants;  /* List<Constant*>;*/
-
 /* Forward */
 static const char* groupncid(Symbol*);
 static const char* typencid(Symbol*);
@@ -28,9 +26,10 @@ static void genc_definespecialattributes(Symbol* vsym);
 
 static void genc_defineattr(Symbol* asym);
 static void genc_definevardata(Symbol*);
-static void genc_write(Symbol*,Bytebuffer*,Odometer*,int);
-
-static void computemaxunlimited(void);
+static void genc_write(Generator*,Symbol* sym, Bytebuffer* code,
+                       int rank, size_t* start, size_t* count);
+static void genc_writevar(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
+static void genc_writeattr(Generator*,Symbol*,Bytebuffer*,int,size_t*,size_t*);
 
 /*
  * Generate C code for creating netCDF from in-memory structure.
@@ -39,19 +38,21 @@ void
 gen_ncc(const char *filename)
 {
     int idim, ivar, iatt, maxdims;
-    int ndims, nvars, natts, ngatts, ngrps, ntyps;
+    int ndims, nvars, natts, ngatts;
     char* cmode_string;
 
 #ifdef USE_NETCDF4
-    int igrp,ityp;
+    int igrp,ityp, ngrps, ntyps;
 #endif
 
     ndims = listlength(dimdefs);
     nvars = listlength(vardefs);
     natts = listlength(attdefs);
     ngatts = listlength(gattdefs);
+#ifdef USE_NETCDF4
     ngrps = listlength(grpdefs);
     ntyps = listlength(typdefs);
+#endif /*USE_NETCDF4*/
 
     /* wrap in main program */
     codeline("#include <stdio.h>");
@@ -87,21 +88,6 @@ gen_ncc(const char *filename)
 	codeline("");
     }
     codeflush();
-
-    /*
-	Define vlen constants
-	The idea is to walk all the data lists
-	whose variable type has a vlen and collect
-	the vlen data and define a constant for it.
-    */ 
-    {
-	Bytebuffer* vlencode = bbNew();
-	codeflush(); /* dump code to this point*/
-	cdata_vlenconstants(vlenconstants,vlencode);
-	codedump(vlencode);
-	codeline("");
-	bbFree(vlencode);
-    }
 
     /* Construct the chunking constants*/
     if(!usingclassic) {
@@ -188,7 +174,7 @@ gen_ncc(const char *filename)
 	codelined(1,"/* dimension lengths */");
 	for(idim = 0; idim < ndims; idim++) {
 	    Symbol* dsym = (Symbol*)listget(dimdefs,idim);
-	    if(dsym->dim.declsize == NC_UNLIMITED) {
+	    if(dsym->dim.isunlimited) {
 		bbprintf0(stmt,"%ssize_t %s_len = NC_UNLIMITED;\n",
 			indented(1),cname(dsym));
 	    } else {
@@ -309,10 +295,14 @@ gen_ncc(const char *filename)
 	codelined(1,"/* define dimensions */");
         for(idim = 0; idim < ndims; idim++) {
             Symbol* dsym = (Symbol*)listget(dimdefs,idim);
-    	    bbprintf0(stmt,
-		"    stat = nc_def_dim(%s, \"%s\", %s_len, &%s);\n",
-		groupncid(dsym->container),
-                escapifyname(dsym->name), cname(dsym), dimncid(dsym));
+	    {
+		bbprintf0(stmt,
+		          "    stat = nc_def_dim(%s, \"%s\", %s_len, &%s);\n",
+		          groupncid(dsym->container),
+                          escapifyname(dsym->name),
+                          cname(dsym),
+                          dimncid(dsym));
+	    }
 	    codedump(stmt);
 	    codelined(1,"check_err(stat,__LINE__,__FILE__);");
        }
@@ -394,20 +384,19 @@ gen_ncc(const char *filename)
     codelined(1,"check_err(stat,__LINE__,__FILE__);");
     codeflush();
 
-    /* Load values into those variables with defined data */
-
-    if(nvars > 0) {
-	codeline("");
-	codelined(1,"/* assign variable data */");
-        for(ivar = 0; ivar < nvars; ivar++) {
-	    Symbol* vsym = (Symbol*)listget(vardefs,ivar);
-	    if(vsym->data != NULL) genc_definevardata(vsym);
-	}
-	codeline("");
-	/* compute the max actual size of the unlimited dimension*/
-        if(usingclassic) computemaxunlimited();
+    if(!header_only) {
+        /* Load values into those variables with defined data */
+        if(nvars > 0) {
+            codeline("");
+            codelined(1,"/* assign variable data */");
+            for(ivar = 0; ivar < nvars; ivar++) {
+                Symbol* vsym = (Symbol*)listget(vardefs,ivar);
+                if(vsym->data != NULL) genc_definevardata(vsym);
+            }
+            codeline("");
+        }
+        codeflush();
     }
-    codeflush();
 }
 
 #ifdef USE_NETCDF4
@@ -497,23 +486,6 @@ cl_c(void)
  * Output a C statement
  */
 
-
-#define INDENTMAX 256
-static char* dent = NULL;
-
-char*
-indented(int n)
-{
-    char* indentation;
-    if(dent == NULL) {
-	dent = (char*)emalloc(INDENTMAX+1);
-	memset((void*)dent,' ',INDENTMAX);
-	dent[INDENTMAX] = '\0';	
-    }
-    if(n*4 >= INDENTMAX) n = INDENTMAX/4;
-    indentation = dent+(INDENTMAX - 4*n);
-    return indentation;
-}
 
 
 /* return C name for netCDF type, given type code */
@@ -711,11 +683,15 @@ definectype(Symbol* tsym)
     case NC_ENUM:
 	for(i=0;i<listlength(tsym->subnodes);i++) {
 	    Symbol* econst = (Symbol*)listget(tsym->subnodes,i);
+	    Bytebuffer* econststring = bbNew();
 	    ASSERT(econst->subclass == NC_ECONST);
+	    c_generator->constant(c_generator,&econst->typ.econst,econststring);
+	    bbNull(econststring);
 	    bbprintf0(stmt,"#define %s ((%s)%s)\n",
 		    cname(econst),
 		    ctypename(econst->typ.basetype),
-		    cdata_const(&econst->typ.econst));
+		    bbContents(econststring));
+	    bbFree(econststring);
 	    codedump(stmt);
 	}
 	bbprintf0(stmt,"typedef %s %s;\n",
@@ -804,9 +780,13 @@ genc_deftype(Symbol* tsym)
 	codelined(1,"check_err(stat,__LINE__,__FILE__);");
 	for(i=0;i<listlength(tsym->subnodes);i++) {
 	    Symbol* econst = (Symbol*)listget(tsym->subnodes,i);
+	    Bytebuffer* econststring = bbNew();
 	    ASSERT(econst->subclass == NC_ECONST);
+	    c_generator->constant(c_generator,&econst->typ.econst,econststring);
+	    bbNull(econststring);
 	    bbprintf0(stmt,"%seconst = %s;\n",
-		indented(1),cdata_const(&econst->typ.econst));
+		indented(1),bbContents(econststring));
+	    bbFree(econststring);
 	    codedump(stmt);
 	    bbprintf0(stmt,"%sstat = nc_insert_enum(%s, %s, \"%s\", &econst);\n",
 		    indented(1),
@@ -905,31 +885,193 @@ genc_deftype(Symbol* tsym)
 static void
 genc_defineattr(Symbol* asym)
 {
-    unsigned long len;
-    Datalist* list;
-    Symbol* basetype = asym->typ.basetype;
-    Bytebuffer* code = NULL; /* capture other decls*/
+    /* we need to capture vlen strings for dumping */
+    Bytebuffer* save = bbNew(); /* capture so we can dump
+                                   vlens first */
+    List* oldstate = NULL;
+    generator_getstate(c_generator,(void*)&oldstate);
+    listfree(oldstate);
+    generator_reset(c_generator,(void*)listnew());
+    generate_attrdata(asym,c_generator,(Writer)genc_write,save);
+    bbFree(save);
+}
+
+static void
+genc_definevardata(Symbol* vsym)
+{
+    Bytebuffer* save; /* capture so we can dump vlens first */
+    List* oldstate = NULL;
+    if(vsym->data == NULL) return;
+    save = bbNew();
+    generator_getstate(c_generator,(void*)&oldstate);
+    listfree(oldstate);
+    generator_reset(c_generator,(void*)listnew());
+    generate_vardata(vsym,c_generator,(Writer)genc_write,save);
+    bbFree(save);
+}
+
+static void
+genc_write(Generator* generator, Symbol* sym, Bytebuffer* code,
+           int rank, size_t* start, size_t* count)
+{
+    if(sym->objectclass == NC_ATT)
+	genc_writeattr(generator,sym,code,rank,start,count);
+    else if(sym->objectclass == NC_VAR)
+	genc_writevar(generator,sym,code,rank,start,count);
+    else
+	PANIC("illegal symbol for genc_write");
+}
+
+static void
+genc_writevar(Generator* generator, Symbol* vsym, Bytebuffer* code,
+           int rank, size_t* start, size_t* count)
+{
+    Symbol* basetype = vsym->typ.basetype;
     nc_type typecode = basetype->typ.typecode;
+    List* vlendecls;
 
-    list = asym->data;
-    len = list==NULL?0:list->length;
+    /* define a block to avoid name clashes*/
+    codeline("");
+    codelined(1,"{");
 
-    bbprintf0(stmt,"%s{ /* %s */\n",indented(1),asym->name);
-    codedump(stmt);
+    /* Dump any vlen decls first */
+    generator_getstate(generator,(void**)&vlendecls);
+    if(vlendecls != NULL && listlength(vlendecls) > 0) {
+	int i;
+	for(i=0;i<listlength(vlendecls);i++) {
+	   Bytebuffer* decl = (Bytebuffer*)listget(vlendecls,i);
+	   codelined(1,bbContents(decl));
+	   bbFree(decl);
+	}
+	listfree(vlendecls);
+	generator_reset(generator,NULL);
+    }       
 
-    code = bbNew();
-    cdata_attrdata(asym,code);
+    if(rank == 0) {
+	codelined(1,"size_t zero = 0;");
+	    /* We make the data be an array so we do not need to
+               ampersand it later => we need an outer pair of braces
+            */
+	    commify(code); /* insert commas at proper places */
+            bbprintf0(stmt,"%sstatic %s %s_data[1] = {%s};\n",
+			    indented(1),
+			    ctypename(basetype),
+			    cname(vsym),
+			    bbContents(code));
+	codedump(stmt);
+        bbprintf0(stmt,"%sstat = nc_put_var1(%s, %s, &zero, %s_data);\n",
+		indented(1),
+		groupncid(vsym->container),
+		varncid(vsym),
+		cname(vsym));
+        codedump(stmt);
+        codelined(1,"check_err(stat,__LINE__,__FILE__);");
+	codeflush();
+    } else { /* rank > 0 */
+	int i;
+        size_t length = 0;
+        if(typecode == NC_CHAR) {
+	    length = bbLength(code);
+	    /* generate data constant */
+	    bbprintf(stmt,"%schar* %s_data = ",
+			indented(1),
+			cname(vsym),
+			(unsigned long)length);
+	    codedump(stmt);
+	    cquotestring(code,'"');
+	    codedump(code);
+	    codeline(" ;");
+	} else {
+	    /* Compute total size */ 
+	    length = 1;
+    	    for(i=0;i<rank;i++) length *= count[i];
+	    /* generate data constant */
+	    commify(code); /* insert commas at proper places */
+	    bbprintf(stmt,"%s%s %s_data[%lu] = ",
+			indented(1),
+			ctypename(basetype),
+			cname(vsym),
+			(unsigned long)length);
+	    codedump(stmt);
+    	    /* C requires an outer set of braces on datalist constants */
+	    codepartial("{");
+	    codedump(code);
+	    codeline("} ;");
+	}
+	
+	/* generate constants for startset, countset*/
+	bbprintf0(stmt,"%ssize_t %s_startset[%lu] = {",
+			indented(1),
+			cname(vsym),
+			rank);
+	for(i=0;i<rank;i++) {
+	    bbprintf(stmt,"%s%lu",(i>0?", ":""),start[i]);
+	}
+	codedump(stmt);
+	codeline("} ;");
+	
+	bbprintf0(stmt,"%ssize_t %s_countset[%lu] = {",
+			indented(1),
+			cname(vsym),
+			rank);
+	for(i=0;i<rank;i++) {
+	    bbprintf(stmt,"%s%lu",(i>0?", ":""),count[i]);
+	}
+	codedump(stmt);
+	codeline("};");
+	
+	bbprintf0(stmt,"%sstat = nc_put_vara(%s, %s, %s_startset, %s_countset, %s_data);\n",
+			indented(1),
+			groupncid(vsym->container), varncid(vsym),
+			cname(vsym),
+			cname(vsym),
+			cname(vsym));
+	codedump(stmt);
+	codelined(1,"check_err(stat,__LINE__,__FILE__);");
+	
+    }
+    /* end defined block*/
+    codelined(1,"}\n");
+    codeflush();
+}
+	
+static void
+genc_writeattr(Generator* generator, Symbol* asym, Bytebuffer* code,
+               int rank, size_t* start, size_t* count)
+{
+    Symbol* basetype = asym->typ.basetype;
+    int typecode = basetype->typ.typecode;
+    size_t len = asym->data->length; /* default assumption */
+
+    /* define a block to avoid name clashes*/
+    codeline("");
+    codelined(1,"{");
 
     /* Handle NC_CHAR specially */
     if(typecode == NC_CHAR) {
-	/* revise the length count */
-	len = bbLength(code);
-	cquotestring(code);
-	bbNull(code);
+        len = bbLength(code); /* presumably before quoting */
+	/* Revise length if length == 0 */
+	if(len == 0) len++;
+	cquotestring(code,'"');
     } else {
         /* All other cases */
+	/* Dump any vlen decls first */
+	List* vlendecls;
+	generator_getstate(generator,(void**)&vlendecls);
+	if(vlendecls != NULL && listlength(vlendecls) > 0) {
+	    int i;
+	    for(i=0;i<listlength(vlendecls);i++) {
+	        Bytebuffer* decl = (Bytebuffer*)listget(vlendecls,i);
+	        codelined(1,bbContents(decl));
+	        bbFree(decl);
+	    }
+	    listfree(vlendecls);
+	    generator_reset(generator,NULL);
+	}       
+
         commify(code);
-        bbprintf0(stmt,"%sstatic const %s %s_att[%ld] = ",indented(1),
+        bbprintf0(stmt,"%sstatic const %s %s_att[%ld] = ",
+			indented(1),
 			ctypename(basetype),
 			cname(asym),
 			asym->data->length
@@ -943,7 +1085,6 @@ genc_defineattr(Symbol* asym)
     }
 
     /* Use the specialized put_att_XX routines if possible*/
-/*defatt:*/
     switch (basetype->typ.typecode) {
     case NC_BYTE:
     case NC_SHORT:
@@ -1026,7 +1167,7 @@ genc_defineattr(Symbol* asym)
 	if(usingclassic && !isclassicprim(basetype->typ.typecode)) {
             verror("Non-classic type: %s",nctypename(basetype->typ.typecode));
 	}
-        bbprintf0(stmt,"%sstat = nc_put_att(%s, %s, \"%s\", %s, %lu, %s_att);",
+        bbprintf0(stmt,"%sstat = nc_put_att(%s, %s, \"%s\", %s, %lu, %s_att);\n",
 		indented(1),
 		groupncid(asym->container),
 		(asym->att.var == NULL?"NC_GLOBAL"
@@ -1040,169 +1181,7 @@ genc_defineattr(Symbol* asym)
 	break;
     }
 
-    bbFree(code);
     codelined(1,"check_err(stat,__LINE__,__FILE__);");
     codelined(1,"}");
 }
-
-static void
-computemaxunlimited(void)
-{
-    int i;
-    unsigned long maxsize;
-    Symbol* udim = rootgroup->grp.unlimiteddim;
-    if(udim == NULL) return; /* there is no unlimited dimension*/
-    /* Look at each variable and see what*/
-    /* size it gives to the unlimited dim (if any)*/
-    maxsize = 0;
-    for(i=0;i<listlength(vardefs);i++) {
-	Symbol* dim;
-	Symbol* var = (Symbol*)listget(vardefs,i);	
-	if(var->typ.dimset.ndims == 0) continue; /* rank == 0*/
-	dim = var->typ.dimset.dimsyms[0];
-	if(dim->dim.declsize != NC_UNLIMITED) continue; /* var does not use unlimited*/
-	if(var->typ.dimset.dimsyms[0]->dim.declsize > maxsize)
-	    maxsize = var->typ.dimset.dimsyms[0]->dim.declsize;
-    }
-}
-
-static void
-genc_definevardata(Symbol* vsym)
-{
-    Dimset* dimset = &vsym->typ.dimset;
-    int isscalar = (dimset->ndims == 0);
-    Bytebuffer* code = NULL;
-    Datasrc* src = NULL;
-    Datalist* fillsrc = NULL;
-    nciter_t iter;
-    Odometer* odom = NULL;
-    size_t nelems;
-    int chartype = (vsym->typ.basetype->typ.typecode == NC_CHAR);
-
-    if(vsym->data == NULL) return;
-
-    code = bbNew();
-    /* give the buffer a running start to be large enough*/
-    bbSetalloc(code, nciterbuffersize);
-
-    if(!isscalar && chartype) {
-        gen_chararray(vsym,code,fillsrc);
-	/* generate a corresponding odometer */
-        odom = newodometer(&vsym->typ.dimset,NULL,NULL);
-	/* patch the odometer to use the right counts */
-        genc_write(vsym,code,odom,0);
-    } else { /* not character constant */
-        src = datalist2src(vsym->data);
-        fillsrc = vsym->var.special._Fillvalue;
-        /* Handle special cases first*/
-        if(isscalar) {
-            cdata_basetype(vsym->typ.basetype,src,code,fillsrc);
-            commify(code);
-            genc_write(vsym,code,NULL,1);
-        } else { /* Non-scalar*/
-            /* Create an iterator to generate blocks of data */
-            nc_get_iter(vsym,nciterbuffersize,&iter);
-            /* Fill in the local odometer instance */
-            odom = newodometer(&vsym->typ.dimset,NULL,NULL);
-            for(;;) {
-                nelems=nc_next_iter(&iter,odom->start,odom->count);
-                if(nelems == 0) break;
-                cdata_array(vsym,code,src,odom,/*index=*/0,fillsrc);
-		commify(code);
-                genc_write(vsym,code,odom,0);
-            }
-        }
-    }
-    if(odom != NULL) odometerfree(odom);
-    bbFree(code);
-}
-
-static void
-genc_write(Symbol* vsym, Bytebuffer* code, Odometer* odom, int isscalar)
-{
-    Symbol* basetype = vsym->typ.basetype;
-    Dimset* dimset = &vsym->typ.dimset;
-    int rank = dimset->ndims;
-    int chartype = (vsym->typ.basetype->typ.typecode == NC_CHAR);
-
-    if(isscalar) {
-	codelined(1,"{");
-	codelined(1,"size_t zero = 0;");
-        bbprintf0(stmt,"%sstatic %s %s_data[1] = {%s};\n",
-			    indented(1),
-			    ctypename(basetype),
-			    cname(vsym),
-			    bbContents(code));
-	codedump(stmt);
-        bbprintf0(stmt,"%sstat = nc_put_var1(%s, %s, &zero, %s_data);",
-		indented(1),
-		groupncid(vsym->container),
-		varncid(vsym),
-		cname(vsym));
-        codedump(stmt);
-        codelined(1,"check_err(stat,__LINE__,__FILE__);");
-	codelined(1,"}");
-    } else {
-	int i;
-        size_t count = 0;
-        if(chartype)
-	    count = bbLength(code);
-	else
-            count = odometertotal(odom,0);
-	/* define a block to avoid name clashes*/
-	bbprintf0(stmt,"%s{\n",indented(1));
-	/* generate data constant */
-	bbprintf(stmt,"%s%s %s_data[%lu] = ",
-			indented(1),
-			ctypename(basetype),
-			cname(vsym),
-			(unsigned long)count);
-	codedump(stmt);
-	
-	if(chartype) {
-	    cquotestring(code);
-	    codedump(code);
-	    codeline(" ;");
-	} else {
-    	    /* C requires an outer set of braces on datalist constants */
-	    codepartial("{");
-	    codedump(code);
-	    codeline("} ;");
-	}
-	
-	/* generate constants for startset, countset*/
-	bbprintf0(stmt,"%ssize_t %s_startset[%lu] = {",
-			indented(1),
-			cname(vsym),
-			rank);
-	for(i=0;i<rank;i++) {
-	    bbprintf(stmt,"%s%lu",(i>0?", ":""),odom->start[i]);
-	}
-	codedump(stmt);
-	codeline("} ;");
-	
-	bbprintf0(stmt,"%ssize_t %s_countset[%lu] = {",
-			indented(1),
-			cname(vsym),
-			rank);
-	for(i=0;i<rank;i++) {
-	    bbprintf(stmt,"%s%lu",(i>0?", ":""),odom->count[i]);
-	}
-	codedump(stmt);
-	codeline("} ;");
-	
-	bbprintf0(stmt,"%sstat = nc_put_vara(%s, %s, %s_startset, %s_countset, %s_data);\n",
-			indented(1),
-			groupncid(vsym->container), varncid(vsym),
-			cname(vsym),
-			cname(vsym),
-			cname(vsym));
-	codedump(stmt);
-	codelined(1,"check_err(stat,__LINE__,__FILE__);");
-	
-	/* end defined block*/
-	codelined(1,"}\n");
-    }
-}
-	
 #endif /*ENABLE_C*/

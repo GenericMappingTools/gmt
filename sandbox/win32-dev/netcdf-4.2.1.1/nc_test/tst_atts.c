@@ -454,7 +454,7 @@ create_file()
     int i444_dims[RANK_i444];
 
     /* enter define mode */
-    stat = nc_create(FILE_NAME, NC_NETCDF4|NC_CLASSIC_MODEL|NC_CLOBBER, &ncid);
+    stat = nc_create(FILE_NAME, NC_CLOBBER, &ncid);
     check_err(stat,__LINE__,__FILE__);
 
     /* define dimensions */
@@ -1297,7 +1297,6 @@ create_file()
     size_t cr_startset[1] = {0} ;
     size_t cr_countset[1] = {2} ;
     stat = nc_put_vara(ncid, cr_id, cr_startset, cr_countset, cr_data);
-    stat = nc_put_vara(ncid, cr_id, cr_startset, cr_countset, cr_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1305,7 +1304,6 @@ create_file()
     signed char br_data[2] = {-128, 127} ;
     size_t br_startset[1] = {0} ;
     size_t br_countset[1] = {2} ;
-    stat = nc_put_vara(ncid, br_id, br_startset, br_countset, br_data);
     stat = nc_put_vara(ncid, br_id, br_startset, br_countset, br_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1315,7 +1313,6 @@ create_file()
     size_t sr_startset[1] = {0} ;
     size_t sr_countset[1] = {2} ;
     stat = nc_put_vara(ncid, sr_id, sr_startset, sr_countset, sr_data);
-    stat = nc_put_vara(ncid, sr_id, sr_startset, sr_countset, sr_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1323,7 +1320,6 @@ create_file()
     int ir_data[2] = {-2147483648, 2147483647} ;
     size_t ir_startset[1] = {0} ;
     size_t ir_countset[1] = {2} ;
-    stat = nc_put_vara(ncid, ir_id, ir_startset, ir_countset, ir_data);
     stat = nc_put_vara(ncid, ir_id, ir_startset, ir_countset, ir_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1333,7 +1329,6 @@ create_file()
     size_t fr_startset[1] = {0} ;
     size_t fr_countset[1] = {2} ;
     stat = nc_put_vara(ncid, fr_id, fr_startset, fr_countset, fr_data);
-    stat = nc_put_vara(ncid, fr_id, fr_startset, fr_countset, fr_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1341,7 +1336,6 @@ create_file()
     double dr_data[2] = {-42, 42} ;
     size_t dr_startset[1] = {0} ;
     size_t dr_countset[1] = {2} ;
-    stat = nc_put_vara(ncid, dr_id, dr_startset, dr_countset, dr_data);
     stat = nc_put_vara(ncid, dr_id, dr_startset, dr_countset, dr_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1351,7 +1345,6 @@ create_file()
     size_t c1_startset[1] = {0} ;
     size_t c1_countset[1] = {1} ;
     stat = nc_put_vara(ncid, c1_id, c1_startset, c1_countset, c1_data);
-    stat = nc_put_vara(ncid, c1_id, c1_startset, c1_countset, c1_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1359,7 +1352,6 @@ create_file()
     signed char b1_data[1] = {-128} ;
     size_t b1_startset[1] = {0} ;
     size_t b1_countset[1] = {1} ;
-    stat = nc_put_vara(ncid, b1_id, b1_startset, b1_countset, b1_data);
     stat = nc_put_vara(ncid, b1_id, b1_startset, b1_countset, b1_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1369,7 +1361,6 @@ create_file()
     size_t s1_startset[1] = {0} ;
     size_t s1_countset[1] = {1} ;
     stat = nc_put_vara(ncid, s1_id, s1_startset, s1_countset, s1_data);
-    stat = nc_put_vara(ncid, s1_id, s1_startset, s1_countset, s1_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1377,7 +1368,6 @@ create_file()
     int i1_data[1] = {-2147483648} ;
     size_t i1_startset[1] = {0} ;
     size_t i1_countset[1] = {1} ;
-    stat = nc_put_vara(ncid, i1_id, i1_startset, i1_countset, i1_data);
     stat = nc_put_vara(ncid, i1_id, i1_startset, i1_countset, i1_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1387,7 +1377,6 @@ create_file()
     size_t f1_startset[1] = {0} ;
     size_t f1_countset[1] = {1} ;
     stat = nc_put_vara(ncid, f1_id, f1_startset, f1_countset, f1_data);
-    stat = nc_put_vara(ncid, f1_id, f1_startset, f1_countset, f1_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1395,7 +1384,6 @@ create_file()
     double d1_data[1] = {-42} ;
     size_t d1_startset[1] = {0} ;
     size_t d1_countset[1] = {1} ;
-    stat = nc_put_vara(ncid, d1_id, d1_startset, d1_countset, d1_data);
     stat = nc_put_vara(ncid, d1_id, d1_startset, d1_countset, d1_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1405,7 +1393,6 @@ create_file()
     size_t c2_startset[1] = {0} ;
     size_t c2_countset[1] = {2} ;
     stat = nc_put_vara(ncid, c2_id, c2_startset, c2_countset, c2_data);
-    stat = nc_put_vara(ncid, c2_id, c2_startset, c2_countset, c2_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1413,7 +1400,6 @@ create_file()
     signed char b2_data[2] = {-128, 127} ;
     size_t b2_startset[1] = {0} ;
     size_t b2_countset[1] = {2} ;
-    stat = nc_put_vara(ncid, b2_id, b2_startset, b2_countset, b2_data);
     stat = nc_put_vara(ncid, b2_id, b2_startset, b2_countset, b2_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1423,7 +1409,6 @@ create_file()
     size_t s2_startset[1] = {0} ;
     size_t s2_countset[1] = {2} ;
     stat = nc_put_vara(ncid, s2_id, s2_startset, s2_countset, s2_data);
-    stat = nc_put_vara(ncid, s2_id, s2_startset, s2_countset, s2_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1431,7 +1416,6 @@ create_file()
     int i2_data[2] = {-2147483648, 2147483647} ;
     size_t i2_startset[1] = {0} ;
     size_t i2_countset[1] = {2} ;
-    stat = nc_put_vara(ncid, i2_id, i2_startset, i2_countset, i2_data);
     stat = nc_put_vara(ncid, i2_id, i2_startset, i2_countset, i2_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1441,7 +1425,6 @@ create_file()
     size_t f2_startset[1] = {0} ;
     size_t f2_countset[1] = {2} ;
     stat = nc_put_vara(ncid, f2_id, f2_startset, f2_countset, f2_data);
-    stat = nc_put_vara(ncid, f2_id, f2_startset, f2_countset, f2_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1449,7 +1432,6 @@ create_file()
     double d2_data[2] = {-42, 42} ;
     size_t d2_startset[1] = {0} ;
     size_t d2_countset[1] = {2} ;
-    stat = nc_put_vara(ncid, d2_id, d2_startset, d2_countset, d2_data);
     stat = nc_put_vara(ncid, d2_id, d2_startset, d2_countset, d2_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1459,7 +1441,6 @@ create_file()
     size_t c3_startset[1] = {0} ;
     size_t c3_countset[1] = {3} ;
     stat = nc_put_vara(ncid, c3_id, c3_startset, c3_countset, c3_data);
-    stat = nc_put_vara(ncid, c3_id, c3_startset, c3_countset, c3_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1467,7 +1448,6 @@ create_file()
     signed char b3_data[3] = {-128, 127, 127} ;
     size_t b3_startset[1] = {0} ;
     size_t b3_countset[1] = {3} ;
-    stat = nc_put_vara(ncid, b3_id, b3_startset, b3_countset, b3_data);
     stat = nc_put_vara(ncid, b3_id, b3_startset, b3_countset, b3_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1477,7 +1457,6 @@ create_file()
     size_t s3_startset[1] = {0} ;
     size_t s3_countset[1] = {3} ;
     stat = nc_put_vara(ncid, s3_id, s3_startset, s3_countset, s3_data);
-    stat = nc_put_vara(ncid, s3_id, s3_startset, s3_countset, s3_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1485,7 +1464,6 @@ create_file()
     int i3_data[3] = {-2147483648, 2147483647, -2147483648} ;
     size_t i3_startset[1] = {0} ;
     size_t i3_countset[1] = {3} ;
-    stat = nc_put_vara(ncid, i3_id, i3_startset, i3_countset, i3_data);
     stat = nc_put_vara(ncid, i3_id, i3_startset, i3_countset, i3_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1495,7 +1473,6 @@ create_file()
     size_t f3_startset[1] = {0} ;
     size_t f3_countset[1] = {3} ;
     stat = nc_put_vara(ncid, f3_id, f3_startset, f3_countset, f3_data);
-    stat = nc_put_vara(ncid, f3_id, f3_startset, f3_countset, f3_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1503,7 +1480,6 @@ create_file()
     double d3_data[3] = {-42, 42, -1} ;
     size_t d3_startset[1] = {0} ;
     size_t d3_countset[1] = {3} ;
-    stat = nc_put_vara(ncid, d3_id, d3_startset, d3_countset, d3_data);
     stat = nc_put_vara(ncid, d3_id, d3_startset, d3_countset, d3_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1513,7 +1489,6 @@ create_file()
     size_t c4_startset[1] = {0} ;
     size_t c4_countset[1] = {4} ;
     stat = nc_put_vara(ncid, c4_id, c4_startset, c4_countset, c4_data);
-    stat = nc_put_vara(ncid, c4_id, c4_startset, c4_countset, c4_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1521,7 +1496,6 @@ create_file()
     signed char b4_data[4] = {-128, 127, 127, -128} ;
     size_t b4_startset[1] = {0} ;
     size_t b4_countset[1] = {4} ;
-    stat = nc_put_vara(ncid, b4_id, b4_startset, b4_countset, b4_data);
     stat = nc_put_vara(ncid, b4_id, b4_startset, b4_countset, b4_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1531,7 +1505,6 @@ create_file()
     size_t s4_startset[1] = {0} ;
     size_t s4_countset[1] = {4} ;
     stat = nc_put_vara(ncid, s4_id, s4_startset, s4_countset, s4_data);
-    stat = nc_put_vara(ncid, s4_id, s4_startset, s4_countset, s4_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1539,7 +1512,6 @@ create_file()
     int i4_data[4] = {-2147483648, 2147483647, -2147483648, -2147483648} ;
     size_t i4_startset[1] = {0} ;
     size_t i4_countset[1] = {4} ;
-    stat = nc_put_vara(ncid, i4_id, i4_startset, i4_countset, i4_data);
     stat = nc_put_vara(ncid, i4_id, i4_startset, i4_countset, i4_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1549,7 +1521,6 @@ create_file()
     size_t f4_startset[1] = {0} ;
     size_t f4_countset[1] = {4} ;
     stat = nc_put_vara(ncid, f4_id, f4_startset, f4_countset, f4_data);
-    stat = nc_put_vara(ncid, f4_id, f4_startset, f4_countset, f4_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1557,7 +1528,6 @@ create_file()
     double d4_data[4] = {-42, 42, -1, 1} ;
     size_t d4_startset[1] = {0} ;
     size_t d4_countset[1] = {4} ;
-    stat = nc_put_vara(ncid, d4_id, d4_startset, d4_countset, d4_data);
     stat = nc_put_vara(ncid, d4_id, d4_startset, d4_countset, d4_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1567,7 +1537,6 @@ create_file()
     size_t cr1_startset[2] = {0, 0} ;
     size_t cr1_countset[2] = {2, 1} ;
     stat = nc_put_vara(ncid, cr1_id, cr1_startset, cr1_countset, cr1_data);
-    stat = nc_put_vara(ncid, cr1_id, cr1_startset, cr1_countset, cr1_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1575,7 +1544,6 @@ create_file()
     signed char br2_data[4] = {-24, -26, -20, -22} ;
     size_t br2_startset[2] = {0, 0} ;
     size_t br2_countset[2] = {2, 2} ;
-    stat = nc_put_vara(ncid, br2_id, br2_startset, br2_countset, br2_data);
     stat = nc_put_vara(ncid, br2_id, br2_startset, br2_countset, br2_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1585,7 +1553,6 @@ create_file()
     size_t sr3_startset[2] = {0, 0} ;
     size_t sr3_countset[2] = {2, 3} ;
     stat = nc_put_vara(ncid, sr3_id, sr3_startset, sr3_countset, sr3_data);
-    stat = nc_put_vara(ncid, sr3_id, sr3_startset, sr3_countset, sr3_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1593,7 +1560,6 @@ create_file()
     int ir4_data[8] = {-24000, -24020, -24040, -24060, -23600, -23620, -23640, -23660} ;
     size_t ir4_startset[2] = {0, 0} ;
     size_t ir4_countset[2] = {2, 4} ;
-    stat = nc_put_vara(ncid, ir4_id, ir4_startset, ir4_countset, ir4_data);
     stat = nc_put_vara(ncid, ir4_id, ir4_startset, ir4_countset, ir4_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1603,7 +1569,6 @@ create_file()
     size_t f11_startset[2] = {0, 0} ;
     size_t f11_countset[2] = {1, 1} ;
     stat = nc_put_vara(ncid, f11_id, f11_startset, f11_countset, f11_data);
-    stat = nc_put_vara(ncid, f11_id, f11_startset, f11_countset, f11_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1611,7 +1576,6 @@ create_file()
     double d12_data[2] = {-3000, -3010} ;
     size_t d12_startset[2] = {0, 0} ;
     size_t d12_countset[2] = {1, 2} ;
-    stat = nc_put_vara(ncid, d12_id, d12_startset, d12_countset, d12_data);
     stat = nc_put_vara(ncid, d12_id, d12_startset, d12_countset, d12_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1621,7 +1585,6 @@ create_file()
     size_t c13_startset[2] = {0, 0} ;
     size_t c13_countset[2] = {1, 3} ;
     stat = nc_put_vara(ncid, c13_id, c13_startset, c13_countset, c13_data);
-    stat = nc_put_vara(ncid, c13_id, c13_startset, c13_countset, c13_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1629,7 +1592,6 @@ create_file()
     signed char b14_data[4] = {-24, -26, -28, -30} ;
     size_t b14_startset[2] = {0, 0} ;
     size_t b14_countset[2] = {1, 4} ;
-    stat = nc_put_vara(ncid, b14_id, b14_startset, b14_countset, b14_data);
     stat = nc_put_vara(ncid, b14_id, b14_startset, b14_countset, b14_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1639,7 +1601,6 @@ create_file()
     size_t s21_startset[2] = {0, 0} ;
     size_t s21_countset[2] = {2, 1} ;
     stat = nc_put_vara(ncid, s21_id, s21_startset, s21_countset, s21_data);
-    stat = nc_put_vara(ncid, s21_id, s21_startset, s21_countset, s21_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1647,7 +1608,6 @@ create_file()
     int i22_data[4] = {-24000, -24020, -23600, -23620} ;
     size_t i22_startset[2] = {0, 0} ;
     size_t i22_countset[2] = {2, 2} ;
-    stat = nc_put_vara(ncid, i22_id, i22_startset, i22_countset, i22_data);
     stat = nc_put_vara(ncid, i22_id, i22_startset, i22_countset, i22_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1657,7 +1617,6 @@ create_file()
     size_t f23_startset[2] = {0, 0} ;
     size_t f23_countset[2] = {2, 3} ;
     stat = nc_put_vara(ncid, f23_id, f23_startset, f23_countset, f23_data);
-    stat = nc_put_vara(ncid, f23_id, f23_startset, f23_countset, f23_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1665,7 +1624,6 @@ create_file()
     double d24_data[8] = {-3000, -3010, -3020, -3030, -2900, -2910, -2920, -2930} ;
     size_t d24_startset[2] = {0, 0} ;
     size_t d24_countset[2] = {2, 4} ;
-    stat = nc_put_vara(ncid, d24_id, d24_startset, d24_countset, d24_data);
     stat = nc_put_vara(ncid, d24_id, d24_startset, d24_countset, d24_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1675,7 +1633,6 @@ create_file()
     size_t c31_startset[2] = {0, 0} ;
     size_t c31_countset[2] = {3, 1} ;
     stat = nc_put_vara(ncid, c31_id, c31_startset, c31_countset, c31_data);
-    stat = nc_put_vara(ncid, c31_id, c31_startset, c31_countset, c31_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1683,7 +1640,6 @@ create_file()
     signed char b32_data[6] = {-24, -26, -20, -22, -16, -18} ;
     size_t b32_startset[2] = {0, 0} ;
     size_t b32_countset[2] = {3, 2} ;
-    stat = nc_put_vara(ncid, b32_id, b32_startset, b32_countset, b32_data);
     stat = nc_put_vara(ncid, b32_id, b32_startset, b32_countset, b32_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1693,7 +1649,6 @@ create_file()
     size_t s33_startset[2] = {0, 0} ;
     size_t s33_countset[2] = {3, 3} ;
     stat = nc_put_vara(ncid, s33_id, s33_startset, s33_countset, s33_data);
-    stat = nc_put_vara(ncid, s33_id, s33_startset, s33_countset, s33_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1701,7 +1656,6 @@ create_file()
     int i34_data[12] = {-24000, -24020, -24040, -24060, -23600, -23620, -23640, -23660, -23200, -23220, -23240, -23260} ;
     size_t i34_startset[2] = {0, 0} ;
     size_t i34_countset[2] = {3, 4} ;
-    stat = nc_put_vara(ncid, i34_id, i34_startset, i34_countset, i34_data);
     stat = nc_put_vara(ncid, i34_id, i34_startset, i34_countset, i34_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1711,7 +1665,6 @@ create_file()
     size_t f41_startset[2] = {0, 0} ;
     size_t f41_countset[2] = {4, 1} ;
     stat = nc_put_vara(ncid, f41_id, f41_startset, f41_countset, f41_data);
-    stat = nc_put_vara(ncid, f41_id, f41_startset, f41_countset, f41_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1719,7 +1672,6 @@ create_file()
     double d42_data[8] = {-3000, -3010, -2900, -2910, -2800, -2810, -2700, -2710} ;
     size_t d42_startset[2] = {0, 0} ;
     size_t d42_countset[2] = {4, 2} ;
-    stat = nc_put_vara(ncid, d42_id, d42_startset, d42_countset, d42_data);
     stat = nc_put_vara(ncid, d42_id, d42_startset, d42_countset, d42_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1729,7 +1681,6 @@ create_file()
     size_t c43_startset[2] = {0, 0} ;
     size_t c43_countset[2] = {4, 3} ;
     stat = nc_put_vara(ncid, c43_id, c43_startset, c43_countset, c43_data);
-    stat = nc_put_vara(ncid, c43_id, c43_startset, c43_countset, c43_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1737,7 +1688,6 @@ create_file()
     signed char b44_data[16] = {-24, -26, -28, -30, -20, -22, -24, -26, -16, -18, -20, -22, -12, -14, -16, -18} ;
     size_t b44_startset[2] = {0, 0} ;
     size_t b44_countset[2] = {4, 4} ;
-    stat = nc_put_vara(ncid, b44_id, b44_startset, b44_countset, b44_data);
     stat = nc_put_vara(ncid, b44_id, b44_startset, b44_countset, b44_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1747,7 +1697,6 @@ create_file()
     size_t sr11_startset[3] = {0, 0, 0} ;
     size_t sr11_countset[3] = {2, 1, 1} ;
     stat = nc_put_vara(ncid, sr11_id, sr11_startset, sr11_countset, sr11_data);
-    stat = nc_put_vara(ncid, sr11_id, sr11_startset, sr11_countset, sr11_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1755,7 +1704,6 @@ create_file()
     int ir12_data[4] = {640000, 639980, 632000, 631980} ;
     size_t ir12_startset[3] = {0, 0, 0} ;
     size_t ir12_countset[3] = {2, 1, 2} ;
-    stat = nc_put_vara(ncid, ir12_id, ir12_startset, ir12_countset, ir12_data);
     stat = nc_put_vara(ncid, ir12_id, ir12_startset, ir12_countset, ir12_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1765,7 +1713,6 @@ create_file()
     size_t fr13_startset[3] = {0, 0, 0} ;
     size_t fr13_countset[3] = {2, 1, 3} ;
     stat = nc_put_vara(ncid, fr13_id, fr13_startset, fr13_countset, fr13_data);
-    stat = nc_put_vara(ncid, fr13_id, fr13_startset, fr13_countset, fr13_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1773,7 +1720,6 @@ create_file()
     double dr14_data[8] = {40000, 39990, 39980, 39970, 39000, 38990, 38980, 38970} ;
     size_t dr14_startset[3] = {0, 0, 0} ;
     size_t dr14_countset[3] = {2, 1, 4} ;
-    stat = nc_put_vara(ncid, dr14_id, dr14_startset, dr14_countset, dr14_data);
     stat = nc_put_vara(ncid, dr14_id, dr14_startset, dr14_countset, dr14_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1783,7 +1729,6 @@ create_file()
     size_t cr21_startset[3] = {0, 0, 0} ;
     size_t cr21_countset[3] = {2, 2, 1} ;
     stat = nc_put_vara(ncid, cr21_id, cr21_startset, cr21_countset, cr21_data);
-    stat = nc_put_vara(ncid, cr21_id, cr21_startset, cr21_countset, cr21_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1791,7 +1736,6 @@ create_file()
     signed char br22_data[8] = {64, 62, 68, 66, 56, 54, 60, 58} ;
     size_t br22_startset[3] = {0, 0, 0} ;
     size_t br22_countset[3] = {2, 2, 2} ;
-    stat = nc_put_vara(ncid, br22_id, br22_startset, br22_countset, br22_data);
     stat = nc_put_vara(ncid, br22_id, br22_startset, br22_countset, br22_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1801,7 +1745,6 @@ create_file()
     size_t sr23_startset[3] = {0, 0, 0} ;
     size_t sr23_countset[3] = {2, 2, 3} ;
     stat = nc_put_vara(ncid, sr23_id, sr23_startset, sr23_countset, sr23_data);
-    stat = nc_put_vara(ncid, sr23_id, sr23_startset, sr23_countset, sr23_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1809,7 +1752,6 @@ create_file()
     int ir24_data[16] = {640000, 639980, 639960, 639940, 640400, 640380, 640360, 640340, 632000, 631980, 631960, 631940, 632400, 632380, 632360, 632340} ;
     size_t ir24_startset[3] = {0, 0, 0} ;
     size_t ir24_countset[3] = {2, 2, 4} ;
-    stat = nc_put_vara(ncid, ir24_id, ir24_startset, ir24_countset, ir24_data);
     stat = nc_put_vara(ncid, ir24_id, ir24_startset, ir24_countset, ir24_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1819,7 +1761,6 @@ create_file()
     size_t fr31_startset[3] = {0, 0, 0} ;
     size_t fr31_countset[3] = {2, 3, 1} ;
     stat = nc_put_vara(ncid, fr31_id, fr31_startset, fr31_countset, fr31_data);
-    stat = nc_put_vara(ncid, fr31_id, fr31_startset, fr31_countset, fr31_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1827,7 +1768,6 @@ create_file()
     double dr32_data[12] = {40000, 39990, 40100, 40090, 40200, 40190, 39000, 38990, 39100, 39090, 39200, 39190} ;
     size_t dr32_startset[3] = {0, 0, 0} ;
     size_t dr32_countset[3] = {2, 3, 2} ;
-    stat = nc_put_vara(ncid, dr32_id, dr32_startset, dr32_countset, dr32_data);
     stat = nc_put_vara(ncid, dr32_id, dr32_startset, dr32_countset, dr32_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1837,7 +1777,6 @@ create_file()
     size_t cr33_startset[3] = {0, 0, 0} ;
     size_t cr33_countset[3] = {2, 3, 3} ;
     stat = nc_put_vara(ncid, cr33_id, cr33_startset, cr33_countset, cr33_data);
-    stat = nc_put_vara(ncid, cr33_id, cr33_startset, cr33_countset, cr33_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1845,7 +1784,6 @@ create_file()
     signed char br34_data[24] = {64, 62, 60, 58, 68, 66, 64, 62, 72, 70, 68, 66, 56, 54, 52, 50, 60, 58, 56, 54, 64, 62, 60, 58} ;
     size_t br34_startset[3] = {0, 0, 0} ;
     size_t br34_countset[3] = {2, 3, 4} ;
-    stat = nc_put_vara(ncid, br34_id, br34_startset, br34_countset, br34_data);
     stat = nc_put_vara(ncid, br34_id, br34_startset, br34_countset, br34_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1855,7 +1793,6 @@ create_file()
     size_t sr41_startset[3] = {0, 0, 0} ;
     size_t sr41_countset[3] = {2, 4, 1} ;
     stat = nc_put_vara(ncid, sr41_id, sr41_startset, sr41_countset, sr41_data);
-    stat = nc_put_vara(ncid, sr41_id, sr41_startset, sr41_countset, sr41_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1863,7 +1800,6 @@ create_file()
     int ir42_data[16] = {640000, 639980, 640400, 640380, 640800, 640780, 641200, 641180, 632000, 631980, 632400, 632380, 632800, 632780, 633200, 633180} ;
     size_t ir42_startset[3] = {0, 0, 0} ;
     size_t ir42_countset[3] = {2, 4, 2} ;
-    stat = nc_put_vara(ncid, ir42_id, ir42_startset, ir42_countset, ir42_data);
     stat = nc_put_vara(ncid, ir42_id, ir42_startset, ir42_countset, ir42_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1873,7 +1809,6 @@ create_file()
     size_t fr43_startset[3] = {0, 0, 0} ;
     size_t fr43_countset[3] = {2, 4, 3} ;
     stat = nc_put_vara(ncid, fr43_id, fr43_startset, fr43_countset, fr43_data);
-    stat = nc_put_vara(ncid, fr43_id, fr43_startset, fr43_countset, fr43_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1881,7 +1816,6 @@ create_file()
     double dr44_data[32] = {40000, 39990, 39980, 39970, 40100, 40090, 40080, 40070, 40200, 40190, 40180, 40170, 40300, 40290, 40280, 40270, 39000, 38990, 38980, 38970, 39100, 39090, 39080, 39070, 39200, 39190, 39180, 39170, 39300, 39290, 39280, 39270} ;
     size_t dr44_startset[3] = {0, 0, 0} ;
     size_t dr44_countset[3] = {2, 4, 4} ;
-    stat = nc_put_vara(ncid, dr44_id, dr44_startset, dr44_countset, dr44_data);
     stat = nc_put_vara(ncid, dr44_id, dr44_startset, dr44_countset, dr44_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1891,7 +1825,6 @@ create_file()
     size_t c111_startset[3] = {0, 0, 0} ;
     size_t c111_countset[3] = {1, 1, 1} ;
     stat = nc_put_vara(ncid, c111_id, c111_startset, c111_countset, c111_data);
-    stat = nc_put_vara(ncid, c111_id, c111_startset, c111_countset, c111_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1899,7 +1832,6 @@ create_file()
     signed char b112_data[2] = {64, 62} ;
     size_t b112_startset[3] = {0, 0, 0} ;
     size_t b112_countset[3] = {1, 1, 2} ;
-    stat = nc_put_vara(ncid, b112_id, b112_startset, b112_countset, b112_data);
     stat = nc_put_vara(ncid, b112_id, b112_startset, b112_countset, b112_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1909,7 +1841,6 @@ create_file()
     size_t s113_startset[3] = {0, 0, 0} ;
     size_t s113_countset[3] = {1, 1, 3} ;
     stat = nc_put_vara(ncid, s113_id, s113_startset, s113_countset, s113_data);
-    stat = nc_put_vara(ncid, s113_id, s113_startset, s113_countset, s113_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1917,7 +1848,6 @@ create_file()
     int i114_data[4] = {640000, 639980, 639960, 639940} ;
     size_t i114_startset[3] = {0, 0, 0} ;
     size_t i114_countset[3] = {1, 1, 4} ;
-    stat = nc_put_vara(ncid, i114_id, i114_startset, i114_countset, i114_data);
     stat = nc_put_vara(ncid, i114_id, i114_startset, i114_countset, i114_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1927,7 +1857,6 @@ create_file()
     size_t f121_startset[3] = {0, 0, 0} ;
     size_t f121_countset[3] = {1, 2, 1} ;
     stat = nc_put_vara(ncid, f121_id, f121_startset, f121_countset, f121_data);
-    stat = nc_put_vara(ncid, f121_id, f121_startset, f121_countset, f121_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1935,7 +1864,6 @@ create_file()
     double d122_data[4] = {40000, 39990, 40100, 40090} ;
     size_t d122_startset[3] = {0, 0, 0} ;
     size_t d122_countset[3] = {1, 2, 2} ;
-    stat = nc_put_vara(ncid, d122_id, d122_startset, d122_countset, d122_data);
     stat = nc_put_vara(ncid, d122_id, d122_startset, d122_countset, d122_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1945,7 +1873,6 @@ create_file()
     size_t c123_startset[3] = {0, 0, 0} ;
     size_t c123_countset[3] = {1, 2, 3} ;
     stat = nc_put_vara(ncid, c123_id, c123_startset, c123_countset, c123_data);
-    stat = nc_put_vara(ncid, c123_id, c123_startset, c123_countset, c123_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1953,7 +1880,6 @@ create_file()
     signed char b124_data[8] = {64, 62, 60, 58, 68, 66, 64, 62} ;
     size_t b124_startset[3] = {0, 0, 0} ;
     size_t b124_countset[3] = {1, 2, 4} ;
-    stat = nc_put_vara(ncid, b124_id, b124_startset, b124_countset, b124_data);
     stat = nc_put_vara(ncid, b124_id, b124_startset, b124_countset, b124_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1963,7 +1889,6 @@ create_file()
     size_t s131_startset[3] = {0, 0, 0} ;
     size_t s131_countset[3] = {1, 3, 1} ;
     stat = nc_put_vara(ncid, s131_id, s131_startset, s131_countset, s131_data);
-    stat = nc_put_vara(ncid, s131_id, s131_startset, s131_countset, s131_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1971,7 +1896,6 @@ create_file()
     int i132_data[6] = {640000, 639980, 640400, 640380, 640800, 640780} ;
     size_t i132_startset[3] = {0, 0, 0} ;
     size_t i132_countset[3] = {1, 3, 2} ;
-    stat = nc_put_vara(ncid, i132_id, i132_startset, i132_countset, i132_data);
     stat = nc_put_vara(ncid, i132_id, i132_startset, i132_countset, i132_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1981,7 +1905,6 @@ create_file()
     size_t f133_startset[3] = {0, 0, 0} ;
     size_t f133_countset[3] = {1, 3, 3} ;
     stat = nc_put_vara(ncid, f133_id, f133_startset, f133_countset, f133_data);
-    stat = nc_put_vara(ncid, f133_id, f133_startset, f133_countset, f133_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -1989,7 +1912,6 @@ create_file()
     double d134_data[12] = {40000, 39990, 39980, 39970, 40100, 40090, 40080, 40070, 40200, 40190, 40180, 40170} ;
     size_t d134_startset[3] = {0, 0, 0} ;
     size_t d134_countset[3] = {1, 3, 4} ;
-    stat = nc_put_vara(ncid, d134_id, d134_startset, d134_countset, d134_data);
     stat = nc_put_vara(ncid, d134_id, d134_startset, d134_countset, d134_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -1999,7 +1921,6 @@ create_file()
     size_t c141_startset[3] = {0, 0, 0} ;
     size_t c141_countset[3] = {1, 4, 1} ;
     stat = nc_put_vara(ncid, c141_id, c141_startset, c141_countset, c141_data);
-    stat = nc_put_vara(ncid, c141_id, c141_startset, c141_countset, c141_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2007,7 +1928,6 @@ create_file()
     signed char b142_data[8] = {64, 62, 68, 66, 72, 70, 76, 74} ;
     size_t b142_startset[3] = {0, 0, 0} ;
     size_t b142_countset[3] = {1, 4, 2} ;
-    stat = nc_put_vara(ncid, b142_id, b142_startset, b142_countset, b142_data);
     stat = nc_put_vara(ncid, b142_id, b142_startset, b142_countset, b142_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2017,7 +1937,6 @@ create_file()
     size_t s143_startset[3] = {0, 0, 0} ;
     size_t s143_countset[3] = {1, 4, 3} ;
     stat = nc_put_vara(ncid, s143_id, s143_startset, s143_countset, s143_data);
-    stat = nc_put_vara(ncid, s143_id, s143_startset, s143_countset, s143_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2025,7 +1944,6 @@ create_file()
     int i144_data[16] = {640000, 639980, 639960, 639940, 640400, 640380, 640360, 640340, 640800, 640780, 640760, 640740, 641200, 641180, 641160, 641140} ;
     size_t i144_startset[3] = {0, 0, 0} ;
     size_t i144_countset[3] = {1, 4, 4} ;
-    stat = nc_put_vara(ncid, i144_id, i144_startset, i144_countset, i144_data);
     stat = nc_put_vara(ncid, i144_id, i144_startset, i144_countset, i144_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2035,7 +1953,6 @@ create_file()
     size_t f211_startset[3] = {0, 0, 0} ;
     size_t f211_countset[3] = {2, 1, 1} ;
     stat = nc_put_vara(ncid, f211_id, f211_startset, f211_countset, f211_data);
-    stat = nc_put_vara(ncid, f211_id, f211_startset, f211_countset, f211_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2043,7 +1960,6 @@ create_file()
     double d212_data[4] = {40000, 39990, 39000, 38990} ;
     size_t d212_startset[3] = {0, 0, 0} ;
     size_t d212_countset[3] = {2, 1, 2} ;
-    stat = nc_put_vara(ncid, d212_id, d212_startset, d212_countset, d212_data);
     stat = nc_put_vara(ncid, d212_id, d212_startset, d212_countset, d212_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2053,7 +1969,6 @@ create_file()
     size_t c213_startset[3] = {0, 0, 0} ;
     size_t c213_countset[3] = {2, 1, 3} ;
     stat = nc_put_vara(ncid, c213_id, c213_startset, c213_countset, c213_data);
-    stat = nc_put_vara(ncid, c213_id, c213_startset, c213_countset, c213_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2061,7 +1976,6 @@ create_file()
     signed char b214_data[8] = {64, 62, 60, 58, 56, 54, 52, 50} ;
     size_t b214_startset[3] = {0, 0, 0} ;
     size_t b214_countset[3] = {2, 1, 4} ;
-    stat = nc_put_vara(ncid, b214_id, b214_startset, b214_countset, b214_data);
     stat = nc_put_vara(ncid, b214_id, b214_startset, b214_countset, b214_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2071,7 +1985,6 @@ create_file()
     size_t s221_startset[3] = {0, 0, 0} ;
     size_t s221_countset[3] = {2, 2, 1} ;
     stat = nc_put_vara(ncid, s221_id, s221_startset, s221_countset, s221_data);
-    stat = nc_put_vara(ncid, s221_id, s221_startset, s221_countset, s221_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2079,7 +1992,6 @@ create_file()
     int i222_data[8] = {640000, 639980, 640400, 640380, 632000, 631980, 632400, 632380} ;
     size_t i222_startset[3] = {0, 0, 0} ;
     size_t i222_countset[3] = {2, 2, 2} ;
-    stat = nc_put_vara(ncid, i222_id, i222_startset, i222_countset, i222_data);
     stat = nc_put_vara(ncid, i222_id, i222_startset, i222_countset, i222_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2089,7 +2001,6 @@ create_file()
     size_t f223_startset[3] = {0, 0, 0} ;
     size_t f223_countset[3] = {2, 2, 3} ;
     stat = nc_put_vara(ncid, f223_id, f223_startset, f223_countset, f223_data);
-    stat = nc_put_vara(ncid, f223_id, f223_startset, f223_countset, f223_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2097,7 +2008,6 @@ create_file()
     double d224_data[16] = {40000, 39990, 39980, 39970, 40100, 40090, 40080, 40070, 39000, 38990, 38980, 38970, 39100, 39090, 39080, 39070} ;
     size_t d224_startset[3] = {0, 0, 0} ;
     size_t d224_countset[3] = {2, 2, 4} ;
-    stat = nc_put_vara(ncid, d224_id, d224_startset, d224_countset, d224_data);
     stat = nc_put_vara(ncid, d224_id, d224_startset, d224_countset, d224_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2107,7 +2017,6 @@ create_file()
     size_t c231_startset[3] = {0, 0, 0} ;
     size_t c231_countset[3] = {2, 3, 1} ;
     stat = nc_put_vara(ncid, c231_id, c231_startset, c231_countset, c231_data);
-    stat = nc_put_vara(ncid, c231_id, c231_startset, c231_countset, c231_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2115,7 +2024,6 @@ create_file()
     signed char b232_data[12] = {64, 62, 68, 66, 72, 70, 56, 54, 60, 58, 64, 62} ;
     size_t b232_startset[3] = {0, 0, 0} ;
     size_t b232_countset[3] = {2, 3, 2} ;
-    stat = nc_put_vara(ncid, b232_id, b232_startset, b232_countset, b232_data);
     stat = nc_put_vara(ncid, b232_id, b232_startset, b232_countset, b232_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2125,7 +2033,6 @@ create_file()
     size_t s233_startset[3] = {0, 0, 0} ;
     size_t s233_countset[3] = {2, 3, 3} ;
     stat = nc_put_vara(ncid, s233_id, s233_startset, s233_countset, s233_data);
-    stat = nc_put_vara(ncid, s233_id, s233_startset, s233_countset, s233_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2133,7 +2040,6 @@ create_file()
     int i234_data[24] = {640000, 639980, 639960, 639940, 640400, 640380, 640360, 640340, 640800, 640780, 640760, 640740, 632000, 631980, 631960, 631940, 632400, 632380, 632360, 632340, 632800, 632780, 632760, 632740} ;
     size_t i234_startset[3] = {0, 0, 0} ;
     size_t i234_countset[3] = {2, 3, 4} ;
-    stat = nc_put_vara(ncid, i234_id, i234_startset, i234_countset, i234_data);
     stat = nc_put_vara(ncid, i234_id, i234_startset, i234_countset, i234_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2143,7 +2049,6 @@ create_file()
     size_t f241_startset[3] = {0, 0, 0} ;
     size_t f241_countset[3] = {2, 4, 1} ;
     stat = nc_put_vara(ncid, f241_id, f241_startset, f241_countset, f241_data);
-    stat = nc_put_vara(ncid, f241_id, f241_startset, f241_countset, f241_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2151,7 +2056,6 @@ create_file()
     double d242_data[16] = {40000, 39990, 40100, 40090, 40200, 40190, 40300, 40290, 39000, 38990, 39100, 39090, 39200, 39190, 39300, 39290} ;
     size_t d242_startset[3] = {0, 0, 0} ;
     size_t d242_countset[3] = {2, 4, 2} ;
-    stat = nc_put_vara(ncid, d242_id, d242_startset, d242_countset, d242_data);
     stat = nc_put_vara(ncid, d242_id, d242_startset, d242_countset, d242_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2161,7 +2065,6 @@ create_file()
     size_t c243_startset[3] = {0, 0, 0} ;
     size_t c243_countset[3] = {2, 4, 3} ;
     stat = nc_put_vara(ncid, c243_id, c243_startset, c243_countset, c243_data);
-    stat = nc_put_vara(ncid, c243_id, c243_startset, c243_countset, c243_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2169,7 +2072,6 @@ create_file()
     signed char b244_data[32] = {64, 62, 60, 58, 68, 66, 64, 62, 72, 70, 68, 66, 76, 74, 72, 70, 56, 54, 52, 50, 60, 58, 56, 54, 64, 62, 60, 58, 68, 66, 64, 62} ;
     size_t b244_startset[3] = {0, 0, 0} ;
     size_t b244_countset[3] = {2, 4, 4} ;
-    stat = nc_put_vara(ncid, b244_id, b244_startset, b244_countset, b244_data);
     stat = nc_put_vara(ncid, b244_id, b244_startset, b244_countset, b244_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2179,7 +2081,6 @@ create_file()
     size_t s311_startset[3] = {0, 0, 0} ;
     size_t s311_countset[3] = {3, 1, 1} ;
     stat = nc_put_vara(ncid, s311_id, s311_startset, s311_countset, s311_data);
-    stat = nc_put_vara(ncid, s311_id, s311_startset, s311_countset, s311_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2187,7 +2088,6 @@ create_file()
     int i312_data[6] = {640000, 639980, 632000, 631980, 624000, 623980} ;
     size_t i312_startset[3] = {0, 0, 0} ;
     size_t i312_countset[3] = {3, 1, 2} ;
-    stat = nc_put_vara(ncid, i312_id, i312_startset, i312_countset, i312_data);
     stat = nc_put_vara(ncid, i312_id, i312_startset, i312_countset, i312_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2197,7 +2097,6 @@ create_file()
     size_t f313_startset[3] = {0, 0, 0} ;
     size_t f313_countset[3] = {3, 1, 3} ;
     stat = nc_put_vara(ncid, f313_id, f313_startset, f313_countset, f313_data);
-    stat = nc_put_vara(ncid, f313_id, f313_startset, f313_countset, f313_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2205,7 +2104,6 @@ create_file()
     double d314_data[12] = {40000, 39990, 39980, 39970, 39000, 38990, 38980, 38970, 38000, 37990, 37980, 37970} ;
     size_t d314_startset[3] = {0, 0, 0} ;
     size_t d314_countset[3] = {3, 1, 4} ;
-    stat = nc_put_vara(ncid, d314_id, d314_startset, d314_countset, d314_data);
     stat = nc_put_vara(ncid, d314_id, d314_startset, d314_countset, d314_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2215,7 +2113,6 @@ create_file()
     size_t c321_startset[3] = {0, 0, 0} ;
     size_t c321_countset[3] = {3, 2, 1} ;
     stat = nc_put_vara(ncid, c321_id, c321_startset, c321_countset, c321_data);
-    stat = nc_put_vara(ncid, c321_id, c321_startset, c321_countset, c321_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2223,7 +2120,6 @@ create_file()
     signed char b322_data[12] = {64, 62, 68, 66, 56, 54, 60, 58, 48, 46, 52, 50} ;
     size_t b322_startset[3] = {0, 0, 0} ;
     size_t b322_countset[3] = {3, 2, 2} ;
-    stat = nc_put_vara(ncid, b322_id, b322_startset, b322_countset, b322_data);
     stat = nc_put_vara(ncid, b322_id, b322_startset, b322_countset, b322_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2233,7 +2129,6 @@ create_file()
     size_t s323_startset[3] = {0, 0, 0} ;
     size_t s323_countset[3] = {3, 2, 3} ;
     stat = nc_put_vara(ncid, s323_id, s323_startset, s323_countset, s323_data);
-    stat = nc_put_vara(ncid, s323_id, s323_startset, s323_countset, s323_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2241,7 +2136,6 @@ create_file()
     int i324_data[24] = {640000, 639980, 639960, 639940, 640400, 640380, 640360, 640340, 632000, 631980, 631960, 631940, 632400, 632380, 632360, 632340, 624000, 623980, 623960, 623940, 624400, 624380, 624360, 624340} ;
     size_t i324_startset[3] = {0, 0, 0} ;
     size_t i324_countset[3] = {3, 2, 4} ;
-    stat = nc_put_vara(ncid, i324_id, i324_startset, i324_countset, i324_data);
     stat = nc_put_vara(ncid, i324_id, i324_startset, i324_countset, i324_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2251,7 +2145,6 @@ create_file()
     size_t f331_startset[3] = {0, 0, 0} ;
     size_t f331_countset[3] = {3, 3, 1} ;
     stat = nc_put_vara(ncid, f331_id, f331_startset, f331_countset, f331_data);
-    stat = nc_put_vara(ncid, f331_id, f331_startset, f331_countset, f331_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2259,7 +2152,6 @@ create_file()
     double d332_data[18] = {40000, 39990, 40100, 40090, 40200, 40190, 39000, 38990, 39100, 39090, 39200, 39190, 38000, 37990, 38100, 38090, 38200, 38190} ;
     size_t d332_startset[3] = {0, 0, 0} ;
     size_t d332_countset[3] = {3, 3, 2} ;
-    stat = nc_put_vara(ncid, d332_id, d332_startset, d332_countset, d332_data);
     stat = nc_put_vara(ncid, d332_id, d332_startset, d332_countset, d332_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2269,7 +2161,6 @@ create_file()
     size_t c333_startset[3] = {0, 0, 0} ;
     size_t c333_countset[3] = {3, 3, 3} ;
     stat = nc_put_vara(ncid, c333_id, c333_startset, c333_countset, c333_data);
-    stat = nc_put_vara(ncid, c333_id, c333_startset, c333_countset, c333_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2277,7 +2168,6 @@ create_file()
     signed char b334_data[36] = {64, 62, 60, 58, 68, 66, 64, 62, 72, 70, 68, 66, 56, 54, 52, 50, 60, 58, 56, 54, 64, 62, 60, 58, 48, 46, 44, 42, 52, 50, 48, 46, 56, 54, 52, 50} ;
     size_t b334_startset[3] = {0, 0, 0} ;
     size_t b334_countset[3] = {3, 3, 4} ;
-    stat = nc_put_vara(ncid, b334_id, b334_startset, b334_countset, b334_data);
     stat = nc_put_vara(ncid, b334_id, b334_startset, b334_countset, b334_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2287,7 +2177,6 @@ create_file()
     size_t s341_startset[3] = {0, 0, 0} ;
     size_t s341_countset[3] = {3, 4, 1} ;
     stat = nc_put_vara(ncid, s341_id, s341_startset, s341_countset, s341_data);
-    stat = nc_put_vara(ncid, s341_id, s341_startset, s341_countset, s341_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2295,7 +2184,6 @@ create_file()
     int i342_data[24] = {640000, 639980, 640400, 640380, 640800, 640780, 641200, 641180, 632000, 631980, 632400, 632380, 632800, 632780, 633200, 633180, 624000, 623980, 624400, 624380, 624800, 624780, 625200, 625180} ;
     size_t i342_startset[3] = {0, 0, 0} ;
     size_t i342_countset[3] = {3, 4, 2} ;
-    stat = nc_put_vara(ncid, i342_id, i342_startset, i342_countset, i342_data);
     stat = nc_put_vara(ncid, i342_id, i342_startset, i342_countset, i342_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2305,7 +2193,6 @@ create_file()
     size_t f343_startset[3] = {0, 0, 0} ;
     size_t f343_countset[3] = {3, 4, 3} ;
     stat = nc_put_vara(ncid, f343_id, f343_startset, f343_countset, f343_data);
-    stat = nc_put_vara(ncid, f343_id, f343_startset, f343_countset, f343_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2313,7 +2200,6 @@ create_file()
     double d344_data[48] = {40000, 39990, 39980, 39970, 40100, 40090, 40080, 40070, 40200, 40190, 40180, 40170, 40300, 40290, 40280, 40270, 39000, 38990, 38980, 38970, 39100, 39090, 39080, 39070, 39200, 39190, 39180, 39170, 39300, 39290, 39280, 39270, 38000, 37990, 37980, 37970, 38100, 38090, 38080, 38070, 38200, 38190, 38180, 38170, 38300, 38290, 38280, 38270} ;
     size_t d344_startset[3] = {0, 0, 0} ;
     size_t d344_countset[3] = {3, 4, 4} ;
-    stat = nc_put_vara(ncid, d344_id, d344_startset, d344_countset, d344_data);
     stat = nc_put_vara(ncid, d344_id, d344_startset, d344_countset, d344_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2323,7 +2209,6 @@ create_file()
     size_t c411_startset[3] = {0, 0, 0} ;
     size_t c411_countset[3] = {4, 1, 1} ;
     stat = nc_put_vara(ncid, c411_id, c411_startset, c411_countset, c411_data);
-    stat = nc_put_vara(ncid, c411_id, c411_startset, c411_countset, c411_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2331,7 +2216,6 @@ create_file()
     signed char b412_data[8] = {64, 62, 56, 54, 48, 46, 40, 38} ;
     size_t b412_startset[3] = {0, 0, 0} ;
     size_t b412_countset[3] = {4, 1, 2} ;
-    stat = nc_put_vara(ncid, b412_id, b412_startset, b412_countset, b412_data);
     stat = nc_put_vara(ncid, b412_id, b412_startset, b412_countset, b412_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2341,7 +2225,6 @@ create_file()
     size_t s413_startset[3] = {0, 0, 0} ;
     size_t s413_countset[3] = {4, 1, 3} ;
     stat = nc_put_vara(ncid, s413_id, s413_startset, s413_countset, s413_data);
-    stat = nc_put_vara(ncid, s413_id, s413_startset, s413_countset, s413_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2349,7 +2232,6 @@ create_file()
     int i414_data[16] = {640000, 639980, 639960, 639940, 632000, 631980, 631960, 631940, 624000, 623980, 623960, 623940, 616000, 615980, 615960, 615940} ;
     size_t i414_startset[3] = {0, 0, 0} ;
     size_t i414_countset[3] = {4, 1, 4} ;
-    stat = nc_put_vara(ncid, i414_id, i414_startset, i414_countset, i414_data);
     stat = nc_put_vara(ncid, i414_id, i414_startset, i414_countset, i414_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2359,7 +2241,6 @@ create_file()
     size_t f421_startset[3] = {0, 0, 0} ;
     size_t f421_countset[3] = {4, 2, 1} ;
     stat = nc_put_vara(ncid, f421_id, f421_startset, f421_countset, f421_data);
-    stat = nc_put_vara(ncid, f421_id, f421_startset, f421_countset, f421_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2367,7 +2248,6 @@ create_file()
     double d422_data[16] = {40000, 39990, 40100, 40090, 39000, 38990, 39100, 39090, 38000, 37990, 38100, 38090, 37000, 36990, 37100, 37090} ;
     size_t d422_startset[3] = {0, 0, 0} ;
     size_t d422_countset[3] = {4, 2, 2} ;
-    stat = nc_put_vara(ncid, d422_id, d422_startset, d422_countset, d422_data);
     stat = nc_put_vara(ncid, d422_id, d422_startset, d422_countset, d422_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2377,7 +2257,6 @@ create_file()
     size_t c423_startset[3] = {0, 0, 0} ;
     size_t c423_countset[3] = {4, 2, 3} ;
     stat = nc_put_vara(ncid, c423_id, c423_startset, c423_countset, c423_data);
-    stat = nc_put_vara(ncid, c423_id, c423_startset, c423_countset, c423_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2385,7 +2264,6 @@ create_file()
     signed char b424_data[32] = {64, 62, 60, 58, 68, 66, 64, 62, 56, 54, 52, 50, 60, 58, 56, 54, 48, 46, 44, 42, 52, 50, 48, 46, 40, 38, 36, 34, 44, 42, 40, 38} ;
     size_t b424_startset[3] = {0, 0, 0} ;
     size_t b424_countset[3] = {4, 2, 4} ;
-    stat = nc_put_vara(ncid, b424_id, b424_startset, b424_countset, b424_data);
     stat = nc_put_vara(ncid, b424_id, b424_startset, b424_countset, b424_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2395,7 +2273,6 @@ create_file()
     size_t s431_startset[3] = {0, 0, 0} ;
     size_t s431_countset[3] = {4, 3, 1} ;
     stat = nc_put_vara(ncid, s431_id, s431_startset, s431_countset, s431_data);
-    stat = nc_put_vara(ncid, s431_id, s431_startset, s431_countset, s431_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2403,7 +2280,6 @@ create_file()
     int i432_data[24] = {640000, 639980, 640400, 640380, 640800, 640780, 632000, 631980, 632400, 632380, 632800, 632780, 624000, 623980, 624400, 624380, 624800, 624780, 616000, 615980, 616400, 616380, 616800, 616780} ;
     size_t i432_startset[3] = {0, 0, 0} ;
     size_t i432_countset[3] = {4, 3, 2} ;
-    stat = nc_put_vara(ncid, i432_id, i432_startset, i432_countset, i432_data);
     stat = nc_put_vara(ncid, i432_id, i432_startset, i432_countset, i432_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2413,7 +2289,6 @@ create_file()
     size_t f433_startset[3] = {0, 0, 0} ;
     size_t f433_countset[3] = {4, 3, 3} ;
     stat = nc_put_vara(ncid, f433_id, f433_startset, f433_countset, f433_data);
-    stat = nc_put_vara(ncid, f433_id, f433_startset, f433_countset, f433_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2421,7 +2296,6 @@ create_file()
     double d434_data[48] = {40000, 39990, 39980, 39970, 40100, 40090, 40080, 40070, 40200, 40190, 40180, 40170, 39000, 38990, 38980, 38970, 39100, 39090, 39080, 39070, 39200, 39190, 39180, 39170, 38000, 37990, 37980, 37970, 38100, 38090, 38080, 38070, 38200, 38190, 38180, 38170, 37000, 36990, 36980, 36970, 37100, 37090, 37080, 37070, 37200, 37190, 37180, 37170} ;
     size_t d434_startset[3] = {0, 0, 0} ;
     size_t d434_countset[3] = {4, 3, 4} ;
-    stat = nc_put_vara(ncid, d434_id, d434_startset, d434_countset, d434_data);
     stat = nc_put_vara(ncid, d434_id, d434_startset, d434_countset, d434_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2431,7 +2305,6 @@ create_file()
     size_t c441_startset[3] = {0, 0, 0} ;
     size_t c441_countset[3] = {4, 4, 1} ;
     stat = nc_put_vara(ncid, c441_id, c441_startset, c441_countset, c441_data);
-    stat = nc_put_vara(ncid, c441_id, c441_startset, c441_countset, c441_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2439,7 +2312,6 @@ create_file()
     signed char b442_data[32] = {64, 62, 68, 66, 72, 70, 76, 74, 56, 54, 60, 58, 64, 62, 68, 66, 48, 46, 52, 50, 56, 54, 60, 58, 40, 38, 44, 42, 48, 46, 52, 50} ;
     size_t b442_startset[3] = {0, 0, 0} ;
     size_t b442_countset[3] = {4, 4, 2} ;
-    stat = nc_put_vara(ncid, b442_id, b442_startset, b442_countset, b442_data);
     stat = nc_put_vara(ncid, b442_id, b442_startset, b442_countset, b442_data);
     check_err(stat,__LINE__,__FILE__);
     }
@@ -2449,7 +2321,6 @@ create_file()
     size_t s443_startset[3] = {0, 0, 0} ;
     size_t s443_countset[3] = {4, 4, 3} ;
     stat = nc_put_vara(ncid, s443_id, s443_startset, s443_countset, s443_data);
-    stat = nc_put_vara(ncid, s443_id, s443_startset, s443_countset, s443_data);
     check_err(stat,__LINE__,__FILE__);
     }
 
@@ -2457,7 +2328,6 @@ create_file()
     int i444_data[64] = {640000, 639980, 639960, 639940, 640400, 640380, 640360, 640340, 640800, 640780, 640760, 640740, 641200, 641180, 641160, 641140, 632000, 631980, 631960, 631940, 632400, 632380, 632360, 632340, 632800, 632780, 632760, 632740, 633200, 633180, 633160, 633140, 624000, 623980, 623960, 623940, 624400, 624380, 624360, 624340, 624800, 624780, 624760, 624740, 625200, 625180, 625160, 625140, 616000, 615980, 615960, 615940, 616400, 616380, 616360, 616340, 616800, 616780, 616760, 616740, 617200, 617180, 617160, 617140} ;
     size_t i444_startset[3] = {0, 0, 0} ;
     size_t i444_countset[3] = {4, 4, 4} ;
-    stat = nc_put_vara(ncid, i444_id, i444_startset, i444_countset, i444_data);
     stat = nc_put_vara(ncid, i444_id, i444_startset, i444_countset, i444_data);
     check_err(stat,__LINE__,__FILE__);
     }

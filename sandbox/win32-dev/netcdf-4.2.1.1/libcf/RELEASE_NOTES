@@ -1,0 +1,19 @@
+This file contains a high-level description of this package's evolution.
+Entries are in reverse chronological order (most recent first).
+
+VERSION         COMMENTS
+-------         --------
+		
+1.0 alpha3      2006-09-13
+		
+		Added def, inq functions for lat, lon, level, time.
+
+		Added tst_cvars.
+
+		Updated and extended documentation.
+
+		Added tst_files, tst_vars.
+
+		Added nccf_var_def, inq, nccf_var_def,inq_missing,
+		nccf_def,inq_file, also notes functions.
+

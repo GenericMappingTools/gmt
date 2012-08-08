@@ -1,5 +1,4 @@
-/* config.h.  Generated from config.h.in by configure.  */
-/* config.h.in.  Generated from configure.ac by autoheader.  */
+/* config.h.  Generated from config.h.cmake by CMake.  */
 
 /* What sort of HTTP client is this? */
 /* #undef CNAME */
@@ -16,14 +15,13 @@
 #define MAX_DEFAULT_CACHE_SIZE 67108864
 
 /* default chunk cache nelems. */
-#define CHUNK_CACHE_NELEMS 1000
-//#define CHUNK_CACHE_NELEMS 1009
+#define CHUNK_CACHE_NELEMS 1009
 
 /* default chunk cache preemption policy. */
 #define CHUNK_CACHE_PREEMPTION 0.75
 
 /* default chunk cache size in bytes. */
-#define CHUNK_CACHE_SIZE 32000000
+#define CHUNK_CACHE_SIZE 33554432 /* 32 MiB */
 //#define CHUNK_CACHE_SIZE 4194304
 
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
@@ -357,19 +355,28 @@
 #define PACKAGE "netcdf"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "support@unidata.ucar.edu"
+#define PACKAGE_BUGREPORT "support-netcdf@unidata.ucar.edu"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "netCDF"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "@PACKAGE_VERSION@"
 
 /* Define to the full name and version of this package. */
 #define PACKAGE_STRING "netCDF @PACKAGE_VERSION@"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "netcdf"
+
+/* Define to the home page for this package. */
+#define PACKAGE_URL ""
+
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "@PACKAGE_VERSION@"
+
+/* Name of package */
+#define PACKAGE "netcdf"
+
+/* Define to the address where bug reports for this package should be sent. */
+#define PACKAGE_BUGREPORT "support@unidata.ucar.edu"
 
 /* Define as the return type of signal handlers (`int' or `void'). */
 /* #undef RETSIGTYPE */
@@ -471,7 +478,7 @@ typedef int ssize_t;
 #define USE_ZLIB 1
 
 /* Version number of package */
-//#define VERSION "4.1.3"
+#define VERSION "@PACKAGE_VERSION@"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel and VAX). */
@@ -525,9 +532,6 @@ typedef int ssize_t;
 /* Define to `long int' if <sys/types.h> does not define. */
 /* #undef off_t */
 
-/* Turned on by netCDF configure. */
-#define pgiFortran 1
-
 /* #define INTEL_COMPILER 1 */
 
 /* Define to `unsigned int' if <sys/types.h> does not define. */
@@ -541,7 +545,7 @@ typedef int ssize_t;
 #if defined(__GNUG__) || defined(__GNUC__)
 #define not_used __attribute__ ((unused))
 #else
-#define not_used 
+#define not_used
 #endif /* __GNUG__ || __GNUC__ */
 
 /* I added the following to this config.h file by hand, after being abducted by 
@@ -560,3 +564,5 @@ typedef int ssize_t;
 #define HAVE_STRDUP 1
 #define HAVE_RPC_XDR_H 1
 #define HAVE_RPC_TYPES_H 1
+
+#include "ncconfigure.h"

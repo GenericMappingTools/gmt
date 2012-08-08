@@ -9,7 +9,6 @@
 #include "netcdf.h"
 
 #define FILE_NAME "tst_files.nc"
-#define URL "http://test.opendap.org:8080/dods/dts/test.01"
 
 int
 main(int argc, char **argv)
@@ -52,13 +51,6 @@ main(int argc, char **argv)
       strcpy(path_in, "");
       path_len = 0;
 
-/* #ifdef USE_DAP */
-/*       /\* Test with URL. *\/ */
-/*       if (nc_open(URL, 0, &ncid)) ERR; */
-/*       if (nc_inq_path(ncid, &path_len, path_in)) ERR; */
-/*       /\*if (path_len != strlen(URL) || strcmp(path_in, URL)) ERR;*\/ */
-/*       if (nc_close(ncid)) ERR; */
-/* #endif /\* USE_DAP *\/ */
    }
    SUMMARIZE_ERR;
    FINAL_RESULTS;

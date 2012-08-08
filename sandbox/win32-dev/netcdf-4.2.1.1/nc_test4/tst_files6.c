@@ -8,26 +8,12 @@
 #include <nc_tests.h>
 #include "netcdf.h"
 
-#define URL "http://test.opendap.org:8080/dods/dts/test.01"
 #define FILE_NAME "tst_files6.nc"
 
 int
 main(int argc, char **argv)
 {
    printf("\n*** Testing netcdf file functions some more.\n");
-#ifdef USE_DAP
-#ifdef ENABLE_DAP_REMOTE_TESTS
-   printf("*** testing simple opendap open/close...");
-   {
-      int ncid;
-
-      /* Test with URL. */
-      if (nc_open(URL, 0, &ncid)) ERR;
-      if (nc_close(ncid)) ERR;
-   }
-   SUMMARIZE_ERR;
-#endif /*ENABLE_DAP_REMOTE_TESTS*/
-#endif /* USE_DAP */
    printf("*** testing Jeff Whitaker's test...");
    {
 #define DIM_NAME "xc"      

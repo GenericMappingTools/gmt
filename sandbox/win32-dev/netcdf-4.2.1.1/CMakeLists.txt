@@ -53,6 +53,16 @@ include (${CMAKE_SOURCE_DIR}/cmake/ConfigUser.cmake)
 set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules/"
   CACHE INTERNAL "Location of our custom CMake modules.")
 
+# Include bsd-xdr
+if (MSVC)
+	include(ExternalProject)
+	ExternalProject_Add(bsd-xdr
+		PREFIX ${CMAKE_CURRENT_BINARY_DIR}/bsd-xdr
+		SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bsd-xdr
+		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX}
+		)
+endif (MSVC)
+
 # get_subdir_var_files (VARIABLE VAR_NAME DIR [ DIR ... ])
 # example: get_subdir_var_files (SUB_LIB_SRCS LIB_SRCS ${SUB_DIRS})
 macro (GET_SUBDIR_VAR_FILES VARIABLE VAR_NAME DIR_NAME)
@@ -68,14 +78,14 @@ macro (GET_SUBDIR_VAR_FILES VARIABLE VAR_NAME DIR_NAME)
 endmacro (GET_SUBDIR_VAR_FILES VARIABLE VAR_NAME DIR_NAME)
 
 # Add subdirectories
-foreach (_dir include fortran libdap2 libdispatch liblib libsrc libsrc4 ncdump
-		ncgen nf_test oc)
+foreach (_dir include libdap2 libdispatch liblib libsrc libsrc4 ncdump
+		ncgen oc2)
 	add_subdirectory (${_dir})
 endforeach(_dir)
 
 # Get list of sources for libnetcdf
-get_subdir_var_files (SRCS_NETCDF SRCS_NETCDF include fortran libdap2 libdispatch liblib
-	libsrc libsrc4 nf_test oc)
+get_subdir_var_files (SRCS_NETCDF SRCS_NETCDF include libdap2 libdispatch liblib
+	libsrc libsrc4 oc2)
 
 # Find libraries
 find_package (CURL REQUIRED)
@@ -83,14 +93,18 @@ find_package (HDF4 REQUIRED)
 find_package (HDF5 REQUIRED)
 #find_package (SZIP REQUIRED) # provided by HDF5-config
 find_package (ZLIB REQUIRED)
-find_package (XDR REQUIRED)
+if (MSVC)
+	set (XDR_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
+else (MSVC)
+	find_package (XDR REQUIRED)
+endif (MSVC)
 
 # Extra include directories
 set (EXTRA_INCLUDE_DIRECTORIES ${CURL_INCLUDE_DIRS} ${HDF4_INCLUDE_DIRS}
 	${HDF5_INCLUDE_DIRS} ${SZIP_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS}
 	${XDR_INCLUDE_DIRS})
 list (REMOVE_DUPLICATES EXTRA_INCLUDE_DIRECTORIES)
-include_directories (include fortran libdispatch oc
+include_directories (include libdispatch oc2
 	libsrc libsrc4 ${EXTRA_INCLUDE_DIRECTORIES} ${NETCDF_BINARY_DIR})
 
 # Required libraries
@@ -102,17 +116,18 @@ if (WIN32)
   include_directories (win32)
 	add_definitions (-DDLL_NETCDF -DNC_DLL_EXPORT)
 	# TODO: definitions
-	# WIN32;NDEBUG;_WINDOWS;CURL_STATICLIB;NETCDF_EXPORTS;DLL_NETCDF;DLL_EXPORT;pgiFortran;NC_DLL_EXPORT;USE_DISPATCH;H5_HAVE_WINDOWS;USE_NETCDF4
-	add_definitions (-DHAVE_CONFIG_H -DpgiFortran -DUSE_DISPATCH
+	# WIN32;NDEBUG;_WINDOWS;CURL_STATICLIB;NETCDF_EXPORTS;DLL_NETCDF;DLL_EXPORT;NC_DLL_EXPORT;USE_DISPATCH;H5_HAVE_WINDOWS;USE_NETCDF4
+	add_definitions (-DHAVE_CONFIG_H -DUSE_DISPATCH
 		-DH5_HAVE_WINDOWS -DUSE_NETCDF4)
 endif (WIN32)
 
 # Get version string from configure, e.g.: PACKAGE_VERSION='4.1.3'
-if( EXISTS "${NETCDF_SOURCE_DIR}/configure" )
-	file( STRINGS "${NETCDF_SOURCE_DIR}/configure"
+if( EXISTS "${NETCDF_SOURCE_DIR}/configure.ac" )
+	file( STRINGS "${NETCDF_SOURCE_DIR}/configure.ac"
 		PACKAGE_VERSION
-		REGEX "PACKAGE_VERSION=" )
-	string (REGEX REPLACE "[^0-9]*([0-9.]+).*" "\\1" PACKAGE_VERSION ${PACKAGE_VERSION})
+		REGEX "AC_INIT.+netCDF" )
+	# AC_INIT([netCDF], [4.2.1.1], [support-netcdf@unidata.ucar.edu])
+	string (REGEX REPLACE "[^0-9]+([0-9.]+).*" "\\1" PACKAGE_VERSION ${PACKAGE_VERSION})
 	string (REGEX REPLACE "([0-9]+)[.].*" "\\1" PACKAGE_VERSION_MAJOR ${PACKAGE_VERSION})
 endif()
 if (NOT PACKAGE_VERSION)
@@ -135,6 +150,12 @@ endif (HAVE_M_LIBRARY)
 
 # Link libs: hdf5_hldll.lib hdf5dll.lib zlib.lib szip.lib libcurl_imp.lib xdr.lib
 target_link_libraries (netcdf ${LINK_LIBRARIES})
+
+# Build and install bsd-xdr before linking
+if (MSVC)
+	target_link_libraries (netcdf ${CMAKE_INSTALL_PREFIX}/lib/xdr.lib)
+	add_dependencies (netcdf bsd-xdr)
+endif (MSVC)
 
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (netcdf
@@ -160,21 +181,21 @@ get_subdir_var_files (SRCS_NCDUMP SRCS_NCDUMP ncdump)
 # build target for ncdump
 add_executable (ncdump ${SRCS_NCDUMP}
 	${SRCS_GETOPT}
-	${NETCDF_SOURCE_DIR}/config.h)
+	${NETCDF_BINARY_DIR}/config.h)
 target_link_libraries (ncdump netcdf)
 
 # nccopy
 get_subdir_var_files (SRCS_NCCOPY SRCS_NCCOPY ncdump)
 add_executable (nccopy ${SRCS_NCCOPY}
 	${SRCS_GETOPT}
-	${NETCDF_SOURCE_DIR}/config.h)
+	${NETCDF_BINARY_DIR}/config.h)
 target_link_libraries (nccopy netcdf)
 
 # ncgen
 get_subdir_var_files (SRCS_NCGEN SRCS_NCGEN ncgen)
 add_executable (ncgen ${SRCS_NCGEN}
 	${SRCS_GETOPT}
-	${NETCDF_SOURCE_DIR}/config.h)
+	${NETCDF_BINARY_DIR}/config.h)
 target_link_libraries (ncgen netcdf)
 
 # Add install targets

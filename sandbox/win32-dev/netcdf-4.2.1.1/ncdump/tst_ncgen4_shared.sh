@@ -48,7 +48,8 @@ ref_ctest1_nc4 \
 ref_ctest1_nc4c \
 ref_nctst_netcdf4 \
 ref_nctst_netcdf4_classic \
-ref_tst_unlim2"
+ref_tst_unlim2 \
+"
 
 if test "${CLASSIC}" = "1" ; then
 TESTS3="${CLASSIC3}"
@@ -68,20 +69,29 @@ ref_tst_comp2 \
 ref_tst_comp3 \
 ref_tst_group_data \
 ref_tst_opaque_data \
-ref_tst_vlen_data \
 ref_tst_solar_1 \
 ref_tst_solar_2 \
 ref_tst_enum_data \
 ref_tst_special_atts \
 ref_tst_nans \
 ref_solar \
-unlimtest2"
+unlimtest2 \
+ref_tst_vlen_data \
+ref_tst_vlen_data \
+ref_tst_vlen_data2 \
+"
 
 SPECIALTESTS3="ref_tst_special_atts3"
 
 SPECIALTESTS="ref_tst_special_atts ${SPECIALTESTS3}"
 
-XFAILTESTS="ref_const_test ref_tst_unlim2 ref_tst_chardata"
+XFAILTESTS=""
+# Fails because ncdump does not output multiple unlim char types correctly
+XFAILTESTS="ref_tst_unlim2 $XFAILTESTS"
+# Fails because ?
+XFAILTESTS="ref_const_test $XFAILTESTS"
+# Fails because ?
+XFAILTESTS="ref_tst_chardata $XFAILTESTS"
 
 # Following are generally not run
 # Because of the size of their output

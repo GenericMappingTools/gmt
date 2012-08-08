@@ -6,6 +6,8 @@
 
 #include "includes.h"
 
+#define DATALISTINIT 32
+
 /* Track primitive symbol instances (initialized in ncgen.y) */
 Symbol* primsymbols[PRIMNO];
 
@@ -437,12 +439,12 @@ makebytestring(char* s, size_t* lenp)
 {
     unsigned char* bytes;
     unsigned char* b;
-    size_t slen = strlen(s);
-    size_t blen = slen/2;
+    size_t slen = strlen(s); /* # nibbles */
+    size_t blen = slen/2; /* # bytes */
     int i;
 
     ASSERT((slen%2) == 0);
-    ASSERT(blen > 0);
+    ASSERT(blen > 0); 
     bytes = (unsigned char*)emalloc(blen);
     b = bytes;
     for(i=0;i<slen;i+=2) {
@@ -488,7 +490,6 @@ dlsetalloc(Datalist* dl, size_t newalloc)
     dl->data = newdata;
 }
 
-#define DATALISTINIT 256
 
 Datalist*
 builddatalist(int initial)
@@ -583,30 +584,22 @@ cleanup()
   reclaimSymbols();
 }
 
+/* compute the total n-dimensional size as 1 long array;
+   if stop == 0, then stop = dimset->ndims.
+*/
 size_t
-arraylength(Dimset* dimset)
-{
-    return subarraylength(dimset,0);
-}
-
-/* compute the total n-dimensional size as 1 long array*/
-/* stop if we encounter an unlimited dimension */
-size_t
-subarraylength(Dimset* dimset, int first)
+crossproduct(Dimset* dimset, int start, int stop)
 {
     size_t totalsize = 1;
-    int i,last;
-    last = dimset->ndims;
-    for(i=first;i<last;i++) {
-	if(dimset->dimsyms[i]->dim.declsize == NC_UNLIMITED) break;
-	totalsize = totalsize * MAX(dimset->dimsyms[i]->dim.unlimitedsize,
-				     dimset->dimsyms[i]->dim.declsize);
+    int i;
+    if(stop == 0) stop = dimset->ndims;
+    for(i=start;i<stop;i++) {
+	totalsize = totalsize * dimset->dimsyms[i]->dim.declsize;
     }
     return totalsize;    
 }
 
-
-/* Do the "complement" of subarray length;
+/* Do the "complement" of crossproduct;
    compute the total n-dimensional size of an array
    starting at 0 thru the 'last' array index.
    stop if we encounter an unlimited dimension
@@ -614,14 +607,7 @@ subarraylength(Dimset* dimset, int first)
 size_t
 prefixarraylength(Dimset* dimset, int last)
 {
-    size_t totalsize = 1;
-    int i;
-    for(i=0;i<=last;i++) {
-	if(dimset->dimsyms[i]->dim.declsize == NC_UNLIMITED) break;
-	totalsize = totalsize * MAX(dimset->dimsyms[i]->dim.unlimitedsize,
-				     dimset->dimsyms[i]->dim.declsize);
-    }
-    return totalsize;    
+    return crossproduct(dimset,0,last+1);
 }
 
 
@@ -642,4 +628,26 @@ check_err(const int stat, const int line, const char* file) {
 	exit(1);
     }
 }
+
+int
+findunlimited(Dimset* dimset, int start)
+{
+    for(;start<dimset->ndims;start++) {
+	if(dimset->dimsyms[start]->dim.isunlimited)
+	    return start;
+    }
+    return dimset->ndims;
+}
+
+int
+findlastunlimited(Dimset* dimset)
+{
+    int i;
+    for(i=dimset->ndims-1;i>=0;i--) {
+	if(dimset->dimsyms[i]->dim.isunlimited)
+	    return i;
+    }
+    return -1;
+}
+
 

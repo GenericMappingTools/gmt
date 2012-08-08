@@ -20,7 +20,7 @@ tst_enums tst_coords tst_coords2 tst_coords3 tst_vars3 tst_vars4	\
 tst_chunks tst_chunks2 tst_utf8 tst_fills tst_fills2 tst_fillbug	\
 tst_xplatform tst_xplatform2 tst_h_atts2 tst_endian_fill tst_atts	\
 t_type cdm_sea_soundings tst_camrun tst_vl tst_atts1 tst_atts2		\
-tst_vars2 tst_files5 tst_files6 tst_sync
+tst_vars2 tst_files5 tst_files6 tst_sync tst_h_strbug
 
 check_PROGRAMS = $(NC4_TESTS)
 
@@ -46,11 +46,26 @@ endif # LARGE_FILE_TESTS
 if BUILD_BENCHMARKS
 check_PROGRAMS += tst_create_files bm_file tst_chunks3 tst_ar4	\
 tst_ar4_3d tst_ar4_4d bm_many_objs tst_h_many_atts bm_many_atts	\
-tst_files2 tst_files3 tst_ar5 tst_h_files3 tst_mem
+tst_files2 tst_files3 tst_ar5 tst_h_files3 tst_mem tst_knmi     \
+bm_netcdf4_recs
 
+bm_netcdf4_recs_SOURCES = bm_netcdf4_recs.c tst_utils.c
+bm_many_atts_SOURCES = bm_many_atts.c tst_utils.c
+bm_many_objs_SOURCES = bm_many_objs.c tst_utils.c
+tst_ar4_3d_SOURCES = tst_ar4_3d.c tst_utils.c
+tst_ar4_4d_SOURCES = tst_ar4_4d.c tst_utils.c
+tst_files2_SOURCES = tst_files2.c tst_utils.c
+tst_ar4_SOURCES = tst_ar4.c tst_utils.c
+tst_h_many_atts_SOURCES = tst_h_many_atts.c tst_utils.c
+bm_file_SOURCES = bm_file.c tst_utils.c
+tst_knmi_SOURCES = tst_knmi.c tst_utils.c
+
+#WARNING: test_knmi depends on run_get_knmi_files.sh,
+# so they must appear in the appropriate order.
 TESTS += tst_ar4_3d tst_create_files run_bm_test1.sh run_bm_elena.sh	\
 run_bm_test2.sh run_tst_chunks.sh run_bm_ar4.sh tst_files2 tst_files3	\
-tst_ar5 tst_h_files3 tst_mem
+tst_ar5 tst_h_files3 tst_mem                                            \
+run_get_knmi_files.sh tst_knmi
 
 # This will run a parallel I/O benchmark for parallel builds.
 if TEST_PARALLEL
@@ -105,7 +120,7 @@ run_tst_chunks.sh ref_chunks1.cdl ref_chunks2.cdl run_pnetcdf_test.sh	\
 run_get_hdf4_files.sh run_valgrind_tests.sh run_valgrind_tests2.sh	\
 run_bm_ar4.sh ref_tst_compounds.nc run_hdf4_valgrind_tests.sh		\
 ref_tst_xplatform2_1.nc ref_tst_xplatform2_2.nc ref_tst_dims.nc		\
-ref_tst_interops4.nc
+ref_tst_interops4.nc run_get_knmi_files.sh
 
 CLEANFILES = tst_mpi_parallel.bin cdm_sea_soundings.nc bm_chunking.nc	\
 bm_radar.nc bm_radar1.nc radar_3d_compression_test.txt			\

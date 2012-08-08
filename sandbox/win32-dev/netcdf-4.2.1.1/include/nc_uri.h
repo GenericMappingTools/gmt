@@ -30,9 +30,10 @@ extern void nc_urisetconstraints(NC_URI*,const char* constraints);
 /* Construct a complete NC_ URI; caller frees returned string */
 
 /* Define flags to control what is included */
-#define NC_URICONSTRAINTS 1
-#define NC_URIUSERPWD	  2
-#define NC_URIPARAMS	  4
+#define NC_URICONSTRAINTS	1
+#define NC_URIUSERPWD	  	2
+#define NC_URIPARAMS	  	4
+#define NC_URIALL	  	(NC_URICONSTRAINTS|NC_URIUSERPWD|NC_URIPARAMS)
 
 extern char* nc_uribuild(NC_URI*,const char* prefix, const char* suffix, int flags);
 
@@ -41,8 +42,9 @@ extern char* nc_uribuild(NC_URI*,const char* prefix, const char* suffix, int fla
 extern int nc_uridecodeparams(NC_URI* nc_uri);
 extern int nc_urisetparams(NC_URI* nc_uri,const char*);
 
-/*! NULL result => entry not found.
-    Empty value should be represented as a zero length string */
-extern const char* nc_urilookup(NC_URI*, const char* param);
+/*! 0 result => entry not found; 1=>found; result holds value (may be null).
+    In any case, the result is imutable and should not be free'd.
+*/
+extern int nc_urilookup(NC_URI*, const char* param, const char** result);
 
 #endif /*NC_URI_H*/

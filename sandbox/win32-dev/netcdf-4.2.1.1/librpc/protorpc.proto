@@ -1,0 +1,1012 @@
+// Notes:
+// 1. when creating a new var, type, etc,
+//    the meta-data tree needs to be updated
+//    (though possibly on a lazy basis)
+
+option config_h=true;
+
+// Define enum covering all RPC calls
+enum RPC_Call {
+NCRPC_CREATE=0;
+NCRPC_OPEN=1;
+NCRPC_NEW_NC=2;
+NCRPC_FREE_NC=3;
+NCRPC_REDEF=4;
+NCRPC__ENDDEF=5;
+NCRPC_SYNC=6;
+NCRPC_ABORT=7;
+NCRPC_CLOSE=8;
+NCRPC_SET_FILL=9;
+NCRPC_SET_BASE_PE=10;
+NCRPC_INQ_BASE_PE=11;
+NCRPC_INQ_FORMAT=12;
+NCRPC_INQ=13;
+NCRPC_INQ_TYPE=14;
+NCRPC_DEF_DIM=15;
+NCRPC_INQ_DIMID=16;
+NCRPC_INQ_DIM=17;
+NCRPC_INQ_UNLIMDIM=18;
+NCRPC_RENAME_DIM=19;
+NCRPC_INQ_ATT=20;
+NCRPC_INQ_ATTID=21;
+NCRPC_INQ_ATTNAME=22;
+NCRPC_RENAME_ATT=23;
+NCRPC_DEL_ATT=24;
+NCRPC_GET_ATT=25;
+NCRPC_PUT_ATT=26;
+NCRPC_DEF_VAR=27;
+NCRPC_INQ_VAR_ALL=28;
+NCRPC_INQ_VARID=29;
+NCRPC_RENAME_VAR=30;
+NCRPC_PUT_VARA=31;
+NCRPC_GET_VARA=32;
+NCRPC_VAR_PAR_ACCESS=33;
+NCRPC_INQ_NCID=34;
+NCRPC_INQ_GRPS=35;
+NCRPC_INQ_GRPNAME=36;
+NCRPC_INQ_GRPNAME_FULL=37;
+NCRPC_INQ_GRP_PARENT=38;
+NCRPC_INQ_GRP_FULL_NCID=39;
+NCRPC_INQ_VARIDS=40;
+NCRPC_INQ_DIMIDS=41;
+NCRPC_INQ_TYPEIDS=42;
+NCRPC_INQ_TYPE_EQUAL=43;
+NCRPC_DEF_GRP=44;
+NCRPC_INQ_USER_TYPE=45;
+NCRPC_DEF_COMPOUND=46;
+NCRPC_INSERT_COMPOUND=47;
+NCRPC_INSERT_ARRAY_COMPOUND=48;
+NCRPC_INQ_TYPEID=49;
+NCRPC_INQ_COMPOUND_FIELD=50;
+NCRPC_INQ_COMPOUND_FIELDINDEX=51;
+NCRPC_DEF_VLEN=52;
+NCRPC_PUT_VLEN_ELEMENT=53;
+NCRPC_GET_VLEN_ELEMENT=54;
+NCRPC_DEF_ENUM=55;
+NCRPC_INSERT_ENUM=56;
+NCRPC_INQ_ENUM_MEMBER=57;
+NCRPC_INQ_ENUM_IDENT=58;
+NCRPC_DEF_OPAQUE=59;
+NCRPC_DEF_VAR_DEFLATE=60;
+NCRPC_DEF_VAR_FLETCHER32=61;
+NCRPC_DEF_VAR_CHUNKING=62;
+NCRPC_DEF_VAR_FILL=63;
+NCRPC_DEF_VAR_ENDIAN=64;
+NCRPC_SET_VAR_CHUNK_CACHE=65;
+NCRPC_GET_VAR_CHUNK_CACHE=66;
+NCRPC_INQ_UNLIMDIMS=67;
+NCRPC_SHOW_METADATA=68;
+NCRPC_INITIALIZE=69;
+NCRPC_GETMETADATA=70;
+}
+
+message NCCreate {
+    required string path		= 1;
+    required int32 cmode		= 2;
+    required uint64 initialsz		= 3;
+    required int32 basepe		= 4;
+    required int32 use_parallel		= 6;
+}
+
+message NCCreate_Return {
+    required int32 ncstatus		= 1;
+    required int32 ncid			= 2;
+}
+
+message NCOpen {
+    required string path		= 1;
+    required int32 cmode		= 2;
+    required int32 basepe		= 3;
+    repeated uint64 chunksizehint	= 4;
+    required int32 use_parallel		= 5;
+    required bytes parameters		= 6;
+}
+
+message NCOpen_Return {
+    required int32 ncstatus		= 1;
+    required int32 ncid			= 2;
+}
+
+message NCRedef {
+    required int32 ncid			= 1;
+}
+
+message NCRedef_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NC_Enddef {
+    required int32 ncid			= 1;
+    required uint64 minfree		= 2;
+    required uint64 v_align		= 3;
+    required uint64 v_minfree		= 4;
+    required uint64 r_align		= 5;
+}
+
+message NC_Enddef_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCSync {
+    required int32 ncid			= 1;
+}
+
+message NCSync_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCAbort {
+    required int32 ncid			= 1;
+}
+
+message NCAbort_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCClose {
+    required int32 ncid			= 1;
+}
+
+message NCClose_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCSet_Fill {
+    required int32 ncid			= 1;
+    required int32 fillmode		= 2;
+}
+
+message NCSet_Fill_Return {
+    required int32 ncstatus		= 1;
+    required int32 oldmode		= 2;
+}
+
+message NCInq_Base_PE {
+    required int32 ncid			= 1;
+}
+
+message NCInq_Base_PE_Return {
+    required int32 ncstatus		= 1;
+    required int32 pe			= 2;
+}
+
+message NCSet_base_pe {
+    required int32 ncid			= 1;
+    required int32 pe			= 2;
+}
+
+message NCSet_base_pe_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_format {
+    required int32 ncid			= 1;
+}
+
+message NCInq_format_Return {
+    required int32 ncstatus		= 1;
+    required int32 format		= 2;
+}
+
+message NCInq {
+    required int32 ncid			= 1;
+}
+
+message NCInq_Return {
+    required int32 ncstatus		= 1;
+    required int32 ndims		= 2;
+    required int32 nvars		= 3;
+    required int32 natts		= 4;
+    required int32 unlimdimid		= 5;
+}
+
+message NCInq_Type {
+    required int32 ncid			= 1;
+    required int32 xtype		= 2;
+}
+
+message NCInq_Type_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+    required uint64 size		= 3;
+}
+
+message NCDef_Dim {
+    required int32 ncid			= 1;
+    required string name		= 2;
+    required uint64 len			= 3;
+}
+
+message NCDef_Dim_Return {
+    required int32 ncstatus		= 1;
+    required int32 dimid		= 2;
+}
+
+message NCInq_dimid {
+    required int32 ncid			= 1;
+    required string name		= 2;
+}
+
+message NCInq_dimid_Return {
+    required int32 ncstatus		= 1;
+    required int32 dimid		= 2;
+}
+
+message NCInq_dim {
+    required int32 ncid			= 1;
+    required int32 dimid		= 2;
+}
+
+message NCInq_dim_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+    required uint64 len			= 3;
+}
+
+message NCInq_unlimdim {
+    required int32 ncid			= 1;
+}
+
+message NCInq_unlimdim_Return {
+    required int32 ncstatus		= 1;
+    required int32 unlimdimid		= 2;
+}
+
+message NCRename_dim {
+    required int32 ncid			= 1;
+    required int32 dimid		= 2;
+    required string name		= 3;
+}
+
+message NCRename_dim_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_att {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+}
+
+message NCInq_att_Return {
+    required int32 ncstatus		= 1;
+    required int32 xtype		= 2;
+    required uint64 len			= 3;
+}
+
+message NCInq_attid {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+}
+
+message NCInq_attid_Return {
+    required int32 ncstatus		= 1;
+    required int32 attid		= 2;
+}
+
+message NCInq_attname {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required int32 attnum		= 3;
+}
+
+message NCInq_attname_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+}
+
+message NCRename_att {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+    required string newname		= 4;
+}
+
+message NCRename_att_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCDel_att {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+}
+
+message NCDel_att_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCGet_att {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+    required int32 xtype		= 4;
+}
+
+message NCGet_att_Return {
+    required int32 ncstatus		= 1;
+    required bytes values		= 2;
+}
+
+message NCPut_att {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+    required int32 vtype		= 4; // external value type
+    required uint64 nelems		= 5;
+    required bytes value		= 6;
+    required int32 atype		= 7; // attribute type
+}
+
+message NCPut_att_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCDef_Var {
+    required int32 ncid			= 1;
+    required string name		= 2;
+    required int32 xtype		= 3;
+    required int32 ndims		= 4;
+    repeated int32 dimids		= 5;
+}
+
+message NCDef_Var_Return {
+    required int32 ncstatus		= 1;
+    required int32 varid		= 2;
+}
+
+message NCInq_varid {
+    required int32 ncid			= 1;
+    required string name		= 2;
+}
+
+message NCInq_varid_Return {
+    required int32 ncstatus		= 1;
+    required int32 varid		= 2;
+}
+
+message NCRename_var {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+}
+
+message NCRename_var_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCGet_vara {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    repeated uint64 start		= 3;
+    repeated uint64 edges		= 4;
+    required int32 memtype		= 5;
+}
+
+message NCGet_vara_Return {
+    required int32 ncstatus		= 1;
+    required bytes value		= 2;
+}
+
+message NCPut_vara {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    repeated uint64 start		= 3;
+    repeated uint64 edges		= 4;
+    required bytes value		= 5;
+    required int32 memtype		= 6;
+}
+
+message NCPut_vara_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCGet_vars {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    repeated uint64 start		= 3;
+    repeated uint64 edges		= 4;
+    repeated uint64 stride		= 5;
+    required int32 memtype		= 6;
+}
+
+message NCGet_vars_Return {
+    required int32 ncstatus		= 1;
+    required bytes value		= 2;
+}
+
+message NCPut_vars {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    repeated uint64 start		= 3;
+    repeated uint64 edges		= 4;
+    repeated uint64 stride		= 5;
+    required bytes value		= 6;
+    required int32 memtype		= 7;
+}
+
+message NCPut_vars_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCGet_varm {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    repeated uint64 start		= 3;
+    repeated uint64 edges		= 4;
+    repeated uint64 stride		= 5;
+    repeated uint64 imap		= 6;
+    required int32 memtype		= 7;
+}
+
+message NCGet_varm_Return {
+    required int32 ncstatus		= 1;
+    required bytes value		= 2;
+}
+
+message NCPut_varm {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    repeated uint64 start		= 3;
+    repeated uint64 edges		= 4;
+    repeated uint64 stride		= 5;
+    repeated uint64 imap		= 6;
+    required bytes value		= 7;
+    required int32 memtype		= 8;
+}
+
+message NCPut_varm_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_var_all {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required string name		= 3;
+}
+
+message NCInq_var_all_Return {
+    required int32 ncstatus		= 1;
+    required int32 xtype		= 2;
+    required int32 ndims		= 3;
+    repeated int32 dimids		= 4;
+    required int32 natts		= 5;
+    required bool shuffle		= 6;
+    required bool deflate		= 7;
+    required int32 deflate_level	= 8;
+    required bool fletcher32		= 9;
+    required bool contiguous		= 10;
+    repeated uint64 chunksizes		= 11;
+    required bool no_fill		= 12;
+    required bytes fill_value		= 13;
+    required bool endianness		= 14;
+    required int32 options_mask		= 15;
+    required int32 pixels_per_block	= 16;
+}
+
+// #ifdef USE_NETCDF4
+
+message NCShow_metadata {
+    required int32 ncid			= 1;
+}
+
+message NCShow_metadata_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_unlimdims {
+    required int32 ncid			= 1;
+}
+
+message NCInq_unlimdims_Return {
+    required int32 ncstatus		= 1;
+    required int32 nunlimdims		= 2;
+    repeated int32 unlimdimids		= 3;
+}
+
+message NCVar_par_access {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required bool par_access		= 3;
+}
+
+message NCVar_par_access_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_ncid {
+    required int32 ncid			= 1;
+    required string group		= 2;
+}
+
+message NCInq_ncid_Return {
+    required int32 ncstatus		= 1;
+    required int32 grp_ncid		= 2;
+}
+
+message NCInq_grps {
+    required int32 ncid			= 1;
+}
+
+message NCInq_grps_Return {
+    required int32 ncstatus		= 1;
+    required int32 ngroups		= 2;
+    repeated int32 ncids		= 3;
+}
+
+message NCInq_grpname {
+    required int32 ncid			= 1;
+}
+
+message NCInq_grpname_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+}
+
+message NCInq_grpname_full {
+    required int32 ncid			= 1;
+}
+
+message NCInq_grpname_full_Return {
+    required int32 ncstatus		= 1;
+    repeated uint64 len			= 2;
+    required string fullname		= 3;
+}
+
+message NCInq_grp_parent {
+    required int32 ncid			= 1;
+}
+
+message NCInq_grp_parent_Return {
+    required int32 ncstatus		= 1;
+    required int32 parentncid		= 2;
+}
+
+message NCInq_grp_full_ncid {
+    required int32 ncid			= 1;
+    required string fullname		= 2;
+}
+
+message NCInq_grp_full_ncid_Return {
+    required int32 ncstatus		= 1;
+    required int32 groupncid		= 2;
+}
+
+message NCInq_varids {
+    required int32 ncid			= 1;
+}
+
+message NCInq_varids_Return {
+    required int32 ncstatus		= 1;
+    required int32 nvars		= 2;
+    repeated int32 varids		= 3;
+}
+
+message NCInq_dimids {
+    required int32 ncid			= 1;
+    required bool includeparents	= 2;
+}
+
+message NCInq_dimids_Return {
+    required int32 ncstatus		= 1;
+    required int32 ndims		= 2;
+    repeated int32 dimids		= 3;
+}
+
+message NCInq_typeids {
+    required int32 ncid			= 1;
+}
+
+message NCInq_typeids_Return {
+    required int32 ncstatus		= 1;
+    required int32 ntypes		= 2;
+    repeated int32 typeids		= 3;
+}
+
+message NCInq_type_equal {
+    required int32 ncid1		= 1;
+    required int32 typeid1		= 2;
+    required int32 ncid2		= 3;
+    required int32 typeid2		= 4;
+}
+
+message NCInq_type_equal_Return {
+    required int32 ncstatus		= 1;
+    required bool equal			= 2;
+}
+
+message NCDef_Grp {
+    required int32 ncid			= 1;
+    required string name		= 2;
+}
+
+message NCDef_Grp_Return {
+    required int32 ncstatus		= 1;
+    required int32 grpncid		= 2;
+}
+
+message NCInq_user_type {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+}
+
+message NCInq_user_type_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+    required uint64 size		= 3;
+    required int32 basetype		= 4;
+    required uint64 nfields		= 5;
+    required int32 typeclass		= 6;
+}
+
+message NCInq_typeid {
+    required int32 ncid			= 1;
+    required string name		= 2;
+}
+
+message NCInq_typeid_Return {
+    required int32 ncstatus		= 1;
+    required int32 typeid		= 2;
+}
+
+message NCDef_Compound {
+    required int32 ncid			= 1;
+    required uint64 size		= 2;
+    required string name		= 3;
+}
+
+message NCDef_Compound_Return {
+    required int32 ncstatus		= 1;
+    required int32 typeid		= 2;
+}
+
+message NCInsert_compound {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required string name		= 3;
+    required uint64 offset		= 4;
+    required int32 fieldtypeid		= 5;
+}
+
+message NCInsert_compound_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInsert_array_compound {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required string name		= 3;
+    required uint64 offset		= 4;
+    required int32 fieldtypeid		= 5;
+    required int32 ndims		= 6;
+    repeated int32 dimsizes		= 7;
+}
+
+message NCInsert_array_compound_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_compound_field {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required int32 fieldid		= 3;
+}
+
+message NCInq_compound_field_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+    required uint64 offset		= 3;
+    required int32 fieldtypeid		= 4;
+    required int32 ndims		= 5;
+    repeated int32 dimsizes		= 6;
+}
+
+message NCInq_compound_fieldindex {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required string name		= 3;
+}
+
+message NCInq_compound_fieldindex_Return {
+    required int32 ncstatus		= 1;
+    required int32 fieldid		= 2;
+}
+
+message NCDef_Vlen {
+    required int32 ncid			= 1;
+    required string name		= 2;
+    required int32 base_typeid		= 3;
+}
+
+message NCDef_Vlen_Return {
+    required int32 ncstatus		= 1;
+    required int32 typeid		= 2;
+}
+
+message NCPut_vlen_element {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required bytes element		= 3;
+    required uint64 len			= 4;
+    required bytes data			= 5;
+}
+
+message NCPut_vlen_element_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCGet_vlen_element {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+}
+
+message NCGet_vlen_element_Return {
+    required int32 ncstatus		= 1;
+    required bytes element		= 2;
+    required uint64 len			= 3;
+    required bytes data			= 4;
+}
+
+message NCDef_Enum {
+    required int32 ncid			= 1;
+    required int32 basetypeid		= 2;
+    required string name		= 3;
+}
+
+message NCDef_Enum_Return {
+    required int32 ncstatus		= 1;
+    required int32 typeid		= 2;
+}
+
+message NCInsert_enum {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required string name		= 3;
+    required bytes value		= 4;
+}
+
+message NCInsert_enum_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCInq_enum_member {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required int32 index		= 3;
+}
+
+message NCInq_enum_member_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+    required bytes value		= 3;
+}
+
+message NCInq_enum_ident {
+    required int32 ncid			= 1;
+    required int32 typeid		= 2;
+    required uint64 value		= 3;
+}
+
+message NCInq_enum_ident_Return {
+    required int32 ncstatus		= 1;
+    required string name		= 2;
+}
+
+message NCDef_Opaque {
+    required int32 ncid			= 1;
+    required uint64 size		= 2;
+    required string name		= 3;
+}
+
+message NCDef_Opaque_Return {
+    required int32 ncstatus		= 1;
+    required int32 typeid		= 2;
+}
+
+message NCDef_var_deflate {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required bool shuffle		= 3;
+    required bool deflate		= 4;
+    required int32 deflatelevel		= 5;
+}
+
+message NCDef_var_deflate_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCDef_Var_Fletcher32 {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required bool fletcher32		= 3;
+}
+
+message NCDef_Var_Fletcher32_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCDef_Var_Chunking {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required bool contiguous		= 3;
+    repeated uint64 chunksizes		= 4;
+}
+
+message NCDef_Var_Chunking_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCDef_Var_Fill {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required bool nofill		= 3;
+    required bytes fill_value		= 4;
+}
+
+message NCDef_Var_Fill_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCDef_Var_endian {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required bool bigendian		= 3;
+}
+
+message NCDef_Var_endian_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCSet_var_chunk_cache {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+    required uint64 size		= 3;
+    required uint64 nelems		= 4;
+    required float preemption		= 5;
+}
+
+message NCSet_var_chunk_cache_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCGet_var_chunk_cache {
+    required int32 ncid			= 1;
+    required int32 varid		= 2;
+}
+
+message NCGet_var_chunk_cache_Return {
+    required int32 ncstatus		= 1;
+    required uint64 size		= 2;
+    required uint64 nelems		= 3;
+    required float preemption		= 4;
+}
+
+// #endif //USE_NETCDF4
+
+// #ifdef NONDISPATCH
+
+message NCNC_set_log_level {
+    required int32 newlevel		= 1;
+}
+
+message NCNC_set_log_level_Return {
+    required int32 ncstatus		= 1;
+}
+
+message NCNC_inq_libvers {
+}
+
+message NCNC_inq_libvers_Return {
+    required string version		= 1;
+}
+
+message NCNC_delete_mp {
+    required string path		= 1;
+    required int32 basepe		= 2;
+}
+
+message NCNC_delete_mp_Return {
+    required int32 ncstatus		= 1;
+}
+
+// This procedure is special to rpc;
+// it transports the complete metadata
+// of a file from server to client at one shot
+
+
+
+// #endif //NONDISPATCH
+
+
+// Define messages for transporting
+// the complete netcdf-4 metadata for a file
+
+// Following should be consistent with netcdf.h
+enum nc_meta  {
+META_NAT=0; // Not A Type
+META_BYTE=1; // signed 1 byte integer
+META_CHAR=2; // ISO/ASCII character
+META_SHORT=3; // signed 2 byte integer
+META_INT=4; // signed 4 byte integer
+META_FLOAT=5; // single precision floating point number
+META_DOUBLE=6; // double precision floating point number
+META_UBYTE=7; // unsigned 1 byte int
+META_USHORT=8; // unsigned 2-byte int
+META_UINT=9; // unsigned 4-byte int
+META_INT64=10; // signed 8-byte int
+META_UINT64=11; // unsigned 8-byte int
+META_STRING=12; // string
+META_VLEN=13; // vlen types
+META_OPAQUE=14; // opaque types
+META_ENUM=15; // enum types
+META_COMPOUND=16; // compound types
+META_ATOMIC=64; // Atomic type (NC_NAT-NC_STRING)
+META_FIELD=65; // Compound Field
+META_GRAPH=66; // Root of a node graph (not same as root group)
+META_GROUP=67; // Group
+META_VAR=68; // Variable
+META_DIM=69; // Dimension
+}
+
+// Structure for representing the meta data as a graph
+message MetaNode {
+    required MetaNode root		= 1; // link to root of the graph
+    required nc_meta nodeclass		= 2;
+    required nc_meta subclass		= 3;
+    // Following depend on nodeclass + subclass
+    optional int32 ncid			= 4;
+    optional int32 typeid		= 5;
+    optional string name		= 6;
+    optional uint64 size		= 7;
+    optional MetaNode basetype		= 8; // vlen or enum or basetype
+    optional MetaGraph graph		= 9; // root of the graph
+    optional MetaGroup group		= 10;
+    optional MetaVar var		= 11;
+    optional MetaDim dim		= 12;
+    optional MetaCompound compound_t	= 13;
+    optional MetaEnum enum_t		= 14;
+    // Vlen and opaque have no extra info
+}
+
+// Sub-messages
+
+message MetaGraph {
+    repeated MetaNode nodeset		= 1;
+    required MetaNode rootgroup		= 2;
+}
+
+message MetaGroup {
+    repeated MetaNode typeset		= 1; // types in group
+    repeated MetaNode varset		= 2;  // vars in group
+    repeated MetaNode dimrset		= 3; // dims in group
+    repeated MetaNode groups		= 4;  // (sub)groups in group
+}
+
+message MetaVar {       // var node specific info
+    repeated MetaNode dims		= 1;
+}
+
+message MetaDim {
+    required uint64 actualsize		= 1; // actual size for unlimited
+}
+
+message MetaCompound {        // compound node specific info
+    repeated MetaNode fields		= 1;
+}
+
+message MetaField {       // field node specific info
+    repeated uint64 dims		= 1;
+    required uint64 offset		= 2;
+    required uint64 alignment		= 3;
+}
+
+message MetaEnum {
+    repeated MetaEconst econsts		= 1;
+}
+
+// No need to represent enum constants as a metanode instance.
+message MetaEconst {
+    required string name		= 1;
+    required bytes value		= 2;
+}

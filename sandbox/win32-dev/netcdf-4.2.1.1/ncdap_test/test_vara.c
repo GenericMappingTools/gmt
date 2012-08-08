@@ -3,8 +3,6 @@
 #include <string.h>
 #include <netcdf.h>
 
-#define URL "http://test.opendap.org:8080/dods/dts/test.06"
-
 /* The DDS in netcdf classic form is as follows: 
 netcdf test {
 dimensions:
@@ -43,9 +41,11 @@ typedef struct Odom {
     size_t* count;
 } Odom;
 
-static float threeD_data[X][Y][Z];
+#ifdef IGNORE
+static float threeD_data[X*Y*Z];
+static int dims[RANK] = {X,Y,Z};
+#endif
 static float threeD[X][Y][Z];
-static dims[RANK] = {X,Y,Z};
 
 static Odom* odom_create(int rank);
 static void odom_reclaim(Odom* odom);
@@ -72,13 +72,27 @@ int
 main()
 {
     int ncid, varid;
-    int retval,i;
+    int retval;
     size_t start[RANK];
     size_t count[RANK];
-    
+    char* topsrcdir;
+    char url[4096];
+
+    /* Assume that TESTS_ENVIRONMENT was set */
+    topsrcdir = getenv("TOPSRCDIR");
+    if(topsrcdir == NULL) {
+        fprintf(stderr,"*** FAIL: $abs_top_srcdir not defined: location= %s:%d\n",__FILE__,__LINE__);
+        exit(1);
+    }    
+    strcpy(url,"file://");
+    strcat(url,topsrcdir);
+    strcat(url,"/ncdap_test/testdata3/test.06");
+
+    printf("test_vara: url=%s\n",url);
+
     memset((void*)threeD,0,sizeof(threeD));
 
-    if((retval = nc_open(URL, NC_NOWRITE, &ncid)))
+    if((retval = nc_open(url, NC_NOWRITE, &ncid)))
        ERR(retval);
 
     if((retval = nc_inq_varid(ncid, VAR, &varid)))
@@ -115,9 +129,9 @@ static int check(size_t* start, size_t* count)
 {
     int ok = 1;
     Odom* odom = odom_create(RANK);
-    odom_set(odom,start,count);
     float* result = (float*)threeD;
     float* expected = (float*)threeD;
+    odom_set(odom,start,count);
     while(odom_more(odom)) {
 	size_t offset = odom_count(odom);
 	if(floateq(result[offset],expected[offset])) {
@@ -197,6 +211,7 @@ static size_t odom_count(Odom* odom)
     return offset;
 }
 
+#ifdef IGNORE
 static float threeD_data[X][Y][Z] = {
   1, 0.999950000416665, 0.999800006666578, 0.999550033748988, 
     0.999200106660978, 0.998750260394966, 0.998200539935204, 
@@ -554,3 +569,4 @@ static float threeD_data[X][Y][Z] = {
     -0.86015540335732, -0.855012160548026, -0.849783417235186, 
     -0.844469696288772 
 };
+#endif

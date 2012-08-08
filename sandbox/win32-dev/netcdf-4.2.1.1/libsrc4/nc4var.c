@@ -7,8 +7,6 @@ This file handles the nc4 variable functions.
 Copyright 2003-2006, University Corporation for Atmospheric
 Research. See COPYRIGHT file for copying and redistribution
 conditions.
-
-$Id$
 */
 
 #include <nc4internal.h>
@@ -242,11 +240,14 @@ check_chunksizes(NC_GRP_INFO_T *grp, NC_VAR_INFO_T *var, const size_t *chunksize
 static int 
 nc4_find_default_chunksizes2(NC_GRP_INFO_T *grp, NC_VAR_INFO_T *var)
 {
-   int d, max_dim;
+   int d;
    size_t type_size, max_len = 0;
    float num_values = 1, num_set = 0;
-   float total_chunk_size;
    int retval;
+#ifdef LOGGING   
+   int max_dim;
+   float total_chunk_size;
+#endif
 
    if (var->type_info->nc_typeid == NC_STRING)
       type_size = sizeof(char *);
@@ -255,7 +256,9 @@ nc4_find_default_chunksizes2(NC_GRP_INFO_T *grp, NC_VAR_INFO_T *var)
 
    /* Later this will become the total number of bytes in the default
     * chunk. */
+#ifdef LOGGING   
    total_chunk_size = type_size;
+#endif
 
    /* How many values in the variable (or one record, if there are
     * unlimited dimensions); which is the largest dimension, and how
@@ -271,7 +274,9 @@ nc4_find_default_chunksizes2(NC_GRP_INFO_T *grp, NC_VAR_INFO_T *var)
       if (var->dim[d]->len > max_len)
       {
 	 max_len = var->dim[d]->len;
+#ifdef LOGGING
 	 max_dim = d;
+#endif
       }
       LOG((4, "d = %d max_dim %d max_len %ld num_values %f", d, max_dim, max_len, 
 	   num_values));
@@ -329,10 +334,17 @@ nc4_find_default_chunksizes2(NC_GRP_INFO_T *grp, NC_VAR_INFO_T *var)
    /* Do we have any big data overhangs? They can be dangerous to
     * babies, the elderly, or confused campers who have had too much
     * beer. */
-#define NC_ALLOWED_OVERHANG .1
    for (d = 0; d < var->ndims; d++)
-      for ( ; var->dim[d]->len % var->chunksizes[d] > var->dim[d]->len * NC_ALLOWED_OVERHANG; )
-	 var->chunksizes[d] -= var->dim[d]->len * NC_ALLOWED_OVERHANG;
+   {
+       int num_chunks;
+       size_t overhang;
+       assert(var->chunksizes[d] > 0);
+       num_chunks = (var->dim[d]->len + var->chunksizes[d] - 1) / var->chunksizes[d];
+       if(num_chunks > 0) {
+	   overhang = (num_chunks * var->chunksizes[d]) - var->dim[d]->len;
+	   var->chunksizes[d] -= overhang / num_chunks;
+       }
+   }
 
    return NC_NOERR;
 }
@@ -384,7 +396,7 @@ nc_def_var_nc4(int ncid, const char *name, nc_type xtype,
 
    /* If this is a user defined type, find it. */
    if (xtype > NC_STRING)
-      if ((retval = nc4_find_type(grp->file->nc4_info, xtype, &type_info)))
+      if (nc4_find_type(grp->file->nc4_info, xtype, &type_info))
          return NC_EBADTYPE;
 
    /* cast needed for braindead systems with signed size_t */

@@ -3,13 +3,10 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 ccompiler=@CC@
-cppcompiler=@CXX@
-fcompiler=@FC@
-fflags=@FFLAGS@ -I${includedir}
-flibs=@NC_FLIBS@
 
 Name: @PACKAGE@
-Description: NetCDF Client Library
+Description: NetCDF Client Library for C
+URL: http://www.unidata.ucar.edu/netcdf
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} @NC_LIBS@
 Cflags: -I${includedir}

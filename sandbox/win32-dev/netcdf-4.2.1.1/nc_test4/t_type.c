@@ -24,7 +24,7 @@ main(int ac, char *av[])
    size_t size_in;
    char name_in[NC_MAX_NAME + 1];
 
-   printf("\n *** Testing netCDF classic version of nc_inq_type...");
+   printf("\n*** Testing netCDF classic version of nc_inq_type...");
    if (nc_inq_type(ncid, 0, name_in, &size_in) != NC_EBADTYPE) ERR;
    if (nc_inq_type(ncid, NC_STRING + 1, name_in, &size_in) != NC_EBADTYPE) ERR;
    if (nc_inq_type(ncid, NC_BYTE, name_in, &size_in)) ERR;

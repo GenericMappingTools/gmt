@@ -1666,8 +1666,9 @@ INTEGER FUNCTION NF_INQ_FORMAT   (INTEGER NCID, INTEGER format)
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
- 
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
+
 @item ndims
 Returned number of dimensions defined for this netCDF dataset.
  
@@ -2432,13 +2433,17 @@ or any of its parents.
 @heading Usage 
 
 @example
-INTEGER FUNCTION NF_INQ_DIMIDS(INTEGER NCID, INTEGER DIMIDS, INTEGER INCLUDE_PARENTS)
+INTEGER FUNCTION NF_INQ_DIMIDS(INTEGER NCID, INTEGER NDIMS, INTEGER DIMIDS, INTEGER INCLUDE_PARENTS)
 @end example
 
 @table @code
 
 @item NCID
 The group id for this operation.
+
+@item NDIMS
+Returned number of dimensions for this location.  If INCLUDE_PARENTS
+is non-zero, includes how many dimensions are visible from this group.
 
 @item DIMIDS
 An array of ints when the dimids of the visible dimensions will be
@@ -2741,7 +2746,7 @@ C     Check the parent ncid.
 @section Find a Group by Name: NF_INQ_GRP_NCID
 @findex NF_INQ_GRP_PARENT
 
-Given a group name an an ncid, find the ncid of the group id. 
+Given a group name and an ncid, find the ncid of the group id. 
 
 @heading Usage 
 
@@ -2807,7 +2812,7 @@ C     Go to a child group and find the id of our type.
 @section Find a Group by its Fully-qualified Name: NF_INQ_GRP_FULL_NCID
 @findex NF_INQ_GRP_PARENT
 
-Given a fully qualified group name an an ncid, find the ncid of the
+Given a fully qualified group name and an ncid, find the ncid of the
 group id.
 
 @heading Usage 
@@ -3028,7 +3033,8 @@ INTEGER FUNCTION NF_DEF_DIM (INTEGER NCID, CHARACTER*(*) NAME,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item NAME
 Dimension name.
@@ -3105,7 +3111,8 @@ INTEGER FUNCTION NF_INQ_DIMID (INTEGER NCID, CHARACTER*(*) NAME,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item NAME
 Dimension name.
@@ -3176,7 +3183,8 @@ INTEGER FUNCTION NF_INQ_DIMLEN  (INTEGER NCID, INTEGER DIMID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE. 
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item DIMID
 Dimension ID, from a previous call to NF_INQ_DIMID or NF_DEF_DIM.
@@ -3254,7 +3262,8 @@ INTEGER FUNCTION NF_RENAME_DIM (INTEGER NCID, INTEGER DIMID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item DIMID
 Dimension ID, from a previous call to NF_INQ_DIMID or NF_DEF_DIM.
@@ -5206,7 +5215,8 @@ INTEGER FUNCTION NF_DEF_VAR(INTEGER NCID, CHARACTER*(*) NAME,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item NAME
 Variable name.
@@ -5346,7 +5356,8 @@ NF_DEF_VAR_CHUNKING(INTEGER NCID, INTEGER VARID, INTEGER STORAGE, INTEGER CHUNKS
 
 @table @code
 @item ncid
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item varid
 Variable ID.
@@ -5462,7 +5473,8 @@ NF_INQ_VAR_CHUNKING(INTEGER NCID, INTEGER VARID, INTEGER STORAGE, INTEGER CHUNKS
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -5531,14 +5543,15 @@ function in the HDF5 library at the HDF5 website:
 @heading Usage 
 
 @example
-nc_set_var_chunk_cache(int ncid, int varid, size_t size, size_t nelems, 
-		       float preemption);
+NF_SET_VAR_CHUNK_CACHE(INTEGER NCID, INTEGER VARID, INTEGER SIZE, INTEGER NELEMS, 
+		       REAL PREEMPTION);
 @end example
 
 @table @code
 
 @item ncid
-NetCDF ID, from a previous call to nc_open or nc_create.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item varid
 Variable ID.
@@ -5617,7 +5630,8 @@ INTEGER NF_GET_VAR_CHUNK_CACHE(INTEGER NCID, INTEGER VARID, INTEGER SIZE, INTEGE
 @table @code
 
 @item ncid
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item varid
 Variable ID.
@@ -5695,7 +5709,8 @@ NF_DEF_VAR_FILL(INTEGER NCID, INTEGER VARID, INTEGER NO_FILL, FILL_VALUE);
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -5770,7 +5785,8 @@ NF_INQ_VAR_FILL(INTEGER NCID, INTEGER VARID, INTEGER NO_FILL, FILL_VALUE)
 @table @code
 
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -5836,7 +5852,8 @@ NF_DEF_VAR_DEFLATE(INTEGER NCID, INTEGER VARID, INTEGER SHUFFLE, INTEGER DEFLATE
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -5960,7 +5977,8 @@ NF_INQ_VAR_DEFLATE(INTEGER NCID, INTEGER VARID, INTEGER SHUFFLE,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6036,7 +6054,8 @@ NF_INQ_VAR_SZIP(INTEGER NCID, INTEGER VARID, INTEGER OPTION_MASK,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6099,7 +6118,8 @@ NF_DEF_VAR_FLETCHER32(INTEGER NCID, INTEGER VARID, INTEGER CHECKSUM);
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6199,7 +6219,8 @@ NF_INQ_VAR_FLETCHER32(INTEGER NCID, INTEGER VARID, INTEGER CHECKSUM);
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6274,7 +6295,8 @@ NF_DEF_VAR_ENDIAN(INTEGER NCID, INTEGER VARID, INTEGER ENDIAN)
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6373,7 +6395,8 @@ NF_INQ_VAR_ENDIAN(INTEGER NCID, INTEGER VARID, INTEGER ENDIAN)
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6435,7 +6458,8 @@ INTEGER FUNCTION NF_INQ_VARID(INTEGER NCID, CHARACTER*(*) NAME,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item NAME
 Variable name for which ID is desired.
@@ -6515,7 +6539,8 @@ INTEGER FUNCTION NF_INQ_VARNATTS (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6618,7 +6643,8 @@ INTEGER FUNCTION  NF_PUT_VAR1(INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6740,7 +6766,8 @@ INTEGER FUNCTION NF_PUT_VAR       (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -6856,7 +6883,8 @@ INTEGER FUNCTION NF_PUT_VARA     (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7003,7 +7031,8 @@ INTEGER FUNCTION NF_PUT_VARS       (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7159,7 +7188,8 @@ INTEGER FUNCTION NF_PUT_VARM_DOUBLE(INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7361,7 +7391,8 @@ INTEGER FUNCTION  NF_GET_VAR1(INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7482,7 +7513,8 @@ INTEGER FUNCTION NF_GET_VAR       (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7583,7 +7615,8 @@ INTEGER FUNCTION NF_GET_VARA_DOUBLE(INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7722,7 +7755,8 @@ INTEGER FUNCTION NF_GET_VARS_DOUBLE(INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -7873,7 +7907,8 @@ INTEGER FUNCTION NF_GET_VARM_DOUBLE(INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -8211,7 +8246,8 @@ INTEGER FUNCTION NF_RENAME_VAR (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID.
@@ -8444,7 +8480,8 @@ INTEGER FUNCTION  NF_PUT_ATT       (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID of the variable to which the attribute will be assigned or
@@ -8590,7 +8627,8 @@ INTEGER FUNCTION NF_INQ_ATTID  (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID of the attribute's variable, or NF_GLOBAL for a global
@@ -8702,7 +8740,8 @@ INTEGER FUNCTION NF_GET_ATT        (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 Variable ID of the attribute's variable, or NF_GLOBAL for a global attribute.
@@ -8922,7 +8961,8 @@ INTEGER FUNCTION NF_RENAME_ATT (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 ID of the attribute's variable, or NF_GLOBAL for a global attribute
@@ -8998,7 +9038,8 @@ INTEGER FUNCTION NF_DEL_ATT (INTEGER NCID, INTEGER VARID,
 
 @table @code
 @item NCID
-NetCDF ID, from a previous call to NF_OPEN or NF_CREATE.
+NetCDF or group ID, from a previous call to NF_OPEN, NF_CREATE,
+NF_DEF_GRP, or associated inquiry functions such as NF_INQ_NCID.
  
 @item VARID
 ID of the attribute's variable, or NF_GLOBAL for a global attribute.

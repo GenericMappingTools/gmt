@@ -108,17 +108,17 @@ data:
 
  Abbott_Image_Data.Image_Name =
   "This is a data test string (pass 0).",
-  "This is a data test string (pass 7).",
-  "This is a data test string (pass 14).",
-  "This is a data test string (pass 21).",
-  "This is a data test string (pass 28)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Abbott_Image_Data.Date_Sampled =
-  "This is a data test string (pass 1).",
-  "This is a data test string (pass 8).",
-  "This is a data test string (pass 15).",
-  "This is a data test string (pass 22).",
-  "This is a data test string (pass 29)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Abbott_Image_Data.North_Latitude = 1000, 999.200106660978, 996.801706302619, 
     992.808635853866, 987.227283375627 ;
@@ -133,55 +133,55 @@ data:
     993.956097956697, 988.771077936042, 982.00423511727 ;
 
  Abbott_Image_Data.Version =
-  "This is a data test string (pass 2).",
-  "This is a data test string (pass 9).",
-  "This is a data test string (pass 16).",
-  "This is a data test string (pass 23).",
-  "This is a data test string (pass 30)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Abbott_Image_Data.Julian_Date = 1, 2, 3, 5, 8 ;
 
  Abbott_Image_Data.PI =
-  "This is a data test string (pass 3).",
-  "This is a data test string (pass 10).",
-  "This is a data test string (pass 17).",
-  "This is a data test string (pass 24).",
-  "This is a data test string (pass 31)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Abbott_Image_Data.Algorithm_Code =
-  "This is a data test string (pass 4).",
-  "This is a data test string (pass 11).",
-  "This is a data test string (pass 18).",
-  "This is a data test string (pass 25).",
-  "This is a data test string (pass 32)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Abbott_Image_Data.Project =
-  "This is a data test string (pass 5).",
-  "This is a data test string (pass 12).",
-  "This is a data test string (pass 19).",
-  "This is a data test string (pass 26).",
-  "This is a data test string (pass 33)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Abbott_Image_Data.Comments =
-  "This is a data test string (pass 6).",
-  "This is a data test string (pass 13).",
-  "This is a data test string (pass 20).",
-  "This is a data test string (pass 27).",
-  "This is a data test string (pass 34)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Image_Name =
-  "This is a data test string (pass 35).",
-  "This is a data test string (pass 44).",
-  "This is a data test string (pass 53).",
-  "This is a data test string (pass 62).",
-  "This is a data test string (pass 71)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Date_Sampled =
-  "This is a data test string (pass 36).",
-  "This is a data test string (pass 45).",
-  "This is a data test string (pass 54).",
-  "This is a data test string (pass 63).",
-  "This is a data test string (pass 72)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.North_Latitude = 980.066577841242, 971.33797485203, 
     961.055438310771, 949.235418082441, 935.896823677935 ;
@@ -196,48 +196,48 @@ data:
     952.333569885713, 939.372712847379, 924.909059857313 ;
 
  Sat_Images.Version =
-  "This is a data test string (pass 37).",
-  "This is a data test string (pass 46).",
-  "This is a data test string (pass 55).",
-  "This is a data test string (pass 64).",
-  "This is a data test string (pass 73)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Satellite =
-  "This is a data test string (pass 38).",
-  "This is a data test string (pass 47).",
-  "This is a data test string (pass 56).",
-  "This is a data test string (pass 65).",
-  "This is a data test string (pass 74)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Instrument =
-  "This is a data test string (pass 39).",
-  "This is a data test string (pass 48).",
-  "This is a data test string (pass 57).",
-  "This is a data test string (pass 66).",
-  "This is a data test string (pass 75)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Channel =
-  "This is a data test string (pass 40).",
-  "This is a data test string (pass 49).",
-  "This is a data test string (pass 58).",
-  "This is a data test string (pass 67).",
-  "This is a data test string (pass 76)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Resolution =
-  "This is a data test string (pass 41).",
-  "This is a data test string (pass 50).",
-  "This is a data test string (pass 59).",
-  "This is a data test string (pass 68).",
-  "This is a data test string (pass 77)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Image_Size = 13, 610, 28657, 1346269, 63245986 ;
 
  Sat_Images.Image_Type =
-  "This is a data test string (pass 42).",
-  "This is a data test string (pass 51).",
-  "This is a data test string (pass 60).",
-  "This is a data test string (pass 69).",
-  "This is a data test string (pass 78)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Image_Bits_Per_Pixel = 21, 987, 46368, 2178309, 102334155 ;
 
@@ -904,22 +904,22 @@ data:
  Sat_Images.Year = 144, 6765, 317811, 14930352, 701408733 ;
 
  Sat_Images.Month =
-  "This is a data test string (pass 43).",
-  "This is a data test string (pass 52).",
-  "This is a data test string (pass 61).",
-  "This is a data test string (pass 70).",
-  "This is a data test string (pass 79)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Sat_Images.Day = 233, 10946, 514229, 24157817, 1134903170 ;
 
  Sat_Images.Hour = 377, 17711, 832040, 39088169, 1836311903 ;
 
  Drifters.Instrument_ID =
-  "This is a data test string (pass 80).",
-  "This is a data test string (pass 85).",
-  "This is a data test string (pass 90).",
-  "This is a data test string (pass 95).",
-  "This is a data test string (pass 100)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.Battery = 921.060994002885, 696.706709347165, 362.357754476673, 
     -29.1995223012899, -416.146836547144 ;
@@ -1036,32 +1036,32 @@ data:
     40.7850112415899, -351.528841940961, -688.344020399234 ;
 
  Drifters.Date_Greenwich =
-  "This is a data test string (pass 81).",
-  "This is a data test string (pass 86).",
-  "This is a data test string (pass 91).",
-  "This is a data test string (pass 96).",
-  "This is a data test string (pass 101)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.Date_Local_Time =
-  "This is a data test string (pass 82).",
-  "This is a data test string (pass 87).",
-  "This is a data test string (pass 92).",
-  "This is a data test string (pass 97).",
-  "This is a data test string (pass 102)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.DateStamp =
-  "This is a data test string (pass 83).",
-  "This is a data test string (pass 88).",
-  "This is a data test string (pass 93).",
-  "This is a data test string (pass 98).",
-  "This is a data test string (pass 103)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.algo_code =
-  "This is a data test string (pass 84).",
-  "This is a data test string (pass 89).",
-  "This is a data test string (pass 94).",
-  "This is a data test string (pass 99).",
-  "This is a data test string (pass 104)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.GPS_hour = -1109825406, -1055680967, -1262539787, 1845853122, 
     2118290601 ;
@@ -1094,30 +1094,30 @@ data:
     -401779575 ;
 
  Instrument.Instrument_ID =
-  "This is a data test string (pass 105).",
-  "This is a data test string (pass 109).",
-  "This is a data test string (pass 113).",
-  "This is a data test string (pass 117).",
-  "This is a data test string (pass 121)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Instrument.Instrument_Type =
-  "This is a data test string (pass 106).",
-  "This is a data test string (pass 110).",
-  "This is a data test string (pass 114).",
-  "This is a data test string (pass 118).",
-  "This is a data test string (pass 122)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Instrument.Sensor_Platform_ID =
-  "This is a data test string (pass 107).",
-  "This is a data test string (pass 111).",
-  "This is a data test string (pass 115).",
-  "This is a data test string (pass 119).",
-  "This is a data test string (pass 123)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Instrument.Comment =
-  "This is a data test string (pass 108).",
-  "This is a data test string (pass 112).",
-  "This is a data test string (pass 116).",
-  "This is a data test string (pass 120).",
-  "This is a data test string (pass 124)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 }

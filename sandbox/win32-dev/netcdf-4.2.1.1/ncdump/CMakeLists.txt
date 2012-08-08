@@ -26,6 +26,6 @@ set (SRCS_NCCOPY nccopy.c nciter.c nciter.h chunkspec.h chunkspec.c utils.h
 
 # sources of ncdump
 set (SRCS_NCDUMP dumplib.h indent.h ncdump.h vardata.h dumplib.c indent.c
-	ncdump.c nctime.c utils.c vardata.c)
+	ncdump.c nctime0.c utils.c vardata.c)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

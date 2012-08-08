@@ -10,6 +10,7 @@
 
    $Id$
 */
+#include "h5_err_macros.h"
 #include <nc_tests.h>
 #include <hdf5.h>
 #include <H5DSpublic.h>

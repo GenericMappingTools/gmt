@@ -140,9 +140,6 @@ main(int argc, char **argv)
 		if( nc_inq_dimlen(ncid, vardims[id], &len) ) ERR;
 		vdims[id] = len;
 	    }
-	    nc_status = nc_inq_att(ncid,varid,_FillValue,&atttype,&attlen);
-	    nc_status = nc_inq_att(ncid, varid, "units", &atttype, &attlen);
-	    nc_status = nc_inq_att(ncid, varid, "C_format", &atttype, &attlen);
 	    if (varid == 0) {
 		/* read Time variable */
 		static double Time_data;

@@ -8,7 +8,7 @@
 #ifndef GENERR_H
 #define GENERR_H
 
-extern int derror_count;
+extern int error_count;
 
 #ifndef NO_STDARG
 #define vastart(argv,fmt) va_start(argv,fmt)

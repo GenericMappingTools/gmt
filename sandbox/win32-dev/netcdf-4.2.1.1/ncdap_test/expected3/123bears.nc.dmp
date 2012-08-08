@@ -23,6 +23,7 @@ variables:
 		:history = "This is an example of a multi-line global\n",
 			"attribute.  It could be used for representing the\n",
 			"processing history of the data, for example." ;
+		:DODS_EXTRA.Unlimited_Dimension = "k" ;
 data:
 
  l = 10, 9, 8 ;

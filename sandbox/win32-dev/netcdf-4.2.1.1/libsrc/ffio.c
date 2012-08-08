@@ -6,7 +6,8 @@
 /* addition by O. Heudecker, AWI-Bremerhaven, 12.3.1998 */
 /* added correction by John Sheldon and Hans Vahlenkamp 15.4.1998*/
 
-#include "ncconfig.h"
+
+#include "config.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>	/* DEBUG */
@@ -15,11 +16,13 @@
 #define ENOERR 0
 #endif
 #include <fcntl.h>
-#include <ffio.h>
 #include <unistd.h>
 #include <string.h>
+#if 0
 /* Insertion by O. R. Heudecker, AWI-Bremerhaven 12.3.98 (1 line)*/
+#include <ffio.h>
 #include <fortran.h>
+#endif
 
 #include "ncio.h"
 #include "fbits.h"
@@ -33,6 +36,12 @@
 #endif
 
 #define ALWAYS_NC_SHARE 0 /* DEBUG */
+
+/* Forward */
+static int ncio_ffio_filesize(ncio *nciop, off_t *filesizep);
+static int ncio_ffio_pad_length(ncio *nciop, off_t length);
+static int ncio_ffio_close(ncio *nciop, int doUnlink);
+
 
 /* Begin OS */
 
@@ -452,7 +461,9 @@ ncio_ffio_init(ncio *const nciop)
 	*((ncio_getfunc **)&nciop->get) = ncio_ffio_get; /* cast away const */
 	*((ncio_movefunc **)&nciop->move) = ncio_ffio_move; /* cast away const */
 	*((ncio_syncfunc **)&nciop->sync) = ncio_ffio_sync; /* cast away const */
-	*((ncio_freefunc **)&nciop->free) = ncio_ffio_free; /* cast away const */
+	*((ncio_filesizefunc **)&nciop->filesize) = ncio_ffio_filesize; /* cast away const */
+	*((ncio_pad_lengthfunc **)&nciop->pad_length) = ncio_ffio_pad_length; /* cast away const */
+	*((ncio_closefunc **)&nciop->close) = ncio_ffio_close; /* cast away const */
 
 	ffp->pos = -1;
 	ffp->bf_offset = OFF_NONE;
@@ -477,7 +488,7 @@ ncio_free(ncio *nciop)
 
 
 static ncio *
-ncio_new(const char *path, int ioflags)
+ncio_ffio_new(const char *path, int ioflags)
 {
 	size_t sz_ncio = M_RNDUP(sizeof(ncio));
 	size_t sz_path = M_RNDUP(strlen(path) +1);
@@ -598,7 +609,7 @@ static const size_t NCIO_MINBLOCKSIZE = 256;
 static const size_t NCIO_MAXBLOCKSIZE = 268435456; /* sanity check, about X_SIZE_T_MAX/8 */
 
 int
-ncio_create(const char *path, int ioflags,
+ffio_create(const char *path, int ioflags,
 	size_t initialsz,
 	off_t igeto, size_t igetsz, size_t *sizehintp,
 	ncio **nciopp, void **const igetvpp)
@@ -618,7 +629,7 @@ ncio_create(const char *path, int ioflags,
 	if(path == NULL || *path == 0)
 		return EINVAL;
 
-	nciop = ncio_new(path, ioflags);
+	nciop = ncio_ffio_new(path, ioflags);
 	if(nciop == NULL)
 		return ENOMEM;
 
@@ -689,13 +700,13 @@ unwind_open:
 	/* ?? unlink */
 	/*FALLTHRU*/
 unwind_new:
-	ncio_free(nciop);
+	ncio_close(nciop,!fIsSet(ioflags, NC_NOCLOBBER));
 	return status;
 }
 
 
 int
-ncio_open(const char *path,
+ffio_open(const char *path,
 	int ioflags,
 	off_t igeto, size_t igetsz, size_t *sizehintp,
 	ncio **nciopp, void **const igetvpp)
@@ -710,7 +721,7 @@ ncio_open(const char *path,
 	if(path == NULL || *path == 0)
 		return EINVAL;
 
-	nciop = ncio_new(path, ioflags);
+	nciop = ncio_ffio_new(path, ioflags);
 	if(nciop == NULL)
 		return ENOMEM;
 
@@ -772,7 +783,7 @@ unwind_open:
 	(void) ffclose(fd);
 	/*FALLTHRU*/
 unwind_new:
-	ncio_free(nciop);
+	ncio_close(nciop,0);
 	return status;
 }
 
@@ -782,8 +793,8 @@ unwind_new:
  * Is use of ffseek() really necessary, or could we use standard fstat() call
  * and get st_size member?
  */
-int
-ncio_filesize(ncio *nciop, off_t *filesizep)
+static int
+ncio_ffio_filesize(ncio *nciop, off_t *filesizep)
 {
     off_t filesize, current, reset;
 
@@ -807,8 +818,8 @@ ncio_filesize(ncio *nciop, off_t *filesizep)
  * size, perhaps as the result of having been previously written in
  * NOFILL mode.
  */
-int
-ncio_pad_length(ncio *nciop, off_t length)
+static int
+ncio_ffio_pad_length(ncio *nciop, off_t length)
 {
 	int status = ENOERR;
 
@@ -829,8 +840,8 @@ ncio_pad_length(ncio *nciop, off_t length)
 }
 
 
-int 
-ncio_close(ncio *nciop, int doUnlink)
+static int 
+ncio_ffio_close(ncio *nciop, int doUnlink)
 {
 	/*
          * TODO: I believe this function is lacking the de-assignment of the
@@ -850,7 +861,7 @@ ncio_close(ncio *nciop, int doUnlink)
 	if(doUnlink)
 		(void) unlink(nciop->path);
 
-	ncio_free(nciop);
+	ncio__ffio_free(nciop);
 
 	return status;
 }

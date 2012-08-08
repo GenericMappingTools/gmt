@@ -1,18 +1,12 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
+/** \file
+Write a file demonstrating some of the features of netCDF-4.
 
-   This is a simple example which reads a small dummy array, which was
-   written by simple_xy_wr.c. This is intended to illustrate the use
-   of the netCDF C API.
+This is a simple example which reads a small dummy array, which was
+written by simple_xy_wr.c. This is intended to illustrate the use of
+the netCDF C API.
 
-   This program is part of the netCDF tutorial:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-tutorial
-
-   Full documentation of the netCDF C API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c
-
-   $Id$
+Full documentation for netCDF can be found at:
+http://www.unidata.ucar.edu/netcdf/docs
 */
 #include <stdlib.h>
 #include <stdio.h>

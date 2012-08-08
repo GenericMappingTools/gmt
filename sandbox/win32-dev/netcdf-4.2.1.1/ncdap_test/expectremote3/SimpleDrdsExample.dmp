@@ -176,10 +176,10 @@ data:
 
  Drifters.instrument_id =
   "This is a data test string (pass 0).",
-  "This is a data test string (pass 2).",
-  "This is a data test string (pass 4).",
-  "This is a data test string (pass 6).",
-  "This is a data test string (pass 8)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.flag_argos = 998.750260394966, 862.807070514761, 531.860721374355, 
     80.7084484547995, -388.684753364753 ;
@@ -209,11 +209,11 @@ data:
     0.796326710732153, -461.072691376713 ;
 
  Drifters.location =
-  "This is a data test string (pass 1).",
-  "This is a data test string (pass 3).",
-  "This is a data test string (pass 5).",
-  "This is a data test string (pass 7).",
-  "This is a data test string (pass 9)." ;
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 0)." ;
 
  Drifters.longitude = 990.215996212637, 813.878456662534, 453.596121425577, 
     -9.20354326880945, -469.923113727602 ;

@@ -1,0 +1,11 @@
+Dataset {
+      Grid {
+        Array:
+          Float32 temp[lat=2][long=2];
+        Maps:
+          Int32 lat[lat=2];
+          Int32 long[long=2];
+      } G1;
+      Int32 lat[lat=2];
+      Int32 long[long=2];
+    } TEST3;

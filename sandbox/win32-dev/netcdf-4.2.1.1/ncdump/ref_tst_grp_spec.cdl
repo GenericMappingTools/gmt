@@ -1,0 +1,64 @@
+netcdf tmp_subset {
+dimensions:
+	dim = UNLIMITED ; // (1 currently)
+variables:
+	float var(dim) ;
+
+group: g1 {
+  dimensions:
+  	dim = 1 ;
+  variables:
+  	float var(dim) ;
+  data:
+
+   var = 1 ;
+
+  group: g2 {
+    dimensions:
+    	dim = 2 ;
+    variables:
+    	float var(dim) ;
+    } // group g2
+
+  group: g3 {
+    dimensions:
+    	dim = 3 ;
+    variables:
+    	float var(dim) ;
+    } // group g3
+  } // group g1
+
+group: g4 {
+  dimensions:
+  	dim = 4 ;
+  variables:
+  	float var(dim) ;
+  data:
+
+   var = 1, 2, 3, 4 ;
+
+  group: g5 {
+    dimensions:
+    	dim = 5 ;
+    variables:
+    	float var(dim) ;
+
+    group: g6 {
+      dimensions:
+      	dim = 6 ;
+      variables:
+      	float var(dim) ;
+      } // group g6
+
+    group: g1 {
+      dimensions:
+      	dim = 1 ;
+      variables:
+      	float var(dim) ;
+      data:
+
+       var = 451 ;
+      } // group g1
+    } // group g5
+  } // group g4
+}

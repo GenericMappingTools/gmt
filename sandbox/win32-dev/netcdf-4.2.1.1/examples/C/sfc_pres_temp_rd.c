@@ -1,19 +1,14 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
+/*! \file
+A simple example of reading a netCDF file.
 
-   This is an example which reads some surface pressure and
-   temperatures. The data file read by this program is produced by the
-   companion program sfc_pres_temp_wr.c. It is intended to illustrate
-   the use of the netCDF C API.
+This is an example which reads some surface pressure and
+temperatures. The data file read by this program is produced by the
+companion program sfc_pres_temp_wr.c. It is intended to illustrate the
+use of the netCDF C API.
+   
+Copyright 2006 University Corporation for Atmospheric
+Research/Unidata.  See COPYRIGHT file for conditions of use.
 
-   This program is part of the netCDF tutorial:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-tutorial
-
-   Full documentation of the netCDF C API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c
-
-   $Id$
 */
 
 #include <stdio.h>

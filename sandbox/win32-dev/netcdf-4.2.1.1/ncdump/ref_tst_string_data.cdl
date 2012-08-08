@@ -7,5 +7,5 @@ variables:
 data:
 
  description = "first string", "second string", "third string", _, 
-    "last string" ;
+    "last \n\"string\"" ;
 }

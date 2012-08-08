@@ -18,22 +18,30 @@ extern void init_netcdf(void);
 extern void parse_init(void);
 extern int ncgparse(void);
 
-/* Default is netcdf-3 mode 1 */
-#define DFALTCMODE 0
-
 /* For error messages */
 char* progname;
 char* cdlname;
 
-int kflag_flag; /* 1 => -k was specified on command line*/
-int cmode_modifier;
+/* option flags */
 int nofill_flag;
 char* mainname; /* name to use for main function; defaults to "main"*/
 int c_flag;
 int binary_flag;
 int f77_flag;
 int cml_flag;
-int java_flag; /* 1=> use netcdf java interface (=>usingclassic)*/
+int java_flag; /* 1=> use netcdf java interface */
+int syntax_only;
+int header_only;
+
+/* flags for tracking what output format to use */
+int k_flag;    /* > 0  => -k was specified on command line*/
+int format_flag;   /* _Format attribute value (same range as -k flag) */
+int enhanced_flag; /* 1 => netcdf-4 constructs appear in the parse */
+int specials_flag; /* 1=> special attributes are present */
+int usingclassic;
+int cmode_modifier;
+
+int diskless;
 
 size_t nciterbuffersize;
 
@@ -42,39 +50,36 @@ struct Vlendata* vlendata;
 char *netcdf_name; /* command line -o file name */
 char *datasetname; /* name from the netcdf <name> {} */
 
-/* Misc. flags*/
-int usingclassic;
-int allowspecial; /* are special attributes ok to use */
-
 extern FILE *ncgin;
 
 /* Forward */
-static char* ubasename ( const char* av0 );
-void usage ( void );
-int main ( int argc, char** argv );
+static char* ubasename(char*);
+void usage( void );
+int main( int argc, char** argv );
 
 /* Define tables vs modes for legal -k values*/
 struct Kvalues legalkinds[NKVALUES] = {
-    {"1", 0},
-    {"classic", 0},
+    {"1", 1},
+    {"classic", 1},
 
 /* The 64-bit offset kind (2)  should only be used if actually needed */
-    {"2", NC_64BIT_OFFSET},
-    {"64-bit-offset", NC_64BIT_OFFSET},
-    {"64-bit offset", NC_64BIT_OFFSET},
+    {"2", 2},
+    {"64-bit-offset", 2},
+    {"64-bit offset", 2},
 
     /* NetCDF-4 HDF5 format*/
-    {"3", NC_NETCDF4},
-    {"hdf5", NC_NETCDF4},
-    {"netCDF-4", NC_NETCDF4},
-    {"netcdf-4", NC_NETCDF4},
-    {"netcdf4", NC_NETCDF4},
-    {"enhanced", NC_NETCDF4},
+    {"3", 3},
+    {"hdf5", 3},
+    {"netCDF-4", 3},
+    {"netcdf-4", 3},
+    {"netcdf4", 3},
+    {"enhanced", 3},
+
     /* NetCDF-4 HDF5 format, but using only nc3 data model */
-    {"4", NC_NETCDF4 | NC_CLASSIC_MODEL},
-    {"hdf5-nc3", NC_NETCDF4 | NC_CLASSIC_MODEL},
-    {"netCDF-4 classic model", NC_NETCDF4 | NC_CLASSIC_MODEL},
-    {"enhanced-nc3", NC_NETCDF4 | NC_CLASSIC_MODEL},
+    {"4", 4},
+    {"hdf5-nc3", 4},
+    {"netCDF-4 classic model", 4},
+    {"enhanced-nc3", 4},
 
     /* null terminate*/
     {NULL,0}
@@ -106,9 +111,8 @@ struct Languages {
 /* result is malloc'd */
 
 static char *
-ubasename(const char *av0)
+ubasename(char *logident)
 {
-    char *logident = nulldup(av0);
     char* sep;
 
     sep = strrchr(logident,'/');
@@ -153,18 +157,25 @@ main(
     cml_flag = 0;
     java_flag = 0;
     binary_flag = 0;
-    kflag_flag = 0;
-    cmode_modifier = 0;
     nofill_flag = 0;
+    syntax_only = 0;
+    header_only = 0;
     mainname = "main";
     nciterbuffersize = 0;
+
+    k_flag = 0;
+    format_flag = 0;
+    enhanced_flag = 0;
+    specials_flag = 0;
+
+    diskless = 0;
 
 #if _CRAYMPP && 0
     /* initialize CRAY MPP parallel-I/O library */
     (void) par_io_init(32, 32);
 #endif
 
-    while ((c = getopt(argc, argv, "bcfk:l:no:v:xdM:D:B:")) != EOF)
+    while ((c = getopt(argc, argv, "hbcfk:l:no:v:xdM:D:B:P")) != EOF)
       switch(c) {
 	case 'd':
 	  debug = 1;	  
@@ -182,6 +193,9 @@ main(
 	  break;
 	case 'b': /* for binary netcdf output, ".nc" extension */
 	  binary_flag = 1;
+	  break;
+	case 'h':
+	  header_only = 1;	  
 	  break;
         case 'l': /* specify language, instead of using -c or -f or -b */
 	    {
@@ -235,7 +249,7 @@ main(
 		(void)strcpy(kind_name, optarg);
 	        for(kvalue=legalkinds;kvalue->name;kvalue++) {
 		    if(strcmp(kind_name,kvalue->name) == 0) {
-		        cmode_modifier = kvalue->mode;
+		        k_flag = kvalue->k_flag;
 			break;
 		    }
 		}
@@ -243,7 +257,6 @@ main(
 		   derror("Invalid format: %s",kind_name);
 		   return 2;
 		}
-		kflag_flag = 1;
 	    }
 	  break;
 	case 'M': /* Determine the name for the main function */
@@ -252,21 +265,30 @@ main(
 	case 'B':
 	  nciterbuffersize = atoi(optarg);
 	  break;
+	case 'P': /* diskless with persistence */
+	  diskless = 1;
+	  break;
 	case '?':
 	  usage();
 	  return(8);
       }
 
     /* check for multiple or no language spec */
-    if(c_flag) languages++;
     if(binary_flag) languages++;
+    if(c_flag) languages++;
     if(f77_flag)languages++;
     if(cml_flag) languages++;
     if(java_flag) languages++;
     if(languages > 1) {
 	fprintf(stderr,"Please specify only one language\n");
-    } else if(languages == 0) {
-	binary_flag = 1; /* binary is default */
+	return 1;
+    }
+
+    if(languages == 0) {
+	binary_flag = 1; /* default */
+	/* Treat -k or -o as an implicit -lb assuming no other -l flags */
+        if(k_flag == 0 && netcdf_name == NULL)
+	    syntax_only = 1;
     }
 
     /* Compute/default the iterator buffer size */
@@ -305,6 +327,9 @@ main(
     }
 #endif
 
+    if(!binary_flag)
+	diskless = 0;
+
     argc -= optind;
     argv += optind;
 
@@ -325,64 +350,69 @@ main(
 	if(strlen(cdlname) > NC_MAX_NAME) cdlname[NC_MAX_NAME] = '\0';
     }
 
-    /* Initially set up the cmode value and related items*/
-    if(kflag_flag == 0) cmode_modifier = DFALTCMODE;
-
-    usingclassic = 0;
-    allowspecial = 0;
-
-    /* Do first pass on flags */
-    if((cmode_modifier & NC_NETCDF4) != 0) {
-	allowspecial = 1;
-	if((cmode_modifier & NC_CLASSIC_MODEL)) {
-	    usingclassic = 1;
-	} else {
-	    usingclassic = 0;
-	}	    
-    } else {
-	usingclassic = 1;
-    }
-
-    /* F77 || STD java => classic */
-    if(f77_flag || java_flag) {
-	usingclassic=1;
-	cmode_modifier &= ~(NC_NETCDF4);
-    }
-
     /* Standard Unidata java interface => usingclassic */
 
     parse_init();
     ncgin = fp;
     if(debug >= 2) {ncgdebug=1;}
-    if(ncgparse() != 0) return 1;
+    if(ncgparse() != 0)
+        return 1;
 
-    /* Recompute flags */
-    if((cmode_modifier & NC_NETCDF4) != 0) {
-	allowspecial = 1;
-	if((cmode_modifier & NC_CLASSIC_MODEL)) {
-	    usingclassic = 1;
-	} else {
-	    usingclassic = 0;
-	}	    
-    } else {
-	usingclassic = 1;
-    }
-
-    /* Complain if still usingclassic =1 && a cdf4
-       construct was used
-    */
-    if(usingclassic && getmarkcdf4() != NULL) {
-	verror(getmarkcdf4());
-	return 1;
-    }
-
+    /* Compute the k_flag (1st pass) using rules in the man page (ncgen.1).*/
 
 #ifndef USE_NETCDF4
-    allowspecial = 0;
+    if(enhanced_flag) {
+	derror("CDL input is enhanced mode, but --disable-netcdf4 was specified during build");
+	return 0;
+    }
 #endif
 
+    if(java_flag || f77_flag) {
+        k_flag = 1;
+	if(enhanced_flag) {
+	    derror("Java or Fortran requires classic model CDL input");
+	    return 0;
+	}
+    }
+
+    if(k_flag == 0)
+	k_flag = format_flag;
+
+    if(enhanced_flag && k_flag == 0)
+	k_flag = 3;
+
+    if(enhanced_flag && k_flag != 3) {
+	derror("-k or _Format conflicts with enhanced CDL input");
+	return 0;
+    }
+
+    if(specials_flag > 0 && k_flag == 0)
+#ifdef USE_NETCDF4
+	k_flag = 3;
+#else
+	k_flag = 1;
+#endif
+
+    if(k_flag == 0)
+	k_flag = 1;
+
+    usingclassic = (k_flag <= 2?1:0);
+
+    /* compute cmode_modifier */
+    switch (k_flag) {
+    case 1: cmode_modifier = 0; break;
+    case 2: cmode_modifier = NC_64BIT_OFFSET; break;
+    case 3: cmode_modifier = NC_NETCDF4; break;
+    case 4: cmode_modifier = NC_NETCDF4 | NC_CLASSIC_MODEL; break;
+    default: ASSERT(0); /* cannot happen */
+    }
+
+    if(diskless)
+	cmode_modifier |= (NC_DISKLESS|NC_NOCLOBBER);
+
     processsemantics();
-    define_netcdf();
+    if(!syntax_only && error_count == 0) 
+        define_netcdf();
 
     return 0;
 }
@@ -398,4 +428,5 @@ init_netcdf(void) /* initialize global counts, flags */
 
     codebuffer = bbNew();
     stmt = bbNew();
+    error_count = 0; /* Track # of errors */
 }

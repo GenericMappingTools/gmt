@@ -22,6 +22,7 @@ variables:
 	char cscalar;
 	double dscalar;
 	char cnodata(i);
+	    cnodata:_Fillvalue = "";
 	byte bnodata(i);
 	short snodata(i);
 	int inodata(i);

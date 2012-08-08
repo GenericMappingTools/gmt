@@ -8,12 +8,20 @@
    either.
 */
 
-#include <nc_tests.h>
+#include "nc_tests.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 
 #define FILE_NAME "tst_h_mem.h5"
 #define STR_LEN 255
+
+const char*
+nc_strerror(int ncerr)
+{
+    static char msg[1024];
+    snprintf(msg,sizeof(msg),"error: %d\n",ncerr);
+    return msg;
+}
 
 int
 main()

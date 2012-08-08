@@ -4,60 +4,37 @@
  *   $Header: /upc/share/CVS/netcdf-3/libncdap3/constraints3.c,v 1.40 2010/05/27 21:34:07 dmh Exp $
  *********************************************************************/
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
+#include "includes.h"
+#include "cceparselex.h"
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
+#undef DEBUG
 
-#include "nclist.h"
-#include "ncbytes.h"
-#include "nclog.h"
-
-#include "netcdf.h"
-#include "cceconstraints.h"
-#include "crdebug.h"
-
-#define DEBUG
-
-#ifndef nulldup
-#define nulldup(s) ((s)==NULL?NULL:strdup(s))
-#endif
-#ifndef nullfree
-#define nullfree(s) if((s)!=NULL) {free(s);} else {}
-#endif
-
-static char* opstrings[] = OPSTRINGS ;
-
-static int mergeprojection(CCEprojection* dst, CCEprojection* src);
 static void ceallnodesr(CCEnode* node, NClist* allnodes, CEsort which);
+
 
 /* Parse incoming url constraints, if any,
    to check for syntactic correctness
 */ 
 int
-cdmparseconstraints(char* constraints, CCEconstraint* dapconstraint)
+cdmparseconstraint(char* constraints, CCEconstraint* constraint)
 {
     int ncstat = NC_NOERR;
     char* errmsg;
 
-    assert(dapconstraint != NULL);
-    nclistclear(dapconstraint->projections);
-    nclistclear(dapconstraint->selections);
+    assert(constraint != NULL);
+    if(constraint->projections == NULL)
+	constraint->projections = nclistnew();
+    nclistclear(constraint->projections);
 
-    ncstat = dapceparse(constraints,dapconstraint,&errmsg);
+    ncstat = cdmceparse(constraints,constraint,&errmsg);
     if(ncstat) {
 	nclog(NCLOGWARN,"DAP constraint parse failure: %s",errmsg);
 	if(errmsg) free(errmsg);
-        nclistclear(dapconstraint->projections);
-        nclistclear(dapconstraint->selections);
+        nclistclear(constraint->projections);
     }
 
 #ifdef DEBUG
-fprintf(stderr,"constraint: %s",ccetostring((CCEnode*)dapconstraint));
+fprintf(stderr,"constraint: %s\n",ccetostring((CCEnode*)constraint));
 #endif
     return ncstat;
 }
@@ -131,103 +108,66 @@ l = 2 * 1 + 1 = 3
 /* Merge slice src into slice dst; dst != src */
 
 int
-cceslicemerge(CCEslice* dst, CCEslice* src)
+cceslicemerge(CCEslice* target, size_t first, size_t length, ptrdiff_t stride)
 {
     int err = NC_NOERR;
-    CCEslice tmp;
+    CCEslice tmp = *target; /* to initialize */
 
-    tmp.stride   = (dst->stride * src->stride);
-    tmp.first    = (dst->first+((src->first)*(dst->stride)));
-    tmp.length   = (((src->length - 1) / src->stride) * tmp.stride) + 1;
+    tmp.stride   = (target->stride * stride);
+    tmp.first    = (target->first+((first)*(target->stride)));
+    tmp.length   = (((length - 1) / stride) * tmp.stride) + 1;
     tmp.stop     = tmp.first + tmp.length;
     tmp.count    = tmp.length / tmp.stride;
-    tmp.declsize = dst->declsize;
+    tmp.declsize = target->declsize;
     if(tmp.length % tmp.stride != 0) tmp.count++;
-    if(tmp.first >= dst->stop || tmp.stop > dst->stop)
+    if(tmp.first >= target->stop || tmp.stop > target->stop)
 	err = NC_EINVALCOORDS;
     else
-	*dst = tmp;
+	*target = tmp;
     return err;
 }
 
 
 /*
-Given two projection lists, merge
-src into dst taking
-overlapping projections into acct.
+Given a projection, restrict it
+using the start,count, and stride info
 */
 int
-cdmmergeprojections(NClist* dst, NClist* src)
+ccerestrictprojection(CCEprojection* target, 
+	      size_t rank,
+	      const size_t* start,
+	      const size_t* count,
+	      const ptrdiff_t* stride)
 {
     int i;
-    NClist* cat = nclistnew();
     int ncstat = NC_NOERR;
+    CCEsegment* seg;
 
 #ifdef DEBUG
-fprintf(stderr,"dapmergeprojection: dst = %s\n",ccetostring((CCEnode*)dst));
-fprintf(stderr,"dapmergeprojection: src = %s\n",ccetostring((CCEnode*)src));
+{int i;
+fprintf(stderr,"restrictprojection: target = %s\n",ccetostring((CCEnode*)target));
+fprintf(stderr,"restrictprojection: start = {");
+for(i=0;i<rank;i++) {fprintf(stderr," %lu",(unsigned long)start[i]);}
+fprintf(stderr,"}\n");
+fprintf(stderr,"restrictprojection: count = {");
+for(i=0;i<rank;i++) {fprintf(stderr," %lu",(unsigned long)count[i]);}
+fprintf(stderr,"}\n");
+fprintf(stderr,"restrictprojection: stride = {");
+for(i=0;i<rank;i++) {fprintf(stderr," %lu",(unsigned long)stride[i]);}
+fprintf(stderr,"}\n");
+}
 #endif
 
-    /* get dst concat clone(src) */
-    nclistsetalloc(cat,nclistlength(dst)+nclistlength(src));
-    for(i=0;i<nclistlength(dst);i++) {
-	CCEprojection* p = (CCEprojection*)nclistget(dst,i);
-	nclistpush(cat,(ncelem)p);
-    }    
-    for(i=0;i<nclistlength(src);i++) {
-	CCEprojection* p = (CCEprojection*)nclistget(src,i);
-	nclistpush(cat,(ncelem)cceclone((CCEnode*)p));
-    }    
-
-    nclistclear(dst);
-
-    /* Repeatedly pull elements from the concat,
-       merge with all duplicates, and stick into
-       the dst
-    */
-    while(nclistlength(cat) > 0) {
-	CCEprojection* target = (CCEprojection*)nclistremove(cat,0);
-	if(target == NULL) continue;
-        if(target->discrim != CES_VAR) continue;
-        for(i=0;i<nclistlength(cat);i++) {
-	    CCEprojection* p2 = (CCEprojection*)nclistget(cat,i);
-	    if(p2 == NULL) continue;
-	    if(p2->discrim != CES_VAR) continue;
-	    if(ccesamepath(target->var->segments,
-			   p2->var->segments)!=0) continue;
-	    /* This entry matches our current target; merge  */
-	    ncstat = mergeprojection(target,p2);
-	    /* null out this merged entry and release it */
-	    nclistset(cat,i,(ncelem)NULL);	    
-	    ccefree((CCEnode*)p2);	    
-	}		    
-	/* Capture the clone */
-	nclistpush(dst,(ncelem)target);
-    }	    
-    nclistfree(cat);
-    return ncstat;
-}
-
-static int
-mergeprojection(CCEprojection* dst, CCEprojection* src)
-{
-    int ncstat = NC_NOERR;
-    int i,j;
-
-    /* merge segment by segment;
-       |dst->segments| == |src->segments|
-       by construction
-    */
-    assert((dst->discrim == CES_VAR && src->discrim == CES_VAR));
-    assert((nclistlength(dst->var->segments) == nclistlength(src->var->segments)));    
-    for(i=0;i<nclistlength(dst->var->segments);i++) {
-	CCEsegment* dstseg = (CCEsegment*)nclistget(dst->var->segments,i);
-	CCEsegment* srcseg = (CCEsegment*)nclistget(src->var->segments,i);
-	for(j=0;j<dstseg->rank;j++) {
-	    cceslicemerge(dstseg->slices+j,
-			  srcseg->slices+j);
-	}
+    ASSERT((nclistlength(target->segments) == 1));    
+    seg = (CCEsegment*)nclistget(target->segments,0);
+    ASSERT((seg->rank == rank));
+    for(i=0;i<seg->rank;i++) {
+	CCEslice* slice = seg->slices+i;
+        cceslicemerge(slice,start[i],count[i],stride[i]);
     }
+#ifdef DEBUG
+fprintf(stderr,"final restriction: %s\n",ccetostring((CCEnode*)target));
+#endif
     return ncstat;
 }
 
@@ -247,22 +187,11 @@ cdmbuildprojectionstring(NClist* projections)
 }
 
 char*
-cdmbuildselectionstring(NClist* selections)
-{
-    NCbytes* buf = ncbytesnew();
-    char* sstring;
-    ccelisttobuffer(selections,buf,",");
-    sstring = ncbytesdup(buf);
-    ncbytesfree(buf);
-    return sstring;
-}
-
-char*
-cdmbuildconstraintstring(CCEconstraint* constraints)
+cdmbuildprojection(NClist* projections)
 {
     NCbytes* buf = ncbytesnew();
     char* result = NULL;
-    ccetobuffer((CCEnode*)constraints,buf);
+    ccelisttobuffer(projections,buf,",");
     result = ncbytesdup(buf);
     ncbytesfree(buf);
     return result;
@@ -271,7 +200,6 @@ cdmbuildconstraintstring(CCEconstraint* constraints)
 CCEnode*
 cceclone(CCEnode* node)
 {
-    int i;
     CCEnode* result = NULL;
 
     result = (CCEnode*)ccecreate(node->sort);
@@ -294,63 +222,11 @@ cceclone(CCEnode* node)
 	    memcpy(clone->slices,orig->slices,orig->rank*sizeof(CCEslice));
     } break;
 
-    case CES_VAR: {
-	CCEvar* clone = (CCEvar*)result;
-	CCEvar* orig = (CCEvar*)node;
-	*clone = *orig;
-	clone->segments = cceclonelist(clone->segments);
-    } break;
-
-    case CES_FCN: {
-	CCEfcn* clone = (CCEfcn*)result;
-	CCEfcn* orig = (CCEfcn*)node;
-	*clone = *orig;
-        clone->name = nulldup(orig->name);
-	clone->args = cceclonelist(orig->args);
-    } break;
-
-    case CES_CONST: {
-	CCEconstant* clone = (CCEconstant*)result;
-	CCEconstant* orig = (CCEconstant*)node;
-	*clone = *orig;
-        if(clone->discrim ==  CES_STR)
-	    clone->text = nulldup(clone->text);
-    } break;
-
-    case CES_VALUE: {
-	CCEvalue* clone = (CCEvalue*)result;
-	CCEvalue* orig = (CCEvalue*)node;
-	*clone = *orig;
-        switch (clone->discrim) {
-        case CES_CONST:
-	    clone->constant = (CCEconstant*)cceclone((CCEnode*)orig->constant); break;
-        case CES_VAR:
-	    clone->var = (CCEvar*)cceclone((CCEnode*)orig->var); break;
-        case CES_FCN:
-	    clone->fcn = (CCEfcn*)cceclone((CCEnode*)orig->fcn); break;
-        default: assert(0);
-        }
-    } break;
-
     case CES_PROJECT: {
 	CCEprojection* clone = (CCEprojection*)result;
 	CCEprojection* orig = (CCEprojection*)node;
 	*clone = *orig;	
-	switch (orig->discrim) {
-	case CES_VAR:
-            clone->var = (CCEvar*)cceclone((CCEnode*)orig->var); break;
-	case CES_FCN:
-            clone->fcn = (CCEfcn*)cceclone((CCEnode*)orig->fcn); break;
-	default: assert(0);
-	}
-    } break;
-
-    case CES_SELECT: {
-	CCEselection* clone = (CCEselection*)result;
-	CCEselection* orig = (CCEselection*)node;
-	*clone = *orig;	
-	clone->lhs = (CCEvalue*)cceclone((CCEnode*)orig->lhs);
-	clone->rhs = cceclonelist(orig->rhs);
+        clone->segments = cceclonelist(orig->segments);
     } break;
 
     case CES_CONSTRAINT: {
@@ -358,7 +234,6 @@ cceclone(CCEnode* node)
 	CCEconstraint* orig = (CCEconstraint*)node;
 	*clone = *orig;	
 	clone->projections = cceclonelist(orig->projections);	
-	clone->selections = cceclonelist(orig->selections);
     } break;
 
     default:
@@ -387,58 +262,11 @@ cceclonelist(NClist* list)
 void
 ccefree(CCEnode* node)
 {
-    int i;
-
     if(node == NULL) return;
 
     switch (node->sort) {
 
-    case CES_VAR: {
-	CCEvar* target = (CCEvar*)node;
-	ccefreelist(target->segments);	
-    } break;
-
-    case CES_FCN: {
-	CCEfcn* target = (CCEfcn*)node;
-	ccefreelist(target->args);	
-        nullfree(target->name);
-    } break;
-
-    case CES_CONST: {
-	CCEconstant* target = (CCEconstant*)node;
-	if(target->discrim == CES_STR)
-	    nullfree(target->text);
-    } break;
-
-    case CES_VALUE: {
-	CCEvalue* target = (CCEvalue*)node;
-	switch(target->discrim) {
-        case CES_CONST: ccefree((CCEnode*)target->constant); break;    
-        case CES_VAR: ccefree((CCEnode*)target->var); break;    
-        case CES_FCN: ccefree((CCEnode*)target->fcn); break;    
-        default: assert(0);
-        }
-    } break;
-
-    case CES_PROJECT: {
-	CCEprojection* target = (CCEprojection*)node;
-	switch (target->discrim) {
-	case CES_VAR: ccefree((CCEnode*)target->var); break;
-	case CES_FCN: ccefree((CCEnode*)target->fcn); break;
-	default: assert(0);
-	}
-    } break;
-
-    case CES_SELECT: {
-	CCEselection* target = (CCEselection*)node;
-	ccefreelist(target->rhs);
-	ccefree((CCEnode*)target->lhs);
-    } break;
-
-    case CES_CONSTRAINT: {
-	CCEconstraint* target = (CCEconstraint*)node;
-	ccefreelist(target->projections);
-	ccefreelist(target->selections);
+    case CES_SLICE: {
     } break;
 
     case CES_SEGMENT: {
@@ -447,7 +275,14 @@ ccefree(CCEnode* node)
         nullfree(target->name);
     } break;
 
-    case CES_SLICE: {
+    case CES_PROJECT: {
+	CCEprojection* target = (CCEprojection*)node;
+	ccefreelist(target->segments); break;
+    } break;
+
+    case CES_CONSTRAINT: {
+	CCEconstraint* target = (CCEconstraint*)node;
+	ccefreelist(target->projections);
     } break;
 
     default:
@@ -498,14 +333,14 @@ ccetobuffer(CCEnode* node, NCbytes* buf)
 	    if(last > slice->declsize && slice->declsize > 0)
 	        last = slice->declsize - 1;
             if(slice->count == 1) {
-                snprintf(tmp,sizeof(tmp),"[%lu]",
+                snprintf(tmp,sizeof(tmp),"%lu",
 	            (unsigned long)slice->first);
             } else if(slice->stride == 1) {
-                snprintf(tmp,sizeof(tmp),"[%lu:%lu]",
+                snprintf(tmp,sizeof(tmp),"%lu:%lu",
 	            (unsigned long)slice->first,
 	            (unsigned long)last);
             } else {
-	        snprintf(tmp,sizeof(tmp),"[%lu:%lu:%lu]",
+	        snprintf(tmp,sizeof(tmp),"%lu:%lu:%lu",
 		    (unsigned long)slice->first,
 		    (unsigned long)slice->stride,
 		    (unsigned long)last);
@@ -519,91 +354,25 @@ ccetobuffer(CCEnode* node, NCbytes* buf)
 	char* name = (segment->name?segment->name:"<unknown>");
 	ncbytescat(buf,nulldup(name));
         if(!cceiswholesegment(segment)) {
+	    ncbytesappend(buf,'(');
 	    for(i=0;i<rank;i++) {
 	        CCEslice* slice = segment->slices+i;
+		if(i>0) ncbytesappend(buf,',');
                 ccetobuffer((CCEnode*)slice,buf);
 	    }
+	    ncbytesappend(buf,')');
 	}
-    } break;
-
-    case CES_VAR: {
-	CCEvar* var = (CCEvar*)node;
-	ccelisttobuffer(var->segments,buf,".");
-    } break;
-
-    case CES_FCN: {
-	CCEfcn* fcn = (CCEfcn*)node;
-        ncbytescat(buf,fcn->name);
-        ncbytescat(buf,"(");
-	ccelisttobuffer(fcn->args,buf,",");
-        ncbytescat(buf,")");
-    } break;
-
-    case CES_CONST: {
-	CCEconstant* value = (CCEconstant*)node;
-        switch (value->discrim) {
-        case CES_STR:
-	    ncbytescat(buf,value->text);
-	    break;		
-        case CES_INT:
-            snprintf(tmp,sizeof(tmp),"%lld",value->intvalue);
-            ncbytescat(buf,tmp);
-    	break;
-        case CES_FLOAT:
-            snprintf(tmp,sizeof(tmp),"%g",value->floatvalue);
-            ncbytescat(buf,tmp);
-	    break;
-        default: assert(0);
-	}
-    } break;
-
-    case CES_VALUE: {
-	CCEvalue* value = (CCEvalue*)node;
-        switch (value->discrim) {
-        case CES_CONST:
-    	    ccetobuffer((CCEnode*)value->constant,buf);
-      	    break;		
-        case CES_VAR:
-    	    ccetobuffer((CCEnode*)value->var,buf);
-    	    break;
-        case CES_FCN:
-    	    ccetobuffer((CCEnode*)value->fcn,buf);
-    	    break;
-        default: assert(0);
-        }
     } break;
 
     case CES_PROJECT: {
 	CCEprojection* target = (CCEprojection*)node;
-	switch (target->discrim) {
-	case CES_VAR:
-	    ccetobuffer((CCEnode*)target->var,buf);
-	    break;
-	case CES_FCN: ccetobuffer((CCEnode*)target->fcn,buf); break;
-	default: assert(0);
-	}
-    } break;
-
-    case CES_SELECT: {
-	CCEselection* sel = (CCEselection*)node;
-	ccetobuffer((CCEnode*)sel->lhs,buf);
-        if(sel->operator == CES_NIL) break;
-        ncbytescat(buf,opstrings[(int)sel->operator]);
-        if(nclistlength(sel->rhs) > 1)
-            ncbytescat(buf,"{");
-	ccelisttobuffer(sel->rhs,buf,",");
-        if(nclistlength(sel->rhs) > 1)
-	    ncbytescat(buf,"}");
+        ccelisttobuffer(target->segments,buf,".");
     } break;
 
     case CES_CONSTRAINT: {
 	CCEconstraint* con = (CCEconstraint*)node;
         if(con->projections != NULL && nclistlength(con->projections) > 0) {
             ccelisttobuffer(con->projections,buf,",");
-	}
-        if(con->selections != NULL && nclistlength(con->selections) > 0) {
-	    ncbytescat(buf,"&"); /* because & is really a prefix */
-            ccelisttobuffer(con->selections,buf,"&");
 	}
     } break;
 
@@ -659,46 +428,15 @@ ceallnodesr(CCEnode* node, NClist* allnodes, CEsort which)
     if(which == CES_NIL || node->sort == which)
         nclistpush(allnodes,(ncelem)node);
     switch(node->sort) {
-    case CES_FCN: {
-	CCEfcn* fcn = (CCEfcn*)node;
-	for(i=0;i<nclistlength(fcn->args);i++) {
-	    ceallnodesr((CCEnode*)nclistget(fcn->args,i),allnodes,which);
-	}
-    } break;
-    case CES_VAR: {
-	CCEvar* var = (CCEvar*)node;
-	for(i=0;i<nclistlength(var->segments);i++) {
-	    ceallnodesr((CCEnode*)nclistget(var->segments,i),allnodes,which);
-	}
-    } break;
-    case CES_VALUE: {
-	CCEvalue* value = (CCEvalue*)node;
-	if(value->discrim == CES_VAR)
-	    ceallnodesr((CCEnode*)value->var,allnodes,which);
-	else if(value->discrim == CES_FCN)
-	    ceallnodesr((CCEnode*)value->fcn,allnodes,which);
-	else
-	    ceallnodesr((CCEnode*)value->constant,allnodes,which);
-    } break;
-    case CES_SELECT: {
-	CCEselection* selection = (CCEselection*)node;
-        ceallnodesr((CCEnode*)selection->lhs,allnodes,which);
-	for(i=0;i<nclistlength(selection->rhs);i++)
-            ceallnodesr((CCEnode*)nclistget(selection->rhs,i),allnodes,which);
-    } break;
     case CES_PROJECT: {
 	CCEprojection* projection = (CCEprojection*)node;
-	if(projection->discrim == CES_VAR)
-	    ceallnodesr((CCEnode*)projection->var,allnodes,which);
-	else
-	    ceallnodesr((CCEnode*)projection->fcn,allnodes,which);
+	for(i=0;i<nclistlength(projection->segments);i++)
+	    ceallnodesr((CCEnode*)nclistget(projection->segments,i),allnodes,which);
     } break;
     case CES_CONSTRAINT: {
 	CCEconstraint* constraint = (CCEconstraint*)node;
 	for(i=0;i<nclistlength(constraint->projections);i++)
 	    ceallnodesr((CCEnode*)nclistget(constraint->projections,i),allnodes,which);
-	for(i=0;i<nclistlength(constraint->selections);i++)
-	    ceallnodesr((CCEnode*)nclistget(constraint->selections,i),allnodes,which);
     } break;
 
     /* All others have no subnodes */
@@ -730,43 +468,10 @@ ccecreate(CEsort sort)
 	node = (CCEnode*)target;
     } break;
 
-    case CES_CONST: {
-	CCEconstant* target = (CCEconstant*)calloc(1,sizeof(CCEconstant));
-	if(target == NULL) return NULL;
-	node = (CCEnode*)target;
-	target->discrim == CES_NIL;
-    } break;
-
-    case CES_VALUE: {
-	CCEvalue* target = (CCEvalue*)calloc(1,sizeof(CCEvalue));
-	if(target == NULL) return NULL;
-	node = (CCEnode*)target;
-	target->discrim == CES_NIL;
-    } break;
-
-    case CES_VAR: {
-	CCEvar* target = (CCEvar*)calloc(1,sizeof(CCEvar));
-	if(target == NULL) return NULL;
-	node = (CCEnode*)target;
-    } break;
-
-    case CES_FCN: {
-	CCEfcn* target = (CCEfcn*)calloc(1,sizeof(CCEfcn));
-	if(target == NULL) return NULL;
-	node = (CCEnode*)target;
-    } break;
-
     case CES_PROJECT: {
 	CCEprojection* target = (CCEprojection*)calloc(1,sizeof(CCEprojection));
 	if(target == NULL) return NULL;
 	node = (CCEnode*)target;
-    } break;
-
-    case CES_SELECT: {
-	CCEselection* target = (CCEselection*)calloc(1,sizeof(CCEselection));
-	if(target == NULL) return NULL;
-	node = (CCEnode*)target;
-	target->operator = CEO_NIL;
     } break;
 
     case CES_CONSTRAINT: {
@@ -799,6 +504,7 @@ int
 cceiswholeslice(CCEslice* slice)
 {
     if(slice->first != 0 || slice->stride != 1) return 0;
+    if(slice->length != slice->declsize) return 0;
     return 1;
 }
 
@@ -806,8 +512,6 @@ int
 cceiswholesegment(CCEsegment* seg)
 {
     int i,whole;
-    NClist* dimset = NULL;
-    unsigned int rank;
     
     if(!seg->slicesdefined) return 0; /* actually, we don't know */
     whole = 1; /* assume so */
@@ -818,16 +522,34 @@ cceiswholesegment(CCEsegment* seg)
 }
 
 int
-cceiswholevar(CCEvar* var)
+cceiswholesegmentlist(NClist* list)
 {
     int i,whole;
     whole = 1; /* assume so */
-    for(i=0;i<nclistlength(var->segments);i++) {
-        CCEsegment* segment = (CCEsegment*)nclistget(var->segments,i);
+    for(i=0;i<nclistlength(list);i++) {
+        CCEsegment* segment = (CCEsegment*)nclistget(list,i);
 	if(!cceiswholesegment(segment)) {whole = 0; break;}	
     }
     return whole;
 }
+
+void
+ccemakewholesegment(CCEsegment* seg, CRnode* node)
+{
+    int i;
+    CRshape shape;    
+
+    crextractshape(node,&shape);
+
+    seg->rank = shape.rank;
+    for(i=0;i<shape.rank;i++) {
+	Dimension* dim = shape.dims[i];
+	ccemakewholeslice(&seg->slices[i],dimsize(dim));
+    }
+    seg->slicesdefined  = 1;
+    seg->slicesdeclized = 1;
+}
+
 
 int
 ccesamepath(NClist* list1, NClist* list2)
@@ -841,4 +563,178 @@ ccesamepath(NClist* list1, NClist* list2)
 	if(strcmp(s1->name,s2->name) != 0) return 0;
     }
     return 1;
+}
+
+/**************************************************/
+/* Path X CCEsegment utilities */
+
+/* Pull a CRpath out of a list of segments */
+CRpath*
+crsegment2path(NClist* segments)
+{
+    CRpath* path = NULL;
+    if(segments != NULL) {
+	int i;
+        for(i=0;i<nclistlength(segments);i++) {
+	    CCEsegment* segment = (CCEsegment*)nclistget(segments,i);
+	    path = crpathappend(path,segment->name);
+	    path = path->next;
+	}
+    }
+    return path;    
+}
+
+int
+pathmatch(NClist* segments, CRpath* path)
+{
+    int i;
+    if(segments == NULL && path == NULL) return 1;
+    for(i=0;i<nclistlength(segments);i++) {
+	CCEsegment* segment = (CCEsegment*)nclistget(segments,i);
+	if(path == NULL) return 0;
+	if(strcmp(segment->name,path->name)!=0) return 0;
+	path = path->next;
+    }
+    if(path != NULL) return 0;
+    return 1;
+}
+
+CRnode*
+crlocatecrnode(CRnode* parent, char* target)
+{
+    int i;
+    CRnode* targetnode = NULL;    
+    switch (parent->sort) {
+    case _Header:
+	/* Retry WRT the root group */
+	targetnode = crlocatecrnode((CRnode*)((Header*)parent)->root,target);
+	break;
+
+    case _Group: {
+	/* Check all the possible items in this group */
+	Group* group = (Group*)parent;
+	for(i=0;i<group->dims.count;i++) {
+	    if(group->dims.values[i]->name.defined
+		&& strcmp(target,group->dims.values[i]->name.value)==0) {
+	        targetnode = (CRnode*)group->dims.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;	
+	for(i=0;i<group->vars.count;i++) {
+	    if(strcmp(target,group->vars.values[i]->name)==0) {
+	        targetnode = (CRnode*)group->vars.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;	
+	for(i=0;i<group->atts.count;i++) {
+	    if(strcmp(target,group->atts.values[i]->name)==0) {
+	        targetnode = (CRnode*)group->atts.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;	
+	for(i=0;i<group->structs.count;i++) {
+	    if(strcmp(target,group->structs.values[i]->name)==0) {
+	        targetnode = (CRnode*)group->structs.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;	
+	for(i=0;i<group->groups.count;i++) {
+	    if(strcmp(target,group->groups.values[i]->name)==0) {
+	        targetnode = (CRnode*)group->groups.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;	
+	for(i=0;i<group->enumTypes.count;i++) {
+	    if(strcmp(target,group->enumTypes.values[i]->name)==0) {
+	        targetnode = (CRnode*)group->enumTypes.values[i];
+		break;
+	    }
+	}
+    } break;
+
+    case _Structure: {
+	Structure* structure = (Structure*)parent;
+	/* Search the components of the structure */
+	for(i=0;i<structure->atts.count;i++) {
+	    if(strcmp(target,structure->atts.values[i]->name)==0) {
+	        targetnode = (CRnode*)structure->atts.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;
+	for(i=0;i<structure->vars.count;i++) {
+	    if(strcmp(target,structure->vars.values[i]->name)==0) {
+	        targetnode = (CRnode*)structure->vars.values[i];
+		break;
+	    }
+	}
+	if(targetnode != NULL) break;
+	for(i=0;i<structure->structs.count;i++) {
+	    if(strcmp(target,structure->structs.values[i]->name)==0) {
+	        targetnode = (CRnode*)structure->structs.values[i];
+		break;
+	    }
+	}
+    } break;
+
+    case _EnumType: {
+	EnumTypedef* enumdef = (EnumTypedef*)parent;
+	/* Search the components of the enumTypeDef */
+	for(i=0;i<enumdef->map.count;i++) {
+	    if(strcmp(target,enumdef->map.values[i]->value)==0) {
+	        targetnode = (CRnode*)enumdef->map.values[i];
+		break;
+	    }
+	}
+    } break;
+
+    default: break;
+    }
+
+    return targetnode;
+}
+
+
+/* Map segment nodes to the corresponding CRnodes */
+int
+crmapsegments(NClist* segments, Header* streamhdr)
+{
+    int i;
+    int ncstat = NC_NOERR;
+    CRpath* prefix = NULL;
+    CRnode* current = (CRnode*)streamhdr; /* starting point for search */
+    CRnode* next = NULL;
+    for(i=0;i<nclistlength(segments);i++) {
+	CCEsegment* segment = (CCEsegment*)nclistget(segments,i);
+	prefix = crpathappend(prefix,segment->name);
+        /* Try to locate matching CRnode */
+	next = crlocatecrnode(current,segment->name);
+	if(next == NULL) {
+	    ncstat = NC_ENOTVAR;
+	    break;
+	}
+	segment->decl = next;
+	current = next;
+    }
+    return ncstat;
+}
+
+/* Fill in the leaf for a given projection */
+int
+crmapprojection(CCEprojection* proj, Header* streamhdr)
+{
+    int ncstat = NC_NOERR;
+    ncstat = crmapsegments(proj->segments,streamhdr);
+    if(ncstat == NC_NOERR && nclistlength(proj->segments) > 0) {
+	/* Locate the leaf */
+	CCEsegment* last = (CCEsegment*)nclistget(proj->segments,
+						  nclistlength(proj->segments)-1);
+	proj->decl = last->decl;
+    }
+    return ncstat;
 }

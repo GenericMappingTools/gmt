@@ -87,19 +87,6 @@ It seems to work for HDF5 for a wide variety of machines.
 
 #define NCCTYPECOUNT     (NCCTYPENCVLEN+1)
 
-#ifdef IGNORE
-static char* ncctypenames[NCCTYPECOUNT] = {
-(char*)NULL,
-"char","unsigned char",
-"short","unsigned short",
-"int","unsigned int",
-"long","unsigned long",
-"long long","unsigned long long",
-"float","double",
-"void*","alignvlen_t"
-};
-#endif
-
 static NCtypealignvec vec[NCCTYPECOUNT];
 static NCtypealignset set;
 static int dapaligninit = 0;

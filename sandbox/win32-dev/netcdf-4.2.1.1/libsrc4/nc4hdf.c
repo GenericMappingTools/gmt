@@ -418,7 +418,7 @@ nc4_get_hdf_typeid(NC_HDF5_FILE_INFO_T *h5, nc_type xtype,
          break;
       default:
          /* Maybe this is a user defined type? */
-         if (!(retval = nc4_find_type(h5, xtype, &type)))
+         if (!nc4_find_type(h5, xtype, &type))
          {
             if (!type)
                return NC_EBADTYPE;
@@ -567,11 +567,19 @@ nc4_put_vara(NC_FILE_INFO_T *nc, int ncid, int varid, const size_t *startp,
       count[i] = countp[i];
    }
    
-   /* Open this databset if necessary. */
+   /* Open this dataset if necessary, also checking for a weird case:
+    * a non-coordinate (and non-scalar) variable that has the same
+    * name as a dimension. */
+   if (var->hdf5_name && strlen(var->hdf5_name) >= strlen(NON_COORD_PREPEND) && 
+       strncmp(var->hdf5_name, NON_COORD_PREPEND, strlen(NON_COORD_PREPEND)) == 0 &&
+       var->ndims)
+       if ((var->hdf_datasetid = H5Dopen2(grp->hdf_grpid, var->hdf5_name,
+					  H5P_DEFAULT)) < 0)
+	   return NC_ENOTVAR;
    if (!var->hdf_datasetid)
-      if ((var->hdf_datasetid = H5Dopen2(grp->hdf_grpid, var->name,
-	      H5P_DEFAULT)) < 0)
-         return NC_ENOTVAR;
+       if ((var->hdf_datasetid = H5Dopen2(grp->hdf_grpid, var->name,
+					  H5P_DEFAULT)) < 0)
+	   return NC_ENOTVAR;
 
    /* Get file space of data. */
    if ((file_spaceid = H5Dget_space(var->hdf_datasetid)) < 0) 
@@ -863,11 +871,19 @@ nc4_get_vara(NC_FILE_INFO_T *nc, int ncid, int varid, const size_t *startp,
       count[i] = countp[i];
    }
 
-   /* Open this dataset if necessary. */
+   /* Open this dataset if necessary, also checking for a weird case:
+    * a non-coordinate (and non-scalar) variable that has the same
+    * name as a dimension. */
+   if (var->hdf5_name && strlen(var->hdf5_name) >= strlen(NON_COORD_PREPEND) && 
+       strncmp(var->hdf5_name, NON_COORD_PREPEND, strlen(NON_COORD_PREPEND)) == 0 &&
+       var->ndims)
+       if ((var->hdf_datasetid = H5Dopen2(grp->hdf_grpid, var->hdf5_name,
+					  H5P_DEFAULT)) < 0)
+	   return NC_ENOTVAR;
    if (!var->hdf_datasetid)
-      if ((var->hdf_datasetid = H5Dopen2(grp->hdf_grpid, var->name,
-	      H5P_DEFAULT)) < 0)
-         return NC_ENOTVAR;
+       if ((var->hdf_datasetid = H5Dopen2(grp->hdf_grpid, var->name,
+					  H5P_DEFAULT)) < 0)
+	   return NC_ENOTVAR;
 
    /* Get file space of data. */
    if ((file_spaceid = H5Dget_space(var->hdf_datasetid)) < 0) 
@@ -977,6 +993,23 @@ nc4_get_vara(NC_FILE_INFO_T *nc, int ncid, int varid, const size_t *startp,
 	 num_spaces++;
 #endif
       }
+
+      /* Fix bug when reading HDF5 files with variable of type
+       * fixed-length string.  We need to make it look like a
+       * variable-length string, because that's all netCDF-4 data
+       * model supports, lacking anonymous dimensions.  So
+       * variable-length strings are in allocated memory that user has
+       * to free, which we allocate here. */
+      if(var->type_info->class == H5T_STRING && 
+	 H5Tget_size(var->type_info->hdf_typeid) > 1 &&
+	 !H5Tis_variable_str(var->type_info->hdf_typeid)) {
+	  hsize_t fstring_len;
+	  if ((fstring_len = H5Tget_size(var->type_info->hdf_typeid)) < 0)
+	      BAIL(NC_EHDFERR);
+      	  if (!(*(char **)data = malloc(1 + fstring_len)))
+      	      BAIL(NC_ENOMEM);
+	  bufr = *(char **)data;
+      }
    
 #ifndef HDF5_CONVERT   
       /* Are we going to convert any data? (No converting of compound or
@@ -1000,7 +1033,8 @@ nc4_get_vara(NC_FILE_INFO_T *nc, int ncid, int varid, const size_t *startp,
       }
       else
 #endif /* ifndef HDF5_CONVERT */
-         bufr = data;
+	  if(!bufr)
+	      bufr = data;
 
       /* Get the HDF type of the data in memory. */
 #ifdef HDF5_CONVERT
@@ -1075,13 +1109,13 @@ nc4_get_vara(NC_FILE_INFO_T *nc, int ncid, int varid, const size_t *startp,
    if (!scalar && provide_fill)
    {
       void *filldata;
-      int real_data_size = 0;
-      int fill_len;
+      size_t real_data_size = 0;
+      size_t fill_len;
 
       /* Skip past the real data we've already read. */
       if (!no_read)
-         for (real_data_size = 1, d2 = 0; d2 < var->ndims; d2++)
-            real_data_size *= (count[d2] - start[d2]) * file_type_size;
+         for (real_data_size = file_type_size, d2 = 0; d2 < var->ndims; d2++)
+            real_data_size *= (count[d2] - start[d2]);
 
       /* Get the fill value from the HDF5 variable. Memory will be
        * allocated. */
@@ -1311,6 +1345,10 @@ var_create_dataset(NC_GRP_INFO_T *grp, NC_VAR_INFO_T *var, int write_dimid)
 		  BAIL(NC_EHDFERR);
          }
       }
+   } else {
+       /* Required to truly turn HDF5 fill values off */
+       if(H5Pset_fill_time(plistid,H5D_FILL_TIME_NEVER) < 0)
+	   BAIL(NC_EHDFERR);
    }
 
    /* If the user wants to shuffle the data, set that up now. */
@@ -1971,6 +2009,77 @@ write_attlist(NC_ATT_INFO_T *attlist, int varid, NC_GRP_INFO_T *grp)
    return NC_NOERR;
 }
 
+/* Using the HDF5 group iterator is more efficient than the original
+ * code (O(n) vs O(n**2) for n variables in the group) */
+#define USE_ITERATE_CODE
+#ifdef  USE_ITERATE_CODE
+typedef struct {
+    char *name;          /* The name of the object to searched*/
+    int  *exists;         /* 1 if the object exists, 0 otherswise */
+} var_exists_iter_info;
+
+/*-------------------------------------------------------------------------
+ * Function:    var_exists_cb
+ *
+ * Purpose:     Callback routine for checking an object by its name
+ *
+ * Return:      Exist:      1
+ *              Not exist:  0
+ *              Failure:   -1
+ *
+ * Programmer:  Peter Cao
+ *              1/25/2012
+ *
+ *-------------------------------------------------------------------------
+ */
+static int
+var_exists_cb(hid_t grpid, const char *name, const H5L_info_t *info,
+    void *_op_data)
+{
+    var_exists_iter_info *iter_info = (var_exists_iter_info *)_op_data;
+    H5I_type_t otype;
+	hid_t oid;
+
+    if ((oid = H5Oopen(grpid, name, H5P_DEFAULT)) < 0) 
+        return H5_ITER_STOP;
+	  
+    if ((otype = H5Iget_type( oid ))<0) {
+		H5Oclose(oid);
+		return H5_ITER_STOP;
+	}
+    H5Oclose(oid);
+	
+    if (otype == H5I_DATASET) {
+		if (!strcmp(iter_info->name, name)) {
+			*(iter_info->exists) = 1;
+			return (H5_ITER_STOP);
+		}
+	}
+
+    return (H5_ITER_CONT);
+} /* end var_exists_cb() */
+
+static int
+var_exists(hid_t grpid, char *name, int *exists)
+{
+    hsize_t num_obj;
+    var_exists_iter_info iter_info;
+    iter_info.name = name;
+    iter_info.exists = exists;
+
+	if (H5Gget_num_objs(grpid, &num_obj) < 0)
+      return NC_EVARMETA;
+
+    if (!name)
+       return NC_NOERR;
+	   
+    *exists = 0;
+    if (H5Literate(grpid, H5_INDEX_CRT_ORDER, H5_ITER_INC, NULL, var_exists_cb, &iter_info) < 0)
+       return NC_EHDFERR;
+
+    return NC_NOERR;
+}
+#else
 static int
 var_exists(hid_t grpid, char *name, int *exists)
 {
@@ -2007,6 +2116,7 @@ var_exists(hid_t grpid, char *name, int *exists)
 
    return retval;
 }
+#endif	/* USE_ITERATE_CODE */
 
 /* This function writes a variable. The principle difficulty comes
  * from the possibility that this is a coordinate variable, and was
@@ -2965,7 +3075,7 @@ nc4_convert_type(const void *src, void *dest,
             case NC_USHORT:
                for (sp = (short *)src, usp = dest; count < len; count++)
                {
-                  if (*sp > X_USHORT_MAX || *sp < 0)
+                  if (*sp < 0)
                      (*range_error)++;
                   *usp++ = *sp++;
                }
@@ -2980,7 +3090,11 @@ nc4_convert_type(const void *src, void *dest,
                break;
             case NC_UINT:
                for (sp = (short *)src, uip = dest; count < len; count++)
+	       {  
+		   if (*sp < 0)
+		       (*range_error)++;
                   *uip++ = *sp++;
+               }
                break;
             case NC_INT64:
                for (sp = (short *)src, lip = dest; count < len; count++)
@@ -2988,7 +3102,11 @@ nc4_convert_type(const void *src, void *dest,
                break;
             case NC_UINT64:
                for (sp = (short *)src, ulip = dest; count < len; count++)
+	       {  
+		   if (*sp < 0)
+		       (*range_error)++;
                   *ulip++ = *sp++;
+               }
                break;
             case NC_FLOAT:
                for (sp = (short *)src, fp = dest; count < len; count++)
@@ -3140,7 +3258,11 @@ nc4_convert_type(const void *src, void *dest,
                   break;
                case NC_UINT64:
                   for (lp = (long *)src, ulip = dest; count < len; count++)
+		  {
+                     if (*lp < 0)
+                        (*range_error)++;
                      *ulip++ = *lp++;
+		  }
                   break;
                case NC_FLOAT:
                   for (lp = (long *)src, fp = dest; count < len; count++)
@@ -3226,7 +3348,11 @@ nc4_convert_type(const void *src, void *dest,
                   break;
                case NC_UINT64:
                   for (ip = (int *)src, ulip = dest; count < len; count++)
+		  {
+		      if (*ip < 0) 
+			  (*range_error)++;
                      *ulip++ = *ip++;
+		  }
                   break;
                case NC_FLOAT:
                   for (ip = (int *)src, fp = dest; count < len; count++)
@@ -3385,13 +3511,8 @@ nc4_convert_type(const void *src, void *dest,
                break;
             case NC_INT64:
                for (lip = (long long *)src, lip1 = dest; count < len; count++)
-               {
-                  if (*lip > X_INT64_MAX || *lip < X_INT64_MIN)
-                     (*range_error)++;
                   *lip1++ = *lip++;
-               }
                break;
-
             case NC_UINT64:
                for (lip = (long long *)src, ulip = dest; count < len; count++)
                {
@@ -3483,11 +3604,7 @@ nc4_convert_type(const void *src, void *dest,
                break;
             case NC_UINT64:
                for (ulip = (unsigned long long *)src, ulip1 = dest; count < len; count++)
-               {
-                  if (*ulip > X_UINT64_MAX)
-                     (*range_error)++;
                   *ulip1++ = *ulip++;
-               }
                break;
             case NC_FLOAT:
                for (ulip = (unsigned long long *)src, fp = dest; count < len; count++)
@@ -3573,7 +3690,7 @@ nc4_convert_type(const void *src, void *dest,
             case NC_UINT64:
                for (fp = (float *)src, lip = dest; count < len; count++)
                {
-                  if (*fp > X_INT64_MAX || *fp < 0)
+                  if (*fp > X_UINT64_MAX || *fp < 0)
                     (*range_error)++;
                   *lip++ = *fp++;
                }
@@ -3666,7 +3783,7 @@ nc4_convert_type(const void *src, void *dest,
             case NC_UINT64:
                for (dp = (double *)src, lip = dest; count < len; count++)
                {
-                  if (*dp > X_UINT64_MAX)
+                  if (*dp > X_UINT64_MAX || *dp < 0)
                     (*range_error)++;
                   *lip++ = *dp++;
                }

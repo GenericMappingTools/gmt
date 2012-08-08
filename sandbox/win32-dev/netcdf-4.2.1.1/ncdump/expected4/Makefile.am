@@ -15,10 +15,11 @@ ref_tst_enum_data.dmp ref_tst_group_data.dmp \
 ref_tst_nans.dmp ref_tst_opaque_data.dmp ref_tst_small.dmp \
 ref_tst_solar_1.dmp ref_tst_solar_2.dmp ref_tst_special_atts.dmp \
 ref_tst_string_data.dmp ref_tst_unicode.dmp ref_tst_utf8.dmp \
-ref_tst_vlen_data.dmp ref_typescope.dmp sfc_pres_temp.dmp \
+ref_typescope.dmp sfc_pres_temp.dmp \
 simple_xy.dmp small.dmp small2.dmp test0.dmp tst_ncml.dmp \
 n3time.dmp ref_tst_special_atts3.dmp ref_tst_chardata.dmp ref_tst_unlim2.dmp \
-ref_solar.dmp unlimtest1.dmp unlimtest2.dmp
+ref_solar.dmp unlimtest1.dmp unlimtest2.dmp \
+ref_tst_vlen_data.dmp ref_tst_vlen_data2.dmp
 
 # These do not exist because they are not run as usual tests
 # bigf1.dmp bigf2.dmp bigf3.dmp bigr1.dmp bigr2.dmp bigr3.dmp gfs1.dmp

@@ -418,8 +418,8 @@ test_redef(int format)
    /* This will fail, except for netcdf-4/hdf5, which permits any
     * name. */
    if (format != NC_FORMAT_NETCDF4)
-      if ((ret = nc_def_dim(ncid, REDEF_NAME_ILLEGAL, REDEF_DIM2_LEN, 
-			    &dimids[1])) != NC_EBADNAME) ERR;
+      if (nc_def_dim(ncid, REDEF_NAME_ILLEGAL, REDEF_DIM2_LEN, 
+			    &dimids[1]) != NC_EBADNAME) ERR;
 
    if (nc_def_dim(ncid, REDEF_DIM1_NAME, REDEF_DIM1_LEN, &dimids[0])) ERR;
    if (nc_def_dim(ncid, REDEF_DIM2_NAME, REDEF_DIM2_LEN, &dimids[1])) ERR;

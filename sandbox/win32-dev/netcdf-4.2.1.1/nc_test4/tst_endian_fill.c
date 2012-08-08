@@ -38,7 +38,7 @@ main(int argc, char **argv)
        * NC_FILL_INT */
       if (nc_def_var(ncid, VAR3_NAME, NC_INT, VAR_RANK, 0, &var3id)) ERR;
       if (nc_def_var_endian(ncid, var3id, NC_ENDIAN_BIG)) ERR;
-      if (nc_put_var(ncid, var3id, &fill));
+      if (nc_put_var(ncid, var3id, &fill)) ERR;
       if (nc_close(ncid)) ERR;
     
       /* Check it out. */

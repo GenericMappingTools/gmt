@@ -1,7 +1,7 @@
 #!/bin/sh
 
 set -e
-
+echo ""
 verbose=0
 
 if test "x$builddir" = "x"; then builddir=`pwd`; fi

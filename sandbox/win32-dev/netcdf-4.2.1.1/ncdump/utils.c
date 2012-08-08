@@ -171,3 +171,52 @@ nc_inq_dimid2(int ncid, const char *dimname, int *dimidp) {
 #endif	/* USE_NETCDF4 */
     return ret;
 }
+
+
+/*
+ * return 1 if varid identifies a record variable
+ * else return 0
+ */
+int
+isrecvar(int ncid, int varid)
+{
+    int ndims;
+    int is_recvar = 0;
+    int *dimids;
+
+    NC_CHECK( nc_inq_varndims(ncid, varid, &ndims) );
+#ifdef USE_NETCDF4
+    if (ndims > 0) {
+	int nunlimdims;
+	int *recdimids;
+	int dim, recdim;
+	dimids = (int *) emalloc((ndims + 1) * sizeof(int));
+	NC_CHECK( nc_inq_vardimid(ncid, varid, dimids) );
+	NC_CHECK( nc_inq_unlimdims(ncid, &nunlimdims, NULL) );
+	recdimids = (int *) emalloc((nunlimdims + 1) * sizeof(int));
+	NC_CHECK( nc_inq_unlimdims(ncid, NULL, recdimids) );
+	for (dim = 0; dim < ndims && is_recvar == 0; dim++) {
+	    for(recdim = 0; recdim < nunlimdims; recdim++) {
+		if(dimids[dim] == recdimids[recdim]) {
+		    is_recvar = 1;
+		    break;
+		}		
+	    }
+	}
+	free(dimids);
+	free(recdimids);
+    }
+#else
+    if (ndims > 0) {
+	int recdimid;
+	dimids = (int *) emalloc((ndims + 1) * sizeof(int));
+	NC_CHECK( nc_inq_vardimid(ncid, varid, dimids) );
+	NC_CHECK( nc_inq_unlimdim(ncid, &recdimid) );
+	if(dimids[0] == recdimid)
+	    is_recvar = 1;
+	free(dimids);
+    }
+#endif /* USE_NETCDF4 */
+    return is_recvar;
+}
+

@@ -5,7 +5,7 @@
  *   See netcdf/COPYRIGHT file for copying and redistribution conditions.
  *   $Header: /upc/share/CVS/netcdf-3/ncgen/genlib.h,v 1.20 2010/05/17 23:26:45 dmh Exp $
  *********************************************************************/
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include <limits.h>
 #include "generr.h"
@@ -39,6 +39,7 @@ extern void	verror ( const char *fmt, ... )
 #endif
 ;
 
+
 extern void markcdf4(const char *msg);
 extern char* getmarkcdf4(void);
 
@@ -54,13 +55,14 @@ extern void close_netcdf ( void ); /* generates close */
 extern char* cprefixed(List* prefix, char* suffix, char* separator);
 
 /* from: escapes.c */
-extern void expand_escapes ( char* termstring, char* yytext, int yyleng );
+extern void expand_escapes (Bytebuffer* termstring, char* yytext, int yyleng );
 extern void deescapify(char *name); /* redunandt over expand_escapes?*/
 extern char* decodify(const char *name);
 extern char* escapifychar(unsigned int c, char* s0, int quote);
 extern char* escapify(char*,int,size_t);
 extern char* escapifyname(char* s0);
-extern void cquotestring(Bytebuffer*);
+extern void cquotestring(Bytebuffer*,char quote);
+extern void f77quotestring(Bytebuffer*);
 extern char* f77escapifyname(char* s0);
 extern char* xescapify(char* s0, int quote, size_t len);
 extern char* jescapify(char* s0, int quote, size_t len);
@@ -70,8 +72,7 @@ extern char* jdecodify(const char *name);
 /* from: getfill.c */
 extern void nc_getfill(Constant*);
 extern char* nc_dfaltfillname(nc_type);
-extern struct Datalist* getfiller(Symbol*,Datalist*); /* type or variable*/
-extern int checkfillvalue(Symbol*, struct Datalist*);
+extern struct Datalist* getfiller(Symbol*); /* symbol isa variable|type */
 
 /* from: ncgen.y */
 extern Symbol* install(const char *sname);
@@ -93,32 +94,36 @@ extern  Symbol* lookupingroup(nc_class objectclass, char* name, Symbol* grp);
 extern  Symbol* lookupgroup(List* prefix);
 #ifndef NO_STDARG
 extern  void semerror(const int, const char *fmt, ...);
+extern  void semwarn(const int, const char *fmt, ...);
 #else
 extern  void semerror(lno,fmt,va_alist) const int lno; const char* fmt; va_dcl;
+extern  void semwarnlno,fmt,va_alist) const int lno; const char* fmt; va_dcl;
 #endif
 extern int nounlimited(Dimset* dimset, int from);
 extern int lastunlimited(Dimset* dimset);
 extern void padstring(Constant* con, size_t desiredlength, int fillchar);
 
-
 extern Datalist* explodestrings(Datalist*,char*);
 extern Datalist* implodestrings(Datalist*,char*);
 extern int explodestringconst(Constant* con, char* tag, Constant*);
+
+extern char* indented(int n);
 
 /* Generators for cdf, c, and fortran */
 
 #ifdef ENABLE_BINARY
 /* from: genbin.c */
+extern Generator* bin_generator;
 extern void gen_netcdf(const char *filename);
 extern void cl_netcdf(void);
 #endif
 
 #ifdef ENABLE_C
 /* from: genc.c */
+extern Generator* c_generator;
 extern void gen_ncc(const char *filename);
 extern void cl_c(void);
 extern const char* ctypename(Symbol*);
-extern char* indented(int n);
 extern const char* nctype(nc_type type);
 extern const char* ncctype(nc_type type);
 extern const char* ncstype(nc_type type);
@@ -126,22 +131,16 @@ extern const char* ncstype(nc_type type);
 
 #ifdef ENABLE_F77
 /* from: genf77.c */
+extern Generator* f77_generator;
 extern void gen_ncf77(const char *filename);
 extern void cl_f77(void);
 extern const char* f77name(Symbol*);
 extern const char* f77typename(Symbol*);
 #endif
 
-#ifdef ENABLE_CML
-/* from: gencml.c */
-extern void gen_nccml(const char *filename);
-extern void cl_cml(void);
-extern char* xname(struct Symbol* sym);
-extern char* xtypename(struct Symbol* tsym);
-#endif
-
 #ifdef ENABLE_JAVA
 /* from: genj.c */
+extern Generator* j_generator;
 extern void gen_ncjava(const char *filename);
 extern void cl_java(void);
 extern void jpartial(char*);
@@ -150,9 +149,12 @@ extern void jlined(int,char*);
 extern void jflush(void);
 #endif
 
+
 /* from: main.c */
-extern int usingclassic; /* 0=>false; 1=>true; */
-extern int allowspecial;
+extern int format_flag;   /* _Format attribute value (same range as -k flag) */
+extern int enhanced_flag; /* 1 => netcdf-4 constructs appear in the parse */
+extern int specials_flag; /* 1 => special attributes are present */
+extern int usingclassic;   /* 1 => k_flag == 1|2 */
 
 /* Global data */
 
@@ -182,6 +184,7 @@ extern int cml_flag;
 extern int java_flag;
 extern int java_jni_flag;
 extern int nofill_flag;
+extern int header_only;
 extern char* mainname;
 extern size_t nciterbuffersize;
 

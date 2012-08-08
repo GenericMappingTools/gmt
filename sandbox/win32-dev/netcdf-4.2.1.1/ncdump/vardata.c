@@ -9,18 +9,21 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <netcdf.h>
-#include "ncdump.h"
+#include "utils.h"
+#include "nccomps.h"
 #include "dumplib.h"
+#include "ncdump.h"
 #include "indent.h"
 #include "vardata.h"
-#include "utils.h"
 
 /* maximum len of string needed for one value of a primitive type */
 #define MAX_OUTPUT_LEN 100
-#define	STREQ(a, b)	(*(a) == *(b) && strcmp((a), (b)) == 0)
 
 #define LINEPIND	"    "	/* indent of continued lines */
+
+extern fspec_t formatting_specs; /* set from command-line options */
 
 /* Only read this many values at a time, if last dimension is larger
   than this */
@@ -61,6 +64,72 @@ lput(const char *cp) {
     }
     (void) fputs(cp,stdout);
     linep += nn;
+}
+
+
+/*--------------------------------------------------------------------------*/
+
+/* Support function for print_att_times.
+ * Output a string that should not be split across lines.
+ * Keep track of position on print line.
+ * Wrap print lines as needed to keep within requested line length.
+ * Start CDL comment on each new line.
+ * Handle line indentation.
+ *
+ * This function is like lput in vardata.c, with variations.
+ * Hopefully this function will later be absorbed into a more
+ * general lput-type function.
+ */
+
+#define CDL_COMMENT_PREFIX "// "
+void
+lput2(
+    const char *cp,		/* string to print */
+    boolean first_item,		/* identify first item in list */
+    boolean wrap		/* line wrap control: true=enable,
+    				 * false=stay on same line  */
+    )
+{
+    static int linep;			/* current line position (number of */
+    					/*   chars); saved between calls    */
+    int len_prefix = strlen (CDL_COMMENT_PREFIX);
+    boolean make_newline;
+    
+    size_t len1 = strlen(cp);		/* length of input string */
+
+    assert (len1 > 0);
+
+/* (1) Single space or newline/indent sequence, as needed. */
+    
+    linep = linep + 1 + len1;		/* new line position, without newline */
+    					/* add 1 extra for preceeding space   */
+    
+    make_newline = (wrap && (first_item || linep > max_line_len + 2));
+    					/* NEVER new line in no-wrap mode */
+    
+    if (make_newline) {			/* start new line, if needed */
+        printf ("\n");
+	indent_out();			/* same exact indentation as pr_att */
+	printf ("\t\t");		/* (possible problem here) */
+        printf ("  ");			/* add indent for CDL comment */
+	linep = 16 + 2 + len1;		/* recompute new line position */
+        				/* with newline + indents      */
+    } else {
+	printf (" ");			/* always one space, if not newline */
+    }
+
+/* (2) Add CDL comment prefix, if needed. */
+
+    if (len_prefix > 0) {
+	if (first_item || make_newline) {
+	    printf (CDL_COMMENT_PREFIX);
+            linep = linep + len_prefix;
+	}
+    }
+
+/* (3) Output caller's string value. */
+
+    printf ("%s", cp);
 }
 
 
@@ -169,7 +238,6 @@ pr_any_att_vals(
 static void
 annotate(
      const ncvar_t *vp,	/* variable */
-     const fspec_t* fsp,	/* formatting specs */
      const size_t *cor,		/* corner coordinates */
      long iel			/* which element in current row */
      )
@@ -182,7 +250,7 @@ annotate(
     printf("  // ");
     print_name(vp->name);
     printf("(");
-    switch (fsp->data_lang) {
+    switch (formatting_specs.data_lang) {
       case LANG_C:
 	/* C variable indices */
 	for (id = 0; id < vrank-1; id++)
@@ -215,7 +283,6 @@ pr_any_vals(
 				 * variable, so terminate with ";" instead
 				 * of "," */
      const void *vals,		/* pointer to block of values */
-     const fspec_t* fsp,	/* formatting specs */
      const size_t *cor		/* corner coordinates */
      )
 {
@@ -226,19 +293,19 @@ pr_any_vals(
     for (iel = 0; iel < len-1; iel++) {
 	print_any_val(sb, vp, (void *)valp);
 	valp += vp->tinfo->size; /* next value according to type */
-	if (fsp->full_data_cmnts) {
+	if (formatting_specs.full_data_cmnts) {
 	    printf("%s, ", sb->buf);
-	    annotate (vp, fsp, cor, iel);
+	    annotate (vp, cor, iel);
 	} else {
 	    sbuf_cat(sb, ", ");
 	    lput(sbuf_str(sb));
 	}
     }
     print_any_val(sb, vp, (void *)valp);
-    if (fsp->full_data_cmnts) {
+    if (formatting_specs.full_data_cmnts) {
 	printf("%s", sbuf_str(sb));
 	lastdelim (more, lastrow);
-	annotate (vp, fsp, cor, iel);
+	annotate (vp, cor, iel);
     } else {
 	lput(sbuf_str(sb));
 	lastdelim2 (more, lastrow);
@@ -262,7 +329,6 @@ pr_tvals(
 				 * variable, so terminate with ";" instead
 				 * of "," */
      const char *vals,		/* pointer to block of values */
-     const fspec_t* fsp,	/* formatting specs */
      const size_t *cor		/* corner coordinates */
      )
 {
@@ -313,9 +379,10 @@ pr_tvals(
 	}
     }
     printf("\"");
-    if (fsp && fsp->full_data_cmnts) {
+    /* if (fsp && formatting_specs.full_data_cmnts) { */
+    if (formatting_specs.full_data_cmnts) {
 	lastdelim (more, lastrow);
-	annotate (vp, fsp,  (size_t *)cor, 0L);
+	annotate (vp,  (size_t *)cor, 0L);
     } else {
 	lastdelim2 (more, lastrow);
     }
@@ -357,8 +424,7 @@ vardata(
      const ncvar_t *vp,		/* variable */
      size_t vdims[],		/* variable dimension sizes */
      int ncid,			/* netcdf id */
-     int varid,			/* variable id */
-     const fspec_t *fsp	        /* formatting specs */
+     int varid			/* variable id */
      )
 {
     size_t *cor;	     /* corner coordinates */
@@ -429,14 +495,14 @@ vardata(
 
 	if (vrank > 0) {
 	    corsav = cor[vrank-1];
-	    if (fsp->brief_data_cmnts != false
+	    if (formatting_specs.brief_data_cmnts != false
 		&& vrank > 1
 		&& left > 0) {	/* print brief comment with indices range */
 /* 		printf("// %s(",vp->name); */
 		printf("// ");
 		print_name(vp->name);
 		printf("(");
-		switch (fsp->data_lang) {
+		switch (formatting_specs.data_lang) {
 		  case LANG_C:
 		    /* print brief comment with C variable indices */
 		    for (id = 0; id < vrank-1; id++)
@@ -472,10 +538,9 @@ vardata(
 	    /* Test if we should treat array of chars as a string  */
 	    if(vp->type == NC_CHAR && 
 	       (vp->fmt == 0 || STREQ(vp->fmt,"%s") || STREQ(vp->fmt,""))) {
-	        pr_tvals(vp, toget, left > toget, lastrow, (char *) vals, 
-			 fsp, cor);
+	        pr_tvals(vp, toget, left > toget, lastrow, (char *) vals, cor);
 	    } else {
-	        pr_any_vals(vp, toget, left > toget, lastrow, vals, fsp, cor);
+	        pr_any_vals(vp, toget, left > toget, lastrow, vals, cor);
 	    }
 
 	    left -= toget;
@@ -622,8 +687,7 @@ vardatax(
      const ncvar_t *vp,		/* variable */
      size_t vdims[],		/* variable dimension sizes */
      int ncid,			/* netcdf id */
-     int varid,			/* variable id */
-     const fspec_t *fsp	        /* formatting specs */
+     int varid			/* variable id */
      )
 {
     size_t *cor;	     /* corner coordinates */

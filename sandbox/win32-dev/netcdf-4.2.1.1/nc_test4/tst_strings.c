@@ -424,7 +424,7 @@ main(int argc, char **argv)
       if (nc_get_var(ncid, varid, data_in)) ERR;
       for (i = 0; i < DHR_LEN; i++)
 	 if (strcmp(data_in[i], data[i])) ERR;
-      if (nc_free_string(DHR_LEN, data_in));
+      if (nc_free_string(DHR_LEN, data_in)) ERR;
 
       /* Check the empty var and att. */
       if (nc_inq_varid(ncid, VAR_NAME2, &varid)) ERR;

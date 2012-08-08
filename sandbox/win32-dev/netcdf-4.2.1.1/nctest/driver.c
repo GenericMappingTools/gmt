@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <netcdf.h>
 #include <stdio.h>
+#include <string.h>
 #include "testcdf.h"		/* defines in-memory test netcdf structure */
 #include "tests.h"
 
@@ -28,7 +29,7 @@
 int
 main(int argc, char **argv)
 {
-    MSC_EXTRA extern int ncopts;		/* netCDF error options */
+    EXTERNL int ncopts;		/* netCDF error options */
     char *testfiles[] = {"nonesuch", "nctest_classic.nc", 
 			 "nctest_64bit_offset.nc", "nctest_netcdf4.nc"};
     char *testfile;
@@ -101,7 +102,7 @@ main(int argc, char **argv)
 
        /* Clean up in-memory struct. */
        {
-	  int i, j;
+	  int i;
 
 	  for (i = 0; i < test.ndims; i++)
 	     free(test.dims[i].name);

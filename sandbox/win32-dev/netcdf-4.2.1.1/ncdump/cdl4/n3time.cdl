@@ -190,7 +190,6 @@ variables:
 		:WMOStationNumber = -1 ;
 		:Location = "Louisville, Colorado" ;
 		:AlignmentDeg = 0.f ;
-		:FrequencyHz = 4.49e+08f ;
 		:LapxmVersion = "2.5.0.0" ;
 		:ConfigFile = "NetCDF4 10.cfg" ;
 		:DataTypes = "Moments," ;

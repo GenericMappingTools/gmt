@@ -1,0 +1,10 @@
+#!/bin/sh
+set -x
+find . -name Makefile -exec rm '{}' \;
+find . -name Makefile.in -exec rm '{}' \;
+rm m4/*
+cp /dev/null m4/empty
+rm configure config.guess config.sub config.h.in
+rm depcomp ltmain.sh compile missing install-sh
+rm 1
+rm ncdump/1

@@ -87,7 +87,9 @@ main()
    {
       hid_t fileid, grpid, attid, file_typeid, native_typeid;
       hid_t file_typeid2, native_typeid2;
+#if 0
       hsize_t num_obj;
+#endif
 
       /* Open one of the netCDF test files. */
       if ((fileid = H5Fopen(REF_FILE_NAME, H5F_ACC_RDWR, H5P_DEFAULT)) < 0) ERR;

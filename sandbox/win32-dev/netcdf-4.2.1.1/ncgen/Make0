@@ -1,0 +1,33 @@
+# Test c output
+T=t
+#VG=valgrind --leak-check=full
+
+CFLAGS=-I../include -I/share/ed/local/spock/include
+LDFLAGS=../liblib/.libs/libnetcdf.a -L/share/ed/local/spock/lib -lhdf5_hl -lhdf5 -lz -lcurl -lm -llber -lldap -lrt -lssl -lcrypto -ldl
+
+CLASSPATH=".:ncCore-4.2.jar"
+
+btest::
+	./ncgen -k3 -lb ${T}.cdl -o ${T}.nc
+	../ncdump/ncdump ./${T}.nc >${T}.dmp
+	diff -wBb ${T}.cdl ${T}.dmp
+
+ctest::
+	./ncgen -k3 -lc ${T}.cdl >${T}.c
+	gcc -o ${T} ${CFLAGS} ${T}.c ${LDFLAGS}
+	./${T}
+	../ncdump/ncdump ./${T}.nc >${T}.dmp
+	diff -wBb ${T}.cdl ${T}.dmp
+
+ct::
+	gcc -o t ${CFLAGS} t.c ${LDFLAGS} -lm
+	${VG} ./t
+	../ncdump/ncdump ./t.nc |tee t.dmp
+
+jtest::
+	./ncgen -lj ${T}.cdl >Main.java
+	javac -d . -classpath "${CLASSPATH}" Main.java
+
+#	java -cp ${CPATH} ./${T}
+#	../ncdump/ncdump ./${T}.nc >${T}.dmp
+#	diff -wBb ${T}.cdl ${T}.dmp

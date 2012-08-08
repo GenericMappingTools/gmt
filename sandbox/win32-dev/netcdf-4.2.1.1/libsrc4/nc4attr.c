@@ -7,11 +7,9 @@ This file handles the nc4 attribute functions.
 Remember that with atts, type conversion can take place when writing
 them, and when reading them.
 
-Copyright 2003-2005, University Corporation for Atmospheric
+Copyright 2003-2011, University Corporation for Atmospheric
 Research. See COPYRIGHT file for copying and redistribution
 conditions.
-
-$Id$
 */
 
 #include "nc4internal.h"
@@ -261,7 +259,7 @@ nc4_put_att(int ncid, NC_FILE_INFO_T *nc, int varid, const char *name,
       {
 	 if (h5->cmode & NC_CLASSIC_MODEL)
 	    return NC_EINDEFINE;
-	 if ((retval = nc_enddef(ncid)))
+	 if ((retval = NC4_redef(ncid)))
 	    BAIL(retval);
       }
    }

@@ -13,7 +13,7 @@
 struct AST_CALLBACK_DATA {
     size_t alloc;
     size_t pos;
-    char* data;
+    unsigned char* data;
 };
 
 static size_t WriteMemoryCallback(void*, size_t, size_t, void*);
@@ -114,13 +114,13 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *cdata)
        ast_log("WriteMemoryCallback: zero sized chunk");
 
     if(callback_data->alloc == 0) {
-	callback_data->data = (char*)malloc(realsize);
+	callback_data->data = (unsigned char*)malloc(realsize);
 	callback_data->alloc = realsize;
 	callback_data->pos = 0;
     }
 
     if(callback_data->alloc - callback_data->pos < realsize) {
-	callback_data->data = (char*)realloc(callback_data->data,
+	callback_data->data = (unsigned char*)realloc(callback_data->data,
 					     callback_data->alloc+realsize);
 	callback_data->alloc += realsize;
     }

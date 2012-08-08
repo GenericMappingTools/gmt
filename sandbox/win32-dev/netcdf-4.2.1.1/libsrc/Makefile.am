@@ -4,8 +4,8 @@
 # This automake file is in charge of building the libsrc directory,
 # which contains the classic library code.
 
-# We may have to add to these later.
-AM_CPPFLAGS = -I$(top_srcdir)/include 
+include $(top_srcdir)/lib_flags.am
+
 libnetcdf3_la_CPPFLAGS = ${AM_CPPFLAGS}
 
 # Turn on a pre-processor flag when building a DLL for windows.
@@ -14,24 +14,32 @@ libnetcdf3_la_CPPFLAGS += -DDLL_EXPORT
 endif # BUILD_DLL
 
 # These files comprise the netCDF-3 classic library code.
-libnetcdf3_la_SOURCES = string.c v1hpg.c onstack.h rnd.h utf8proc.c	\
-utf8proc_data.h nclistmgr.c putget.m4 attr.m4 nc3dispatch.c nc.c var.c	\
-dim.c ncx.m4 ncx.h lookup3.c pstdint.h
+libnetcdf3_la_SOURCES = v1hpg.c onstack.h                              \
+nclistmgr.c putget.c attr.c nc3dispatch.c nc.c var.c dim.c ncx.c	\
+ncx.h lookup3.c pstdint.h ncio.c ncio.h
+
+if BUILD_DISKLESS
+  libnetcdf3_la_SOURCES += memio.c
+if BUILD_MMAP
+  libnetcdf3_la_SOURCES += mmapio.c
+endif BUILD_MMAP
+endif BUILD_DISKLESS
 
 # Does the user want to use ffio, a replacement for posixio for Cray
 # computers?
 if USE_FFIO
 libnetcdf3_la_SOURCES += ffio.c
-else
+else !USE_FFIO
 libnetcdf3_la_SOURCES += posixio.c
-endif
+endif !USE_FFIO
+
 noinst_LTLIBRARIES = libnetcdf3.la
 
 # These files are cleaned on developer workstations (and then rebuilt
 # with m4), but they are included in the distribution so that the user
 # does not have to have m4.
 MAINTAINERCLEANFILES = attr.c ncx.c putget.c $(man_MANS) attrx.c putgetx.c
-EXTRA_DIST = attr.c ncx.c putget.c $(man_MANS) 
+EXTRA_DIST = attr.m4 ncx.m4 putget.m4 $(man_MANS) 
 
 # This tells make how to turn .m4 files into .c files.
 .m4.c:

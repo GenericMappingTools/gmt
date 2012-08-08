@@ -7,16 +7,7 @@
    they functions all just abort if called.
 */
 
-#include "config.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-
-#include "netcdf.h"
-
-#include "nclist.h"
-#include "ncbytes.h"
+#include "includes.h"
 #include "cceconstraints.h"
 #include "cceparselex.h"
 
@@ -47,10 +38,9 @@ projections(CCEparsestate* state, Object list0)
     }
 #ifdef DEBUG
 fprintf(stderr,"	ce.projections: %s\n",
-	ccetostring((CCEnode*)state->constraint->projections));
+	ccetostring((CCEnode*)state->constraint));
 #endif
 }
-
 
 static Object
 projectionlist(CCEparsestate* state, Object list0, Object decl)
@@ -59,15 +49,11 @@ projectionlist(CCEparsestate* state, Object list0, Object decl)
 }
 
 static Object
-projection(CCEparsestate* state, Object varorfcn)
+projection(CCEparsestate* state, Object segments0)
 {
     CCEprojection* p = (CCEprojection*)ccecreate(CES_PROJECT);
-    CEsort tag = *(CEsort*)varorfcn;
-    if(tag == CES_FCN)
-	p->fcn = varorfcn;
-    else
-	p->var = varorfcn;
-    p->discrim = tag;
+    NClist* segments = (NClist*)segments0;
+    p->segments = segments;
 #ifdef DEBUG
 fprintf(stderr,"	ce.projection: %s\n",
 	ccetostring((CCEnode*)p));
@@ -76,17 +62,9 @@ fprintf(stderr,"	ce.projection: %s\n",
 }
 
 static Object
-segmentlist(CCEparsestate* state, Object var0, Object decl)
+segmentlist(CCEparsestate* state, Object list0, Object decl)
 {
-    /* watch out: this is non-standard */
-    NClist* list;
-    CCEvar* v = (CCEvar*)var0;
-    if(v==NULL) v = (CCEvar*)ccecreate(CES_VAR);
-    list = v->segments;
-    if(list == NULL) list = nclistnew();
-    nclistpush(list,(ncelem)decl);
-    v->segments = list;
-    return v;
+    return collectlist(list0,decl);
 }
 
 static Object
@@ -108,7 +86,7 @@ segment(CCEparsestate* state, Object name, Object slices0)
         segment->slicesdefined = 0;
 #ifdef DEBUG
 fprintf(stderr,"	ce.segment: %s\n",
-	dumpsegment(segment));
+	ccetostring((CCEnode*)segment));
 #endif
     return segment;
 }
@@ -149,7 +127,7 @@ range(CCEparsestate* state, Object sfirst, Object sstride, Object slast)
     slice->count  = slice->length / slice->stride;
 #ifdef DEBUG
 fprintf(stderr,"	ce.slice: %s\n",
-	dumpslice(slice));
+	ccetostring((CCEnode*)slice));
 #endif
     return slice;
 }
@@ -215,12 +193,7 @@ fprintf(stderr,"cceeparse: input=%s\n",input);
 #ifdef DEBUG
 if(nclistlength(constraint->projections) > 0)
 fprintf(stderr,"cceeparse: projections=%s\n",
-        ccetostring((CCEnode*)constraint->projections));
-#endif
-#ifdef DEBUG
-if(nclistlength(constraint->selections)  > 0)
-fprintf(stderr,"cceeparse: selections=%s\n",
-	dumpselections(constraint->selections));
+        ccetostring((CCEnode*)constraint));
 #endif
 	} else {
 	    if(errmsgp) *errmsgp = nulldup(state->errorbuf);

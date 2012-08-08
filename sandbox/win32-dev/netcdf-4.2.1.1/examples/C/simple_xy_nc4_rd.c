@@ -1,23 +1,16 @@
-/* This is part of the netCDF package. Copyright 2007 University
-   Corporation for Atmospheric Research/Unidata.  See COPYRIGHT file
-   for conditions of use.
+/** \file
+Read the simple_xy file, with some of the features of netCDF-4.
 
-   This is a very simple example which is based on the simple_xy
-   example, but whch uses netCDF-4 features, such as
-   compression. Please see the simple_xy example to learn more about
-   the netCDF-3 API.
+This is a very simple example which is based on the simple_xy example,
+but whch uses netCDF-4 features, such as compression. Please see the
+simple_xy example to learn more about the netCDF-3 API.
 
-   Like simple_xy_rd.c, this example reads a small dummy array, which
-   was written by simple_xy_wr.c, and is compressed. This is intended
-   to illustrate the use of the netCDF C API.
+Like simple_xy_rd.c, this example reads a small dummy array, which was
+written by simple_xy_wr.c, and is compressed. This is intended to
+illustrate the use of the netCDF C API.
 
-   This program is part of the netCDF-4 tutorial:
-   http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf-tutorial
-
-   Full documentation of the netCDF-4 C API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/netcdf-4/newdocs/netcdf-c
-
-   $Id$
+Full documentation for netCDF can be found at:
+http://www.unidata.ucar.edu/netcdf/docs
 */
 
 #include <config.h>

@@ -20,12 +20,13 @@ netcdf-4.1-beta2-snapshot2009091100
 #include <stdio.h>
 #include <string.h>
 #include "netcdf.h"
+#include "ncdispatch.h"
 
 #undef STANDALONE
 
 #undef DEBUG
 
-#define URL "http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/coads_climatology.nc"
+#define TESTPATH "/thredds/dodsC/testdods/coads_climatology.nc"
 #define VAR "SST"
 
 static float expected_stride1[12] = {
@@ -76,9 +77,12 @@ main()
     int err;
     size_t start[5], count[5];
     ptrdiff_t stride[5], imap[5];
-
-    int idim, ndim;  
+    int idim;
     float dat[20];
+    char url[4096];
+#ifdef STANDALONE
+    int ndim;
+#endif
 
 #ifdef DEBUG
     oc_loginit();
@@ -86,9 +90,20 @@ main()
     oc_logopen(NULL);
 #endif
 
-    printf("*** Test: varm on URL: %s\n",URL);
+    {
+        /* Find Test Server */
+        const char* svc = NC_findtestserver("thredds");
+        if(svc == NULL) {
+	    fprintf(stderr,"Cannot locate test server\n");
+	    exit(1);
+        }
+        strcpy(url,svc);
+        strcat(url,TESTPATH);
+    }
 
-    check(err = nc_open(URL, NC_NOWRITE, &ncid),__FILE__,__LINE__);
+    printf("*** Test: varm on URL: %s\n",url);
+
+    check(err = nc_open(url, NC_NOWRITE, &ncid),__FILE__,__LINE__);
     check(err = nc_inq_varid(ncid, VAR, &varid),__FILE__,__LINE__);
     for (idim=0; idim<4; idim++) {
         start[idim] = 0;
@@ -96,8 +111,9 @@ main()
         stride[idim] = 1;
         imap[idim] = 1;
     }
+#ifdef STANDALONE
     ndim=3;
-
+#endif
 
     printf("*** Testing: stride case 1\n");
     start[1] = 44;
@@ -125,8 +141,9 @@ main()
     printf("\n");
 #endif
 
-    check(err = nc_get_varm_float (ncid, varid, start, count, stride, imap,
-			     (float*) dat),__FILE__,__LINE__);
+    check(err = nc_get_varm_float (ncid, varid, start, count, stride, imap,(float*) dat),__FILE__,__LINE__);
+//    check(err = nc_get_vara_float (ncid, varid, start, count, (float*) dat),__FILE__,__LINE__);
+
 #ifdef STANDALONE
     printf("varm: %s =",VAR);
     for(i=0;i<12;i++) printf(" %f",dat[i]);
@@ -235,9 +252,6 @@ main()
 
     return fail;
 
-ncfail:
-    printf("*** nc function failure: %d %s\n",err,nc_strerror(err));
-    return 1;
 }
 
 

@@ -5,7 +5,6 @@
  *********************************************************************/
 #include "config.h"
 #include "ncdap3.h"
-#include "dapodom.h"
 
 NCerror
 dapconvert3(nc_type srctype, nc_type dsttype, char* memory0, char* value0, size_t count)
@@ -251,6 +250,7 @@ dapcvtattrval3(nc_type etype, void* dst, NClist* src)
 	case NC_STRING: case NC_URL: {
 	    char** p = (char**)dstmem;
 	    *p = nulldup(s);
+	    ok = 1;
 	    } break;
 	default:
    	    PANIC1("unexpected nc_type: %d",(int)etype);

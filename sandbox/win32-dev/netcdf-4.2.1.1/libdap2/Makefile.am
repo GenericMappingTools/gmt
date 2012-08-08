@@ -25,42 +25,30 @@ dapodom.h getvara.h dapnc.h daputil.h dapdebug.h dapdump.h		\
 dceconstraints.h dcetab.h dceparselex.h
 
 if USE_NETCDF4
-SRC += cdf4.c constraints4.c ncd4dispatch.c ncdap4.c getvara4.c
-HDRS +=constraints4.h ncd4dispatch.h ncdap4.h
+#SRC += cdf4.c constraints4.c ncd4dispatch.c ncdap4.c getvara4.c
+#HDRS +=constraints4.h ncd4dispatch.h ncdap4.h
 endif
 
 if BUILD_DAP
-
-noinst_LTLIBRARIES = libdap2.la
-
-# Build convenience library
-libdap2_la_SOURCES = $(SRC) $(HDRS)
-libdap2_la_CPPFLAGS = $(AM_CPPFLAGS)
-libdap2_la_LIBADD =
-
-AM_CPPFLAGS += -I${top_srcdir}/libdispatch
 
 if USE_NETCDF4
 AM_CPPFLAGS += -I$(top_srcdir)/libsrc4
 endif
 
-AM_CPPFLAGS += -I$(top_srcdir)/libsrc
-AM_CPPFLAGS += -I${top_srcdir}/oc
+# Build convenience library
+noinst_LTLIBRARIES = libdap2.la
+libdap2_la_SOURCES = $(SRC) $(HDRS)
+libdap2_la_CPPFLAGS = $(AM_CPPFLAGS)
+libdap2_la_LIBADD =
 
-LDADD += libdap2.la
-
-if USE_NETCDF4
-LDADD += ${top_builddir}/libsrc4/libnetcdf4.la
-endif
-
-LDADD += ${top_builddir}/libsrc/libnetcdf3.la		\
-	 ${top_builddir}/oc/liboc.la			\
-	 ${top_builddir}/libdispatch/libdispatch.la
-
-if BUILD_V2
-LDADD += ${top_builddir}/libdispatch/libnetcdf2.la 
-endif # BUILD_V2
-
+#if USE_NETCDF4
+#LDADD += ${top_builddir}/libsrc4/libnetcdf4.la
+#endif
+#
+#LDADD += ${top_builddir}/libsrc/libnetcdf3.la		\
+#	 ${top_builddir}/oc2/liboc.la			\
+#	 ${top_builddir}/libdispatch/libdispatch.la
+#
 endif # BUILD_DAP
 
 # These rule are used if someone wants to rebuild the grammar files.

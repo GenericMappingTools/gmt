@@ -19,7 +19,10 @@ variables:
 		crop_harvest:long_name = "crop harvest attributes by\ncounty ID, year and practice" ;
 data:
 crop_harvest = 
- {111, 2011, 13, 
+ {
+   111,
+   2011,
+   13, 
    {1, 2, 3}, 
    {101, 102, 103}, 
    {1.5, 2.5, 3.5}, 

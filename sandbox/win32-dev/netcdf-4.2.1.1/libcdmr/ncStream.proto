@@ -1,0 +1,129 @@
+package ncstream;
+
+option java_package = "ucar.nc2.stream";
+option java_outer_classname = "NcStreamProto";
+
+enum DataType {
+  CHAR = 0;
+  BYTE = 1;
+  SHORT = 2;
+  INT = 3;
+  INT64 = 4;
+  FLOAT = 5;
+  DOUBLE = 6;
+  STRING = 7;
+  STRUCTURE = 8;
+  SEQUENCE = 9;
+  ENUM1 = 10;
+  ENUM2 = 11;
+  ENUM4 = 12;
+  OPAQUE = 13;
+  UBYTE = 14;
+  USHORT = 15;
+  UINT = 16;
+  UINT64 = 17;
+}
+
+message Attribute {
+  required string name = 1;
+  required DataType type = 2;
+  required uint32 len = 3;
+  optional bytes data = 4; // not needed if len == 0
+  repeated string sdata = 5; // used for string data
+}
+
+message Dimension {
+  optional string name = 1; // optional when private
+  optional uint64 length = 2; // optional when vlen
+  optional bool isUnlimited = 3 [default = false];
+  optional bool isVlen = 4 [default = false];
+  optional bool isPrivate = 5 [default = false];
+}
+
+message Variable {
+  required string name = 1; // short name
+  required DataType dataType = 2;
+  repeated Dimension shape = 3;  // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  optional bool unsigned = 5 [default = false];
+  optional bytes data = 6;    // "immediate" - store small data in header
+  optional string enumType = 7;  // only for enum types
+  repeated uint32 dimIndex = 8;  //index into Dimension list, use this or shape  ???
+}
+
+message Structure {
+  required string name = 1;   // short name
+  required DataType dataType = 2;  // struct or seq
+  repeated Dimension shape = 3; // actual dimension instead of reference
+  repeated Attribute atts = 4;
+  repeated Variable vars = 5;
+  repeated Structure structs = 6;
+}
+
+message EnumTypedef {
+  message EnumType {
+    required uint32 code = 1;
+    required string value = 2;
+  }
+  required string name = 1;
+  repeated EnumType map = 2;
+}
+
+message Group {
+  required string name = 1;
+  repeated Dimension dims = 2;
+  repeated Variable vars = 3;
+  repeated Structure structs = 4;
+  repeated Attribute atts = 5;
+  repeated Group groups = 6;
+  repeated EnumTypedef enumTypes = 7;
+}
+
+message Header {
+  optional string location = 1;
+  optional string title = 2;
+  optional string id = 3;
+  required Group root = 4;
+  optional uint32 version = 5 [default = 0];
+}
+
+//////////////////////////////////
+
+enum Compress {
+  NONE = 0;
+  DEFLATE = 1;
+}
+
+message Data {
+  required string varName = 1; // change to hash or index to save space ??
+  required DataType dataType = 2;
+  optional Section section = 3; // not required for Sequence
+  optional bool bigend = 4 [default = true];
+  optional uint32 version = 5 [default = 0];
+  optional Compress compress = 6 [default = NONE];
+  optional fixed32 crc32 = 7;
+}
+
+message Range {
+  optional uint64 start = 1 [default = 0];
+  required uint64 size = 2;
+  optional uint64 stride = 3 [default = 1];
+}
+
+message Section {
+  repeated Range range = 1;
+}
+
+message StructureData {
+  repeated uint32 member = 1; // optional list of members present
+  required bytes data = 2; // fixed length data
+  repeated uint32 heapCount = 3; // heap String count
+  repeated string sdata = 4; // Strings
+  optional uint64 nrows = 5 [default = 1];
+}
+
+//////////////////////////////////
+
+message Error {
+  required string message = 1;
+}

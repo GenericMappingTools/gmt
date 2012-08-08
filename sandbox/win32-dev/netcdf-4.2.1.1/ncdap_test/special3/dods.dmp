@@ -1,0 +1,167 @@
+netcdf dods {
+dimensions:
+	T = 12 ;
+	X = 180 ;
+	Y = 90 ;
+variables:
+	float Y(Y) ;
+		Y:pointwidth = 2.f ;
+		Y:gridtype = 0 ;
+		Y:units = "degree_north" ;
+	float X(X) ;
+		X:pointwidth = 2.f ;
+		X:gridtype = 1 ;
+		X:units = "degree_east" ;
+	float T(T) ;
+		T:pointwidth = 1.f ;
+		T:modulo = 12.f ;
+		T:calendar = "360" ;
+		T:modulus = 12.f ;
+		T:gridtype = 1 ;
+		T:units = "months since 1960-01-01" ;
+	float buoy(T, Y, X) ;
+		buoy:history = "COADS climatology from Oberhuber" ;
+		buoy:missing_value = -999.f ;
+		buoy:long_name = "buoyancy flux" ;
+		buoy:units = "m2/s3" ;
+	float ce(T, Y, X) ;
+		ce:history = "COADS climatology from Oberhuber" ;
+		ce:missing_value = -999.f ;
+		ce:long_name = "transfer coefficient for latent heat" ;
+		ce:units = "unitless" ;
+	float cld(T, Y, X) ;
+		cld:history = "COADS climatology from Oberhuber" ;
+		cld:missing_value = -999.f ;
+		cld:long_name = "cloud cover" ;
+		cld:units = "octas" ;
+	float dqdt(T, Y, X) ;
+		dqdt:history = "COADS climatology from Oberhuber" ;
+		dqdt:missing_value = -999.f ;
+		dqdt:long_name = "newtonian cooling rate" ;
+		dqdt:units = "W K-1 m-2" ;
+	float hfx(T, Y, X) ;
+		hfx:history = "COADS climatology from Oberhuber" ;
+		hfx:missing_value = -999.f ;
+		hfx:long_name = "net downward heat flux" ;
+		hfx:units = "W/m2" ;
+	float lhfx(T, Y, X) ;
+		lhfx:history = "COADS climatology from Oberhuber" ;
+		lhfx:missing_value = -999.f ;
+		lhfx:long_name = "latent heat flux" ;
+		lhfx:units = "W/m2" ;
+	float lwfx(T, Y, X) ;
+		lwfx:history = "COADS climatology from Oberhuber" ;
+		lwfx:missing_value = -999.f ;
+		lwfx:long_name = "outgoing longwave radiation" ;
+		lwfx:units = "W/m2" ;
+	float pme(T, Y, X) ;
+		pme:history = "COADS climatology from Oberhuber" ;
+		pme:missing_value = -999.f ;
+		pme:long_name = "net freshwater flux" ;
+		pme:units = "mm/month" ;
+	float precipitation(T, Y, X) ;
+		precipitation:history = "COADS climatology from Oberhuber" ;
+		precipitation:missing_value = -999.f ;
+		precipitation:long_name = "precipitation" ;
+		precipitation:units = "mm/month" ;
+	float rfx(T, Y, X) ;
+		rfx:history = "COADS climatology from Oberhuber" ;
+		rfx:missing_value = -999.f ;
+		rfx:long_name = "net radiation" ;
+		rfx:units = "W/m2" ;
+	float rhum(T, Y, X) ;
+		rhum:history = "COADS climatology from Oberhuber" ;
+		rhum:missing_value = -999.f ;
+		rhum:long_name = "relative humidity" ;
+		rhum:units = "unitless" ;
+	float shfx(T, Y, X) ;
+		shfx:history = "COADS climatology from Oberhuber" ;
+		shfx:missing_value = -999.f ;
+		shfx:long_name = "sensible heat flux" ;
+		shfx:units = "W/m2" ;
+	float slp(T, Y, X) ;
+		slp:history = "COADS climatology from Oberhuber" ;
+		slp:missing_value = -999.f ;
+		slp:long_name = "sea level pressure" ;
+		slp:units = "mb" ;
+	float solr(T, Y, X) ;
+		solr:history = "COADS climatology from Oberhuber" ;
+		solr:missing_value = -999.f ;
+		solr:long_name = "solar radiation" ;
+		solr:units = "W/m2" ;
+	float sst(T, Y, X) ;
+		sst:history = "COADS climatology from Oberhuber" ;
+		sst:missing_value = -999.f ;
+		sst:long_name = "mixed layer temperature" ;
+		sst:units = "Celsius_scale" ;
+	float tair(T, Y, X) ;
+		tair:history = "COADS climatology from Oberhuber" ;
+		tair:missing_value = -999.f ;
+		tair:long_name = "air temperature" ;
+		tair:units = "Celsius_scale" ;
+	float taux(T, Y, X) ;
+		taux:history = "COADS climatology from Oberhuber" ;
+		taux:long_name = "zonal wind stress" ;
+		taux:units = "dyne/cm2" ;
+		taux:missing_value = -9990000.f ;
+	float tauy(T, Y, X) ;
+		tauy:history = "COADS climatology from Oberhuber" ;
+		tauy:long_name = "meridional wind stress" ;
+		tauy:units = "dyne/cm2" ;
+		tauy:missing_value = -9990000.f ;
+	float u(T, Y, X) ;
+		u:history = "COADS climatology from Oberhuber" ;
+		u:missing_value = -999.f ;
+		u:long_name = "zonal wind speed" ;
+		u:units = "m/s" ;
+	float umag(T, Y, X) ;
+		umag:history = "COADS climatology from Oberhuber" ;
+		umag:missing_value = -999.f ;
+		umag:long_name = "wind speed" ;
+		umag:units = "m/s" ;
+	float ustar(T, Y, X) ;
+		ustar:history = "COADS climatology from Oberhuber" ;
+		ustar:missing_value = -999.f ;
+		ustar:long_name = "frictional velocity" ;
+		ustar:units = "m/s" ;
+	float v(T, Y, X) ;
+		v:history = "COADS climatology from Oberhuber" ;
+		v:missing_value = -999.f ;
+		v:long_name = "meridional wind speed" ;
+		v:units = "m/s" ;
+	float wssi(T, Y, X) ;
+		wssi:history = "COADS climatology from Oberhuber" ;
+		wssi:missing_value = -999.f ;
+		wssi:long_name = "r.m.s. wind speed" ;
+		wssi:units = "m/s" ;
+
+// global attributes:
+		:description = "Max Planck Institute heat flux and surface radiation climatology over global oceans" ;
+		:Conventions = "IRIDL" ;
+		:dataset_documentation.html = "http://iridl.ldeo.columbia.edu/SOURCES/.OBERHUBER/.dataset_documentation.html" ;
+		:iridl\:hasSemantics = "iridl:MPI_Met" ;
+		:references = "Oberhuber1988" ;
+data:
+
+ Y = -89, -87, -85, -83, -81, -79, -77, -75, -73, -71, -69, -67, -65, -63, 
+    -61, -59, -57, -55, -53, -51, -49, -47, -45, -43, -41, -39, -37, -35, 
+    -33, -31, -29, -27, -25, -23, -21, -19, -17, -15, -13, -11, -9, -7, -5, 
+    -3, -1, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 
+    35, 37, 39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 
+    71, 73, 75, 77, 79, 81, 83, 85, 87, 89 ;
+
+ X = 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 
+    39, 41, 43, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63, 65, 67, 69, 71, 73, 
+    75, 77, 79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99, 101, 103, 105, 107, 
+    109, 111, 113, 115, 117, 119, 121, 123, 125, 127, 129, 131, 133, 135, 
+    137, 139, 141, 143, 145, 147, 149, 151, 153, 155, 157, 159, 161, 163, 
+    165, 167, 169, 171, 173, 175, 177, 179, 181, 183, 185, 187, 189, 191, 
+    193, 195, 197, 199, 201, 203, 205, 207, 209, 211, 213, 215, 217, 219, 
+    221, 223, 225, 227, 229, 231, 233, 235, 237, 239, 241, 243, 245, 247, 
+    249, 251, 253, 255, 257, 259, 261, 263, 265, 267, 269, 271, 273, 275, 
+    277, 279, 281, 283, 285, 287, 289, 291, 293, 295, 297, 299, 301, 303, 
+    305, 307, 309, 311, 313, 315, 317, 319, 321, 323, 325, 327, 329, 331, 
+    333, 335, 337, 339, 341, 343, 345, 347, 349, 351, 353, 355, 357, 359 ;
+
+ T = 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 10.5, 11.5 ;
+}

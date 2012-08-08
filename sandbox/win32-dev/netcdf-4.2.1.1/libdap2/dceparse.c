@@ -20,13 +20,6 @@
 #include "dceconstraints.h"
 #include "dceparselex.h"
 
-#ifndef nulldup
-#define nulldup(s) ((s)==NULL?NULL:strdup(s))
-#endif
-#ifndef nullfree
-#define nullfree(s) if((s)!=NULL) {free(s);} else {}
-#endif
-
 static Object collectlist(Object list0, Object decl);
 
 void
@@ -103,6 +96,7 @@ segment(DCEparsestate* state, Object name, Object slices0)
     NClist* slices = (NClist*)slices0;
     segment->name = strdup((char*)name);
     if(slices != NULL && nclistlength(slices) > 0) {
+	segment->rank = nclistlength(slices);
         segment->slicesdefined = 1; /* but not declsizes */
 	for(i=0;i<nclistlength(slices);i++) {
 	    DCEslice* slice = (DCEslice*)nclistget(slices,i);

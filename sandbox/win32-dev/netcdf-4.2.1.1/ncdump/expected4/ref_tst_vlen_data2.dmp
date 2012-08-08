@@ -1,0 +1,96 @@
+netcdf ref_tst_vlen_data2 {
+
+group: pfSystem {
+  types:
+    byte enum daysofWeekType {Monday = 3, Tuesday = 1, Wednesday = 7, 
+        Thursday = 9, Friday = 2} ;
+    compound pfCoilType {
+      string name ;
+      string turns ;
+      string polarity ;
+    }; // pfCoilType
+    int(*) vlen_int ;
+    string(*) vlen_string ;
+    pfCoilType(*) vlen_t ;
+    compound pfCircuitType {
+      int id ;
+      string name ;
+      string description ;
+      vlen_t pfCoils ;
+    }; // pfCircuitType
+    vlen_int(*) vlen_int_vec ;
+    vlen_string(*) vlen_string_vec ;
+    compound singleCompoundType {
+      int scalarAtomicInt ;
+      int fixedLengthVectorAtomicInt(5) ;
+      string scalarString ;
+      string fixedLengthVectorString(5) ;
+      vlen_int vlenScalarInt ;
+      vlen_int vlenInt ;
+      vlen_int fixedLengthVectorVlenInt(3) ;
+      vlen_int_vec vlenVlenInt ;
+      vlen_string vlenScalarString ;
+      vlen_string vlenString ;
+      vlen_string fixedLengthVectorVlenString(3) ;
+      vlen_string_vec vlenVlenString ;
+      daysofWeekType daysOfWeek(10) ;
+    }; // singleCompoundType
+    singleCompoundType(*) vlen_CompoundType ;
+  dimensions:
+  	pfCircuitCount = 10 ;
+  	vlenDim = 3 ;
+  	dayCount = 10 ;
+  variables:
+  	daysofWeekType daysOfWeek(dayCount) ;
+  	int scalarAtomicInt ;
+  	double scalarAtomicDouble ;
+  	int fixedLengthVectorAtomicInt(pfCircuitCount) ;
+  	double fixedLengthVectorAtomicDouble(pfCircuitCount) ;
+  	string scalarString ;
+  	string fixedLengthVectorString(pfCircuitCount) ;
+  	vlen_int vlenInt ;
+  	vlen_int vlenScalarInt ;
+  	vlen_int fixedLengthVectorVlenInt(vlenDim) ;
+  	vlen_int_vec vlenVlenInt ;
+  	vlen_string vlenString ;
+  	vlen_string vlenScalarString ;
+  	vlen_string fixedLengthVectorVlenString(vlenDim) ;
+  	vlen_string_vec vlenVlenString ;
+  data:
+
+   daysOfWeek = Monday, Thursday, Friday, Monday, Monday, Friday, Thursday, 
+      Thursday, Thursday, Tuesday ;
+
+   scalarAtomicInt = 10 ;
+
+   scalarAtomicDouble = 10.234 ;
+
+   fixedLengthVectorAtomicInt = -1, 2, -3, 4, -5, 6, -7, 8, -9, 10 ;
+
+   fixedLengthVectorAtomicDouble = 1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 
+      9.9, 10.1 ;
+
+   scalarString = "This is some data" ;
+
+   fixedLengthVectorString = "data1", "data22", "data333", "data4444", 
+      "data5", "data6", "data7", "data8", "data9", "data10" ;
+
+   vlenInt = {9, 2, 4, 6, 8, 0, -3} ;
+
+   vlenScalarInt = {3967} ;
+
+   fixedLengthVectorVlenInt = {20, 3, 4, 6}, {120, 103, 104}, {220, 203} ;
+
+   vlenVlenInt = {{20, 3, 4, 6}, {120, 103, 104}, {220, 203}} ;
+
+   vlenString = {"One", "Two", "Three", "Four", "Five", "Six", "Seven"} ;
+
+   vlenScalarString = {"Twenty"} ;
+
+   fixedLengthVectorVlenString = {"One", "Two", "Three", "Four"}, 
+      {"2One", "2Two"}, {"4One", "4Two", "4Three", "4Four", "4Five"} ;
+
+   vlenVlenString = 
+      {{"One", "Two", "Three", "Four"}, {"2One", "2Two"}, {"4One", "4Two", "4Three", "4Four", "4Five"}} ;
+  } // group pfSystem
+}

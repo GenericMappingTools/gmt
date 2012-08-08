@@ -14,7 +14,6 @@ Probably only works with MSVC. All other compilers untested.
     HDF4.2.7-win764-vs10shared.zip (Windows 64-bit CMake VS 2010, Intel Fortran 12)
     HDF5188-win64-shared.zip (Windows 64-bit CMake VS 2008 C, C++, IVF 11.1)
 
-* Get XDR from svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/bsd-xdr/
 * Get cURL from http://curl.haxx.se/download.html
 
 -- Building Prerequisites --
@@ -36,8 +35,8 @@ c:\Program Files\HDF Group\HDF<major-version>\<version>\bin to z:\software\bin.
 
 3. cURL
 
+- cURL 7.24.0 is known to work; other versions might fail to compile.
 - extract files in z:\software\src
-
 - cURL versions greater than 7.21.7 have a bug in the CMakeLists.txt. You need to patch the file curl-<version>/CMakeLists.txt:
 
 --------8<-------------------------------------------------------
@@ -87,38 +86,15 @@ include, lib and bin respectively.
   info message.
 
 
-4. XDR
-
-- Get the sources:
-   cd \software\src
-   svn co svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/bsd-xdr bsd-xdr
-
-- Read README.CMake if you like
-
-- In the Windows SDK Command Prompt:
-
-   cd <path-to-xdr-source-dir>
-   mkdir build
-   cd build
-   cmake -G "NMake Makefiles" ..
-
-- If everything went fine you can now build and install XDR:
-   nmake
-   nmake install
-
-- Check if 'xdrsizeof_test' works in the prompt.
-
-
-
 -- Building netCDF --
 
 Once we have installed and build all the library dependencies we can
 attempt to deploy netCDF.
 
 - Get the CMake bundled sources of netCDF via subversion from
-  svn://gmtserver.soest.hawaii.edu/gmt5/sandbox/win32-dev/netcdf-4.1.3
+  http://svn.unidata.ucar.edu/repos/netcdf/trunk
 
-- Edit cmake/ConfigUser.cmake and set correct paths to HDF, xdr etc.
+- Edit cmake/ConfigUser.cmake and set correct paths to HDF etc.
 
 - Build and install
 
@@ -132,4 +108,3 @@ attempt to deploy netCDF.
 - Test if nccopy, ncdump and ncgen work in the prompt
 
 Enjoy!
-

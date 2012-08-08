@@ -4,6 +4,15 @@
  */
 /* $Id$ */
 
+/* For MinGW Build */
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#include <winbase.h>
+#include <io.h>
+#define fstat64 fstat
+#define lseek64 lseek
+#endif
+
 #include <config.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -70,6 +79,13 @@
 #define S_IWOTH   0000002
 #endif
 
+/*Forward*/
+static int ncio_px_filesize(ncio *nciop, off_t *filesizep);
+static int ncio_px_pad_length(ncio *nciop, off_t length);
+static int ncio_px_close(ncio *nciop, int doUnlink);
+static int ncio_spx_close(ncio *nciop, int doUnlink);
+
+
 /*
  * Define the following for debugging.
  */
@@ -86,22 +102,27 @@
 static size_t
 pagesize(void)
 {
+  size_t pgsz;
+#if defined(_WIN32) || defined(_WIN64)
+  SYSTEM_INFO info;
+#endif
 /* Hmm, aren't standards great? */
 #if defined(_SC_PAGE_SIZE) && !defined(_SC_PAGESIZE)
 #define _SC_PAGESIZE _SC_PAGE_SIZE
 #endif
 
-#ifdef _SC_PAGESIZE
-	{
-		const long pgsz = sysconf(_SC_PAGESIZE);
-		if(pgsz > 0)
-			return (size_t) pgsz;
-		/* else, silent in the face of error */
-	}
+  /* For MinGW Builds */
+#if defined(_WIN32) || defined(_WIN64)
+  GetSystemInfo(&info);
+  pgsz = (size_t)info.dwPageSize;
+#elif defined(_SC_PAGESIZE)
+  pgsz = (size_t)sysconf(_SC_PAGESIZE);
 #elif defined(HAVE_GETPAGESIZE)
-	return (size_t) getpagesize();
+  pgsz = (size_t) getpagesize();
 #endif
-	return (size_t) POSIXIO_DEFAULT_PAGESIZE;
+  if(pgsz > 0)
+    return (size_t) pgsz;
+   return (size_t)POSIXIO_DEFAULT_PAGESIZE;
 }
 
 /*
@@ -896,7 +917,7 @@ ncio_px_sync(ncio *const nciop)
    free up anything hanging off pvt.
 */
 static void
-ncio_px_free(void *const pvt)
+ncio_px_freepvt(void *const pvt)
 {
 	ncio_px *const pxp = (ncio_px *)pvt;
 	if(pxp == NULL)
@@ -989,7 +1010,9 @@ ncio_px_init(ncio *const nciop)
 	*((ncio_getfunc **)&nciop->get) = ncio_px_get; /* cast away const */
 	*((ncio_movefunc **)&nciop->move) = ncio_px_move; /* cast away const */
 	*((ncio_syncfunc **)&nciop->sync) = ncio_px_sync; /* cast away const */
-	*((ncio_freefunc **)&nciop->free) = ncio_px_free; /* cast away const */
+	*((ncio_filesizefunc **)&nciop->filesize) = ncio_px_filesize; /* cast away const */
+	*((ncio_pad_lengthfunc **)&nciop->pad_length) = ncio_px_pad_length; /* cast away const */
+	*((ncio_closefunc **)&nciop->close) = ncio_px_close; /* cast away const */
 
 	pxp->blksz = 0;
 	pxp->pos = -1;
@@ -1300,7 +1323,7 @@ ncio_spx_sync(ncio *const nciop)
 }
 
 static void
-ncio_spx_free(void *const pvt)
+ncio_spx_freepvt(void *const pvt)
 {
 	ncio_spx *const pxp = (ncio_spx *)pvt;
 	if(pxp == NULL)
@@ -1361,7 +1384,10 @@ ncio_spx_init(ncio *const nciop)
 	*((ncio_getfunc **)&nciop->get) = ncio_spx_get; /* cast away const */
 	*((ncio_movefunc **)&nciop->move) = ncio_spx_move; /* cast away const */
 	*((ncio_syncfunc **)&nciop->sync) = ncio_spx_sync; /* cast away const */
-	*((ncio_freefunc **)&nciop->free) = ncio_spx_free; /* cast away const */
+	/* shared with _px_ */
+	*((ncio_filesizefunc **)&nciop->filesize) = ncio_px_filesize; /* cast away const */
+	*((ncio_pad_lengthfunc **)&nciop->pad_length) = ncio_px_pad_length; /* cast away const */
+	*((ncio_closefunc **)&nciop->close) = ncio_spx_close; /* cast away const */
 
 	pxp->pos = -1;
 	pxp->bf_offset = OFF_NONE;
@@ -1379,14 +1405,22 @@ ncio_spx_init(ncio *const nciop)
    metadata must be freed.
 */
 static void
-ncio_free(ncio *nciop)
+ncio_px_free(ncio *nciop)
 {
 	if(nciop == NULL)
 		return;
+	if(nciop->pvt != NULL)
+		ncio_px_freepvt(nciop->pvt);
+	free(nciop);
+}
 
-	if(nciop->free != NULL)
-		nciop->free(nciop->pvt);
-	
+static void
+ncio_spx_free(ncio *nciop)
+{
+	if(nciop == NULL)
+		return;
+	if(nciop->pvt != NULL)
+		ncio_spx_freepvt(nciop->pvt);
 	free(nciop);
 }
 
@@ -1396,7 +1430,7 @@ ncio_free(ncio *nciop)
    NC_SHARE is used.)
 */
 static ncio *
-ncio_new(const char *path, int ioflags)
+ncio_px_new(const char *path, int ioflags)
 {
 	size_t sz_ncio = M_RNDUP(sizeof(ncio));
 	size_t sz_path = M_RNDUP(strlen(path) +1);
@@ -1466,7 +1500,7 @@ ncio_new(const char *path, int ioflags)
    igetvpp - pointer to pointer which will get the location of ?
 */
 int
-ncio_create(const char *path, int ioflags,
+posixio_create(const char *path, int ioflags,
 	size_t initialsz,
 	off_t igeto, size_t igetsz, size_t *sizehintp,
 	ncio **nciopp, void **const igetvpp)
@@ -1484,7 +1518,7 @@ ncio_create(const char *path, int ioflags,
 	if(path == NULL || *path == 0)
 		return EINVAL;
 
-	nciop = ncio_new(path, ioflags);
+	nciop = ncio_px_new(path, ioflags);
 	if(nciop == NULL)
 		return ENOMEM;
 
@@ -1560,7 +1594,7 @@ unwind_open:
 	/* ?? unlink */
 	/*FALLTHRU*/
 unwind_new:
-	ncio_free(nciop);
+	ncio_close(nciop,!fIsSet(ioflags, NC_NOCLOBBER));
 	return status;
 }
 
@@ -1609,7 +1643,7 @@ unwind_new:
    read, if this were ever used, which it isn't.
 */
 int
-ncio_open(const char *path,
+posixio_open(const char *path,
 	int ioflags,
 	off_t igeto, size_t igetsz, size_t *sizehintp,
 	ncio **nciopp, void **const igetvpp)
@@ -1622,7 +1656,7 @@ ncio_open(const char *path,
 	if(path == NULL || *path == 0)
 		return EINVAL;
 
-	nciop = ncio_new(path, ioflags);
+	nciop = ncio_px_new(path, ioflags);
 	if(nciop == NULL)
 		return ENOMEM;
 
@@ -1681,15 +1715,15 @@ unwind_open:
 	(void) close(fd);
 	/*FALLTHRU*/
 unwind_new:
-	ncio_free(nciop);
+	ncio_close(nciop,0);
 	return status;
 }
 
 /* 
  * Get file size in bytes.
  */
-int
-ncio_filesize(ncio *nciop, off_t *filesizep)
+static int
+ncio_px_filesize(ncio *nciop, off_t *filesizep)
 {
     struct stat sb;
 
@@ -1707,8 +1741,8 @@ ncio_filesize(ncio *nciop, off_t *filesizep)
  * calculated size, perhaps as the result of having been previously
  * written in NOFILL mode.
  */
-int
-ncio_pad_length(ncio *nciop, off_t length)
+static int
+ncio_px_pad_length(ncio *nciop, off_t length)
 {
 	int status = ENOERR;
 
@@ -1739,22 +1773,30 @@ ncio_pad_length(ncio *nciop, off_t length)
 
    doUnlink - if true, unlink file
 */
-int 
-ncio_close(ncio *nciop, int doUnlink)
+static int 
+ncio_px_close(ncio *nciop, int doUnlink)
 {
 	int status = ENOERR;
-
 	if(nciop == NULL)
 		return EINVAL;
-
 	status = nciop->sync(nciop);
-
 	(void) close(nciop->fd);
-	
 	if(doUnlink)
 		(void) unlink(nciop->path);
+	ncio_px_free(nciop);
+	return status;
+}
 
-	ncio_free(nciop);
-
+static int 
+ncio_spx_close(ncio *nciop, int doUnlink)
+{
+	int status = ENOERR;
+	if(nciop == NULL)
+		return EINVAL;
+	status = nciop->sync(nciop);
+	(void) close(nciop->fd);
+	if(doUnlink)
+		(void) unlink(nciop->path);
+	ncio_spx_free(nciop);
 	return status;
 }

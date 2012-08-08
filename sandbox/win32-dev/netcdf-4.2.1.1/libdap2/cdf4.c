@@ -51,7 +51,6 @@ computecdfnodesets4(NCDAPCOMMON* nccomm)
 }
 
 /*
-
 The variables for a DAP->netcdf-4 translation are defined by
 the top-level objects in the DAP tree.
 Grids and Structures are converted to netcdf-4
@@ -71,7 +70,11 @@ computevarnodes4(NCDAPCOMMON* nccomm, NClist* varnodes)
     for(i=0;i<nclistlength(toplevel);i++) {
 	CDFnode* var = (CDFnode*)nclistget(toplevel,i);
 	/* If this node has a bad name, make it invisible */
-	if(dap_badname(var->name)) var->visible = 0;
+	if(dap_badname(var->ncbasename)) {
+	    char* newname = dap_repairname(var->ncbasename);
+	    nullfree(var->ncbasename);
+	    var->ncbasename = newname;
+	}
 	if(!var->visible) continue;
 	if(var->nctype == NC_Sequence && singletonsequence(var)) {
 	    var->singleton = 1;
@@ -95,81 +98,10 @@ fixgrids4(NCDAPCOMMON* nccomm)
 	(void)fixgrid34(nccomm,grid); /* Ignore mal-formed grids */
     }
 
-#ifdef IGNORE
-    /* Rename selected array variables */
-    for(i=0;i<nclistlength(vars);i++) {
-        CDFnode* var = (CDFnode*)nclistget(vars,i);
-	CDFnode* grid = var->container;
-	if(grid == NULL || grid->nctype != NC_Grid) continue;
-	if(strcmp(grid->name,var->name)==0) {
-	    /* shorten the var name */
-	    nullfree(var->ncfullname);
-	    var->ncfullname = nulldup(grid->ncbasename);
-	    MEMCHECK(var->ncfullname,NC_ENOMEM);
-	}
-    }
-#endif
-
-#ifdef IGNORE
-    /* Attempt to hoist the top-level grid arrays and maps */
-    /* Find vars that have the same base name as some other var;
-       and remove corresponding grid container (if any) */
-    for(i=0;i<nclistlength(vars);i++) {
-	int j;
-        CDFnode* var = (CDFnode*)nclistget(vars,i);
-	if(var->container == NULL || var->container->nctype != NC_Grid)
-	    continue;
-        for(j=0;j<nclistlength(vars);j++) {
-            CDFnode* testvar = (CDFnode*)nclistget(vars,j);
-	    if(var == testvar) continue;
-	    if(strcmp(testvar->ncbasename,var->ncbasename)==0) {
-	        nclistdeleteall(topgrids,(ncelem)var->container);
-	        nclistdeleteall(topgrids,(ncelem)testvar->container);
-	    }
-	}
-    }
-
-    /* hoist remaining grids vars */
-    for(i=0;i<nclistlength(vars);i++) {
-        CDFnode* var = (CDFnode*)nclistget(vars,i);
-	if(nclistcontains(topgrids,(ncelem)var->container)) {
-	    nullfree(var->ncfullname);
-	    var->ncfullname = nulldup(var->ncbasename);
-	    MEMCHECK(var,NC_ENOMEM);
-	}
-    }
-#endif
     nclistfree(topgrids);
     return NC_NOERR;
 }
 
-#ifdef IGNORE
-NCerror
-computecdfdimnames4(NCDAPCOMMON* nccomm)
-{
-    int i,j;
-    NClist* topdims = nclistnew();
-    NCerror ncstat = NC_NOERR;
-
-    /* Collect the dimensions that are referenced by
-       top-level variables; these are the only dimensions
-       that need to be defined under the current translation.
-    */    
-    for(i=0;i<nclistlength(nccomm->cdf.varnodes);i++) {
-	CDFnode* var = (CDFnode*)nclistget(nccomm->cdf.varnodes,i);
-	if(nclistlength(var->array.dimensions) == 0) continue;
-	for(j=0;j<nclistlength(var->array.dimensions);j++) {
-	    CDFnode* dim = (CDFnode*)nclistget(var->array.dimensions,j);
-	    if(nclistcontains(topdims,(ncelem)dim)) continue;
-	    nclistpush(topdims,(ncelem)dim);
-	}
-    }
-    ncstat = computecdfdimnames34(nccomm);
-    /* clean up*/
-    nclistfree(topdims);
-    return ncstat;
-}
-#endif
 
 NCerror
 computetypenames4(NCDAPCOMMON* nccomm, CDFnode* tnode)
@@ -270,7 +202,7 @@ fprintf(stderr,"\t\tfield: %s\n",dumpalign(&field->typesize.field));
 	/* The field size is instance size * # array elements */
 	tnode->typesize.field = tnode->typesize.instance;
         tnode->typesize.field.size = tnode->typesize.instance.size
-			    * cdftotalsize(tnode->array.dimensions);
+			    * cdftotalsize(tnode->array.dimset0);
 #ifdef ALIGNCHECK
 fprintf(stderr,"computesize.final: struct (%s):\n",tnode->name);
 fprintf(stderr,"\tinstance: %s\n",dumpalign(&tnode->typesize.instance));
@@ -325,7 +257,7 @@ fprintf(stderr,"\n");
 	tnode->typesize.instance.offset = 0;
 	tnode->typesize.field = tnode->typesize.instance; /* except for... */
         tnode->typesize.field.size = tnode->typesize.instance.size
-                            * cdftotalsize(tnode->array.dimensions);
+                            * cdftotalsize(tnode->array.dimset0);
 	break;
 
     default: PANIC1("unexpected nctype: %d",tnode->nctype);
@@ -437,7 +369,7 @@ getsingletonfield(NClist* list)
 	CDFnode* field = (CDFnode*)nclistget(list,i);
 	if(!field->visible) continue;
         fieldcount++;
-	if(field->nctype == NC_Primitive && nclistlength(field->array.dimensions) == 0)
+	if(field->nctype == NC_Primitive && nclistlength(field->array.dimset0) == 0)
 	    thefield = field;
     }
     if(fieldcount != 1) thefield = NULL; /* not the right type of field */
@@ -562,4 +494,26 @@ shortentypenames4(NCDAPCOMMON* nccomm)
     nclistfree(unique);
     ncbytesfree(name);
     return NC_NOERR;
+}
+
+/* Define the dimsetplus and dimsetall lists for
+   all nodes with dimensions
+*/
+NCerror
+definedimsets4(NCDAPCOMMON* nccomm)
+{
+    int i;
+    int ncstat = NC_NOERR;
+    NClist* allnodes = nccomm->cdf.ddsroot->tree->nodes;
+
+    for(i=0;i<nclistlength(allnodes);i++) {
+	CDFnode* rankednode = (CDFnode*)nclistget(allnodes,i);
+	if(rankednode->nctype == NC_Dimension) continue; //ignore
+	ASSERT((rankednode->array.dimsetplus == NULL));
+	ASSERT((rankednode->array.dimsetall == NULL));
+	/* Make dimsetplus and dimsetall == dimset0 */
+	rankednode->array.dimsetplus = nclistclone(rankednode->array.dimset0);
+	rankednode->array.dimsetall = nclistclone(rankednode->array.dimset0);
+    }
+    return ncstat;
 }

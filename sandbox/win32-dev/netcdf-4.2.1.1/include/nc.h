@@ -2,7 +2,6 @@
  *	Copyright 1996, University Corporation for Atmospheric Research
  *      See netcdf/COPYRIGHT file for copying and redistribution conditions.
  */
-/* $Id$ */
 #ifndef _NC_H_
 #define _NC_H_
 
@@ -22,8 +21,10 @@
 #else
 #include <netcdf.h>
 #endif /* USE_PARALLEL */
+#if 0
 #include "ncio.h"	
 #include "fbits.h"
+#endif
 
 /*#ifndef HAVE_SSIZE_T
 #define ssize_t int
@@ -40,7 +41,9 @@
  */
 #define MIN_NC_XSZ 32
 
+/* Forward */
 typedef struct NC NC; /* forward reference */
+struct ncio;
 
 /*
  *  The internal data types
@@ -257,18 +260,22 @@ typedef short int		 shmem_t;
 #endif
 
 /* Warning: fields from BEGIN COMMON to END COMMON must be same for:
-	1. NC (libsrc/nc.h)
-	2. NC_FILE_INFO (libsrc4/nc4internal.h)
-	3. NCDAP3 (libncdap3/ncdap3.h)
-	4. NCDAP4 (libncdap4/ncdap4.h)
+	1. NCcommon (include/ncdispatch.h)
+	2. NC (libsrc/nc.h)
+	3. NC_FILE_INFO (libsrc4/nc4internal.h)
+	4. whatever libdiskless uses
 */
 struct NC {
-/*BEGIN COMMON*/
-	int ext_ncid; /* uid << 16 */
-	int int_ncid; /* unspecified other id */
+/*BEGIN COMMON (see include/ncdispatch.h: struct NCcommon) */
+	int ext_ncid;
+	int int_ncid;
 	struct NC_Dispatch* dispatch;	
-        struct NC_Dispatch3* dapdispatch;
-	char* path; /* as specified at open or create */
+	void* dispatchdata;
+	char* path;
+	int substrate;
+	void* instance; /* per-instance data specific to netcdf3,4,dap,etc.
+                           Currently only used by librpc, will retrofit other
+                           dispatch kinds over time. */
 /*END COMMON*/
 	/* contains the previous NC during redef. */
 	struct NC *old;
@@ -281,7 +288,7 @@ struct NC {
 #define NC_HDIRTY 0x80  /* header info has changed */
 /*	NC_NOFILL in netcdf.h, historical interface */
 	int flags;
-	ncio *nciop;
+	struct ncio* nciop;
 	size_t chunk;	/* largest extent this layer will request from ncio->get() */
 	size_t xsz;	/* external size of this header, == var[0].begin */
 	off_t begin_var; /* position of the first (non-record) var */
@@ -379,6 +386,9 @@ NC_sync(NC *ncp);
 extern int
 NC_calcsize(const NC *ncp, off_t *filesizep);
 
+extern int
+NC_set_readonly(NC *ncp, int onezero);
+
 /* End defined in nc.c */
 /* Begin defined in v1hpg.c */
 
@@ -413,5 +423,10 @@ extern void del_from_NCList(NC*);/* does not free object */
 extern NC* find_in_NCList(int ext_ncid);
 extern void free_NCList(void);/* reclaim whole list */
 extern int count_NCList(void); /* return # of entries in NClist */
+
+/* Create a pseudo file descriptor that does not
+   overlap real file descriptors
+*/
+extern int nc__pseudofd(void);
 
 #endif /* _NC_H_ */

@@ -1,8 +1,6 @@
 #ifndef NCGEN_DEBUG_H
 #define NCGEN_DEBUG_H
 
-/*#define F*/
-
 /*********************************************************************
  *   Copyright 1993, UCAR/Unidata
  *   See netcdf/COPYRIGHT file for copying and redistribution conditions.
@@ -13,6 +11,26 @@
 #include <assert.h>
 #include "generr.h"
 #include "bytebuffer.h"
+
+#if 0
+#define GENDEBUG 2
+#endif
+
+#ifdef GENDEBUG
+#  define DEBUG
+#  if GENDEBUG > 0
+#    define DEBUG1
+#  endif
+#  if GENDEBUG > 1
+#    define DEBUG2
+#  endif
+#  if GENDEBUG > 2
+#    define DEBUG3
+#  endif
+#endif
+
+
+
 
 extern int ncgdebug;
 extern int debug;

@@ -4,9 +4,7 @@
  *   $Header$
  *********************************************************************/
 
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <stdlib.h>
 #include <string.h>
@@ -27,22 +25,6 @@
 #define NILLEN(s) ((s)==NULL?0:strlen(s))
 #endif
 
-#ifndef nulldup
-#define nulldup(s) ((s)==NULL?NULL:strdup(s))
-#endif
-
-#ifndef HAVE_STRDUP
-static char* nulldup(char* s)
-{
-    char* dup = NULL;
-    if(s != NULL) {
-	dup = (char*)malloc(strlen(s)+1);
-	if(dup != NULL)
-	    strcpy(dup,s);
-    }
-    return dup;
-}
-#endif
 
 static char* legalprotocols[] = {
 "file:",
@@ -75,10 +57,19 @@ nc_uriparse(const char* uri0, NC_URI** nc_urip)
     char* user = NULL;
     char* pwd = NULL;
     char* file = NULL;
-    char* stop;
 
     nc_uri = (NC_URI*)calloc(1,sizeof(NC_URI));
     if(nc_uri == NULL) return 0;    
+
+    /* Temporary hack to remove escape characters inserted by Windows or MinGW */
+    if(strchr(uri0,'\\') != NULL) {    
+	char* u = strdup(uri0);
+	if(u == NULL) return 0;
+        p = u;
+	p1 = u;
+        while((c=*p1++)) {if(c != '\\') *p++ = c;}
+	uri0 = (const char*)u;
+    }
 
     /* make local copy of uri */
     uri = strdup(uri0);
@@ -89,7 +80,6 @@ nc_uriparse(const char* uri0, NC_URI** nc_urip)
     while((c=*p1++)) {if(c != ' ' && c != '\t') *p++ = c;}
 
     p = uri;
-    stop = p + strlen(p);
 
     /* break up the uri string into pieces*/
 
@@ -123,7 +113,8 @@ nc_uriparse(const char* uri0, NC_URI** nc_urip)
     file = strchr(p,'/');
     if(file) {
 	*file++ = '\0'; /* warning: we just overwrote the leading / */
-    }
+    } else
+	goto fail; /* url only has host part, no path */
 
     /* 7. extract any user:pwd */
     p1 = strchr(p,'@');
@@ -284,7 +275,6 @@ nc_uribuild(NC_URI* duri, const char* prefix, const char* suffix, int pieces)
 
     if(prefix != NULL) len += NILLEN(prefix);
     if(withparams) {
-	len += NILLEN("[]");
 	len += NILLEN(duri->params);
     }
     len += (NILLEN(duri->protocol)+NILLEN("://"));
@@ -308,9 +298,7 @@ nc_uribuild(NC_URI* duri, const char* prefix, const char* suffix, int pieces)
     newuri[0] = '\0';
     if(prefix != NULL) strcat(newuri,prefix);
     if(withparams) {
-	strcat(newuri,"[");
 	strcat(newuri,duri->params);
-	strcat(newuri,"]");
     }
     strcat(newuri,duri->protocol);
     strcat(newuri,"://");
@@ -425,19 +413,21 @@ nc_uridecodeparams(NC_URI* nc_uri)
     return 1;
 }
 
-const char*
-nc_urilookup(NC_URI* uri, const char* key)
+int
+nc_urilookup(NC_URI* uri, const char* key, const char** resultp)
 {
     int i;
-    if(uri == NULL || key == NULL || uri->params == NULL) return NULL;
+    char* value = NULL;
+    if(uri == NULL || key == NULL || uri->params == NULL) return 0;
     if(uri->paramlist == NULL) {
 	i = nc_uridecodeparams(uri);
 	if(!i) return 0;
     }
     i = nc_find(uri->paramlist,key);
-    if(i >= 0)
-	return uri->paramlist[(2*i)+1];
-    return NULL;
+    if(i < 0) return 0;
+    value = uri->paramlist[(2*i)+1];
+    if(resultp) *resultp = value;
+    return 1;
 }
 
 int
@@ -474,78 +464,3 @@ nc_paramfree(char** params)
     }
     free(params);
 }
-
-#ifdef IGNORE
-/*
-Delete the entry.
-return value = 1 => found and deleted;
-               0 => param not found
-*/
-int
-nc_paramdelete(char** params, const char* key)
-{
-    int i;
-    char** p;
-    char** q;
-    if(params == NULL || key == NULL) return 0;
-    i = nc_find(params,key);
-    if(i < 0) return 0;
-    p = params+(2*i);
-    for(q=p+2;*q;) {	
-	*p++ = *q++;
-    }
-    *p = NULL;
-    return 1;
-}
-
-static int
-nc_length(char** params)
-{
-    int i = 0;
-    if(params != NULL) {
-	while(*params) {params+=2; i++;}
-    }
-    return i;
-}
-
-/*
-Insert new client param (name,value);
-return value = 1 => not already defined
-               0 => param already defined (no change)
-*/
-char**
-nc_paraminsert(char** params, const char* key, const char* value)
-{
-    int i;
-    char** newp;
-    size_t len;
-    if(params == NULL || key == NULL) return 0;
-    i = nc_find(params,key);
-    if(i >= 0) return 0;
-    /* not found, append */
-    i = nc_length(params);
-    len = sizeof(char*)*((2*i)+1);
-    newp = realloc(params,len+2*sizeof(char*));
-    memcpy(newp,params,len);
-    newp[2*i] = strdup(key);
-    newp[2*i+1] = (value==NULL?NULL:strdup(value));
-    return newp;
-}
-
-/*
-Replace new client param (name,value);
-return value = 1 => replacement performed
-               0 => key not found (no change)
-*/
-int
-nc_paramreplace(char** params, const char* key, const char* value)
-{
-    int i;
-    if(params == NULL || key == NULL) return 0;
-    i = nc_find(params,key);
-    if(i < 0) return 0;
-    if(params[2*i+1] != NULL) free(params[2*i+1]);
-    params[2*i+1] = nulldup(value);
-    return 1;
-}
-#endif

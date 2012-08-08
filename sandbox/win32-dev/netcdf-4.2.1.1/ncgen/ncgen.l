@@ -6,7 +6,7 @@
  *********************************************************************/
 
 /* Problems:
-1. Ideally, we assume the input is true ut8.
+1. We assume the input is true utf8.
    Unfortunately, we may actually get iso-latin-8859-1.
    This means that there will be ambiguity about the characters
    in the range 128-255 because they will look like n-byte unicode
@@ -23,6 +23,11 @@
    The tests are derived from the table at
 	    http://www.w3.org/2005/03/23-lex-U
    We include lexical definitions for all three, but use the second version.
+4. Single character constants enclosed in '...' cannot be
+   utf-8, so we assume they are by default encoded using the 1-byte
+   subset of utf-8. It turns out that this subset is in fact
+   equivalent to US-Ascii (7-bit).
+   We could use ISO-8859-1, but that conflicts with UTF-8 above value 127.
 */
 
 /* lex specification for tokens for ncgen */
@@ -38,7 +43,7 @@
 char errstr[100];		/* for short error messages */
 
 int lineno;              /* line number for error messages */
-char* lextext;           /* name or string with escapes removed */
+Bytebuffer* lextext;           /* name or string with escapes removed */
 
 #define YY_BREAK                /* defining as nothing eliminates unreachable
 				   statement warnings from flex output, 
@@ -157,6 +162,8 @@ FLTNUMBER    [+-]?[0-9]*\.[0-9]*{exp}?[Ff]|[+-]?[0-9]*{exp}[Ff]
 
 SPECIAL "_FillValue"|"_Format"|"_Storage"|"_ChunkSizes"|"_Fletcher32"|"_DeflateLevel"|"_Shuffle"|"_Endianness"|"_NoFill"
 
+USASCII   [\x01-\x7F]
+
 %%
 [ \r\t\f]+	{ /* whitespace */ 
 		  break;        
@@ -175,24 +182,22 @@ yyerror("string too long, truncated\n");
 yytext[MAXTRST-1] = '\0';
 }
 */
-			lextext = emalloc(1+4*yyleng); /* should be max
-                                                             needed */
 		        /* Assumes expand escapes also does normalization */
+			bbClear(lextext);
 			expand_escapes(lextext,(char *)yytext,yyleng);
+			bbNull(lextext);
 		 	return lexdebug(TERMSTRING);
 		        }
 
 {OPAQUESTRING}	{ /* drop leading 0x; pad to even number of chars */
 		char* p = yytext+2;
 		int len = yyleng - 2;
-		int padlen = len;
-	        if((padlen % 2) == 1) padlen++;
-		lextext = emalloc(1+padlen);
-		strncpy(lextext,p,len+1); /*include null */
-		lextext[len] = '0'; /* assume padding */
-		lextext[padlen] = '\0'; /* make sure null terminated */
+		bbClear(lextext);
+	        bbAppendn(lextext,p,len);
+	        if((len % 2) == 1) bbAppend(lextext,'0');
+		bbNull(lextext);
 		/* convert all chars to lower case */
-		for(p=lextext;*p;p++) *p = tolower(*p);
+		for(p=bbContents(lextext);*p;p++) *p = tolower(*p);
 		return lexdebug(OPAQUESTRING);
 		}
 
@@ -253,19 +258,20 @@ NaNf|nanf { /* missing value (pre-2.4 backward compatibility) */
 		}
 
 {PATH}		{
-		lextext = emalloc(1+4*yyleng); /* should be max needed */
-		strncpy(lextext,(char*)yytext,yyleng+1); /* include null */
-		yylval.sym = makepath(lextext);
-		free(lextext);
+		bbClear(lextext);
+		bbAppendn(lextext,(char*)yytext,yyleng+1); /* include null */
+	        bbNull(lextext);
+		yylval.sym = makepath(bbContents(lextext));
 		return lexdebug(PATH);
 		}
 
 
 {SPECIAL}      {struct Specialtoken* st;
-		lextext = emalloc(1+4*yyleng); /* should be max needed */
-		strncpy(lextext,(char*)yytext,yyleng+1); /* include null */
+		bbClear(lextext);
+		bbAppendn(lextext,(char*)yytext,yyleng+1); /* include null */
+		bbNull(lextext);
 		for(st=specials;st->name;st++) {
-		    if(strcmp(lextext,st->name)==0) {return lexdebug(st->token);}
+		    if(strcmp(bbContents(lextext),st->name)==0) {return lexdebug(st->token);}
 		}
 		return 0;
 		}
@@ -273,24 +279,27 @@ NaNf|nanf { /* missing value (pre-2.4 backward compatibility) */
 <TEXT>{DATASETID} {
 		    int c;
 		    char* p; char* q;
-		    lextext = emalloc(1+4*yyleng); /* should be max needed */
 		    /* copy the trimmed name */
-		    strncpy(lextext,(char*)yytext,yyleng+1); /* include null */
-		    p = lextext;
-		    q = lextext;
+		    bbClear(lextext);
+		    bbAppendn(lextext,(char*)yytext,yyleng+1); /* include null */
+		    bbNull(lextext);
+		    p = bbContents(lextext);
+		    q = p;
 		    while((c=*p++)) {if(c > ' ') *q++ = c;}
 		    *q = '\0';
-		    datasetname = lextext;
+		    datasetname = bbDup(lextext);
 		    BEGIN(INITIAL);
 		    return lexdebug(DATASETID);
 		}
 
-{ID}		{
-		    lextext = emalloc(1+4*yyleng); /* should be max needed */
-		    strncpy(lextext,(char*)yytext,yyleng+1); /* include null */
-		    deescapify(lextext);
-		    if (STREQ((char *)lextext, FILL_STRING)) return lexdebug(FILLMARKER);
-		    yylval.sym = install(lextext);
+{ID}		{ char* id;
+		    bbClear(lextext);
+		    bbAppendn(lextext,(char*)yytext,yyleng+1); /* include null */
+		    bbNull(lextext);
+		    id = bbContents(lextext);
+		    deescapify(id);
+		    if (STREQ(id, FILL_STRING)) return lexdebug(FILLMARKER);
+		    yylval.sym = install(id);
 		    return lexdebug(IDENT);
 		}
 
@@ -555,7 +564,7 @@ int
 lex_init(void)
 {
     lineno = 1;
-    lextext = NULL;
+    lextext = bbNew();
     if(0) unput(0); /* keep -Wall quiet */
     return 0;
 }

@@ -7,7 +7,7 @@
  
 #include <curl/curl.h>
 
-#include <ast.h>
+#include "ast.h"
 
 #include "nclist.h"
 
@@ -117,7 +117,7 @@ nccr_dump_dimkind(Dimension* dim)
     }
     snprintf(buffer,sizeof(buffer),"%s(%llu)",
 		skind,
-		dim->length.value);
+		(unsigned long long)dim->length.value);
     return buffer;
 }
 
@@ -235,6 +235,7 @@ nccr_dump_typeref(DataType datatype)
     case USHORT: return "USHORT";
     case UINT: return "UINT";
     case UINT64: return "UINT64";
+    default: break;
     }
     return NULL;
 }
@@ -262,16 +263,16 @@ static ast_err
 nccr_dump_section(Section* section)
 {
     int i;
-    uint64_t start = 0;
-    uint64_t size = 0;
-    uint64_t stride = 1;
+    unsigned long long start = 0;
+    unsigned long long size = 0;
+    unsigned long long stride = 1;
     for(i=0;i<section->range.count;i++) {
 	Range* range = section->range.values[i];
 	if(range->start.defined) start = range->start.value;
 	size = range->size;
 	if(range->stride.defined) stride = range->stride.value;
 	if(stride == 1 && size == 1)
-	    printf("[%llu]",start);
+	    printf("[%llu]",(unsigned long long)start);
 	else if(stride == 1)
 	    printf("[%llu:%llu]",start,size);
 	else

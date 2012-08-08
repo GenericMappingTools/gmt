@@ -71,7 +71,9 @@ nc_free_iter(nciter_t *iterp);
 /* 
  * Simplest interface for group iteration: get total number of groups
  * (including all descendant groups, recursively) and all group ids
- * for start group and its descendants, in preorder.
+ * for start group and its descendants, in preorder.  Note that this
+ * loses information about subgroup relationships, just flattening all
+ * groups into a serial list.
  */
 extern int
 nc_inq_grps_full(int ncid, int *numgrps, int *ncids);

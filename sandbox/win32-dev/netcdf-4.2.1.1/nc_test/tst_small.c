@@ -53,7 +53,7 @@ test_small_atts(const char *testfile)
 	 if (ndims != 0 && nvars != 0 && natts != 1 && unlimdimid != -1) ERR;
 	 if (nc_inq_attlen(ncid, NC_GLOBAL, ATT_NAME, &len_in)) ERR;
 	 if (len_in != t + 1) ERR;
-	 if (nc_get_att_text(ncid, NC_GLOBAL, ATT_NAME, att_in));
+	 if (nc_get_att_text(ncid, NC_GLOBAL, ATT_NAME, att_in)) ERR;
 	 if (strncmp(att_in, att, t)) ERR;
 	 if (nc_close(ncid)) ERR; 
       }
@@ -292,7 +292,7 @@ test_one_growing_with_att(const char *testfile)
       index[0] = r;
       if (nc_get_var1_text(ncid, 0, index, &data_in)) ERR;
       if (data_in != data[r]) ERR;
-      if (nc_get_att_text(ncid, varid, att_name, &data_in));
+      if (nc_get_att_text(ncid, varid, att_name, &data_in)) ERR;
       if (data_in != data[r]) ERR;
       if (nc_close(ncid)) ERR; 
    } /* Next record. */
@@ -388,7 +388,7 @@ test_one_with_att(const char *testfile)
    if (ndims != 1 && nvars != 1 && natts != 0 && unlimdimid != 0) ERR;
    if (nc_get_var_text(ncid, varid, &data_in)) ERR;
    if (data_in != data) ERR;
-   if (nc_get_att_text(ncid, NC_GLOBAL, ATT_NAME, &data_in));
+   if (nc_get_att_text(ncid, NC_GLOBAL, ATT_NAME, &data_in)) ERR;
    if (data_in != data) ERR;
    if (nc_close(ncid)) ERR; 
    return 0;

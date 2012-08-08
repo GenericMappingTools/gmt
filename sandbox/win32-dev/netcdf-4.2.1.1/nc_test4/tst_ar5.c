@@ -38,7 +38,7 @@ get_mem_used1(int *mem_used)
    system(cmd);
 
    /* Read the results and delete temp file. */
-   if (!(fp = fopen(TMP_FILE_NAME, "r"))) ERR;
+   if (!(fp = fopen(TMP_FILE_NAME, "r"))) exit;
    num_char = fread(blob, MAX_LEN, 1, fp);
    sscanf(blob, "%d", mem_used);
    fclose(fp);

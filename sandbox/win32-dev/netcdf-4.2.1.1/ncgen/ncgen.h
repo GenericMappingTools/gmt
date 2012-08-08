@@ -33,23 +33,38 @@
 #define NC_ARRAY    107
 #define NC_PRIM     108 /*Including NC_STRING */
 #define NC_STRUCT  NC_COMPOUND /* alias */
+#define NC_LIST    NC_COMPOUND /* alias */
 
 /* Extend nc types with generic fill value*/
 #define NC_FILLVALUE    31
 
 /* Must be a better way to do this */
-#ifndef INFINITE
-static unsigned long long _NAND = 0x7ff8000000000000;
-static unsigned long long _INFD = 0x7ff0000000000000;
-static unsigned long _NANF = 0x7fc00000;
-static unsigned long _INFF = 0x7f800000;
+#include <math.h>
+#include <float.h>
 
-#define NANF (*(float*)&_NANF)
-#define NAN (*(double*)&_NAND)
-#define INFINITEF (*(float*)&_INFF)
-#define NEGINFINITEF (-INFINITEF)
-#define INFINITE (*(double*)&_INFD)
-#define NEGINFINITE (-INFINITE)
+#ifndef NAN
+# ifdef _MSC_VER
+#   include <ymath.h>
+#   define NAN _Nan._Double
+# else /* _MSC_VER */
+static const double _NAN = (HUGE_VAL-HUGE_VAL);
+#   define NAN _NAN
+# endif /* _MSC_VER */
+#endif /* !NAN */
+
+#ifndef NANF
+# define NANF (float)NAN
+#endif
+
+#ifndef INFINITY
+# define INFINITY (DBL_MAX+DBL_MAX)
+#endif
+
+#ifndef INFINITE
+# define INFINITEF (float)INFINITY
+# define NEGINFINITEF (-INFINITEF)
+# define INFINITE INFINITY
+# define NEGINFINITE (-INFINITEF)
 #endif
 
 /* nc_class is one of:
@@ -86,16 +101,16 @@ various C global variables
 
 struct Kvalues {
 char* name;
-int mode;
+int k_flag;
 };
 
 #define NKVALUES 16
 extern struct Kvalues legalkinds[NKVALUES];
 
-/* Note: non-variable specials (e.g. _Format) are not included in this struct*/
+/* Note: some non-var specials (i.e. _Format) are not included in this struct*/
 typedef struct Specialdata {
     int flags;
-    Datalist*     _Fillvalue;
+    Datalist*      _Fillvalue; /* This is a per-type  */
     int           _Storage;      /* NC_CHUNKED | NC_CONTIGUOUS*/
     size_t*       _ChunkSizes;     /* NULL => defaults*/
         int nchunks;     /*  |_Chunksize| ; 0 => not specified*/
@@ -115,7 +130,7 @@ typedef struct Dimset {
 
 typedef struct Diminfo {
     int   isconstant; /* separate constant from named dimension*/
-    size_t  unlimitedsize; /* if unlimited */
+    int   isunlimited;
     size_t  declsize; /* 0 => unlimited/unspecified*/
 } Diminfo;
 
@@ -134,6 +149,8 @@ typedef struct Typeinfo {
         size_t   size;     /* for opaque, compound, etc.*/
         size_t   nelems;   /* size in terms of # of datalist constants
 			      it takes to represent it */
+	Datalist*       _Fillvalue; /* per-type cached fillvalue
+                                       (overridden by var fillvalue) */
 } Typeinfo;
 
 typedef struct Varinfo {
@@ -144,7 +161,6 @@ typedef struct Varinfo {
 
 typedef struct Groupinfo {
     int is_root;
-    struct Symbol* unlimiteddim;
 } Groupinfo;
 
 typedef struct Symbol {  /* symbol table entry*/

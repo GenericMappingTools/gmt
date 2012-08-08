@@ -15,14 +15,17 @@ noinst_LTLIBRARIES = libdispatch.la
 libdispatch_la_CPPFLAGS = ${AM_CPPFLAGS}
 
 # The source files.
-libdispatch_la_SOURCES = parallel.c copy.c file.c dim.c att.c error.c	\
-var.c dispatch.c nc_uri.c nclist.c ncbytes.c \
-nchashmap.c \
-nclog.c nclog.h
+libdispatch_la_SOURCES = dparallel.c dcopy.c dfile.c ddim.c datt.c	\
+dattinq.c dattput.c dattget.c derror.c dvar.c dvarget.c dvarput.c	\
+dvarinq.c ddispatch.c                                                   \
+dnclog.c dstring.c dutf8proc.c utf8proc_data.h                          \
+nc_uri.c nclist.c ncbytes.c nchashmap.c nctime.c                        \
+dsubstrate.c
 
 # Add functions only found in netCDF-4.
 if USE_NETCDF4
-libdispatch_la_SOURCES += nc4.c
+libdispatch_la_SOURCES += dgroup.c dvlen.c dcompound.c dtype.c denum.c	\
+dopaque.c ncaux.c
 endif # USE_NETCDF4
 
 # Turn on pre-processor flag when building a DLL for windows.
@@ -33,7 +36,7 @@ endif # BUILD_DLL
 # Add V2 API convenience library if needed.
 if BUILD_V2
 noinst_LTLIBRARIES += libnetcdf2.la 
-libnetcdf2_la_SOURCES = v2i.c
+libnetcdf2_la_SOURCES = dv2i.c
 libnetcdf2_la_CPPFLAGS = ${AM_CPPFLAGS} -DDLL_EXPORT
 endif # BUILD_V2
 

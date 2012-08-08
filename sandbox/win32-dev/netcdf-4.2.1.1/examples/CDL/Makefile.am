@@ -7,9 +7,9 @@
 
 # All we do is run two shell scripts, which create the sample files
 # and then compare them with the C versions of the examples.
-if !BUILD_DLL
+#if !BUILD_DLL
 TESTS = create_sample_files.sh do_comps.sh
-endif
+#endif
 
 # Ship the scripts needed to create the sample files and compare them.
 EXTRA_DIST = do_comps.sh create_sample_files.sh simple_xy.cdl	\

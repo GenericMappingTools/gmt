@@ -302,6 +302,7 @@ main(int argc, char *argv[])
     else
        fprintf(stderr, "*** nc_test SUCCESS!!!\n");
 
+    exit(0);
     return 0;
 }
 

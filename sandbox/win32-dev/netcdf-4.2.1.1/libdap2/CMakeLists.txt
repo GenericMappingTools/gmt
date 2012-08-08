@@ -22,31 +22,13 @@
 
 # libnetcdf sources in libdap2
 set (SRCS_NETCDF ${SRCS_NETCDF}
-  cache.c
-  cdf3.c
-  cdf4.c
-  common34.c
-  constraints3.c
-  constraints4.c
-  dapalign.c
-  dapattr3.c
-  dapcvt.c
-  dapdebug.c
-  dapdump.c
-  dapodom.c
-  daputil.c
-  dceconstraints.c
-  dcelex.c
-  dceparse.c
-  dcetab.c
-  getvara3.c
-  getvara4.c
-  ncd3dispatch.c
-  ncd4dispatch.c
-  ncdap3.c
-  ncdap3a.c
-  ncdap4.c
-  ncdaperr.c
-)
+	constraints3.c common34.c dapcvt.c dapalign.c dapodom.c daputil.c
+	ncdaperr.c cdf3.c cache.c dapdump.c dapdebug.c dapattr3.c
+	ncd3dispatch.c ncdap3.c ncdap3a.c getvara3.c dceconstraints.c dcetab.c
+	dceparse.c dcelex.c
+	nccommon.h constraints3.h ncd3dispatch.h ncdap3.h dapalign.h
+	dapodom.h getvara.h dapnc.h daputil.h dapdebug.h dapdump.h
+	dceconstraints.h dcetab.h dceparselex.h
+	)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

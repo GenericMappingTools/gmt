@@ -34,7 +34,7 @@
 int
 main(int argc, char **argv)
 {
-    int ncid, spockid, kirkid, dimids[NUMDIMS];
+    int ncid, spockid, kirkid, dimids[NUMDIMS], recdimid, scottyid;
     int int_val_in, int_val_out = 99;
     double double_val_in, double_val_out = 1.79769313486230e+308; /* from ncx.h */
     size_t index[2] = {QTR_CLASSIC_MAX-1, 0};
@@ -55,6 +55,7 @@ main(int argc, char **argv)
 
     for (cmode_run=0; cmode_run<2; cmode_run++)
     {
+	size_t big_index = (size_t)MAX_CLASSIC_BYTES + 10;
  	/* On second pass, try using NC_SHARE. */
 	if (cmode_run == 1) 
 	{
@@ -72,15 +73,27 @@ main(int argc, char **argv)
 	    ERR;
 	if ((res = nc_def_dim(ncid, "longdim", QTR_CLASSIC_MAX, dimids)))
 	    ERR;
+	/* test bug fix writing record beyond 2**31 */
+	if ((res = nc_def_dim(ncid, "longerdim", NC_UNLIMITED, &recdimid)))
+	    ERR;
 	if ((res = nc_def_var(ncid, "spock", NC_DOUBLE, NUMDIMS, 
 			      dimids, &spockid)))
 	    ERR;
 	if ((res = nc_def_var(ncid, "kirk", NC_DOUBLE, NUMDIMS, 
 			      dimids, &kirkid)))
 	    ERR;
+	if ((res = nc_def_var(ncid, "scotty", NC_BYTE, 1, 
+			      &recdimid, &scottyid)))
+	    ERR;
 	if ((res = nc_enddef(ncid)))
 	    ERR;
 	if ((res = nc_put_var1_double(ncid, kirkid, index, &double_val_out)))
+	    ERR;
+	if ((res = nc_put_var1_int(ncid, scottyid, &big_index, &int_val_out)))
+	    ERR;
+	if ((res = nc_get_var1_int(ncid, scottyid, &big_index, &int_val_in)))
+	    ERR;
+	if (int_val_in != int_val_out) 
 	    ERR;
 	if ((res = nc_close(ncid)))
 	    ERR;

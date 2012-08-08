@@ -114,7 +114,7 @@ ncbytesappend(NCbytes* bb, char elem)
 
 /* This assumes s is a null terminated string*/
 int
-ncbytescat(NCbytes* bb, char* s)
+ncbytescat(NCbytes* bb, const char* s)
 {
     ncbytesappendn(bb,(void*)s,strlen(s)+1); /* include trailing null*/
     /* back up over the trailing null*/

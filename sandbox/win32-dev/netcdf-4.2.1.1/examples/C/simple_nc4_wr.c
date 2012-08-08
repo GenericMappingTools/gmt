@@ -1,27 +1,15 @@
-/* This is part of the netCDF-4 package. Copyright 2007 University
-   Corporation for Atmospheric Research/Unidata.  See COPYRIGHT file
-   for conditions of use.
+/** \file
+Write a file demonstrating some of the features of netCDF-4.
 
-   This is a very simple example which demonstrates some of the
-   new features of netCDF-4.0.
+We create two shared dimensions, "x" and "y", in a parent group, and
+some netCDF variables in different subgroups. The variables will
+include a compound and an enum type, as well as some of the new atomic
+types, like the unsigned 64-bit integer.
 
-   We create two shared dimensions, "x" and "y", in a parent group,
-   and some netCDF variables in different subgroups. The variables
-   will include a compound and an enum type, as well as some of the
-   new atomic types, like the unsigned 64-bit integer.
-
-   This example demonstrates the netCDF-4 C API. This is part of the
-   netCDF tutorial, which can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-tutorial.html
-
-   To understand this example program, users should have a good
-   understanding of the netCDF-3 API. See the example program
-   simple_xy_wr.c for a netCDF-3 example.
-
-   Full documentation of the netCDF-4 C API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c.html
-
-   $Id$
+This is part of the netCDF package. Copyright 2006-2011 University
+Corporation for Atmospheric Research/Unidata. See COPYRIGHT file for
+conditions of use. Full documentation of the netCDF can be found at
+http://www.unidata.ucar.edu/software/netcdf/docs.
 */
 
 #include <stdlib.h>

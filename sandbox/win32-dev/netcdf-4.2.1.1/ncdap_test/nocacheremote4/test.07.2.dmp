@@ -1,0 +1,29 @@
+netcdf test {
+types:
+  compound person_record_t {
+    string name ;
+    int age ;
+  }; // person_record_t
+  person_record_t(*) person_t ;
+  compound types_record_t {
+    ubyte b ;
+    int i32 ;
+    uint ui32 ;
+    short i16 ;
+    ushort ui16 ;
+    float f32 ;
+    double f64 ;
+    string s ;
+    string u ;
+  }; // types_record_t
+  types_record_t(*) types_t ;
+variables:
+	person_t person ;
+	types_t types ;
+data:
+
+ person = 
+    {{"This is a data test string (pass 2).", 3}, {"This is a data test string (pass 3).", 5}, {"This is a data test string (pass 4).", 8}} ;
+
+ types = {} ;
+}

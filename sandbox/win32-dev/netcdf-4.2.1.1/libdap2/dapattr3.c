@@ -6,62 +6,116 @@
 
 #include "ncdap3.h"
 
-#define OCHECK(exp) if((ocstat = (exp))) goto done;
+#define OCCHECK(exp) if((ocstat = (exp))) {THROWCHK(ocstat); goto done;}
 
 /* Forward */
-static NCerror buildattribute(char*,nc_type,NClist*,NCattribute**);
-static int mergedas1(OCconnection, CDFnode* dds, OCobject das);
-static NCerror dodsextra3(NCDAPCOMMON*, CDFnode*, NClist*);
-static int isglobalname3(char* name);
+static NCerror buildattribute(char*,nc_type,size_t,char**,NCattribute**);
 
-#ifdef IGNORE
-/* Extract attributes from the underlying oc objects
-   and rematerialize them with the CDFnodes.
+/*
+Invoke oc_merge_das and then extract special
+attributes such as "strlen" and "dimname"
+and stuff from DODS_EXTRA.
 */
-
-NCerror
-dapmerge3(NCDAPCOMMON* nccomm, CDFnode* node)
+int
+dapmerge3(NCDAPCOMMON* nccomm, CDFnode* ddsroot, OCddsnode dasroot)
 {
-    unsigned int i;
-    char* aname;
-    unsigned int nvalues,nattrs;
-    void* values;
-    OCtype atype;
-    OCerror ocstat = OC_NOERR;
+    int i,j;
     NCerror ncstat = NC_NOERR;
-    NCattribute* att;
+    OCerror ocstat = OC_NOERR;
+    NClist* allnodes;
+    OClink conn;
+    char* ocname = NULL;
 
-    if(node->dds == OCNULL) goto done;
-    OCHECK(oc_inq_nattr(nccomm->conn,node->dds,&nattrs));
-    if(nattrs == 0) goto done;
-    if(node->attributes == NULL) node->attributes = nclistnew();
-    for(i=0;i<nattrs;i++) {
-	ocstat = oc_inq_attr(nccomm->conn,node->dds,i,
-			           &aname,
-			           &atype,
-                                   &nvalues,
-                                   &values);
-	if(ocstat != OC_NOERR) continue; /* ignore */
-        if(aname == NULL || nvalues == 0 || values == NULL)
-	    continue; /* nothing to do */
-	ncstat = buildattribute(aname,octypetonc(atype),
-				      nvalues,values,&att);
-	if(ncstat == NC_NOERR)
-            nclistpush(node->attributes,(ncelem)att);
-	nullfree(aname);
-	oc_attr_reclaim(atype,nvalues,values);
+    conn = nccomm->oc.conn;
+
+    if(ddsroot == NULL || dasroot == NULL) return NC_NOERR;
+    /* Merge the das tree onto the dds tree */ 
+    ocstat = oc_merge_das(nccomm->oc.conn,dasroot,ddsroot);
+    if(ocstat != OC_NOERR) goto done;
+
+    /* Create attributes on CDFnodes */
+    allnodes = nccomm->cdf.ddsroot->tree->nodes;
+    for(i=0;i<nclistlength(allnodes);i++) {
+	CDFnode* node = (CDFnode*)nclistget(allnodes,i);
+	OCddsnode ocnode = node->ocnode;
+	size_t attrcount;
+	OCtype ocetype;
+			
+	OCCHECK(oc_dds_attr_count(conn,ocnode,&attrcount));
+	for(j=0;j<attrcount;j++) {
+	    size_t nvalues;
+	    char** values = NULL;
+	    NCattribute* att = NULL;
+
+	    if(ocname != NULL) free(ocname); /* from last loop */
+	    OCCHECK(oc_dds_attr(conn,ocnode,j,&ocname,&ocetype,&nvalues,NULL));
+	    if(nvalues > 0) {
+	        values = (char**)malloc(sizeof(char*)*nvalues);
+		if(values == NULL) {ncstat = NC_ENOMEM; goto done;}
+	        OCCHECK(oc_dds_attr(conn,ocnode,j,NULL,NULL,NULL,values));
+	    }
+	    ncstat = buildattribute(ocname,octypetonc(ocetype),nvalues,values,&att);
+	    if(ncstat != NC_NOERR) goto done;
+	    if(node->attributes == NULL)
+		node->attributes = nclistnew();
+	    nclistpush(node->attributes,(ncelem)att);
+	    if(strncmp(ocname,"DODS",strlen("DODS"))==0) {
+		att->invisible = 1;
+	        /* Define extra semantics associated with
+                   DODS and DODS_EXTRA attributes */
+		if(strcmp(ocname,"DODS.strlen")==0
+		   || strcmp(ocname,"DODS_EXTRA.strlen")==0) {
+		    unsigned int maxstrlen = 0;
+		    if(values != NULL) {
+			if(0==sscanf(values[0],"%u",&maxstrlen))
+			    maxstrlen = 0;
+		    }
+		    node->dodsspecial.maxstrlen = maxstrlen;
+#ifdef DEBUG
+fprintf(stderr,"%s.maxstrlen=%d\n",node->ocname,(int)node->dodsspecial.maxstrlen);
+#endif
+		} else if(strcmp(ocname,"DODS.dimName")==0
+		   || strcmp(ocname,"DODS_EXTRA.dimName")==0) {
+		    if(values != NULL) {
+		        node->dodsspecial.dimname = nulldup(values[0]);
+#ifdef DEBUG
+fprintf(stderr,"%s.dimname=%s\n",node->ocname,node->dodsspecial.dimname);
+#endif
+		    } else node->dodsspecial.dimname = NULL;
+		} else if(strcmp(ocname,"DODS.Unlimited_Dimension")==0
+		   || strcmp(ocname,"DODS_EXTRA.Unlimited_Dimension")==0) {
+		    if(values != NULL) {
+		        if(nccomm->cdf.recorddimname != NULL)
+		            nclog(NCLOGWARN,"Duplicate DODS_EXTRA:Unlimited_Dimension specifications");
+			else
+		            nccomm->cdf.recorddimname = nulldup(values[0]);
+#ifdef DEBUG
+fprintf(stderr,"%s.Unlimited_Dimension=%s\n",node->ocname,nccomm->cdf.recorddimname);
+#endif
+		    }
+
+		}
+	    }
+	    /* clean up */
+	    if(values) {
+		oc_reclaim_strings(nvalues,values);
+		free(values);
+	    }
+	}
     }
+
 done:
+    if(ocname != NULL) free(ocname);
     if(ocstat != OC_NOERR) ncstat = ocerrtoncerr(ocstat);
     return THROW(ncstat);
 }
 
-#endif
-
+/* Build an NCattribute */
 static NCerror
 buildattribute(char* name, nc_type ptype,
-               NClist* values, NCattribute** attp)
+               size_t nvalues, char** values, NCattribute** attp)
 {
+    int i;
     NCerror ncstat = NC_NOERR;
     NCattribute* att;
 
@@ -70,115 +124,102 @@ buildattribute(char* name, nc_type ptype,
     att->name = nulldup(name);
     att->etype = ptype;
 
-    att->values = values;
+    att->values = nclistnew();
+    for(i=0;i<nvalues;i++)
+	nclistpush(att->values,(ncelem)nulldup(values[i]));
 
     if(attp) *attp = att;
 
     return THROW(ncstat);
 }
 
-#ifdef IGNORE
-static NCerror
-cvttype(nc_type etype, char** srcp, char** dstp)
-{
-    unsigned int typesize = nctypesizeof(etype);
-    char* src = *srcp;
-    char* dst = *dstp;
-
-    switch (etype) {
-    case NC_STRING: case NC_URL: {
-	char* ssrc = *(char**)src;	
-	*((char**)dst) = nulldup(ssrc);
-	srcp += typesize;
-	dstp += typesize;
-    } break;
-    
-    default:
-	if(typesize == 0) goto fail;
-	memcpy((void*)dst,(void*)src,typesize);
-	srcp += typesize;
-	dstp += typesize;
-	break;
-    }
-    return NC_NOERR;
-fail:
-    nclog(NCLOGERR,"cvttype bad value: %s",oc_typetostring(etype));
-    return NC_EINVAL;
-}
-#endif
-
-
+#if 0
 /*
-Duplicate the oc merge das and dds code, but
-modify to capture such things as "strlen" and "dimname".
+Given a das attribute walk it to see if it
+has at least 1 actual attribute (no recursion)
 */
+static int
+hasattribute3(OClink conn, OCdasnode dasnode)
+{
+    int i;
+    OCerror ocstat = OC_NOERR;
+    int tf = 0; /* assume false */
+    OCtype ocsubtype;
+    NClist* subnodes = nclistnew();
+
+    OCCHECK(oc_dds_octype(conn,dasnode,&ocsubtype));
+    if(ocsubtype == OC_Attribute) return 1; /* this is an attribute */
+    ASSERT((ocsubtype == OC_Attributeset));
+
+    OCCHECK(collect_subnodes(conn,dasnode,subnodes));
+    for(i=0;i<nclistlength(subnodes);i++) {
+        OCdasnode subnode = (OCdasnode)nclistget(subnodes,i);
+        OCCHECK(oc_dds_class(conn,subnode,&ocsubtype));
+	if(ocsubtype == OC_Attribute) {tf=1; break;}
+    }
+done:
+    nclistfree(subnodes);
+    return tf;
+}
 
 int
-dapmerge3(NCDAPCOMMON* nccomm, CDFnode* ddsroot, OCobject dasroot)
+dapmerge3(NCDAPCOMMON* nccomm, CDFnode* ddsroot, OCddsnode dasroot)
 {
     unsigned int i,j;
     NCerror ncerr = NC_NOERR;
     OCerror ocstat = OC_NOERR;
-    OCconnection conn = nccomm->oc.conn;
-    unsigned int nsubnodes, nobjects;
-    OCobject* dasobjects = NULL;
+    OClink conn = nccomm->oc.conn;
+    size_t nsubnodes;
     NClist* dasglobals = nclistnew();
-    NClist* dodsextra = nclistnew();
     NClist* dasnodes = nclistnew();
+    NClist* dodsextra = nclistnew();
     NClist* varnodes = nclistnew();
-    NClist* allddsnodes = ddsroot->tree->nodes;
+    NClist* alldasnodes = nclistnew();    
 
     if(ddsroot == NULL || dasroot == NULL) return NC_NOERR;
 
-    nobjects = oc_inq_nobjects(conn,dasroot);
-    dasobjects = oc_inq_objects(conn,dasroot);
+    ocstat = collect_alldasnodes(conn,dasroot,alldasnodes);
     
     /* 1. collect all the relevant DAS nodes;
           namely those that contain at least one
           attribute value.
           Simultaneously look for potential ambiguities
           if found; complain but continue: result are indeterminate.
-          also collect globals and DODS_EXTRAs separately*/
-    for(i=0;i<nobjects;i++) {
-	OCobject das = dasobjects[i];
+          also collect globals and DODS_EXTRA separately.
+    */
+    for(i=0;i<nclistlength(alldasnodes);i++) {
+	OCddsnode das = (OCddsnode)nclistget(alldasnodes,i);
 	OCtype octype;
         char* ocname = NULL;
 	int isglobal = 0;
 	int hasattributes = 0;
-	OCobject* subnodes;
 
-        OCHECK(oc_inq_class(conn,das,&octype));
+        OCCHECK(oc_dds_class(conn,das,&octype));
 	if(octype == OC_Attribute) continue; /* ignore these for now*/
 
-        OCHECK(oc_inq_name(conn,das,&ocname));
-	OCHECK(oc_inq_nsubnodes(conn,das,&nsubnodes));
+        OCCHECK(oc_dds_name(conn,das,&ocname));
+	OCCHECK(oc_dds_nsubnodes(conn,das,&nsubnodes));
 
 	isglobal = (ocname == NULL ? 0 : isglobalname3(ocname));
 
-	if(ocname == NULL || isglobal) {
-	    nclistpush(dasglobals,(ncelem)das);
-	    nullfree(ocname);
-	    continue;
-	}
-	if(ocname != NULL && strcmp(ocname,"DODS_EXTRA")==0) {
+	/* catch DODS_EXTRA */
+	if(isglobal && ocname != NULL && strcmp(ocname,"DODS_EXTRA")==0) {
 	    nclistpush(dodsextra,(ncelem)das);
 	    nullfree(ocname);
 	    continue;
 	}
-	OCHECK(oc_inq_subnodes(conn,das,&subnodes));
-	for(j=0;j<nsubnodes;j++) {
-	    OCobject subnode = subnodes[j];
-	    OCtype ocsubtype;
-            OCHECK(oc_inq_class(conn,subnode,&ocsubtype));
-	    if(ocsubtype == OC_Attribute) {hasattributes = 1; break;}
+	if(ocname == NULL || isglobal) {
+            nclistpush(dasglobals,(ncelem)das);
+	    nullfree(ocname);
+	    continue;
 	}
-	nullfree(subnodes);
+	hasattributes = hasattribute3(conn,das);
 	if(hasattributes) {
 	    /* Look for previously collected nodes with same name*/
             for(j=0;j<nclistlength(dasnodes);j++) {
-	        OCobject das2 = (OCobject)nclistget(dasnodes,j);
+	        OCddsnode das2 = (OCddsnode)nclistget(dasnodes,j);
 		char* ocname2;
-	        OCHECK(oc_inq_name(conn,das2,&ocname2));
+	        OCCHECK(oc_dds_name(conn,das2,&ocname2));
 		if(ocname2 == NULL || ocname == NULL) goto loop;
 		if(strcmp(ocname2,"DODS")==0) goto loop;
 	        if(strcmp(ocname,ocname2)==0)
@@ -191,33 +232,39 @@ loop:
 	nullfree(ocname);
     }
 
-    /* 2. collect all the leaf DDS nodes (of type NC_Primitive)*/
-    for(i=0;i<nclistlength(allddsnodes);i++) {
-	CDFnode* dds = (CDFnode*)nclistget(allddsnodes,i);
-	if(dds->nctype == NC_Primitive) nclistpush(varnodes,(ncelem)dds);
-    }
+    /* 2. collect all the leaf DDS nodes (of type NC_Atomic)*/
+    ocstat = collect_leaves(link,ddsroot,varnodes);
 
-    /* 3. For each das node, lncate matching DDS node(s) and attach
+    /* 3. For each das node, locate matching DDS node(s) and attach
           attributes to the DDS node(s).
           Match means:
           1. DAS->fullname :: DDS->fullname
           2. DAS->name :: DDS->fullname (support DAS names with embedded '.'
           3. DAS->name :: DDS->name
+	  4. special case for DODS. Apply 1-3 on DODS parent.
     */
     for(i=0;i<nclistlength(dasnodes);i++) {
-	OCobject das = (OCobject)nclistget(dasnodes,i);
-	char* ocfullname;
-	char* ocbasename;
-	if(das == OCNULL) continue;
-	ocfullname = makeocpathstring3(conn,das,".");
-	OCHECK(oc_inq_name(conn,das,&ocbasename));
+	OCddsnode das = (OCddsnode)nclistget(dasnodes,i);
+	char* ocfullname = NULL;
+	char* ocbasename = NULL;
+
+	if(das == NULL) continue;
+	OCCHECK(oc_dds_name(conn,das,&ocbasename));
+	if(strcmp(ocbasename,"DODS")==0) {
+	    OCddsnode container;
+   	    OCCHECK(oc_dds_container(conn,das,&container));
+            ASSERT(container != NULL);
+	    ocfullname = makeocpathstring3(conn,container,".");
+	} else {
+	    ocfullname = makeocpathstring3(conn,das,".");
+	}
         for(j=0;j<nclistlength(varnodes);j++) {
 	    CDFnode* dds = (CDFnode*)nclistget(varnodes,j);
-	    char* ddsfullname = makesimplepathstring3(dds);
+	    char* ddsfullname = makecdfpathstring3(dds,".");
 	    if(strcmp(ocfullname,ddsfullname)==0
 	       || strcmp(ocbasename,ddsfullname)==0
-	       || strcmp(ocbasename,dds->name)==0) {
-		mergedas1(conn,dds,das);
+	       || strcmp(ocbasename,dds->ocname)==0) {
+		mergedas1(nccomm,conn,dds,das);
 		/* remove from dasnodes list*/
 		nclistset(dasnodes,i,(ncelem)NULL);
 	    }
@@ -227,58 +274,61 @@ loop:
 	nullfree(ocbasename);
     }
 
-    /* 4. Assign globals*/
+    /* 4. Assign globals */
     for(i=0;i<nclistlength(dasglobals);i++) {
-	OCobject das = (OCobject)nclistget(dasglobals,i);
-	mergedas1(conn,ddsroot,das);
+	OCddsnode das = (OCddsnode)nclistget(dasglobals,i);
+	mergedas1(nccomm,conn,ddsroot,das);
     }
 
-    /* process DOD_EXTRA */
-    if(nclistlength(dodsextra) > 0) dodsextra3(nccomm,ddsroot,dodsextra);    
+    /* 5. Assign DOD_EXTRA */
+    for(i=0;i<nclistlength(dodsextra);i++) {
+	OCddsnode das = (OCddsnode)nclistget(dodsextra,i);
+	mergedas1(nccomm,conn,ddsroot,das);
+    }
 
 done: /* cleanup*/
-    nullfree(dasobjects);
     nclistfree(dasglobals);
     nclistfree(dasnodes);
+    nclistfree(alldasnodes);
     nclistfree(dodsextra);
     nclistfree(varnodes);
-    if(ocstat != OC_NOERR) ncerr = ocerrtoncerr(ocstat);
+    if(ocstat != OC_NOERR)
+	ncerr = ocerrtoncerr(ocstat);
     return THROW(ncerr);
 }
 
 static int
-mergedas1(OCconnection conn, CDFnode* dds, OCobject das)
+mergedas1(NCDAPCOMMON* nccomm, OClink conn, CDFnode* dds, OCddsnode das)
 {
     NCerror ncstat = NC_NOERR;
     OCerror ocstat = OC_NOERR;
-    unsigned int i,j;
+    unsigned int i,j,k;
     unsigned int nsubnodes;
     OCobject* subnodes = NULL;
     OCobject* dodsnodes = NULL;
     unsigned int ndodsnodes;
 
-
     if(dds == NULL || das == OCNULL) return NC_NOERR; /* nothing to do */
     if(dds->attributes == NULL) dds->attributes = nclistnew();
     /* assign the simple attributes in the das set to this dds node*/
-    OCHECK(oc_inq_nsubnodes(conn,das,&nsubnodes));
-    OCHECK(oc_inq_subnodes(conn,das,&subnodes));
+    OCCHECK(oc_inq_nsubnodes(conn,das,&nsubnodes));
+    OCCHECK(oc_inq_subnodes(conn,das,&subnodes));
     for(i=0;i<nsubnodes;i++) {
 	OCobject attnode = subnodes[i];
 	OCtype octype, ocetype;
 	char* ocname = NULL;
 	unsigned int ocnvalues;
-        OCHECK(oc_inq_name(conn,attnode,&ocname));	
-        OCHECK(oc_inq_class(conn,attnode,&octype));
+        OCCHECK(oc_inq_name(conn,attnode,&ocname));	
+        OCCHECK(oc_inq_class(conn,attnode,&octype));
 	if(octype == OC_Attribute) {
 	    NCattribute* att = NULL;
 	    NClist* stringvalues;
-            OCHECK(oc_inq_primtype(conn,attnode,&ocetype));	
-	    OCHECK(oc_inq_dasattr_nvalues(conn,attnode,&ocnvalues));
+            OCCHECK(oc_inq_primtype(conn,attnode,&ocetype));	
+	    OCCHECK(oc_inq_dasattr_nvalues(conn,attnode,&ocnvalues));
 	    stringvalues = nclistnew();
 	    for(j=0;j<ocnvalues;j++) {
 		char* stringval;
-	        OCHECK(oc_inq_dasattr(conn,attnode,j,&ocetype,&stringval));
+	        OCCHECK(oc_inq_dasattr(conn,attnode,j,&ocetype,&stringval));
 	        nclistpush(stringvalues,(ncelem)stringval);
 	    }
 	    ncstat = buildattribute(ocname,
@@ -287,42 +337,75 @@ mergedas1(OCconnection conn, CDFnode* dds, OCobject das)
 				    &att);				
 	    if(ncstat) goto done;
             nclistpush(dds->attributes,(ncelem)att);
-	} else if(octype == OC_Attributeset && strcmp(ocname,"DODS")==0) {
-	    /* This is a DODS special attribute set */
-	    OCHECK(oc_inq_nsubnodes(conn,attnode,&ndodsnodes));
-	    OCHECK(oc_inq_subnodes(conn,attnode,&dodsnodes));
+	} else if(octype == OC_Attributeset
+		  && (strcmp(ocname,"DODS")==0
+		      || strcmp(ocname,"DODS_EXTRA")==0)) {
+	    /* Turn the DODS special attributes into into
+               special attributes for dds node */
+	    OCCHECK(oc_inq_nsubnodes(conn,attnode,&ndodsnodes));
+	    OCCHECK(oc_inq_subnodes(conn,attnode,&dodsnodes));
 	    for(j=0;j<ndodsnodes;j++) {
 		char* dodsname = NULL;
-		char* stringval;
-	        OCobject dodsnode = dodsnodes[j];
-	        OCHECK(oc_inq_class(conn,dodsnode,&octype));
+		char newname[4096];
+	        OCobject attnode = dodsnodes[j];
+	        NCattribute* att = NULL;
+	        NClist* stringvalues;
+	        OCCHECK(oc_inq_class(conn,attnode,&octype));
 		if(octype != OC_Attribute) continue;
-	        OCHECK(oc_inq_name(conn,dodsnode,&dodsname));
-	        OCHECK(oc_inq_dasattr_nvalues(conn,dodsnode,&ocnvalues));
+                OCCHECK(oc_inq_primtype(conn,attnode,&ocetype));	
+	        OCCHECK(oc_inq_dasattr_nvalues(conn,attnode,&ocnvalues));
+	        stringvalues = nclistnew();
+	        for(k=0;k<ocnvalues;k++) {
+		    char* stringval;
+	            OCCHECK(oc_inq_dasattr(conn,attnode,k,&ocetype,&stringval));
+	            nclistpush(stringvalues,(ncelem)stringval);
+		}
+	        OCCHECK(oc_inq_name(conn,attnode,&dodsname));
+		/* Compute new special name */
+		strcpy(newname,"_DODS_");
+		strcat(newname,dodsname);
+	        ncstat = buildattribute(newname,
+				        octypetonc(ocetype),
+				        stringvalues,
+				        &att);				
+		if(ncstat) goto done;
+		att->invisible = 1;
+            	nclistpush(dds->attributes,(ncelem)att);
+
+		/* Define extra semantics associated with DODS and DODS_EXTRA attribute */
 		if(strcmp(dodsname,"strlen")==0) {
 		    unsigned int maxstrlen = 0;
-		    if(ocnvalues > 0) {
-		        OCHECK(oc_inq_dasattr(conn,dodsnode,0,NULL,&stringval));
+		    if(nclistlength(stringvalues) > 0) {
+		        char* stringval = (char*)nclistget(stringvalues,0);
 			if(0==sscanf(stringval,"%u",&maxstrlen)) maxstrlen = 0;
-			nullfree(stringval);
 		    }
 		    dds->dodsspecial.maxstrlen = maxstrlen;
 #ifdef DEBUG
-fprintf(stderr,"%s.maxstrlen=%d\n",dds->name,(int)dds->dodsspecial.maxstrlen);
+fprintf(stderr,"%s.maxstrlen=%d\n",dds->ocname,(int)dds->dodsspecial.maxstrlen);
 #endif
 		} else if(strcmp(dodsname,"dimName")==0) {
-		    if(ocnvalues > 0) {
-		        OCHECK(oc_inq_dasattr(conn,dodsnode,0,NULL,
-				&dds->dodsspecial.dimname));
+		    if(nclistlength(stringvalues) > 0) {
+		        char* stringval = (char*)nclistget(stringvalues,0);
+		        dds->dodsspecial.dimname = nulldup(stringval);
 #ifdef DEBUG
-fprintf(stderr,"%s.dimname=%s\n",dds->name,dds->dodsspecial.dimname);
+fprintf(stderr,"%s.dimname=%s\n",dds->ocname,dds->dodsspecial.dimname);
 #endif
 		    } else dds->dodsspecial.dimname = NULL;
+		} else if(strcmp(dodsname,"Unlimited_Dimension")==0) {
+		    if(nccomm->cdf.recorddimname != NULL) {
+		        nclog(NCLOGWARN,"Duplicate DODS_EXTRA:Unlimited_Dimension specifications");
+		    } else if(nclistlength(stringvalues) > 0) {
+		        char* stringval = (char*)nclistget(stringvalues,0);
+			nccomm->cdf.recorddimname = nulldup(stringval);
+#ifdef DEBUG
+fprintf(stderr,"%s.Unlimited_Dimension=%s\n",dds->ocname,nccomm->cdf.recorddimname);
+#endif
+		    }
 		} /* else ignore */
 	        nullfree(dodsname);
 	    }
 	    nullfree(dodsnodes);
-	} /* else ignore */
+	}
         nullfree(ocname);
     }
 
@@ -331,46 +414,6 @@ done:
     if(ocstat != OC_NOERR) ncstat = ocerrtoncerr(ocstat);
     return THROW(ncstat);
 }
-
-static NCerror
-dodsextra3(NCDAPCOMMON* nccomm, CDFnode* root, NClist* dodsextra)
-{
-    int i,j;
-    OCtype octype;
-    NCerror ncstat = NC_NOERR;
-    OCerror ocstat = OC_NOERR;
-    OCconnection conn = nccomm->oc.conn;
-
-    for(i=0;i<nclistlength(dodsextra);i++) {
- 	OCobject das = (OCobject)nclistget(dodsextra,i);
-	unsigned int ndodsnodes;
-	OCobject* dodsnodes = NULL;
-        OCHECK(oc_inq_class(conn,das,&octype));
-	if(octype != OC_Attributeset) continue;
-	/* Get the attributes within the DODS_EXTRA */
-        OCHECK(oc_inq_nsubnodes(conn,das,&ndodsnodes));
-        OCHECK(oc_inq_subnodes(conn,das,&dodsnodes));
-        for(j=0;j<ndodsnodes;j++) {
-	    OCobject extranode = dodsnodes[j];
-   	    char* dodsname = NULL;
-	    char* stringval;
-	    unsigned int ocnvalues;
-	    OCHECK(oc_inq_class(conn,extranode,&octype));
-	    if(octype != OC_Attribute) continue;
-	    OCHECK(oc_inq_name(conn,extranode,&dodsname));
-	    OCHECK(oc_inq_dasattr_nvalues(conn,extranode,&ocnvalues));
-	    if(strcmp(dodsname,"Unlimited_Dimension")==0 && ocnvalues > 0) {
-	        OCHECK(oc_inq_dasattr(conn,extranode,0,NULL,&stringval));
-		nccomm->cdf.recorddim = stringval;
-	    }
-	    nullfree(dodsname);
-	}
-	nullfree(dodsnodes);
-    }
-done:
-    return ncstat;
-}
-
 
 static int
 isglobalname3(char* name)
@@ -385,3 +428,68 @@ isglobalname3(char* name)
     return 1;
 }
 
+
+static OCerror
+collect_alldasnodes(OClink link, OCddsnode dasnode, NClist* alldasnodes)
+{
+    size_t nsubnodes,i;
+    OCerror ocstat = OC_NOERR;
+    nclistpush(alldasnodes,(ncelem)dasnode);
+    ocstat = oc_dds_nsubnodes(link,dasnode,&nsubnodes);
+    if(ocstat != OC_NOERR) goto done;
+    for(i=0;i<nsubnodes;i++) {
+	OCddsnode subnode;
+	ocstat = oc_dds_ithsubnode(link,dasnode,i,&subnode);
+        if(ocstat != OC_NOERR) goto done;
+	ocstat = collect_alldasnodes(link,subnode,alldasnodes);
+        if(ocstat != OC_NOERR) goto done;	
+    }
+    
+done:
+    return ocstat;
+}
+
+static OCerror
+collect_leaves(OClink link, OCddsnode ddsnode, NClist* leaves)
+{
+    size_t nsubnodes,i;
+    OCerror ocstat = OC_NOERR;
+    OCtype octype;
+    ocstat = oc_dds_octype(link,ddsnode,&octype);
+    if(ocstat != OC_NOERR) goto done;
+    if(octype == OC_Atomic) {
+        nclistpush(leaves,(ncelem)ddsnode);
+    } else {
+        ocstat = oc_dds_nsubnodes(link,ddsnode,&nsubnodes);
+        if(ocstat != OC_NOERR) goto done;
+        for(i=0;i<nsubnodes;i++) {
+	    OCddsnode subnode;
+	    ocstat = oc_dds_ithsubnode(link,ddsnode,i,&subnode);
+            if(ocstat != OC_NOERR) goto done;
+	    ocstat = collect_leaves(link,subnode,leaves);
+            if(ocstat != OC_NOERR) goto done;	
+	}
+    }
+    
+done:
+    return ocstat;
+}
+
+static OCerror
+collect_subnodes(OClink link, OCddsnode ddsnode, NClist* subnodes)
+{
+    size_t nsubnodes,i;
+    OCerror ocstat = OC_NOERR;
+    ocstat = oc_dds_nsubnodes(link,ddsnode,&nsubnodes);
+    if(ocstat != OC_NOERR) goto done;
+    for(i=0;i<nsubnodes;i++) {
+        OCddsnode subnode;
+	ocstat = oc_dds_ithsubnode(link,ddsnode,i,&subnode);
+        if(ocstat != OC_NOERR) goto done;
+	nclistpush(subnodes,(ncelem)subnode);
+    }
+    
+done:
+    return ocstat;
+}
+#endif /*0*/

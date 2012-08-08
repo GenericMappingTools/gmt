@@ -289,11 +289,11 @@ check_fill_seq(int id)
 	if(nc_get_var1_float(id, Float_id, vindices, &got.fl[0]) == -1) 
 		goto bad_ret;
 	val = (float) ii;
-	if(val != got.fl[0])
-	{
-		parray("indices", NUM_DIMS, vindices);
-		(void) printf("\t%f != %f\n", val, got.fl[0]);
-	}
+	/* if(val != got.fl[0]) */
+	/* { */
+	/* 	parray("indices", NUM_DIMS, vindices); */
+	/* 	(void) printf("\t%f != %f\n", val, got.fl[0]); */
+	/* } */
 		    (*cc)++; ii++;
 		    continue;
 		}
@@ -357,7 +357,7 @@ main(int ac, char *av[])
 
 	ret = nc__create(fname,NC_NOCLOBBER, initialsz, &chunksz, &id);
 	if(ret != NC_NOERR) {
-		(void) fprintf(stderr, "trying again\n");
+ 		/* (void) fprintf(stderr, "trying again\n"); */
 		ret = nc__create(fname,NC_CLOBBER, initialsz, &chunksz, &id);
 	}
 	if(ret != NC_NOERR) 
@@ -400,7 +400,7 @@ main(int ac, char *av[])
 
 	assert( nc_rename_dim(id,1, "IXX") == NC_NOERR);
 	assert( nc_inq_dim(id, 1, buf, &ui) == NC_NOERR);
-	(void) printf("dimrename: %s\n", buf);
+	/* (void) printf("dimrename: %s\n", buf); */
 	assert( nc_rename_dim(id,1, dim_names[1]) == NC_NOERR);
 
 #ifdef ATTRX
@@ -453,7 +453,7 @@ main(int ac, char *av[])
 #endif /* SYNCDEBUG */
 
 	ret = nc_close(id);
-	(void) printf("nc_close ret = %d\n\n", ret);
+	/* (void) printf("nc_close ret = %d\n\n", ret); */
 
 
 /*
@@ -466,20 +466,20 @@ main(int ac, char *av[])
 			nc_strerror(ret));
    	    exit(1);
 	}
-	(void) printf("reopen id = %d for filename %s\n",
-		id, fname);
+	/* (void) printf("reopen id = %d for filename %s\n", */
+	/* 	id, fname); */
 
 	/*	NC	*/ 
-	(void) printf("NC ");
+	/* (void) printf("NC "); */
 	assert( nc_inq(id, &(cdesc->num_dims), &(cdesc->num_vars),
 		&(cdesc->num_attrs), &(cdesc->xtendim) ) == NC_NOERR);
 	assert((size_t) cdesc->num_dims == num_dims);
 	assert(cdesc->num_attrs == 1);
 	assert(cdesc->num_vars == NUM_TESTVARS);
-	(void) printf("done\n");
+	/* (void) printf("done\n"); */
 	
 	/*	GATTR	*/
-	(void) printf("GATTR ");
+	/* (void) printf("GATTR "); */
 
 	assert( nc_inq_attname(id, NC_GLOBAL, 0, adesc->mnem) == 0);
 	assert(strcmp("TITLE",adesc->mnem) == 0);
@@ -491,7 +491,7 @@ main(int ac, char *av[])
 	assert( strcmp(fname, buf) == 0);
 
 	/*	VAR	*/
-	(void) printf("VAR ");
+	/* (void) printf("VAR "); */
 	assert( cdesc->num_vars == NUM_TESTVARS );
 
 	for(ii = 0; ii < cdesc->num_vars; ii++, tvp++ ) 
@@ -527,7 +527,7 @@ main(int ac, char *av[])
 		}
 
 		/* VATTR */
-		(void) printf("VATTR\n");
+		/* (void) printf("VATTR\n"); */
 		for(jj=0; jj<vdesc->num_attrs; jj++ ) 
 		{
 			assert( nc_inq_attname(id, ii, jj, adesc->mnem) == NC_NOERR);
@@ -598,59 +598,59 @@ main(int ac, char *av[])
 		}
 	}
 
-	(void) printf("fill_seq ");
+	/* (void) printf("fill_seq "); */
 	check_fill_seq(id);
-	(void) printf("Done\n");
+	/* (void) printf("Done\n"); */
 
 	assert( nc_get_var1_double(id, Double_id, indices[0], &got.dbl)== NC_NOERR);
-	(void) printf("got val = %f\n", got.dbl );
+	/* (void) printf("got val = %f\n", got.dbl ); */
 
 	assert( nc_get_var1_double(id, Double_id, indices[1], &got.dbl)== NC_NOERR);
-	(void) printf("got val = %f\n", got.dbl );
+	/* (void) printf("got val = %f\n", got.dbl ); */
 
 	assert( nc_get_var1_float(id, Float_id, indices[2], &got.fl[0])== NC_NOERR);
-	(void) printf("got val = %f\n", got.fl[0] );
+	/* (void) printf("got val = %f\n", got.fl[0] ); */
 
 	assert( nc_get_var1_int(id, Long_id, indices[3], &got.in[0])== NC_NOERR);
-	(void) printf("got val = %d\n", got.in[0] );
+	/* (void) printf("got val = %d\n", got.in[0] ); */
 
 	assert( nc_get_var1_short(id, Short_id, indices[4], &got.sh[0])== NC_NOERR);
-	(void) printf("got val = %d\n", got.sh[0] );
+	/* (void) printf("got val = %d\n", got.sh[0] ); */
 
 	assert( nc_get_var1_text(id, Char_id, indices[5], &got.by[0]) == NC_NOERR);
-	(void) printf("got NC_CHAR val = %c (0x%02x) \n",
-		 got.by[0] , got.by[0]);
+	/* (void) printf("got NC_CHAR val = %c (0x%02x) \n", */
+		 /* got.by[0] , got.by[0]); */
 
 	assert( nc_get_var1_text(id, Char_id, indices[6], &got.by[0]) == NC_NOERR);
-	(void) printf("got NC_CHAR val = %c (0x%02x) \n",
-		 got.by[0], got.by[0] );
+	/* (void) printf("got NC_CHAR val = %c (0x%02x) \n", */
+	/* 	 got.by[0], got.by[0] ); */
 
 	(void) memset(buf,0,sizeof(buf));
 	assert( nc_get_vara_text(id, Char_id, s_start, s_edges, buf) == NC_NOERR);
-	(void) printf("got NC_CHAR val = \"%s\"\n", buf);
+	/* (void) printf("got NC_CHAR val = \"%s\"\n", buf); */
 
 	assert( nc_get_var1_schar(id, Byte_id, indices[5],
 			(signed char *)&got.by[0])== NC_NOERR);
-	(void) printf("got val = %c (0x%02x) \n", got.by[0] , got.by[0]);
+	/* (void) printf("got val = %c (0x%02x) \n", got.by[0] , got.by[0]); */
 
 	assert( nc_get_var1_schar(id, Byte_id, indices[6],
 			(signed char *)&got.by[0])== NC_NOERR);
-	(void) printf("got val = %c (0x%02x) \n", got.by[0], got.by[0] );
+	/* (void) printf("got val = %c (0x%02x) \n", got.by[0], got.by[0] ); */
 
 	(void) memset(buf,0,sizeof(buf));
 	assert( nc_get_vara_schar(id, Byte_id, s_start, s_edges,
 			(signed char *)buf)== NC_NOERR );
-	(void) printf("got val = \"%s\"\n", buf);
+	/* (void) printf("got val = \"%s\"\n", buf); */
 
 	{
 		double dbuf[NUM_RECS * SIZE_1 * SIZE_2];
 		assert(nc_get_var_double(id, Float_id, dbuf) == NC_NOERR);
-		(void) printf("got vals = %f ... %f\n", dbuf[0],
-			 dbuf[NUM_RECS * SIZE_1 * SIZE_2 -1] );
+		/* (void) printf("got vals = %f ... %f\n", dbuf[0], */
+		/* 	 dbuf[NUM_RECS * SIZE_1 * SIZE_2 -1] ); */
 	}
 
 	ret = nc_close(id);
-	(void) printf("re nc_close ret = %d\n", ret);
+	/* (void) printf("re nc_close ret = %d\n", ret); */
 
 	return 0;
 }

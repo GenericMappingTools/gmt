@@ -226,7 +226,6 @@ test_ncvardef(path)
 	ncclose(cdfid); return ++nerrs;
     }
     /* try bad ids in dims vector, should fail */
-    id = va[0].dims[0];
     va[0].dims[va[0].ndims-1] = -1;
     if (ncvardef(cdfid, "baddims", va[0].type, va[0].ndims, va[0].dims)
 	!= -1) {

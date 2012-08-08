@@ -5,7 +5,7 @@
 /* $Id$ */
 /* $Header: /upc/share/CVS/netcdf-3/ncgen/list.c,v 1.3 2010/05/24 19:59:58 dmh Exp $ */
 
-#include <config.h>
+#include "config.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

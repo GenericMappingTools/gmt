@@ -20,13 +20,17 @@
 #endif /* NO_FLOAT_H */
 #include <math.h>
 #include <netcdf.h>
-#include "ncdump.h"
-#include "dumplib.h"
-#include "isnan.h"
-#include "nctime.h"
 #include "utils.h"
+#include "nccomps.h"
+#include "dumplib.h"
+#include "ncdump.h"
+#include "isnan.h"
+#include "nctime0.h"
+
 static float float_eps;
 static double double_eps;
+
+extern fspec_t formatting_specs; /* set from command-line options */
 
 static float
 float_epsilon(void)
@@ -99,7 +103,7 @@ init_epsilons(void)
 
 
 static char* has_c_format_att(int ncid, int varid);
-static vnode* newvnode(void);
+static idnode_t* newidnode(void);
 
 int float_precision_specified = 0; /* -p option specified float precision */
 int double_precision_specified = 0; /* -p option specified double precision */
@@ -184,8 +188,6 @@ safebuf_t *
 sbuf_new() {
     size_t len = SAFEBUF_INIT_LEN;
     safebuf_t *sb;
-    if (len == 0)
-	return 0;
     sb = (safebuf_t *) emalloc(sizeof(safebuf_t));
     sb->buf = (char *)emalloc(len + sizeof(int));
     sb->len = len;
@@ -415,10 +417,10 @@ get_fmt(
     return get_default_fmt(typeid);
 }
 
-static vnode*
-newvnode(void)
+static idnode_t*
+newidnode(void)
 {
-    vnode *newvp = (vnode*) emalloc(sizeof(vnode));
+    idnode_t *newvp = (idnode_t*) emalloc(sizeof(idnode_t));
     return newvp;
 }
 
@@ -426,10 +428,10 @@ newvnode(void)
 /*
  * Get a new, empty variable list.
  */
-vnode*
-newvlist(void)
+idnode_t*
+newidlist(void)
 {
-    vnode *vp = newvnode();
+    idnode_t *vp = newidnode();
 
     vp -> next = 0;
     vp -> id = -1;		/* bad id */
@@ -439,9 +441,9 @@ newvlist(void)
 
 
 void
-varadd(vnode* vlist, int varid)
+idadd(idnode_t* vlist, int varid)
 {
-    vnode *newvp = newvnode();
+    idnode_t *newvp = newidnode();
     
     newvp -> next = vlist -> next;
     newvp -> id = varid;
@@ -450,20 +452,32 @@ varadd(vnode* vlist, int varid)
 
 
 /* 
- * return 1 if variable identified by varid is member of variable
- * list vlist points to.
+ * return true if id is member of list that vlist points to.
  */
-int
-varmember(const vnode* vlist, int varid)
+boolean
+idmember(const idnode_t* idlist, int id)
 {
-    vnode *vp = vlist -> next;
+    idnode_t *vp = idlist -> next;
 
     for (; vp ; vp = vp->next)
-      if (vp->id == varid)
-	return 1;
-    return 0;    
+      if (vp->id == id)
+	return true;
+    return false;    
 }
 
+/* 
+ * return true if group identified by grpid is member of group
+ * list specified on command line by -g.
+ */
+boolean
+group_wanted(int grpid)
+{
+    /* If -g not specified, all groups are wanted */
+    if(formatting_specs.nlgrps == 0)
+	return true;
+    /* if -g specified, look for match in group id list */
+    return idmember(formatting_specs.grpids, grpid);
+}
 
 /* Return primitive type name */
 static const char *
@@ -918,11 +932,66 @@ int ncstring_typ_tostring(const nctype_t *typ, safebuf_t *sfbf, const void *valp
     size_t slen;
     char *sout;
     int res;
+    int iel;
+    const char *cp;
+    char *sp;
+    unsigned char uc;
 
-    slen = 3 + strlen(((char **)valp)[0]); /* need "'s around string */
+    cp = ((char **)valp)[0];
+    slen = 3 + 5 * strlen(cp); /* need "'s around string, and extra space to escape control characters */ 
     sout = emalloc(slen);
-    res = snprintf(sout, slen, "\"%s\"", ((char **)valp)[0]);
-    assert(res > 0);
+    sp = sout;
+    *sp++ = '"' ;
+    while(*cp) {
+	switch (uc = *cp++ & 0377) {
+	case '\b':
+	    *sp++ = '\\';
+	    *sp++ = 'b' ;
+	    break;
+	case '\f':
+	    *sp++ = '\\';
+	    *sp++ = 'f';
+	    break;
+	case '\n':		
+	    *sp++ = '\\';
+	    *sp++ = 'n';
+	    break;
+	case '\r':
+	    *sp++ = '\\';
+	    *sp++ = 'r';
+	    break;
+	case '\t':
+	    *sp++ = '\\';
+	    *sp++ = 't';
+	    break;
+	case '\v':
+	    *sp++ = '\\';
+	    *sp++ = 'n';
+	    break;
+	case '\\':
+	    *sp++ = '\\';
+	    *sp++ = '\\';
+	    break;
+	case '\'':
+	    *sp++ = '\\';
+	    *sp++ = '\'';
+	    break;
+	case '\"':
+	    *sp++ = '\\';
+	    *sp++ = '\"';
+	    break;
+	default:
+	    if (iscntrl(uc)) {
+		snprintf(sp,3,"\\%03o",uc);
+		sp += 4;
+	    }
+	    else
+		*sp++ = uc;
+	    break;
+	}
+    }
+    *sp++ = '"' ;
+    *sp++ = '\0' ;
     sbuf_cpy(sfbf, sout);
     free(sout);
     return sbuf_len(sfbf);
@@ -1269,10 +1338,11 @@ int
 nctime_val_tostring(const ncvar_t *varp, safebuf_t *sfbf, const void *valp) {
     char sout[PRIM_LEN];
     double vv = to_double(varp, valp);
+    int separator = formatting_specs.iso_separator ? 'T' : ' ';
     if(isfinite(vv)) {
 	int res;
 	sout[0]='"';
-	cdRel2Iso(varp->timeinfo->calendar, varp->timeinfo->units, vv, &sout[1]);
+	cdRel2Iso(varp->timeinfo->calendar, varp->timeinfo->units, separator, vv, &sout[1]);
 	res = strlen(sout);
 	sout[res++] = '"';
 	sout[res] = '\0';
@@ -1404,7 +1474,7 @@ static typ_tostring_func ts_funcs[] = {
 /* Set function pointer of function to convert a value to a string for
  * the variable pointed to by varp. */
 void
-set_tostring_func(ncvar_t *varp, fspec_t *specp) {
+set_tostring_func(ncvar_t *varp) {
     val_tostring_func tostring_funcs[] = {
 	ncbyte_val_tostring,
 	ncchar_val_tostring,
@@ -1422,7 +1492,7 @@ set_tostring_func(ncvar_t *varp, fspec_t *specp) {
 	ncstring_val_tostring
 #endif /* USE_NETCDF4 */
     };
-    if(varp->has_timeval && specp->iso_times) {
+    if(varp->has_timeval && formatting_specs.string_times) {
 	varp->val_tostring = (val_tostring_func) nctime_val_tostring;
 	return;
     }
@@ -1490,9 +1560,6 @@ nc_inq_gvarid(int grpid, const char *varname, int *varidp) {
     */
     
 #ifdef USE_NETCDF4
-#ifdef UNUSED
-    const char *vp = varname;
-#endif
     char *vargroup;
     char *relname;
     char *groupname;
@@ -1718,9 +1785,6 @@ init_types(int ncid) {
     * recursively on each of them. */
    {
       int g, numgrps, *ncids;
-#ifdef UNUSED
-      int format;
-#endif
 
       /* See how many groups there are. */
       NC_CHECK( nc_inq_grps(ncid, &numgrps, NULL) );
@@ -1750,14 +1814,20 @@ iscoordvar(int ncid, int varid)
     int dimid;
     int* dimids = 0;
     ncdim_t *dims = 0;
+#ifdef USE_NETCDF4
     int include_parents = 1;
+#endif
     int is_coord = 0;		/* true if variable is a coordinate variable */
     char varname[NC_MAX_NAME];
     int varndims;
 
     do {	  /* be safe in case someone is currently adding
 		   * dimensions */
+#ifdef USE_NETCDF4
+	NC_CHECK( nc_inq_dimids(ncid, &ndims, NULL, include_parents ) );
+#else
 	NC_CHECK( nc_inq_ndims(ncid, &ndims) );
+#endif
 	if (dims)
 	    free(dims);
 	dims = (ncdim_t *) emalloc((ndims + 1) * sizeof(ncdim_t));
@@ -1794,54 +1864,6 @@ iscoordvar(int ncid, int varid)
     if(dimids)
 	free(dimids);
     return is_coord;
-}
-
-
-/*
- * return 1 if varid identifies a record variable
- * else return 0
- */
-int
-isrecvar(int ncid, int varid)
-{
-    int ndims;
-    int is_recvar = 0;
-    int *dimids;
-
-    NC_CHECK( nc_inq_varndims(ncid, varid, &ndims) );
-#ifdef USE_NETCDF4
-    if (ndims > 0) {
-	int nunlimdims;
-	int *recdimids;
-	int dim, recdim;
-	dimids = (int *) emalloc((ndims + 1) * sizeof(int));
-	NC_CHECK( nc_inq_vardimid(ncid, varid, dimids) );
-	NC_CHECK( nc_inq_unlimdims(ncid, &nunlimdims, NULL) );
-	recdimids = (int *) emalloc((nunlimdims + 1) * sizeof(int));
-	NC_CHECK( nc_inq_unlimdims(ncid, NULL, recdimids) );
-	for (dim = 0; dim < ndims && is_recvar == 0; dim++) {
-	    for(recdim = 0; recdim < nunlimdims; recdim++) {
-		if(dimids[dim] == recdimids[recdim]) {
-		    is_recvar = 1;
-		    break;
-		}		
-	    }
-	}
-	free(dimids);
-	free(recdimids);
-    }
-#else
-    if (ndims > 0) {
-	int recdimid;
-	dimids = (int *) emalloc((ndims + 1) * sizeof(int));
-	NC_CHECK( nc_inq_vardimid(ncid, varid, dimids) );
-	NC_CHECK( nc_inq_unlimdim(ncid, &recdimid) );
-	if(dimids[0] == recdimid)
-	    is_recvar = 1;
-	free(dimids);
-    }
-#endif /* USE_NETCDF4 */
-    return is_recvar;
 }
 
 

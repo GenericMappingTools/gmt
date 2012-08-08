@@ -72,7 +72,7 @@ main(int argc, char **argv)
       if (nc_close(ncid)) ERR;
    }
    SUMMARIZE_ERR;
-   printf("**** printing table of default chunksizes...");
+   printf("**** testing default chunksizes...");
    {
       int nvars, ndims, ngatts, unlimdimid;
       int contig;
@@ -91,7 +91,9 @@ main(int argc, char **argv)
       for (d = 0; d < NUM_DIM; d++)
       {
 	 sprintf(dim_name, "dim_%d", dim_len[d]);
+#ifdef PRINT_DEFAULT_CHUNKSIZE_TABLE
 	 printf("creating dim %s\n", dim_name);
+#endif
 	 if (nc_def_dim(ncid, dim_name, dim_len[d], &dimid[d])) ERR;
       }
 
@@ -100,11 +102,13 @@ main(int argc, char **argv)
 	 sprintf(var_name, "var_%d", type_id[t]);
 	 if (nc_def_var(ncid, var_name, type_id[t], NUM_DIM, dimid, &varid[t])) ERR;
 	 if (nc_inq_var_chunking(ncid, varid[t], &contig, chunksize_in)) ERR;
+#ifdef PRINT_DEFAULT_CHUNKSIZE_TABLE
 	 printf("chunksizes for %d x %d x %d x %d var: %d x %d x %d x %d (=%d)\n", 
 		dim_len[0], dim_len[1], dim_len[2], dim_len[3], 
 		(int)chunksize_in[0], (int)chunksize_in[1], (int)chunksize_in[2], 
 		(int)chunksize_in[3], 
 		(int)(chunksize_in[0] * chunksize_in[1] * chunksize_in[2] * chunksize_in[3]));
+#endif
       }
 
       if (nc_close(ncid)) ERR;
@@ -119,11 +123,13 @@ main(int argc, char **argv)
 	 sprintf(var_name, "var_%d", type_id[t]);
 	 if (nc_inq_var_chunking(ncid, varid[t], &contig, chunksize_in)) ERR;
 	 if (contig) ERR;
+#ifdef PRINT_DEFAULT_CHUNKSIZE_TABLE
 	 printf("chunksizes for %d x %d x %d x %d var: %d x %d x %d x %d (=%d)\n", 
 		dim_len[0], dim_len[1], dim_len[2], dim_len[3], 
 		(int)chunksize_in[0], (int)chunksize_in[1], (int)chunksize_in[2], 
 		(int)chunksize_in[3],
 		(int)(chunksize_in[0] * chunksize_in[1] * chunksize_in[2] * chunksize_in[3]));
+#endif
       }
 
       if (nc_close(ncid)) ERR;

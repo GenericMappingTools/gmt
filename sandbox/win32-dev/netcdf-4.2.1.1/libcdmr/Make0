@@ -1,0 +1,80 @@
+
+PREFIX=/tmp
+
+NCLIB=../liblib/.libs/libnetcdf.a
+NCINCL=-I../include -I${HDF5DIR}/include
+
+#HDF5DIR=/local
+HDF5DIR=/share/ed/local/${HOST}
+CURLDIR=/usr/local
+CURLDIR=${HDF5DIR}
+
+HDFLIBS=-L${HDF5DIR}/lib -lhdf5_hl -lhdf5
+CURLLIB=-L${CURLDIR}/lib -lcurl -lz
+CURLINCL=-I${CURLDIR}/include
+#RPCLIB=-lnsl
+ZLIB=-L${HDF5DIR}/lib -lz
+TESTURL=file:///upc/share/dmh/nc/netcdf-3/ncdap_test/testdata3
+VALGRIND=valgrind --leak-check=full
+
+OCLIB=../libncdap3/oc/.libs/liboc.a
+OCINCL=-I../libncdap3/oc
+
+OTHERLIBS=-lm
+
+RPATH=-Wl,-rpath,${HDF5DIR}/lib -Wl,-rpath,${CURLDIR}/lib
+
+# Might want to specify a particular C compiler with flags
+#CC=cc
+CFLAGS=-g -O0 -Wall -DHAVE_CONFIG_H
+#CFLAGS=-DHAVE_CONFIG_H
+
+GFLAGS=-g
+#############################################
+
+LIBS=${NCLIB} ${CURLLIB} ${HDFLIBS} ${ZLIB} ${OTHERLIBS} ${RPCLIB}
+INCL=-I. -I.. -I../include -I../ncdump ${OCINCL} ${NCINCL} ${CURLINCL}
+
+##################################################
+
+all:: ncd
+
+##################################################
+clean::
+	rm -f *.o *.exe ncdump.exe ncd.exe 
+	rm -f *.stackdump
+
+##################################################
+# ncd
+S=chunkspec.c dimmap.c dumplib.c indent.c ncdump.c nciter.c nctime0.c utils.c vardata.c
+
+SRC=${S:%.c=../ncdump/%.c}
+OBJ=${S:%.c=%.o}
+
+ncd:: 
+	cd .. ; make
+	${CC} ${CFLAGS} ${GFLAGS} -c ${INCL} ${SRC}
+	${CC} -g -O0 -o ncd ${GFLAGS} ${OBJ} ${LIBS} ${RPATH}
+
+ncdonly:: 
+	${CC} ${CFLAGS} ${GFLAGS} -c ${INCL} ${SRC}
+	${CC} -o ncd ${GFLAGS} ${OBJ} ${LIBS} ${RPATH}
+
+URL=[cdmremote]http://motherlode.ucar.edu/thredds/cdmremote/nws/upperair/ncdecoded/files/Upperair_20110517_0000.nc
+#?wmoStaNum
+
+q0::
+	./ncd "${URL}"
+qq::
+	gdb --args ./ncd "${URL}"
+qv::
+	${VALGRIND} ./ncd "${URL}"
+
+qh::
+	./ncd -h "${URL}"
+qqh::
+	gdb --args ./ncd -h "${URL}"
+qvh::
+	${VALGRIND} ./ncd -h "${URL}"
+
+

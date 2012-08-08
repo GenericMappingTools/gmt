@@ -20,6 +20,9 @@
 #define VAR1_NAME "var1"
 #define VAR2_NAME "var2"
 
+/* This is handy for print statements. */
+static char *format_name[] = {"", "classic", "64-bit offset", "netCDF-4", 
+			      "netCDF-4 classic model"};
 
 int check_file(int format, unsigned char *uchar_out);
 int create_file(int format, unsigned char *uchar_out);
@@ -146,4 +149,5 @@ check_file(int format, unsigned char *uchar_out)
    }
    
    if (nc_close(ncid)) ERR;
+   return 0;
 }

@@ -103,14 +103,17 @@ main(int argc, char **argv)
 #define VAR_NAME "Marcus_Aurelius"
       hid_t fcpl_id, fileid, grpid, spaceid, typeid, datasetid, plistid;
       int ncid, nvars_in, ndims_in, natts_in, unlimdim_in, type_in;
-      size_t size_in;
       char *data = "Thou art no dissatisfied, I suppose, because "
 	 "thou weighest only so many liters and not three hundred. Be not "
 	 "dissatisfied then that thou must live only so many years and not more; "
 	 "for as thou art satisfied with the amount of substance which has "
 	 "been assigned to thee, so be content with the time.";
+      char name_in[NC_MAX_NAME + 1];
+#if 0
+      size_t size_in;
       char *empty = "";
-      char *data_in2, name_in[NC_MAX_NAME + 1];
+      char *data_in2;
+#endif
 
       /* Create create property list. */
       if ((fcpl_id = H5Pcreate(H5P_FILE_CREATE)) < 0) ERR;

@@ -20,11 +20,6 @@ static int tohex(int c);
 static void ceaddyytext(DCElexstate* lex, int c);
 
 /****************************************************/
-#ifdef UNUSED
-static char* worddelims =
-  "{}[]:;=,";
-#endif
-
 /* Define 1 and > 1st legal characters */
 static char* wordchars1 =
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-+_/%\\";

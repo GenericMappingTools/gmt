@@ -2,12 +2,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/times.h>
+#ifdef HAVE_SYS_TIMES_H
+#  include <sys/times.h>
+#endif
 #include <sys/stat.h>
 #include <assert.h>
 #include <sys/time.h>
 #include <unistd.h>		/* for sysconf */
-#include <sys/resource.h>
+#ifdef HAVE_SYS_RESOURCE_H
+#  include <sys/resource.h>
+#endif
 #include <nc_tests.h>		/* The ERR macro is here... */
 #include <netcdf.h>
 

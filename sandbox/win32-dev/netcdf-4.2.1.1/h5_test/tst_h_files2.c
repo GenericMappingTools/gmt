@@ -7,7 +7,7 @@
    tests don't work, than netCDF-4 won't work either.
 */
 
-#include <err_macros.h>
+#include "h5_err_macros.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 

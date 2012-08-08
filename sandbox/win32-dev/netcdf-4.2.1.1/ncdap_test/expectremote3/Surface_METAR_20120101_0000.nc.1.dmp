@@ -1,0 +1,60 @@
+netcdf Surface_METAR_20120101_0000 {
+dimensions:
+	recNum = UNLIMITED ; // (11 currently)
+	weather_len = 16 ;
+variables:
+	char weather(recNum, weather_len) ;
+		weather:long_name = "Weather phenomena" ;
+		weather:_FillValue = "" ;
+		weather:reference = "WMO #306, code table 4658" ;
+		weather:_DODS_strlen = 16 ;
+		weather:_DODS_dimName = "weather_len" ;
+
+// global attributes:
+		:title = "METAR Data from NWS" ;
+		:version = 2.3 ;
+		:processor = "metar2nc  version v1.2" ;
+		:Conventions = "Unidata Observation Dataset v1.0" ;
+		:standard_name_vocabulary = "CF-1.0" ;
+		:description = "Metar Data from NWS distributed through the Unidata IDD\n",
+			"    realtime datastream. 1 day\'s worth of data" ;
+		:time_coordinate = "time_observation" ;
+		:cdm_datatype = "Station" ;
+		:stationDimension = "station" ;
+		:station_id = "station_id" ;
+		:station_description = "station_description" ;
+		:latitude_coordinate = "latitude" ;
+		:longitude_coordinate = "longitude" ;
+		:altitude_coordinate = "altitude" ;
+		:geospatial_lat_max = "90.0" ;
+		:geospatial_lat_min = "-90.0" ;
+		:geospatial_lon_max = "360.0" ;
+		:geospatial_lon_min = "0.0" ;
+		:time_coverage_start = "1325375100 seconds since 1970-01-01 00 UTC" ;
+		:time_coverage_end = "1325461440 seconds since 1970-01-01 00 UTC" ;
+		:observationDimension = "recNum" ;
+		:notes = "\n",
+			"    The metar2nc decoder creates a netCDF file based on a set of variables \n",
+			"    that are commonly used in display programs. Since not all the variables\n",
+			"    that are possible(over 135) are written, the raw METAR report is stored \n",
+			"    for future decoding of variables not explicited specified. The \n",
+			"    lastChild variable gives the record number of the most recent report \n",
+			"    for a particular station and the prevChild variable is the record \n",
+			"    number of the next most recent. By following the links, all the reports\n",
+			"    for a particular station can be extracted." ;
+		:_DODS_Unlimited_Dimension = "recNum" ;
+data:
+
+ weather =
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name",
+  "\000\327\017\001\000\000\000\000_name" ;
+}

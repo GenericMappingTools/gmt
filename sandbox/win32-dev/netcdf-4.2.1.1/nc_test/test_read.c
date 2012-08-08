@@ -100,10 +100,11 @@ test_nc_open(void)
 	error("nc_open of nonexistent file should have returned system error");
 #endif
 
-    /* Open a file that is not a netCDF file. */
-    err = nc_open("nc_test.o", NC_NOWRITE, &ncid);/* should fail */
-    IF (err != NC_ENOTNC)
-	error("nc_open of non-netCDF file: status = %d", err);
+    /* Open a file that is not a netCDF file.  But need a portable
+     * test that also works for cross-compiles ... */
+    /* err = nc_open("nc_test.o", NC_NOWRITE, &ncid);/\* should fail *\/ */
+    /* IF (err != NC_ENOTNC) */
+    /* 	error("nc_open of non-netCDF file: status = %d", err); */
 
     /* Open a netCDF file in read-only mode, check that write fails */
     err = nc_open(testfile, NC_NOWRITE, &ncid);
@@ -263,10 +264,14 @@ test_nc_inq(void)
 	    int ngatts0;
 	    int recdim0;
 	    err = nc_enddef(ncid2); /* enter data mode */
+	    IF (err)
+		error("nc_enddef: %s", nc_strerror(err));
 	    err = nc_inq(ncid2, &ndims0, &nvars0, &ngatts0, &recdim0);
 	    IF (err)
 		error("nc_inq: %s", nc_strerror(err));
 	    err = nc_redef(ncid2); /* enter define mode */
+	    IF (err)
+		error("nc_redef: %s", nc_strerror(err));
 	    /* Check that inquire still works in define mode */
 	    err = nc_inq(ncid2, &ndims, &nvars, &ngatts, &recdim);
 	    IF (err)

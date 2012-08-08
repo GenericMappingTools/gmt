@@ -6,7 +6,7 @@
 #ifndef CRDEBUG_H
 #define CRDEBUG_H
 
-#define DEBUG
+#undef DEBUG
 
 #include <stdarg.h>
 #include <assert.h>
@@ -29,7 +29,7 @@ extern int nccrpanic(const char* fmt, ...);
 #define MEMCHECK(var,throw) {if((var)==NULL) return (throw);}
 
 #ifdef CATCHERROR
-/* Place breakpoint on dapbreakpoint to catch errors close to where they occur*/
+/* Place breakpoint on nccrbreakpoint to catch errors close to where they occur*/
 #define THROW(e) nccrthrow(e)
 #define THROWCHK(e) (void)nccrthrow(e)
 

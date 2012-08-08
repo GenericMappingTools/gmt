@@ -8,7 +8,7 @@
 
 */
 
-#include <err_macros.h>
+#include "h5_err_macros.h"
 #include <hdf5.h>
 #include <H5DSpublic.h>
 #include <ncdimscale.h>
@@ -38,6 +38,7 @@ struct nc_hdf5_link_info
    H5I_type_t obj_type;   
 };   
 
+#if 0
 static herr_t
 visit_link(hid_t g_id, const char *name, const H5L_info_t *info, 
 	   void *op_data)  
@@ -65,11 +66,14 @@ visit_link(hid_t g_id, const char *name, const H5L_info_t *info,
    
    return ret;
 }
+#endif
 
 herr_t alien_visitor(hid_t did, unsigned dim, hid_t dsid, 
 		     void *visitor_data)
 {
+#if 0
    char name1[STR_LEN];
+#endif
    H5G_stat_t statbuf;
    HDF5_OBJID_T *objid = visitor_data;
 
@@ -101,7 +105,10 @@ main()
    printf("\n*** Checking HDF5 dimscales detach.\n");
    printf("*** Creating a file with two vars with one dimension scale...");
    {
-      hid_t fileid, grpid, spaceid, var1_id, var2_id, dimscaleid, cparmsid;
+#if 0
+      hid_t cparmsid;
+#endif
+      hid_t fileid, grpid, spaceid, var1_id, var2_id, dimscaleid;
       hid_t fcpl_id, fapl_id, create_propid, access_propid;
       hsize_t dims[NDIMS] = {DIM_LEN};
       char dimscale_wo_var[STR_LEN];
@@ -112,7 +119,7 @@ main()
       if (H5Pset_fclose_degree(fapl_id, H5F_CLOSE_STRONG)) ERR;
       if (H5Pset_cache(fapl_id, 0, CHUNK_CACHE_NELEMS, CHUNK_CACHE_SIZE,
 		       CHUNK_CACHE_PREEMPTION) < 0) ERR;
-      if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_18, H5F_LIBVER_18) < 0) ERR;
+      if (H5Pset_libver_bounds(fapl_id, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST) < 0) ERR;
       if ((fcpl_id = H5Pcreate(H5P_FILE_CREATE)) < 0) ERR;
       if (H5Pset_link_creation_order(fcpl_id, (H5P_CRT_ORDER_TRACKED |
 					       H5P_CRT_ORDER_INDEXED)) < 0) ERR;

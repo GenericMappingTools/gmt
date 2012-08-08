@@ -67,35 +67,6 @@ variables:
 		pr:cell_method = "time: mean" ;
 
 */
-
-/* Subtract the `struct timeval' values X and Y, storing the result in
-   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
-   function from the GNU documentation. */
-static int
-timeval_subtract (result, x, y)
-   struct timeval *result, *x, *y;
-{
-   /* Perform the carry for the later subtraction by updating Y. */
-   if (x->tv_usec < y->tv_usec) {
-      int nsec = (y->tv_usec - x->tv_usec) / MILLION + 1;
-      y->tv_usec -= MILLION * nsec;
-      y->tv_sec += nsec;
-   }
-   if (x->tv_usec - y->tv_usec > MILLION) {
-      int nsec = (x->tv_usec - y->tv_usec) / MILLION;
-      y->tv_usec += MILLION * nsec;
-      y->tv_sec -= nsec;
-   }
-
-   /* Compute the time remaining to wait.
-      `tv_usec' is certainly positive. */
-   result->tv_sec = x->tv_sec - y->tv_sec;
-   result->tv_usec = x->tv_usec - y->tv_usec;
-
-   /* Return 1 if result is negative. */
-   return x->tv_sec < y->tv_sec;
-}
-
 #define USAGE   "\
   [-v]        Verbose\n\
   [-h]        Print output header\n\
@@ -104,9 +75,9 @@ timeval_subtract (result, x, y)
   file        Name of netCDF file\n"
 
 static void
-usage(void)
+usage(char* msg)
 {
-   fprintf(stderr, "tst_ar4 -v -h -t -c CACHE_SIZE file\n%s", USAGE);
+   fprintf(stderr, "%s\nusage: tst_ar4 -v -h -t -c CACHE_SIZE file\n%s", msg,USAGE);
 }
 
 #define NDIMS3 3
@@ -158,17 +129,17 @@ main(int argc, char **argv)
 	    sscanf(optarg, "%d", &cache);
 	    break;
 	 case '?':
-	    usage();
+	    usage("unknown option");
 	    return 1;
       }
       
    argc -= optind;
    argv += optind;
       
-   /* If no file arguments left, print usage message. */
+   /* If no file arguments left, report and exit  */
    if (argc < 1)
    {
-      usage();
+      printf("no file specified\n");
       return 0;
    }
       
@@ -222,7 +193,7 @@ main(int argc, char **argv)
       if (gettimeofday(&start_time, NULL)) ERR;
       if (nc_get_vara_float(ncid, varid, start, count, ts_data)) ERR_RET;
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       read_1_us = (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 
       /* Read all the rest. */
@@ -231,7 +202,7 @@ main(int argc, char **argv)
 	 for (start[2] = 1; start[2] < LON_LEN; start[2]++)
 	    if (nc_get_vara_float(ncid, varid, start, count, ts_data)) ERR_RET;
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       avg_read_us = ((int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec + read_1_us) / 
 	 (LAT_LEN * LON_LEN);
    }
@@ -249,7 +220,7 @@ main(int argc, char **argv)
       if (gettimeofday(&start_time, NULL)) ERR;
       if (nc_get_vara_float(ncid, varid, start, count, hor_data)) ERR_RET;
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       read_1_us = (int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec;
 
       /* Read (and time) all the rest. */
@@ -257,7 +228,7 @@ main(int argc, char **argv)
       for (start[0] = 1; start[0] < TIME_LEN; start[0]++)
 	 if (nc_get_vara_float(ncid, varid, start, count, hor_data)) ERR_RET;
       if (gettimeofday(&end_time, NULL)) ERR;
-      if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+      if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
       avg_read_us = ((int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec + 
 		     read_1_us) / TIME_LEN;
    }

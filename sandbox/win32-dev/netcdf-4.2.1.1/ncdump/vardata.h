@@ -18,16 +18,14 @@ extern "C" {
 extern int vardata ( const ncvar_t*, /* variable */
 		     size_t [], /* variable dimension lengths */
 		     int, /* netcdf id */
-		     int, /* variable id */
-		     const fspec_t* /* formatting specs */
+		     int  /* variable id */
     );
 
 /* Output the data for a single variable, in NcML syntax. */
 extern int vardatax ( const ncvar_t*, /* variable */
 		     size_t [], /* variable dimension lengths */
 		     int, /* netcdf id */
-		     int, /* variable id */
-		     const fspec_t* /* formatting specs */
+		     int  /* variable id */
     );
 
 /* set maximum line length */
@@ -36,8 +34,11 @@ extern void set_max_len ( int len );
 /* print string with current indent and splitting long lines, if needed */
 extern void lput( const char *string );
 
+/* like lput, but with options to support formatting with appended comments */
+extern void lput2( const char *string, boolean first, boolean wrap);
+
 /* print values of an attribute */
-    extern void pr_any_att_vals( const ncatt_t *attp, const void *vals );
+extern void pr_any_att_vals( const ncatt_t *attp, const void *vals );
 
 #ifdef __cplusplus
 }

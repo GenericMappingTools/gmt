@@ -165,6 +165,29 @@ nclistcontains(NClist* list, ncelem elem)
     return 0;
 }
 
+/* Remove element by value; only removes first encountered */
+int
+nclistelemremove(NClist* l, ncelem elem)
+{
+  unsigned int len;
+  unsigned int i;
+  int found = 0;
+  if(l == NULL || (len=l->length) == 0) return ncDATANULL;
+  for(i=0;i<nclistlength(l);i++) {
+    ncelem candidate = l->content[i];
+    if(elem == candidate) {
+      for(i+=1;i<len;i++) l->content[i-1] = l->content[i];
+      l->length--;
+      found = 1;
+      break;
+    }
+  }
+  return found;
+}
+
+
+
+
 /* Extends nclist to include a unique operator 
    which remove duplicate values; NULL values removed
    return value is always 1.

@@ -433,7 +433,8 @@ test_nc_put_var_$1(void)
 	    assert(var_rank[i] <= MAX_RANK);
 	    assert(var_nels[i] <= MAX_NELS);
 	    err = nc_put_var_$1(BAD_ID, i, value);
-
+	    IF (err != NC_EBADID) 
+	        error("bad ncid: status = %d", err);
 	    nels = 1;
 	    for (j = 0; j < var_rank[i]; j++) {
 		nels *= var_shape[i][j];

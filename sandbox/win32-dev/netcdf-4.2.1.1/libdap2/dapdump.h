@@ -63,6 +63,8 @@ extern char* dumpsegments(NClist* segments);
 extern char* dumpslice(DCEslice* slice);
 extern char* dumpslices(DCEslice* slice, unsigned int rank);
 
+extern void dumpraw(void*);
+extern void dumplistraw(NClist*);
 
 #endif /*DUMP_H*/
 

@@ -19,34 +19,6 @@
 
 void *last_sbrk;
 
-/* Subtract the `struct timeval' values X and Y, storing the result in
-   RESULT.  Return 1 if the difference is negative, otherwise 0.  This
-   function from the GNU documentation. */
-static int
-timeval_subtract (result, x, y)
-   struct timeval *result, *x, *y;
-{
-   /* Perform the carry for the later subtraction by updating Y. */
-   if (x->tv_usec < y->tv_usec) {
-      int nsec = (y->tv_usec - x->tv_usec) / MILLION + 1;
-      y->tv_usec -= MILLION * nsec;
-      y->tv_sec += nsec;
-   }
-   if (x->tv_usec - y->tv_usec > MILLION) {
-      int nsec = (x->tv_usec - y->tv_usec) / MILLION;
-      y->tv_usec += MILLION * nsec;
-      y->tv_sec -= nsec;
-   }
-
-   /* Compute the time remaining to wait.
-      `tv_usec' is certainly positive. */
-   result->tv_sec = x->tv_sec - y->tv_sec;
-   result->tv_usec = x->tv_usec - y->tv_usec;
-
-   /* Return 1 if result is negative. */
-   return x->tv_sec < y->tv_sec;
-}
-
 /* This function uses the ps command to find the amount of memory in
 use by the process. From the ps man page:
 
@@ -249,7 +221,7 @@ main(int argc, char **argv)
 
 	 /* How long did it take? */
 	 if (gettimeofday(&end_time, NULL)) ERR;
-	 if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	 if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	 create_us = ((int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec);
 
 	 /* Change the cache settings. */
@@ -274,7 +246,7 @@ main(int argc, char **argv)
 
 	 /* How long did it take per file? */
 	 if (gettimeofday(&end_time, NULL)) ERR;
-	 if (timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
+	 if (nc4_timeval_subtract(&diff_time, &end_time, &start_time)) ERR;
 	 open_us = ((int)diff_time.tv_sec * MILLION + (int)diff_time.tv_usec);
 
 	 /* How much memory is in use by this process now? */
@@ -287,7 +259,7 @@ main(int argc, char **argv)
 
 	 /* How long did it take to close all files? */
 	 if (gettimeofday(&close_end_time, NULL)) ERR;
-	 if (timeval_subtract(&close_diff_time, &close_end_time, &close_start_time)) ERR;
+	 if (nc4_timeval_subtract(&close_diff_time, &close_end_time, &close_start_time)) ERR;
 	 close_us = ((int)close_diff_time.tv_sec * MILLION + (int)close_diff_time.tv_usec);
 
 	 /* We're done with this. */

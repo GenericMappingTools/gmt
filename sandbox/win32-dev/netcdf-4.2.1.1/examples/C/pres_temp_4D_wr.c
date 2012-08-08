@@ -1,19 +1,13 @@
-/* This is part of the netCDF package.
-   Copyright 2006 University Corporation for Atmospheric Research/Unidata.
-   See COPYRIGHT file for conditions of use.
+/*! \file
+A more complex example of writing a netCDF file.
 
-   This is an example program which writes some 4D pressure and
-   temperatures. It is intended to illustrate the use of the netCDF
-   C API. The companion program pres_temp_4D_rd.c shows how
-   to read the netCDF data file created by this program.
-   
-   This program is part of the netCDF tutorial:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-tutorial
-   
-   Full documentation of the netCDF C API can be found at:
-   http://www.unidata.ucar.edu/software/netcdf/docs/netcdf-c
+This is an example program which writes some 4D pressure and
+temperatures. It is intended to illustrate the use of the netCDF C
+API. The companion program pres_temp_4D_rd.c shows how to read the
+netCDF data file created by this program.
 
-   $Id$
+Copyright 2006 University Corporation for Atmospheric
+Research/Unidata.  See COPYRIGHT file for conditions of use.
 */
 
 #include <stdio.h>

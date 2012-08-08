@@ -1,10 +1,20 @@
-
 #!/bin/sh
 
 #set -x
 quiet=0
 leakcheck=0
 timing=0
+
+# Figure our dst server
+SVC=`./nctestserver dts`
+if test "x$SVC" = "x" ; then
+echo "cannot locate test server"
+exit
+fi
+DTS="$SVC/dts"
+
+PARAMS="[log]"
+#PARAMS="${PARAMS}[show=fetch]"
 
 #OCLOGFILE=/dev/null
 OCLOGFILE="" ; export OCLOGFILE
@@ -18,62 +28,53 @@ longtests="$5"
 
 if test "x$timing" = "x1" ; then leakcheck=0; fi
 
-# This fails because solaris ping does not like the -c1 option
-# # See if we can access the remote server at all
-# PINGURL="test.opendap.org"
-# # do we have ping command?
-# #if test ping -c1 localhost >/dev/null 2>&1 ; then
-# if test ping -c1 localhost ; then
-#   if ping -c1 ${PINGURL} >/dev/null 2>&1 ; then
-#     ignore=1
-#   else
-#     echo "WARNING: NETWORK ACCESS NOT AVAILABLE"
-# fi
-# fi
+# get the list of test files
+WHICHTESTS="S1 C1 C2"
+if test -n "$longtests"; then
+WHICHTESTS="${WHICHTESTS} L1 LC1"
+fi
 
 #locate the testdata and expected directory
 if test "$cache" = 0 ; then
-CACHE=""
+# No cache means no cache, including prefetch
+CACHE="[noprefetch]"
 expected3="${srcdir}/nocacheremote3"
 expected4="${srcdir}/nocacheremote4"
 else
-CACHE="[cache]"
+CACHE="[cache][prefetch]"
 expected3="${srcdir}/expectremote3"
 expected4="${srcdir}/expectremote4"
 fi
 
-# get the list of test files
+PARAMS="${PARAMS}${CACHE}"
+
 ##################################################
 # Remote test info
 ##################################################
-# For now, only do only following test sets
-if test -n "$longtests"; then
-WHICHTESTS="L1 LC1"
-else
-WHICHTESTS="S1 C1 C2"
-fi
-WHICHTESTS="C2"
 
 # For special testing
-REMOTEURLX="http://test.opendap.org:8080/dods/dts"
+REMOTEURLX="$DTS"
 REMOTETESTSX="test.03"
 
-REMOTEURLXC="http://test.opendap.org:8080/dods/dts"
+REMOTEURLXC="$DTS"
 REMOTETESTSXC="test.03;1;s0,s1"
 
 # These shorter tests are always run
-REMOTEURLS1="http://test.opendap.org:8080/dods/dts"
+REMOTEURLS1="$DTS"
 REMOTETESTSS1="\
-test.01 test.02 test.04 test.05 test.06a test.07a test.07 \
-test.21 test.22 test.23 \
-test.31 \
+test.01 test.02 test.04 test.05 test.06 test.07a test.07 \
+test.21 \
 test.50 test.53 test.55 test.56 test.57 \
 test.66 test.67 test.68 test.69"
+
+# Server is failing on some tests ; investigate why
+S1FAIL="test.06a test.22 test.23 test.31"
 
 # These longer tests are optional
 REMOTEURLL1="$REMOTEURLS1"
 REMOTETESTSL1="\
 test.03 \
+test.06 \
 b31 b31a D1 Drifters EOSDB \
 ingrid nestedDAS NestedSeq NestedSeq2 OverideExample \
 SimpleDrdsExample test.an1 \
@@ -86,13 +87,13 @@ whoi"
 
 
 # Anything larger than about 100k will not be in the distribution
-TOOBIG="parserBug0001 test.satimage Sat_Images test.06 test.32"
+TOOBIGL1="parserBug0001 test.satimage Sat_Images test.32"
 
 # Following contain %XX escapes which I cannot handle yet
 ESCAPEDFAIL="test.dfr1 test.dfr2 test.dfr3 test.GridFile test.PointFile test.SwathFile test.sds6 test.sds7"
 
 # Following tests are to check constraint handling
-REMOTEURLC1="http://test.opendap.org:8080/dods/dts"
+REMOTEURLC1="$DTS"
 REMOTETESTSC1="\
 test.01;1;f64 \
 test.02;1;b[1:2:10] \
@@ -111,13 +112,22 @@ GLOBEC_cetaceans;1;number&number>6 \
 GLOBEC_cetaceans;2;lat,lon&lat>42.0&lat<=42.5\
 "
 
+# C3 is too slow for testing. It has nested sequences.
+#We need to think about better optimizations
 REMOTEURLC3="http://dapper.pmel.noaa.gov/dapper/argo"
 REMOTETESTSC3="\
 argo_all.cdp;1;&location.LATITUDE<1&location.LATITUDE>-1\
 "
 
+# Test string access 
+# this test cannot be used because the
+# dataset has a limited lifetime
+#REMOTEURLC4="http://motherlode.ucar.edu:$PORT/thredds/dodsC/station/metar"
+#REMOTETESTSC4="\
+#Surface_METAR_20120101_0000.nc;1;weather[0:10]"
+
 # Constrained long tests
-REMOTEURLLC1="http://test.opendap.org:8080/dods/dts"
+REMOTEURLLC1="$DTS"
 REMOTETESTSLC1="\
 test.03;2;s1"
 
@@ -127,6 +137,12 @@ IGNORE="test.07.2"
 # Known to fail
 
 XFAILTESTS3=""
+# For now, remove some tests from windows platform.
+if [ `uname | cut -d "_" -f 1` = "MINGW32" ]; then
+    XFAILTESTS3="$XFAILTESTS3 test.67 test.06.1 test.06"
+fi
+
+
 XFAILTESTS4="$XFAILTESTS3"
 
 # Server is down at the moment
@@ -160,14 +176,14 @@ case "$mode" in
 3)
     EXPECTED="$expected3"
     TITLE="DAP to netCDF-3 translation"
-    PARAMS="${CACHE}[netcdf3]"
+    PARAMS="${PARAMS}[netcdf3]"
     XFAILTESTS="$XFAILTESTS3"
     SVCFAILTESTS="$SVCFAILTESTS3"
     ;;
 4)
     EXPECTED="$expected4"
     TITLE="DAP to netCDF-4 translation"
-    PARAMS="${CACHE}[netcdf4]"
+    PARAMS="${PARAMS}[netcdf4]"
     XFAILTESTS="$XFAILTESTS4"
     SVCFAILTESTS="$SVCFAILTESTS4"
     ;;
@@ -215,6 +231,7 @@ for i in $WHICHTESTS ; do
   LC1) TESTURL="$REMOTEURLLC1" ; TESTSET="$REMOTETESTSLC1" ; constrained=1 ;;
   X) TESTURL="$REMOTEURLX" ; TESTSET="$REMOTETESTSX" ; constrained=0 ;;
   XC) TESTURL="$REMOTEURLXC" ; TESTSET="$REMOTETESTSXC" ; constrained=1 ;;
+  *) echo "Unknown which test: $i" ;;
   esac
 
 cd ${RESULTSDIR}
@@ -275,11 +292,11 @@ for t in ${TESTSET} ; do
     ;;
   2)
     xfailcount=`expr $xfailcount + 1`
-    echo "*** XFAIL: ${name}"
+    echo "*** XFAIL : ${name}"
     ;;
   3)
     svcfailcount=`expr $svcfailcount + 1`
-    echo "*** SVCFAIL: ${name}"
+    echo "*** SVCFAIL : ${name}"
     ;;
   esac
 

@@ -2,14 +2,24 @@
  *   Copyright 2009, UCAR/Unidata
  *   See netcdf/COPYRIGHT file for copying and redistribution conditions.
  *********************************************************************/
-/* $Id$ */
-/* $Header: /upc/share/CVS/netcdf-3/ncgen/data.h,v 1.5 2010/05/24 19:59:56 dmh Exp $ */
 
 #ifndef DATA_H
 #define DATA_H 1
 
+#ifndef NO_STDARG
+#  include <stdarg.h>
+#else
+#  include <varargs.h>
+#endif
+
 /* nmemonic*/
 #define TOPLEVEL 1
+
+/* Forward types */
+struct Datalist;
+struct Symbol;
+struct Dimset;
+typedef struct Generator Generator;
 
 /* any one possible value*/
 typedef union Constvalue {
@@ -27,8 +37,7 @@ typedef union Constvalue {
     double doublev;             /* NC_DOUBLE*/
     struct Stringv {		/* NC_STRING*/
 	int len;
-	char* stringv;
-        /*struct Datalist* charlist;*/
+	char* stringv; 
     } stringv;
     struct Opaquev {     /* NC_OPAQUE*/
 	int len; /* length as originally written (rounded to even number)*/
@@ -65,7 +74,6 @@ typedef struct Datalist {
    location of current read point in the Datalist sequence
    In effect, we are parsing the data sequence.
    Push and pop of data sources is supported (see srcpush() below).*/
-
 typedef struct Datasrc {
     Constant*    data;     /* duplicate pointer; so do not free.*/
     int index;        
@@ -81,71 +89,12 @@ struct Vlendata {
 };
 extern struct Vlendata* vlendata;
 
-/* Convenience*/
-
-#define SRCPUSH(iscmpd,src) {if(((iscmpd)=issublist(src))) {srcpush(src);}}
-#define SRCPOP(iscmpd,src) {if((iscmpd)) {srcpop(src);}}
-
+/* from: data.c */
 int issublist(Datasrc* src);
 int isstring(Datasrc* src);
 int isfillvalue(Datasrc* src);
 int istype(Datasrc* src, nc_type);
 int isstringable(nc_type nctype);
-
-#ifdef ENABLE_BINARY
-/* from: cdfdata.c */
-void bindata_array(struct Symbol*,Bytebuffer*,Datasrc*,Odometer*,int,Datalist*);
-void bindata_attrdata(struct Symbol* asym, Bytebuffer*);
-void bindata_vardata(struct Symbol* vsym, Bytebuffer*);
-void bindata_vlenconstants(List*);
-void bindata_basetype(struct Symbol*,struct Datasrc*,Bytebuffer*,struct Datalist*);
-#endif
-
-#ifdef ENABLE_C
-/* from: cdata.c */
-void cdata_attrdata(struct Symbol* asym, Bytebuffer*);
-void cdata_array(struct Symbol*,Bytebuffer*,Datasrc*,Odometer*,int,Datalist*);
-void cdata_basetype(struct Symbol*,struct Datasrc*,Bytebuffer*,struct Datalist*);
-void cdata_vlenconstants(List*,Bytebuffer*);
-char* cdata_const(Constant*);
-#endif
-
-#ifdef ENABLE_F77
-/* from: f77data.c */
-void f77data_attrdata(struct Symbol* asym, Bytebuffer*);
-void f77data_array(struct Symbol*,Bytebuffer*,Datasrc*,Odometer*,int,Datalist*);
-void f77data_basetype(struct Symbol*,struct Datasrc*,Bytebuffer*,struct Datalist*);
-char* f77data_const(Constant* ci);
-void f77quotestring(Bytebuffer* databuf);
-#endif
-
-#ifdef ENABLE_CML
-/* from: cmldata.c */
-void gencml_attrdata(struct Symbol* asym, Bytebuffer*);
-void gencml_scalardata(struct Symbol* vsym, Bytebuffer*);
-void gencml_arraydata(struct Symbol* vsym, Bytebuffer*);
-void gencml_vlenconstants(List*, Bytebuffer*);
-void gencml_fillvalue(struct Symbol*, Datalist*, Datasrc*, Bytebuffer*);
-void xquotestring(Bytebuffer* databuf);
-char* xconst(Constant* ci);
-#endif
-
-#ifdef ENABLE_JAVA
-/* from: jdata.c */
-void jdata_array(struct Symbol*,Bytebuffer*,Datasrc*,Odometer*,int,Datalist*);
-void jdata_basetype(struct Symbol*,struct Datasrc*,Bytebuffer*,struct Datalist*);
-char* jdata_const(Constant* ci);
-void jquotestring(Bytebuffer* databuf, char);
-#endif
-
-/* from: data.c */
-Constant gen_string(unsigned long, Datasrc*);
-int stringimplode(Constant* con);
-Constant cloneconstant(Constant* con); /* shallow clone*/
-Constant gen_stringall(unsigned long size, Datasrc* src, unsigned long);
-
-Constant* emptycompoundconst(int,Constant*);
-Constant* emptystringconst(int,Constant*);
 
 Datasrc* datalist2src(Datalist* list);
 Datasrc* const2src(Constant*);
@@ -156,28 +105,29 @@ void freedatasrc(Datasrc* src);
 void srcpush(Datasrc*);
 void srcpushlist(Datasrc* src, Datalist* cmpd);
 void srcpop(Datasrc*);
-void srcmoveto(Datasrc*,size_t);
-void srcmove(Datasrc*,size_t);
 void srcsetfill(Datasrc* ds, Datalist* list);
 
-Datalist* datalistclone(Datalist* dl);
-Datalist* datalistconcat(Datalist* dl1, Datalist* dl2);
-Datalist* datalistappend(Datalist* dl, Constant* con);
-Datalist* datalistreplace(Datalist* dl, unsigned int index, Constant* con);
-int datalistline(Datalist*);
+int       datalistline(Datalist*);
+#define   datalistith(dl,i) ((dl)==NULL?NULL:((i) >= (dl)->length?NULL:&(dl)->data[i]))
 
 Constant* srcnext(Datasrc*);
-int srclast(Datasrc*); /* are we at the last entry ? */
 int srcmore(Datasrc*);
 int srcline(Datasrc* ds);
-void srcsplice(Datasrc* ds, Datalist* list);
+
+#define islistconst(con) ((con)!=NULL && (con)->nctype == NC_COMPOUND)
+#define isfillconst(con) ((con)!=NULL && (con)->nctype == NC_FILLVALUE)
+#define constline(con) (con==NULL?0:(con)->lineno)
+
+Constant* emptystringconst(int,Constant*);
+
+Constant cloneconstant(Constant* con); /* shallow clone*/
 
 void alignbuffer(struct Constant* prim, Bytebuffer* buf);
 
 /* Code dump support procedures */
 void bbindent(Bytebuffer*,const int);
-void bbprintf(Bytebuffer*,const char *fmt, ...);
-void bbprintf0(Bytebuffer*,const char *fmt, ...);
+void bbprintf(Bytebuffer*,const char *fmt, ...); /* append */
+void bbprintf0(Bytebuffer*,const char *fmt, ...); /* clear, then append*/
 /* Following dump to codebuffer */
 void codeprintf(const char *fmt, ...);
 void codedump(Bytebuffer*);
@@ -207,13 +157,40 @@ extern Constant nullconstant;
 extern Constant fillconstant;
 
 /* From genchar.c */
-void gen_charattr(struct Symbol* asym, Bytebuffer* databuf);
-void gen_chararray(struct Symbol* vsym, Bytebuffer* databuf, Datalist* fillsrc);
-void gen_charfield(Datasrc* src, Odometer*, Bytebuffer* databuf);
-void gen_charvlen(Datasrc*, Bytebuffer*);
-int collectstring(struct Constant*, size_t, Bytebuffer*, int);
-int getfillchar(Datalist* fillsrc);
-int buildcanonicalcharlist(Datalist*, size_t, int, Constant*);
-void padstring(Constant* con, size_t desiredlength, int fillchar);
+void gen_charattr(Datalist*, Bytebuffer*);
+void gen_charvlen(Datalist*, Bytebuffer*);
+void gen_chararray(struct Dimset*, Datalist*, Bytebuffer*, Datalist* fillsrc);
+#ifndef CHARBUG
+void gen_leafchararray(struct Dimset*,int,Datalist*,Bytebuffer* databuf, Datalist* fillsrc);
+#endif
+
+/* Mnemonic */
+#define UNKNOWN ((size_t)0)
+
+typedef enum ListClass {
+    LISTDATA, LISTATTR, LISTVLEN, LISTCOMPOUND, LISTFIELDARRAY
+} ListClass;
+
+struct Generator {
+    void* state;
+        int (*charconstant)(Generator*,Bytebuffer*,...);
+        int (*constant)(Generator*,Constant*,Bytebuffer*,...);
+        int (*listbegin)(Generator*,ListClass,size_t,Bytebuffer*,int*,...);
+        int (*list)(Generator*,ListClass,int,size_t,Bytebuffer*,...);
+        int (*listend)(Generator*,ListClass,int,size_t,Bytebuffer*,...);
+	int (*vlendecl)(Generator*,Bytebuffer*,struct Symbol*,int,size_t,...);
+        int (*vlenstring)(Generator*,Bytebuffer*,int*,size_t*,...);
+};
+
+extern int generator_getstate(Generator*,void**);
+extern int generator_reset(Generator*,void*);
+
+typedef int (*Writer)(Generator*,struct Symbol*,Bytebuffer*,int,size_t*,size_t*);
+
+extern void generate_attrdata(struct Symbol*, Generator*, Writer writer, Bytebuffer*);
+extern void generate_vardata(struct Symbol*, Generator*, Writer writer,Bytebuffer*);
+extern void generate_basetype(struct Symbol*,Constant*,Bytebuffer*,Datalist*,Generator*);
+
 
 #endif /*DATA_H*/
+

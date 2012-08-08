@@ -75,7 +75,6 @@ main(int argc, char **argv)
       if (nc_open(FILE_NAME, NC_NOWRITE, &ncid)) ERR;
 
       /* Get the string, check it, and free it. */
-      strcpy(data_in, "");
       if (nc_get_var_string(ncid, varid_in, data_in)) ERR;
       if (strcmp(data_in[0], data_out[0])) ERR;
       if (nc_free_string(1, data_in)) ERR;
