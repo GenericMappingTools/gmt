@@ -1,0 +1,6 @@
+Dataset {
+    Int32 SDS_RLE[fakeDim0 = 16][fakeDim1 = 5];
+    Int32 SDS_N%2dbit[fakeDim2 = 16][fakeDim3 = 5];
+    Int32 SDS_Skip_Huffman[fakeDim4 = 16][fakeDim5 = 5];
+    Int32 SDS_Deflate[fakeDim6 = 16][fakeDim7 = 5];
+} testsds6.hdf;

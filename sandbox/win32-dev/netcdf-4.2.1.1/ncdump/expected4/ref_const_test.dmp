@@ -1,0 +1,40 @@
+netcdf ref_const_test {
+dimensions:
+	d3 = 3 ;
+	d4 = 4 ;
+variables:
+	char charv ;
+	byte int8v(d4) ;
+	short int16v(d3) ;
+	int int32v(d3) ;
+	int64 int64v(d3) ;
+	ubyte uint8v(d4) ;
+	ushort uint16v(d3) ;
+	uint uint32v(d3) ;
+	uint64 uint64v(d3) ;
+	float floatv ;
+	double doublev ;
+data:
+
+ charv = "a" ;
+
+ int8v = -5, 5, -81, 97 ;
+
+ int16v = -2000, 32767, -21555 ;
+
+ int32v = -200000, 256000, 180148924 ;
+
+ int64v = -200000000000, 51200000000, -6067004223159161907 ;
+
+ uint8v = 251, 5, 175, 97 ;
+
+ uint16v = 63536, _, 43981 ;
+
+ uint32v = 4294767296, 256000, 180148924 ;
+
+ uint64v = 18446743873709551616, 51200000000, 12379739850550389709 ;
+
+ floatv = 516 ;
+
+ doublev = -77777777.8888 ;
+}

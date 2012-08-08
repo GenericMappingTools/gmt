@@ -1,0 +1,112 @@
+@c This is part of the netCDF documentation. See COPYRIGHT file
+@c for terms of use.
+
+@c This file is included by the manual texi files, and contains
+@c common definitions.
+
+@c $Id$
+
+@c The canonical name for each manual.
+@set n-man The NetCDF Users Guide
+@set c-man The NetCDF C Interface Guide
+@set cxx-man The NetCDF C++ Interface Guide
+@set cxx4-man The NetCDF-4 C++ Interface Guide
+@set f77-man The NetCDF Fortran 77 Interface Guide
+@set f90-man The NetCDF Fortran 90 Interface Guide
+@set i-man The NetCDF Installation and Porting Guide
+@set tut-man The NetCDF Tutorial
+@set j-man The NetCDF Java User Manual
+
+@c Support email.
+@set netcdf-support-email support-netcdf@@unidata.ucar.edu
+@set hdf5-support-email help@@hdfgroup.org
+
+@c Home pages for internal stuff like netcdf, netcdf-4, netcdf java,
+@c Unidata, etc.
+@set unidata-url http://www.unidata.ucar.edu
+@set netcdf-url @value{unidata-url}/netcdf
+@set netcdf-4-url @value{netcdf-url}/netcdf-4
+@set netcdf-java-url @value{unidata-url}/software/netcdf-java
+@set ucar-url http://www.ucar.edu
+@set uop-url http://www.uop.ucar.edu
+
+@c External web pages.
+@set hdf5-url http://hdfgroup.org/HDF5/
+@set hdf5-tutorial-url @value{hdf5-url}/HDF5/Tutor
+@set hdf5-download-url @value{hdf5-url}/HDF5/release/beta/obtain518.html
+@set hdf5-szip-license-url http://hdf.ncsa.uiuc.edu/doc_resource/SZIP/Commercial_szip.html
+@set hdf5-chunking-advice-url http://hdfeos.org/workshops/ws13/presentations/day1/HDF5-EOSXIII-Advanced-Chunking.ppt
+@set cygwin-url http://www.cygwin.com
+@set mingw-url http://www.mingw.org
+@set mingw-faq @value{mingw-url}/mingwfaq.shtml
+@set woe32-url http://www.haible.de/bruno/woe32dll.html
+@set red-hat-w32-url http://www.redhat.com/docs/manuals/enterprise/RHEL-4-Manual/gnu-linker/win32.html
+@set cf-url http://cf-pcmdi.llnl.gov
+@set zlib-url http://www.zlib.net
+@set curl-url http://curl.haxx.se
+@set xml2-url http://xmlsoft.org
+@set opendap-url http://opendap.org
+@set pnetcdf-url http://www.mcs.anl.gov/parallel-netcdf
+
+@c urls for netcdf documents
+@set docs-url @value{netcdf-url}/docs
+@set docs4-url @value{netcdf-url}/netcdf-4/newdocs
+@set old-docs-url @value{netcdf-url}/old_docs
+@set v2-docs-url @value{netcdf-url}/old_docs/really_old/guide_toc.html
+@set pre360-install-url @value{old-docs-url}/INSTALL_pre_360.html
+@set 360-install-url @value{old-docs-url}/docs_3_6_0/netcdf-install
+@set 361-install-url @value{old-docs-url}/docs_3_6_1/netcdf-install
+@set install-url @value{docs-url}/netcdf-install
+@set netcdf-install-url @value{docs-url}/netcdf-install
+@set netcdf-faq-url @value{netcdf-url}/faq.html
+@set netcdf-shared-faq-url @value{netcdf-faq-url}#using_shared
+@set netcdf-builds @value{netcdf-url}/builds
+@set netcdf-other-builds @value{netcdf-url}/other-builds.html
+@set netcdf-software-url @value{netcdf-url}/software.html
+@set known-problems-url @value{docs-url}/known_problems.html
+@set netcdf-java-man-url @value{netcdf-java-url}/v2.1/NetcdfJavaUserManual.htm
+
+@c urls to search on-line stuff
+@set netcdf-support-search-url /search.jsp?support&netcdf
+@set netcdf-list-search-url /search.jsp?netcdfgroup
+
+@c places to get downloads
+@set ftp-site ftp://ftp.unidata.ucar.edu/pub/netcdf
+@set netcdf4-ftp-site @value{ftp-site}/netcdf-4
+@set netcdf-binaries-url @value{unidata-url}/downloads/netcdf/index.jsp 
+@set windows-ftp-site @value{ftp-site}/contrib/win32
+
+@c Tools mentioned in the netCDF tutorial.
+@set idv-url http://www.unidata.ucar.edu/software/idv
+@set udunits-url http://www.unidata.ucar.edu/software/udunits
+@set ncl-url http://www.ncl.ucar.edu
+@set nco-url http://nco.sourceforge.net
+@set grads-url http://grads.iges.org/grads/grads.html
+
+@setchapternewpage odd
+@finalout
+@copying 
+Copyright @copyright{} 2005-2009 University Corporation for
+Atmospheric Research
+
+@sp 2
+Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The software and any accompanying written 
+materials are provided ``as is'' without warranty of any kind.  UCAR 
+expressly disclaims all warranties of any kind, either expressed or 
+implied, including but not limited to the implied warranties of 
+merchantability and fitness for a particular purpose.  
+
+The Unidata Program Center is managed by the University 
+Corporation for Atmospheric Research and sponsored by the National 
+Science Foundation.  Any opinions, findings, conclusions, or 
+recommendations expressed in this publication are those of the 
+author(s) and do not necessarily reflect the views of the National 
+Science Foundation.
+
+Mention of any commercial company or product in this document 
+does not constitute an endorsement by the Unidata Program Center.  
+Unidata does not authorize any use of information from this 
+publication for advertising or publicity purposes.
+@end copying

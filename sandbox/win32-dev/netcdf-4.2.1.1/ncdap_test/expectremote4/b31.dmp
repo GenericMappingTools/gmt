@@ -1,0 +1,20 @@
+netcdf b31 {
+types:
+  compound b31_record_t {
+    double id ;
+    string class ;
+    string text ;
+  }; // b31_record_t
+  b31_record_t(*) b31_t ;
+variables:
+	b31_t b31 ;
+	int b32 ;
+		string b32:billy = "Bob is my real name" ;
+		string b32:Robert = "Really wants to be called Billy" ;
+data:
+
+ b31 = 
+    {{1000, "This is a data test string (pass 0).", "This is a data test string (pass 1)."}, {999.950000416665, "This is a data test string (pass 2).", "This is a data test string (pass 3)."}, {999.800006666578, "This is a data test string (pass 4).", "This is a data test string (pass 5)."}, {999.550033748988, "This is a data test string (pass 6).", "This is a data test string (pass 7)."}, {999.200106660978, "This is a data test string (pass 8).", "This is a data test string (pass 9)."}} ;
+
+ b32 = 1 ;
+}

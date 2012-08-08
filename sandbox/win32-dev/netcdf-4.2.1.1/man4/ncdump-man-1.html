@@ -1,0 +1,519 @@
+<!-- Creator     : groff version 1.20.1 -->
+<!-- CreationDate: Thu Jun 30 17:23:46 2011 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>NCDUMP</title>
+
+</head>
+<body>
+
+<h1 align="center">NCDUMP</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#REFERENCES">REFERENCES</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+<a href="#BUGS">BUGS</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">ncdump &minus;
+Convert netCDF file to text form (CDL)</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em">ncdump [-c] [-h] [-v
+<i>var1,...</i>] [-b <i>lang</i>] [-f <i>lang</i>] [-l
+<i>len</i>] [-n <i>name</i>] [-p <i>f_digits[,d_digits]</i>]
+[-k] [-x] [-s] [-t] <i>file</i></p></td></tr>
+</table>
+
+<h2>DESCRIPTION
+<a name="DESCRIPTION"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><i><b>ncdump</b></i>
+generates a text representation of a specified netCDF file
+on standard output. The text representation is in a form
+called CDL (&lsquo;&lsquo;network Common Data form
+Language&rsquo;&rsquo;) that can be viewed, edited, or serve
+as input to <b>ncgen</b>. <b>ncgen</b> is a companion
+program that can generate a binary netCDF file from a CDL
+file. Hence <b>ncgen</b> and <b>ncdump</b> can be used as
+inverses to transform the data representation between binary
+and text representations. See <b>ncgen</b> for a description
+of CDL and netCDF representations.</p>
+
+<p style="margin-left:11%; margin-top: 1em">As of NetCDF
+version 4.1, and if DAP support was enabled when
+<b>ncdump</b> was built, the file name may specify a DAP
+URL. This allows <b>ncdump</b> to print out data sources
+from DAP servers. When used with the <b>-h</b> option,
+<b>ncdump</b> can be used to show the translation from the
+DAP DDS data model to the NetCDF data model.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncdump</b>
+defines a default display format used for each type of
+netCDF data, but this can be changed if a
+&lsquo;C_format&rsquo; attribute is defined for a netCDF
+variable. In this case, <b>ncdump</b> will use the
+&lsquo;C_format&rsquo; attribute to format each value. For
+example, if floating-point data for the netCDF variable
+&lsquo;Z&rsquo; is known to be accurate to only three
+significant digits, it would be appropriate to use the
+variable attribute</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="29%">
+
+
+<p style="margin-top: 1em">Z:C_format =
+&quot;%.3g&quot;</p> </td>
+<td width="49%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncdump</b>
+may also be used as a simple browser for netCDF data files,
+to display the dimension names and sizes; variable names,
+types, and shapes; attribute names and values; and
+optionally, the values of data for all variables or selected
+variables in a netCDF file.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncdump</b>
+uses &lsquo;_&rsquo; to represent data values that are equal
+to the &lsquo;_FillValue&rsquo; attribute for a variable,
+intended to represent data that has not yet been written. If
+a variable has no &lsquo;_FillValue&rsquo; attribute, the
+default fill value for the variable type is used if the
+variable is not of byte type.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncdump</b>
+may also be used to determine what kind of netCDF file is
+used (which variant of the netCDF file format) with the -k
+option.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>OPTIONS
+<a name="OPTIONS"></a>
+</h2>
+<td width="11%"></td>
+<td width="3%"></td>
+<td width="8%"></td>
+<td width="78%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-c</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Show the values of <i>coordinate</i> variables
+(variables that are also dimensions) as well as the
+declarations of all dimensions, variables, and attribute
+values. Data values of non-coordinate variables are not
+included in the output. This is the most suitable option to
+use for a brief look at the structure and contents of a
+netCDF file.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-h</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Show only the <i>header</i> information in the output,
+that is the declarations of dimensions, variables, and
+attributes but no data values for any variables. The output
+is identical to using the <b>-c</b> option except that the
+values of coordinate variables are not included. (At most
+one of <b>-c</b> or <b>-h</b> options may be present.)</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>-v</b>
+<i>var1,...,varn</i></p>
+
+<p style="margin-left:22%;">The output will include data
+values for the specified variables, in addition to the
+declarations of all dimensions, variables, and attributes.
+One or more variables must be specified by name in the
+comma-delimited list following this option. The list must be
+a single argument to the command, hence cannot contain
+blanks or other white space characters unless escaped. The
+named variables must be valid netCDF variables in the
+input-file. A variable within a group in a netCDF-4 file may
+be specified with an absolute path name, such as
+&lsquo;/GroupA/GroupA2/var&rsquo;. Use of a relative path
+name such as &lsquo;var&rsquo; or &lsquo;grp/var&rsquo;
+specifies all matching variable names in the file. The
+default, without this option and in the absence of the
+<b>-c</b> or <b>-h</b> options, is to include data values
+for <i>all</i> variables in the output.</p>
+
+<p style="margin-left:11%;"><b>-b</b> <i>lang</i></p>
+
+<p style="margin-left:22%;">A brief annotation in the form
+of a CDL comment (text beginning with the characters
+&lsquo;&lsquo;//&rsquo;&rsquo;) will be included in the data
+section of the output for each &lsquo;row&rsquo; of data, to
+help identify data values for multidimensional variables. If
+<i>lang</i> begins with &lsquo;C&rsquo; or &lsquo;c&rsquo;,
+then C language conventions will be used (zero-based
+indices, last dimension varying fastest). If <i>lang</i>
+begins with &lsquo;F&rsquo; or &lsquo;f&rsquo;, then Fortran
+language conventions will be used (one-based indices, first
+dimension varying fastest). In either case, the data will be
+presented in the same order; only the annotations will
+differ. This option is useful for browsing through large
+volumes of multidimensional data.</p>
+
+<p style="margin-left:11%;"><b>-f</b> <i>lang</i></p>
+
+<p style="margin-left:22%;">Full annotations in the form of
+trailing CDL comments (text beginning with the characters
+&lsquo;&lsquo;//&rsquo;&rsquo;) for every data value (except
+individual characters in character arrays) will be included
+in the data section. If <i>lang</i> begins with
+&lsquo;C&rsquo; or &lsquo;c&rsquo;, then C language
+conventions will be used (zero-based indices, last dimension
+varying fastest). If <i>lang</i> begins with &lsquo;F&rsquo;
+or &lsquo;f&rsquo;, then Fortran language conventions will
+be used (one-based indices, first dimension varying
+fastest). In either case, the data will be presented in the
+same order; only the annotations will differ. This option
+may be useful for piping data into other filters, since each
+data value appears on a separate line, fully identified.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="9%">
+
+
+<p><b>-l</b> <i>len</i></p></td>
+<td width="2%"></td>
+<td width="78%">
+
+
+<p>Changes the default maximum line length (80) used in
+formatting lists of non-character data values.</p></td></tr>
+</table>
+
+<p style="margin-left:11%;"><b>-n</b> <i>name</i></p>
+
+<p style="margin-left:22%;">CDL requires a name for a
+netCDF data set, for use by <b>ncgen -b</b> in generating a
+default netCDF file name. By default, <i>ncdump</i>
+constructs this name from the last component of the path
+name of the input netCDF file by stripping off any extension
+it has. Use the <b>-n</b> option to specify a different
+name. Although the output file name used by <b>ncgen -b</b>
+can be specified, it may be wise to have <i>ncdump</i>
+change the default name to avoid inadvertently overwriting a
+valuable netCDF file when using <b>ncdump</b>, editing the
+resulting CDL file, and using <b>ncgen -b</b> to generate a
+new netCDF file from the edited CDL file.</p>
+
+<p style="margin-left:11%;"><b>-p</b>
+<i>float_digits[,double_digits]</i></p>
+
+<p style="margin-left:22%;">Specifies default precision
+(number of significant digits) to use in displaying
+floating-point or double precision data values for
+attributes and variables. If specified, this value overrides
+the value of the &lsquo;C_format&rsquo; attribute for any
+variable that has such an attribute. Floating-point data
+will be displayed with <i>float_digits</i> significant
+digits. If <i>double_digits</i> is also specified,
+double-precision values will be displayed with that many
+significant digits. In the absence of any <b>-p</b>
+specifications, floating-point and double-precision data are
+displayed with 7 and 15 significant digits respectively. CDL
+files can be made smaller if less precision is required. If
+both floating-point and double-precision precisions are
+specified, the two values must appear separated by a comma
+(no blanks) as a single argument to the command. If you
+really want every last bit of precision from the netCDF file
+represented in the CDL file for all possible floating-point
+values, you will have to specify this with <b>-p 9,17</b>
+(according to Theorem 15 of the paper listed under
+REFERENCES).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-k</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Show what kind of netCDF file the pathname references,
+one of &lsquo;classic&rsquo;, &lsquo;64-bit
+offset&rsquo;,&lsquo;netCDF-4&rsquo;, or &lsquo;netCDF-4
+classic model&rsquo;. Before version 3.6, there was only one
+kind of netCDF file, designated as &lsquo;classic&rsquo;
+(also know as format variant 1). Large file support
+introduced another variant of the format, designated as
+&lsquo;64-bit offset&rsquo; (known as format variant 2).
+NetCDF-4, uses a third variant of the format,
+&lsquo;netCDF-4&rsquo; (format variant 3). Another format
+variant, designated &lsquo;netCDF-4 classic model&rsquo;
+(format variant 4), is restricted to features supported by
+the netCDF-3 data model but represented using the HDF5
+format, so that an unmodified netCDF-3 program can read or
+write the file just by relinking with the netCDF-4 library.
+The string output by using the &lsquo;-k&rsquo; option may
+be provided as the value of the &lsquo;-k&rsquo; option to
+ncgen(1) to specify exactly what kind of netCDF file to
+generate, when you want to override the default inferred
+from the CDL.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-x</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Output XML (NcML) instead of CDL. The NcML does not
+include data values. The NcML output option currently only
+works for netCDF classic model data.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-s</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Output special virtual attributes that provide
+performance-related information about the file format and
+variable properties for netCDF-4 data. These special virtual
+attributes are not actually part of the data, they are
+merely a convenient way to display miscellaneous properties
+of the data in CDL (and eventually NcML). They include
+&lsquo;_ChunkSizes&rsquo;, &lsquo;_DeflateLevel&rsquo;,
+&lsquo;_Endianness&rsquo;, &lsquo;_Fletcher32&rsquo;,
+&lsquo;_Format&rsquo;, &lsquo;_NoFill&rsquo;,
+&lsquo;_Shuffle&rsquo;, and &lsquo;_Storage&rsquo;.
+&lsquo;_ChunkSizes&rsquo; is a list of chunk sizes for each
+dimension of the variable. &lsquo;_DeflateLevel&rsquo; is an
+integer between 0 and 9 inclusive if compression has been
+specified for the variable. &lsquo;_Endianness&rsquo; is
+either &lsquo;little&rsquo; or &lsquo;big&rsquo;, depending
+on how the variable was stored when first written.
+&lsquo;_Fletcher32&rsquo; is &lsquo;true&rsquo; if the
+checksum property was set for the variable.
+&lsquo;_Format&rsquo; is a global attribute specifying the
+netCDF format variant, one of &lsquo;classic&rsquo;,
+&lsquo;64-bit offset&rsquo;, &lsquo;netCDF-4&rsquo;, or
+&lsquo;netCDF-4 classic model&rsquo;. &lsquo;_NoFill&rsquo;
+is &lsquo;true&rsquo; if the persistent NoFill property was
+set for the variable when it was defined.
+&lsquo;_Shuffle&rsquo; is &lsquo;true&rsquo; if use of the
+shuffle filter was specified for the variable.
+&lsquo;_Storage&rsquo; is &lsquo;contiguous&rsquo; or
+&lsquo;chunked&rsquo;, depending on how the variable&rsquo;s
+data is stored.</p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="3%">
+
+
+<p><b>-t</b></p></td>
+<td width="8%"></td>
+<td width="78%">
+
+
+<p>Controls display of time data, if stored in a variable
+that uses a udunits compliant time representation such as
+&lsquo;days since 1970-01-01&rsquo; or &lsquo;seconds since
+2009-03-15 12:01:17&rsquo;. If this option is specified,
+time values are displayed as human-readable date-time
+strings rather than numerical values, interpreted in terms
+of a &lsquo;calendar&rsquo; variable attribute, if
+specified. Calendar attribute values interpreted with this
+option include the CF Conventions values
+&lsquo;gregorian&rsquo; or &lsquo;standard&rsquo;,
+&lsquo;proleptic_gregorian&rsquo;, &lsquo;noleap&rsquo; or
+&lsquo;365_day&rsquo;, &lsquo;all_leap&rsquo; or
+&lsquo;366_day&rsquo;, &lsquo;360_day&rsquo;, and
+&lsquo;julian&rsquo;.</p> </td></tr>
+</table>
+
+<h2>EXAMPLES
+<a name="EXAMPLES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Look at the
+structure of the data in the netCDF file
+&lsquo;<b>foo.nc</b>&rsquo;:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="24%">
+
+
+<p style="margin-top: 1em">ncdump -c foo.nc</p></td>
+<td width="54%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Produce an
+annotated CDL version of the structure and data in the
+netCDF file &lsquo;<b>foo.nc</b>&rsquo;, using C-style
+indexing for the annotations:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="43%">
+
+
+<p style="margin-top: 1em">ncdump -b c foo.nc &gt;
+foo.cdl</p> </td>
+<td width="35%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Output data for
+only the variables &lsquo;uwind&rsquo; and
+&lsquo;vwind&rsquo; from the netCDF file
+&lsquo;<b>foo.nc</b>&rsquo;, and show the floating-point
+data with only three significant digits of precision:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="50%">
+
+
+<p style="margin-top: 1em">ncdump -v uwind,vwind -p 3
+foo.nc</p> </td>
+<td width="28%">
+</td></tr>
+</table>
+
+<p style="margin-left:11%; margin-top: 1em">Produce a
+fully-annotated (one data value per line) listing of the
+data for the variable &lsquo;omega&rsquo;, using Fortran
+conventions for indices, and changing the netCDF dataset
+name in the resulting CDL file to &lsquo;omega&rsquo;:</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="22%"></td>
+<td width="76%">
+
+
+<p style="margin-top: 1em">ncdump -v omega -f fortran -n
+omega foo.nc &gt; Z.cdl</p></td>
+<td width="2%">
+</td></tr>
+</table>
+
+<h2>REFERENCES
+<a name="REFERENCES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><i>What Every
+Computer Scientist should Know About Floating-Point
+Arithmetic</i>, D. Goldberg, <b>ACM Computing Surveys, Vol.
+23, No. 1</b>, March 1991, pp. 5-48. Climate and Forecast
+Metadata Conventions, http://www.cfconventions.org.</p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncgen</b>(1),
+<b>netcdf</b>(3)</p>
+
+<h2>BUGS
+<a name="BUGS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Character
+arrays that contain a null-byte are treated like C strings,
+so no characters after the null byte appear in the
+output.</p>
+
+
+<p style="margin-left:11%; margin-top: 1em">Multidimensional
+character string arrays are not handled well, since the CDL
+syntax for breaking a long character string into several
+shorter lines is weak.</p>
+
+<p style="margin-left:11%; margin-top: 1em">There should be
+a way to specify that the data should be displayed in
+&lsquo;record&rsquo; order, that is with the all the values
+for &lsquo;record&rsquo; variables together that have the
+same value of the record dimension.</p>
+<hr>
+</body>
+</html>

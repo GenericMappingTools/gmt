@@ -1,0 +1,39 @@
+netcdf ref_tst_special_atts3 {
+dimensions:
+	dim1 = 10 ;
+	dim2 = 20 ;
+	dim3 = 30 ;
+	time = UNLIMITED ; // (0 currently)
+	lat = 361 ;
+	lon = 540 ;
+variables:
+	int var1(dim1) ;
+		var1:_Storage = "contiguous" ;
+		var1:_Endianness = "little" ;
+	int var2(dim1, dim2) ;
+		var2:_Storage = "chunked" ;
+		var2:_ChunkSizes = 6, 7 ;
+		var2:_Fletcher32 = "true" ;
+		var2:_Endianness = "big" ;
+	int var3(dim1, dim2, dim3) ;
+		var3:_Storage = "chunked" ;
+		var3:_ChunkSizes = 6, 7, 8 ;
+		var3:_DeflateLevel = 2 ;
+		var3:_Endianness = "little" ;
+	int var4(dim1, dim2, dim3) ;
+		var4:_Storage = "chunked" ;
+		var4:_ChunkSizes = 6, 7, 8 ;
+		var4:_DeflateLevel = 2 ;
+		var4:_Shuffle = "true" ;
+		var4:_Endianness = "little" ;
+		var4:_NoFill = "true" ;
+        float slp(time, lat, lon) ;
+                slp:_FillValue = 1.e+15f ;
+                slp:_DeflateLevel = 1 ;
+                slp:_Storage = "chunked" ;
+                slp:_ChunkSizes = 1, 361, 540 ;
+
+// global attributes:
+		:_Format = "netCDF-4 classic model" ;
+data:
+}

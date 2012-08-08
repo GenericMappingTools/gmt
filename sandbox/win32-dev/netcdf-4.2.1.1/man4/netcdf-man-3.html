@@ -1,0 +1,3728 @@
+<!-- Creator     : groff version 1.20.1 -->
+<!-- CreationDate: Thu Jun 30 17:23:47 2011 -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="Content-Style" content="text/css">
+<style type="text/css">
+       p       { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       pre     { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       table   { margin-top: 0; margin-bottom: 0; vertical-align: top }
+       h1      { text-align: center }
+</style>
+<title>NETCDF</title>
+
+</head>
+<body>
+
+<h1 align="center">NETCDF</h1>
+
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#LIBRARY VERSION">LIBRARY VERSION</a><br>
+<a href="#RETURN VALUES">RETURN VALUES</a><br>
+<a href="#FILE OPERATIONS">FILE OPERATIONS</a><br>
+<a href="#USER DEFINED TYPES">USER DEFINED TYPES</a><br>
+<a href="#GROUPS">GROUPS</a><br>
+<a href="#DIMENSIONS">DIMENSIONS</a><br>
+<a href="#VARIABLES">VARIABLES</a><br>
+<a href="#VARIABLES in NETCDF-4 FILES">VARIABLES in NETCDF-4 FILES</a><br>
+<a href="#WRITING AND READING WHOLE VARIABLES">WRITING AND READING WHOLE VARIABLES</a><br>
+<a href="#WRITING AND READING ONE DATUM">WRITING AND READING ONE DATUM</a><br>
+<a href="#WRITING AND READING AN ARRAY">WRITING AND READING AN ARRAY</a><br>
+<a href="#WRITING AND READING A SLICED ARRAY">WRITING AND READING A SLICED ARRAY</a><br>
+<a href="#WRITING AND READING A MAPPED ARRAY">WRITING AND READING A MAPPED ARRAY</a><br>
+<a href="#ATTRIBUTES">ATTRIBUTES</a><br>
+<a href="#COMMON ARGUMENT DESCRIPTIONS">COMMON ARGUMENT DESCRIPTIONS</a><br>
+<a href="#VARIABLE PREFILLING">VARIABLE PREFILLING</a><br>
+<a href="#MPP FUNCTION DESCRIPTIONS">MPP FUNCTION DESCRIPTIONS</a><br>
+<a href="#ENVIRONMENT VARIABLES">ENVIRONMENT VARIABLES</a><br>
+<a href="#MAILING-LISTS">MAILING-LISTS</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+
+
+<h2>NAME
+<a name="NAME"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">netcdf &minus;
+Unidata&rsquo;s Network Common Data Form (netCDF) library
+interface</p>
+
+<h2>SYNOPSIS
+<a name="SYNOPSIS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>#include
+&quot;netcdf.h&quot;</b></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>cc ...
+-lnetcdf -lhdf5_hl -lhdf5 -lz -lm</b></p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>Complete
+documentation for the netCDF libraries can be found at the
+netCDF website:
+http://www.unidata.ucar.edu/software/netcdf/.</b></p>
+
+<h2>LIBRARY VERSION
+<a name="LIBRARY VERSION"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">This document
+describes versions 3 and 4 of Unidata netCDF data-access
+interface for the C programming language.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="43%">
+
+
+<p style="margin-top: 1em"><b>const char*
+nc_inq_libvers()</b></p> </td>
+<td width="46%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Returns a
+string identifying the version of the netCDF library, and
+when it was built, like: &quot;3.1a of Aug 22 1996 12:57:47
+$&quot;.</p>
+
+<p style="margin-left:11%; margin-top: 1em">The RCS
+<b>ident(1)</b> command will find a string like &quot;$Id:
+@(#) netcdf library version 3.1a of Sep 6 1996 15:56:26
+$&quot; in the library. The SCCS <b>what(1)</b> command will
+find a string like &quot;netcdf library version 3.1a of Aug
+23 1996 16:07:40 $&quot;.</p>
+
+<h2>RETURN VALUES
+<a name="RETURN VALUES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">All netCDF
+functions (except <b>nc_inq_libvers()</b> and
+<b>nc_strerror()</b>) return an integer status.</p>
+
+<p style="margin-left:11%; margin-top: 1em">If this
+returned status value is not equal to <b>NC_NOERR</b>
+(zero), it indicates that an error occurred. The possible
+status values are defined in system include file
+&lt;errno.h&gt; and in &quot;netcdf.h&quot;.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="54%">
+
+
+<p style="margin-top: 1em"><b>const char*
+nc_strerror(int</b> <i>status</i><b>)</b></p></td>
+<td width="35%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Returns a
+string textual translation of the <i>status</i> value, like
+&quot;Attribute or variable name contains illegal
+characters&quot; or &quot;No such file or
+directory&quot;.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>FILE OPERATIONS
+<a name="FILE OPERATIONS"></a>
+</h2>
+<td width="11%"></td>
+<td width="83%"></td>
+<td width="6%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="83%">
+
+
+<p><b>int nc_create(const char</b> <i>path</i><b>[],
+int</b> <i>cmode</i><b>, int*</b> <i>ncid</i><b>)</b></p></td>
+<td width="6%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Creates a new
+netCDF dataset at <i>path</i>, returning a netCDF ID in
+<i>ncid</i>. The argument <i>cmode</i> may include the
+bitwise-or of the following flags: <b>NC_NOCLOBBER</b> to
+protect existing datasets (default silently blows them
+away), <b>NC_SHARE</b> for synchronous dataset updates for
+classic format files (default is to buffer accesses),</p>
+
+<p style="margin-left:22%; margin-top: 1em">When a netCDF
+dataset is created, is is opened <b>NC_WRITE</b>. The new
+netCDF dataset is in define mode. <b>NC_64BIT_OFFSET</b>. to
+create a file in the 64-bit offset format (as opposed to
+classic format, the default). <b>NC_TRUE</b> to create a
+netCDF-4/HDF5 file, and <b>NC_CLASSIC_MODEL</b> to guarantee
+that netCDF-4/HDF5 files maintain compatibility with the
+netCDF classic data model.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc__create(const char</b>
+<i>path</i><b>[], int</b> <i>cmode</i><b>, size_t</b>
+<i>initialsize</i><b>, size_t*</b> <i>chunksize</i><b>,
+int*</b> <i>ncid</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nc_create()</b> but has additional performance tuning
+parameters.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The argument
+<i>initialsize</i> sets the initial size of the file at
+creation time.</p>
+
+<p style="margin-left:22%; margin-top: 1em">See
+<b>nc__open()</b> below for an explanation of the
+<i>chunksize</i> parameter.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="78%">
+
+
+<p style="margin-top: 1em"><b>int nc_open(const char</b>
+<i>path</i><b>[], int</b> <i>mode</i><b>, int*</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="11%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncopen()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Opens a
+existing netCDF dataset at <i>path</i> returning a netCDF ID
+in <i>ncid</i>. The type of access is described by the
+<i>mode</i> parameter, which may include the bitwise-or of
+the following flags: <b>NC_WRITE</b> for read-write access
+(default read-only), <b>NC_SHARE</b> for synchronous dataset
+updates (default is to buffer accesses), and <b>NC_LOCK</b>
+(not yet implemented).</p>
+
+<p style="margin-left:22%; margin-top: 1em">As of NetCDF
+version 4.1, and if TRUE support was enabled when the NetCDF
+library was built, the path parameter may specify a TRUE
+URL. In this case, the access mode is forced to be
+read-only.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc__open(const char</b>
+<i>path</i><b>[], int</b> <i>mode</i><b>, size_t*</b>
+<i>chunksize</i><b>, int*</b> <i>ncid</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nc_open()</b> but has an additional performance tuning
+parameter.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The argument
+referenced by <i>chunksize</i> controls a space versus time
+tradeoff, memory allocated in the netcdf library versus
+number of system calls. Because of internal requirements,
+the value may not be set to exactly the value requested. The
+actual value chosen is returned by reference. Using the
+value <b>NC_SIZEHINT_DEFAULT</b> causes the library to
+choose a default. How the system choses the default depends
+on the system. On many systems, the &quot;preferred I/O
+block size&quot; is available from the <b>stat()</b> system
+call, <b>struct stat</b> member <b>st_blksize</b>. If this
+is available it is used. Lacking that, twice the system
+pagesize is used. Lacking a call to discover the system
+pagesize, we just set default chunksize to 8192.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The chunksize
+is a property of a given open netcdf descriptor <i>ncid</i>,
+it is not a persistent property of the netcdf dataset.</p>
+
+<p style="margin-left:22%; margin-top: 1em">As with
+<b>nc__open()</b>, the path parameter may specify a TRUE
+URL, but the tuning parameters are ignored.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="34%">
+
+
+<p style="margin-top: 1em"><b>int nc_redef(int</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="55%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncredef()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Puts an open
+netCDF dataset into define mode, so dimensions, variables,
+and attributes can be added or renamed and attributes can be
+deleted.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="35%">
+
+
+<p style="margin-top: 1em"><b>int nc_enddef(int</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="54%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncendef()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Takes an open
+netCDF dataset out of define mode. The changes made to the
+netCDF dataset while it was in define mode are checked and
+committed to disk if no problems occurred. Some data values
+may be written as well, see &quot;VARIABLE PREFILLING&quot;
+below. After a successful call, variable data can be read or
+written to the dataset.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc__enddef(int</b>
+<i>ncid</i><b>, size_t</b> <i>h_minfree</i><b>, size_t</b>
+<i>v_align</i><b>, size_t</b> <i>v_minfree</i><b>,
+size_t</b> <i>r_align</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nc_enddef()</b> but has additional performance tuning
+parameters.</p>
+
+<p style="margin-left:22%; margin-top: 1em">Caution: this
+function exposes internals of the netcdf version 1 file
+format. It may not be available on future netcdf
+implementations.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The current
+netcdf file format has three sections, the
+&quot;header&quot; section, the data section for fixed size
+variables, and the data section for variables which have an
+unlimited dimension (record variables). The header begins at
+the beginning of the file. The index (offset) of the
+beginning of the other two sections is contained in the
+header. Typically, there is no space between the sections.
+This causes copying overhead to accrue if one wishes to
+change the size of the sections, as may happen when changing
+names of things, text attribute values, adding attributes or
+adding variables. Also, for buffered i/o, there may be
+advantages to aligning sections in certain ways.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The minfree
+parameters allow one to control costs of future calls to
+<b>nc_redef()</b>, <b>nc_enddef()</b> by requesting that
+<i>minfree</i> bytes be available at the end of the section.
+The <i>h_minfree</i> parameter sets the pad at the end of
+the &quot;header&quot; section. The <i>v_minfree</i>
+parameter sets the pad at the end of the data section for
+fixed size variables.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The align
+parameters allow one to set the alignment of the beginning
+of the corresponding sections. The beginning of the section
+is rounded up to an index which is a multiple of the align
+parameter. The flag value <b>NC_ALIGN_CHUNK</b> tells the
+library to use the chunksize (see above) as the align
+parameter. The <i>v_align</i> parameter controls the
+alignment of the beginning of the data section for fixed
+size variables. The <i>r_align</i> parameter controls the
+alignment of the beginning of the data section for variables
+which have an unlimited dimension (record variables).</p>
+
+<p style="margin-left:22%; margin-top: 1em">The file format
+requires mod 4 alignment, so the align parameters are
+silently rounded up to multiples of 4. The usual call,
+<b>nc_enddef(</b><i>ncid</i><b>)</b> is equivalent to
+<b>nc__enddef(</b><i>ncid</i><b>, 0, 4, 0, 4)</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The file format
+does not contain a &quot;record size&quot; value, this is
+calculated from the sizes of the record variables. This
+unfortunate fact prevents us from providing minfree and
+alignment control of the &quot;records&quot; in a netcdf
+file. If you add a variable which has an unlimited
+dimension, the third section will always be copied with the
+new variable added.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="32%">
+
+
+<p style="margin-top: 1em"><b>int nc_sync(int</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="57%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncsync()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Unless the
+<b>NC_SHARE</b> bit is set in <b>nc_open()</b> or
+<b>nc_create()</b>, accesses to the underlying netCDF
+dataset are buffered by the library. This function
+synchronizes the state of the underlying dataset and the
+library. This is done automatically by <b>nc_close()</b> and
+<b>nc_enddef()</b>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="34%">
+
+
+<p style="margin-top: 1em"><b>int nc_abort(int</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="55%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncabort()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">You don&rsquo;t
+need to call this function. This function is called
+automatically by <b>nc_close()</b> if the netCDF was in
+define mode and something goes wrong with the commit. If the
+netCDF dataset isn&rsquo;t in define mode, then this
+function is equivalent to <b>nc_close()</b>. If it is called
+after <b>nc_redef()</b>, but before <b>nc_enddef()</b>, the
+new definitions are not committed and the dataset is closed.
+If it is called after <b>nc_create()</b> but before
+<b>nc_enddef()</b>, the dataset disappears.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="34%">
+
+
+<p style="margin-top: 1em"><b>int nc_close(int</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="55%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncclose()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Closes an open
+netCDF dataset. If the dataset is in define mode,
+<b>nc_enddef()</b> will be called before closing. After a
+dataset is closed, its ID may be reassigned to another
+dataset.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq(int</b>
+<i>ncid</i><b>, int*</b> <i>ndims</i><b>, int*</b>
+<i>nvars</i><b>, int*</b> <i>natts</i><b>, int*</b>
+<i>unlimdimid</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_ndims(int</b>
+<i>ncid</i><b>, int*</b> <i>ndims</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_nvars(int</b>
+<i>ncid</i><b>, int*</b> <i>nvars</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_natts(int</b>
+<i>ncid</i><b>, int*</b> <i>natts</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_unlimdim(int</b>
+<i>ncid</i><b>, int*</b> <i>unlimdimid</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_format(int</b>
+<i>ncid</i><b>, int*</b> <i>formatn</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Use these
+functions to find out what is in a netCDF dataset. Upon
+successful return, <i>ndims</i> will contain the number of
+dimensions defined for this netCDF dataset, <i>nvars</i>
+will contain the number of variables, <i>natts</i> will
+contain the number of attributes, and <i>unlimdimid</i> will
+contain the dimension ID of the unlimited dimension if one
+exists, or -1 otherwise. <i>formatn</i> will contain the
+version number of the dataset &lt;format&gt;, one of
+<b>NC_FORMAT_CLASSIC</b>, <b>NC_FORMAT_64BIT</b>,
+<b>NC_FORMAT_NETCDF4</b>, or
+<b>NC_FORMAT_NETCDF4_CLASSIC</b>. If any of the return
+parameters is a <b>NULL</b> pointer, then the corresponding
+information will not be returned; hence, no space need be
+allocated for it.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_dim(int</b>
+<i>ncid</i><b>, const char</b> <i>name</i><b>[], size_t</b>
+<i>len</i><b>, int*</b> <i>dimid</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncdimdef()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Adds a new
+dimension to an open netCDF dataset, which must be in define
+mode. <i>name</i> is the dimension name. If <i>dimid</i> is
+not a <b>NULL</b> pointer then upon successful completion
+<i>dimid</i> will contain the dimension ID of the newly
+created dimension.</p>
+
+<h2>USER DEFINED TYPES
+<a name="USER DEFINED TYPES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Users many
+define types for a netCDF-4/HDF5 file (unless the
+<b>NC_CLASSIC_MODEL</b> was used when the file was creates).
+Users may define compound types, variable length arrays,
+enumeration types, and opaque types.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_compound(int</b>
+<i>ncid</i><b>, size_t</b> <i>size</i><b>, const char</b>
+<i>name</i><b>[], int*</b> <i>typeidp</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Define a
+compound type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_insert_compound(int</b> <i>ncid</i><b>, nc_type , const
+char</b> <i>name</i><b>[], size_t</b> <i>offset</i><b>,
+nc_type</b> <i>field_typeid</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Insert an
+element into a compound type. May not be done after type has
+been used, or after the type has been written by an
+enddef.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_insert_array_compound(int</b> <i>ncid</i><b>, nc_type ,
+const char</b> <i>name</i><b>[], size_t</b>
+<i>offset</i><b>, nc_type</b> <i>field_typeid</i><b>,
+int</b> <i>ndims</i><b>, const int</b>
+<i>dim_sizes</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Insert an array
+into a compound type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_type(int</b>
+<i>ncid</i><b>, nc_type , char</b> <i>name</i><b>[],
+size_t*</b> <i>sizep</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_compound(int</b>
+<i>ncid</i><b>, nc_type , char</b> <i>name</i><b>[],
+size_t*</b> <i>sizep</i><b>, size_t*</b>
+<i>nfieldsp</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_name(int</b> <i>ncid</i><b>, nc_type ,
+char</b> <i>name</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_size(int</b> <i>ncid</i><b>, nc_type ,
+size_t*</b> <i>sizep</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_nfields(int</b> <i>ncid</i><b>, nc_type ,
+size_t*</b> <i>nfieldsp</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_fieldname(int</b> <i>ncid</i><b>, nc_type ,
+int</b> <i>fieldid</i><b>, char</b>
+<i>name</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_fieldindex(int</b> <i>ncid</i><b>, nc_type ,
+const char</b> <i>name</i><b>[], int*</b>
+<i>fieldidp</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_fieldoffset(int</b> <i>ncid</i><b>, nc_type
+, int</b> <i>fieldid</i><b>, size_t*</b>
+<i>offsetp</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_fieldtype(int</b> <i>ncid</i><b>, nc_type ,
+int</b> <i>fieldid</i><b>, nc_type*</b>
+<i>field_typeid</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_fieldndims(int</b> <i>ncid</i><b>, nc_type ,
+int</b> <i>fieldid</i><b>, int*</b> <i>ndims</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_compound_fielddim_sizes(int</b> <i>ncid</i><b>,
+nc_type , int</b> <i>fieldid</i><b>, int</b>
+<i>dim_sizes</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+compound type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_vlen(int</b>
+<i>ncid</i><b>, const char</b> <i>name</i><b>[], nc_type</b>
+<i>base_typeid</i><b>, nc_type*</b>
+<i>xtypep</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Create a
+varaible length array type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_vlen(int</b>
+<i>ncid</i><b>, nc_type , char</b> <i>name</i><b>[],
+size_t*</b> <i>datum_sizep</i><b>, nc_type*</b>
+<i>base_nc_typep</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+varaible length array type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="47%">
+
+
+<p style="margin-top: 1em"><b>int nc_free_vlen(nc_vlen_t
+*vl)</b></p> </td>
+<td width="42%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Free memory
+comsumed by reading data of a varaible length array
+type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_put_vlen_element(int</b> <i>ncid</i><b>, nc_type , void
+*</b> <i>vlen_element</i><b>, size_t</b> <i>len</i><b>, void
+*</b> <i>data</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Write one
+VLEN.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vlen_element(int</b> <i>ncid</i><b>, nc_type , void
+**</b> <i>vlen_element</i><b>, size_t</b> <i>len</i><b>,
+void **</b> <i>data</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Read one
+VLEN.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="66%">
+
+
+<p style="margin-top: 1em"><b>int nc_free_string(size_t</b>
+<i>len</i><b>, char **data)</b></p></td>
+<td width="23%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Free memory
+comsumed by reading data of a string type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_user_type(int</b>
+<i>ncid</i><b>, nc_type , char</b> <i>name</i><b>[], size_t*
+, nc_type* , size_t* , int* )</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+user define type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_enum(int</b>
+<i>ncid</i><b>, nc_type</b> <i>base_typeid</i><b>, const
+char</b> <i>name</i><b>[], nc_type*</b>
+<i>typeidp</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Define an
+enumeration type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_insert_enum(int</b>
+<i>ncid</i><b>, nc_type</b> <i>base_typeid</i><b>, const
+char</b> <i>name</i><b>[], const void *value)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Insert a
+name-value pair into enumeration type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_enum_member(int</b> <i>ncid</i><b>, nc_type</b>
+<i>xtype</i><b>, int</b> <i>idx</i><b>, char</b>
+<i>name</i><b>[], void *value)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_enum_ident(int</b>
+<i>ncid</i><b>, nc_type</b> <i>xtype</i><b>, int</b>
+<i>idx</i><b>, long long</b> <i>value</i><b>, char</b>
+<i>identifier</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+name-value pair into enumeration type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_opaque(int</b>
+<i>ncid</i><b>, size_t</b> <i>size</i><b>, const char</b>
+<i>name</i><b>[], nc_type*</b> <i>xtypep</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Create an
+opaque type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_opaque(int</b>
+<i>ncid</i><b>, nc_type</b> <i>xtype</i><b>, char</b>
+<i>name</i><b>[], size_t*</b> <i>sizep</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about
+opaque type.</p>
+
+<h2>GROUPS
+<a name="GROUPS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Users may
+organize data into hierarchical groups in netCDF-4/HDF5
+files (unless <b>NC_CLASSIC_MODEL</b> was used when creating
+the file).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="80%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_grps(int</b>
+<i>ncid</i><b>, int*</b> <i>numgrps</i><b>, int</b>
+<i>ncids</i><b>[])</b></p> </td>
+<td width="9%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn how many
+groups (and their ncids) are available from the group
+represented by ncid.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_grpname(int</b>
+<i>ncid</i><b>, char</b> <i>name</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_grpname_full(int</b> <i>ncid</i><b>, size_t*</b>
+<i>len</i><b>, char</b> <i>name</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_grpname_len(int</b> <i>ncid</i><b>, size_t*</b>
+<i>len</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_grp_parent(int</b>
+<i>ncid</i><b>, int*</b> <i>ncid</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_grp_ncid(int</b>
+<i>ncid</i><b>, char</b> <i>name</i><b>[], int*</b>
+<i>ncid</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_full_ncid(int</b>
+<i>ncid</i><b>, char</b> <i>name</i><b>[], int*</b>
+<i>ncid</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+group.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="71%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_varids(int</b>
+<i>ncid</i><b>, int*</b> <i>nvars</i><b>, int* )</b></p></td>
+<td width="18%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Get the varids
+in a group.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_dimids(int</b>
+<i>ncid</i><b>, int*</b> <i>ndims</i><b>, int*</b>
+<i>dimids</i><b>, int</b> <i>include_parents</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Get the dimids
+in a group and (potentially) its parents.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="86%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_typeids(int</b>
+<i>ncid</i><b>, int*</b> <i>ntypes</i><b>, int</b>
+<i>typeids</i><b>[])</b></p> </td>
+<td width="3%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Get the typeids
+of user-defined types in a group.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="74%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_grp(int</b>
+<i>ncid</i><b>, char</b> <i>name</i><b>[], int*</b>
+<i>ncid</i><b>)</b></p> </td>
+<td width="15%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Create a
+group.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>DIMENSIONS
+<a name="DIMENSIONS"></a>
+</h2>
+<td width="11%"></td>
+<td width="87%"></td>
+<td width="2%">
+</td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="87%">
+
+
+<p><b>int nc_inq_dimid(int</b> <i>ncid</i><b>, const
+char</b> <i>name</i><b>[], int*</b> <i>dimid</i><b>)</b></p></td>
+<td width="2%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncdimid()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Given a
+dimension name, returns the ID of a netCDF dimension in
+<i>dimid</i>.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_dim(int</b>
+<i>ncid</i><b>, int</b> <i>dimid</i><b>, char</b>
+<i>name</i><b>[], size_t*</b> <i>len</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_dimname(int</b>
+<i>ncid</i><b>, int</b> <i>dimid</i><b>, char</b>
+<i>name</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_dimlen(int</b>
+<i>ncid</i><b>, int</b> <i>dimid</i><b>, size_t*</b>
+<i>len</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Use these
+functions to find out about a dimension. If either the
+<i>name</i> argument or <i>len</i> argument is a <b>NULL</b>
+pointer, then the associated information will not be
+returned. Otherwise, <i>name</i> should be big enough
+(<b>NC_MAX_NAME</b>) to hold the dimension name as the name
+will be copied into your storage. The length return
+parameter, <i>len</i> will contain the size of the
+dimension. For the unlimited dimension, the returned length
+is the current maximum value used for writing into any of
+the variables which use the dimension.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="87%">
+
+
+<p style="margin-top: 1em"><b>int nc_rename_dim(int</b>
+<i>ncid</i><b>, int</b> <i>dimid</i><b>, const char</b>
+<i>name</i><b>[])</b></p> </td>
+<td width="2%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncdimrename()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Renames an
+existing dimension in an open netCDF dataset. If the new
+name is longer than the old name, the netCDF dataset must be
+in define mode. You cannot rename a dimension to have the
+same name as another dimension.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>VARIABLES
+<a name="VARIABLES"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_def_var(int</b> <i>ncid</i><b>, const char</b>
+<i>name</i><b>[], nc_type</b> <i>xtype</i><b>, int</b>
+<i>ndims</i><b>, const int</b> <i>dimids</i><b>[], int*</b>
+<i>varid</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncvardef()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Adds a new
+variable to a netCDF dataset. The netCDF must be in define
+mode. If not <b>NULL</b>, then <i>varid</i> will be set to
+the netCDF variable ID.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="87%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_varid(int</b>
+<i>ncid</i><b>, const char</b> <i>name</i><b>[], int*</b>
+<i>varid</i><b>)</b></p> </td>
+<td width="2%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncvarid()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Returns the ID
+of a netCDF variable in <i>varid</i> given its name.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_var(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, char</b>
+<i>name</i><b>[], nc_type*</b> <i>xtype</i><b>, int*</b>
+<i>ndims</i><b>, int</b> <i>dimids</i><b>[], int*</b>
+<i>natts</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_varname(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, char</b>
+<i>name</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_vartype(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, nc_type*</b>
+<i>xtype</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_varndims(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int*</b>
+<i>ndims</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_vardimid(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int</b>
+<i>dimids</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_varnatts(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int*</b>
+<i>natts</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Returns
+information about a netCDF variable, given its ID. If any of
+the return parameters (<i>name</i>, <i>xtype</i>,
+<i>ndims</i>, <i>dimids</i>, or <i>natts</i>) is a
+<b>NULL</b> pointer, then the corresponding information will
+not be returned; hence, no space need be allocated for
+it.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="87%">
+
+
+<p style="margin-top: 1em"><b>int nc_rename_var(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[])</b></p> </td>
+<td width="2%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncvarrename()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Changes the
+name of a netCDF variable. If the new name is longer than
+the old name, the netCDF must be in define mode. You cannot
+rename a variable to have the name of any existing
+variable.</p>
+
+<h2>VARIABLES in NETCDF-4 FILES
+<a name="VARIABLES in NETCDF-4 FILES"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">The following
+functions may only be used on variables in a netCDF-4/HDF5
+data file. These functions must be called after the variable
+is defined, but before an enddef call.</p>
+
+<p style="margin-left:11%; margin-top: 1em"><b>int
+nc_def_var_deflate(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, int</b> <i>shuffle</i><b>, int</b>
+<i>deflate</i><b>, int</b> <i>deflate_level</i><b>)</b></p>
+
+<p style="margin-left:11%; margin-top: 1em">Turn on
+compression and/or shuffle filter. (Shuffle filter is only
+useful for integer data.)</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_var_deflate(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, int*</b> <i>shufflep</i><b>, int*</b>
+<i>deflatep</i><b>, int*</b>
+<i>deflate_levelp</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about a
+variable&rsquo;s deflate settings.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_def_var_fletcher32(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, int</b> <i>fletcher32</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Turn on
+checksumming for a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_var_fletcher32(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, int*</b> <i>fletcher32</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about
+checksumming for a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_def_var_chunking(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, int</b> <i>storage</i><b>, const size_t</b>
+<i>chunksizesp</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Set chunksizes
+for a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_inq_var_chunking(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, int*</b> <i>storagep</i><b>, size_t</b>
+<i>chunksizesp</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn about
+chunksizes for a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_var_fill(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int</b>
+<i>no_fill</i><b>, const size_t</b>
+<i>chunksizesp</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Set a fill
+value for a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_var_fill(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int*</b>
+<i>storagep</i><b>, size_t</b>
+<i>chunksizesp</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn the fill
+value for a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="83%">
+
+
+<p style="margin-top: 1em"><b>int nc_def_var_endian(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int</b>
+<i>endian</i><b>)</b></p> </td>
+<td width="6%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Set endianness
+of variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="86%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_var_endian(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int*</b>
+<i>endianp</i><b>)</b></p> </td>
+<td width="3%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Learn the
+endianness of a variable.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>WRITING AND READING WHOLE VARIABLES
+<a name="WRITING AND READING WHOLE VARIABLES"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_text(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_uchar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const unsigned char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_schar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const signed char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_short(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const short</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_int(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const int</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_long(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_float(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const float</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_double(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const double</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_ubyte(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const unsigned char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_ushort(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const unsigned short</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_uint(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const unsigned int</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_int64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const long long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_uint64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const unsigned long long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var_string(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char *</b> <i>out</i><b>[])</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Writes an
+entire netCDF variable (i.e. all the values). The netCDF
+dataset must be open and in data mode. The type of the data
+is specified in the function name, and it is converted to
+the external type of the specified variable, if possible,
+otherwise an <b>NC_ERANGE</b> error is returned. Note that
+rounding is not performed during the conversion. Floating
+point numbers are truncated when converted to integers.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_text(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_uchar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, unsigned char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_schar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, signed char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_short(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_int(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_long(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_float(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, float</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_double(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, double</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_ubyte(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, unsigned char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_ushort(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, unsigned short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_uint(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, unsigned int</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_int64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, long long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_uint64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, unsigned long
+long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var_string(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, char *</b>
+<i>in</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Reads an entire
+netCDF variable (i.e. all the values). The netCDF dataset
+must be open and in data mode. The data is converted from
+the external type of the specified variable, if necessary,
+to the type specified in the function name. If conversion is
+not possible, an <b>NC_ERANGE</b> error is returned.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>WRITING AND READING ONE DATUM
+<a name="WRITING AND READING ONE DATUM"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_text(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+char</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_uchar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned char</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_schar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[], signed
+char</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_short(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+short</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_int(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[], int</b>
+<i>*out</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_long(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+long</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_float(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+float</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_double(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+double</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_ubyte(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned char</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_ushort(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned short</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_uint(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned int</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_int64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[], long
+long</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_uint64(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned long long</b> <i>*out</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_var1_string(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+char *</b> <i>*out</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Puts a single
+data value into a variable at the position <i>index</i> of
+an open netCDF dataset that is in data mode. The type of the
+data is specified in the function name, and it is converted
+to the external type of the specified variable, if possible,
+otherwise an <b>NC_ERANGE</b> error is returned.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_text(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], char*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_uchar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], unsigned char*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_schar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], signed char*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_short(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], short*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_int(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], int*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_long(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], long*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_float(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], float*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_var1_double(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+double*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_ubyte(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], unsigned char*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_var1_ushort(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned short*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_uint(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], unsigned int*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_var1_int64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>index</i><b>[], long long*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_var1_uint64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[],
+unsigned long long*</b> <i>in</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_var1_string(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>index</i><b>[], char
+**</b> <i>in</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Gets a single
+data value from a variable at the position <i>index</i> of
+an open netCDF dataset that is in data mode. The data is
+converted from the external type of the specified variable,
+if necessary, to the type specified in the function name. If
+conversion is not possible, an <b>NC_ERANGE</b> error is
+returned.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>WRITING AND READING AN ARRAY
+<a name="WRITING AND READING AN ARRAY"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_text(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_uchar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const unsigned char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_schar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const signed char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_short(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const short</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_int(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const int</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_long(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_float(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const float</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_double(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const double</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_ubyte(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const unsigned char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_ushort(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const unsigned short</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_uint(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const unsigned int</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_int64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const long long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_uint64(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const unsigned long
+long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vara_string(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const char *</b>
+<i>out</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Writes an array
+section of values into a netCDF variable of an open netCDF
+dataset, which must be in data mode. The array section is
+specified by the <i>start</i> and <i>count</i> vectors,
+which give the starting index and count of values along each
+dimension of the specified variable. The type of the data is
+specified in the function name and is converted to the
+external type of the specified variable, if possible,
+otherwise an <b>NC_ERANGE</b> error is returned.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_text(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_uchar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+unsigned char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_schar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+signed char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_short(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+short</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_int(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+int</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_long(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_float(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+float</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vara_double(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], double</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_ubyte(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+unsigned char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vara_ushort(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], unsigned short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_uint(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[],
+unsigned int</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vara_int64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], long
+long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vara_uint64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], unsigned long long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vara_string(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], char *</b>
+<i>in</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Reads an array
+section of values from a netCDF variable of an open netCDF
+dataset, which must be in data mode. The array section is
+specified by the <i>start</i> and <i>count</i> vectors,
+which give the starting index and count of values along each
+dimension of the specified variable. The data is converted
+from the external type of the specified variable, if
+necessary, to the type specified in the function name. If
+conversion is not possible, an <b>NC_ERANGE</b> error is
+returned.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>WRITING AND READING A SLICED ARRAY
+<a name="WRITING AND READING A SLICED ARRAY"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_text(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_uchar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const unsigned char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_schar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const signed char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_short(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const short</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_int(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const int</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_long(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_float(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const float</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_double(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const double</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_ubyte(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const unsigned char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_ushort(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const unsigned short</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_uint(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const unsigned int</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_int64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const long long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_uint64(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const unsigned long long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_vars_string(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], const char *</b>
+<i>out</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">These functions
+are used for <i>strided output</i>, which is like the array
+section output described above, except that the sampling
+stride (the interval between accessed values) is specified
+for each dimension. For an explanation of the sampling
+stride vector, see COMMON ARGUMENTS DESCRIPTIONS below.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_text(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_uchar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], unsigned char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_schar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], signed char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_short(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_int(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], int</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_long(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_float(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], float</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vars_double(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], double</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_ubyte(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], unsigned char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vars_ushort(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], unsigned short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_uint(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], unsigned int</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_vars_int64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[], long long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vars_uint64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], unsigned long long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_vars_string(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[], char *</b> <i>in</i><b>[])</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">These functions
+are used for <i>strided input</i>, which is like the array
+section input described above, except that the sampling
+stride (the interval between accessed values) is specified
+for each dimension. For an explanation of the sampling
+stride vector, see COMMON ARGUMENTS DESCRIPTIONS below.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>WRITING AND READING A MAPPED ARRAY
+<a name="WRITING AND READING A MAPPED ARRAY"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_text(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const char</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_uchar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const unsigned
+char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_schar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const signed
+char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_short(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const short</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_int(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const int</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_long(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_float(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const float</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_double(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const double</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_ubyte(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const unsigned
+char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_ushort(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const unsigned
+short</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_uint(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const unsigned
+int</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_int64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const long long</b>
+<i>out</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_uint64(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const unsigned long
+long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_varm_string(int</b> <i>ncid</i><b>,
+int</b> <i>varid</i><b>, const size_t</b> <i>start</i><b>[],
+const size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, const char *</b>
+<i>out</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">These functions
+are used for <i>mapped output</i>, which is like strided
+output described above, except that an additional index
+mapping vector is provided to specify the in-memory
+arrangement of the data values. For an explanation of the
+index mapping vector, see COMMON ARGUMENTS DESCRIPTIONS
+below.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_text(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, char</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_uchar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, unsigned
+char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_schar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, signed
+char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_short(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_int(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, int</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_long(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_float(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, float</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_varm_double(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, double</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_ubyte(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, unsigned
+char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_varm_ushort(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, unsigned short</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_uint(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, unsigned
+int</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_varm_int64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const size_t</b>
+<i>start</i><b>[], const size_t</b> <i>count</i><b>[], const
+size_t</b> <i>stride</i><b>[],</b> <i>imap</i><b>, long
+long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_varm_uint64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, unsigned long
+long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int
+nc_get_varm_string(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const size_t</b> <i>start</i><b>[], const
+size_t</b> <i>count</i><b>[], const size_t</b>
+<i>stride</i><b>[],</b> <i>imap</i><b>, char *</b>
+<i>in</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">These functions
+are used for <i>mapped input</i>, which is like strided
+input described above, except that an additional index
+mapping vector is provided to specify the in-memory
+arrangement of the data values. For an explanation of the
+index mapping vector, see COMMON ARGUMENTS DESCRIPTIONS
+below.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+
+
+<h2>ATTRIBUTES
+<a name="ATTRIBUTES"></a>
+</h2>
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_text(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_uchar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+unsigned char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_schar(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+signed char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_short(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+short</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_int(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+int</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_long(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_float(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+float</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_double(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+double</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_ubyte(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+unsigned char</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_ushort(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+unsigned short</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_uint(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+unsigned int</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_int64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+long long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_uint64(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+unsigned long long</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att_string(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, const
+char *</b> <i>out</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_put_att(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[],
+nc_type</b> <i>xtype</i><b>, size_t</b> <i>len</i><b>, void
+*</b> <i>ip</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p><b>int nc_get_att(int</b> <i>ncid</i><b>, int</b>
+<i>varid</i><b>, const char</b> <i>name</i><b>[], void
+**</b> <i>ip</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Unlike
+variables, attributes do not have separate functions for
+defining and writing values. This family of functions
+defines a new attribute with a value or changes the value of
+an existing attribute. If the attribute is new, or if the
+space required to store the attribute value is greater than
+before, the netCDF dataset must be in define mode. The
+parameter <i>len</i> is the number of values from <i>out</i>
+to transfer. It is often one, except that for
+<b>nc_put_att_text()</b> it will usually be
+<b>strlen(</b><i>out</i><b>)</b>.</p>
+
+<p style="margin-left:22%; margin-top: 1em">For these
+functions, the type component of the function name refers to
+the in-memory type of the value, whereas the <i>xtype</i>
+argument refers to the external type for storing the value.
+An <b>NC_ERANGE</b> error results if a conversion between
+these types is not possible. In this case the value is
+represented with the appropriate fill-value for the
+associated external type.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_attname(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, int</b>
+<i>attnum</i><b>, char</b> <i>name</i><b>[])</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Gets the name
+of an attribute, given its variable ID and attribute number.
+This function is useful in generic applications that need to
+get the names of all the attributes associated with a
+variable, since attributes are accessed by name rather than
+number in all other attribute functions. The number of an
+attribute is more volatile than the name, since it can
+change when other attributes of the same variable are
+deleted. The attributes for each variable are numbered from
+0 (the first attribute) to <i>nvatts</i>-1, where
+<i>nvatts</i> is the number of attributes for the variable,
+as returned from a call to <b>nc_inq_varnatts()</b>. If the
+<i>name</i> parameter is a <b>NULL</b> pointer, no name will
+be returned and no space need be allocated.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_att(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], nc_type*</b> <i>xtype</i><b>, size_t*</b>
+<i>len</i><b>)</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_attid(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], int*</b> <i>attnum</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_atttype(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], nc_type*</b> <i>xtype</i><b>)</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_attlen(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], size_t*</b> <i>len</i><b>)</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">These functions
+return information about a netCDF attribute, given its
+variable ID and name. The information returned is the
+external type in <i>xtype</i> and the number of elements in
+the attribute as <i>len</i>. If any of the return arguments
+is a <b>NULL</b> pointer, the specified information will not
+be returned.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_copy_att(int</b>
+<i>ncid</i><b>, int</b> <i>varid_in</i><b>, const char</b>
+<i>name</i><b>[], int</b> <i>ncid_out</i><b>, int</b>
+<i>varid_out</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Copies an
+attribute from one netCDF dataset to another. It can also be
+used to copy an attribute from one variable to another
+within the same netCDF. <i>ncid_in</i> is the netCDF ID of
+an input netCDF dataset from which the attribute will be
+copied. <i>varid_in</i> is the ID of the variable in the
+input netCDF dataset from which the attribute will be
+copied, or <b>NC_GLOBAL</b> for a global attribute.
+<i>name</i> is the name of the attribute in the input netCDF
+dataset to be copied. <i>ncid_out</i> is the netCDF ID of
+the output netCDF dataset to which the attribute will be
+copied. It is permissible for the input and output netCDF
+ID&rsquo;s to be the same. The output netCDF dataset should
+be in define mode if the attribute to be copied does not
+already exist for the target variable, or if it would cause
+an existing target attribute to grow. <i>varid_out</i> is
+the ID of the variable in the output netCDF dataset to which
+the attribute will be copied, or <b>NC_GLOBAL</b> to copy to
+a global attribute.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_rename_att(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], const char</b>
+<i>newname</i><b>[])</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Changes the
+name of an attribute. If the new name is longer than the
+original name, the netCDF must be in define mode. You cannot
+rename an attribute to have the same name as another
+attribute of the same variable. <i>name</i> is the original
+attribute name. <i>newname</i> is the new name to be
+assigned to the specified attribute. If the new name is
+longer than the old name, the netCDF dataset must be in
+define mode.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="83%">
+
+
+<p style="margin-top: 1em"><b>int nc_del_att(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[])</b></p> </td>
+<td width="6%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Deletes an
+attribute from a netCDF dataset. The dataset must be in
+define mode.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_text(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_uchar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], unsigned char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_schar(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], signed char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_short(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], short</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_int(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], int</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_long(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_float(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], float</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_double(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], double</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_ubyte(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], unsigned char</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_ushort(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], unsigned short</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_uint(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], unsigned int</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_int64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], long long</b> <i>in</i><b>[])</b></p></td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_uint64(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], unsigned long long</b>
+<i>in</i><b>[])</b></p> </td></tr>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_get_att_string(int</b>
+<i>ncid</i><b>, int</b> <i>varid</i><b>, const char</b>
+<i>name</i><b>[], char *</b> <i>in</i><b>[])</b></p></td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Gets the
+value(s) of a netCDF attribute, given its variable ID and
+name. Converts from the external type to the type specified
+in the function name, if possible, otherwise returns an
+<b>NC_ERANGE</b> error. All elements of the vector of
+attribute values are returned, so you must allocate enough
+space to hold them. If you don&rsquo;t know how much space
+to reserve, call <b>nc_inq_attlen()</b> first to find out
+the length of the attribute.</p>
+
+<h2>COMMON ARGUMENT DESCRIPTIONS
+<a name="COMMON ARGUMENT DESCRIPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">In this section
+we define some common arguments which are used in the
+&quot;FUNCTION DESCRIPTIONS&quot; section. <br>
+int <i>ncid</i></p>
+
+<p style="margin-left:22%;">is the netCDF ID returned from
+a previous, successful call to <b>nc_open()</b> or
+<b>nc_create()</b></p>
+
+<p style="margin-left:11%;">char <i>name</i>[]</p>
+
+<p style="margin-left:22%;">is the name of a dimension,
+variable, or attribute. The names of dimensions, variables
+and attributes consist of arbitrary sequences of
+alphanumeric characters (as well as underscore
+&rsquo;_&rsquo;, period &rsquo;.&rsquo; and hyphen
+&rsquo;-&rsquo;), beginning with a letter or underscore.
+(However names commencing with underscore are reserved for
+system use.) Case is significant in netCDF names. A
+zero-length name is not allowed. As an input argument, it
+shall be a pointer to a 0-terminated string; as an output
+argument, it shall be the address of a buffer in which to
+hold such a string. The maximum allowable number of
+characters (excluding the terminating 0) is
+<b>NC_MAX_NAME</b>.</p>
+
+<p style="margin-left:11%;">nc_type <i>xtype</i></p>
+
+<p style="margin-left:22%;">specifies the external data
+type of a netCDF variable or attribute and is one of the
+following: <b>NC_BYTE</b>, <b>NC_CHAR</b>, <b>NC_SHORT</b>,
+<b>NC_INT</b>, <b>NC_FLOAT</b>, or <b>NC_DOUBLE</b>. These
+are used to specify 8-bit integers, characters, 16-bit
+integers, 32-bit integers, 32-bit IEEE floating point
+numbers, and 64-bit IEEE floating-point numbers,
+respectively. (<b>NC_INT</b> corresponds to <b>NC_LONG</b>
+in version 2, to specify a 32-bit integer).</p>
+
+<p style="margin-left:11%;">int <i>dimids</i>[]</p>
+
+<p style="margin-left:22%;">is a vector of dimension
+ID&rsquo;s and defines the shape of a netCDF variable. The
+size of the vector shall be greater than or equal to the
+rank (i.e. the number of dimensions) of the variable
+(<i>ndims</i>). The vector shall be ordered by the speed
+with which a dimension varies: <i>dimids</i>[<i>ndims</i>-1]
+shall be the dimension ID of the most rapidly varying
+dimension and <i>dimids</i>[0] shall be the dimension ID of
+the most slowly varying dimension. The maximum possible
+number of dimensions for a variable is given by the symbolic
+constant <b>NC_MAX_VAR_DIMS</b>.</p>
+
+<p style="margin-left:11%;">int <i>dimid</i></p>
+
+<p style="margin-left:22%;">is the ID of a netCDF
+dimension. netCDF dimension ID&rsquo;s are allocated
+sequentially from the non-negative integers beginning with
+0.</p>
+
+<p style="margin-left:11%;">int <i>ndims</i></p>
+
+<p style="margin-left:22%;">is either the total number of
+dimensions in a netCDF dataset or the rank (i.e. the number
+of dimensions) of a netCDF variable. The value shall not be
+negative or greater than the symbolic constant
+<b>NC_MAX_VAR_DIMS</b>.</p>
+
+<p style="margin-left:11%;">int <i>varid</i></p>
+
+<p style="margin-left:22%;">is the ID of a netCDF variable
+or (for the attribute-access functions) the symbolic
+constant <b>NC_GLOBAL</b>, which is used to reference global
+attributes. netCDF variable ID&rsquo;s are allocated
+sequentially from the non-negative integers beginning with
+0.</p>
+
+<p style="margin-left:11%;">int* <i>natts</i></p>
+
+<p style="margin-left:22%;">is the number of global
+attributes in a netCDF dataset for the <b>nc_inquire()</b>
+function or the number of attributes associated with a
+netCDF variable for the <b>nc_varinq()</b> function.</p>
+
+<p style="margin-left:11%;">const size_t <i>index</i>[]</p>
+
+<p style="margin-left:22%;">specifies the indicial
+coordinates of the netCDF data value to be accessed. The
+indices start at 0; thus, for example, the first data value
+of a two-dimensional variable is (0,0). The size of the
+vector shall be at least the rank of the associated netCDF
+variable and its elements shall correspond, in order, to the
+variable&rsquo;s dimensions.</p>
+
+<p style="margin-left:11%;">const size_t <i>start</i>[]</p>
+
+<p style="margin-left:22%;">specifies the starting point
+for accessing a netCDF variable&rsquo;s data values in terms
+of the indicial coordinates of the corner of the array
+section. The indices start at 0; thus, the first data value
+of a variable is (0, 0, ..., 0). The size of the vector
+shall be at least the rank of the associated netCDF variable
+and its elements shall correspond, in order, to the
+variable&rsquo;s dimensions.</p>
+
+<p style="margin-left:11%;">const size_t <i>count</i>[]</p>
+
+<p style="margin-left:22%;">specifies the number of indices
+selected along each dimension of the array section. Thus, to
+access a single value, for example, specify <i>count</i> as
+(1, 1, ..., 1). Note that, for strided I/O, this argument
+must be adjusted to be compatible with the <i>stride</i> and
+<i>start</i> arguments so that the interaction of the three
+does not attempt to access an invalid data co-ordinate. The
+elements of the <i>count</i> vector correspond, in order, to
+the variable&rsquo;s dimensions.</p>
+
+<p style="margin-left:11%;">const size_t
+<i>stride</i>[]</p>
+
+<p style="margin-left:22%;">specifies the sampling interval
+along each dimension of the netCDF variable. The elements of
+the stride vector correspond, in order, to the netCDF
+variable&rsquo;s dimensions (<i>stride</i>[0]) gives the
+sampling interval along the most slowly varying dimension of
+the netCDF variable). Sampling intervals are specified in
+type-independent units of elements (a value of 1 selects
+consecutive elements of the netCDF variable along the
+corresponding dimension, a value of 2 selects every other
+element, etc.). A <b>NULL</b> stride argument is treated as
+(1, 1, ... , 1).</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="6%">
+
+
+<p><i>imap</i></p></td>
+<td width="5%"></td>
+<td width="78%">
+
+
+<p>specifies the mapping between the dimensions of a netCDF
+variable and the in-memory structure of the internal data
+array. The elements of the index mapping vector correspond,
+in order, to the netCDF variable&rsquo;s dimensions
+(<i>imap</i>[0] gives the distance between elements of the
+internal array corresponding to the most slowly varying
+dimension of the netCDF variable). Distances between
+elements are specified in type-independent units of elements
+(the distance between internal elements that occupy adjacent
+memory locations is 1 and not the element&rsquo;s
+byte-length as in netCDF 2). A <b>NULL</b> pointer means the
+memory-resident values have the same structure as the
+associated netCDF variable.</p></td></tr>
+</table>
+
+<h2>VARIABLE PREFILLING
+<a name="VARIABLE PREFILLING"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">By default, the
+netCDF interface sets the values of all newly-defined
+variables of finite length (i.e. those that do not have an
+unlimited, dimension) to the type-dependent fill-value
+associated with each variable. This is done when
+<b>nc_enddef()</b> is called. The fill-value for a variable
+may be changed from the default value by defining the
+attribute &lsquo;<b>_FillValue</b>&rsquo; for the variable.
+This attribute must have the same type as the variable and
+be of length one.</p>
+
+<p style="margin-left:11%; margin-top: 1em">Variables with
+an unlimited dimension are also prefilled, but on an
+&lsquo;as needed&rsquo; basis. For example, if the first
+write of such a variable is to position 5, then positions 0
+through 4 (and no others) would be set to the fill-value at
+the same time.</p>
+
+<p style="margin-left:11%; margin-top: 1em">This default
+prefilling of data values may be disabled by or&rsquo;ing
+the <b>NC_NOFILL</b> flag into the mode parameter of
+<b>nc_open()</b> or <b>nc_create()</b>, or, by calling the
+function <b>nc_set_fill()</b> with the argument
+<b>NC_NOFILL</b>. For variables that do not use the
+unlimited dimension, this call must be made before
+<b>nc_enddef()</b>. For variables that use the unlimited
+dimension, this call may be made at any time.</p>
+
+<p style="margin-left:11%; margin-top: 1em">One can obtain
+increased performance of the netCDF interface by using this
+feature, but only at the expense of requiring the
+application to set every single data value. The performance
+enhancing behavior of this function is dependent on the
+particulars of the implementation and dataset format. The
+flag value controlled by <b>nc_set_fill()</b> is per netCDF
+ID, not per variable or per write. Allowing this to change
+affects the degree to which a program can be effectively
+parallelized. Given all of this, we state that the use of
+this feature may not be available (or even needed) in future
+releases. Programmers are cautioned against heavy reliance
+upon this feature.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc_setfill(int</b>
+<i>ncid</i><b>, int</b> <i>fillmode</i><b>, int*</b>
+<i>old_fillemode</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">(Corresponds to
+<b>ncsetfill()</b> in version 2)</p>
+
+<p style="margin-left:22%; margin-top: 1em">Determines
+whether or not variable prefilling will be done (see above).
+The netCDF dataset shall be writable. <i>fillmode</i> is
+either <b>NC_FILL</b> to enable prefilling (the default) or
+<b>NC_NOFILL</b> to disable prefilling. This function
+returns the previous setting in <i>old_fillmode</i>.</p>
+
+<h2>MPP FUNCTION DESCRIPTIONS
+<a name="MPP FUNCTION DESCRIPTIONS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Additional
+functions for use on SGI/Cray MPP machines (_CRAYMPP). These
+are used to set and inquire which PE is the base for MPP for
+a particular netCDF. These are only relevant when using the
+SGI/Cray &lsquo;&lsquo;global&rsquo;&rsquo; Flexible File
+I/O layer and desire to have only a subset of PEs to open
+the specific netCDF file. For technical reasons, these
+functions are available on all platforms. On a platform
+other than SGI/Cray MPP, it is as if only processor
+available were processor 0.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To use this
+feature, you need to specify a communicator group and call
+<b>glio_group_mpi()</b> or <b>glio_group_shmem()</b> prior
+to the netCDF <b>nc_open()</b> and <b>nc_create()</b>
+calls.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc__create_mp(const
+char</b> <i>path</i><b>[], int</b> <i>cmode</i><b>,
+size_t</b> <i>initialsize</i><b>, int</b> <i>pe</i><b>,
+size_t*</b> <i>chunksize</i><b>, int*</b>
+<i>ncid</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nc__create()</b> but allows the base PE to be set.</p>
+
+<p style="margin-left:22%; margin-top: 1em">The argument
+<i>pe</i> sets the base PE at creation time. In the MPP
+environment, <b>nc__create()</b> and <b>nc_create()</b> set
+the base PE to processor zero by default.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="89%">
+
+
+<p style="margin-top: 1em"><b>int nc__open_mp(const
+char</b> <i>path</i><b>[], int</b> <i>mode</i><b>, int</b>
+<i>pe</i><b>, size_t*</b> <i>chunksize</i><b>, int*</b>
+<i>ncid</i><b>)</b></p> </td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Like
+<b>nc__open()</b> but allows the base PE to be set. The
+argument <i>pe</i> sets the base PE at creation time. In the
+MPP environment, <b>nc__open()</b> and <b>nc_open()</b> set
+the base PE to processor zero by default.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="57%">
+
+
+<p style="margin-top: 1em"><b>int nc_inq_base_pe(int</b>
+<i>ncid</i><b>, int*</b> <i>pe</i><b>)</b></p></td>
+<td width="32%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Inquires of the
+netCDF dataset which PE is being used as the base for MPP
+use. This is safe to use at any time.</p>
+
+<table width="100%" border="0" rules="none" frame="void"
+       cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="55%">
+
+
+<p style="margin-top: 1em"><b>int nc_set_base_pe(int</b>
+<i>ncid</i><b>, int</b> <i>pe</i><b>)</b></p></td>
+<td width="34%">
+</td></tr>
+</table>
+
+<p style="margin-left:22%; margin-top: 1em">Resets the base
+PE for the netCDF dataset. Only perform this operation when
+the affected communicator group synchronizes before and
+after the call. This operation is very risky and should only
+be contemplated under only the most extreme cases.</p>
+
+<h2>ENVIRONMENT VARIABLES
+<a name="ENVIRONMENT VARIABLES"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>NETCDF_FFIOSPEC</b></p>
+
+<p style="margin-left:17%;">Specifies the Flexible File I/O
+buffers for netCDF I/O when executing under the UNICOS
+operating system (the variable is ignored on other operating
+systems). An appropriate specification can greatly increase
+the efficiency of netCDF I/O -- to the extent that it can
+actually surpass FORTRAN binary I/O. This environment
+variable has been made a little more generalized, such that
+other FFIO option specifications can now be added. The
+default specification is <b>bufa:336:2</b>, unless a current
+FFIO specification is in operation, which will be honored.
+See UNICOS Flexible File I/O for more information.</p>
+
+<h2>MAILING-LISTS
+<a name="MAILING-LISTS"></a>
+</h2>
+
+
+<p style="margin-left:11%; margin-top: 1em">Both a mailing
+list and a digest are available for discussion of the netCDF
+interface and announcements about netCDF bugs, fixes, and
+enhancements. To begin or change your subscription to either
+the mailing-list or the digest, send one of the following in
+the body (not the subject line) of an email message to
+&quot;majordomo@unidata.ucar.edu&quot;. Use your email
+address in place of <i>jdoe@host.inst.domain</i>.</p>
+
+<p style="margin-left:11%; margin-top: 1em">To subscribe to
+the netCDF mailing list:</p>
+
+<p style="margin-left:22%;"><b>subscribe netcdfgroup</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To unsubscribe from the netCDF
+mailing list:</p>
+
+<p style="margin-left:22%;"><b>unsubscribe netcdfgroup</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To subscribe to the netCDF
+digest:</p>
+
+<p style="margin-left:22%;"><b>subscribe netcdfdigest</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To unsubscribe from the netCDF
+digest:</p>
+
+<p style="margin-left:22%;"><b>unsubscribe netcdfdigest</b>
+<i>jdoe@host.inst.domain</i></p>
+
+<p style="margin-left:11%;">To retrieve the general
+introductory information for the mailing list:</p>
+
+<p style="margin-left:22%;"><b>info netcdfgroup</b></p>
+
+<p style="margin-left:11%;">To get a synopsis of other
+majordomo commands:</p>
+
+<p style="margin-left:22%;"><b>help</b></p>
+
+<h2>SEE ALSO
+<a name="SEE ALSO"></a>
+</h2>
+
+
+
+<p style="margin-left:11%; margin-top: 1em"><b>ncdump</b>(1),
+<b>ncgen</b>(1), <b>netcdf</b>(3).</p>
+
+<p style="margin-left:11%; margin-top: 1em"><i>netCDF
+User&rsquo;s Guide</i>, published by the Unidata Program
+Center, University Corporation for Atmospheric Research,
+located in Boulder, Colorado.</p>
+
+<p style="margin-left:11%; margin-top: 1em">NetCDF home
+page at http:/www.unidata.ucar.edu/netcdf.</p>
+<hr>
+</body>
+</html>

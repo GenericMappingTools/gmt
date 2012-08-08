@@ -1,0 +1,12 @@
+netcdf synth5 {
+dimensions:
+	lat = 2 ;
+	long = 2 ;
+variables:
+	float G1(lat, long) ;
+data:
+
+ G1 =
+  1320, 2320,
+  3320, 4320 ;
+}

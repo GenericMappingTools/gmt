@@ -1,0 +1,257 @@
+.\" $Header: /upc/share/CVS/netcdf-3/ncdump/ncdump.1,v 1.10 2009/07/28 14:48:36 russ Exp $
+.TH NCDUMP 1 "$Date$" "Printed: \n(yr-\n(mo-\n(dy" "UNIDATA UTILITIES"
+.SH NAME
+ncdump \- Convert netCDF file to text form (CDL)
+.SH SYNOPSIS
+.ft B
+.HP
+ncdump
+.nh
+\%[-c]
+\%[-h]
+\%[-v \fIvar1,...\fP]
+\%[-b \fIlang\fP]
+\%[-f \fIlang\fP]
+\%[-l \fIlen\fP]
+\%[-n \fIname\fP]
+\%[-p \fIf_digits[,d_digits]\fP]
+\%[-k]
+\%[-x]
+\%[-s]
+\%[-t]
+\%\fIfile\fP
+.hy
+.ft
+.SH DESCRIPTION
+\fBncdump\fP generates a text representation of a specified netCDF file on
+standard output.  The text representation is in a form called CDL
+(``network Common Data form Language'') that can be viewed, edited, or serve
+as input to \fBncgen\fP.  \fBncgen\fP is a companion program that can
+generate a binary netCDF file from a CDL file.  Hence \fBncgen\fP and
+\fBncdump\fP can be used as inverses to transform the data representation
+between binary and text representations.  See \fBncgen\fP for a description
+of CDL and netCDF representations.
+.LP
+As of NetCDF version 4.1, and if DAP support was enabled when \fBncdump\fP
+was built, the file name may specify a DAP URL. This allows \fBncdump\fP
+to print out data sources from DAP servers.  When used with
+the \fB-h\fP option, \fBncdump\fP can be used to show the translation
+from the DAP DDS data model to the NetCDF data model.
+.LP
+\fBncdump\fP defines a default display format used for each type of
+netCDF data, but
+this can be changed if a `C_format' attribute is defined for a netCDF
+variable.  In this case, \fBncdump\fP will use the `C_format' attribute to
+format each value.  For example, if floating-point data for the netCDF
+variable `Z' is known to be accurate to only three significant digits, it
+would be appropriate to use the variable attribute
+.RS
+.HP
+Z:C_format = "%.3g"
+.RE
+.LP
+\fBncdump\fP may also be used as a simple browser for netCDF data
+files, to display the dimension names and sizes; variable names, types,
+and shapes; attribute names and values; and optionally, the values of
+data for all variables or selected variables in a netCDF file.
+.LP
+\fBncdump\fP uses `_' to represent data values that are equal to the
+`_FillValue' attribute for a variable, intended to represent data that
+has not yet been written.  If a variable has no `_FillValue' attribute, the
+default fill value for the variable type is used if the variable is not of
+byte type.
+.LP
+\fBncdump\fP may also be used to determine what kind of netCDF file is used
+(which variant of the netCDF file format) with the -k option.
+.SH OPTIONS
+.IP "\fB-c\fP"
+Show the values of \fIcoordinate\fP variables (variables that are also
+dimensions) as well as the declarations of all dimensions, variables, and
+attribute values.  Data values of non-coordinate variables are not included
+in the output.  This is the most suitable option to use for a brief look at
+the structure and contents of a netCDF file.
+.IP "\fB-h\fP"
+Show only the \fIheader\fP information in the output, that is the
+declarations of dimensions, variables, and attributes but no data values for
+any variables.  The output is identical to using the \fB-c\fP option except
+that the values of coordinate variables are not included.  (At most one of
+\fB-c\fP or \fB-h\fP options may be present.)
+.IP "\fB-v\fP \fIvar1,...,varn\fP"
+The output will include data values for the specified variables, in addition
+to the declarations of all dimensions, variables, and attributes.  One or
+more variables must be specified by name in the comma-delimited list
+following this option.  The list must be a single argument to the command,
+hence cannot contain blanks or other white space characters unless
+escaped.  The named
+variables must be valid netCDF variables in the input-file.  A variable
+within a group in a netCDF-4 file may be specified with an absolute
+path name, such as `/GroupA/GroupA2/var'.  Use of a relative path name
+such as `var' or `grp/var' specifies all matching
+variable names in the file.
+The default,
+without this option and in the absence of the \fB-c\fP or \fB-h\fP
+options, is to include data values for \fIall\fP variables in the output.
+.IP "\fB-b\fP \fIlang\fP"
+A brief annotation in the form of a CDL comment (text beginning with the
+characters ``//'') will be included in the data section of the output for
+each `row' of data, to help identify data values for multidimensional
+variables.  If \fIlang\fP begins with `C' or `c', then C language
+conventions will be used (zero-based indices, last dimension varying
+fastest).  If \fIlang\fP begins with `F' or `f', then Fortran language
+conventions will be used (one-based indices, first dimension varying
+fastest).  In either case, the data will be presented in the same order;
+only the annotations will differ.  This option is useful for browsing
+through large volumes of multidimensional data.
+.IP "\fB-f\fP \fIlang\fP"
+Full annotations in the form of trailing CDL comments (text beginning with
+the characters ``//'') for every data value (except individual characters in
+character arrays) will be included in the data section.  If \fIlang\fP
+begins with `C' or `c', then C language conventions will be used (zero-based
+indices, last dimension varying fastest).  If \fIlang\fP begins with `F' or
+`f', then Fortran language conventions will be used (one-based indices,
+first dimension varying fastest).  In either case, the data will be
+presented in the same order; only the annotations will differ.  This option
+may be useful for piping data into other filters, since each data value
+appears on a separate line, fully identified.
+.IP "\fB-l\fP \fIlen\fP"
+Changes the default maximum line length (80) used in formatting lists of
+non-character data values.
+.IP "\fB-n\fP \fIname\fP"
+CDL requires a name for a netCDF data set, for use by \fBncgen -b\fP in
+generating a default netCDF file name.  By default, \fIncdump\fP constructs
+this name from the last component of the path name of the input netCDF file
+by stripping off any extension it has.  Use the \fB-n\fP option to specify a
+different name.  Although the output file name used by \fBncgen -b\fP can be
+specified, it may be wise to have \fIncdump\fP change the default name to
+avoid inadvertently overwriting a valuable netCDF file when using
+\fBncdump\fP, editing the resulting CDL file, and using \fBncgen -b\fP to
+generate a new netCDF file from the edited CDL file.
+.IP "\fB-p\fP \fIfloat_digits[,double_digits]\fP"
+Specifies default precision (number of significant digits) to use in displaying
+floating-point or double precision data values for attributes and variables.
+If specified, this value overrides the value of the `C_format' attribute for
+any variable that has such an attribute.  
+Floating-point data will be displayed with
+\fIfloat_digits\fP significant digits.  If \fIdouble_digits\fP is also
+specified, double-precision values will be displayed with that many
+significant digits.  In the absence of any
+\fB-p\fP specifications, floating-point and double-precision data are
+displayed with 7 and 15 significant digits respectively.  CDL files can be
+made smaller if less precision is required.  If both floating-point and
+double-precision precisions are specified, the two values must appear
+separated by a comma (no blanks) as a single argument to the command.
+If you really want every last bit of precision from the netCDF file
+represented in the CDL file for all possible floating-point values, you will
+have to specify this with \fB-p 9,17\fP (according to Theorem 15 of the
+paper listed under REFERENCES).
+.IP "\fB-k\fP"
+Show what kind of netCDF file the pathname references, one of
+`classic', `64-bit offset',`netCDF-4', or `netCDF-4 classic model'.  Before version
+3.6, there was only one kind of netCDF file, designated as `classic'
+(also know as format variant 1).  Large file support introduced
+another variant of the format, designated as `64-bit offset' (known as
+format variant 2).  NetCDF-4, uses a third variant of the format,
+`netCDF-4' (format variant 3).  Another format variant, designated
+`netCDF-4 classic model' (format variant 4), is restricted
+to features supported by the netCDF-3 data model but represented using
+the HDF5 format, so that an unmodified netCDF-3 program can read or
+write the file just by relinking with the netCDF-4 library.  
+The string output by using the `-k' option may be provided as the
+value of the `-k' option to ncgen(1) to
+specify exactly what kind of netCDF file to generate, when you want to
+override the default inferred from the CDL.
+.IP "\fB-x\fP"
+Output XML (NcML) instead of CDL.  The NcML does not include data values.
+The NcML output option currently only works for netCDF classic model data.
+.IP "\fB-s\fP"
+Output special virtual attributes that provide performance-related
+information about the file format and variable properties for netCDF-4
+data.  These special virtual attributes are not actually part of the
+data, they are merely a convenient way to display miscellaneous
+properties of the data in CDL (and eventually NcML).  They include 
+`_ChunkSizes', 
+`_DeflateLevel', 
+`_Endianness', 
+`_Fletcher32', 
+`_Format',
+`_NoFill',
+`_Shuffle', and
+`_Storage'.  
+`_ChunkSizes' is a list of chunk sizes for each dimension of the variable. 
+`_DeflateLevel' is an
+integer between 0 and 9 inclusive if compression has been specified
+for the variable.
+`_Endianness' is either `little' or `big', depending on
+how the variable was stored when first written. 
+`_Fletcher32' is `true' if the checksum property was set for
+the variable. 
+`_Format' is a global attribute specifying the netCDF format
+variant, one of `classic', `64-bit offset', `netCDF-4', or `netCDF-4
+classic model'.  
+`_NoFill' is `true' if the persistent NoFill property was set for the
+variable when it was defined.
+`_Shuffle' is `true' if use of the shuffle filter was specified for the variable.
+`_Storage' is `contiguous' or `chunked', depending on how the
+variable's data is stored.
+.IP "\fB-t\fP"
+Controls display of time data, if stored in a variable that uses
+a udunits compliant time representation such as `days since
+1970-01-01' or `seconds since 2009-03-15 12:01:17'.  If this option is
+specified, time values are displayed as human-readable date-time
+strings rather than numerical values, interpreted in terms of a 
+`calendar' variable attribute, if specified.  Calendar attribute
+values interpreted with this option include the CF Conventions values
+`gregorian' or `standard', `proleptic_gregorian', `noleap' or `365_day',
+`all_leap' or `366_day', `360_day', and `julian'.
+.SH EXAMPLES
+.LP
+Look at the structure of the data in the netCDF file `\fBfoo.nc\fP':
+.RS
+.HP
+ncdump -c foo.nc
+.RE
+.LP
+Produce an annotated CDL version of the structure and data in the
+netCDF file `\fBfoo.nc\fP', using C-style indexing for the annotations:
+.RS
+.HP
+ncdump -b c foo.nc > foo.cdl
+.RE
+.LP
+Output data for only the variables `uwind' and `vwind' from the netCDF file
+`\fBfoo.nc\fP', and show the floating-point data with only three significant
+digits of precision:
+.RS
+.HP
+ncdump -v uwind,vwind -p 3 foo.nc
+.RE
+.LP
+Produce a fully-annotated (one data value per line) listing of the data for
+the variable `omega', using Fortran conventions for indices, and changing the
+netCDF dataset name in the resulting CDL file to `omega':
+.RS
+.HP
+ncdump -v omega -f fortran -n omega foo.nc > Z.cdl
+.RE
+.SH REFERENCES
+ \fIWhat
+Every Computer Scientist should Know About Floating-Point Arithmetic\fP, D.
+Goldberg, \fBACM Computing Surveys, Vol. 23, No. 1\fP, March 1991, pp. 5-48.
+.BR
+Climate and Forecast Metadata Conventions, http://www.cfconventions.org.
+.SH "SEE ALSO"
+.LP
+.BR ncgen (1),
+.BR netcdf (3)
+.SH BUGS
+.LP
+Character arrays that contain a null-byte are treated like C strings, so no
+characters after the null byte appear in the output.
+
+Multidimensional character string arrays are not handled well, since the CDL
+syntax for breaking a long character string into several shorter lines is
+weak.
+
+There should be a way to specify that the data should be displayed in
+`record' order, that is with the all the values for `record' variables
+together that have the same value of the record dimension.

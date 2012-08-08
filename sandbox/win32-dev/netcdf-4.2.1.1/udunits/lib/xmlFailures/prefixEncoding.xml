@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Bad prefix encoding -->
+
+<unit-system>
+    <!-- SI prefixes -->
+	<prefix>
+	    <value>1e-6</value>
+	    <name>micro</name>
+	    <symbol encoding="foobar"></symbol>	
+	    <symbol>µ</symbol>	
+	</prefix>
+</unit-system>

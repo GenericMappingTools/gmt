@@ -1,0 +1,350 @@
+\input texinfo  @c -*-texinfo-*-
+@c %**start of header
+@setfilename udunits2.info
+
+@include version.texi
+
+@settitle UDUNITS @value{VERSION} Manual
+@c %**end of header
+@dircategory Science
+@direntry
+* udunits-2: (udunits2).  The Unidata package for units of physical quantities.
+@end direntry
+@copying
+@include LICENSE
+@end copying
+
+@titlepage
+@title The UDUNITS-2 Package
+@author Steven R. Emmerson
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@contents
+
+@ifnottex
+@node Top, Introduction, (dir), (dir)
+@top UDUNITS-2
+This manual describes the UDUNITS-2 package, which contains
+a C library for units of physical quantities and a unit-definition
+and value-conversion utility.
+
+@insertcopying
+@end ifnottex
+
+@menu
+* Introduction::        Introduction
+* Differences::		How this package differs from the original UDUNITS
+* Obtain::              Obtaining this package
+* Install::             Installing this package
+* Support::             Support for this package
+* Database::            The unit database
+* Complete Index::      Complete index
+@end menu
+
+@node Introduction, Differences, Top, Top
+@chapter Introduction
+@cindex Introduction
+
+The UDUNITS-2 package provides support for units of physical quantities.
+Its three main components are: 1) @ref{Top, , a C library, udunits2lib}
+for units of physical quantities;
+2) @ref{Top, , a utility, udunits2prog};
+for obtaining the definition of a unit and for
+converting numeric values between compatible units;
+and 3) an extensive database of units.
+
+@node Differences, Obtain, Introduction, Top
+@chapter How This Package Differs from the Original @code{UDUNITS} Package
+
+The @code{UDUNIT-2} package differs from the original @code{UDUNITS}
+package in the following ways:
+@itemize @bullet
+
+@item @strong{Support for non-ASCII characters:}  
+The original @code{UDUNITS}
+package only supports the ASCII character set.  The @code{UDUNITS-2}
+package supports the following character sets: ASCII, ISO 8859-1 (Latin-1),
+and the UTF-8 encoding of ISO 10646 (Unicode).  This means that unit
+string specifications like "@code{µ°F·Ω⁻¹}" are now supported (your
+viewer must support UTF-8 to display this string correctly).
+
+@item @strong{Support for logarithmic units:}  The unit string
+specification "@code{0.1 lg(re 1 mW)}" specifies a deciBel unit with a
+one milliwatt reference level.
+Such units are fully integrated into the package and all meaningful
+operations and conversions are supported.
+
+@item @strong{Persistent value converters:}
+It is now possible to obtain a @emph{converter} data-object, which can
+be used to convert numeric values in one unit to numeric values in another,
+compatible unit.  The values can be @code{float}, @code{double}, or
+one-dimensional arrays of @code{float}s or @code{double}s.
+
+@item @strong{Improved API:}  Due to the above changes, it was not
+possible to keep the application programming interface (API) of the original
+@code{UDUNITS} package.  The new interface, however, is easily
+understood and easy to use.  To support backward comptibility,
+the package does contain a version 1 C API, which uses the version 2
+library.
+
+@item @strong{XML unit database:}  The unit database is encoded using
+human-readable XML rather than a custom format.  The XML
+parser included in the package supports an @emph{<import>} element to
+allow easy and convenient customization.
+
+@item @strong{No Fortran or Perl API:}  Interfaces for these languages
+have not yet been created.  Contact
+@email{support-udunits@@unidata.ucar.edu} if you are interested in
+helping to create these interfaces.
+
+@end itemize
+
+One thing that has not changed is that almost all unit string specifications
+understood by the original @code{UDUNITS} package are also
+understood by the new @code{UDUNITS-2} package.  The one exception is
+the symbol @code{g}, which in the original package was associated with
+standard free fall (a unit of accelleration) but which is associated
+with gram in the new package.
+
+@node Obtain, Install, Differences, Top
+@chapter Obtaining this Package
+@cindex obtaining this package
+
+Get this package from its download-page at
+@uref{http://www.unidata.ucar.edu/downloads/udunits/}
+and unpack it in an appropriate place, e.g.,
+
+@example
+cd /usr/local/src
+gunzip -c udunits-@value{VERSION}.tar.gz | pax -r
+@end example
+
+@node Install, Database, Obtain, Top
+@chapter Installing this Package
+@cindex installing this package
+
+@menu
+* Short::        Short intallation instructions
+* Long::         Long installation instructions
+* What::         What gets installed
+@end menu
+
+@node Short, Long, , Install
+@section Short Installation Instructions
+Not all development enviroments can build and install this package.
+See the long instructions in the next section for details.
+
+The following assumes that you are familiar with autoconf-based
+package-installation.
+If you're not, then follow the long instructions in the
+next section.
+
+@example
+./configure [--prefix=@var{root}] [--disable-shared] [CC=@var{path}]
+make
+make check                      # optional; requires CUNIT installation
+make install                    # also installs INFO documentation
+make install-html install-pdf   # optional
+make clean
+@end example
+
+By default, the installation root is @code{/usr/local}.
+
+If you encounter problems, then follow the instructions in the
+next section.
+
+@node Long, What, Short, Install
+@section Long Installation Instructions
+
+@enumerate
+@item
+Go to the top-level source-directory of this package, e.g.,
+@example
+cd udunits-@value{VERSION}
+@end example
+
+@item
+Because some @code{make} utilities cannot build this package correctly,
+locate the operating system that is closest to yours in the following table
+and determine the @var{make} utility that you will use.
+@quotation
+@include make.texi
+@end quotation
+
+@item
+If necessary, clean-up from a previous installation attempt by making
+the @code{distclean} target using the @var{make} utility from step 2:
+@example
+@var{make} distclean
+@end example
+
+@item
+Because some compilers cannot build this package correctly,
+locate the operating system closest to yours in the following table
+and determine the compiler
+that you will use and any required option for the @code{configure} script.
+@quotation
+@include success.texi
+@end quotation
+
+The option @code{--disable-shared} causes the build process to create
+a static library only: a sharable library is not created.
+This option is necessary if the @code{libtool} utility that's included
+in this package can't build a sharable library using the given compiler.
+
+The following table lists the build environments that do not work ---
+so don't use them:
+@quotation
+@include failure.texi
+@end quotation
+
+@item
+Execute the @code{configure} script.
+Specify the installation prefix, the compiler from the
+previous step, and any required option.
+For example, if you are on an HP-UX system and want to use
+the @code{/bin/c89} compiler and install under @code{/opt},
+then the following command is appropriate:
+
+@example
+./configure --prefix=/opt --disable-shared CC=/bin/c89
+@end example
+
+If the installation prefix is not specified, then the default
+is to install under @code{/usr/local}.
+
+If the compiler isn't specified, then the default is to use
+@code{gcc}.
+
+@item
+Build this package by making the default target using the @var{make} utility
+from step 2:
+@example
+@var{make}
+@end example
+
+@item
+If you wish to verify that this package works correctly,
+then make the @code{check} target using the
+@var{make} utility from step 2:
+@example
+@var{make} check
+@end example
+This step is only effective if the @code{configure} script found an
+installed @code{CUNIT} unit-testing package.  If that package wasn't
+found, then the above command will quickly exit without testing this
+package.
+
+@item
+Install the @ref{Top, , library, udunits2lib}, 
+@ref{Top, , utility, udunits2prog}, header-files, units-database, and
+INFO documentation files by making 
+the @code{install} target using the @var{make} utility from
+step 2:
+@example
+@var{make} install
+@end example
+
+@item
+If desired, install the HTML and PDF documentation files by making 
+one or more of the following targets 
+using the @var{make} utility from step 2:
+@example
+@var{make} install-html install-pdf
+@end example
+
+@item
+Clean up by making the @code{clean} target using the @var{make} utility
+from step 2:
+@example
+@var{make} clean
+@end example
+@end enumerate
+
+@node What, , Long, Install
+@section What Gets Installed
+
+The following files are created or installed under the installation directory:
+
+@example
+bin/:
+udunits2                # Unit @ref{Top, , utility, udunits2prog}
+
+include/:
+converter.h             # API for value converters
+udunits2.h              # API for units
+
+lib/:
+libudunits2.a           # Static unit @ref{Top, , library, udunits2lib}
+libudunits2.la          # libtool(1) reference for unit @ref{Top, , library, udunits2lib}
+libudunits2.so          # Link to shared @ref{Top, , library, udunits2lib}
+libudunits2.so.0        # Link to shared @ref{Top, , library, udunits2lib}
+libudunits2.so.0.0.0    # Shared @ref{Top, , library, udunits2lib}
+
+share/:
+doc                     # Directory. Created if it doesn't exist
+info                    # Directory. Created if it doesn't exist
+udunits                 # Directory. Created if it doesn't exist
+
+share/doc:
+udunits                 # Directory. Created if it doesn't exist
+
+share/doc/udunits:
+udunits2.html           # HTML documentation on this package
+udunits2lib.html        # HTML documentation on the unit @ref{Top, , library, udunits2lib}
+udunits2lib.pdf         # PDF documentation on the unit @ref{Top, , library, udunits2lib}
+udunits2.pdf            # PDF documentation on this package
+udunits2prog.html       # HTML documentation on the unit @ref{Top, , utility, udunits2prog}
+udunits2prog.pdf        # PDF documentation on the unit @ref{Top, , utility, udunits2prog}
+
+share/info:
+dir                     # Top-level "info" file.  Created if it doesn't exist
+udunits2.info           # INFO documentation on this package
+udunits2lib.info        # INFO documentation on the unit @ref{Top, , library, udunits2lib}
+udunits2prog.info       # INFO documentation on the unit @ref{Top, , utility, udunits2prog}
+
+share/udunits:
+udunits2.xml            # Default unit database
+udunits2-accepted.xml   # Units accepted for use with the SI
+udunits2-base.xml       # SI base units
+udunits2-common.xml     # Common, non-SI units
+udunits2-derived.xml    # Derived units of the SI
+udunits2-prefixes.xml   # SI unit prefixes
+@end example
+
+@node Database, Support, Install, Top
+@chapter The Units Database
+@cindex database
+
+The database for the UDUNITS-2 package comprises one XML file containing
+unit prefixes and four XML files containing unit definitions:
+
+@itemize
+@item @uref{../../udunits/udunits2-prefixes.xml,SI unit prefixes}
+@item @uref{../../udunits/udunits2-base.xml,SI base units}
+@item @uref{../../udunits/udunits2-derived.xml,SI derived units}
+@item @uref{../../udunits/udunits2-accepted.xml,Units accepted for use with the SI}
+@item @uref{../../udunits/udunits2-common.xml,Non-SI units}
+@end itemize
+
+@node Support, Complete Index, Database, Top
+@chapter Support for this Package
+@cindex support
+@cindex package, support
+
+The home-page for this package can be found at
+@uref{http://www.unidata.ucar.edu/software/udunits/}.
+
+Bug reports should be sent to
+@email{support-udunits@@unidata.ucar.edu}.
+
+@node Complete Index, , Support, Top
+@unnumbered Index
+
+@printindex cp
+
+@bye

@@ -1,0 +1,10 @@
+netcdf ref_tst_noncoord {
+dimensions:
+  n = 3;
+  mode = unlimited;
+variables:
+  int mode(n);
+data:
+  mode = 1, 2, 3;
+}
+

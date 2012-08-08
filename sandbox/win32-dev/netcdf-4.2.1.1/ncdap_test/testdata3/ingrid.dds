@@ -1,0 +1,11 @@
+Dataset {
+    Int32 ISTA[ISTA = 35];
+    Float32 IZ[IZ = 44];
+    Grid {
+     ARRAY:
+        Float32 V3H[ISTA = 35][IZ = 44];
+     MAPS:
+        Int32 ISTA[ISTA = 35];
+        Float32 IZ[IZ = 44];
+    } v3H;
+} STATION;

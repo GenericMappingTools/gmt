@@ -1,0 +1,23 @@
+netcdf synth4 {
+types:
+  compound S1_t {
+    ubyte v1(4) ;
+    short v2(4) ;
+    int v3(2) ;
+    float v4(2) ;
+    double v5(2) ;
+  }; // S1_t
+dimensions:
+	S1_0 = 2 ;
+variables:
+	S1_t S1(S1_0) ;
+
+// global attributes:
+		:g1 = 3, 8, 16, 32 ;
+		string :s1 = "gvalue1" ;
+data:
+
+ S1 = 
+    {{97, 98, 99, 100}, {116, 216, 316, 416}, {132, 232}, {1320, 2320}, {1640, 2640}}, 
+    {{101, 102, 103, 104}, {516, 616, 716, 816}, {332, 432}, {3320, 4320}, {3640, 4640}} ;
+}

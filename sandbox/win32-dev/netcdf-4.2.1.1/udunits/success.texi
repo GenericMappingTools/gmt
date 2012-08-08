@@ -1,0 +1,3 @@
+@multitable {@code{Linux 2.6.18-1.2257.fc5smp}} {@code{/opt/csw/gcc4/bin/gcc}} {@code{--disable-shared}}
+@headitem O/S @tab Compiler @tab @code{configure} Option
+@end multitable

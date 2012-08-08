@@ -1,0 +1,16 @@
+netcdf in_v {
+dimensions:
+	time = 10 ;
+variables:
+	float v(time) ;
+		string v:long_name = "Meridional wind speed" ;
+		string v:units = "meter second-1" ;
+
+// global attributes:
+		string :Conventions = "NCAR-CSM" ;
+		string :history = "History global attribute.\\012" ;
+		:julian_day = 200000.04 ;
+data:
+
+ v = 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ;
+}

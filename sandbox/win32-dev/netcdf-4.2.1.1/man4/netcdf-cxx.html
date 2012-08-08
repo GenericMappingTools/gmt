@@ -1,0 +1,1129 @@
+<html lang="en">
+<head>
+<title>NetCDF C++ Interface Guide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="NetCDF C++ Interface Guide">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="top" href="#Top">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+Copyright (C) 2005-2009 University Corporation for
+Atmospheric Research
+
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The software and any accompanying written
+materials are provided ``as is'' without warranty of any kind.  UCAR
+expressly disclaims all warranties of any kind, either expressed or
+implied, including but not limited to the implied warranties of
+merchantability and fitness for a particular purpose.
+
+The Unidata Program Center is managed by the University
+Corporation for Atmospheric Research and sponsored by the National
+Science Foundation.  Any opinions, findings, conclusions, or
+recommendations expressed in this publication are those of the
+author(s) and do not necessarily reflect the views of the National
+Science Foundation.
+
+Mention of any commercial company or product in this document
+does not constitute an endorsement by the Unidata Program Center.
+Unidata does not authorize any use of information from this
+publication for advertising or publicity purposes.-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<h1 class="settitle">NetCDF C++ Interface Guide</h1>
+<div class="node">
+<a name="Top"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Introduction">Introduction</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#dir">(dir)</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
+
+</div>
+
+<h2 class="unnumbered">The NetCDF C++ Interface Guide</h2>
+
+<p>This document describes the netCDF C++ API. It applies to netCDF
+version 4.1.3 release of the software, but the C++ interface
+still only supports the &ldquo;classic&rdquo; data model from the netCDF-3
+release. This document was last updated in 30 June 2011.
+
+   <p>The netCDF library provides an application- and machine-independent
+interface to self-describing, array-oriented data.  It supports an
+abstract view of such data as a collection of named variables and
+their attributes, and provides high-level access to data that is
+faithful to the abstraction.  This on-line document describes the C++
+interface to netCDF.  This C++ interface is still based on the classic
+data model supported by netCDF-3 software; it has not yet been updated
+to the enhanced data model supported by netCDF-4.
+
+   <p>The first part of this master menu lists the major nodes in this Info
+document.  The rest of the menu lists all the lower level nodes in the
+document.
+
+   <p>For a complete description of the netCDF format and utilities see
+<a href="netcdf.html#Top">Top</a>.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Introduction">Introduction</a>
+<li><a accesskey="2" href="#NetCDF-Classes">NetCDF Classes</a>
+<li><a accesskey="3" href="#Auxiliary-Classes">Auxiliary Classes</a>
+<li><a accesskey="4" href="#Combined-Index">Combined Index</a>
+
+</li></ul>
+<p>--- The Detailed Node Listing ---
+
+<p>Introduction
+
+</p>
+<ul class="menu">
+<li><a accesskey="5" href="#Class-Hierarchy">Class Hierarchy</a>
+<li><a accesskey="6" href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a>
+
+</li></ul>
+<p>NetCDF Classes
+
+</p>
+<ul class="menu">
+<li><a accesskey="7" href="#Class-NcFile">Class NcFile</a>:                 Files
+<li><a accesskey="8" href="#Class-NcDim">Class NcDim</a>:                  Dimensions
+<li><a accesskey="9" href="#Class-NcTypedComponent">Class NcTypedComponent</a>:       Operations common to variables and attributes
+<li><a href="#Class-NcVar">Class NcVar</a>:                  Variables
+<li><a href="#Class-NcAtt">Class NcAtt</a>:                  Attributes
+
+</li></ul>
+<p>Auxiliary Classes
+
+</p>
+<ul class="menu">
+<li><a href="#Class-NcValues">Class NcValues</a>
+<li><a href="#Class-NcError">Class NcError</a>
+
+   </ul>
+
+<div class="node">
+<a name="Introduction"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#NetCDF-Classes">NetCDF Classes</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Top">Top</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Introduction</h2>
+
+<p><a name="index-requirements-of-C_002b_002b-interface-1"></a>
+The main requirements for the design of the C++ interface are:
+
+     <ul>
+<li>to provide the functionality of the C interface;
+<li>to provide type safety by eliminating all use of <code>void*</code> pointers; and
+<li>to provide an interface that is simpler to use than the C interface. 
+</ul>
+
+   <p>Some of the features of the C++ interface are:
+
+     <ul>
+<li>No IDs needed for netCDF's variables, dimensions, or attributes. 
+<li>No explicit open or close calls needed for netCDF files; a constructor
+opens and a destructor closes a file. 
+<li>No need to specify types for creating attributes; they will have the
+type of the value provided. 
+<li>No use of <code>void*</code>: values are type-checked. 
+<li>Less indirection is needed for dimensions and dimension sizes than with
+the C interface.  A variable's dimensions can be provided as arguments
+when defining a variable. 
+<li>Code for data types is isolated to make the addition of new
+types easier. 
+<li>No explicit <code>ncredef</code> or <code>ncendef</code> calls are needed for
+switching between define and data modes.  Whenever a mode switch is
+required, it happens implicitly. 
+</ul>
+
+   <p>The header file <samp><span class="file">netcdfcpp.h</span></samp> must be included in source code files
+using this interface.
+
+   <p>This release provides some of the functionality of netCDF version 4,
+but not for the enhanced data model introduced with netCDF-4.
+
+   <p>This manual assumes familiarity with the netCDF User's Guide, where
+the concepts of netCDF dimensions, variables, and attributes are
+discussed.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Class-Hierarchy">Class Hierarchy</a>
+<li><a accesskey="2" href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a>
+</ul>
+
+<div class="node">
+<a name="Class-Hierarchy"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Introduction">Introduction</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Introduction">Introduction</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class Hierarchy</h3>
+
+<p><a name="index-class-hierarchy-2"></a>
+The class for netCDF file objects is <code>NcFile</code>.
+
+   <p>The components of a netCDF file are dimensions, variables, and
+attributes.  There is a class for each of these kinds of objects;
+<code>NcDim</code>, <code>NcVar</code>, and <code>NcAtt</code>.  Variables and attributes
+share some common characteristics that are factored out in the
+abstract base class <code>NcTypedComponent</code>.
+
+   <p>An auxiliary class, <code>NcValues</code>, provides a type for arrays of values
+that are read from or written to netCDF files.  Another auxiliary class,
+<code>NcError</code>, provides facilities for handling errors.
+
+<pre class="example">     <code>NcFile</code>                     netCDF file
+     
+     <code>NcDim</code>                      dimension
+     
+     <code>NcTypedComponent</code>           abstract base class
+             <code>NcVar</code>                variable
+             <code>NcAtt</code>                attribute
+     
+     <code>NcValues</code>                   abstract base class for array
+             <code>NcValues_ncbyte</code>      array of bytes
+             <code>NcValues_char</code>        array of characters
+             <code>NcValues_short</code>       array of shorts
+             <code>NcValues_int</code>         array of ints
+             <code>NcValues_long</code>        array of longs
+             <code>NcValues_float</code>       array of floats
+             <code>NcValues_double</code>      array of doubles
+     
+     <code>NcError</code>                    for error handling
+</pre>
+   <div class="node">
+<a name="Auxiliary-Types-and-Constants"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Class-Hierarchy">Class Hierarchy</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Introduction">Introduction</a>
+
+</div>
+
+<h3 class="unnumberedsec">Auxiliary Types and Constants</h3>
+
+<p><a name="index-auxiliary-types-and-constants-3"></a>
+The netCDF classes use several auxiliary types for arguments and return
+types from member functions: <code>NcToken</code>, <code>NcType</code>,
+<code>NcBool</code>, and <code>ncbyte</code>.
+
+     
+<a name="index-NcToken-4"></a>
+<dl><dt><code>NcToken</code><dd>Used for names for netCDF objects, in particular variable names, dimension
+names, and attribute names.  Currently this is just a typedef for
+<code>const char*</code>.
+
+     <p><a name="index-NcType-5"></a><br><dt><code>NcType</code><dd>Used for specifying netCDF external value types.  Currently this is an
+enumerated type with the following legitimate values: <code>ncByte</code>,
+<code>ncChar</code>, <code>ncShort</code>, <code>ncInt</code>, <code>ncLong</code> (deprecated),
+<code>ncFloat</code>, and <code>ncDouble</code>.
+
+     <p><a name="index-NcBool-6"></a><br><dt><code>NcBool</code><dd>Used for the return type of some member functions.  If the member
+function fails, 0 is returned, otherwise some non-zero value.  Currently
+this is just a typedef for <code>unsigned int</code>.  It will be changed to
+<code>bool</code> when all C++ compilers support the new <code>bool</code> type.
+
+     <p><a name="index-ncbyte-7"></a><br><dt><code>ncbyte</code><dd>Used to declare values of type <code>ncByte</code>, for 8-bit integer data. 
+(This is currently a typedef for <code>unsigned char</code>, but it may be
+changed to a typedef for <code>signed char</code>, so don't depend on the
+underlying representation.) 
+</dl>
+
+<div class="node">
+<a name="NetCDF-Classes"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Auxiliary-Classes">Auxiliary Classes</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Introduction">Introduction</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">NetCDF Classes</h2>
+
+<ul class="menu">
+<li><a accesskey="1" href="#Class-NcFile">Class NcFile</a>:                 Files
+<li><a accesskey="2" href="#Class-NcDim">Class NcDim</a>:                  Dimensions
+<li><a accesskey="3" href="#Class-NcTypedComponent">Class NcTypedComponent</a>:       Operations common to variables and attributes
+<li><a accesskey="4" href="#Class-NcVar">Class NcVar</a>:                  Variables
+<li><a accesskey="5" href="#Class-NcAtt">Class NcAtt</a>:                  Attributes
+</ul>
+
+<p><a name="index-NcFile-8"></a><div class="node">
+<a name="Class-NcFile"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Class-NcDim">Class NcDim</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NetCDF-Classes">NetCDF Classes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NetCDF-Classes">NetCDF Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcFile</h3>
+
+<p><code>NcFile</code> is the class for netCDF files,
+providing methods for netCDF file operations.
+
+   <p>Some member functions return pointers to dimensions (<code>NcDim</code>) or
+variables (<code>NcVar</code>).  These objects are owned by the <code>NcFile</code>
+they are associated with, and will be deleted automatically by the
+<code>NcFile</code> destructor (or by the <code>close</code> member function, if
+this is called earlier than the destructor), so users should not delete
+these.  Member functions that return pointers to attributes
+(<code>NcAtt</code>) pass ownership to the calling function; users
+should delete attributes when they are finished with them.
+
+   <p>Member functions that return <code>NcBool</code> yield <code>TRUE</code> on success
+and <code>FALSE</code> on failure.  Member functions that return a pointer
+value return a <code>NULL</code> pointer on failure.
+
+   <p>This class interface hides the distinction in the C and Fortran
+interfaces between <dfn>define mode</dfn> (when dimensions, variables, or
+attributes are being defined or renamed), and <dfn>data mode</dfn> (when data
+values are being accessed), by automatically switching between the modes
+when necessary.  Be aware that switching from accessing data to adding
+or renaming dimensions, variables and attributes can be expensive, since
+it may entail a copy of the data.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-NcFile-9"></a>
+<a name="index-NcFile_003a_003aNcFile-10"></a>
+<dl><dt><code>NcFile( const char * path, FileMode = ReadOnly, size_t *chunksizeptr = NULL, size_t initialsize = 0, FileFormat = Classic)</code><dd>
+The constructor creates a new netCDF file or opens an existing netCDF
+file. 
+The path argument may be an OPenDAP DAP URL if DAP support is enabled.
+
+     <p>The <code>FileMode</code> argument can be any of <code>ReadOnly</code> (the
+default) to open an existing file for reading, <code>Write</code> to open an
+existing file for reading or writing, <code>Replace</code> to create a new
+empty file even if the named file already exists, or
+<code>New</code> to create a new file only if the named file does not already
+exist.
+
+     <p>The optional <code>FileFormat</code> argument can be any of <code>Classic</code>
+(the default), <code>Offset64Bits</code>, <code>Netcdf4</code>, or
+<code>Netcdf4Classic</code>.
+
+     <p>The optional <code>chunksizeptr</code> and <code>initialsize</code> tuning
+parameters are as described in the corresponding <code>nc__create()</code>
+function in the C interface.
+
+     <p>The constructor will not fail, but in the case of a bad path name,
+improper permissions, or if the file already exists and you have
+specified <code>FileMode</code> as <code>New</code>, no netCDF file will be created
+or opened.  If the constructor fails to create or open a netCDF file, a
+subsequent call to the <code>is_valid()</code> member function will return
+<code>False</code>.
+
+     <p><a name="index-g_t_007eNcFile-11"></a><a name="index-NcFile_003a_003a_007eNcFile-12"></a><br><dt><code>~NcFile( void )</code><dd>Destructor.  The file is closed and all resources associated with it are
+released, including the associated <code>NcVar</code> and <code>NcDim</code>
+objects.  If you wish to close the file earlier, you may explicitly call
+the <code>close</code> member function; a subsequent destructor call will work
+properly.
+
+     <p><a name="index-close-13"></a><a name="index-NcFile_003a_003aclose-14"></a><br><dt><code>NcBool close( void )</code><dd>Close netCDF file earlier than it would be closed by the <code>NcFile</code>
+destructor.
+
+     <p><a name="index-is_005fvalid-15"></a><a name="index-NcFile_003a_003ais_005fvalid-16"></a><br><dt><code>NcBool is_valid( void ) const</code><dd>Returns <code>TRUE</code> if valid netCDF file, <code>FALSE</code> otherwise (e.g. 
+if constructor could not open file).
+
+     <p><a name="index-num_005fdims-17"></a><a name="index-NcFile_003a_003anum_005fdims-18"></a><br><dt><code>int num_dims( void ) const</code><dd>Returns the number of dimensions in the netCDF file.
+
+     <p><a name="index-num_005fvars-19"></a><a name="index-NcFile_003a_003anum_005fvars-20"></a><br><dt><code>int num_vars( void ) const</code><dd>Returns the number of variables in the netCDF file.
+
+     <p><a name="index-num_005fatts-21"></a><a name="index-NcFile_003a_003anum_005fatts-22"></a><br><dt><code>int num_atts( void ) const</code><dd>Returns the number of global attributes in the netCDF file.
+
+     <p><a name="index-get_005fdim-23"></a><a name="index-NcFile_003a_003aget_005fdim-24"></a><br><dt><code>NcDim* get_dim(NcToken name) const</code><dd>Get a dimension by name.
+
+     <p><a name="index-get_005fvar-25"></a><a name="index-NcFile_003a_003aget_005fvar-26"></a><br><dt><code>NcVar* get_var(NcToken name) const</code><dd>Get a variable by name.
+
+     <p><a name="index-get_005fatt-27"></a><a name="index-NcFile_003a_003aget_005fatt-28"></a><br><dt><code>NcAtt* get_att(NcToken name) const</code><dd>Get a global attribute by name.
+
+     <p><a name="index-get_005fdim-29"></a><a name="index-NcFile_003a_003aget_005fdim-30"></a><br><dt><code>NcDim* get_dim(int n) const</code><dd>Get the <var>n</var>th dimension (beginning with the 0th).
+
+     <p><a name="index-get_005fvar-31"></a><a name="index-NcFile_003a_003aget_005fvar-32"></a><br><dt><code>NcVar* get_var(int n) const</code><dd>Get the <var>n</var>th variable (beginning with the 0th).
+
+     <p><a name="index-get_005fatt-33"></a><a name="index-NcFile_003a_003aget_005fatt-34"></a><br><dt><code>NcAtt* get_att(int n) const</code><dd>Get the <var>n</var>th global attribute (beginning with the 0th).
+
+     <p><a name="index-rec_005fdim-35"></a><a name="index-NcFile_003a_003arec_005fdim-36"></a><br><dt><code>NcDim* rec_dim( void ) const</code><dd>Get the unlimited dimension, if any. 
+</dl>
+
+   <p>The following <code>add_</code> member functions put the file in <dfn>define
+mode</dfn>, so could be expensive.  To avoid copying of data, invoke
+these before writing data to variables.
+
+     
+<a name="index-add_005fdim-37"></a>
+<a name="index-NcFile_003a_003aadd_005fdim-38"></a>
+<dl><dt><code>NcDim* add_dim(NcToken dimname)</code><dd>Add an unlimited dimension named <code>dimname</code> to the netCDF file.
+
+     <p><a name="index-add_005fdim-39"></a><a name="index-NcFile_003a_003aadd_005fdim-40"></a><br><dt><code>NcDim* add_dim(NcToken dimname, long dimsize)</code><dd>Add a dimension named <code>dimname</code> of size <code>dimsize</code>.
+
+     <p><a name="index-add_005fvar-41"></a><a name="index-NcFile_003a_003aadd_005fvar-42"></a><br><dt><code>NcVar* add_var(NcToken varname, NcType type, const NcDim*, ...)</code><dd>Add a variable named <code>varname</code> of the specified type
+(<code>ncByte</code>, <code>ncChar</code>, <code>ncShort</code>, <code>ncInt</code>,
+<code>ncFloat</code>, <code>ncDouble</code>) to the open netCDF file.  The variable
+is defined with a shape that depends on how many
+dimension arguments are provided.  A scalar variable would have 0
+dimensions, a vector would have 1 dimension, and so on.  Supply as many
+dimensions as needed, up to 5.  If more than 5 dimensions are required,
+use the n-dimensional version of this member function instead.
+
+     <p><a name="index-add_005fvar-43"></a><a name="index-NcFile_003a_003aadd_005fvar-44"></a><br><dt><code>NcVar* add_var(NcToken varname, NcType type, int ndims, const NcDim** dims)</code><dd>Add a variable named <code>varname</code> of <code>ndims</code> dimensions and of
+the specified type.  This method must be used when dealing with
+variables of more than 5 dimensions.
+
+     <p><a name="index-add_005fatt-45"></a><a name="index-NcFile_003a_003aadd_005fatt-46"></a><br><dt><code>NcBool add_att(NcToken name, ncbyte val)</code><dt><code>NcBool add_att(NcToken name, char val)</code><dt><code>NcBool add_att(NcToken name, short val)</code><dt><code>NcBool add_att(NcToken name, int val)</code><dt><code>NcBool add_att(NcToken name, float val)</code><dt><code>NcBool add_att(NcToken name, double val)</code><dd>Add global scalar attributes of the specified name and with the
+supplied value.
+
+     <br><dt><code>NcBool add_att(NcToken name, const char* val)</code><dd>Add global string-valued attribute with the specified name and C string
+value (terminated with a <code>\0</code> character).
+
+     <p><a name="index-add_005fatt-47"></a><a name="index-NcFile_003a_003aadd_005fatt-48"></a><br><dt><code>NcBool add_att(NcToken name, int n, const ncbyte* val)</code><dt><code>NcBool add_att(NcToken name, int n, const char* val)</code><dt><code>NcBool add_att(NcToken name, int n, const short* val)</code><dt><code>NcBool add_att(NcToken name, int n, const int* val)</code><dt><code>NcBool add_att(NcToken name, int n, const float* val)</code><dt><code>NcBool add_att(NcToken name, int n, const double* val)</code><dd>Add global vector attributes with the specified name, length, and values.
+
+     <p><a name="index-set_005ffill-49"></a><a name="index-NcFile_003a_003aset_005ffill-50"></a><br><dt><code>NcBool set_fill(FillMode mode = Fill)</code><dd>Sets fill-mode to either <code>NcFile::Fill</code> or <code>NcFile::NoFill</code>. 
+Default is <code>Fill</code>, in which case unwritten values are pre-written
+with appropriate type-specific or variable-specific fill values.
+
+     <p><a name="index-get_005ffill-51"></a><a name="index-NcFile_003a_003aget_005ffill-52"></a><br><dt><code>enum NcFile::FillMode get_fill( void ) const</code><dd>Returns fill mode of the file, either <code>NcFile::Fill</code> or
+<code>NcFile::NoFill</code>.
+
+     <p><a name="index-get_005fformat-53"></a><a name="index-NcFile_003a_003aget_005fformat-54"></a><br><dt><code>enum NcFile::FileFormat get_format( void ) const</code><dd>Returns format version of the file, either <code>NcFile::Classic</code>,
+<code>NcFile:Offset64Bits</code>, <code>NcFile:Netcdf4</code>, or
+<code>NcFile::Netcdf4Classic</code>.
+
+     <p><a name="index-sync-55"></a><a name="index-NcFile_003a_003async-56"></a><br><dt><code>NcBool sync( void )</code><dd>Synchronizes file to disk.  This flushes buffers so that readers
+of the file will see recent changes.
+
+     <p><a name="index-abort-57"></a><a name="index-NcFile_003a_003aabort-58"></a><br><dt><code>NcBool abort( void )</code><dd>Either just closes file (if recently it has been in data mode as the
+result of accessing data), or backs out of the most recent sequence of
+changes to the file schema (dimensions, variables, and attributes). 
+</dl>
+
+   <p><a name="index-NcDim-59"></a><div class="node">
+<a name="Class-NcDim"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Class-NcTypedComponent">Class NcTypedComponent</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Class-NcFile">Class NcFile</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NetCDF-Classes">NetCDF Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcDim</h3>
+
+<p>A netCDF dimension has a name and a size.  Dimensions are only created and
+destroyed by NcFile member functions, because they cannot exist
+independently of an open netCDF file.  Hence there are no public
+constructors or destructors.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-name-60"></a>
+<a name="index-NcDim_003a_003aname-61"></a>
+<dl><dt><code>NcToken name( void ) const</code><dd>
+Returns the name of the dimension if it exists, 0 otherwise.
+
+     <p><a name="index-size-62"></a><a name="index-NcDim_003a_003asize-63"></a><br><dt><code>long size( void ) const</code><dd>
+Returns the dimension size.
+
+     <p><a name="index-is_005fvalid-64"></a><a name="index-NcDim_003a_003ais_005fvalid-65"></a><br><dt><code>NcBool is_valid( void ) const</code><dd>
+Returns <code>TRUE</code> if file and dimension are both valid, <code>FALSE</code>
+otherwise.
+
+     <p><a name="index-is_005funlimited-66"></a><a name="index-NcDim_003a_003ais_005funlimited-67"></a><br><dt><code>NcBool is_unlimited( void ) const</code><dd>
+Returns <code>TRUE</code> if the dimension is the unlimited dimension,
+<code>FALSE</code> if either not a valid netCDF file, or if the dimension is
+not the unlimited dimension.
+
+     <p><a name="index-rename-68"></a><a name="index-NcDim_003a_003arename-69"></a><br><dt><code>NcBool rename( NcToken newname )</code><dd>
+Renames the dimension to <code>newname</code>.
+
+     <p><a name="index-sync-70"></a><a name="index-NcDim_003a_003async-71"></a><br><dt><code>NcBool sync( void )</code><dd>
+If the dimension may have been renamed, make sure its name is updated.
+
+</dl>
+
+   <p><a name="index-NcTypedComponent-72"></a><div class="node">
+<a name="Class-NcTypedComponent"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Class-NcVar">Class NcVar</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Class-NcDim">Class NcDim</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NetCDF-Classes">NetCDF Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcTypedComponent</h3>
+
+<p><code>NcTypedComponent</code> is an abstract base class for <code>NcVar</code> and
+<code>NcAtt</code> that captures the similarities between netCDF variables and
+attributes.  We list here the member functions that variables and
+attributes inherit from <code>NcTypedComponent</code>, but these member
+functions are also documented under the <code>NcVar</code> and <code>NcAtt</code>
+classes for convenience.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-name-73"></a>
+<a name="index-NcTypedComponent_003a_003aname-74"></a>
+<dl><dt><code>NcToken name( void ) const</code><dd>
+Returns the name of the variable or attribute.
+
+     <p><a name="index-type-75"></a><a name="index-NcTypedComponent_003a_003atype-76"></a><br><dt><code>NcType type( void ) const</code><dd>
+Returns the type of the variable or attribute.  The type will be one of
+<code>ncByte</code>, <code>ncChar</code>, <code>ncShort</code>, <code>ncInt</code>,
+<code>ncFloat</code>, or <code>ncDouble</code>.
+
+     <p><a name="index-is_005fvalid-77"></a><a name="index-NcTypedComponent_003a_003ais_005fvalid-78"></a><br><dt><code>NcBool is_valid( void ) const</code><dd>
+Returns <code>TRUE</code> if the component is valid, <code>FALSE</code> otherwise.
+
+     <p><a name="index-num_005fvals-79"></a><a name="index-NcTypedComponent_003a_003anum_005fvals-80"></a><br><dt><code>long num_vals( void ) const</code><dd>
+Returns the number of values for an attribute or variable.  For an
+attribute, this is just 1 for a scalar attribute, the number of values
+for a vector-valued attribute, and the number of characters for a
+string-valued attribute.  For a variable, this is the product of the
+dimension sizes for all the variable's dimensions.
+
+     <p><a name="index-rename-81"></a><a name="index-NcTypedComponent_003a_003arename-82"></a><br><dt><code>NcBool rename( NcToken newname )</code><dd>
+Renames the variable or attribute.
+
+     <p><a name="index-values-83"></a><a name="index-NcTypedComponent_003a_003avalues-84"></a><br><dt><code>NcValues* values( void ) const</code><dd>
+Returns a pointer to the block of all values for the variable or
+attribute.  The caller is responsible for deleting this block of values
+when no longer needed, as well as the pointer returned by the
+<code>values</code> method.  Note that this is not a good way to read
+selected values of a variable; use the <code>get</code> member function
+instead, to get single values or selected cross-sections of values.
+
+     <p><a name="index-as_005fncbyte-85"></a><a name="index-NcTypedComponent_003a_003aas_005fncbyte-86"></a><br><dt><code>ncbyte as_ncbyte( int n ) const</code><dd><a name="index-as_005fchar-87"></a><a name="index-NcTypedComponent_003a_003aas_005fchar-88"></a><dt><code>char as_char( int n ) const</code><dd><a name="index-as_005fshort-89"></a><a name="index-NcTypedComponent_003a_003aas_005fshort-90"></a><dt><code>short as_short( int n ) const</code><dd><a name="index-as_005fint-91"></a><a name="index-NcTypedComponent_003a_003aas_005fint-92"></a><dt><code>int as_int( int n ) const</code><dd><a name="index-as_005fnclong-93"></a><a name="index-NcTypedComponent_003a_003aas_005fnclong-94"></a><dt><code>nclong as_nclong( int n ) const // deprecated</code><dd><a name="index-as_005flong-95"></a><a name="index-NcTypedComponent_003a_003aas_005flong-96"></a><dt><code>long as_long( int n ) const</code><dd><a name="index-as_005ffloat-97"></a><a name="index-NcTypedComponent_003a_003aas_005ffloat-98"></a><dt><code>float as_float( int n ) const</code><dd><a name="index-as_005fdouble-99"></a><a name="index-NcTypedComponent_003a_003aas_005fdouble-100"></a><dt><code>double as_double( int n ) const</code><dd><a name="index-as_005fstring-101"></a><a name="index-NcTypedComponent_003a_003aas_005fstring-102"></a><dt><code>char* as_string( int n ) const</code><dd>
+Get the n-th value of the attribute or variable.  These member functions
+provide conversions from the value type of the variable or attribute to
+the specified type.  If the value is out-of-range, the
+fill-value of the appropriate type is returned. 
+</dl>
+
+   <p><a name="index-NcVar-103"></a><div class="node">
+<a name="Class-NcVar"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Class-NcAtt">Class NcAtt</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Class-NcTypedComponent">Class NcTypedComponent</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NetCDF-Classes">NetCDF Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcVar</h3>
+
+<p><code>NcVar</code> is derived from NcTypedComponent, and represents a netCDF
+variable.  A netCDF variable has a name, a type, a shape, zero or more
+attributes, and a block of values associated with it.  Because variables
+are only associated with open netCDF files, there are no public
+constructors for this class.  Use member functions of <code>NcFile</code> to
+get variables or add new variables.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-name-104"></a>
+<a name="index-NcTypedComponent_003a_003aname-105"></a>
+<dl><dt><code>NcToken name( void ) const</code><dd>
+Returns the name of the variable.
+
+     <p><a name="index-type-106"></a><a name="index-NcTypedComponent_003a_003atype-107"></a><br><dt><code>NcType type( void ) const</code><dd>
+Returns the type of the variable.  The type will be one of
+<code>ncByte</code>, <code>ncChar</code>, <code>ncShort</code>, <code>ncInt</code>,
+<code>ncFloat</code>, or <code>ncDouble</code>.
+
+     <p><a name="index-num_005fdims-108"></a><a name="index-NcVar_003a_003anum_005fdims-109"></a><br><dt><code>int num_dims( void ) const</code><dd>Returns number of dimensions for this variable.
+
+     <p><a name="index-get_005fdim-110"></a><a name="index-NcVar_003a_003aget_005fdim-111"></a><br><dt><code>NcDim* get_dim( int n ) const</code><dd>Returns a pointer to the n-th dimension (starting at 0).  Returns a
+NULL-pointer if an invalid dimension is requested.
+
+     <p><a name="index-edges-112"></a><a name="index-NcVar_003a_003aedges-113"></a><br><dt><code>long* edges( void ) const</code><dd>Returns the shape of the variable, in the form of a vector containing
+the sizes of the dimensions of the variable.  The caller is responsible
+for deleting the returned edge vector when no longer needed.
+
+     <p><a name="index-num_005fatts-114"></a><a name="index-NcVar_003a_003anum_005fatts-115"></a><br><dt><code>int num_atts( void ) const</code><dd>Returns the number of attributes attached to the variable.
+
+     <p><a name="index-get_005fatt-116"></a><a name="index-NcVar_003a_003aget_005fatt-117"></a><br><dt><code>NcAtt* get_att( NcToken attname ) const</code><br><dt><code>NcAtt* get_att( int n ) const</code><dd>The first member function returns a variable attribute by name.  The
+second returns the n-th (starting at 0) attribute of the variable.  In
+either case, if no such attribute has been attached to the variable,
+zero is returned.  Attributes returned in this way belong to the caller,
+and hence should eventually be deleted by the caller to avoid memory
+leaks.
+
+     <p><a name="index-is_005fvalid-118"></a><a name="index-NcTypedComponent_003a_003ais_005fvalid-119"></a><br><dt><code>NcBool is_valid( void ) const</code><dd>
+Returns <code>TRUE</code> if the variable is valid, <code>FALSE</code> otherwise.
+
+     <p><a name="index-num_005fvals-120"></a><a name="index-NcTypedComponent_003a_003anum_005fvals-121"></a><br><dt><code>long num_vals( void ) const</code><dd>
+Returns the number of values for a variable.  This is just 1 for a
+scalar variable, or the product of the dimension sizes for all the
+variable's dimensions.
+
+     <p><a name="index-values-122"></a><a name="index-NcTypedComponent_003a_003avalues-123"></a><br><dt><code>NcValues* values( void ) const</code><dd>
+Returns a pointer to the block of all values for the variable. 
+The caller is responsible for deleting this block of values
+when no longer needed. 
+Note that this is not a good way to read selected values of
+a variable; use the <code>get</code> member function instead, to get single
+values or selected cross-sections of values.
+
+     <p><a name="index-put-124"></a><a name="index-NcVar_003a_003aput-125"></a><br><dt><code>NcBool put(const ncbyte* vals, long c0, long c1, long c2, long c3, long c4)</code><dt><code>NcBool put(const char*   vals, long c0, long c1, long c2, long c3, long c4)</code><dt><code>NcBool put(const short*  vals, long c0, long c1, long c2, long c3, long c4)</code><dt><code>NcBool put(const int* vals, long c0, long c1, long c2, long c3, long c4)</code><dt><code>NcBool put(const long* vals, long c0, long c1, long c2, long c3, long c4)</code><dt><code>NcBool put(const float*  vals, long c0, long c1, long c2, long c3, long c4)</code><dt><code>NcBool put(const double* vals, long c0, long c1, long c2, long c3, long c4)</code><dd>
+Write scalar or 1 to 5-dimensional arrays by providing enough arguments. 
+The <code>vals</code> argument points to a contiguous block of values in
+memory to be written.  This means if you allocate each row of an
+array with a &ldquo;new&rdquo; call for example, you must not write more than one row
+at a time, because the rows may not be contiguous in memory. 
+Other arguments are edge lengths, and their number must not exceed variable's
+dimensionality.  Start corner is <code>[0,0,..., 0]</code> by default, but may
+be reset using the <code>set_cur()</code> member function for this variable. 
+<code>FALSE</code> is returned if type of values does not match type for
+variable.  For more than 5 dimensions, use the overloaded n-dimensional
+form of the <code>put</code> member function.
+
+     <p><a name="index-put-126"></a><a name="index-NcVar_003a_003aput-127"></a><br><dt><code>NcBool put(const ncbyte* vals, const long* counts)</code><dt><code>NcBool put(const char*   vals, const long* counts)</code><dt><code>NcBool put(const short*  vals, const long* counts)</code><dt><code>NcBool put(const int* vals, const long* counts)</code><dt><code>NcBool put(const long* vals, const long* counts)</code><dt><code>NcBool put(const float*  vals, const long* counts)</code><dt><code>NcBool put(const double* vals, const long* counts)</code><dd>
+Write n-dimensional arrays, starting at <code>[0, 0, ..., 0]</code> by
+default, may be reset with <code>set_cur()</code>.  <code>FALSE</code> is returned
+if type of values does not match type for variable. 
+The <code>vals</code> argument points to a contiguous block of values in
+memory to be written.  This means if you allocate each row of an
+array with a &ldquo;new&rdquo; call for example, you must not write more than one row
+at a time, because the rows may not be contiguous in memory.
+
+     <p><a name="index-get-128"></a><a name="index-NcVar_003a_003aget-129"></a><br><dt><code>NcBool get(ncbyte* vals, long c0, long c1, long c2, long c3, long c4) const</code><dt><code>NcBool get(char*   vals, long c0, long c1, long c2, long c3, long c4) const</code><dt><code>NcBool get(short*  vals, long c0, long c1, long c2, long c3, long c4) const</code><dt><code>NcBool get(int* vals, long c0, long c1, long c2, long c3, long c4) const</code><dt><code>NcBool get(long* vals, long c0, long c1, long c2, long c3, long c4) const</code><dt><code>NcBool get(float*  vals, long c0, long c1, long c2, long c3, long c4) const</code><dt><code>NcBool get(double* vals, long c0, long c1, long c2, long c3, long c4) const</code><dd>
+Get scalar or 1 to 5 dimensional arrays by providing enough arguments. 
+The <code>vals</code> argument points to a contiguous block of values in
+memory into which values will be read.  This means if you allocate each row of an
+array with a &ldquo;new&rdquo; call for example, you must not read more than one row
+at a time, because the rows may not be contiguous in memory. 
+Other arguments are edge lengths, and their number must not exceed variable's
+dimensionality.  Start corner is <code>[0,0,..., 0]</code> by default, but may
+be reset using the <code>set_cur()</code> member function.  <code>FALSE</code> is
+returned if type of values does not match type for variable.
+
+     <p><a name="index-get-130"></a><a name="index-NcVar_003a_003aget-131"></a><br><dt><code>NcBool get(ncbyte* vals, const long* counts) const</code><dt><code>NcBool get(char*   vals, const long* counts) const</code><dt><code>NcBool get(short*  vals, const long* counts) const</code><dt><code>NcBool get(int* vals, const long* counts) const</code><dt><code>NcBool get(long* vals, const long* counts) const</code><dt><code>NcBool get(float*  vals, const long* counts) const</code><dt><code>NcBool get(double* vals, const long* counts) const</code><dd>Get n-dimensional arrays, starting at <code>[0, 0, ..., 0]</code> by default,
+may be reset with <code>set_cur()</code> member function.  <code>FALSE</code> is
+returned if type of values does not match type for variable. 
+Get scalar or 1 to 5 dimensional arrays by providing enough arguments. 
+The <code>vals</code> argument points to a contiguous block of values in
+memory into which values will be read.  This means if you allocate each row of an
+array with a &ldquo;new&rdquo; call for example, you must not read more than one row
+at a time, because the rows may not be contiguous in memory.
+
+     <p><a name="index-set_005fcur-132"></a><a name="index-NcVar_003a_003aset_005fcur-133"></a><br><dt><code>NcBool set_cur(long c0=-1, long c1=-1, long c2=-1, long c3=-1, long c4=-1)</code><dt><code>NcBool set_cur(long* cur)</code><dd>Resets the starting corner to the values supplied.  The first form works
+for a variable of dimensionality from scalar to 5 dimensions.  For more
+than five dimensions, use the second form, in which the number of longs
+supplied must match the rank of the variable.  The method returns FALSE if
+any argument is greater than the size of the corresponding dimension.
+
+     <p><a name="index-NcVar_003a_003aadd_005fatt-134"></a><a name="index-add_005fatt-135"></a><br><dt><code>NcBool add_att( NcToken, char )</code><br><dt><code>NcBool add_att( NcToken, ncbyte )</code><dt><code>NcBool add_att( NcToken, short )</code><dt><code>NcBool add_att( NcToken, int )</code><dt><code>NcBool add_att( NcToken, long )</code><dt><code>NcBool add_att( NcToken, float )</code><dt><code>NcBool add_att( NcToken, double )</code><dt><code>NcBool add_att( NcToken, const char* )</code><dt><code>NcBool add_att( NcToken, int, const char* )</code><dt><code>NcBool add_att( NcToken, int, const ncbyte* )</code><dt><code>NcBool add_att( NcToken, int, const short* )</code><dt><code>NcBool add_att( NcToken, int, const int* )</code><dt><code>NcBool add_att( NcToken, int, const long* )</code><dt><code>NcBool add_att( NcToken, int, const float* )</code><dt><code>NcBool add_att( NcToken, int, const double* )</code><dd>
+Add scalar or vector attribute of any type to a variable, given the
+name, number of values, and the vector of values.  These put file in
+define mode, so could be expensive.  To avoid the expense of copying
+data, add attributes to variables before writing data.
+
+     <p><a name="index-rename-136"></a><a name="index-NcTypedComponent_003a_003arename-137"></a><br><dt><code>NcBool rename( NcToken newname )</code><dd>
+Renames the variable.  If variable is renamed to a longer name, this
+puts file in define mode, so could be expensive.
+
+     <p><a name="index-as_005fncbyte-138"></a><a name="index-NcTypedComponent_003a_003aas_005fncbyte-139"></a><br><dt><code>ncbyte as_ncbyte( int n ) const</code><dd><a name="index-as_005fchar-140"></a><a name="index-NcTypedComponent_003a_003aas_005fchar-141"></a><dt><code>char as_char( int n ) const</code><dd><a name="index-as_005fshort-142"></a><a name="index-NcTypedComponent_003a_003aas_005fshort-143"></a><dt><code>short as_short( int n ) const</code><dd><a name="index-as_005fint-144"></a><a name="index-NcTypedComponent_003a_003aas_005fint-145"></a><dt><code>int as_int( int n ) const</code><dd><a name="index-as_005fnclong-146"></a><a name="index-NcTypedComponent_003a_003aas_005fnclong-147"></a><dt><code>nclong as_nclong( int n ) const // deprecated</code><dd><a name="index-as_005flong-148"></a><a name="index-NcTypedComponent_003a_003aas_005flong-149"></a><dt><code>long as_long( int n ) const</code><dd><a name="index-as_005ffloat-150"></a><a name="index-NcTypedComponent_003a_003aas_005ffloat-151"></a><dt><code>float as_float( int n ) const</code><dd><a name="index-as_005fdouble-152"></a><a name="index-NcTypedComponent_003a_003aas_005fdouble-153"></a><dt><code>double as_double( int n ) const</code><dd><a name="index-as_005fstring-154"></a><a name="index-NcTypedComponent_003a_003aas_005fstring-155"></a><dt><code>char* as_string( int n ) const</code><dd>
+Get the n-th value of the variable, ignoring its shape.  These member
+functions provide conversions from the value type of the variable to the
+specified type.  If the requested value is out-of-range, the fill-value of the
+appropriate type is returned.
+
+     <p><a name="index-id-156"></a><a name="index-NcVar_003a_003aid-157"></a><br><dt><code>int id( void ) const</code><dd>
+Return the variable number.  This is not needed in the C++ interface,
+but might be needed in calling a C-function that requires that a variable
+be identified by number instead of name.
+
+     <p><a name="index-sync-158"></a><a name="index-NcVar_003a_003async-159"></a><br><dt><code>NcBool sync( void )</code><dd>
+If the variable may have been renamed, make sure its name is updated.
+
+     <p><a name="index-g_t_007eNcVar-160"></a><a name="index-NcVar_003a_003a_007eNcVar-161"></a><br><dt><code>~NcVar( void )</code><dd>Destructor. 
+</dl>
+
+   <p>The following member functions are intended for record variables.  They
+will also work for non-record variables, if the first dimension is
+interpreted as the record dimension.
+
+     
+<a name="index-rec_005fsize-162"></a>
+<a name="index-NcVar_003a_003arec_005fsize-163"></a>
+<dl><dt><code>long rec_size( void )</code><br><dt><code>long rec_size( NcDim* )</code><dd>
+Return the number of values per record or the number of values per
+dimension slice for the specified dimension.
+
+     <p><a name="index-get_005frec-164"></a><a name="index-NcVar_003a_003aget_005frec-165"></a><br><dt><code>NcValues* get_rec( void )</code><dt><code>NcValues* get_rec( long n )</code><dd>
+Get the data for this variable for the current record or for the
+<var>n</var>th record.
+
+     <br><dt><code>NcValues* get_rec( NcDim* )</code><dt><code>NcValues* get_rec( NcDim*, long n )</code><dd>
+Get the data for this variable for the current dimension slice or for the
+<var>n</var>th dimension slice.
+
+     <p><a name="index-put_005frec-166"></a><a name="index-NcVar_003a_003aput_005frec-167"></a><br><dt><code>NcBool put_rec( const ncbyte* vals )</code><dt><code>NcBool put_rec( const char* vals )</code><dt><code>NcBool put_rec( const short* vals )</code><dt><code>NcBool put_rec( const int* vals )</code><dt><code>NcBool put_rec( const long* vals )</code><dt><code>NcBool put_rec( const float* vals )</code><dt><code>NcBool put_rec( const double* vals )</code><dd>
+Put a record's worth of data for this variable in the current record.
+
+     <br><dt><code>NcBool put_rec( NcDim*, const ncbyte* vals )</code><dt><code>NcBool put_rec( NcDim*, const char* vals )</code><dt><code>NcBool put_rec( NcDim*, const short* vals )</code><dt><code>NcBool put_rec( NcDim*, const int* vals )</code><dt><code>NcBool put_rec( NcDim*, const long* vals )</code><dt><code>NcBool put_rec( NcDim*, const float* vals )</code><dt><code>NcBool put_rec( NcDim*, const double* vals )</code><dd>
+Put a dimension slice worth of data for this variable in the current
+dimension slice.
+
+     <p><a name="index-put_005frec-168"></a><a name="index-NcVar_003a_003aput_005frec-169"></a><br><dt><code>NcBool put_rec( const ncbyte* vals, long rec )</code><dt><code>NcBool put_rec( const char* vals, long rec )</code><dt><code>NcBool put_rec( const short* vals, long rec )</code><dt><code>NcBool put_rec( const int* vals, long rec )</code><dt><code>NcBool put_rec( const long* vals, long rec )</code><dt><code>NcBool put_rec( const float* vals, long rec )</code><dt><code>NcBool put_rec( const double* vals, long rec )</code><dd>
+Put a record's worth of data for this variable in the specified record.
+
+     <br><dt><code>NcBool put_rec( NcDim*, const ncbyte* vals, long slice )</code><dt><code>NcBool put_rec( NcDim*, const char* vals, long slice )</code><dt><code>NcBool put_rec( NcDim*, const short* vals, long slice )</code><dt><code>NcBool put_rec( NcDim*, const int* vals, long slice )</code><dt><code>NcBool put_rec( NcDim*, const long* vals, long slice )</code><dt><code>NcBool put_rec( NcDim*, const float* vals, long slice )</code><dt><code>NcBool put_rec( NcDim*, const double* vals, long slice )</code><dd>
+Put a dimension slice worth of data for this variable in the specified
+dimension slice.
+
+     <p><a name="index-get_005findex-170"></a><a name="index-NcVar_003a_003aget_005findex-171"></a><br><dt><code>long get_index( const ncbyte* vals )</code><dt><code>long get_index( const char* vals )</code><dt><code>long get_index( const short* vals )</code><dt><code>long get_index( const int* vals )</code><dt><code>long get_index( const long* vals )</code><dt><code>long get_index( const float* vals )</code><dt><code>long get_index( const double* vals )</code><dd>
+Get first record index for this variable corresponding to the specified
+key value(s).
+
+     <br><dt><code>long get_index( NcDim*, const ncbyte* vals )</code><dt><code>long get_index( NcDim*, const char* vals )</code><dt><code>long get_index( NcDim*, const short* vals )</code><dt><code>long get_index( NcDim*, const int* vals )</code><dt><code>long get_index( NcDim*, const long* vals )</code><dt><code>long get_index( NcDim*, const float* vals )</code><dt><code>long get_index( NcDim*, const double* vals )</code><dd>
+Get first index of specified dimension for this variable corresponding
+to the specified key value(s).
+
+     <p><a name="index-set_005frec-172"></a><a name="index-NcVar_003a_003aset_005frec-173"></a><br><dt><code>void set_rec ( long rec )</code><dd>
+Set the current record for this variable.
+
+     <br><dt><code>void set_rec ( NcDim*, long rec )</code><dd>
+Set the current dimension slice for the specified dimension for this variable.
+
+   </dl>
+
+   <p><a name="index-NcAtt-174"></a><div class="node">
+<a name="Class-NcAtt"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Class-NcVar">Class NcVar</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NetCDF-Classes">NetCDF Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcAtt</h3>
+
+<p><code>NcAtt</code> is derived from <code>NcTypedComponent</code>, and represents a netCDF
+attribute.  A netCDF attribute has a name and a type, and may be either
+a scalar attribute or a vector attribute.  Scalar attributes have one
+value and vector attributes have multiple values.  In addition, each
+attribute is attached to a specific netCDF variable or is global to an
+entire netCDF file.  Because attributes are only associated with open
+netCDF files, there are no public constructors for this class.  Use
+member functions of <code>NcFile</code> and <code>NcVar</code> to get netCDF
+attributes or add new attributes.  Most of the useful member functions
+for <code>NcAtt</code> are
+inherited from class <code>NcTypedComponent</code>.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-name-175"></a>
+<a name="index-NcTypedComponent_003a_003aname-176"></a>
+<dl><dt><code>NcToken name( void ) const</code><dd>
+Returns the name of the attribute.
+
+     <p><a name="index-type-177"></a><a name="index-NcTypedComponent_003a_003atype-178"></a><br><dt><code>NcType type( void ) const</code><dd>
+Returns the type of the attribute.  The type will be one of
+<code>ncByte</code>, <code>ncChar</code>, <code>ncShort</code>, <code>ncInt</code>,
+<code>ncFloat</code>, or <code>ncDouble</code>.
+
+     <p><a name="index-is_005fvalid-179"></a><a name="index-NcTypedComponent_003a_003ais_005fvalid-180"></a><br><dt><code>NcBool is_valid( void ) const</code><dd>
+Returns <code>TRUE</code> if the attribute is valid, <code>FALSE</code> otherwise.
+
+     <p><a name="index-num_005fvals-181"></a><a name="index-NcTypedComponent_003a_003anum_005fvals-182"></a><br><dt><code>long num_vals( void ) const</code><dd>
+Returns the number of values for an attribute.  This is just 1 for a
+scalar attribute, the number of values for a vector-valued attribute,
+and the number of characters for a string-valued attribute.
+
+     <p><a name="index-rename-183"></a><a name="index-NcTypedComponent_003a_003arename-184"></a><br><dt><code>NcBool rename( NcToken newname )</code><dd>
+Renames the attribute.
+
+     <p><a name="index-values-185"></a><a name="index-NcTypedComponent_003a_003avalues-186"></a><br><dt><code>NcValues* values( void ) const</code><dd>
+Returns a pointer to the block of all values for the
+attribute.  The caller is responsible for deleting this block of values
+when no longer needed.
+
+     <p><a name="index-as_005fncbyte-187"></a><a name="index-NcTypedComponent_003a_003aas_005fncbyte-188"></a><br><dt><code>ncbyte as_ncbyte( int n ) const</code><dd><a name="index-as_005fchar-189"></a><a name="index-NcTypedComponent_003a_003aas_005fchar-190"></a><dt><code>char as_char( int n ) const</code><dd><a name="index-as_005fshort-191"></a><a name="index-NcTypedComponent_003a_003aas_005fshort-192"></a><dt><code>short as_short( int n ) const</code><dd>
+<a name="index-as_005fint-193"></a><a name="index-NcTypedComponent_003a_003aas_005fint-194"></a><dt><code>int as_int( int n ) const</code><dd>
+<a name="index-as_005fnclong-195"></a><a name="index-NcTypedComponent_003a_003aas_005fnclong-196"></a><dt><code>nclong as_nclong( int n ) const // deprecated</code><dd>
+<a name="index-as_005flong-197"></a><a name="index-NcTypedComponent_003a_003aas_005flong-198"></a><dt><code>long as_long( int n ) const</code><dd>
+<a name="index-as_005ffloat-199"></a><a name="index-NcTypedComponent_003a_003aas_005ffloat-200"></a><dt><code>float as_float( int n ) const</code><dd><a name="index-as_005fdouble-201"></a><a name="index-NcTypedComponent_003a_003aas_005fdouble-202"></a><dt><code>double as_double( int n ) const</code><dd><a name="index-as_005fstring-203"></a><a name="index-NcTypedComponent_003a_003aas_005fstring-204"></a><dt><code>char* as_string( int n ) const</code><dd>
+Get the n-th value of the attribute.  These member functions provide
+conversions from the value type of the attribute to the specified type. 
+If the value is out-of-range, the fill-value of the appropriate type is
+returned.
+
+     <p><a name="index-remove-205"></a><a name="index-NcAtt_003a_003aremove-206"></a><br><dt><code>NcBool remove( void )</code><dd>Deletes the attribute from the file and detaches it from the variable. 
+Does not call the destructor.  Subsequent calls to <code>is_valid()</code> will
+return <code>FALSE</code>.
+
+     <p><a name="index-g_t_007eNcAtt-207"></a><a name="index-NcAtt_003a_003a_007eNcAtt-208"></a><br><dt><code>~NcAtt( void )</code><dd>Destructor. 
+</dl>
+
+<div class="node">
+<a name="Auxiliary-Classes"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Combined-Index">Combined Index</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NetCDF-Classes">NetCDF Classes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Auxiliary Classes</h2>
+
+<p>Auxiliary classes include the abstract base class <code>NcValues</code>, its
+type-specific derived subclasses, and the error-handling class
+<code>NcError</code>.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Class-NcValues">Class NcValues</a>
+<li><a accesskey="2" href="#Class-NcError">Class NcError</a>
+</ul>
+
+   <p><a name="index-NcValues-209"></a><div class="node">
+<a name="Class-NcValues"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Class-NcError">Class NcError</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Auxiliary-Classes">Auxiliary Classes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Auxiliary-Classes">Auxiliary Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcValues</h3>
+
+<p><a name="index-NcValues_005fncbyte-210"></a><a name="index-NcValues_005fchar-211"></a><a name="index-NcValues_005fshort-212"></a><a name="index-NcValues_005fint-213"></a><a name="index-NcValues_005fnclong-214"></a><a name="index-NcValues_005flong-215"></a><a name="index-NcValues_005ffloat-216"></a><a name="index-NcValues_005fdouble-217"></a>Class <code>NcValues</code> is an abstract base class for a block of typed
+values.  The derived classes are <code>NcValues_ncbyte</code>,
+<code>NcValues_char</code>, <code>NcValues_short</code>, <code>NcValues_int</code>,
+<code>NcValues_nclong</code> (deprecated), and  <code>NcValues_long</code>,
+<code>NcValues_float</code>, <code>NcValues_double</code>. 
+These classes are used as the return type of the
+<code>NcTypedComponent::values()</code> member function, for typed-value
+arrays associated with variables and attributes.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-NcValues-218"></a>
+<a name="index-NcValues_003a_003aNcValues-219"></a>
+<dl><dt><code>NcValues( void )</code><dd>Default constructor.
+
+     <p><a name="index-NcValues-220"></a><a name="index-NcValues_003a_003aNcValues-221"></a><br><dt><code>NcValues(NcType, long)</code><dd>Constructor for a value block of the specified type and length.
+
+     <p><a name="index-g_t_007eNcValues-222"></a><a name="index-NcValues_003a_003a_007eNcValues-223"></a><br><dt><code>~NcValues( void )</code><dd>Destructor.
+
+     <p><a name="index-num-224"></a><a name="index-NcValues_003a_003anum-225"></a><br><dt><code>long num( void )</code><dd>Returns the number of values in the value block.
+
+     <p><a name="index-print-226"></a><a name="index-NcValues_003a_003aprint-227"></a><br><dt><code>ostream&amp; print(ostream&amp;) const</code><dd>Used to print the comma-delimited sequence of values of the value block.
+
+     <p><a name="index-base-228"></a><a name="index-NcValues_003a_003abase-229"></a><br><dt><code>void* base( void ) const</code><dd>Returns a bland pointer to the beginning of the value block.
+
+     <p><a name="index-bytes_005ffor_005fone-230"></a><a name="index-NcValues_003a_003abytes_005ffor_005fone-231"></a><br><dt><code>int bytes_for_one( void ) const</code><dd>Returns the number of bytes required for one value.
+
+     <p><a name="index-as_005fncbyte-232"></a><a name="index-NcValues_003a_003aas_005fncbyte-233"></a><br><dt><code>ncbyte as_ncbyte( int n ) const</code><dd><a name="index-as_005fchar-234"></a><a name="index-NcValues_003a_003aas_005fchar-235"></a><dt><code>char as_char( int n ) const</code><dd><a name="index-as_005fshort-236"></a><a name="index-NcValues_003a_003aas_005fshort-237"></a><dt><code>short as_short( int n ) const</code><dd>
+<a name="index-as_005fint-238"></a><a name="index-NcValues_003a_003aas_005fint-239"></a><dt><code>int as_int( int n ) const</code><dd>
+<a name="index-as_005fnclong-240"></a><a name="index-NcValues_003a_003aas_005fnclong-241"></a><dt><code>nclong as_nclong( int n ) const // deprecated</code><dd>
+<a name="index-as_005flong-242"></a><a name="index-NcValues_003a_003aas_005flong-243"></a><dt><code>long as_long( int n ) const</code><dd>
+<a name="index-as_005ffloat-244"></a><a name="index-NcValues_003a_003aas_005ffloat-245"></a><dt><code>float as_float( int n ) const</code><dd><a name="index-as_005fdouble-246"></a><a name="index-NcValues_003a_003aas_005fdouble-247"></a><dt><code>double as_double( int n ) const</code><dd><a name="index-as_005fstring-248"></a><a name="index-NcValues_003a_003aas_005fstring-249"></a><dt><code>char* as_string( int n ) const</code><dd>Provide conversions for the nth value from the value type to a desired
+basic type.  If the value is out of range, the default "fill-value" for
+the appropriate type is returned. 
+</dl>
+
+   <p><a name="index-NcError-250"></a><div class="node">
+<a name="Class-NcError"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Class-NcValues">Class NcValues</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Auxiliary-Classes">Auxiliary Classes</a>
+
+</div>
+
+<h3 class="unnumberedsec">Class NcError</h3>
+
+<p>This class provides control for netCDF error handling.  Declaring an
+<code>NcError</code> object temporarily changes the error-handling behavior
+for all netCDF classes until the <code>NcError</code> object is destroyed
+(typically by going out of scope), at which time the previous
+error-handling behavior is restored.
+
+<h4 class="unnumberedsubsec">Public Member Functions</h4>
+
+     
+<a name="index-NcError-251"></a>
+<dl><dt><code>NcError( Behavior b = verbose_fatal )</code><dd>The constructor saves the previous error state for restoration when the
+destructor is invoked, and sets a new specified state.  Valid error
+states are <code>NcError::silent_nonfatal</code>,
+<code>NcError::verbose_nonfatal</code>, <code>NcError::silent_fatal</code>, or
+<code>NcError::verbose_fatal</code>, to control whether error messages are
+output from the underlying library and whether such messages are fatal
+or nonfatal.
+
+     <p><a name="index-g_t_007eNcError-252"></a><a name="index-NcError_003a_003a_007eNcError-253"></a><br><dt><code>~NcError( void )</code><dd>Destructor, restores previous error state.
+
+     <p><a name="index-get_005ferr-254"></a><a name="index-NcError_003a_003aget_005ferr-255"></a><br><dt><code>int get_err( void )</code><dd>Returns most recent error, as enumerated in <samp><span class="file">netcdf.h</span></samp>. 
+</dl>
+
+<div class="node">
+<a name="Combined-Index"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Auxiliary-Classes">Auxiliary Classes</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Index</h2>
+
+<ul class="index-cp" compact>
+<li><a href="#index-abort-57"><code>abort</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-add_005fatt-135"><code>add_att</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-add_005fatt-45"><code>add_att</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-add_005fdim-37"><code>add_dim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-add_005fvar-41"><code>add_var</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-as_005fchar-234"><code>as_char</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fchar-189"><code>as_char</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fchar-140"><code>as_char</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fchar-87"><code>as_char</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005fdouble-246"><code>as_double</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fdouble-201"><code>as_double</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fdouble-152"><code>as_double</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fdouble-99"><code>as_double</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005ffloat-244"><code>as_float</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005ffloat-199"><code>as_float</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005ffloat-150"><code>as_float</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005ffloat-97"><code>as_float</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005fint-238"><code>as_int</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fint-193"><code>as_int</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fint-144"><code>as_int</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fint-91"><code>as_int</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005flong-242"><code>as_long</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005flong-197"><code>as_long</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005flong-148"><code>as_long</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005flong-95"><code>as_long</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005fncbyte-232"><code>as_ncbyte</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fncbyte-187"><code>as_ncbyte</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fncbyte-138"><code>as_ncbyte</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fncbyte-85"><code>as_ncbyte</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005fnclong-240"><code>as_nclong</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fnclong-195"><code>as_nclong</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fnclong-146"><code>as_nclong</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fnclong-93"><code>as_nclong</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005fshort-236"><code>as_short</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fshort-191"><code>as_short</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fshort-142"><code>as_short</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fshort-89"><code>as_short</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-as_005fstring-248"><code>as_string</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-as_005fstring-203"><code>as_string</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-as_005fstring-154"><code>as_string</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-as_005fstring-101"><code>as_string</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-auxiliary-types-and-constants-3">auxiliary types and constants</a>: <a href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a></li>
+<li><a href="#index-base-228"><code>base</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-bytes_005ffor_005fone-230"><code>bytes_for_one</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-class-hierarchy-2">class hierarchy</a>: <a href="#Class-Hierarchy">Class Hierarchy</a></li>
+<li><a href="#index-close-13"><code>close</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-edges-112"><code>edges</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-get-128"><code>get</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-get_005fatt-116"><code>get_att</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-get_005fatt-27"><code>get_att</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-get_005fdim-110"><code>get_dim</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-get_005fdim-23"><code>get_dim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-get_005ferr-254"><code>get_err</code></a>: <a href="#Class-NcError">Class NcError</a></li>
+<li><a href="#index-get_005ffill-51"><code>get_fill</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-get_005fformat-53"><code>get_format</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-get_005findex-170"><code>get_index</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-get_005frec-164"><code>get_rec</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-get_005fvar-25"><code>get_var</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-id-156"><code>id</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-is_005funlimited-66"><code>is_unlimited</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-is_005fvalid-179"><code>is_valid</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-is_005fvalid-118"><code>is_valid</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-is_005fvalid-77"><code>is_valid</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-is_005fvalid-64"><code>is_valid</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-is_005fvalid-15"><code>is_valid</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-name-175"><code>name</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-name-104"><code>name</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-name-73"><code>name</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-name-60"><code>name</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcAtt-174"><code>NcAtt</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcAtt_003a_003aremove-206"><code>NcAtt::remove</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcAtt_003a_003a_007eNcAtt-208"><code>NcAtt::~NcAtt</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcBool-6"><code>NcBool</code></a>: <a href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a></li>
+<li><a href="#index-ncbyte-7"><code>ncbyte</code></a>: <a href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a></li>
+<li><a href="#index-NcDim-59"><code>NcDim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcDim_003a_003ais_005funlimited-67"><code>NcDim::is_unlimited</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcDim_003a_003ais_005fvalid-65"><code>NcDim::is_valid</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcDim_003a_003aname-61"><code>NcDim::name</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcDim_003a_003arename-69"><code>NcDim::rename</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcDim_003a_003asize-63"><code>NcDim::size</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcDim_003a_003async-71"><code>NcDim::sync</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcError-251"><code>NcError</code></a>: <a href="#Class-NcError">Class NcError</a></li>
+<li><a href="#index-NcError-250"><code>NcError</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcError_003a_003aget_005ferr-255"><code>NcError::get_err</code></a>: <a href="#Class-NcError">Class NcError</a></li>
+<li><a href="#index-NcError_003a_003a_007eNcError-253"><code>NcError::~NcError</code></a>: <a href="#Class-NcError">Class NcError</a></li>
+<li><a href="#index-NcFile-9"><code>NcFile</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile-8"><code>NcFile</code></a>: <a href="#NetCDF-Classes">NetCDF Classes</a></li>
+<li><a href="#index-NcFile_003a_003aabort-58"><code>NcFile::abort</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aadd_005fatt-46"><code>NcFile::add_att</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aadd_005fdim-38"><code>NcFile::add_dim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aadd_005fvar-42"><code>NcFile::add_var</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aclose-14"><code>NcFile::close</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aget_005fatt-28"><code>NcFile::get_att</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aget_005fdim-24"><code>NcFile::get_dim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aget_005ffill-52"><code>NcFile::get_fill</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aget_005fformat-54"><code>NcFile::get_format</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aget_005fvar-26"><code>NcFile::get_var</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003ais_005fvalid-16"><code>NcFile::is_valid</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aNcFile-10"><code>NcFile::NcFile</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003anum_005fatts-22"><code>NcFile::num_atts</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003anum_005fdims-18"><code>NcFile::num_dims</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003anum_005fvars-20"><code>NcFile::num_vars</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003arec_005fdim-36"><code>NcFile::rec_dim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003aset_005ffill-50"><code>NcFile::set_fill</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003async-56"><code>NcFile::sync</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcFile_003a_003a_007eNcFile-12"><code>NcFile::~NcFile</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-NcToken-4"><code>NcToken</code></a>: <a href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a></li>
+<li><a href="#index-NcType-5"><code>NcType</code></a>: <a href="#Auxiliary-Types-and-Constants">Auxiliary Types and Constants</a></li>
+<li><a href="#index-NcTypedComponent-72"><code>NcTypedComponent</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fchar-190"><code>NcTypedComponent::as_char</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fchar-141"><code>NcTypedComponent::as_char</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fchar-88"><code>NcTypedComponent::as_char</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fdouble-202"><code>NcTypedComponent::as_double</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fdouble-153"><code>NcTypedComponent::as_double</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fdouble-100"><code>NcTypedComponent::as_double</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005ffloat-200"><code>NcTypedComponent::as_float</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005ffloat-151"><code>NcTypedComponent::as_float</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005ffloat-98"><code>NcTypedComponent::as_float</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fint-194"><code>NcTypedComponent::as_int</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fint-145"><code>NcTypedComponent::as_int</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fint-92"><code>NcTypedComponent::as_int</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005flong-198"><code>NcTypedComponent::as_long</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005flong-149"><code>NcTypedComponent::as_long</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005flong-96"><code>NcTypedComponent::as_long</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fncbyte-188"><code>NcTypedComponent::as_ncbyte</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fncbyte-139"><code>NcTypedComponent::as_ncbyte</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fncbyte-86"><code>NcTypedComponent::as_ncbyte</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fnclong-196"><code>NcTypedComponent::as_nclong</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fnclong-147"><code>NcTypedComponent::as_nclong</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fnclong-94"><code>NcTypedComponent::as_nclong</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fshort-192"><code>NcTypedComponent::as_short</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fshort-143"><code>NcTypedComponent::as_short</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fshort-90"><code>NcTypedComponent::as_short</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fstring-204"><code>NcTypedComponent::as_string</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fstring-155"><code>NcTypedComponent::as_string</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aas_005fstring-102"><code>NcTypedComponent::as_string</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003ais_005fvalid-180"><code>NcTypedComponent::is_valid</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003ais_005fvalid-119"><code>NcTypedComponent::is_valid</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003ais_005fvalid-78"><code>NcTypedComponent::is_valid</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aname-176"><code>NcTypedComponent::name</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aname-105"><code>NcTypedComponent::name</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003aname-74"><code>NcTypedComponent::name</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003anum_005fvals-182"><code>NcTypedComponent::num_vals</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003anum_005fvals-121"><code>NcTypedComponent::num_vals</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003anum_005fvals-80"><code>NcTypedComponent::num_vals</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003arename-184"><code>NcTypedComponent::rename</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003arename-137"><code>NcTypedComponent::rename</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003arename-82"><code>NcTypedComponent::rename</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003atype-178"><code>NcTypedComponent::type</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003atype-107"><code>NcTypedComponent::type</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003atype-76"><code>NcTypedComponent::type</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcTypedComponent_003a_003avalues-186"><code>NcTypedComponent::values</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-NcTypedComponent_003a_003avalues-123"><code>NcTypedComponent::values</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcTypedComponent_003a_003avalues-84"><code>NcTypedComponent::values</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcValues-218"><code>NcValues</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues-209"><code>NcValues</code></a>: <a href="#Auxiliary-Classes">Auxiliary Classes</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fchar-235"><code>NcValues::as_char</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fdouble-247"><code>NcValues::as_double</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005ffloat-245"><code>NcValues::as_float</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fint-239"><code>NcValues::as_int</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005flong-243"><code>NcValues::as_long</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fncbyte-233"><code>NcValues::as_ncbyte</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fnclong-241"><code>NcValues::as_nclong</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fshort-237"><code>NcValues::as_short</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aas_005fstring-249"><code>NcValues::as_string</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003abase-229"><code>NcValues::base</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003abytes_005ffor_005fone-231"><code>NcValues::bytes_for_one</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aNcValues-219"><code>NcValues::NcValues</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003anum-225"><code>NcValues::num</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003aprint-227"><code>NcValues::print</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_003a_003a_007eNcValues-223"><code>NcValues::~NcValues</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005fchar-211"><code>NcValues_char</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005fdouble-217"><code>NcValues_double</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005ffloat-216"><code>NcValues_float</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005fint-213"><code>NcValues_int</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005flong-215"><code>NcValues_long</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005fncbyte-210"><code>NcValues_ncbyte</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005fnclong-214"><code>NcValues_nclong</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcValues_005fshort-212"><code>NcValues_short</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-NcVar-103"><code>NcVar</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-NcVar_003a_003aadd_005fatt-134"><code>NcVar::add_att</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aedges-113"><code>NcVar::edges</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aget-129"><code>NcVar::get</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aget_005fatt-117"><code>NcVar::get_att</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aget_005fdim-111"><code>NcVar::get_dim</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aget_005findex-171"><code>NcVar::get_index</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aget_005frec-165"><code>NcVar::get_rec</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aid-157"><code>NcVar::id</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003anum_005fatts-115"><code>NcVar::num_atts</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003anum_005fdims-109"><code>NcVar::num_dims</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aput-125"><code>NcVar::put</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aput_005frec-167"><code>NcVar::put_rec</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003arec_005fsize-163"><code>NcVar::rec_size</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aset_005fcur-133"><code>NcVar::set_cur</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003aset_005frec-173"><code>NcVar::set_rec</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003async-159"><code>NcVar::sync</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-NcVar_003a_003a_007eNcVar-161"><code>NcVar::~NcVar</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-num-224"><code>num</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-num_005fatts-114"><code>num_atts</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-num_005fatts-21"><code>num_atts</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-num_005fdims-108"><code>num_dims</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-num_005fdims-17"><code>num_dims</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-num_005fvals-181"><code>num_vals</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-num_005fvals-120"><code>num_vals</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-num_005fvals-79"><code>num_vals</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-num_005fvars-19"><code>num_vars</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-print-226"><code>print</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-put-124"><code>put</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-put_005frec-166"><code>put_rec</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-rec_005fdim-35"><code>rec_dim</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-rec_005fsize-162"><code>rec_size</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-remove-205"><code>remove</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-rename-183"><code>rename</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-rename-136"><code>rename</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-rename-81"><code>rename</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-rename-68"><code>rename</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-requirements-of-C_002b_002b-interface-1">requirements of C++ interface</a>: <a href="#Introduction">Introduction</a></li>
+<li><a href="#index-set_005fcur-132"><code>set_cur</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-set_005ffill-49"><code>set_fill</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-set_005frec-172"><code>set_rec</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-size-62"><code>size</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-sync-158"><code>sync</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-sync-70"><code>sync</code></a>: <a href="#Class-NcDim">Class NcDim</a></li>
+<li><a href="#index-sync-55"><code>sync</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-type-177"><code>type</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-type-106"><code>type</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-type-75"><code>type</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-values-185"><code>values</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-values-122"><code>values</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+<li><a href="#index-values-83"><code>values</code></a>: <a href="#Class-NcTypedComponent">Class NcTypedComponent</a></li>
+<li><a href="#index-g_t_007eNcAtt-207"><code>~NcAtt</code></a>: <a href="#Class-NcAtt">Class NcAtt</a></li>
+<li><a href="#index-g_t_007eNcError-252"><code>~NcError</code></a>: <a href="#Class-NcError">Class NcError</a></li>
+<li><a href="#index-g_t_007eNcFile-11"><code>~NcFile</code></a>: <a href="#Class-NcFile">Class NcFile</a></li>
+<li><a href="#index-g_t_007eNcValues-222"><code>~NcValues</code></a>: <a href="#Class-NcValues">Class NcValues</a></li>
+<li><a href="#index-g_t_007eNcVar-160"><code>~NcVar</code></a>: <a href="#Class-NcVar">Class NcVar</a></li>
+</ul></body></html>
+

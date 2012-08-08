@@ -1,0 +1,447 @@
+This is netcdf-f77.info, produced by makeinfo version 4.13 from
+/machine/netcdf/nc_test_5366/man4//defines.texi.
+
+Copyright (C) 2005-2009 University Corporation for Atmospheric Research
+
+
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided that the copyright notice and these paragraphs are
+preserved on all copies.  The software and any accompanying written
+materials are provided "as is" without warranty of any kind.  UCAR
+expressly disclaims all warranties of any kind, either expressed or
+implied, including but not limited to the implied warranties of
+merchantability and fitness for a particular purpose.
+
+   The Unidata Program Center is managed by the University Corporation
+for Atmospheric Research and sponsored by the National Science
+Foundation.  Any opinions, findings, conclusions, or recommendations
+expressed in this publication are those of the author(s) and do not
+necessarily reflect the views of the National Science Foundation.
+
+   Mention of any commercial company or product in this document does
+not constitute an endorsement by the Unidata Program Center.  Unidata
+does not authorize any use of information from this publication for
+advertising or publicity purposes.
+
+INFO-DIR-SECTION netCDF scientific data format
+START-INFO-DIR-ENTRY
+* netcdf-f77: (netcdf-f77).         The NetCDF Fortran 77 Interface Guide
+END-INFO-DIR-ENTRY
+
+
+File: netcdf-f77.info,  Node: Summary of FORTRAN 77 Interface,  Next: Combined Index,  Prev: V2 FORTRAN Transition,  Up: Top
+
+Appendix B Summary of FORTRAN 77 Interface
+******************************************
+
+Input parameters are in upper case, output parameters are in lower
+case. The FORTRAN types of all the parameters are listed alphabetically
+by parameter name below the function declarations.
+
+     CHARACTER*80 FUNCTION  NF_INQ_LIBVERS()
+     CHARACTER*80 FUNCTION  NF_STRERROR  (NCERR)
+     INTEGER FUNCTION  NF_CREATE         (PATH, CMODE, ncid)
+     INTEGER FUNCTION  NF_OPEN           (PATH, MODE, ncid)
+     INTEGER FUNCTION  NF_SET_FILL       (NCID, FILLMODE, old_mode)
+     INTEGER FUNCTION  NF_REDEF          (NCID)
+     INTEGER FUNCTION  NF_ENDDEF         (NCID)
+     INTEGER FUNCTION  NF_SYNC           (NCID)
+     INTEGER FUNCTION  NF_ABORT          (NCID)
+     INTEGER FUNCTION  NF_CLOSE          (NCID)
+     INTEGER FUNCTION  NF_INQ            (NCID, ndims, nvars, ngatts,
+                                          unlimdimid)
+     INTEGER FUNCTION  NF_INQ_NDIMS      (NCID, ndims)
+     INTEGER FUNCTION  NF_INQ_NVARS      (NCID, nvars)
+     INTEGER FUNCTION  NF_INQ_NATTS      (NCID, ngatts)
+     INTEGER FUNCTION  NF_INQ_UNLIMDIM   (NCID, unlimdimid)
+     INTEGER FUNCTION  NF_DEF_DIM        (NCID, NAME, LEN, dimid)
+     INTEGER FUNCTION  NF_INQ_DIMID      (NCID, NAME, dimid)
+     INTEGER FUNCTION  NF_INQ_DIM        (NCID, DIMID, name, len)
+     INTEGER FUNCTION  NF_INQ_DIMNAME    (NCID, DIMID, name)
+     INTEGER FUNCTION  NF_INQ_DIMLEN     (NCID, DIMID, len)
+     INTEGER FUNCTION  NF_RENAME_DIM     (NCID, DIMID, NAME)
+
+     INTEGER FUNCTION  NF_DEF_VAR        (NCID, NAME, XTYPE, NDIMS, DIMIDS,
+                                          varid)
+     INTEGER FUNCTION  NF_INQ_VAR        (NCID, VARID, name, xtype, ndims,
+                                          dimids, natts)
+     INTEGER FUNCTION  NF_INQ_VARID      (NCID, NAME, varid)
+     INTEGER FUNCTION  NF_INQ_VARNAME    (NCID, VARID, name)
+     INTEGER FUNCTION  NF_INQ_VARTYPE    (NCID, VARID, xtype)
+     INTEGER FUNCTION  NF_INQ_VARNDIMS   (NCID, VARID, ndims)
+     INTEGER FUNCTION  NF_INQ_VARDIMID   (NCID, VARID, DIMIDS)
+     INTEGER FUNCTION  NF_INQ_VARNATTS   (NCID, VARID, natts)
+     INTEGER FUNCTION  NF_RENAME_VAR     (NCID, VARID, NAME)
+     INTEGER FUNCTION  NF_PUT_VAR_TEXT   (NCID, VARID, TEXT)
+     INTEGER FUNCTION  NF_GET_VAR_TEXT   (NCID, VARID, text)
+     INTEGER FUNCTION  NF_PUT_VAR_INT1   (NCID, VARID, I1VAL)
+     INTEGER FUNCTION  NF_GET_VAR_INT1   (NCID, VARID, i1val)
+     INTEGER FUNCTION  NF_PUT_VAR_INT2   (NCID, VARID, I2VAL)
+     INTEGER FUNCTION  NF_GET_VAR_INT2   (NCID, VARID, i2val)
+     INTEGER FUNCTION  NF_PUT_VAR_INT    (NCID, VARID, IVAL)
+     INTEGER FUNCTION  NF_GET_VAR_INT    (NCID, VARID, ival)
+     INTEGER FUNCTION  NF_PUT_VAR_REAL   (NCID, VARID, RVAL)
+     INTEGER FUNCTION  NF_GET_VAR_REAL   (NCID, VARID, rval)
+     INTEGER FUNCTION  NF_PUT_VAR_DOUBLE (NCID, VARID, DVAL)
+     INTEGER FUNCTION  NF_GET_VAR_DOUBLE (NCID, VARID, dval)
+     INTEGER FUNCTION  NF_PUT_VAR1_TEXT  (NCID, VARID, INDEX, TEXT)
+     INTEGER FUNCTION  NF_GET_VAR1_TEXT  (NCID, VARID, INDEX, text)
+     INTEGER FUNCTION  NF_PUT_VAR1_INT1  (NCID, VARID, INDEX, I1VAL)
+     INTEGER FUNCTION  NF_GET_VAR1_INT1  (NCID, VARID, INDEX, i1val)
+     INTEGER FUNCTION  NF_PUT_VAR1_INT2  (NCID, VARID, INDEX, I2VAL)
+     INTEGER FUNCTION  NF_GET_VAR1_INT2  (NCID, VARID, INDEX, i2val)
+     INTEGER FUNCTION  NF_PUT_VAR1_INT   (NCID, VARID, INDEX, IVAL)
+     INTEGER FUNCTION  NF_GET_VAR1_INT   (NCID, VARID, INDEX, ival)
+     INTEGER FUNCTION  NF_PUT_VAR1_REAL  (NCID, VARID, INDEX, RVAL)
+     INTEGER FUNCTION  NF_GET_VAR1_REAL  (NCID, VARID, INDEX, rval)
+     INTEGER FUNCTION  NF_PUT_VAR1_DOUBLE(NCID, VARID, INDEX, DVAL)
+     INTEGER FUNCTION  NF_GET_VAR1_DOUBLE(NCID, VARID, INDEX, dval)
+     INTEGER FUNCTION  NF_PUT_VARA_TEXT  (NCID, VARID, START, COUNT, TEXT)
+     INTEGER FUNCTION  NF_GET_VARA_TEXT  (NCID, VARID, START, COUNT, text)
+     INTEGER FUNCTION  NF_PUT_VARA_INT1  (NCID, VARID, START, COUNT, I1VALS)
+     INTEGER FUNCTION  NF_GET_VARA_INT1  (NCID, VARID, START, COUNT, i1vals)
+     INTEGER FUNCTION  NF_PUT_VARA_INT2  (NCID, VARID, START, COUNT, I2VALS)
+     INTEGER FUNCTION  NF_GET_VARA_INT2  (NCID, VARID, START, COUNT, i2vals)
+     INTEGER FUNCTION  NF_PUT_VARA_INT   (NCID, VARID, START, COUNT, IVALS)
+     INTEGER FUNCTION  NF_GET_VARA_INT   (NCID, VARID, START, COUNT, ivals)
+     INTEGER FUNCTION  NF_PUT_VARA_REAL  (NCID, VARID, START, COUNT, RVALS)
+     INTEGER FUNCTION  NF_GET_VARA_REAL  (NCID, VARID, START, COUNT, rvals)
+     INTEGER FUNCTION  NF_PUT_VARA_DOUBLE(NCID, VARID, START, COUNT, DVALS)
+     INTEGER FUNCTION  NF_GET_VARA_DOUBLE(NCID, VARID, START, COUNT, dvals)
+     INTEGER FUNCTION  NF_PUT_VARS_TEXT  (NCID, VARID, START, COUNT, STRIDE,
+                                          TEXT)
+     INTEGER FUNCTION  NF_GET_VARS_TEXT  (NCID, VARID, START, COUNT, STRIDE,
+                                          text)
+     INTEGER FUNCTION  NF_PUT_VARS_INT1  (NCID, VARID, START, COUNT, STRIDE,
+                                          I1VALS)
+     INTEGER FUNCTION  NF_GET_VARS_INT1  (NCID, VARID, START, COUNT, STRIDE,
+                                          i1vals)
+     INTEGER FUNCTION  NF_PUT_VARS_INT2  (NCID, VARID, START, COUNT, STRIDE,
+                                          I2VALS)
+     INTEGER FUNCTION  NF_GET_VARS_INT2  (NCID, VARID, START, COUNT, STRIDE,
+                                          i2vals)
+     INTEGER FUNCTION  NF_PUT_VARS_INT   (NCID, VARID, START, COUNT, STRIDE,
+                                          IVALS)
+     INTEGER FUNCTION  NF_GET_VARS_INT   (NCID, VARID, START, COUNT, STRIDE,
+                                          ivals)
+     INTEGER FUNCTION  NF_PUT_VARS_REAL  (NCID, VARID, START, COUNT, STRIDE,
+                                          RVALS)
+     INTEGER FUNCTION  NF_GET_VARS_REAL  (NCID, VARID, START, COUNT, STRIDE,
+                                          rvals)
+     INTEGER FUNCTION  NF_PUT_VARS_DOUBLE(NCID, VARID, START, COUNT, STRIDE,
+                                          DVALS)
+     INTEGER FUNCTION  NF_GET_VARS_DOUBLE(NCID, VARID, START, COUNT, STRIDE,
+                                          dvals)
+     INTEGER FUNCTION  NF_PUT_VARM_TEXT  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, TEXT)
+     INTEGER FUNCTION  NF_GET_VARM_TEXT  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, text)
+     INTEGER FUNCTION  NF_PUT_VARM_INT1  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, I1VALS)
+     INTEGER FUNCTION  NF_GET_VARM_INT1  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, i1vals)
+     INTEGER FUNCTION  NF_PUT_VARM_INT2  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, I2VALS)
+     INTEGER FUNCTION  NF_GET_VARM_INT2  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, i2vals)
+     INTEGER FUNCTION  NF_PUT_VARM_INT   (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, IVALS)
+     INTEGER FUNCTION  NF_GET_VARM_INT   (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, ivals)
+     INTEGER FUNCTION  NF_PUT_VARM_REAL  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, RVALS)
+     INTEGER FUNCTION  NF_GET_VARM_REAL  (NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, rvals)
+     INTEGER FUNCTION  NF_PUT_VARM_DOUBLE(NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, DVALS)
+     INTEGER FUNCTION  NF_GET_VARM_DOUBLE(NCID, VARID, START, COUNT, STRIDE,
+                                          IMAP, dvals)
+
+     INTEGER FUNCTION  NF_INQ_ATT        (NCID, VARID, NAME, xtype, len)
+     INTEGER FUNCTION  NF_INQ_ATTID      (NCID, VARID, NAME, attnum)
+     INTEGER FUNCTION  NF_INQ_ATTTYPE    (NCID, VARID, NAME, xtype)
+     INTEGER FUNCTION  NF_INQ_ATTLEN     (NCID, VARID, NAME, len)
+     INTEGER FUNCTION  NF_INQ_ATTNAME    (NCID, VARID, ATTNUM, name)
+     INTEGER FUNCTION  NF_COPY_ATT       (NCID_IN, VARID_IN, NAME,
+                                          NCID_OUT, VARID_OUT)
+     INTEGER FUNCTION  NF_RENAME_ATT     (NCID, VARID, CURNAME, NEWNAME)
+     INTEGER FUNCTION  NF_DEL_ATT        (NCID, VARID, NAME)
+     INTEGER FUNCTION  NF_PUT_ATT_TEXT   (NCID, VARID, NAME, LEN, TEXT)
+     INTEGER FUNCTION  NF_GET_ATT_TEXT   (NCID, VARID, NAME, text)
+     INTEGER FUNCTION  NF_PUT_ATT_INT1   (NCID, VARID, NAME, XTYPE, LEN,
+                                          I1VALS)
+     INTEGER FUNCTION  NF_GET_ATT_INT1   (NCID, VARID, NAME, i1vals)
+     INTEGER FUNCTION  NF_PUT_ATT_INT2   (NCID, VARID, NAME, XTYPE, LEN,
+                                          I2VALS)
+     INTEGER FUNCTION  NF_GET_ATT_INT2   (NCID, VARID, NAME, i2vals)
+     INTEGER FUNCTION  NF_PUT_ATT_INT    (NCID, VARID, NAME, XTYPE, LEN,
+                                          IVALS)
+     INTEGER FUNCTION  NF_GET_ATT_INT    (NCID, VARID, NAME, ivals)
+     INTEGER FUNCTION  NF_PUT_ATT_REAL   (NCID, VARID, NAME, XTYPE, LEN,
+                                          RVALS)
+     INTEGER FUNCTION  NF_GET_ATT_REAL   (NCID, VARID, NAME, rvals)
+     INTEGER FUNCTION  NF_PUT_ATT_DOUBLE (NCID, VARID, NAME, XTYPE, LEN,
+                                          DVALS)
+     INTEGER FUNCTION  NF_GET_ATT_DOUBLE (NCID, VARID, NAME, dvals)
+
+     INTEGER       ATTNUM       ! attribute number
+     INTEGER       attnum       ! returned attribute number
+     INTEGER       CMODE        ! NF_NOCLOBBER, NF_SHARE flags expression
+     INTEGER       COUNT        ! array of edge lengths of block of values
+     CHARACTER(*)  CURNAME      ! current name (before renaming)
+     INTEGER       DIMID        ! dimension ID
+     INTEGER       dimid        ! returned dimension ID
+     INTEGER       DIMIDS       ! list of dimension IDs
+     INTEGER       dimids       ! list of returned dimension IDs
+     DOUBLEPRECISION  DVAL      ! single data value
+     DOUBLEPRECISION  dval      ! returned single data value
+     DOUBLEPRECISION  DVALS     ! array of data values
+     DOUBLEPRECISION  dvals     ! array of returned data values
+     INTEGER       FILLMODE     ! NF_NOFILL or NF_FILL, for setting fill mode
+     INTEGER*1     I1VAL        ! single data value
+     INTEGER*1     I1val        ! returned single data value
+     INTEGER*1     I1VALS       ! array of data values
+     INTEGER*1     i1vals       ! array of returned data values
+     INTEGER*2     I2VAL        ! single data value
+     INTEGER*2     i2val        ! returned single data value
+     INTEGER*2     I2VALS       ! array of data values
+     INTEGER*2     i2vals       ! array of returned data values
+     INTEGER       IMAP         ! index mapping vector
+     INTEGER       INDEX        ! variable array index vector
+     INTEGER       IVAL         ! single data value
+     INTEGER       ival         ! returned single data value
+     INTEGER       IVALS        ! array of data values
+     INTEGER       ivals        ! array of returned data values
+     INTEGER       LEN          ! dimension or attribute length
+     INTEGER       len          ! returned dimension or attribute length
+     INTEGER       MODE         ! open mode, one of NF_WRITE or NF_NOWRITE
+     CHARACTER(*)  NAME         ! dimension, variable, or attribute name
+     CHARACTER(*)  name         ! returned dim, var, or att name
+     INTEGER       natts        ! returned number of attributes
+     INTEGER       NCERR        ! error returned from NF_xxx function call
+     INTEGER       NCID         ! netCDF ID of an open netCDF dataset
+     INTEGER       ncid         ! returned netCDF ID
+     INTEGER       NCID_IN      ! netCDF ID of open source netCDF dataset
+     INTEGER       NCID_OUT     ! netCDF ID of open destination netCDF dataset
+     INTEGER       NDIMS        ! number of dimensions
+     INTEGER       ndims        ! returned number of dimensions
+     CHARACTER(*)  NEWNAME      ! new name for dim, var, or att
+     INTEGER       ngatts       ! returned number of global attributes
+     INTEGER       nvars        ! returned number of variables
+     INTEGER       old_mode     ! previous fill mode, NF_NOFILL or NF_FILL,
+     CHARACTER(*)  PATH         ! name of netCDF dataset
+     REAL          RVAL         ! single data value
+     REAL          rval         ! returned single data value
+     REAL          RVALS        ! array of data values
+     REAL          rvals        ! array of returned data values
+     INTEGER       START        ! variable array indices of first value
+     INTEGER       STRIDE       ! variable array dimensional strides
+     CHARACTER(*)  TEXT         ! input text value
+     CHARACTER(*)  text         ! returned text value
+     INTEGER       unlimdimid   ! returned ID of unlimited dimension
+     INTEGER       VARID        ! variable ID
+     INTEGER       varid        ! returned variable ID
+     INTEGER       VARID_IN     ! variable ID
+     INTEGER       VARID_OUT    ! variable ID
+     INTEGER       XTYPE        ! external type: NF_BYTE, NF_CHAR, ... ,
+     INTEGER       xtype        ! returned external type
+
+
+File: netcdf-f77.info,  Node: Combined Index,  Prev: Summary of FORTRAN 77 Interface,  Up: Top
+
+Index
+*****
+
+ [index ]
+* Menu:
+
+* attributes, adding:                    Adding New Dimensions. (line 6)
+* big-endian:                            NF_DEF_VAR_ENDIAN.     (line 6)
+* checksum:                              NF_DEF_VAR_FLETCHER32. (line 6)
+* chunking:                              NF_DEF_VAR_CHUNKING.   (line 6)
+* chunksizes:                            NF_DEF_VAR_CHUNKING.   (line 6)
+* compiling with netCDF library:         Compiling and Linking with the NetCDF Library.
+                                                                (line 6)
+* compound types, overview:              Compound Types.        (line 6)
+* compression, setting parameters:       NF_DEF_VAR_DEFLATE.    (line 6)
+* contiguous:                            NF_DEF_VAR_CHUNKING.   (line 6)
+* creating dataset:                      Creating a NetCDF Dataset.
+                                                                (line 6)
+* datasets, introduction:                Datasets Introduction. (line 6)
+* deflate:                               NF_DEF_VAR_DEFLATE.    (line 6)
+* dimensions, adding:                    Adding New Dimensions. (line 6)
+* endianness:                            NF_DEF_VAR_ENDIAN.     (line 6)
+* enum type:                             Enum Type.             (line 6)
+* fill:                                  NF_DEF_VAR_FILL.       (line 6)
+* fletcher32:                            NF_DEF_VAR_FLETCHER32. (line 6)
+* groups, overview:                      Groups.                (line 6)
+* HDF5 chunk cache <1>:                  NF_GET_VAR_CHUNK_CACHE.
+                                                                (line 6)
+* HDF5 chunk cache <2>:                  NF_GET_CHUNK_CACHE.    (line 6)
+* HDF5 chunk cache:                      NF_SET_CHUNK_CACHE.    (line 6)
+* HDF5 chunk cache, per-variable:        NF_SET_VAR_CHUNK_CACHE.
+                                                                (line 6)
+* interface descriptions:                NetCDF Library Interface Descriptions.
+                                                                (line 6)
+* linking to netCDF library:             Compiling and Linking with the NetCDF Library.
+                                                                (line 6)
+* little-endian:                         NF_DEF_VAR_ENDIAN.     (line 6)
+* nc_get_chunk_cache:                    NF_GET_CHUNK_CACHE.    (line 6)
+* nc_set_chunk_cache:                    NF_SET_CHUNK_CACHE.    (line 6)
+* nc_set_var_chunk_cache:                NF_SET_VAR_CHUNK_CACHE.
+                                                                (line 6)
+* NF__CREATE:                            NF__CREATE.            (line 6)
+* NF__ENDDEF:                            NF__ENDDEF.            (line 6)
+* NF__OPEN:                              NF__OPEN.              (line 6)
+* NF_ABORT:                              NF_ABORT.              (line 6)
+* NF_CLOSE:                              NF_CLOSE.              (line 6)
+* NF_CLOSE, typical use:                 Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_COPY_ATT:                           NF_COPY_ATT.           (line 6)
+* NF_CREATE:                             NF_CREATE.             (line 6)
+* NF_CREATE, typical use:                Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_CREATE_PAR:                         NF_CREATE_PAR.         (line 6)
+* NF_DEF_COMPOUND:                       NF_DEF_COMPOUND.       (line 6)
+* NF_DEF_DIM:                            NF_DEF_DIM.            (line 6)
+* NF_DEF_DIM, typical use:               Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_DEF_ENUM:                           NF_DEF_ENUM.           (line 6)
+* NF_DEF_GRP:                            NF_DEF_GRP.            (line 6)
+* NF_DEF_OPAQUE:                         NF_DEF_OPAQUE.         (line 6)
+* NF_DEF_VAR:                            NF_DEF_VAR.            (line 6)
+* NF_DEF_VAR, typical use:               Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_DEF_VAR_CHUNKING:                   NF_DEF_VAR_CHUNKING.   (line 6)
+* NF_DEF_VAR_DEFLATE:                    NF_DEF_VAR_DEFLATE.    (line 6)
+* NF_DEF_VAR_ENDIAN:                     NF_DEF_VAR_ENDIAN.     (line 6)
+* NF_DEF_VAR_FILL:                       NF_DEF_VAR_FILL.       (line 6)
+* NF_DEF_VAR_FLETCHER32:                 NF_DEF_VAR_FLETCHER32. (line 6)
+* NF_DEF_VLEN <1>:                       NF_INQ_VLEN.           (line 6)
+* NF_DEF_VLEN:                           NF_DEF_VLEN.           (line 6)
+* NF_DEL_ATT:                            NF_DEL_ATT.            (line 6)
+* NF_ENDDEF:                             NF_ENDDEF.             (line 6)
+* NF_ENDDEF, typical use:                Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_FREE_VLEN:                          NF_FREE_VLEN.          (line 6)
+* NF_GET_ATT, typical use:               Reading a NetCDF Dataset with Known Names.
+                                                                (line 6)
+* NF_GET_ATT_ type:                      NF_GET_ATT_ type.      (line 6)
+* nf_get_chunk_cache:                    NF_GET_VAR_CHUNK_CACHE.
+                                                                (line 6)
+* NF_GET_VAR, typical use:               Reading a NetCDF Dataset with Known Names.
+                                                                (line 6)
+* NF_GET_VAR1_ type:                     NF_GET_VAR1_ type.     (line 6)
+* NF_GET_VAR_ type:                      NF_GET_VAR_ type.      (line 6)
+* NF_GET_VARA_ type:                     NF_GET_VARA_ type.     (line 6)
+* NF_GET_VARM_ type:                     NF_GET_VARM_ type.     (line 6)
+* NF_GET_VARS_ type:                     NF_GET_VARS_ type.     (line 6)
+* NF_GET_VLEN_ELEMENT:                   NF_GET_VLEN_ELEMENT.   (line 6)
+* NF_INQ Family:                         NF_INQ Family.         (line 6)
+* NF_INQ, typical use:                   Reading a netCDF Dataset with Unknown Names.
+                                                                (line 6)
+* NF_INQ_ATT Family:                     NF_INQ_ATT Family.     (line 6)
+* NF_INQ_ATTNAME, typical use:           Reading a netCDF Dataset with Unknown Names.
+                                                                (line 6)
+* NF_INQ_COMPOUND:                       NF_INQ_COMPOUND.       (line 6)
+* NF_INQ_COMPOUND_FIELD:                 NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_FIELDDIM_SIZES:        NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_FIELDINDEX:            NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_FIELDNAME:             NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_FIELDNDIMS:            NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_FIELDOFFSET:           NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_FIELDTYPE:             NF_INQ_COMPOUND_FIELD. (line 6)
+* NF_INQ_COMPOUND_NAME:                  NF_INQ_COMPOUND.       (line 6)
+* NF_INQ_COMPOUND_NFIELDS:               NF_INQ_COMPOUND.       (line 6)
+* NF_INQ_COMPOUND_SIZE:                  NF_INQ_COMPOUND.       (line 6)
+* NF_INQ_DIM Family:                     NF_INQ_DIM Family.     (line 6)
+* NF_INQ_DIMID:                          NF_INQ_DIMID.          (line 6)
+* NF_INQ_DIMID, typical use:             Reading a NetCDF Dataset with Known Names.
+                                                                (line 6)
+* NF_INQ_DIMIDS:                         NF_INQ_DIMIDS.         (line 6)
+* NF_INQ_ENUM:                           NF_INQ_ENUM.           (line 6)
+* NF_INQ_ENUM_IDENT:                     NF_INQ_ENUM_IDENT.     (line 6)
+* nf_inq_enum_member:                    NF_INQ_ENUM_MEMBER.    (line 6)
+* NF_INQ_FORMAT:                         NF_INQ Family.         (line 6)
+* NF_INQ_GRP_PARENT <1>:                 NF_INQ_GRP_FULL_NCID.  (line 6)
+* NF_INQ_GRP_PARENT <2>:                 NF_INQ_GRP_NCID.       (line 6)
+* NF_INQ_GRP_PARENT:                     NF_INQ_GRP_PARENT.     (line 6)
+* NF_INQ_GRPNAME:                        NF_INQ_GRPNAME.        (line 6)
+* NF_INQ_GRPNAME_FULL:                   NF_INQ_GRPNAME_FULL.   (line 6)
+* NF_INQ_GRPNAME_LEN:                    NF_INQ_GRPNAME_LEN.    (line 6)
+* NF_INQ_GRPS:                           NF_INQ_GRPS.           (line 6)
+* NF_INQ_LIBVERS:                        NF_INQ_LIBVERS.        (line 6)
+* NF_INQ_NATTS:                          NF_INQ Family.         (line 6)
+* NF_INQ_NCID:                           NF_INQ_NCID.           (line 6)
+* NF_INQ_NDIMS:                          NF_INQ Family.         (line 6)
+* NF_INQ_NVARS:                          NF_INQ Family.         (line 6)
+* NF_INQ_OPAQUE:                         NF_INQ_OPAQUE.         (line 6)
+* NF_INQ_TYPE:                           NF_INQ_TYPE.           (line 6)
+* NF_INQ_TYPEID:                         NF_INQ_TYPEID.         (line 6)
+* NF_INQ_TYPEIDS:                        NF_INQ_TYPEIDS.        (line 6)
+* NF_INQ_UNLIMDIM:                       NF_INQ Family.         (line 6)
+* NF_INQ_USER_TYPE:                      NF_INQ_USER_TYPE.      (line 6)
+* NF_INQ_VAR family:                     NF_INQ_VAR family.     (line 6)
+* NF_INQ_VAR_CHUNKING:                   NF_INQ_VAR_CHUNKING.   (line 6)
+* NF_INQ_VAR_DEFLATE:                    NF_INQ_VAR_DEFLATE.    (line 6)
+* NF_INQ_VAR_ENDIAN:                     NF_INQ_VAR_ENDIAN.     (line 6)
+* NF_INQ_VAR_FILL:                       NF_INQ_VAR_FILL.       (line 6)
+* NF_INQ_VAR_FLETCHER32:                 NF_INQ_VAR_FLETCHER32. (line 6)
+* NF_INQ_VAR_SZIP:                       NF_INQ_VAR_SZIP.       (line 6)
+* NF_INQ_VARID:                          NF_INQ_VARID.          (line 6)
+* NF_INQ_VARID, typical use:             Reading a NetCDF Dataset with Known Names.
+                                                                (line 6)
+* NF_INQ_VARIDS:                         NF_INQ_VARIDS.         (line 6)
+* NF_INSERT_ARRAY_COMPOUND:              NF_INSERT_ARRAY_COMPOUND.
+                                                                (line 6)
+* NF_INSERT_COMPOUND:                    NF_INSERT_COMPOUND.    (line 6)
+* NF_INSERT_ENUM:                        NF_INSERT_ENUM.        (line 6)
+* NF_OPEN:                               NF_OPEN.               (line 6)
+* NF_OPEN_PAR:                           NF_OPEN_PAR.           (line 6)
+* NF_PUT_ATT, typical use:               Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_PUT_ATT_ type:                      NF_PUT_ATT_ type.      (line 6)
+* NF_PUT_VAR, typical use:               Creating a NetCDF Dataset.
+                                                                (line 6)
+* NF_PUT_VAR1_  type:                    NF_PUT_VAR1_ type.     (line 6)
+* NF_PUT_VAR_ type:                      NF_PUT_VAR_ type.      (line 6)
+* NF_PUT_VARA_ type:                     NF_PUT_VARA_ type.     (line 6)
+* NF_PUT_VARM_ type:                     NF_PUT_VARM_ type.     (line 6)
+* NF_PUT_VARS_ type:                     NF_PUT_VARS_ type.     (line 6)
+* NF_PUT_VLEN_ELEMENT:                   NF_PUT_VLEN_ELEMENT.   (line 6)
+* NF_REDEF:                              NF_REDEF.              (line 6)
+* NF_RENAME_ATT:                         NF_RENAME_ATT.         (line 6)
+* NF_RENAME_DIM:                         NF_RENAME_DIM.         (line 6)
+* NF_RENAME_VAR:                         NF_RENAME_VAR.         (line 6)
+* NF_SET_DEFAULT_FORMAT:                 NF_SET_DEFAULT_FORMAT. (line 6)
+* NF_SET_FILL:                           NF_SET_FILL.           (line 6)
+* NF_STRERROR:                           NF_STRERROR.           (line 6)
+* NF_SYNC:                               NF_SYNC.               (line 6)
+* NF_VAR_PAR_ACCESS:                     NF_VAR_PAR_ACCESS.     (line 6)
+* NF_VAR_PAR_ACCESS, example:            NF_VAR_PAR_ACCESS.     (line 6)
+* opaque type:                           Opaque Type.           (line 6)
+* reading dataset with unknown names:    Reading a netCDF Dataset with Unknown Names.
+                                                                (line 6)
+* reading datasets with known names:     Reading a NetCDF Dataset with Known Names.
+                                                                (line 6)
+* user defined types:                    User Defined Data Types.
+                                                                (line 6)
+* user defined types, overview:          User Defined Types.    (line 6)
+* variable length array type, overview:  User Defined Data Types.
+                                                                (line 6)
+* variable length arrays:                Variable Length Array. (line 6)
+* variables, adding:                     Adding New Dimensions. (line 6)
+* variables, checksum:                   NF_DEF_VAR_FLETCHER32. (line 6)
+* variables, chunking:                   NF_DEF_VAR_CHUNKING.   (line 6)
+* variables, contiguous:                 NF_DEF_VAR_CHUNKING.   (line 6)
+* variables, endian:                     NF_DEF_VAR_ENDIAN.     (line 6)
+* variables, fill:                       NF_DEF_VAR_FILL.       (line 6)
+* variables, fletcher32:                 NF_DEF_VAR_FLETCHER32. (line 6)
+* variables, setting deflate:            NF_DEF_VAR_DEFLATE.    (line 6)
+* VLEN:                                  Variable Length Array. (line 6)
+* VLEN, defining <1>:                    NF_FREE_VLEN.          (line 6)
+* VLEN, defining <2>:                    NF_INQ_VLEN.           (line 6)
+* VLEN, defining:                        NF_DEF_VLEN.           (line 6)
+
+

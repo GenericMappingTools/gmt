@@ -1,0 +1,12 @@
+netcdf nestedDAS {
+variables:
+	ubyte b31 ;
+	string b32 ;
+		string b32:billy = "Bob is my real name" ;
+		string b32:Robert = "Really wants to be called Billy" ;
+data:
+
+ b31 = 0 ;
+
+ b32 = "This is a data test string (pass 0)." ;
+}

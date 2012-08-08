@@ -1,0 +1,35 @@
+netcdf ref_dimscope {
+dimensions:
+  dim1 = 5 ;
+
+group: g {
+  dimensions:
+    dim2 = 3 ;
+
+  group: h {
+    dimensions:
+      dim3 = 7 ;
+    variables:
+      int v1(dim1);
+      float v2(dim2);
+    data:
+
+     v1 = _, _, _, _, _ ;
+
+     v2 = _, _, _ ;
+  } // group h
+
+  group: i {
+    dimensions:
+      dim3 = 7 ;
+    variables:
+      int v1(dim1);
+      float v3(dim3);
+    data:
+
+     v1 = _, _, _, _, _ ;
+
+     v3 = _, _, _, _, _, _, _ ;
+  } // group i
+} // group g
+}

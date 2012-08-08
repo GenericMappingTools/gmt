@@ -1,0 +1,18 @@
+netcdf test {
+dimensions:
+	maxStrlen64 = 64 ;
+variables:
+	char person1.name(maxStrlen64) ;
+	int person1.age ;
+	char person2.name(maxStrlen64) ;
+	int person2.age ;
+data:
+
+ person1.name = "This is a data test string (pass 0)." ;
+
+ person1.age = 1 ;
+
+ person2.name = "This is a data test string (pass 1)." ;
+
+ person2.age = 2 ;
+}

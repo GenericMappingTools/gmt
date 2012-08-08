@@ -1,0 +1,4 @@
+Dataset {
+    Int32 i;
+    Float64 f[latitude = 20][longitude = 10];
+} NamedDimensions;

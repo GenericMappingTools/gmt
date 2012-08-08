@@ -1,0 +1,13 @@
+netcdf tst_vlen_data {
+types:
+  float(*) row_of_floats ;
+dimensions:
+	m = 5 ;
+variables:
+	row_of_floats ragged_array(m) ;
+		row_of_floats ragged_array:_FillValue = {-999} ;
+data:
+
+ ragged_array = {10, 11, 12, 13, 14}, {20, 21, 22, 23}, {30, 31, 32}, 
+    {40, 41}, _ ;
+}

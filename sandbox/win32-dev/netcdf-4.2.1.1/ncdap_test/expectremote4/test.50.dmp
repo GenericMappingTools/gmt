@@ -1,0 +1,31 @@
+netcdf test {
+types:
+  compound types_t {
+    ubyte b ;
+    int i32 ;
+    uint ui32 ;
+    short i16 ;
+    ushort ui16 ;
+    float f32 ;
+    double f64 ;
+    string s ;
+    string u ;
+  }; // types_t
+dimensions:
+	types_0 = 10 ;
+variables:
+	types_t types(types_0) ;
+data:
+
+ types = 
+    {0, 1, 0, 0, 0, 0, 1000, "This is a data test string (pass 0).", "http://www.dods.org"}, 
+    {1, 2, 2, 16, 65520, 0.9999833, 999.950000416665, "This is a data test string (pass 1).", "http://www.dods.org"}, 
+    {2, 3, 6, 32, 65504, 1.999867, 999.800006666578, "This is a data test string (pass 2).", "http://www.dods.org"}, 
+    {3, 5, 12, 48, 65488, 2.99955, 999.550033748988, "This is a data test string (pass 3).", "http://www.dods.org"}, 
+    {4, 8, 20, 64, 65472, 3.998933, 999.200106660978, "This is a data test string (pass 4).", "http://www.dods.org"}, 
+    {5, 13, 30, 80, 65456, 4.997917, 998.750260394966, "This is a data test string (pass 5).", "http://www.dods.org"}, 
+    {6, 21, 42, 96, 65440, 5.996401, 998.200539935204, "This is a data test string (pass 6).", "http://www.dods.org"}, 
+    {7, 34, 56, 112, 65424, 6.994285, 997.55100025328, "This is a data test string (pass 7).", "http://www.dods.org"}, 
+    {8, 55, 72, 128, 65408, 7.991469, 996.801706302619, "This is a data test string (pass 8).", "http://www.dods.org"}, 
+    {9, 89, 90, 144, 65392, 8.987855, 995.952733011994, "This is a data test string (pass 9).", "http://www.dods.org"} ;
+}

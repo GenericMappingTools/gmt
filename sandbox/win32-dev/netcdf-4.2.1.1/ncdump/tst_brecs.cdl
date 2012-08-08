@@ -1,0 +1,15 @@
+netcdf tst_brecs {
+dimensions:
+	time = UNLIMITED ; // (20 currently)
+variables:
+	byte b1(time) ;
+	byte b2(time) ;
+	byte b3(time) ;
+data:
+
+ b1 = 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ;
+
+ b2 = 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 ;
+
+ b3 = 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 ;
+}

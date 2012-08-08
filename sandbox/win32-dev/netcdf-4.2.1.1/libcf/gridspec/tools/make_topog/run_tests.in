@@ -1,0 +1,21 @@
+#!/bin/sh
+# This shell script runs the GRIDSPEC make_topog tests.
+# $Id$
+
+set -e
+echo ""
+echo "*** Testing gridspec topog."
+
+# echo "*** generating realistic topography..."
+# ./make_topog --mosaic mosaic.nc --topog_type realistic \
+#     --topog_file /archive/fms/mom4/input_data/OCCAM_p5degree.nc --topog_field TOPO \
+#     --scale_factor -1 
+# ./gs_make_topog --mosaic mosaic.nc --topog_type realistic \
+#     --topog_file /archive/fms/mom4/input_data/OCCAM_p5degree.nc --topog_field TOPO \
+#     --scale_factor -1 --grid_name gs_topog_grid
+# @NCDUMPDIR@/ncdump topog.nc > topog.cdl
+# @NCDUMPDIR@/ncdump -n topog gs_topog.nc > gs_topog.cdl
+# #diff -w topog.cdl gs_topog.cdl 
+
+echo "*** All gridspec topog tests passed!"
+exit 0

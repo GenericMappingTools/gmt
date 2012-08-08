@@ -1,0 +1,53 @@
+netcdf \123 {
+dimensions:
+	i = 2 ;
+	j = 3 ;
+	l = 3 ;
+	maxStrlen64 = 64 ;
+variables:
+	short l(l) ;
+	char bears(i, j, maxStrlen64) ;
+		bears:act = "text string\n",
+			"\t123" ;
+		bears:acs = -40s ;
+		bears:acl = 17000 ;
+		bears:acf = -2.f, 1.f, 0.f ;
+		bears:acd = -1., 0.75 ;
+		bears:string_length = 3 ;
+	short order(i, j) ;
+	int shot(i, j) ;
+	float aloan(i, j) ;
+	double cross(i, j) ;
+
+// global attributes:
+		:history = "This is an example of a multi-line global\n",
+			"attribute.  It could be used for representing the\n",
+			"processing history of the data, for example." ;
+data:
+
+ l = 10, 9, 8 ;
+
+ bears =
+  "ind",
+  "ist",
+  "ing",
+  "uis",
+  "hab",
+  "le" ;
+
+ order =
+  1, 2, 3,
+  4, 5, 6 ;
+
+ shot =
+  2, 3, 4,
+  5, 6, 7 ;
+
+ aloan =
+  3, 4, 5,
+  6, 7, 1e+12 ;
+
+ cross =
+  4, 5, 0.000244140625,
+  7, 8, 10000000000 ;
+}

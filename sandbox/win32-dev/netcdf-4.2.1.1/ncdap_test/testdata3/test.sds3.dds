@@ -1,0 +1,11 @@
+Dataset {
+    Int32 SDS_2[fakeDim0 = 8][fakeDim1 = 4];
+    Int32 SDS_3[fakeDim2 = 4][fakeDim3 = 4][fakeDim4 = 2];
+    Int32 SDS_4[fakeDim5 = 2][fakeDim6 = 2][fakeDim7 = 2][fakeDim8 = 2];
+    Int32 SDS_5[fakeDim9 = 2][fakeDim10 = 2][fakeDim11 = 2][fakeDim12 = 2][fakeDim13 = 2];
+    Int32 SDS_6[fakeDim14 = 2][fakeDim15 = 1][fakeDim16 = 2][fakeDim17 = 1][fakeDim18 = 2][fakeDim19 = 1];
+    Int32 SDS_7[fakeDim20 = 2][fakeDim21 = 1][fakeDim22 = 2][fakeDim23 = 1][fakeDim24 = 2][fakeDim25 = 1][fakeDim26 = 2];
+    Int32 SDS_8[fakeDim27 = 1][fakeDim28 = 2][fakeDim29 = 1][fakeDim30 = 2][fakeDim31 = 1][fakeDim32 = 2][fakeDim33 = 1][fakeDim34 = 2];
+    Int32 SDS_16[fakeDim35 = 2][fakeDim36 = 1][fakeDim37 = 1][fakeDim38 = 1][fakeDim39 = 2][fakeDim40 = 1][fakeDim41 = 1][fakeDim42 = 1][fakeDim43 = 2][fakeDim44 = 1][fakeDim45 = 1][fakeDim46 = 1][fakeDim47 = 2][fakeDim48 = 1][fakeDim49 = 1][fakeDim50 = 1];
+    Int32 SDS_20[fakeDim51 = 2][fakeDim52 = 1][fakeDim53 = 1][fakeDim54 = 1][fakeDim55 = 2][fakeDim56 = 1][fakeDim57 = 1][fakeDim58 = 1][fakeDim59 = 2][fakeDim60 = 1][fakeDim61 = 1][fakeDim62 = 1][fakeDim63 = 2][fakeDim64 = 1][fakeDim65 = 1][fakeDim66 = 1][fakeDim67 = 2][fakeDim68 = 1][fakeDim69 = 1][fakeDim70 = 1];
+} testsds3.hdf;

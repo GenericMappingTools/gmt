@@ -1,0 +1,9 @@
+Dataset {
+    Grid {
+     ARRAY:
+        Int32 SDS_1[Y_Axis = 16][X_Axis = 5];
+     MAPS:
+        Float64 Y_Axis[16];
+        Int32 X_Axis[5];
+    } SDS_1;
+} testsds4.hdf;

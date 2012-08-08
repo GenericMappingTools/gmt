@@ -1,0 +1,104 @@
+netcdf tst_times {
+dimensions:
+	time = 1 ;
+variables:
+	double t1_days(time) ;
+		t1_days:units = "days since 1500-1-1" ;
+	double t1_st_days(time) ;
+		t1_st_days:calendar = "standard" ;
+		t1_st_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_gr_days(time) ;
+		t1_gr_days:calendar = "gregorian" ;
+		t1_gr_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_pg_days(time) ;
+		t1_pg_days:calendar = "proleptic_gregorian" ;
+		t1_pg_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_nl_days(time) ;
+		t1_nl_days:calendar = "noleap" ;
+		t1_nl_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_365_days(time) ;
+		t1_365_days:calendar = "365_day" ;
+		t1_365_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_al_days(time) ;
+		t1_al_days:calendar = "all_leap" ;
+		t1_al_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_366_days(time) ;
+		t1_366_days:calendar = "366_day" ;
+		t1_366_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_360_days(time) ;
+		t1_360_days:calendar = "360_day" ;
+		t1_360_days:units = "days since 1500-01-01 00:00:00" ;
+	double t1_jl_days(time) ;
+		t1_jl_days:calendar = "julian" ;
+		t1_jl_days:units = "days since 1500-01-01 00:00:00" ;
+	double t2_days(time) ;
+		t2_days:units = "days since 2000-6-15 12:00" ;
+	double t2_st_days(time) ;
+		t2_st_days:calendar = "standard" ;
+		t2_st_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_gr_days(time) ;
+		t2_gr_days:calendar = "gregorian" ;
+		t2_gr_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_pg_days(time) ;
+		t2_pg_days:calendar = "proleptic_gregorian" ;
+		t2_pg_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_nl_days(time) ;
+		t2_nl_days:calendar = "noleap" ;
+		t2_nl_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_365_days(time) ;
+		t2_365_days:calendar = "365_day" ;
+		t2_365_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_al_days(time) ;
+		t2_al_days:calendar = "all_leap" ;
+		t2_al_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_366_days(time) ;
+		t2_366_days:calendar = "366_day" ;
+		t2_366_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_360_days(time) ;
+		t2_360_days:calendar = "360_day" ;
+		t2_360_days:units = "days since 2000-06-15 12:00:00" ;
+	double t2_jl_days(time) ;
+		t2_jl_days:calendar = "julian" ;
+		t2_jl_days:units = "days since 2000-06-15 12:00:00" ;
+data:
+
+ t1_days = "2009-01-01" ;
+
+ t1_st_days = "2009-01-01" ;
+
+ t1_gr_days = "2009-01-01" ;
+
+ t1_pg_days = "2009-01-01" ;
+
+ t1_nl_days = "2009-01-01" ;
+
+ t1_365_days = "2009-01-01" ;
+
+ t1_al_days = "2009-01-01" ;
+
+ t1_366_days = "2009-01-01" ;
+
+ t1_360_days = "2009-01-01" ;
+
+ t1_jl_days = "2009-01-01" ;
+
+ t2_days = "2009-01-01" ;
+
+ t2_st_days = "2009-01-01" ;
+
+ t2_gr_days = "2009-01-01" ;
+
+ t2_pg_days = "2009-01-01" ;
+
+ t2_nl_days = "2009-01-01" ;
+
+ t2_365_days = "2009-01-01" ;
+
+ t2_al_days = "2009-01-01" ;
+
+ t2_366_days = "2009-01-01" ;
+
+ t2_360_days = "2009-01-01" ;
+
+ t2_jl_days = "2009-01-01" ;
+}

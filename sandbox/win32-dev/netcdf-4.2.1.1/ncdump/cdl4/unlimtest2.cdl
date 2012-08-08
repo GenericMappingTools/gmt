@@ -1,0 +1,28 @@
+netcdf unlimtest1 {
+types:
+  compound CROP_HARVESTING_ACREAGE {
+    ushort county_id ;
+    ushort year ;
+    ubyte prac_code ;
+    ushort planted_acres(3) ;
+    ushort harvested_acres(3) ;
+    float yield(3) ;
+    float percent_comp(3) ;
+  }; // CROP_HARVESTING_ACREAGE
+dimensions:
+	npractices = 7 ;
+	ncounty_ids = UNLIMITED ; // (0 currently)
+	nyears = 10 ;
+	ncrops = 3 ;
+variables:
+	CROP_HARVESTING_ACREAGE crop_harvest(ncounty_ids, nyears, npractices) ;
+		crop_harvest:long_name = "crop harvest attributes by\ncounty ID, year and practice" ;
+data:
+crop_harvest = 
+ {111, 2011, 13, 
+   {1, 2, 3}, 
+   {101, 102, 103}, 
+   {1.5, 2.5, 3.5}, 
+   {0.1, 0.2, 0.3}
+  } ;
+}

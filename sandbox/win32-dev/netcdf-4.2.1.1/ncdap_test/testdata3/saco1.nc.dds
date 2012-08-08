@@ -1,0 +1,17 @@
+Dataset {
+    Float64 lat[lat = 1];
+    Float64 lon[lon = 1];
+    Float64 height[height = 805];
+    Grid {
+      Array:
+        Float64 time[height = 805];
+      Maps:
+        Float64 height[height = 805];
+    } time;
+    Grid {
+      Array:
+        Float64 river_discharge[height = 805];
+      Maps:
+        Float64 height[height = 805];
+    } river_discharge;
+} saco1.nc;

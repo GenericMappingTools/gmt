@@ -1,0 +1,27 @@
+Dataset {
+    Structure {
+        Structure {
+            Sequence {
+                Structure {
+                    Float64 Time__0;
+                } Time;
+            } Time;
+            Float64 MRGFLD_Longitude[MRGDIM%3aSwath1_2 = 2][GeoTrack%3aSwath1 = 20][GeoXtrack%3aSwath1 = 10];
+        } Geolocation%20Fields;
+        Structure {
+            Sequence {
+                Structure {
+                    Float64 Density__0;
+                } Density;
+            } Density;
+            Float64 Temperature[GeoTrack%3aSwath1 = 20][GeoXtrack%3aSwath1 = 10];
+            Float64 Pressure[Res2tr%3aSwath1 = 40][Res2xtr%3aSwath1 = 20];
+            Float64 Spectra[Bands%3aSwath1 = 15][Res2tr%3aSwath1 = 40][Res2xtr%3aSwath1 = 20];
+            Sequence {
+                Structure {
+                    Int32 Count__0;
+                } Count;
+            } Count;
+        } Data%20Fields;
+    } Swath1;
+} SwathFile.hdf;

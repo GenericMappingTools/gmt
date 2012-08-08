@@ -1,0 +1,23 @@
+netcdf ref_tst_compounds2 {
+types:
+  compound cmp1 {
+    short i ;
+    int j ;
+  }; // cmp1
+  compound cmp2 {
+    float x ;
+    double y(3, 2) ;
+  }; // cmp2
+  compound cmp3 {
+    cmp1 xx ;
+    cmp2 yy ;
+  }; // cmp3
+dimensions:
+	phony_dim = 1 ;
+variables:
+	cmp3 phony_compound_var(phony_dim) ;
+data:
+
+ phony_compound_var = 
+    {{20000, 300000}, {100000, {-100000.028899567, -100000, -100000, -100000, -100000, -100000}}} ;
+}

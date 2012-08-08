@@ -1,0 +1,9 @@
+netcdf synth7 {
+dimensions:
+	Q1 = 8 ;
+variables:
+	float Q1.v4(Q1) ;
+data:
+
+ Q1.v4 = 1320, 2320, 3320, 4320, 5320, 6320, 7320, 8320 ;
+}

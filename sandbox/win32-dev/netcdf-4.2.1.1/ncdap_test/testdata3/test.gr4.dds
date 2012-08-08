@@ -1,0 +1,3 @@
+Dataset {
+    Int32 GR_Palette[GR_Palette__comps = 3][GR_Palette__Y = 5][GR_Palette__X = 5];
+} testgr4.hdf;

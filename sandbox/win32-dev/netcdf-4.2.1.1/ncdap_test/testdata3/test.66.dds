@@ -1,0 +1,28 @@
+Dataset {
+    Structure {
+        Int32 long_one;
+        Int32 long_two;
+        Int32 long_three;
+        Int32 long_four;
+        Int32 long_five;
+        Int32 long_six;
+        Float64 long_one_float;
+        Float64 long_two_float;
+        Float64 long_three_float;
+    } long_names_one;
+    Structure {
+        Int32 long_one_float1;
+        Int32 long_two_float1;
+        Int32 long_three_float3;
+        Int32 long_four;
+        Int32 long_five;
+        Int32 long_six;
+        Float64 long_one_float;
+        Float64 long_two_float;
+        Float64 long_three_float;
+    } long_names_one_and_a_half;
+    Structure {
+        Int32 a_very_long_name_given_what_it_accomplishes;
+        Int32 another_name_nearly_as_pointless;
+    } long_names_two;
+} long_identifier_test_data_set;

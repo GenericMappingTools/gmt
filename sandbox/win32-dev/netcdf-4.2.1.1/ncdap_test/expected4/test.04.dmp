@@ -1,0 +1,20 @@
+netcdf test {
+types:
+  compound types_t {
+    ubyte b ;
+    int i32 ;
+    uint ui32 ;
+    short i16 ;
+    ushort ui16 ;
+    float f32 ;
+    double f64 ;
+    string s ;
+    string u ;
+  }; // types_t
+variables:
+	types_t types ;
+data:
+
+ types = 
+    {0, 1, 0, 0, 0, 0, 1000, "This is a data test string (pass 0).", "http://www.dods.org"} ;
+}

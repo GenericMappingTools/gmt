@@ -1,0 +1,242 @@
+<html lang="en">
+<head>
+<title>udunits2 Program Guide</title>
+<meta http-equiv="Content-Type" content="text/html">
+<meta name="description" content="udunits2 Program Guide">
+<meta name="generator" content="makeinfo 4.13">
+<link title="Top" rel="top" href="#Top">
+<link href="http://www.gnu.org/software/texinfo/" rel="generator-home" title="Texinfo Homepage">
+<!--
+
+   Copyright 2008, 2009 University Corporation for Atmospheric Research
+
+Access and use of this software shall impose the following obligations
+and understandings on the user. The user is granted the right, without
+any fee or cost, to use, copy, modify, alter, enhance and distribute
+this software, and any derivative works thereof, and its supporting
+documentation for any purpose whatsoever, provided that this entire
+notice appears in all copies of the software, derivative works and
+supporting documentation. Further, UCAR requests that the user credit
+UCAR/Unidata in any publications that result from the use of this
+software or in any product that includes this software, although this is
+not an obligation. The names UCAR and/or Unidata, however, may not be
+used in any advertising or publicity to endorse or promote any products
+or commercial entity unless specific written permission is obtained from
+UCAR/Unidata. The user also understands that UCAR/Unidata is not
+obligated to provide the user with any support, consulting, training or
+assistance of any kind with regard to the use, operation and performance
+of this software nor to provide the user with any updates, revisions,
+new versions or "bug fixes."
+
+THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+-->
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+  span.sc    { font-variant:small-caps }
+  span.roman { font-family:serif; font-weight:normal; } 
+  span.sansserif { font-family:sans-serif; font-weight:normal; } 
+--></style>
+</head>
+<body>
+<h1 class="settitle">udunits2 Program Guide</h1>
+<div class="contents">
+<h2>Table of Contents</h2>
+<ul>
+<li><a name="toc_Top" href="#Top">udunits2</a>
+<li><a name="toc_Synopsis" href="#Synopsis">1 Synopsis</a>
+<li><a name="toc_Options" href="#Options">2 Options</a>
+<li><a name="toc_Description" href="#Description">3 Description</a>
+<li><a name="toc_See-Also" href="#See-Also">4 See Also</a>
+<li><a name="toc_Complete-Index" href="#Complete-Index">Index</a>
+</li></ul>
+</div>
+
+
+
+<div class="node">
+<a name="Top"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Synopsis">Synopsis</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#dir">(dir)</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
+
+</div>
+
+<h2 class="unnumbered">udunits2</h2>
+
+<p>This manual describes how to use the <code>udunits2</code> program. 
+This program allows you to discover the definition of a unit
+as well as convert numeric values between compatible units.
+
+   <p>Copyright 2008, 2009 University Corporation for Atmospheric Research
+
+   <p>Access and use of this software shall impose the following obligations
+and understandings on the user. The user is granted the right, without
+any fee or cost, to use, copy, modify, alter, enhance and distribute
+this software, and any derivative works thereof, and its supporting
+documentation for any purpose whatsoever, provided that this entire
+notice appears in all copies of the software, derivative works and
+supporting documentation. Further, UCAR requests that the user credit
+UCAR/Unidata in any publications that result from the use of this
+software or in any product that includes this software, although this is
+not an obligation. The names UCAR and/or Unidata, however, may not be
+used in any advertising or publicity to endorse or promote any products
+or commercial entity unless specific written permission is obtained from
+UCAR/Unidata. The user also understands that UCAR/Unidata is not
+obligated to provide the user with any support, consulting, training or
+assistance of any kind with regard to the use, operation and performance
+of this software nor to provide the user with any updates, revisions,
+new versions or "bug fixes."
+
+   <p>THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+
+<ul class="menu">
+<li><a accesskey="1" href="#Synopsis">Synopsis</a>:             Terse usage example
+<li><a accesskey="2" href="#Options">Options</a>:              Command-line options
+<li><a accesskey="3" href="#Description">Description</a>:          Description of the program
+<li><a accesskey="4" href="#See-Also">See Also</a>:             Additional information
+<li><a accesskey="5" href="#Complete-Index">Complete Index</a>:       Complete index
+</ul>
+
+<div class="node">
+<a name="Synopsis"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Options">Options</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Top">Top</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">1 Synopsis</h2>
+
+<p><a name="index-synopsis-1"></a>
+<pre class="example">     udunits2 [-A|-L|-U] [-hr] [XML_file]
+</pre>
+   <div class="node">
+<a name="Options"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Description">Description</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Synopsis">Synopsis</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">2 Options</h2>
+
+<p><a name="index-options-2"></a>
+The following options and arguments are supported:
+
+     <dl>
+<dt><code>-A</code><dd>Use the ASCII character-set. 
+<br><dt><code>-L</code><dd>Use the ISO Latin-1 (ISO-8859-1) character-set. 
+<br><dt><code>-U</code><dd>Use the full Unicode character-set with UTF-8 encoding. 
+<br><dt><code>-h</code><dd>Print a help message. 
+<br><dt><code>-r</code><dd>Reveal any problems with the units database (by default, no error messages are
+printed during import of the database). 
+<br><dt><code>XML_file</code><dd>The pathname of the XML-formatted units database. 
+If not specified, then the default, compile-time pathname is used. 
+</dl>
+
+<div class="node">
+<a name="Description"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#See-Also">See Also</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Options">Options</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">3 Description</h2>
+
+<p>When successfully started, the program will print the prompt
+
+<pre class="example">     You have:
+</pre>
+   <p>At this point you can exit the program by entering the end-of-file character
+(usually control-D) or continue by entering either a value or a unit. 
+(a value comprises a numerical value and a unit. 
+For example,
+
+<pre class="example">     You have: 80 km/h
+     You want:
+</pre>
+   <p>At this point, if you enter a blank line, then the program will assume
+that you entered a unit in the previous line and will print
+the definition of that unit in terms of the base units of the
+unit-system that it imported on startup.  For example,
+
+<pre class="example">     You have: 80 km/h
+     You want:
+         22.2222222222222 m.s-1
+     You have:
+</pre>
+   <p>Details of the formatting depend on the character-set being used. 
+See <a href="#Options">Options</a>.
+
+   <p>Alternatively, at the &ldquo;<kbd>You want:</kbd>&rdquo; prompt you can enter the unit
+in which you want the previously-entered value. 
+For example,
+
+<pre class="example">     You have: 80 km/h
+     You want: mi/h
+         80 km/h = 49.7097 mi/h
+         x/(mi/h) = 0.621371*(x/(km/h))
+     You have:
+</pre>
+   <p>The first line after &ldquo;<kbd>You want:</kbd>&rdquo; shows the &ldquo;have&rdquo; value in the
+desired &ldquo;want&rdquo; unit.
+
+   <p>The second line shows the transformation between numerical values
+in the &ldquo;have&rdquo; unit to numerical values in the &ldquo;want&rdquo; unit.  The
+symbol &ldquo;<kbd>x</kbd>&rdquo; represents the physical quantity in question. 
+See <a href="http://physics.nist.gov/Pubs/SP811/sec07.html">http://physics.nist.gov/Pubs/SP811/sec07.html</a>.
+
+<div class="node">
+<a name="See-Also"></a>
+<p><hr>
+Next:&nbsp;<a rel="next" accesskey="n" href="#Complete-Index">Complete Index</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Description">Description</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="chapter">4 See Also</h2>
+
+<p>See <a href="udunits2lib.html#Top">UDUNITS-2</a>, for
+information on the UDUNITS-2 library, which is used by this program.
+
+<div class="node">
+<a name="Complete-Index"></a>
+<p><hr>
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#See-Also">See Also</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
+
+</div>
+
+<h2 class="unnumbered">Index</h2>
+
+<ul class="index-cp" compact>
+<li><a href="#index-options-2">options</a>: <a href="#Options">Options</a></li>
+<li><a href="#index-synopsis-1">synopsis</a>: <a href="#Synopsis">Synopsis</a></li>
+   </ul></body></html>
+

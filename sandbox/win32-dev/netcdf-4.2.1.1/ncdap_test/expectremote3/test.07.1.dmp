@@ -1,0 +1,9 @@
+netcdf test {
+dimensions:
+	person = 5 ;
+variables:
+	int person.age(person) ;
+data:
+
+ person.age = 1, 2, 3, 5, 8 ;
+}

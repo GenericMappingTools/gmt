@@ -1,0 +1,13 @@
+netcdf synth3 {
+dimensions:
+	S1.v1_0 = 2 ;
+	S1.v1_1 = 3 ;
+variables:
+	int S1.v1(S1.v1_0, S1.v1_1) ;
+		S1.v1:a1 = 32 ;
+data:
+
+ S1.v1 =
+  132, 232, 332,
+  432, 532, 632 ;
+}

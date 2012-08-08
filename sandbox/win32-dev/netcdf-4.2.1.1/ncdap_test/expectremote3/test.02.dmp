@@ -1,0 +1,112 @@
+netcdf test {
+dimensions:
+	b_0 = 25 ;
+	f32_0 = 25 ;
+	f64_0 = 25 ;
+	i16_0 = 25 ;
+	i32_0 = 25 ;
+	maxStrlen64 = 64 ;
+	s_0 = 25 ;
+	u_0 = 25 ;
+	ui16_0 = 25 ;
+	ui32_0 = 25 ;
+variables:
+	byte b(b_0) ;
+	int i32(i32_0) ;
+	int ui32(ui32_0) ;
+	short i16(i16_0) ;
+	short ui16(ui16_0) ;
+	float f32(f32_0) ;
+	double f64(f64_0) ;
+	char s(s_0, maxStrlen64) ;
+	char u(u_0, maxStrlen64) ;
+data:
+
+ b = 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 
+    20, 21, 22, 23, 24 ;
+
+ i32 = 0, 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 
+    22528, 24576, 26624, 28672, 30720, 32768, 34816, 36864, 38912, 40960, 
+    43008, 45056, 47104, 49152 ;
+
+ ui32 = 0, 4096, 8192, 12288, 16384, 20480, 24576, 28672, 32768, 36864, 
+    40960, 45056, 49152, 53248, 57344, 61440, 65536, 69632, 73728, 77824, 
+    81920, 86016, 90112, 94208, 98304 ;
+
+ i16 = 0, 256, 512, 768, 1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 
+    3072, 3328, 3584, 3840, 4096, 4352, 4608, 4864, 5120, 5376, 5632, 5888, 
+    6144 ;
+
+ ui16 = 0, 1024, 2048, 3072, 4096, 5120, 6144, 7168, 8192, 9216, 10240, 
+    11264, 12288, 13312, 14336, 15360, 16384, 17408, 18432, 19456, 20480, 
+    21504, 22528, 23552, 24576 ;
+
+ f32 = 0, 0.009999833, 0.01999867, 0.0299955, 0.03998933, 0.04997917, 
+    0.059964, 0.06994285, 0.0799147, 0.08987855, 0.09983341, 0.1097783, 
+    0.1197122, 0.1296341, 0.1395431, 0.1494381, 0.1593182, 0.1691823, 
+    0.1790296, 0.1888589, 0.1986693, 0.2084599, 0.2182296, 0.2279775, 
+    0.2377026 ;
+
+ f64 = 1, 0.999950000416665, 0.999800006666578, 0.999550033748988, 
+    0.999200106660978, 0.998750260394966, 0.998200539935204, 
+    0.99755100025328, 0.996801706302619, 0.995952733011994, 
+    0.995004165278026, 0.993956097956697, 0.992808635853866, 
+    0.991561893714788, 0.990215996212637, 0.988771077936042, 
+    0.987227283375627, 0.985584766909561, 0.983843692788121, 
+    0.98200423511727, 0.980066577841242, 0.978030914724148, 
+    0.975897449330606, 0.973666395005375, 0.97133797485203 ;
+
+ s =
+  "This is a data test string (pass 0).",
+  "This is a data test string (pass 1).",
+  "This is a data test string (pass 2).",
+  "This is a data test string (pass 3).",
+  "This is a data test string (pass 4).",
+  "This is a data test string (pass 5).",
+  "This is a data test string (pass 6).",
+  "This is a data test string (pass 7).",
+  "This is a data test string (pass 8).",
+  "This is a data test string (pass 9).",
+  "This is a data test string (pass 10).",
+  "This is a data test string (pass 11).",
+  "This is a data test string (pass 12).",
+  "This is a data test string (pass 13).",
+  "This is a data test string (pass 14).",
+  "This is a data test string (pass 15).",
+  "This is a data test string (pass 16).",
+  "This is a data test string (pass 17).",
+  "This is a data test string (pass 18).",
+  "This is a data test string (pass 19).",
+  "This is a data test string (pass 20).",
+  "This is a data test string (pass 21).",
+  "This is a data test string (pass 22).",
+  "This is a data test string (pass 23).",
+  "This is a data test string (pass 24)." ;
+
+ u =
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org",
+  "http://www.dods.org" ;
+}

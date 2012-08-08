@@ -1,0 +1,201 @@
+2.1.21  2010-01-24
+        Eliminate expectation and use of leading scale factor in the "have"
+        unit of udunits2(1).
+
+        Add verification of commit status to "make ftp".
+
+        Add dependency of documentation on version.
+
+        Add "force" flag to tagging rule in makefile.
+
+2.1.20  2010-12-20
+        Added "fahrenheit" as an alias for "degrees fahrenheit".
+
+        Added hyperlinks from HTML documentation to XML files of the units
+        database.
+
+2.1.19  2010-08-17
+        Moved ut_set_error_message_handler(ut_ignore) call in version 2.1.18
+        to eliminate more messages.
+
+2.1.18  2010-08-13
+        Made the UDUNIT-1 function utInit() call 
+        ut_set_error_message_handler(ut_ignore) to make use of the UDUNITS-1
+        API more backward compatible.
+
+2.1.17  2010-06-23
+        Added tagging of version in repository to "make ftp".
+
+        Moved call to ut_set_second() in XML parser from after the XML file is
+        read to as soon as the "second" unit is encountered.
+
+2.1.16  2010-06-21
+        Corrected and updated definition of "e" -- the charge of an electron.
+
+2.1.15  2010-05-27
+        Corrected return value of ut_get_status() when ut_parse() fails due to
+        a syntax error.
+
+        Added missing "void" parameter to declarations of UDUNITS-1 functions
+        utIsInit() and utTerm().
+
+        Added commentary about the hybrid Gregorian/Julian calendar to the
+        library documentation.
+
+        Added the following units:
+            "potential_vorticity_unit" (1e-6 m2 s-1 K kg-1)
+            "einstein" (mole)
+
+        Added "u" as a symbol for "micro".
+
+2.1.14  2010-01-29
+        Modified the build procedure.  It now
+            1) Builds the Expat (XML parsing) library that's bundled with the
+               UDUNITS-2 package if and only if the host system doesn't have
+               one; and
+            2) Installs the bundled Expat library if that library is built.
+
+        Documented the need for linking against an Expat library.
+
+2.1.13  2010-01-21
+        Modified the build procedure slightly.  It now
+            1) Supports cross-compilation; and
+            2) Installs the info(1) documentation files by default.
+
+2.1.12  2010-01-11
+        Corrected initialization of time-origin to prevent inconsistent results
+        from ut_decode_time().  Thanks to David Pierce at the Scripps
+        Institution of Oceanography.
+
+2.1.11	2009-10-23
+	Added missing percent (%) unit.
+
+2.1.10	2009-10-21
+	Fixed memory-related problems reported by valgrind(1).
+
+        Changed $(pkgdatarootdir) to $(pkgdatadir) in the top-level Makefile.
+
+	Corrected the syntax in the definition of the US survey foot.
+
+2.1.9	2009-09-09
+        Fixed bug in ut_are_convertible() that caused it to return true for
+        m2.s-2 and m.s-2.
+
+        Changed installation directory for units database files from $(datadir)
+        (default: /usr/local/share) to $(pkgdatadir) (default:
+        /usr/local/share/udunits).
+
+        Changed name of "ut_unit*" member in the UDUNITS-1 "utUnit"
+        backward-compatibility structure from "ut_unit" to "unit2" because,
+        unlike C, the g++ compiler doesn't allow a member to have the same name
+        as a typedef.
+
+        Added version specification to the top-level UDUNITS-2 documentation.
+
+2.1.8	2009-06-19
+	Corrected definition of "lbf": was "2000 force_pounds"; is now
+	"1 force_pound".
+
+2.1.7	2009-05-05
+	Replaced angle brackets with quotation marks in inclusion of the
+	UDUNITS-2 header-file by the UDUNITS-1 header-file.  This was
+	done to accomodate ncview's configure-script and because it's
+	the right thing to do because both header-files are installed in the
+	same directory.
+
+	Added test for math library to configure script to support
+	systems whose C library doesn't have them.
+
+	Improved the process for making the "results.tab" target in the
+	test/ subdirectory.
+
+	Added delays to process for creating documentation source to
+	accomodate broken HP-UX B.11.00 make(1).
+
+	Added "make check" to git pre-commit hook.
+
+2.1.6	2009-04-15
+	Added to the installed, top-level, UDUNITS-2 documentation,
+	commentary about the existence of a version 1 C API in the
+	package.
+
+	Moved the UDUNITS-1 API into the UDUNITS-2 library subdirectory,
+	"lib", in order to allow "make check" to build the package.
+
+2.1.5	2009-03-24
+	Fixed bug in udunits2(1) utility introduced in version 2.1.2.
+	Entering a "have" unit that didn't have a numerical first
+	component risked a segmentation violation.
+
+2.1.4	2009-03-24
+	Documented the change in meaning of the symbol "g" from the
+	original package (standard free fall) to this package (gram).
+
+	Returned HP-UX to the set of tested operating systems.
+
+2.1.3	2009-03-23
+	Corrected typos in XML units database for "US_survey_foot" and
+	"international_foot": removed embedded quotation marks.
+
+2.1.2	2009-03-19
+	Corrected program udunits2(1): it now correctly parses units
+	like "0.1 lg(re 1.0e-12 W.m-2)".
+
+	Made the dimensionless unit one format as "1".
+
+	Corrected rule for target "web-update": changed "distname" to
+	"distName".
+
+	Corrected the development make(1) target "hostcheck": added
+	setting of MAKEFLAGS to the empty string before invoking
+	make(1).
+
+2.1.1	2009-03-13
+	Corrected and improved the development make(1) targets "ftp"
+	and "download-update".
+
+	Added publication of the XML database on the UDUNITS website to
+	the target "web-update".
+
+	Corrected typo in API documentation.
+
+2.1.0	2009-03-11
+	Added UDUNITS-1 API.  This thin interface uses the UDUNITS-2
+	library.  Users will have to recompile their UDUNITS-1-based 
+	code using the new "udunits.h" header-file and rebuild their
+	programs using the new UDUNITS-2 library.  Because the UDUNITS-1
+	API uses the "utUnit" data-structure and the UDUNITS-2 API uses
+	pointers to "ut_unit" data-structures, a small memory-leak is 
+	possible in code that creates many units.  This leak can be 
+	avoided by calling the new method utFree(utUnit*) when the unit
+	is no longer needed.
+
+	Added some "const" qualifiers to the API.
+
+	Modified ut_format() for timestamp units.  It now prints the
+	long form (with hyphens and colons) if the year of the origin is
+	less than 1000 or greater than 9999.  This was done to make
+	ut_format() compatible with ut_parse().
+
+2.0.4	2009-02-21
+	Added copyright notices and LICENSE file.
+
+2.0.3	2009-02-18
+        Added the function ut_root(const ut_unit* unit, int root) to
+        return a root of a unit (e.g., "m2/s2" -> "m/s").
+
+2.0.2	2008-12-02
+	Changed order of calls to ut_set_status() and
+	ut_handle_error_message() so that the status value is always set
+	before the error-message handler is called.  This allows error
+	handlers to determine the cause of the message.
+
+2.0.1	2008-11-13
+	Added parsing of timestamps that have dashes and colons but also
+	use "T" (e.g., "seconds since 1970-01-01T00:00:00Z").
+
+	Corrected the regular expressions for matching the character-set
+	specifier in the udunits2(1) program.
+
+2.0.0	2007-07-18
+	Initial release.

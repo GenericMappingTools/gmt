@@ -1,0 +1,1925 @@
+This is udunits2lib.info, produced by makeinfo version 4.13 from
+udunits2lib.texi.
+
+INFO-DIR-SECTION Software libraries
+START-INFO-DIR-ENTRY
+* UDUNITS-2: (udunits2lib).     The Unidata units library.
+END-INFO-DIR-ENTRY
+
+   Copyright 2008, 2009 University Corporation for Atmospheric Research
+
+   Access and use of this software shall impose the following
+obligations and understandings on the user. The user is granted the
+right, without any fee or cost, to use, copy, modify, alter, enhance
+and distribute this software, and any derivative works thereof, and its
+supporting documentation for any purpose whatsoever, provided that this
+entire notice appears in all copies of the software, derivative works
+and supporting documentation. Further, UCAR requests that the user
+credit UCAR/Unidata in any publications that result from the use of this
+software or in any product that includes this software, although this is
+not an obligation. The names UCAR and/or Unidata, however, may not be
+used in any advertising or publicity to endorse or promote any products
+or commercial entity unless specific written permission is obtained from
+UCAR/Unidata. The user also understands that UCAR/Unidata is not
+obligated to provide the user with any support, consulting, training or
+assistance of any kind with regard to the use, operation and performance
+of this software nor to provide the user with any updates, revisions,
+new versions or "bug fixes."
+
+   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+
+
+File: udunits2lib.info,  Node: Top,  Next: Synopsis,  Prev: (dir),  Up: (dir)
+
+UDUNITS-2
+*********
+
+This manual describes how to use the C API of the UDUNITS-2 library.
+Among other things, the library allows C code to obtain a binary
+representation of a unit of a physical quantity, to operate on such
+units, and to convert numeric values between compatible units.
+
+   The library comes with an extensive database of units all referenced
+to the SI system of units.
+
+   Copyright 2008, 2009 University Corporation for Atmospheric Research
+
+   Access and use of this software shall impose the following
+obligations and understandings on the user. The user is granted the
+right, without any fee or cost, to use, copy, modify, alter, enhance
+and distribute this software, and any derivative works thereof, and its
+supporting documentation for any purpose whatsoever, provided that this
+entire notice appears in all copies of the software, derivative works
+and supporting documentation. Further, UCAR requests that the user
+credit UCAR/Unidata in any publications that result from the use of this
+software or in any product that includes this software, although this is
+not an obligation. The names UCAR and/or Unidata, however, may not be
+used in any advertising or publicity to endorse or promote any products
+or commercial entity unless specific written permission is obtained from
+UCAR/Unidata. The user also understands that UCAR/Unidata is not
+obligated to provide the user with any support, consulting, training or
+assistance of any kind with regard to the use, operation and performance
+of this software nor to provide the user with any updates, revisions,
+new versions or "bug fixes."
+
+   THIS SOFTWARE IS PROVIDED BY UCAR/UNIDATA "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL UCAR/UNIDATA BE LIABLE FOR ANY SPECIAL,
+INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING
+FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
+WITH THE ACCESS, USE OR PERFORMANCE OF THIS SOFTWARE.
+
+* Menu:
+
+* Synopsis::            Terse usage display
+* Why::                 What's a unit package good for?
+* Unit-Systems::        Explanation of unit-systems and how to get one
+* Parsing::             Converting strings into units
+* Syntax::              Syntax for string representation of units
+* Formatting::          Converting units into strings
+* Value Conversion::    Converting values between units
+* Prefixes::            Defining unit prefixes
+* Mapping::             Mapping between units and identifiers
+* Operations::          Operations on units
+* Time::                Handling time
+* Errors::              Error-handling
+* Database::            The units database
+* Types::               Data types
+* Complete Index::      Complete index
+
+
+File: udunits2lib.info,  Node: Synopsis,  Next: Why,  Prev: Top,  Up: Top
+
+1 Synopsis
+**********
+
+Coding:
+     #include <udunits2.h>
+
+          ut_system*                 ut_read_xml(const char* PATH);
+          ut_system*                 ut_new_system(void);
+          void                       ut_free_system(ut_system*
+                                     SYSTEM);
+          ut_system*                 ut_get_system(const ut_unit*
+                                     UNIT);
+          ut_unit*                   ut_get_dimensionless_unit_one(const
+                                     ut_system* SYSTEM);
+          ut_unit*                   ut_get_unit_by_name(const
+                                     ut_system* SYSTEM, const char*
+                                     NAME);
+          ut_unit*                   ut_get_unit_by_symbol(const
+                                     ut_system* SYSTEM, const char*
+                                     SYMBOL);
+          ut_status                  ut_set_second(const ut_unit*
+                                     SECOND);
+          ut_status                  ut_add_name_prefix(ut_system*
+                                     SYSTEM, const char* NAME,
+                                     double VALUE);
+          ut_status                  ut_add_symbol_prefix(ut_system*
+                                     SYSTEM, const char* SYMBOL,
+                                     double VALUE);
+          ut_unit*                   ut_new_base_unit(ut_system*
+                                     SYSTEM);
+          ut_unit*                   ut_new_dimensionless_unit(ut_system*
+                                     SYSTEM);
+          ut_unit*                   ut_clone(const ut_unit* UNIT);
+          void                       ut_free(ut_unit* UNIT);
+          const char*                ut_get_name(const ut_unit*
+                                     UNIT, ut_encoding ENCODING);
+          ut_status                  ut_map_name_to_unit(const char*
+                                     NAME, const ut_encoding
+                                     ENCODING, const ut_unit* UNIT);
+          ut_status                  ut_unmap_name_to_unit(ut_system*
+                                     SYSTEM, const char* NAME, const
+                                     ut_encoding ENCODING);
+          ut_status                  ut_map_unit_to_name(const
+                                     ut_unit* UNIT, const char*
+                                     NAME, ut_encoding ENCODING);
+          ut_status                  ut_unmap_unit_to_name(const
+                                     ut_unit* UNIT, ut_encoding
+                                     ENCODING);
+          const char*                ut_get_symbol(const ut_unit*
+                                     UNIT, ut_encoding ENCODING);
+          ut_status                  ut_map_symbol_to_unit(const
+                                     char* SYMBOL, const ut_encoding
+                                     ENCODING, const ut_unit* UNIT);
+          ut_status                  ut_unmap_symbol_to_unit(ut_system*
+                                     SYSTEM, const char* SYMBOL,
+                                     const ut_encoding ENCODING);
+          ut_status                  ut_map_unit_to_symbol(const
+                                     ut_unit* UNIT, const char*
+                                     SYMBOL, ut_encoding ENCODING);
+          ut_status                  ut_unmap_unit_to_symbol(const
+                                     ut_unit* UNIT, ut_encoding
+                                     ENCODING);
+          int                        ut_is_dimensionless(const
+                                     ut_unit* UNIT);
+          int                        ut_same_system(const ut_unit*
+                                     UNIT1, const ut_unit* UNIT2);
+          int                        ut_compare(const ut_unit*
+                                     UNIT1, const ut_unit* UNIT2);
+          int                        ut_are_convertible(const
+                                     ut_unit* UNIT1, const ut_unit*
+                                     UNIT2);
+          cv_converter*              ut_get_converter(ut_unit* FROM,
+                                     ut_unit* TO);
+          ut_unit*                   ut_scale(double FACTOR, const
+                                     ut_unit* UNIT);
+          ut_unit*                   ut_offset(const ut_unit* UNIT,
+                                     double OFFSET);
+          ut_unit*                   ut_offset_by_time(const
+                                     ut_unit* UNIT, double ORIGIN);
+          ut_unit*                   ut_multiply(const ut_unit*
+                                     UNIT1, const ut_unit* UNIT2);
+          ut_unit*                   ut_invert(const ut_unit* UNIT);
+          ut_unit*                   ut_divide(const ut_unit* NUMER,
+                                     const ut_unit* DENOM);
+          ut_unit*                   ut_raise(const ut_unit* UNIT,
+                                     int POWER);
+          ut_unit*                   ut_root(const ut_unit* UNIT,
+                                     int ROOT);
+          ut_unit*                   ut_log(double BASE, const
+                                     ut_unit* REFERENCE);
+          ut_unit*                   ut_parse(const ut_system*
+                                     SYSTEM, const char* STRING,
+                                     ut_encoding ENCODING);
+          char*                      ut_trim(char* STRING,
+                                     ut_encoding ENCODING);
+          int                        ut_format(const ut_unit* UNIT,
+                                     char* BUF, size_t SIZE,
+                                     unsigned OPTS);
+          ut_status                  ut_accept_visitor(const
+                                     ut_unit* UNIT, const
+                                     ut_visitor* VISITOR, void* ARG);
+          double                     ut_encode_date(int YEAR, int
+                                     MONTH, int DAY);
+          double                     ut_encode_clock(int HOURS, int
+                                     MINUTES, double SECONDS);
+          double                     ut_encode_time(int YEAR, int
+                                     MONTH, int DAY, int HOUR, int
+                                     MINUTE, double SECOND);
+          void                       ut_decode_time(double VALUE,
+                                     int* YEAR, int* MONTH, int*
+                                     DAY, int* HOUR, int* MINUTE,
+                                     double* SECOND, double*
+                                     RESOLUTION);
+          ut_status                  ut_get_status(void);
+          void                       ut_set_status(ut_status STATUS);
+          int                        ut_handle_error_message(const
+                                     char* FMT, ...);
+          ut_error_message_handler   ut_set_error_message_handler(ut_error_message_handler
+                                     HANDLER);
+          int                        ut_write_to_stderr(const char*
+                                     FMT, va_list ARGS);
+          int                        ut_ignore(const char* FMT,
+                                     va_list ARGS);
+
+          float                      cv_convert_float(const
+                                     cv_converter* CONVERTER, float
+                                     VALUE);
+          double                     cv_convert_double(const
+                                     cv_converter* CONVERTER, double
+                                     VALUE);
+          float*                     cv_convert_floats(const
+                                     cv_converter* CONVERTER, const
+                                     float* IN, size_t COUNT, float*
+                                     OUT);
+          double*                    cv_convert_doubles(const
+                                     cv_converter* CONVERTER, const
+                                     double* CONST in, SIZE_T count,
+                                     DOUBLE* out);
+          void                       cv_free(cv_converter* CONV);
+
+   Compiling:
+     c89 -I _includedir_ ...
+
+   Where _includedir_ is the installation-directory for C header files
+(e.g., `/usr/local/include').
+
+   Linking:
+     c89 ... -L_libdir_ -ludunits2 -lexpat ... -lm
+
+   Where _libdir_ is the installation-directory for object code
+libraries (e.g., `/usr/local/lib').
+
+
+File: udunits2lib.info,  Node: Why,  Next: Unit-Systems,  Prev: Synopsis,  Up: Top
+
+2 What's a Unit Package Good For?
+*********************************
+
+The existance of a software package is justified by what you can do
+with it.  The three main things you can do with the UDUNIT-2 package are
+  1. *note Convert numeric values between compatible units: Value
+     Conversion.
+
+  2. Convert a string representation of a unit into a binary one --
+     enabling the programatic manipulation of units.  There are three
+     ways to do this:
+        * *note Get the unit: Extracting. from a *note unit-system::.
+          This requires that you know the unit's name or symbol and
+          that the unit is in a unit-system.
+
+        * *note Parse a string representation of the unit into its
+          binary representation: Parsing.  This requires that the
+          string be parsable by `*note ut_parse()::'.
+
+        * *note Explicity construct the unit from subcomponent units
+          using unit operations: Operations.
+
+  3. *note Convert a binary representation of a unit into a string:
+     Formatting. -- enabling the printing and storing of units in a
+     human-readable form.
+        While the above might seem to be trivial activities, their
+general availability at the time might have helped prevent the Mars
+Climate Orbiter (http://en.wikipedia.org/wiki/Mars_Climate_Orbiter)
+fiasco.
+
+
+File: udunits2lib.info,  Node: Unit-Systems,  Next: Value Conversion,  Prev: Why,  Up: Top
+
+3 Unit-Systems
+**************
+
+A unit-system is a set of units that are all defined in terms of the
+same set of base units.  In the SI system of units, for example, the
+base units are the meter, kilogram, second, ampere, kelvin, mole, and
+candela.  (For definitions of these base units, see
+`http://physics.nist.gov/cuu/Units/current.html'.)
+
+   In the UDUNITS-2 package, every accessible unit belongs to one and
+only one unit-system.  It is not possible to convert numeric values
+between units of different unit-systems.  Similarly, units belonging to
+different unit-systems always compare unequal.
+
+   There are several categories of operations on unit-systems:
+
+* Menu:
+
+* Obtaining::   How to obtain a unit-system.
+* Extracting::  Getting a unit from a unit-system.
+* Adding::      Adding new units to a unit-system.
+* Prefixes::    Add new unit-prefixes to a unit-system.
+* Misc::        Miscelaneous unit-system operations.
+
+
+File: udunits2lib.info,  Node: Obtaining,  Next: Extracting,  Up: Unit-Systems
+
+3.1 Obtaining a Unit-System
+===========================
+
+Typically, you would obtain a unit-system of predefined units by reading
+the default unit database using `*note ut_read_xml()::' with a `NULL'
+pathname argument.  If this doesn't quite match your needs, then there
+are alternatives.  Together with the typical solution, the means for
+obtaining a useful unit-system are (in order of increasing difficulty):
+
+   * Obtain the default unit-system using `*note ut_read_xml:
+     ut_read_xml().(NULL)'.
+
+   * Copy and customize the unit database and then call `*note
+     ut_read_xml()::' with the pathname of the customized database to
+     obtain a customized unit-system.
+
+   * Same as either of the above but then adding new units to the
+     unit-system using `*note ut_new_base_unit()::' and `*note
+     ut_new_dimensionless_unit()::'.
+
+   * Same as the above but also deriving new units using *note unit
+     operations: Operations.  and then adding them to the unit-system
+     using *note unit mapping: Mapping.
+
+   * Same as the above but starting with an empty unit-system obtained
+     from `*note ut_new_system()::', in which case you will definitely
+     have to start with `*note ut_new_base_unit()::' and `*note
+     ut_new_dimensionless_unit()::'.
+
+   You should pass every unit-system pointer to `*note
+ut_free_system()::' when you no longer need the corresponding
+unit-system.
+
+ -- Function: `ut_system*' ut_read_xml `(const char* PATH)'
+     Reads the XML-formatted unit-database specified by PATH and
+     returns the corresponding unit-sytem.  If PATH is `NULL', then the
+     pathname specified by the environment variable `UDUNITS2_XML_PATH'
+     is used if set; otherwise, the compile-time pathname of the
+     installed, default, unit database is used.  You should pass the
+     returned pointer to `ut_free_system()' when you no longer need the
+     unit-system.  If an error occurs, then this function writes an
+     error-message using `*note ut_handle_error_message()::' and
+     returns `NULL'.  Also, `*note ut_get_status()::' will return one
+     of the following:
+
+    `UT_OPEN_ARG'
+          PATH is non-`NULL' but the file couldn't be opened.  See
+          `errno' for the reason.
+
+    `UT_OPEN_ENV'
+          PATH is `NULL' and environment variable `UDUNITS2_XML_PATH'
+          is set but the file couldn't be opened.  See `errno' for the
+          reason.
+
+    `UT_OPEN_DEFAULT'
+          PATH is `NULL', environment variable `UDUNITS2_XML_PATH' is
+          unset, and the installed, default, unit database couldn't be
+          opened.  See `errno' for the reason.
+
+    `UT_OS'
+          Operating-system error.  See `errno'.
+
+    `UT_PARSE'
+          The database file couldn't be parsed.
+
+ -- Function: `ut_system*' ut_new_system `(void)'
+     Creates and returns a new unit-system.  On success, the
+     unit-system will be empty except for the dimensionless unit one.
+     You should pass the returned pointer to `ut_free_system()' when you
+     no longer need the unit-system.  If an error occurs, then this
+     function writes an error-message using `*note
+     ut_handle_error_message()::' and returns `NULL'.  Also, `*note
+     ut_get_status()::' will return the following:
+
+    `UT_OS'
+          Operating-system error.  See `errno'.
+
+
+File: udunits2lib.info,  Node: Extracting,  Next: Adding,  Prev: Obtaining,  Up: Unit-Systems
+
+3.2 Extracting Units from a Unit-System
+=======================================
+
+*NOTE_* This section covers low-level access to the indidual units of a
+*note unit-system::.  General parsing of arbitrary unit specifications
+is coverted in the section *note Parsing::.
+
+   A *note unit-system:: contains mappings from identifiers to units
+(and vice versa).  Consequently, once you have a unit-system, you can
+easily obtain a unit for which you know the name or symbol using the
+function `*note ut_get_unit_by_name()::' or `*note
+ut_get_unit_by_symbol()::'.
+
+ -- Function: `ut_unit*' ut_get_unit_by_name `(const ut_system* SYSTEM,
+          const char* NAME)'
+     Returns the unit to which NAME maps from the unit-system
+     referenced by SYSTEM or `NULL' if no such unit exists.  Name
+     comparisons are case-insensitive.  If this function returns
+     `NULL', then `*note ut_get_status()::' will return one of the
+     following:
+
+    `UT_SUCCESS'
+          NAME doesn't map to a unit of SYSTEM.
+
+    `UT_BAD_ARG'
+          SYSTEM or NAME is `NULL'.
+
+ -- Function: `ut_unit*' ut_get_unit_by_symbol `(const ut_system*
+          SYSTEM, const char* SYMBOL)'
+     Returns the unit to which SYMBOL maps from the unit-system
+     referenced by SYSTEM or `NULL' if no such unit exists.  Symbol
+     comparisons are case-sensitive.  If this function returns `NULL',
+     then `*note ut_get_status()::' will return one of the following:
+
+    `UT_SUCCESS'
+          SYMBOL doesn't map to a unit of SYSTEM.
+
+    `UT_BAD_ARG'
+          SYSTEM or SYMBOL is `NULL'.
+
+ -- Function: `ut_unit*' ut_get_dimensionless_unit_one `(const
+          ut_system* SYSTEM)'
+     Returns the dimensionless unit one of the unit-system referenced by
+     SYSTEM.  While not necessary, the returned pointer may be passed
+     to `ut_free()' when you no longer need the unit.  If SYSTEM is
+     `NULL', then this function writes an error-message using `*note
+     ut_handle_error_message()::' and returns `NULL'.  Also, `*note
+     ut_get_status()::' will return `UT_BAD_ARG'.
+
+
+File: udunits2lib.info,  Node: Adding,  Next: Prefixes,  Prev: Extracting,  Up: Unit-Systems
+
+3.3 Adding Units to a Unit-System
+=================================
+
+If you use `*note ut_read_xml()::', then you should not normally need to
+add any new units to a unit-system.
+
+   Because you get units via their names or symbols, adding a unit to a
+unit-system actually means mapping one or more identifiers (i.e., names
+or symbols) to the unit.  Thereafter, you can use `*note
+ut_get_unit_by_name()::' and `*note ut_get_unit_by_symbol()::' to
+retrieve the unit.  The mapping of identifiers to units is covered
+*note here: Mapping.
+
+   Having said that, it is possible to create a new base or
+dimensionless unit within a unit-system using `*note
+ut_new_base_unit()::' or `*note ut_new_dimensionless_unit()::'--you'll
+just also have to map identifiers to the newly-created unit in order to
+be able to retrieve it later by identifier.
+
+ -- Function: `ut_unit*' ut_new_base_unit `(ut_system* SYSTEM)'
+     Creates and adds a new base-unit to the unit-system referenced by
+     SYSTEM.  This function returns the new base-unit.  You should pass
+     the returned pointer to `ut_free()' when you no longer need the
+     unit.  If an error occurs, then this function writes an
+     error-message using `*note ut_handle_error_message()::' and
+     returns `NULL'.  Also, `*note ut_get_status()::' will return one
+     of the following:
+
+    `UT_BAD_ARG'
+          SYSTEM is `NULL'.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+     If you use `*note ut_read_xml()::', then you should not normally
+     need to call this function.
+
+ -- Function: `ut_unit*' ut_new_dimensionless_unit `(ut_system* SYSTEM)'
+     Creates and adds a new dimensionless-unit to the unit-system
+     referenced by SYSTEM.  This function returns the new
+     dimensionless-unit.  You should pass the returned pointer to
+     `ut_free()' when you no longer need the unit.  If an error occurs,
+     then this function writes an error-message using `*note
+     ut_handle_error_message()::' and returns `NULL'.  Also, `*note
+     ut_get_status()::' will return one of the following:
+
+    `UT_BAD_ARG'
+          SYSTEM is `NULL'.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+     If you use `*note ut_read_xml()::', then you should not normally
+     need to call this function.
+
+
+File: udunits2lib.info,  Node: Prefixes,  Next: Misc,  Prev: Adding,  Up: Unit-Systems
+
+3.4 Adding Unit-Prefixes to a Unit-System
+=========================================
+
+A prefix is a word or symbol that is appended to the beginning of a
+word or symbol that represents a unit in order to modify the value of
+that unit.  For example, the prefix "kilo" in the word "kiloamperes"
+changes the value from one ampere to one-thousand amperes.
+
+   If you use `*note ut_read_xml()::', then you should not normally
+need to add any new prefixes to a unit-system.
+
+ -- Function: `*note ut_status::' ut_add_name_prefix `(ut_system*
+          SYSTEM, const char* NAME, double VALUE)'
+     Adds the name-prefix NAME with the value VALUE to the unit-system
+     SYSTEM.  A name-prefix is something like "mega" or "milli".
+     Comparisons between name-prefixes are case-insensitive.  This
+     function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          SYSTEM or NAME is `NULL', or VALUE is `0'.
+
+    `UT_EXISTS'
+          NAME already maps to a different value.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+ -- Function: `*note ut_status::' ut_add_symbol_prefix `(ut_system*
+          SYSTEM, const char* SYMBOL, double VALUE)'
+     Adds the symbol-prefix SYMBOL with the value VALUE to the
+     unit-system SYSTEM.  A symbol-prefix is something like "M" or "m".
+     Comparisons between symbol-prefixes are case-sensitive.  This
+     function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          SYSTEM or SYMBOL is `NULL', or VALUE is `0'.
+
+    `UT_EXISTS'
+          SYMBOL already maps to a different value.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+
+File: udunits2lib.info,  Node: Misc,  Prev: Prefixes,  Up: Unit-Systems
+
+3.5 Miscelaneous Operations on Unit-Systems
+===========================================
+
+ -- Function: `void' ut_free_system `(ut_system* SYSTEM)'
+     Frees the unit-system referenced by SYSTEM.  All
+     unit-to-identifier and identifier-to-unit mappings are removed.
+     Use of `system' after this function returns results in undefined
+     behavior.
+
+ -- Function: `*note ut_status::' ut_set_second `(const ut_unit*
+          SECOND)'
+     Sets the "second" unit of a unit-system.  This function must be
+     called before the first call to `ut_offset_by_time()' for a unit
+     in the same unit-system.  `*note ut_read_xml()::' calls this
+     function if the unit-system it's reading contains a unit named
+     "second".  This function returns one of the following:
+
+    `UT_SUCCESS'
+          The "second" unit of SYSTEM was successfully set.
+
+    `UT_EXISTS'
+          The "second" unit of SYSTEM is set to a different unit.
+
+    `UT_BAD_ARG'
+          SECOND is `NULL'.
+
+
+File: udunits2lib.info,  Node: Value Conversion,  Next: Parsing,  Prev: Unit-Systems,  Up: Top
+
+4 Converting Values Between Units
+*********************************
+
+You can convert numeric values in one unit to equivalent values in
+another, compatible unit by means of a converter.  For example
+
+     #include <udunits2.h>
+     ...
+         ut_unit*      from = ...;
+         ut_unit*      to = ...;
+         cv_converter* converter = ut_get_converter(from, to);
+         double       fromValue = ...;
+         double       toValue = cv_convert_double(converter, fromValue);
+
+         cv_free(converter);
+
+   The converter API is declared in the header-file `<converter.h>',
+which is automatically included by the UDUNITS-2 header-file
+(`<udunits2.h>') so you don't need to explicitly include it.
+
+ -- Function: `int' ut_are_convertible `(const ut_unit* UNIT1, uconst
+          t_unit* UNIT2)'
+     Indicates if numeric values in unit UNIT1 are convertible to
+     numeric values in unit UNIT2 via *note ut_get_converter()::.  In
+     making this determination, dimensionless units are ignored.  This
+     function returns a non-zero value if conversion is possible;
+     otherwise, `0' is returned and *note ut_get_status():: will return
+     one of the following:
+
+    `UT_BAD_ARG'
+          UNIT1 or UNIT2 is `NULL'.
+
+    `UT_NOT_SAME_SYSTEM'
+          UNIT1 and UNIT2 belong to different *note unit-system::s.
+
+    `UT_SUCCESS'
+          Conversion between the units is not possible (e.g., UNIT1
+          refers to a meter and UNIT2 refers to a kilogram.
+
+ -- Function: `cv_converter*' ut_get_converter `(ut_unit* const FROM,
+          ut_unit* const TO)'
+     Creates and returns a converter of numeric values in the FROM unit
+     to equivalent values in the TO unit.  You should pass the returned
+     pointer to `cv_free()' when you no longer need the converter.  If
+     an error occurs, then this function writes an error-message using
+     `*note ut_handle_error_message()::' and returns `NULL'.  Also,
+     `*note ut_get_status()::' will return one of the following:
+
+    `UT_BAD_ARG'
+          FROM or TO is `NULL'.
+
+    `UT_NOT_SAME_SYSTEM'
+          The units FROM and TO don't belong to the same unit-system.
+
+    `UT_MEANINGLESS'
+          The units belong to the same unit-system but conversion
+          between them is meaningless (e.g., conversion between seconds
+          and kilograms is meaningless).
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+ -- Function: `float' cv_convert_float `(const cv_converter* CONVERTER,
+          const float VALUE)'
+     Converts the single floating-point value VALUE and returns the new
+     value.
+
+ -- Function: `double' cv_convert_double `(const cv_converter*
+          CONVERTER, const double VALUE)'
+     Converts the single double-precision value VALUE and returns the
+     new value.
+
+ -- Function: `float*' cv_convert_floats `(const cv_converter*
+          CONVERTER, const float* IN, size_t COUNT, float* OUT)'
+     Converts the COUNT floating-point values starting at IN, writing
+     the new values starting at OUT and, as a convenience, returns OUT.
+     The input and output arrays may overlap or be identical.
+
+ -- Function: `double*' cv_convert_doubles `(const cv_converter*
+          CONVERTER, const double* IN, size_t COUNT, double* OUT)'
+     Converts the COUNT double-precision values starting at IN, writing
+     the new values starting at OUT and, as a convenience, returns OUT.
+     The input and output arrays may overlap or be identical.
+
+ -- Function: `void' cv_free `(cv_converter* CONV)';
+     Frees resources associated with the converter referenced by CONV.
+     You should call this function when you no longer need the
+     converter.  Use of CONV upon return results in undefined behavior.
+
+
+File: udunits2lib.info,  Node: Parsing,  Next: Syntax,  Prev: Value Conversion,  Up: Top
+
+5 Parsing a String into a Unit
+******************************
+
+Here's an example of parsing a string representation of a unit into its
+binary representation:
+
+     #include <stdlib.h>
+     #include <udunits2.h>
+     ...
+         ut_system*   unitSystem = *note ut_read_xml(NULL): ut_read_xml().;
+         const char* string = "kg.m2/s3";
+         ut_unit*     watt = *note ut_parse: ut_parse().(unitSystem, string, UT_ASCII);
+
+         if (watt == NULL) {
+             /* Unable to parse string. */
+         }
+         else {
+             /* Life is good. */
+         }
+
+ -- Function: `ut_unit*' ut_parse `(const ut_system* SYSTEM, const
+          char* STRING, ut_encoding ENCODING)'
+     Returns the binary unit representation corresponding to the string
+     unit representation STRING in the character-set ENCODING using the
+     unit-system SYSTEM.  STRING must have no leading or trailing
+     whitespace (see `*note ut_trim()::').  If an error occurs, then
+     this function returns `NULL' and `*note ut_get_status()::' will
+     return one of the following:
+
+    `UT_BAD_ARG'
+          SYSTEM or STRING is `NULL'.
+
+    `UT_SYNTAX'
+          STRING contained a syntax error.
+
+    `UT_UNKNOWN'
+          STRING contained an unknown identifier.
+
+    `UT_OS'
+          Operating-system failure.  See `errno' for the reason.
+
+ -- Function: `size_t' ut_trim `(char* STRING, ut_encoding ENCODING)'
+     Removes all leading and trailing whitespace from the
+     NUL-terminated string STRING.  Returns STRING, which is modified
+     if it contained leading or trailing whitespace.
+
+
+File: udunits2lib.info,  Node: Syntax,  Next: Formatting,  Prev: Parsing,  Up: Top
+
+6 Unit Syntax
+*************
+
+For the most part, the UDUNITS-2 package follows the syntax for
+unit-strings promulgated by the US National Institute for Standards and
+Technology (NIST).  Details, of which, can be found at
+`http://physics.nist.gov/cuu/Units/index.html'.  The one general
+exception to this is the invention of a syntax for "offset"-units
+(e.g., the definition of the degree Celsius is "K @ 273.15").
+
+* Menu:
+
+* Examples::  Examples of unit specifications
+* Grammar::   Formal unit grammar
+
+
+File: udunits2lib.info,  Node: Examples,  Next: Grammar,  Up: Syntax
+
+6.1 Unit Specification Examples
+===============================
+
+     String Type   Using Names             Using       Comment
+                                           Symbols     
+     -------------------------------------------------------------------------------------------------------- 
+     Simple        meter                   m           
+     Raised        meter^2                 m2          higher precedence than multiplying or dividing
+     Product       newton meter            N.m         
+     Quotient      meter per second        m/s         
+     Scaled        60 second               60 s        
+     Prefixed      kilometer               km          
+     Offset        kelvin from 273.15      K @ 273.15  lower precedence than multiplying or dividing
+     Logarithmic   lg(re milliwatt)        lg(re mW)   "lg" is base 10, "ln" is base e, and "lb" is base 2
+     Grouped       (5 meter)/(30 second)   (5 m)/(30   
+                                           s)          
+
+The above may be combined, e.g., "0.1 lg(re m/(5 s)^2) @ 50".
+
+   You may also look at the `<def>' elements in *note the units
+database: Database. to see examples of string unit specifications.
+
+   You may use the `*note udunits2: (udunits2prog)Top.' utility to
+experiment with string unit specifications.
+
+
+File: udunits2lib.info,  Node: Grammar,  Prev: Examples,  Up: Syntax
+
+6.2 Unit Grammar
+================
+
+Here is the unit-syntax understood by the UDUNITS-2 package.  Words
+printed _Thusly_ indicate non-terminals; words printed THUSLY indicate
+terminals; and words printed <thusly> indicate lexical elements.
+
+     _Unit-Spec: one of_
+             nothing
+             _Shift-Spec_
+
+     _Shift-Spec: one of_
+             _Product-Spec_
+             _Product-Spec_ SHIFT REAL
+             _Product-Spec_ SHIFT INT
+             _Product-Spec_ SHIFT _Timestamp_
+
+     _Product-Spec: one of_
+             _Power-Spec_
+             _Product-Spec_ _Power-Spec_
+             _Product-Spec_ MULTIPLY _Power-Spec_
+             _Product-Spec_ DIVIDE _Power-Spec_
+
+     _Power-Spec: one of_
+             _Basic-Spec_
+             _Basic-Spec_ INT
+             _Basic-Spec_ EXPONENT
+             _Basic-Spec_ RAISE INT
+
+     _Basic-Spec: one of_
+             ID
+             "(" _Shift-Spec_ ")"
+             LOGREF _Product_Spec_ ")"
+             _Number_
+
+     _Number: one of_
+             INT
+             REAL
+
+     _Timestamp: one of_
+             DATE
+             DATE CLOCK
+             DATE CLOCK CLOCK
+             DATE CLOCK INT
+             DATE CLOCK ID
+             TIMESTAMP
+             TIMESTAMP INT
+             TIMESTAMP ID
+
+     SHIFT:
+             <space>* <shift_op> <space>*
+
+     <shift_op>: one of
+             "@"
+             "after"
+             "from"
+             "since"
+             "ref"
+
+     REAL:
+             the usual floating-point format
+
+     INT:
+             the usual integer format
+
+     MULTIPLY: one of
+             "-"
+             "."
+             "*"
+             <space>+
+             <centered middot>
+
+     DIVIDE:
+             <space>* <divide_op> <space>*
+
+     <divide_op>: one of
+             per
+             PER
+             "/"
+
+     EXPONENT:
+             ISO-8859-9 or UTF-8 encoded exponent characters
+
+     RAISE: one of
+             "^"
+             "**"
+
+     ID: one of
+             <id>
+             "%"
+             "'"
+             "\""
+             degree sign
+             greek mu character
+
+     <id>:
+             <alpha> <alphanum>*
+
+     <alpha>:
+             [A-Za-z_]
+             ISO-8859-1 alphabetic characters
+             non-breaking space
+
+     <alphanum>: one of
+             <alpha>
+             <digit>
+
+     <digit>:
+             [0-9]
+
+     LOGREF:
+             <log> <space>* <logref>
+
+     <log>: one of
+             "log"
+             "lg"
+             "ln"
+             "lb"
+
+     <logref>:
+             "(" <space>* <re> ":"? <space>*
+
+     DATE:
+             <year> "-" <month> ("-" <day>)?
+
+     <year>:
+             [+-]?[0-9]{1,4}
+
+     <month>:
+             "0"?[1-9]|1[0-2]
+
+     <day>:
+             "0"?[1-9]|[1-2][0-9]|"30"|"31"
+
+     CLOCK:
+             <hour> ":" <minute> (":" <second>)?
+
+     TIMSTAMP:
+             <year> (<month> <day>?)? "T" <hour> (<minute> <second>?)?
+
+     <hour>:
+             [+-]?[0-1]?[0-9]|2[0-3]
+
+     <minute>:
+             [0-5]?[0-9]
+
+     <second>:
+             (<minute>|60) (\.[0-9]*)?
+
+
+File: udunits2lib.info,  Node: Formatting,  Next: Operations,  Prev: Syntax,  Up: Top
+
+7 Formatting a Unit into a String
+*********************************
+
+Use the `*note ut_format()::' function to obtain the string
+representation of a binary unit.  For example, the following gets the
+definition of the unit "watt" in ASCII characters using unit-symbols
+rather than unit-names:
+
+     ut_unit*     watt = ...;
+     char        buf[128];
+     unsigned    opts = *note UT_ASCII: ut_encoding. | UT_DEFINITION;
+     int         len = *note ut_format: ut_format().(watt, buf, sizeof(buf), opts);
+
+     if (len == -1) {
+         /* Couldn't get string */
+     }
+     else if (len == sizeof(buf)) {
+         /* Entire buffer used: no terminating NUL */
+     }
+     else {
+         /* Have string with terminating NUL */
+     }
+
+ -- Function: `int' ut_format `(const ut_unit* UNIT, char* BUF, size_t
+          SIZE, unsigned OPTS)'
+     Formats the unit UNIT (i.e., returns its string representation)
+     into the buffer pointed-to by BUF of size SIZE.  The argument OPTS
+     specifies how the formatting is to be done and is a bitwise OR of
+     a *note ut_encoding:: value and zero or more of the following:
+
+    `UT_NAMES'
+          Use unit names instead of symbols.
+
+    `UT_DEFINITION'
+          The formatted string should be the definition of UNIT in terms
+          of basic-units instead of stopping any expansion at the
+          highest level possible.
+
+     On succes, this function returns the number of characters written
+     into BUF, which will be less than or equal to SIZE.  If the number
+     is equal to SIZE, then the buffer is too small to have a
+     terminating `NUL' character.
+
+     On failure, this function returns `-1' and *note ut_get_status()::
+     will return one of the following:
+
+    `UT_BAD_ARG'
+          UNIT or BUF is `NULL', or OPTS contains the bit patterns of
+          both `UT_LATIN1' and `UT_UTF8'.
+
+    `UT_CANT_FORMAT'
+          UNIT can't be formatted in the desired manner (e.g., OPTS
+          contains `UT_ASCII' but UNIT doesn't have an identifier in
+          that character-set or OPTS doesn't contain UT_NAMES and a
+          necessary symbol doesn't exist).
+
+
+File: udunits2lib.info,  Node: Operations,  Next: Mapping,  Prev: Formatting,  Up: Top
+
+8 Unit Operations
+*****************
+
+You can use unit operations to construct new units, get information
+about units, or compare units.
+
+* Menu:
+
+* Unary::       Operations on a single unit
+* Binary::      Operations on pairs of units
+
+
+File: udunits2lib.info,  Node: Unary,  Next: Binary,  Up: Operations
+
+8.1 Unary Unit Operations
+=========================
+
+ -- Function: `void' ut_free `(ut_unit* UNIT)'
+     Frees resources associated with UNIT.  You should invoke this
+     function on every unit that you no longer need.  Use of UNIT upon
+     return from this function results in undefined behavior.
+
+ -- Function: `ut_unit*' ut_scale `(double FACTOR, const ut_unit* UNIT)'
+     Returns a unit equivalent to another unit scaled by a numeric
+     factor.  For example:
+          const ut_unit*   meter = ...
+          const ut_unit*   kilometer = ut_scale(1000, meter);
+     The returned unit is equivalent to UNIT multiplied by FACTOR.  You
+     should pass the returned pointer to `*note ut_free()::' when you
+     no longer need the unit.
+
+ -- Function: `ut_unit*' ut_offset `(const ut_unit* UNIT, double
+          OFFSET)'
+     Returns a unit equivalent to another unit relative to a particular
+     origin.  For example:
+          const ut_unit*   kelvin = ...
+          const ut_unit*   celsius = ut_offset(kelvin, 273.15);
+     The returned unit is equivalent to UNIT with an origin of OFFSET.
+     You should pass the returned pointer to `*note ut_free()::' when
+     you no longer need the unit.  If an error occurs, then this
+     function returns `NULL' and `*note ut_get_status()::' will return
+     one of the following:
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system error.  See `errno' for the reason.
+
+ -- Function: `ut_unit*' ut_offset_by_time `(const ut_unit* const UNIT,
+          const double ORIGIN)'
+     Returns a timestamp-unit equivalent to the time unit UNIT
+     referenced to the time-origin ORIGIN (as returned by `*note
+     ut_encode_time()::').  For example:
+          const ut_unit*   second = ...
+          const ut_unit*   secondsSinceTheEpoch =
+              ut_offset_by_time(second, ut_encode_time(1970, 1, 1, 0, 0, 0.0));
+     Leap seconds are not taken into account.  You should pass the
+     returned pointer to `*note ut_free()::' when you no longer need
+     the unit.  If an error occurs, then this function returns `NULL'
+     and `*note ut_get_status()::' will return one of the following:
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system error.  See `errno' for the reason.
+
+    `UT_MEANINGLESS'
+          Creation of a timestamp unit based on UNIT is not meaningful.
+          It might not be a time-unit, for example.
+
+    `UT_NO_SECOND'
+          The associated unit-system doesn't contain a "second" unit.
+          See `*note ut_set_second()::'.
+
+     *CAUTION:* The timestamp-unit was created to be analogous to, for
+     example, the degree celsius--but for the time dimension.  I've
+     come to believe, however, that creating such a unit was a mistake,
+     primarily because users try to use the unit in ways for which it
+     was not designed (such as converting dates in a calendar whose
+     year is exactly 365 days long).  Such activities are much better
+     handled by a dedicated calendar package.  Please be careful about
+     using timestamp-units.  See also the section on *note The Handling
+     of Time: Time.
+
+
+ -- Function: `ut_unit*' ut_invert `(const ut_unit* UNIT)'
+     Returns the inverse (i.e., reciprocal) of the unit UNIT.  This
+     convenience function is equal to `*note ut_raise(UNIT,-1):
+     ut_raise().'.  You should pass the returned pointer to `*note
+     ut_free()::' when you no longer need the unit.  If an error occurs,
+     then this function writes an error-message using `*note
+     ut_handle_error_message()::' and returns `NULL'.  Also, `*note
+     ut_get_status()::' will return one of the following:
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system error. See `errno' for the reason.
+
+ -- Function: `ut_unit*' ut_raise `(const ut_unit* UNIT, int POWER)'
+     Returns the unit equal to unit UNIT raised to the power POWER.
+     You should pass the returned pointer to `ut_free()' when you no
+     longer need the unit.  If an error occurs, then this function
+     writes an error-message using `*note ut_handle_error_message()::'
+     and returns `NULL'.  Also, `*note ut_get_status()::' will return
+     one of the following:
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system error. See `errno' for the reason.
+
+ -- Function: `ut_unit*' ut_root `(const ut_unit* UNIT, int ROOT)'
+     Returns the unit equal to the ROOT root of unit UNIT.  You should
+     pass the returned pointer to `ut_free()' when you no longer need
+     the unit.  If an error occurs, then this function writes an
+     error-message using `*note ut_handle_error_message()::' and
+     returns `NULL'.  Also, `*note ut_get_status()::' will return one
+     of the following:
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+    `UT_MEANINGLESS'
+          It's meaningless to take the given root of the given unit.
+          This could be because the resulting unit would have
+          fractional (i.e., non-integral) dimensionality, or because
+          the unit is, for example, a logarithmic unit.
+
+    `UT_OS'
+          Operating-system error. See `errno' for the reason.
+
+ -- Function: `ut_unit*' ut_log `(double BASE, const ut_unit*
+          REFERENCE)'
+     Returns the logarithmic unit corresponding to the logarithmic base
+     BASE and a reference level specified as the unit REFERENCE.  For
+     example, the following creates a decibel unit with a one milliwatt
+     reference level:
+               const ut_unit* milliWatt = ...;
+               const ut_unit* bel_1_mW = ut_log(10.0, milliWatt);
+
+               if (bel_1_mW != NULL) {
+                   const ut_unit* decibel_1_mW = *note ut_scale: ut_scale().(0.1, bel_1_mW);
+
+                   *note ut_free: ut_free().(bel_1_mW);   /* no longer needed */
+
+                   if (decibel_1_mW != NULL) {
+                       /* Have decibel unit with 1 mW reference */
+                       ...
+                       *note ut_free: ut_free().(decibel_1_mW);
+                   }                 /* "decibel_1_mW" allocated */
+               }
+     You should pass the returned pointer to `ut_free()' when you no
+     longer need the unit.  If an error occurs, then this function
+     writes an error-message using `*note ut_handle_error_message()::'
+     and returns `NULL'.  Also, `*note ut_get_status()::' will return
+     one of the following:
+
+    `UT_BAD_ARG'
+          REFERENCE is `NULL'.
+
+    `UT_OS'
+          Operating-system error. See `errno' for the reason.
+
+    `UT_BAD_ARG'
+          BASE is invalid (e.g., it must be greater than one).
+
+ -- Function: `const char*' ut_get_name `(const ut_unit* UNIT,
+          ut_encoding ENCODING)'
+     Returns the name to which the unit referenced by UNIT maps in the
+     character-encoding specified by ENCODING.  If this function
+     returns `NULL', then `*note ut_get_status()::' will return one of
+     the following:
+
+    `UT_BAD_ARG'
+          NAME is `NULL'.
+
+    `UT_SUCCESS'
+          UNIT doesn't map to a name in the given character-set.
+
+ -- Function: `const char*' ut_get_symbol `(const ut_unit* UNIT,
+          ut_encoding ENCODING)'
+     Returns the symbol to which the unit referenced by UNIT maps in the
+     character-encoding specified by ENCODING.  If this function
+     returns `NULL', then `*note ut_get_status()::' will return one of
+     the following:
+
+    `UT_BAD_ARG'
+          SYMBOL is `NULL'.
+
+    `UT_SUCCESS'
+          UNIT doesn't map to a symbol in the given character-set.
+
+ -- Function: `ut_system*' ut_get_system `(const ut_unit* UNIT)'
+     Returns the unit-system to which the unit referenced by UNIT
+     belongs.  If UNIT is `NULL', then this function writes an
+     error-message using `*note ut_handle_error_message()::' and
+     returns `NULL'.  Also, `*note ut_get_status()::' will return
+     `UT_BAD_ARG'.
+
+ -- Function: `int' ut_is_dimensionless `(const ut_unit* UNIT)'
+     Indicates if unit UNIT is dimensionless (like "radian").  This
+     function returns a non-zero value if the unit is dimensionfull;
+     otherwise, `0' is returned and *note ut_get_status():: will return
+     one of the following:
+
+    `UT_BAD_ARG'
+          UNIT1 is `NULL'.
+
+    `UT_SUCCESS'
+          The unit is dimensionless.
+
+ -- Function: `ut_unit*' ut_clone `(const ut_unit* UNIT)'
+     Returns a copy of the unit referenced by UNIT.  You should pass
+     the returned pointer to `ut_free()' when you no longer need the
+     unit.  If an error occurs, then this function writes an
+     error-message using `*note ut_handle_error_message()::' and
+     returns `NULL'.  Also, `*note ut_get_status()::' will return one
+     of the following:
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+     If you use `*note ut_read_xml()::', then you should not normally
+     need to call this function.
+
+ -- Function: `*note ut_status::' ut_accept_visitor `(const ut_unit*
+          UNIT, const *note ut_visitor: ut_visitor.* VISITOR, void*
+          ARG)'
+     Accepts the visitor VISITOR to the unit UNIT.  The argument ARG is
+     passed to the visitor's functions.  This function returns one of
+     the following:
+
+    `UT_BAD_ARG'
+          VISITOR or UNIT is `NULL'.
+
+    `UT_VISIT_ERROR'
+          An error occurred in VISITOR while visiting UNIT.
+
+    `UT_SUCCESS'
+          Success.
+
+ -- Data type: ut_visitor int foo(int) int bar(int, int)
+     You pass a pointer to a data object of this type if and when you
+     call `*note ut_accept_visitor()::'.  It contains the following
+     pointers to functions that implement your unit-visitor:
+
+    `*note ut_status:: (*visit_basic)(const ut_unit* UNIT, void* ARG);'
+          Visits the basic-unit UNIT.  A basic-unit is a base unit like
+          "meter" or a non-dimensional but named unit like "radian".
+          This function returns `*note UT_SUCCESS: ut_status.' on and
+          only on success.
+
+    `*note ut_status:: (*visit_product)(const ut_unit* UNIT, int COUNT, const ut_unit* const* BASICUNITS, const int* POWERS, void* ARG);'
+          Visits the product-unit UNIT.  The product-unit is a product
+          of the COUNT basic-units referenced by BASICUNITS, each
+          raised to their respective, non-zero power in POWERS.  This
+          function returns `*note UT_SUCCESS: ut_status.' on and only
+          on success.
+
+    `*note ut_status:: (*visit_galilean)(const ut_unit* UNIT, double SCALE, const ut_unit* UNDERLYINGUNIT, double ORIGIN, void* arg);'
+          Visits the Galilean-unit UNIT.  The Galilean-unit has the
+          underlying unit UNDERLYINGUNIT and either the non-unity scale
+          factor SCALE or the non-zero origin ORIGIN, or both.  This
+          function returns `*note UT_SUCCESS: ut_status.' on and only
+          on success.
+
+    `*note ut_status:: (*visit_timestamp)(const ut_unit* UNIT, const ut_unit* TIMEUNIT, double ORIGIN, void* ARG);'
+          Visits the timestamp-unit UNIT.  The timestamp-unit has the
+          underlying unit of time TIMEUNIT and the `*note
+          ut_encode_time()::'-encoded time-origin ORIGIN.  This
+          function returns `*note UT_SUCCESS: ut_status.' on and only
+          on success.
+
+    `*note ut_status:: (*visit_logarithmic)(const ut_unit* UNIT, double BASE, const ut_unit* REFERENCE, void* ARG);'
+          Visits the logarithmic-unit UNIT.  The logarithmic-unit has
+          the logarithmic base BASE and the reference-level is
+          specified by the unit REFERENCE.  This function returns
+          `*note UT_SUCCESS: ut_status.' on and only on success.
+
+
+File: udunits2lib.info,  Node: Binary,  Prev: Unary,  Up: Operations
+
+8.2 Binary Unit Operations
+==========================
+
+Binary unit operations act on two units.
+
+   *NOTE_* The functions `*note ut_are_convertible()::' and `*note
+ut_get_converter()::' are also binary unit operations but are
+documented elsewhere.
+
+ -- Function: `ut_unit*' ut_multiply `(const ut_unit* UNIT1, const
+          ut_unit* UNIT2)'
+     Returns the result of multiplying unit UNIT1 by unit UNIT2.  You
+     should pass the pointer to *note ut_free():: when you no longer
+     need the unit On failure, this function returns `NULL' and *note
+     ut_get_status():: will return one of the following:
+
+    `UT_BAD_ARG'
+          UNIT1 or UNIT2 is `NULL'.
+
+    `UT_NOT_SAME_SYSTEM'
+          UNIT1 and UNIT2 belong to different *note unit-system::s.
+
+    `UT_OS'
+          Operating-system error. See ERRNO for the reason.
+
+ -- Function: `ut_unit*' ut_divide `(const ut_unit* NUMER, const
+          ut_unit* DENOM)'
+     Returns the result of dividing unit NUMER by unit DENOM.  You
+     should pass the pointer to *note ut_free():: when you no longer
+     need the unit On failure, this function returns `NULL' and *note
+     ut_get_status():: will return one of the following:
+
+    `UT_BAD_ARG'
+          NUMER or DENOM is `NULL'.
+
+    `UT_NOT_SAME_SYSTEM'
+          UNIT1 and UNIT2 belong to different *note unit-system::s.
+
+    `UT_OS'
+          Operating-system error. See `errno' for the reason.
+
+ -- Function: `int' ut_compare `(const ut_unit* UNIT1, const ut_unit*
+          UNIT2)'
+     Compares two units.  Returns a value less than, equal to, or
+     greater than zero as UNIT1 is considered less than, equal to, or
+     greater than UNIT2, respectively.  Units from different *note
+     unit-system::s never compare equal.  The value zero is also
+     returned if both unit pointers are `NULL'.
+
+ -- Function: `int' ut_same_system `(const ut_unit* UNIT1, const
+          ut_unit* UNIT2)'
+     Indicates if two units belong to the same unit-system.  This
+     function returns a non-zero value if the two units belong to the
+     same *note unit-system::; otherwise, `0' is returned and *note
+     ut_get_status():: will return one of the following:
+
+    `UT_BAD_ARG'
+          UNIT1 or UNIT2 is `NULL'.
+
+    `UT_SUCCESS'
+          The units belong to different *note unit-system::s.
+
+
+File: udunits2lib.info,  Node: Mapping,  Next: Time,  Prev: Operations,  Up: Top
+
+9 Mapping Between Identifiers and Units
+***************************************
+
+Within a unit-system, you can map an identifier to a unit and vice
+versa.  If an identifier maps to a unit, then the unit can be retrieved
+from the unit-system via the identifier.  Similarly, if a unit maps to
+an identifier, then the unit can be printed using the identifier.
+
+   There a two kinds of identifiers: names and symbols.
+
+* Menu:
+
+* Names::       Mapping between units and names.
+* Symbols::     Mapping between units and symbols.
+
+
+File: udunits2lib.info,  Node: Names,  Next: Symbols,  Up: Mapping
+
+9.1 Names
+=========
+
+You can map a name to a unit and vice versa.  If you use `*note
+ut_read_xml()::', then you shouldn't normally need to do this.
+
+ -- Function: `*note ut_status::' ut_map_name_to_unit `(const char*
+          NAME, const ut_encoding ENCODING, const ut_unit* UNIT)'
+     Maps the name referenced by NAME, in character-set ENCODING, to
+     the unit referenced by UNIT in the unit-system that contains UNIT.
+     This function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          NAME or UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+    `UT_EXISTS'
+          NAME already maps to a different unit.
+
+ -- Function: `*note ut_status::' ut_unmap_name_to_unit `(ut_system*
+          SYSTEM, const char* NAME, const ut_encoding ENCODING)'
+     Removes any mapping from name NAME, in character-set ENCODING, to
+     a unit in unit-system SYSTEM.  This function returns one of the
+     following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          SYSTEM or NAME is `NULL'.
+
+ -- Function: `*note ut_status::' ut_map_unit_to_name `(const ut_unit*
+          UNIT, const char* NAME, ut_encoding ENCODING)'
+     Maps the unit UNIT to the name NAME, which is in character-set
+     ENCODING, in the unit-system that contains the unit.  This
+     function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          UNIT or NAME is `NULL', or NAME is not in the character-set
+          ENCODING.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+    `UT_EXISTS'
+          UNIT already maps to a different name.
+
+ -- Function: `*note ut_status::' ut_unmap_unit_to_name `(const
+          ut_unit* UNIT, ut_encoding ENCODING)'
+     Removes any mapping from unit UNIT to a name in character-set
+     ENCODING from the unit-system that contains the unit.  This
+     function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+
+File: udunits2lib.info,  Node: Symbols,  Prev: Names,  Up: Mapping
+
+9.2 Symbols
+===========
+
+You can map a symbol to a unit and vice versa.  If you use `*note
+ut_read_xml()::', then you shouldn't normally need to do this.
+
+ -- Function: `*note ut_status::' ut_map_symbol_to_unit `(const char*
+          SYMBOL, const ut_encoding ENCODING, const ut_unit* UNIT)'
+     Maps the symbol referenced by SYMBOL, in character-set ENCODING,
+     to the unit referenced by UNIT in the unit-system that contains
+     UNIT.  This function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          SYMBOL or UNIT is `NULL'.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+    `UT_EXISTS'
+          SYMBOL already maps to a different unit.
+
+ -- Function: `*note ut_status::' ut_unmap_symbol_to_unit `(ut_system*
+          SYSTEM, const char* SYMBOL, const ut_encoding ENCODING)'
+     Removes any mapping from symbol SYMBOL, in character-set ENCODING,
+     to a unit in unit-system SYSTEM.  This function returns one of the
+     following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          SYSTEM or SYMBOL is `NULL'.
+
+ -- Function: `*note ut_status::' ut_map_unit_to_symbol `(const
+          ut_unit* UNIT, const char* SYMBOL, ut_encoding ENCODING)'
+     Maps the unit UNIT to the symbol SYMBOL, which is in character-set
+     ENCODING, in the unit-system that contains the unit.  This
+     function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          UNIT or SYMBOL is `NULL'.
+
+    `UT_BAD_ARG'
+          Symbol SYMBOL is not in the character-set ENCODING.
+
+    `UT_OS'
+          Operating-system failure.  See `errno'.
+
+    `UT_EXISTS'
+          UNIT already maps to a different symbol.
+
+ -- Function: `*note ut_status::' ut_unmap_unit_to_symbol `(const
+          ut_unit* UNIT, ut_encoding ENCODING)'
+     Removes any mapping from unit UNIT to a symbol in character-set
+     ENCODING from the unit-system that contains the unit.  This
+     function returns one of the following:
+
+    `UT_SUCCESS'
+          Success.
+
+    `UT_BAD_ARG'
+          UNIT is `NULL'.
+
+
+File: udunits2lib.info,  Node: Time,  Next: Errors,  Prev: Mapping,  Up: Top
+
+10 The Handling of Time
+***********************
+
+You should use a true calendar package rather than the UDUNITS-2 package
+to handle time.  Having said that, many people use the time-handling
+capabilities of the UDUNITS-2 package because it supports "units" like
+"`seconds since 1970-01-01'".  You should be aware, however, that the
+hybrid Gregorian/Julian calendar used by the UDUNITS-2 package _cannot
+be changed_.  Dates on or after 1582-10-15 are assumed to be Gregorian
+dates; dates before that are assumed to be Julian dates.  In particular,
+the year 1 BCE is immediately followed by the year 1 CE.
+
+   In general, the UDUNITS-2 package handles time by encoding it as
+double-precision value, which can then be acted upon arithmetically.
+
+ -- Function: `double' ut_encode_time `(int YEAR, int MONTH, int DAY,
+          int HOUR, int MINUTE, double SECOND)'
+     Encodes a time as a double-precision value.  This convenience
+     function is equivalent to
+          *note ut_encode_date: ut_encode_date().(YEAR,MONTH,DAY) + *note ut_encode_clock: ut_encode_clock().(HOUR,MINUTE,SECOND)
+
+ -- Function: `double' ut_encode_date `(int YEAR, int MONTH, int DAY)'
+     Encodes a date as a double-precision value.  You probably won't
+     use this function.  Dates on or after 1582-10-15 are assumed to be
+     Gregorian dates; dates before that are assumed to be Julian dates.
+     In particular, the year 1 BCE is immediately followed by the year
+     1 CE.
+
+ -- Function: `double' ut_encode_clock `(int HOUR, int MINUTE, double
+          SECOND)'
+     Encodes a clock-time as a double-precision value.  You probably
+     won't use this function.
+
+ -- Function: `void' ut_decode_time `(double TIME, int* YEAR, int*
+          MONTH, int* DAY, int* HOUR, int* MINUTE, double* SECOND,
+          double* RESOLUTION)'
+     Decodes a time from a double-precision value into its individual
+     components.  The variable referenced by RESOLUTION will be set to
+     the resolution (i.e., uncertainty) of the time in seconds.
+
+
+File: udunits2lib.info,  Node: Errors,  Next: Database,  Prev: Time,  Up: Top
+
+11 Error Handling
+*****************
+
+Error-handling in the units module has two aspects: the status of the
+last operation performed by the module and the handling of
+error-messages:
+
+* Menu:
+
+* Status::      The status of the last operation.
+* Messages::    The handling of error-messages.
+
+
+File: udunits2lib.info,  Node: Status,  Next: Messages,  Up: Errors
+
+11.1 Status of Last Operation
+=============================
+
+UDUNITS-2 functions set their status by calling `*note
+ut_set_status()::'.  You can use the function `*note ut_get_status()::'
+to retrieve that status.
+
+ -- Function: `*note ut_status::' ut_get_status `(void)'
+     Returns the value specified in the last call to `*note
+     ut_set_status()::'
+
+ -- Function: `void' ut_set_status `(*note ut_status:: STATUS)'
+     Set the status of the units module to STATUS.
+
+ -- Data type: ut_status
+     This enumeration has the following values:
+
+    `UT_SUCCESS'
+          Success
+
+    `UT_BAD_ARG'
+          An argument violates the the function's contract (e.g., it's
+          `NULL').
+
+    `UT_EXISTS'
+          Unit, prefix, or identifier already exists
+
+    `UT_NO_UNIT'
+          No such unit exists
+
+    `UT_OS'
+          Operating-system error.  See `errno' for the reason.
+
+    `UT_NOT_SAME_SYSTEM'
+          The units belong to different unit-systems
+
+    `UT_MEANINGLESS'
+          The operation on the unit or units is meaningless
+
+    `UT_NO_SECOND'
+          The unit-system doesn't have a unit named "second"
+
+    `UT_VISIT_ERROR'
+          An error occurred while visiting a unit
+
+    `UT_CANT_FORMAT'
+          A unit can't be formatted in the desired manner
+
+    `UT_SYNTAX'
+          String unit representation contains syntax error
+
+    `UT_UNKNOWN'
+          String unit representation contains unknown word
+
+    `UT_OPEN_ARG'
+          Can't open argument-specified unit database
+
+    `UT_OPEN_ENV'
+          Can't open environment-specified unit database
+
+    `UT_OPEN_DEFAULT'
+          Can't open installed, default, unit database
+
+    `UT_PARSE'
+          Error parsing unit database
+
+
+File: udunits2lib.info,  Node: Messages,  Prev: Status,  Up: Errors
+
+11.2 Error-Messages
+===================
+
+ -- Function: `int' ut_handle_error_message `(const char* FMT, ...)'
+     Handles the error-message corresponding to the format-string FMT
+     and any subsequent arguments referenced by it.  The interpretation
+     of the formatting-string is identical to that of the UNIX function
+     `printf()'.  On success, this function returns the number of bytes
+     in the error-message; otherwise, this function returns `-1'.
+
+     Use the function `*note ut_set_error_message_handler()::' to
+     change how error-messages are handled.
+
+ -- Function: `*note ut_error_message_handler::'
+ut_set_error_message_handler `(*note ut_error_message_handler::
+          HANDLER)'
+     Sets the function that handles error-messages and returns the
+     previous error-message handler.  The initial error-message handler
+     is `*note ut_write_to_stderr()::'.
+
+ -- Function: `int' ut_write_to_stderr `(const char* FMT, va_list ARGS)'
+     Writes the variadic error-message corresponding to
+     formatting-string FMT and arguments ARGS to the standard-error
+     stream and appends a newline.  The interpretation of the
+     formatting-string is identical to that of the UNIX function
+     `printf()'.  On success, this function returns the number of bytes
+     in the error-message; otherwise, this function returns `-1'.
+
+ -- Function: `int' ut_ignore `(const char* FMT, va_list ARGS)'
+     Does nothing.  In particular, it ignores the variadic error-message
+     corresponding to formatting-string FMT and arguments ARGS.  Pass
+     this function to `*note ut_set_error_message_handler()::' when you
+     don't want the unit module to print any error-messages.
+
+ -- Data type: ut_error_message_handler
+     This is the type of an error-message handler.  It's definition is
+          typedef int (*ut_error_message_handler)(const char* fmt, va_list args);
+
+
+File: udunits2lib.info,  Node: Database,  Next: Types,  Prev: Errors,  Up: Top
+
+12 The Units Database
+*********************
+
+The database of units that comes with the UDUNITS-2 package is an
+XML-formatted file that is based on the SI system of units.  It
+contains the names and symbols of most of the units that you will ever
+encounter.  The pathname of the installed file is
+`_datadir_/udunits2.xml', where _datadir_ is the installation-directory
+for read-only, architecture-independent data (e.g., `/usr/local/share').
+This pathname is the default that `*note ut_read_xml()::' uses.
+
+   Naturally, because the database is a regular file, it can be edited
+to add new units or remove existing ones.  Be very careful about doing
+this, however, because you might lose the benefit of exchanging
+unit-based information with others who haven't modified their database.
+
+
+File: udunits2lib.info,  Node: Types,  Next: Complete Index,  Prev: Database,  Up: Top
+
+13 Data Types
+*************
+
+The data types `*note ut_visitor::', `*note ut_status::', and `*note
+ut_error_message_handler::' are documented elsewhere.
+
+ -- Data type: ut_encoding
+     This enumeration has the following values:
+
+    `UT_ASCII'
+          US ASCII (http://en.wikipedia.org/wiki/Ascii) character-set.
+
+    `UT_ISO_8859_1'
+          The ISO-8859-1 (http://en.wikipedia.org/wiki/Iso-8859-1)
+          character-set.
+
+    `UT_LATIN1'
+          Synonym for `UT_ISO_8859_1'.
+
+    `UT_UTF8'
+          The UTF-8 (http://en.wikipedia.org/wiki/Utf-8) encoding of
+          the Unicode character-set.
+
+
+File: udunits2lib.info,  Node: Complete Index,  Prev: Types,  Up: Top
+
+Index
+*****
+
+ [index ]
+* Menu:
+
+* adding prefixes to a unit-system:      Prefixes.            (line   6)
+* adding units to a unit-system:         Adding.              (line   6)
+* base unit:                             Unit-Systems.        (line   7)
+* binary unit operations:                Binary.              (line   6)
+* converting values between units:       Value Conversion.    (line   6)
+* cv_convert_double:                     Value Conversion.    (line  72)
+* cv_convert_doubles:                    Value Conversion.    (line  83)
+* cv_convert_float:                      Value Conversion.    (line  67)
+* cv_convert_floats:                     Value Conversion.    (line  77)
+* cv_free:                               Value Conversion.    (line  88)
+* data types:                            Types.               (line   6)
+* database, unit, obtaining predefined:  Obtaining.           (line   6)
+* database, units:                       Database.            (line   6)
+* error handling:                        Errors.              (line   6)
+* error-messages:                        Messages.            (line   6)
+* examples, unit specification:          Examples.            (line   6)
+* formatting a unit into a string:       Formatting.          (line   6)
+* getting a unit by its name:            Extracting.          (line  16)
+* getting a unit by its symbol:          Extracting.          (line  30)
+* grammar, unit:                         Grammar.             (line   6)
+* mapping identifiers:                   Mapping.             (line   6)
+* mapping units:                         Mapping.             (line   6)
+* messages, error:                       Messages.            (line   6)
+* module status:                         Status.              (line   6)
+* names:                                 Names.               (line   6)
+* operations, unit:                      Operations.          (line   6)
+* parsing a string into a unit:          Parsing.             (line   6)
+* prefixes, adding to a unit-system:     Prefixes.            (line   6)
+* status of last operation:              Status.              (line   6)
+* string, formatting a unit into a:      Formatting.          (line   6)
+* string, parsing into a unit:           Parsing.             (line   6)
+* symbols:                               Symbols.             (line   6)
+* synopsis:                              Synopsis.            (line   6)
+* syntax, unit:                          Syntax.              (line   6)
+* system of units:                       Unit-Systems.        (line   6)
+* time, handling of:                     Time.                (line   6)
+* types, data:                           Types.               (line   6)
+* unary unit operations:                 Unary.               (line   6)
+* unit conversion:                       Value Conversion.    (line   6)
+* unit database, obtaining predefined:   Obtaining.           (line   6)
+* unit grammar:                          Grammar.             (line   6)
+* unit operations:                       Operations.          (line   6)
+* unit specification examples:           Examples.            (line   6)
+* unit syntax:                           Syntax.              (line   6)
+* unit, adding to a unit-system:         Adding.              (line   6)
+* unit, base:                            Unit-Systems.        (line   7)
+* unit, formatting into a string:        Formatting.          (line   6)
+* unit, getting by name:                 Extracting.          (line  16)
+* unit, getting by symbol:               Extracting.          (line  30)
+* unit-system:                           Unit-Systems.        (line   6)
+* unit-system, adding a unit to:         Adding.              (line   6)
+* unit-system, adding prefixes to a:     Prefixes.            (line   6)
+* unit-system, obtaining predefined:     Obtaining.           (line   6)
+* units database:                        Database.            (line   6)
+* units, mapping to identifiers:         Mapping.             (line   6)
+* units, obtaining predefined:           Obtaining.           (line   6)
+* ut_accept_visitor:                     Unary.               (line 224)
+* ut_add_name_prefix:                    Prefixes.            (line  16)
+* ut_add_symbol_prefix:                  Prefixes.            (line  35)
+* ut_are_convertible:                    Value Conversion.    (line  25)
+* ut_clone:                              Unary.               (line 206)
+* ut_compare:                            Binary.              (line  46)
+* ut_decode_time:                        Time.                (line  39)
+* ut_divide:                             Binary.              (line  30)
+* ut_encode_clock:                       Time.                (line  33)
+* ut_encode_date:                        Time.                (line  25)
+* ut_encode_time:                        Time.                (line  20)
+* ut_encoding:                           Types.               (line  10)
+* ut_error_message_handler:              Messages.            (line  38)
+* ut_format:                             Formatting.          (line  28)
+* ut_free:                               Unary.               (line   7)
+* ut_free_system:                        Misc.                (line   7)
+* ut_get_converter:                      Value Conversion.    (line  44)
+* ut_get_dimensionless_unit_one:         Extracting.          (line  45)
+* ut_get_name:                           Unary.               (line 162)
+* ut_get_status:                         Status.              (line  11)
+* ut_get_symbol:                         Unary.               (line 175)
+* ut_get_system:                         Unary.               (line 187)
+* ut_get_unit_by_name:                   Extracting.          (line  18)
+* ut_get_unit_by_symbol:                 Extracting.          (line  32)
+* ut_handle_error_message:               Messages.            (line   7)
+* ut_ignore:                             Messages.            (line  32)
+* ut_invert:                             Unary.               (line  77)
+* ut_is_dimensionless:                   Unary.               (line 194)
+* ut_log:                                Unary.               (line 127)
+* ut_map_name_to_unit:                   Names.               (line  11)
+* ut_map_symbol_to_unit:                 Symbols.             (line  11)
+* ut_map_unit_to_name:                   Names.               (line  41)
+* ut_map_unit_to_symbol:                 Symbols.             (line  41)
+* ut_multiply:                           Binary.              (line  14)
+* ut_new_base_unit:                      Adding.              (line  23)
+* ut_new_dimensionless_unit:             Adding.              (line  40)
+* ut_new_system:                         Obtaining.           (line  69)
+* ut_offset:                             Unary.               (line  22)
+* ut_offset_by_time:                     Unary.               (line  40)
+* ut_parse:                              Parsing.             (line  25)
+* ut_raise:                              Unary.               (line  92)
+* ut_read_xml:                           Obtaining.           (line  37)
+* ut_read_xml(), discussion of:          Obtaining.           (line   6)
+* ut_root:                               Unary.               (line 106)
+* ut_same_system:                        Binary.              (line  54)
+* ut_scale:                              Unary.               (line  12)
+* ut_set_error_message_handler:          Messages.            (line  19)
+* ut_set_second:                         Misc.                (line  14)
+* ut_set_status:                         Status.              (line  15)
+* ut_status:                             Status.              (line  18)
+* ut_trim:                               Parsing.             (line  45)
+* ut_unmap_name_to_unit:                 Names.               (line  29)
+* ut_unmap_symbol_to_unit:               Symbols.             (line  29)
+* ut_unmap_unit_to_name:                 Names.               (line  60)
+* ut_unmap_unit_to_symbol:               Symbols.             (line  62)
+* ut_visitor:                            Unary.               (line 238)
+* ut_write_to_stderr:                    Messages.            (line  24)
+
+
+
+Tag Table:
+Node: Top1983
+Node: Synopsis4972
+Node: Why13591
+Ref: unit-system14992
+Node: Unit-Systems14992
+Node: Obtaining16017
+Ref: ut_read_xml()17496
+Ref: ut_new_system()18832
+Node: Extracting19386
+Ref: ut_get_unit_by_name()20040
+Ref: ut_get_unit_by_symbol()20538
+Ref: ut_get_dimensionless_unit_one()21041
+Node: Adding21533
+Ref: ut_new_base_unit()22465
+Ref: ut_new_dimensionless_unit()23173
+Node: Prefixes23908
+Ref: ut_add_name_prefix()24466
+Ref: ut_add_symbol_prefix()25069
+Node: Misc25679
+Ref: ut_free_system()25843
+Ref: ut_set_second()26110
+Node: Value Conversion26735
+Ref: ut_are_convertible()27535
+Ref: ut_get_converter()28298
+Ref: cv_convert_float()29228
+Ref: cv_convert_double()29415
+Ref: cv_convert_floats()29607
+Ref: cv_convert_doubles()29940
+Ref: cv_free()30279
+Node: Parsing30539
+Ref: ut_parse()31202
+Ref: ut_trim()31961
+Node: Syntax32213
+Node: Examples32803
+Node: Grammar34180
+Node: Formatting37302
+Ref: ut_format()38125
+Node: Operations39516
+Node: Unary39842
+Ref: ut_free()39967
+Ref: ut_scale()40215
+Ref: ut_offset()40656
+Ref: ut_offset_by_time()41368
+Ref: ut_invert()43068
+Ref: ut_raise()43706
+Ref: ut_root()44267
+Ref: ut_log()45096
+Ref: ut_get_name()46545
+Ref: ut_get_symbol()46996
+Ref: ut_get_system()47455
+Ref: ut_is_dimensionless()47800
+Ref: ut_clone()48201
+Ref: ut_accept_visitor()48827
+Ref: ut_visitor49317
+Node: Binary51543
+Ref: ut_multiply()51864
+Ref: ut_divide52446
+Ref: ut_compare()53025
+Ref: ut_same_system()53430
+Node: Mapping53918
+Node: Names54527
+Ref: ut_map_name_to_unit()54746
+Ref: ut_unmap_name_to_unit()55289
+Ref: ut_map_unit_to_name()55671
+Ref: ut_unmap_unit_to_name()56250
+Node: Symbols56620
+Ref: ut_map_symbol_to_unit()56845
+Ref: ut_unmap_symbol_to_unit()57401
+Ref: ut_map_unit_to_symbol()57793
+Ref: ut_unmap_unit_to_symbol()58408
+Node: Time58782
+Ref: ut_encode_time()59605
+Ref: ut_encode_date()59952
+Ref: ut_encode_clock()60319
+Ref: ut_decode_time()60508
+Node: Errors60879
+Node: Status61251
+Ref: ut_get_status()61536
+Ref: ut_set_status()61678
+Ref: ut_status61794
+Node: Messages63034
+Ref: ut_handle_error_message()63146
+Ref: ut_set_error_message_handler()63679
+Ref: ut_write_to_stderr()63992
+Ref: ut_ignore()64455
+Ref: ut_error_message_handler64796
+Node: Database64990
+Node: Types65857
+Ref: ut_encoding66100
+Node: Complete Index66553
+
+End Tag Table

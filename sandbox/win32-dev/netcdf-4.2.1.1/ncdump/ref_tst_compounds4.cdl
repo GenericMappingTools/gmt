@@ -1,0 +1,13 @@
+netcdf ref_tst_compounds4 {
+types:
+  compound c {
+    float x ;
+    double y ;
+  }; // c
+  compound d {
+    c s1 ;
+  }; // d
+
+// global attributes:
+		d :a1 = {{1, -2}} ;
+}

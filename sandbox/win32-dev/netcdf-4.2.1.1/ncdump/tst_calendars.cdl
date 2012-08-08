@@ -1,0 +1,100 @@
+netcdf tst_calendars { // test climate calendars and CDL time with -t option
+dimensions:
+	time = 1;
+variables:
+  double t1_days(time);
+     t1_days:units = "days since 1500-1-1";
+  double t1_st_days(time);
+     t1_st_days:calendar = "standard" ; // mixed julian-gregorian
+     t1_st_days:units = "days since 1500-01-01 00:00:00";
+  double t1_gr_days(time);
+     t1_gr_days:calendar = "gregorian" ; // same as "standard"
+     t1_gr_days:units = "days since 1500-01-01 00:00:00";
+  double t1_pg_days(time);
+     t1_pg_days:calendar = "proleptic_gregorian" ;
+     t1_pg_days:units = "days since 1500-01-01 00:00:00";
+  double t1_nl_days(time);
+     t1_nl_days:calendar = "noleap" ;
+     t1_nl_days:units = "days since 1500-01-01 00:00:00";
+  double t1_365_days(time);
+     t1_365_days:calendar = "365_day" ; // same as "noleap"
+     t1_365_days:units = "days since 1500-01-01 00:00:00";
+  double t1_al_days(time);
+     t1_al_days:calendar = "all_leap" ;
+     t1_al_days:units = "days since 1500-01-01 00:00:00";
+  double t1_366_days(time);
+     t1_366_days:calendar = "366_day" ; // same as "all_leap"
+     t1_366_days:units = "days since 1500-01-01 00:00:00";
+  double t1_360_days(time);
+     t1_360_days:calendar = "360_day" ;
+     t1_360_days:units = "days since 1500-01-01 00:00:00";
+  double t1_jl_days(time);
+     t1_jl_days:calendar = "julian" ;
+     t1_jl_days:units = "days since 1500-01-01 00:00:00";
+
+  double t2_days(time);
+     t2_days:units = "days since 2000-6-15 12:00";
+  double t2_st_days(time);
+     t2_st_days:calendar = "standard" ; // mixed julian-gregorian
+     t2_st_days:units = "days since 2000-06-15 12:00:00";
+  double t2_gr_days(time);
+     t2_gr_days:calendar = "gregorian" ; // same as "standard"
+     t2_gr_days:units = "days since 2000-06-15 12:00:00";
+  double t2_pg_days(time);
+     t2_pg_days:calendar = "proleptic_gregorian" ;
+     t2_pg_days:units = "days since 2000-06-15 12:00:00";
+  double t2_nl_days(time);
+     t2_nl_days:calendar = "noleap" ;
+     t2_nl_days:units = "days since 2000-06-15 12:00:00";
+  double t2_365_days(time);
+     t2_365_days:calendar = "365_day" ; // same as "noleap"
+     t2_365_days:units = "days since 2000-06-15 12:00:00";
+  double t2_al_days(time);   // *** no year, 07-29 12:00
+     t2_al_days:calendar = "all_leap" ; // seems wrong, same as gregorian
+     t2_al_days:units = "days since 2000-06-15 12:00:00";
+  double t2_366_days(time);   // *** no year, 07-29 12:00
+     t2_366_days:calendar = "366_day" ; // omits years, same as "clim"??
+     t2_366_days:units = "days since 2000-06-15 12:00:00";
+  double t2_360_days(time);
+     t2_360_days:calendar = "360_day" ; // omits years, same as "clim"??
+     t2_360_days:units = "days since 2000-06-15 12:00:00";
+  double t2_jl_days(time);
+     t2_jl_days:calendar = "julian" ;
+     t2_jl_days:units = "days since 2000-06-15 12:00:00";
+
+//  double t1_none_days(time);
+//     t1_none_days:calendar = "none" ;
+//     t1_none_days:units = "days since 1500-01-01 00:00:00";
+//  double t2_none_days(time);
+//     t2_none_days:calendar = "none" ;
+//     t2_none_days:units = "days since 2000-06-15 12:00:00";
+
+data:
+   // Should all represent 2009-01-01 00:00:00
+	t1_days = 185900;
+	t1_st_days = 185900;
+	t1_gr_days = 185900;
+	t1_pg_days = 185909;
+	t1_nl_days = 185785;
+	t1_365_days = 185785;
+	t1_366_days = 186294;
+	t1_al_days = 186294;
+        t1_360_days = 183240;
+	t1_jl_days = 185913;
+
+	t2_days = 3121.5;
+	t2_st_days = 3121.5;
+	t2_gr_days = 3121.5;
+	t2_pg_days = 3121.5;
+	t2_nl_days = 3119.5;
+	t2_365_days = 3119.5;
+	t2_366_days = 3127.5;
+	t2_al_days = 3127.5;
+        t2_360_days = 3075.5;
+	t2_jl_days = 3121.5;
+
+//  Not sure what these should represent yet ...
+//	t1_none_days = 185900;
+//	t2_none_days = 3121.5;
+}
+

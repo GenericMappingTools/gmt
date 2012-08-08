@@ -1,0 +1,109 @@
+netcdf test {
+types:
+  compound Field_DFNT_INT32_t {
+    int Field_DFNT_INT32__0 ;
+  }; // Field_DFNT_INT32_t
+  compound Vdata_DFNT_INT32_record_t {
+    Field_DFNT_INT32_t Field_DFNT_INT32 ;
+  }; // Vdata_DFNT_INT32_record_t
+  Vdata_DFNT_INT32_record_t(*) Vdata_DFNT_INT32_t ;
+  compound Field_DFNT_UINT32_t {
+    uint Field_DFNT_UINT32__0 ;
+  }; // Field_DFNT_UINT32_t
+  compound Vdata_DFNT_UINT32_record_t {
+    Field_DFNT_UINT32_t Field_DFNT_UINT32 ;
+  }; // Vdata_DFNT_UINT32_record_t
+  Vdata_DFNT_UINT32_record_t(*) Vdata_DFNT_UINT32_t ;
+  compound Field_DFNT_INT16_t {
+    int Field_DFNT_INT16__0 ;
+  }; // Field_DFNT_INT16_t
+  compound Vdata_DFNT_INT16_record_t {
+    Field_DFNT_INT16_t Field_DFNT_INT16 ;
+  }; // Vdata_DFNT_INT16_record_t
+  Vdata_DFNT_INT16_record_t(*) Vdata_DFNT_INT16_t ;
+  compound Field_DFNT_UINT16_t {
+    uint Field_DFNT_UINT16__0 ;
+  }; // Field_DFNT_UINT16_t
+  compound Vdata_DFNT_UINT16_record_t {
+    Field_DFNT_UINT16_t Field_DFNT_UINT16 ;
+  }; // Vdata_DFNT_UINT16_record_t
+  Vdata_DFNT_UINT16_record_t(*) Vdata_DFNT_UINT16_t ;
+  compound Field_DFNT_INT8_t {
+    int Field_DFNT_INT8__0 ;
+  }; // Field_DFNT_INT8_t
+  compound Vdata_DFNT_INT8_record_t {
+    Field_DFNT_INT8_t Field_DFNT_INT8 ;
+  }; // Vdata_DFNT_INT8_record_t
+  Vdata_DFNT_INT8_record_t(*) Vdata_DFNT_INT8_t ;
+  compound Field_DFNT_UINT8_t {
+    ubyte Field_DFNT_UINT8__0 ;
+  }; // Field_DFNT_UINT8_t
+  compound Vdata_DFNT_UINT8_record_t {
+    Field_DFNT_UINT8_t Field_DFNT_UINT8 ;
+  }; // Vdata_DFNT_UINT8_record_t
+  Vdata_DFNT_UINT8_record_t(*) Vdata_DFNT_UINT8_t ;
+  compound Field_DFNT_FLOAT32_t {
+    double Field_DFNT_FLOAT32__0 ;
+  }; // Field_DFNT_FLOAT32_t
+  compound Vdata_DFNT_FLOAT32_record_t {
+    Field_DFNT_FLOAT32_t Field_DFNT_FLOAT32 ;
+  }; // Vdata_DFNT_FLOAT32_record_t
+  Vdata_DFNT_FLOAT32_record_t(*) Vdata_DFNT_FLOAT32_t ;
+  compound Field_DFNT_FLOAT64_t {
+    double Field_DFNT_FLOAT64__0 ;
+  }; // Field_DFNT_FLOAT64_t
+  compound Vdata_DFNT_FLOAT64_record_t {
+    Field_DFNT_FLOAT64_t Field_DFNT_FLOAT64 ;
+  }; // Vdata_DFNT_FLOAT64_record_t
+  Vdata_DFNT_FLOAT64_record_t(*) Vdata_DFNT_FLOAT64_t ;
+  compound Field_DFNT_CHAR8_t {
+    string Field_DFNT_CHAR8__0 ;
+  }; // Field_DFNT_CHAR8_t
+  compound Vdata_DFNT_CHAR8_record_t {
+    Field_DFNT_CHAR8_t Field_DFNT_CHAR8 ;
+  }; // Vdata_DFNT_CHAR8_record_t
+  Vdata_DFNT_CHAR8_record_t(*) Vdata_DFNT_CHAR8_t ;
+  compound Field_DFNT_UCHAR8_t {
+    string Field_DFNT_UCHAR8__0 ;
+  }; // Field_DFNT_UCHAR8_t
+  compound Vdata_DFNT_UCHAR8_record_t {
+    Field_DFNT_UCHAR8_t Field_DFNT_UCHAR8 ;
+  }; // Vdata_DFNT_UCHAR8_record_t
+  Vdata_DFNT_UCHAR8_record_t(*) Vdata_DFNT_UCHAR8_t ;
+variables:
+	Vdata_DFNT_INT32_t Vdata_DFNT_INT32 ;
+	Vdata_DFNT_UINT32_t Vdata_DFNT_UINT32 ;
+	Vdata_DFNT_INT16_t Vdata_DFNT_INT16 ;
+	Vdata_DFNT_UINT16_t Vdata_DFNT_UINT16 ;
+	Vdata_DFNT_INT8_t Vdata_DFNT_INT8 ;
+	Vdata_DFNT_UINT8_t Vdata_DFNT_UINT8 ;
+	Vdata_DFNT_FLOAT32_t Vdata_DFNT_FLOAT32 ;
+	Vdata_DFNT_FLOAT64_t Vdata_DFNT_FLOAT64 ;
+	Vdata_DFNT_CHAR8_t Vdata_DFNT_CHAR8 ;
+	Vdata_DFNT_UCHAR8_t Vdata_DFNT_UCHAR8 ;
+data:
+
+ Vdata_DFNT_INT32 = {{{1}}, {{2}}, {{3}}, {{5}}, {{8}}} ;
+
+ Vdata_DFNT_UINT32 = {{{0}}, {{2}}, {{6}}, {{12}}, {{20}}} ;
+
+ Vdata_DFNT_INT16 = {{{13}}, {{21}}, {{34}}, {{55}}, {{89}}} ;
+
+ Vdata_DFNT_UINT16 = {{{30}}, {{42}}, {{56}}, {{72}}, {{90}}} ;
+
+ Vdata_DFNT_INT8 = {{{144}}, {{233}}, {{377}}, {{610}}, {{987}}} ;
+
+ Vdata_DFNT_UINT8 = {{{0}}, {{1}}, {{2}}, {{3}}, {{4}}} ;
+
+ Vdata_DFNT_FLOAT32 = 
+    {{{1000}}, {{999.950000416665}}, {{999.800006666578}}, {{999.550033748988}}, {{999.200106660978}}} ;
+
+ Vdata_DFNT_FLOAT64 = 
+    {{{998.750260394966}}, {{998.200539935204}}, {{997.55100025328}}, {{996.801706302619}}, {{995.952733011994}}} ;
+
+ Vdata_DFNT_CHAR8 = 
+    {{{"This is a data test string (pass 0)."}}, {{"This is a data test string (pass 1)."}}, {{"This is a data test string (pass 2)."}}, {{"This is a data test string (pass 3)."}}, {{"This is a data test string (pass 4)."}}} ;
+
+ Vdata_DFNT_UCHAR8 = 
+    {{{"This is a data test string (pass 5)."}}, {{"This is a data test string (pass 6)."}}, {{"This is a data test string (pass 7)."}}, {{"This is a data test string (pass 8)."}}, {{"This is a data test string (pass 9)."}}} ;
+}

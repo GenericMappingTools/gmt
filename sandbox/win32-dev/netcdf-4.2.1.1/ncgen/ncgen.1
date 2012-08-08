@@ -1,0 +1,777 @@
+.\" $Header: /upc/share/CVS/netcdf-3/ncgen/ncgen.1,v 1.10 2010/04/29 16:38:55 dmh Exp $
+.TH NCGEN 1 "$Date$" "Printed: \n(yr-\n(mo-\n(dy" "UNIDATA UTILITIES"
+.SH NAME
+ncgen \- From a CDL file generate a netCDF-3 file, a netCDF-4 file or a C program
+.SH SYNOPSIS
+.HP
+ncgen
+.nh
+\%[-b]
+\%[-c]
+\%[-f]
+\%[-k \fIfile format\fP]
+\%[-l \fIoutput language\fP]
+\%[-n]
+\%[-o \fInetcdf_filename\fP]
+\%[-x]
+\%\fIinput_file\fP
+.hy
+.ft
+.SH DESCRIPTION
+\fBncgen\fP generates either a netCDF-3 (i.e. classic) binary .nc file,
+a netCDF-4 (i.e. enhanced) binary .nc file
+or a file in some source language that when executed will
+construct the corresponding binary .nc file.
+The input to \fBncgen\fP is a description of a netCDF
+file in a small language known as CDL (network Common Data form Language),
+described below.
+If no options are specified in invoking \fBncgen\fP, it merely checks the
+syntax of the input CDL file, producing error messages for
+any violations of CDL syntax.  Other options can be used, for example,
+to create the corresponding netCDF file,
+or to generate a C program that uses the netCDF C
+interface to create the netCDF file.
+.LP
+Note that this version of ncgen was originally called ncgen4.
+The older ncgen program has been renamed to ncgen3.
+.LP
+\fBncgen\fP may be used with the companion program \fBncdump\fP to perform
+some simple operations on netCDF files.  For example, to rename a dimension
+in a netCDF file, use \fBncdump\fP to get a CDL version of the netCDF file,
+edit the CDL file to change the name of the dimensions, and use \fBncgen\fP
+to generate the corresponding netCDF file from the edited CDL file.
+.SH OPTIONS
+.IP "\fB-b\fP"
+Create a (binary) netCDF file.  If the \fB-o\fP option is absent, a default
+file name will be constructed from the netCDF name (specified after the
+\fBnetcdf\fP keyword in the input) by appending the `.nc' extension.  If a
+file already exists with the specified name, it will be overwritten.
+.IP "\fB-c\fP"
+Generate
+.B C
+source code that will create a netCDF file
+matching the netCDF specification.  The C source code is written to
+standard output; equivalent to -lc.
+.IP "\fB-f\fP"
+Generate
+.B FORTRAN 77
+source code that will create a netCDF file
+matching the netCDF specification.
+The source code is written to
+standard output; equivalent to -lf77.
+.IP "\fB-o\fP \fRnetcdf_file\fP"
+Name for the binary netCDF file created.  If this option is specified, it implies
+the "\fB-b\fP" option.  (This option is necessary because netCDF files
+cannot be written directly to standard output, since standard output is not
+seekable.)
+.IP "\fB-k \fRfile_format\fP"
+The -k flag specifies the format of the file to be created and, by inference,
+the data model accepted by ncgen (i.e. netcdf-3 (classic) versus
+netcdf-4).
+The possible arguments are as follows.
+.RS
+.RS
+.IP "'1', 'classic' => netcdf classic file format, netcdf-3 type model."
+.IP "'2', '64-bit-offset', '64-bit offset' => netcdf 64 bit classic file format, netcdf-3 type model."
+.IP "'3', 'hdf5', 'netCDF-4', 'enhanced' => netcdf-4 file format, netcdf-4 type model."
+.IP "'4', 'hdf5-nc3', 'netCDF-4 classic model', 'enhanced-nc3' => netcdf-4 file format, netcdf-3 type model."
+.RE
+.RE
+If no -k is specified then it defaults to -k1 (i.e. classic).
+Note also that -v is accepted to mean the same thing as
+-k for backward compatibility, but -k is preferred, to match
+the corresponding ncdump option. 
+.IP "\fB-x\fP"
+Don't initialize data with fill values.  This can speed up creation of
+large netCDF files greatly, but later attempts to read unwritten data
+from the generated file will not be easily detectable.
+.IP "\fB-l \fRoutput_language\fP"
+The -l flag specifies the output language to use
+when generating source code that will create or define a netCDF file
+matching the netCDF specification.
+The output is written to standard output.
+The currently supported languages have the following flags.
+.RS
+.RS
+.IP "c|C' => C language output."
+.IP "f77|fortran77' => FORTRAN 77 language output"
+; note that currently only the classic model is supported.
+.IP "j|java' => (experimental) Java language output"
+; targets the existing Unidata Java interface, which means that
+only the classic model is supported.
+.RE
+.RE
+.SH EXAMPLES
+.LP
+Check the syntax of the CDL file `\fBfoo.cdl\fP':
+.RS
+.HP
+ncgen foo.cdl
+.RE
+.LP
+From the CDL file `\fBfoo.cdl\fP', generate an equivalent binary netCDF file
+named `\fBx.nc\fP':
+.RS
+.HP
+ncgen -o x.nc foo.cdl
+.RE
+.LP
+From the CDL file `\fBfoo.cdl\fP', generate a C program containing the
+netCDF function invocations necessary to create an equivalent binary netCDF
+file named `\fBx.nc\fP':
+.RS
+.HP
+ncgen -c -o x.nc foo.cdl
+.RE
+.LP
+.SH USAGE
+.SS "CDL Syntax Overview"
+.LP
+Below is an example of CDL syntax, describing a netCDF file with several
+named dimensions (lat, lon, and time), variables (Z, t, p, rh, lat, lon,
+time), variable attributes (units, long_name, valid_range, _FillValue),
+and some data.  CDL keywords are in boldface.  (This example is intended to
+illustrate the syntax; a real CDL file would have a more complete set of
+attributes so that the data would be more completely self-describing.)
+.RS
+.nf
+netcdf foo {  // an example netCDF specification in CDL
+
+\fBtypes\fP:
+    \fIubyte\fP \fIenum\fP enum_t {Clear = 0, Cumulonimbus = 1, Stratus = 2};
+    \fIopaque\fP(11) opaque_t;
+    \fIint\fP(*) vlen_t;
+
+\fBdimensions\fP:
+	lat = 10, lon = 5, time = \fIunlimited\fP ;
+
+\fBvariables\fP:
+	\fIlong\fP    lat(lat), lon(lon), time(time);
+	\fIfloat\fP   Z(time,lat,lon), t(time,lat,lon);
+	\fIdouble\fP  p(time,lat,lon);
+	\fIlong\fP    rh(time,lat,lon);
+
+	\fIstring\fP  country(time,lat,lon);
+	\fIubyte\fP   tag;
+
+	// variable attributes
+	lat:long_name = "latitude";
+	lat:units = "degrees_north";
+	lon:long_name = "longitude";
+	lon:units = "degrees_east";
+	time:units = "seconds since 1992-1-1 00:00:00";
+
+	// typed variable attributes
+	\fIstring\fP Z:units = "geopotential meters";
+	\fIfloat\fP Z:valid_range = 0., 5000.;
+	\fIdouble\fP p:_FillValue = -9999.;
+	\fIlong\fP rh:_FillValue = -1;
+	\fIvlen_t\fP :globalatt = {17, 18, 19};
+\fBdata\fP:
+	lat   = 0, 10, 20, 30, 40, 50, 60, 70, 80, 90;
+	lon   = -140, -118, -96, -84, -52;
+\fBgroup\fP: g {
+\fBtypes\fP:
+    \fIcompound\fP cmpd_t { \fIvlen_t\fP f1; \fIenum_t\fP f2;};
+} // group g
+\fBgroup\fP: h {
+\fBvariables\fP:
+	/g/\fIcmpd_t\fP  compoundvar;
+\fBdata\fP:
+        compoundvar = { {3,4,5}, Stratus } ;
+} // group h
+}
+.fi
+.RE
+.LP
+All CDL statements are terminated by a semicolon.  Spaces, tabs,
+and newlines can be used freely for readability.
+Comments may follow the characters `//' on any line.
+.LP
+A CDL description consists of five optional parts:
+\fItypes\fP,
+\fIdimensions\fP,
+\fIvariables\fP,
+\fIdata\fP,
+beginning with the keyword
+.BR `types:' ,
+.BR `dimensions:' ,
+.BR `variables:' ,
+and
+.BR `data:',
+respectively.
+Note several things:
+(1) the keyword includes the trailing colon, so there must not be any space before the colon character,
+and (2) the keywords are required to be lower case.
+.LP
+The \fBvariables:\fP section may contain \fIvariable declarations\fP
+and \fIattribute assignments\fP.
+All sections may contain global attribute assignments.
+.LP
+In addition, after the \fBdata:\fP section, the user
+may define a series of groups (see the example above).
+Groups themselves can contain types, dimensions, variables,
+data, and other (nested) groups.
+.LP
+The netCDF \fBtypes:\fP section declares the user defined types.
+These may be constructed using any of the following types:
+\fBenum\fP, \fBvlen\fP, \fBopaque\fP, or \fBcompound\fP.
+.LP
+A netCDF \fIdimension\fP is used to define the shape of one or more of the
+multidimensional variables contained in the netCDF file.  A netCDF
+dimension has a name and a size.  A dimension
+can have the \fBunlimited\fP size, which means a variable using this
+dimension can grow to any length in that dimension.
+.LP
+A \fIvariable\fP represents a multidimensional array of values of the
+same type.  A variable has a name, a data type, and a shape described
+by its list of dimensions.  Each variable may also have associated
+\fIattributes\fP (see below) as well as data values.  The name, data
+type, and shape of a variable are specified by its declaration in the
+\fIvariable\fP section of a CDL description.  A variable may have the same
+name as a dimension; by convention such a variable is one-dimensional
+and contains coordinates of the dimension it names.  Dimensions need
+not have corresponding variables.
+.LP
+A netCDF \fIattribute\fP contains information about a netCDF variable or
+about the whole netCDF dataset.  Attributes are used
+to specify such properties as units, special values, maximum and
+minimum valid values, scaling factors, offsets, and parameters.  Attribute
+information is represented by single values or arrays of values.  For
+example, "units" is an attribute represented by a character array such
+as "celsius".  An attribute has an associated variable, a name,
+a data type, a length, and a value.  In contrast to variables that are
+intended for data, attributes are intended for metadata (data about
+data).
+Unlike netCDF-3, attribute types can be any user defined type
+as well as the usual built-in types.
+.LP
+In CDL, an attribute is designated by a
+a type, a variable, a ':', and then an attribute name.
+The type is optional and if missing, it will be inferred from the values
+assigned to the attribute.
+It is possible to assign \fIglobal\fP attributes
+not associated with any variable to the netCDF as a whole by omitting
+the variable name in the attribute declaration.
+Notice that there is a potential ambiguity in a specification such as
+.nf
+x : a = ...
+.fi
+In this situation, x could be either a type for a global attribute,
+or the variable name for an attribute. Since there could both be a type named
+x and a variable named x, there is an ambiguity.
+The rule is that in this situation, x will be interpreted as a
+type if possible, and otherwise as a variable.
+.LP
+If not specified, the data type of an attribute in CDL
+is derived from the type of the value(s) assigned to it.  The length of
+an attribute is the number of data values assigned to it, or the
+number of characters in the character string assigned to it.  Multiple
+values are assigned to non-character attributes by separating the
+values with commas.  All values assigned to an attribute must be of
+the same type.
+.LP
+The names for CDL dimensions, variables, attributes, types, and groups
+may contain any non-control utf-8 character
+except the forward slash character (`/').
+However, certain characters must escaped if they are used in a name,
+where the escape character is the backward slash `\\'.
+In particular, if the leading character off the name is a digit (0-9),
+then it must be preceded by the escape character.
+In addition, the characters ` !"#$%&()*,:;<=>?[]^`\'{}|~\\'
+must be escaped if they occur anywhere in a name.
+.LP
+Note also that the words
+`variable',
+`dimension',
+`data',
+`group',
+and `types'
+are legal CDL names, but be careful that there is a space
+between them and any following colon character.
+This is mostly an issue with attribute declarations.
+For example, consider this.
+.HP
+.RS
+.nf
+netcdf ... {
+...
+variables:
+    int dimensions;
+        dimensions: attribute=0 ; // this will cause an error
+        dimensions : attribute=0 ; // this is ok.
+...
+}
+.fi
+.RE
+.LP
+The optional \fBdata:\fP section of a CDL specification is where
+netCDF variables may be initialized.  The syntax of an initialization
+is simple: a variable name, an equals sign, and a
+comma-delimited list of constants (possibly separated by spaces, tabs
+and newlines) terminated with a semicolon.  For multi-dimensional
+arrays, the last dimension varies fastest.  Thus row-order rather than
+column order is used for matrices.  If fewer values are supplied than
+are needed to fill a variable, it is extended with a type-dependent
+`fill value', which can be overridden by supplying a value for a
+distinguished variable attribute named `_FillValue'.  The
+types of constants need not match the type declared for a variable;
+coercions are done to convert integers to floating point, for example.
+The constant `_' can be used to designate the fill value for a variable.
+.SS "Primitive Data Types"
+.LP
+.RS
+.nf
+\fBchar\fP	characters
+\fBbyte\fP	8-bit data
+\fBshort\fP	16-bit signed integers
+\fBint\fP	32-bit signed integers
+\fBlong\fP	(synonymous with \fBint\fP)
+\fBint64\fP	64-bit signed integers
+\fBfloat\fP	IEEE single precision floating point (32 bits)
+\fBreal\fP	(synonymous with \fBfloat\fP)
+\fBdouble\fP	IEEE double precision floating point (64 bits)
+\fBubyte\fP	unsigned 8-bit data
+\fBushort\fP	16-bit unsigned integers
+\fBuint\fP	32-bit unsigned integers
+\fBuint64\fP	64-bit unsigned integers
+\fBstring\fP	arbitrary length strings
+.fi
+.RE
+.LP
+CDL supports a superset of the primitive data types of C.
+The names for the primitive data types are reserved words in CDL,
+so the names of variables, dimensions, and attributes must not be
+primitive type names.  In declarations, type names may be specified
+in either upper or lower case.
+.LP
+Bytes differ from characters in that they are intended to hold a full eight
+bits of data, and the zero byte has no special significance, as it
+does for character data.
+\fBncgen\fP converts \fBbyte\fP declarations to \fBchar\fP
+declarations in the output C code and to the nonstandard \fBBYTE\fP
+declaration in output Fortran code.
+.LP
+Shorts can hold values between -32768 and 32767.
+\fBncgen\fP converts \fBshort\fP declarations to \fBshort\fP
+declarations in the output C code and to the nonstandard \fBINTEGER*2\fP
+declaration in output Fortran code.
+.LP
+Ints can hold values between -2147483648 and 2147483647.
+\fBncgen\fP converts \fBint\fP declarations to \fBint\fP
+declarations in the output C code and to \fBINTEGER\fP
+declarations in output Fortran code.  \fBlong\fP
+is accepted as a synonym for \fBint\fP in CDL declarations, but is
+deprecated since there are now platforms with 64-bit representations
+for C longs.
+.LP
+Int64 can hold values between -9223372036854775808
+and 9223372036854775807.
+\fBncgen\fP converts \fBint64\fP declarations to \fBlonglong\fP
+declarations in the output C code.
+.\" and to \fBINTEGER\fP declarations in output Fortran code.
+.LP
+Floats can hold values between about -3.4+38 and 3.4+38.  Their
+external representation is as 32-bit IEEE normalized single-precision
+floating point numbers.  \fBncgen\fP converts \fBfloat\fP
+declarations to \fBfloat\fP declarations in the output C code and to
+\fBREAL\fP declarations in output Fortran code.  \fBreal\fP is accepted
+as a synonym for \fBfloat\fP in CDL declarations.
+.LP
+Doubles can hold values between about -1.7+308 and 1.7+308.  Their
+external representation is as 64-bit IEEE standard normalized
+double-precision floating point numbers.  \fBncgen\fP converts
+\fBdouble\fP declarations to \fBdouble\fP declarations in the output C
+code and to \fBDOUBLE PRECISION\fP declarations in output Fortran
+code.
+.LP
+The unsigned counterparts of the above integer types
+are mapped to the corresponding unsigned C types.
+Their ranges are suitably modified to start at zero.
+.LP
+.SS "CDL Constants"
+.LP
+Constants assigned to attributes or variables may be of any of the
+basic netCDF types.  The syntax for constants is similar to C syntax,
+except that type suffixes must be appended to shorts and floats to
+distinguish them from longs and doubles.
+.LP
+A \fIbyte\fP constant is represented by a single character or multiple
+character escape sequence enclosed in single quotes.  For example,
+.RS
+.nf
+ 'a'		// ASCII `a'
+ '\\0'		// a zero byte
+ '\\n'		// ASCII newline character
+ '\\33'		// ASCII escape character (33 octal)
+ '\\x2b'	// ASCII plus (2b hex)
+ '\\377'	// 377 octal = 255 decimal, non-ASCII
+.fi
+.RE
+.LP
+Character constants are enclosed in double quotes.  A character array
+may be represented as a string enclosed in double quotes.  The usual C
+string escape conventions are honored.  For example
+.RS
+.nf
+"a"		// ASCII `a'
+"Two\\nlines\\n"	// a 10-character string with two embedded newlines
+"a bell:\\007"	// a string containing an ASCII bell
+.fi
+.RE
+Note that the netCDF character array "a" would fit in a one-element
+variable, since no terminating NULL character is assumed.  However, a zero
+byte in a character array is interpreted as the end of the significant
+characters by the \fBncdump\fP program, following the C convention.
+Therefore, a NULL byte should not be embedded in a character string unless
+at the end: use the \fIbyte\fP data type instead for byte arrays that
+contain the zero byte.
+.LP
+\fIshort\fP integer constants are intended for representing 16-bit
+signed quantities.  The form of a \fIshort\fP constant is an integer
+constant with an `s' or `S' appended.  If a \fIshort\fP constant
+begins with `0', it is interpreted as octal, except that if it begins with
+`0x', it is interpreted as a hexadecimal constant.  For example:
+.RS
+.nf
+-2s	// a short -2
+0123s	// octal
+0x7ffs  //hexadecimal
+.fi
+.RE
+.LP
+\fIint\fP integer constants are intended for representing 32-bit signed
+quantities.  The form of an \fIint\fP constant is an ordinary integer
+constant, although it is acceptable to append an optional `l' or
+`L' (again, deprecated).
+If an \fIint\fP constant begins with `0', it is interpreted as
+octal, except that if it begins with `0x', it is interpreted as a hexadecimal
+constant (but see opaque constants below).
+Examples of valid \fIint\fP constants include:
+.RS
+.nf
+-2
+1234567890L
+0123		// octal
+0x7ff		// hexadecimal
+.fi
+.RE
+.LP
+\fIint64\fP integer constants are intended for representing 64-bit
+signed quantities.  The form of an \fIint64\fP constant is an integer
+constant with an `ll' or `LL' appended.  If an \fIint64\fP constant
+begins with `0', it is interpreted as octal, except that if it begins with
+`0x', it is interpreted as a hexadecimal constant.  For example:
+.RS
+.nf
+-2ll	// an unsigned -2
+0123LL	// octal
+0x7ffLL  //hexadecimal
+.fi
+.RE
+.LP
+Floating point constants of type \fIfloat\fP are appropriate for representing
+floating point data with about seven significant digits of precision. 
+The form of a \fIfloat\fP constant is the same as a C floating point
+constant with an `f' or `F' appended.  For example the following
+are all acceptable \fIfloat\fP constants:
+.RS
+.nf
+-2.0f
+3.14159265358979f	// will be truncated to less precision
+1.f
+.1f
+.fi
+.RE
+.LP
+Floating point constants of type \fIdouble\fP are appropriate for
+representing floating point data with about sixteen significant digits
+of precision.  The form of a \fIdouble\fP constant is the same as a C
+floating point constant.  An optional `d' or `D' may be appended.
+For example the following are all acceptable \fIdouble\fP constants:
+.RS
+.nf
+-2.0
+3.141592653589793
+1.0e-20
+1.d
+.fi
+.RE
+.LP
+Unsigned integer constants can be created by appending
+the character 'U' or 'u' between the constant and any trailing
+size specifier.  Thus one could say
+10U, 100us, 100000ul, or 1000000ull, for example.
+.LP
+\fIString\fP constants are, like character constants,
+represented using double quotes. This represents a potential
+ambiguity since a multi-character string may also indicate
+a dimensioned character value. Disambiguation usually occurs
+by context, but care should be taken to specify the\fIstring\fP
+type to ensure the proper choice.
+.LP
+\fIOpaque\fP constants are represented as
+sequences of hexadecimal digits preceded by 0X or 0x: 0xaa34ffff,
+for example.
+These constants can still be used as integer constants
+and will be either truncated or extended as necessary.
+.SS "Compound Constant Expressions"
+.LP
+In order to assign values to variables (or attributes)
+whose type is user-defined type, the constant notation has been
+extended to include sequences of constants enclosed in curly
+brackets (e.g. "{"..."}").
+Such a constant is called a compound constant, and compound constants
+can be nested.
+.LP
+Given a type "T(*) vlen_t", where T is some other arbitrary base type,
+constants for this should be specified as follows.
+.nf
+    vlen_t var[2] = {t11,t12,...t1N}, {t21,t22,...t2m};
+.fi
+The values tij, are assumed to be constants of type T.
+.LP
+Given a type "compound cmpd_t {T1 f1; T2 f2...Tn fn}",
+where the Ti are other arbitrary base types,
+constants for this should be specified as follows.
+.nf
+    cmpd_t var[2] = {t11,t12,...t1N}, {t21,t22,...t2n};
+.fi
+The values tij, are assumed to be constants of type Ti.
+If the fields are missing, then they will be set using any
+specified or default fill value for the field's base type.
+.LP
+The general set of rules for using braces are defined in the
+.B Specifying
+.B Datalists
+section below.
+.LP
+.SS "Scoping Rules"
+.LP
+With the addition of groups, the name space for defined objects
+is no longer flat. References (names)
+of any type, dimension, or variable may be prefixed
+with the absolute path specifying a specific declaration.
+Thus one might say
+.nf
+    variables:
+        /g1/g2/t1 v1;
+.fi
+The type being referenced (t1) is the one within group g2, which in
+turn is nested in group g1.
+The similarity of this notation to Unix file paths is deliberate,
+and one can consider groups as a form of directory structure.
+.HP
+1. When name is not prefixed, then scope rules are applied to locate the
+specified declaration. Currently, there are three rules: one for dimensions,
+one for types and enumeration constants, and one for all others.
+.HP
+2. When an unprefixed name of a dimension is used (as in a variable declaration),
+ncgen first looks in the immediately enclosing group for the dimension.
+If it is not found there, then it looks in the group enclosing this group.
+This continues up the group hierarchy until the dimension is found,
+or there are no more groups to search.
+.HP
+3. For all other names, only the immediately enclosing group is searched.
+.LP
+When an unprefixed name of a type or an enumeration constant
+is used, ncgen searches the group tree using a pre-order depth-first
+search. This essentially means that it will find the matching declaration
+that precedes the reference textually in the cdl file and that
+is "highest" in the group hierarchy.
+.LP
+One final note. Forward references are not allowed.
+This means that specifying, for example,
+/g1/g2/t1 will fail if this reference occurs before g1 and/or g2 are defined.
+.SS "Special Attributes"
+.LP
+Special, virtual, attributes can be specified to provide
+performance-related information about the file format and
+about variable properties.
+The file must be a netCDF-4 file for these to take effect.
+.LP
+These special virtual attributes are not actually part of the file,
+they are merely a convenient way to set miscellaneous
+properties of the data in CDL
+.LP
+The special attributes currently supported are as follows:
+`_Format',
+`_Fletcher32, 
+`_ChunkSizes', 
+`_Endianness', 
+`_DeflateLevel', 
+`_Shuffle', and
+`_Storage'.
+.LP
+`_Format' is a global attribute specifying the netCDF format
+variant. Its value must be a single string
+matching one of `classic', `64-bit offset', `netCDF-4', or
+`netCDF-4 classic model'.
+.LP
+The rest of the special attributes are all variable attributes.
+Essentially all of then map to some corresponding `nc_def_var_XXX'
+function as defined in the netCDF-4 API.
+For the atttributes that are essentially boolean (_Fletcher32, _Shuffle,
+and _NOFILL), the value true can be specified by using the strings
+`true' or `1', or by using the integer 1.
+The value false expects either `false', `0', or the integer 0.
+The actions associated with these attributes are as follows.
+.IP 1. 3
+`_Fletcher32 sets the `fletcher32' property for a variable.
+.IP 2. 3
+`_Endianness' is either `little' or `big', depending on
+how the variable is stored when first written.
+.IP 3. 3
+`_DeflateLevel' is an
+integer between 0 and 9 inclusive if compression has been specified
+for the variable.
+.IP 4. 3
+`_Shuffle' specifies if the the shuffle filter should be used.
+.IP 5. 3
+`_Storage' is `contiguous' or `chunked'.
+.IP 6. 3
+`_ChunkSizes' is a list of chunk sizes for each dimension of
+the variable
+.LP
+.SS "Specifying Datalists"
+.LP
+Specifying datalists for variables in the `data:` section can be somewhat
+complicated. There are some rules that must be followed
+to ensure that datalists are parsed correctly by ncgen.
+.IP 1. 3
+The top level is automatically assumed to be a list of items, so it should not be inside {...}.
+.IP 2. 3
+Instances of UNLIMITED dimensions (other than the first dimension) must be surrounded by {...} in order to specify the size.
+.IP 3. 3
+Instances of vlens must be surrounded by {...} in order to specify the size.
+.IP 4. 3
+Compound instances must be embedded in {...}
+.IP 5. 3
+Non-scalar fields of compound instances must be embedded in {...}.
+.IP 6. 3
+Datalists associated with attributes are implicitly a vector (i.e., a list) of values of the type of the attribute and the above rules must apply with that in mind.
+.IP 7. 3
+No other use of braces is allowed.
+.LP
+Note that one consequence of these rules is that
+arrays of values cannot have subarrays within braces.
+Consider, for example, int var(d1)(d2)...(dn),
+where none of d2...dn are unlimited.
+A datalist for this variable must be a single list of integers,
+where the number of integers is no more than D=d1*d2*...dn values;
+note that the list can be less than D, in which case fill values
+will be used to pad the list.
+.LP
+Rule 6 about attribute datalist has the following consequence.
+If the type of the attribute is a compound (or vlen) type, and if
+the number of entries in the list is one, then the compound instances
+must be enclosed in braces.
+.LP
+.SS "Specifying Character Datalists"
+.LP
+Specifying datalists for variables of type char also has some
+complications. consider, for example
+.RS
+.nf
+dimensions: u=UNLIMITED; d1=1; d2=2; d3=3;
+            d4=4; d5=5; u2=UNLIMITED;
+variables: char var(d3,d4);
+datalist: var="1", "two", "three";
+.fi
+.RE
+.LP
+We have twenty elements of var to fill (d5 X d4)
+and we have three strings of length 1, 3, 5.
+How do we assign the characters in the strings to the
+twenty elements?
+.LP
+The basic rule is "greedy" plus "right dimension rules".
+By this we mean the following.
+.IP 1. 3
+Use the size of the rightmost dimension (d4=4)
+and modify the constant list so that every string is less
+than or equal to this dimension size. Longer strings are decomposed.
+For our example, we get this.
+.in +5
+datalist: var= "1", "two", "thre", "e";
+.in -5
+
+.IP 2. 3
+Pad any short strings to the length of the right dimension.
+This produces the following.
+.in +5
+datalist: var= "1\\0\\0\\0", "two\\0", "thre", "e\\0\\0\\0";
+.in -5
+
+.IP 3. 3
+Move the the next to the rightmost dimension (d5 in this case)
+and add fill values as needed, producing this.
+.in +5
+datalist: var= "1\\0\\0\\0", "two\\0", "thre", "e\\0\\0\\0", "\\0\\0\\0\\0";
+.in -5
+
+4. Repeat step 3 for successively more left dimensions until the
+first dimension is reached. If the first dimension is UNLIMITED,
+and has not had any previous value assigned to it, then
+do not pad, but instead use the length at that point
+as the unlimited length. In all other cases, pad to the
+specified length.
+.LP
+Note that the term "greedy" is used because the above algorithm
+causes the strings to be assigned to the "front" of the variable
+and fill values to the end.
+.LP
+There are several additional edge cases that must be dealt with.
+.IP 1. 3
+Suppose we have only an unlimited dimension such as this case.
+.in +5
+.nf
+variables: char var(u);
+datalist: var="1", "two", "three";
+.fi
+.in -5
+In this case, we treat it like it was defined as this.
+.in +5
+.nf
+variables: char var(u,d1);
+datalist: var="1","t","w","o","t","h","r","e","e";
+.fi
+.in -5
+This means that u will have the length of nine.
+.IP 2. 3
+In netcdf-4, dimensions other than the first can be unlimited.
+Of course by the rules above, the interior unlimited instances
+must be delimited by {...}. For example.
+.in +5
+.nf
+variables: char var(u,u2);
+datalist: var={"1", "two"}, {"three"};
+.fi
+.in -5
+
+In this case u will have the effective length of two.
+Within each instance of u2, the rules above will apply, leading
+to this.
+.in +5
+datalist: var={"1","t","w","o"}, {"t","h","r","e","e"};
+.in -5
+
+The effective size of u2 will be the max of the two instance lengths
+(five in this case)
+and the shorter will be padded to produce this.
+.in +5
+datalist: var={"1","t","w","o","\\0"}, {"t","h","r","e","e"};
+.in -5
+
+.SH BUGS
+.LP
+The programs generated by \fBncgen\fP when using the \fB-c\fP flag
+use initialization statements to store data in variables, and will fail to
+produce compilable programs if you try to use them for large datasets, since
+the resulting statements may exceed the line length or number of
+continuation statements permitted by the compiler.
+.LP
+The CDL syntax makes it easy to assign what looks like an array of
+variable-length strings to a netCDF variable, but the strings may simply be
+concatenated into a single array of characters.
+Specific use of the \fIstring\fP type specifier may solve the problem
