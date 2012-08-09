@@ -1065,6 +1065,10 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 		first_row = lrint ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y]);
 		last_row  = lrint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) - 1 + is_gridline_reg;
 
+		/* Adjust first_row */
+		if (header->row_order == k_nc_start_south)
+			first_row = header->ny - 1 - last_row;
+
 		/* Global grids: if -R + padding is equal or exceeds grid bounds */
 		if (is_global && last_col - first_col + 1 + is_global_repeat >= header->nx) {
 			/* Number of requested cols >= nx: read whole grid and shift */
@@ -1093,10 +1097,6 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 	/* Do not read last column from global repeating grids */
 	if (is_global_repeat && last_col + 1 == header->nx)
 		--last_col;
-
-	/* Adjust first_row */
-	if (header->row_order == k_nc_start_south)
-		first_row = header->ny - 1 - last_row;
 
 	origin[0] = first_row;
 	origin[1] = first_col;
