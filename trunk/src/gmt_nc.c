@@ -51,6 +51,7 @@
  *  grid_flip_vertical      Reverses the grid vertically
  *  n_chunked_rows_in_cache Determines how many chunks to read at once
  *  io_nc_grid              Does the actual netcdf I/O
+ *  netcdf_libvers          returns the netCDF library version
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -65,6 +66,21 @@
 
 int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
 int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+
+static int nc_libvers[] = {-1, -1, -1, -1}; /* holds the version of the netCDF library */
+
+const int * netcdf_libvers (void) {
+	static bool inquired = false;
+
+	if (!inquired) {
+		const char *vers_string = nc_inq_libvers();
+		sscanf (vers_string, "%d.%d.%d.%d",
+				nc_libvers, nc_libvers+1, nc_libvers+2, nc_libvers+3);
+		inquired = true;
+	}
+
+	return nc_libvers; /* return pointer to version array */
+}
 
 int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	/* Returns GMT_NOERROR if NetCDF grid */
@@ -443,6 +459,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Store global attributes */
 		unsigned int row, col;
 		int reg;
+		const int *nc_vers = netcdf_libvers();
+		const bool is_nc4_file = header->z_chunksize[0] != 0;
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
@@ -486,12 +504,19 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
-		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+		if (job == 'u' && is_nc4_file && nc_vers[0] == 4 && nc_vers[1] < 3) {
+			/* netCDF-4 libs of versions < 4.3 have a bug and crash when
+			 * rewriting the _FillValue attribute in netCDF-4 files */
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: netCDF libraries < 4.3 cannot alter the _FillValue attribute in netCDF-4 files.\n");
 		}
 		else {
-			i = lrint (header->nan_value);
-			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
+			if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
+				GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+			}
+			else {
+				i = lrint (header->nan_value);
+				GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
+			}
 		}
 
 		/* Limits need to be stored in actual, not internal grid, units */
@@ -841,7 +866,12 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsi
 		/* memory needed for subset exceeds the cache size */
 		size_t chunks_per_row = (size_t) ceil (width / chunksize[yx_dim[1]]);
 		*n_contiguous_chunk_rows = (size_t) floor (NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]]);
-		GMT_report (C, GMT_MSG_LONG_VERBOSE,
+		GMT_report (C,
+#ifdef NC4_DEBUG
+				GMT_MSG_NORMAL,
+#else
+				GMT_MSG_LONG_VERBOSE,
+#endif
 				"processing at most %" PRIuS " (%" PRIuS "x%" PRIuS ") chunks at a time (%.1f MiB)...\n",
 				*n_contiguous_chunk_rows * chunks_per_row,
 				*n_contiguous_chunk_rows, chunks_per_row,
@@ -919,6 +949,11 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 	if (n_contiguous_chunk_rows) {
 		/* read/write grid in chunks to keep memory footprint low */
 		unsigned remainder;
+#ifdef NC4_DEBUG
+		unsigned row_num = 0;
+			GMT_report (C, GMT_MSG_NORMAL, "stride: %u increment: %u width: %u\n",
+					stride, increment, width);
+#endif
 
 		/* adjust row count, so that it ends on the bottom of a chunk */
 		count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
@@ -927,13 +962,19 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 
 		count[yx_dim[1]] = width;
 		while ( start[yx_dim[0]] + count[yx_dim[0]] <= height && status == NC_NOERR) {
+#ifdef NC4_DEBUG
+			GMT_report (C, GMT_MSG_NORMAL, "chunked row #%u start-y:%zu height:%zu\n",
+					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
+#endif
 			/* get/put chunked rows */
 			if (stride || increment > 1)
 				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
 			else
 				status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
-			p_grid += count[yx_dim[0]] * width;   /* advance grid location */
-			start[yx_dim[0]] += count[yx_dim[0]]; /* set new origin */
+
+			/* advance grid location and set new origin */
+			p_grid += count[yx_dim[0]] * (stride == 0 ? width : stride) * increment;
+			start[yx_dim[0]] += count[yx_dim[0]];
 			if (remainder) {
 				/* reset count to full chunk height */
 				count[yx_dim[0]] += remainder;
@@ -943,6 +984,10 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 		if ( start[yx_dim[0]] != height && status == NC_NOERR ) {
 			/* get/put last chunked row */
 			count[yx_dim[0]] = height - start[yx_dim[0]] + origin[0];
+#ifdef NC4_DEBUG
+			GMT_report (C, GMT_MSG_NORMAL, "chunked row #%u start-y:%zu height:%zu\n",
+					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
+#endif
 			if (stride || increment > 1)
 				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
 			else
@@ -1131,8 +1176,12 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	}
 
 	/* if we need to shift grid */
-	if (n_shift)
+	if (n_shift) {
+#ifdef NC4_DEBUG
+		GMT_report (C, GMT_MSG_NORMAL, "right_shift_grid: %d\n", n_shift);
+#endif
 		right_shift_grid (grid, dim[1], dim[0], n_shift, sizeof(grid[0]) * inc);
+	}
 
 	/* if dim[1] + dim2[1] was < requested width: wrap-pad east border */
 	if (GMT_grd_is_global(C, header) && width > dim[1] + dim2[1]) {
@@ -1169,16 +1218,18 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	}
 	else {
 		/* report z-range of grid (with scale and offset applied): */
+		GMT_report (C,
 #ifdef NC4_DEBUG
-		GMT_report (C, GMT_MSG_NORMAL, "packed z-range: [%g,%g]\n", header->z_min, header->z_max);
+				GMT_MSG_NORMAL,
 #else
-		GMT_report (C, GMT_MSG_VERBOSE, "packed z-range: [%g,%g]\n", header->z_min, header->z_max);
+				GMT_MSG_VERBOSE,
 #endif
+				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
 	}
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
+		//grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
 
 	/* Add padding with border replication */
 	pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
@@ -1310,11 +1361,13 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: The z-range, [%g,%g], exceeds the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
 		/* report z-range of grid (with scale and offset applied): */
+		GMT_report (C,
 #ifdef NC4_DEBUG
-		GMT_report (C, GMT_MSG_NORMAL, "packed z-range: [%g,%g]\n", header->z_min, header->z_max);
+				GMT_MSG_NORMAL,
 #else
-		GMT_report (C, GMT_MSG_VERBOSE, "packed z-range: [%g,%g]\n", header->z_min, header->z_max);
+				GMT_MSG_VERBOSE,
 #endif
+				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
 
 		/* Limits need to be written in actual, not internal grid, units: */
 		limit[0] = header->z_min * header->z_scale_factor + header->z_add_offset;
