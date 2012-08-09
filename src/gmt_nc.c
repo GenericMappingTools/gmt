@@ -1229,7 +1229,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		//grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
+		grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
 
 	/* Add padding with border replication */
 	pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
