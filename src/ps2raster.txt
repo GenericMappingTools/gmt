@@ -23,7 +23,7 @@ conventional extension name associated to the raster format (e.g., .jpg for the 
 OPT(D) to redirect the output to a different directory.
 .SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)[BD(u)[IT(margins)]|-]
+OPT(A)[BD(u)][IT(margins)][BD(-)]
 Adjust the BoundingBox and HiResBoundingBox to the minimum required by the image content.  Append BD(u) to first remove any
 GMT-produced time-stamps.  Optionally, append extra margins to the bounding box.  Give either one (uniform),
 two (x and y) or four (individual sides) margins; append unit [Default is set by PROJ_LENGTH_UNIT].
