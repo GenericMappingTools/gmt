@@ -67,7 +67,7 @@ help	Give a brief help message
 EOF
 	exit
 fi
-REGHOME4=$GMTHOME4/registration	# Where to do the work
+REGHOME4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmtadmin/registration	# Where to do the work
 REGHOME5=$GMTHOME5/sandbox/registration	# Where to do the work
 gmtswitch gmt5
 
