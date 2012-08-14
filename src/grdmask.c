@@ -51,8 +51,9 @@ struct GRDMASK_CTRL {
 		unsigned int mode;	/* 0 for out/on/in, 1 for polygon ID inside, 2 for polygon ID inside+path */
 		double mask[GRDMASK_N_CLASSES];	/* values for each level */
 	} N;
-	struct S {	/* -S[-|=|+]<radius>[d|e|f|k|m|M|n] */
+	struct S {	/* -S[-|=|+]<radius|z>[d|e|f|k|m|M|n] */
 		bool active;
+		bool variable_radius;	/* true when radii is read in on a per-record basis [false] */
 		int mode;	/* Could be negative */
 		double radius;
 		char unit;
@@ -105,6 +106,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
+	GMT_message (GMT, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
 	GMT_message (GMT, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
 	GMT_explain_options (GMT, "VC2fghiF:.");
 	
@@ -120,7 +122,7 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int n_errors = 0, j, pos;
-	char ptr[GMT_BUFSIZ];
+	char ptr[GMT_BUFSIZ], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -181,7 +183,14 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 				break;
 			case 'S':	/* Search radius */
 				Ctrl->S.active = true;
-				Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+				if ((c = strchr (opt->arg, 'z'))) {	/* Gave -S[-|=|+]z[d|e|f|k|m|M|n] which means read radii from file */
+					c[0] = '0';	/* Replace the v with 0 temporarily */
+					Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
+					Ctrl->S.variable_radius = true;
+					c[0] = 'v';	/* Restore v */
+				}
+				else	/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n] which means radius is fixed or 0 */ 
+					Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 
 			default:	/* Report bad options */
@@ -210,7 +219,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	bool error = false, periodic = false, periodic_grid = false;
 	unsigned int side, *d_col = NULL, d_row = 0, col_0, row_0;
-	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0;
+	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
 	int row, col, nx, ny;
 	
 	uint64_t ij, k, seg;
@@ -219,7 +228,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	float mask_val[3];
 	
-	double distance, xx, yy, z_value, xtmp, *grd_x0 = NULL, *grd_y0 = NULL;
+	double distance, xx, yy, z_value, xtmp, radius, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -283,11 +292,15 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-		d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		grd_x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		grd_y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
 		for (col = 0; col < nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
 		for (row = 0; row < ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+		if (!Ctrl->S.variable_radius) {
+			radius = Ctrl->S.radius;
+			n_cols = 3;	/* Get x, y, radius */
+			d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
+		}
 	}
 	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
@@ -297,9 +310,9 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = mask_val[GMT_OUTSIDE];
 
-	if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) Return (error);
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_cols)) != GMT_OK) Return (error);
 	gmode = (Ctrl->S.active) ? GMT_IS_POINT : GMT_IS_POLY;
-	GMT_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
+	GMT_skip_xy_duplicates (GMT, true);	/* Skip repeating x/y points in polygons */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, gmode, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
@@ -320,7 +333,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (tbl = n_pol = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++, n_pol++) {	/* For each segment in the table */
 			S = D->table[tbl]->segment[seg];		/* Current segment */
-			if (Ctrl->S.active) {	/* Assign 'inside' to nodes within given distance of data constrains */
+			if (Ctrl->S.active) {	/* Assign 'inside' to nodes within given distance of data constraints */
 				for (k = 0; k < S->n_rows; k++) {
 					if (GMT_y_is_outside (GMT, S->coord[GMT_Y][k], Grid->header->wesn[YLO], Grid->header->wesn[YHI])) continue;	/* Outside y-range */
 					xtmp = S->coord[GMT_X][k];	/* Make copy since we may have to adjust by +-360 */
@@ -339,15 +352,22 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 						ij = GMT_IJP (Grid->header, row_0, col);
 						Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is also the nearest node */
 					}
-					if (Ctrl->S.radius == 0.0) continue;	/* Only consider the nearest node */
+					if (Ctrl->S.variable_radius) radius = S->coord[GMT_Z][k];
+					if (radius == 0.0) continue;	/* Only consider the nearest node */
 					/* Here we also include all the nodes within the search radius */
+					if (Ctrl->S.variable_radius && !doubleAlmostEqual (radius, last_radius)) {	/* Init d_row/d_col etc */
+						if (d_col) GMT_free (GMT, d_col);
+						d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);
+						last_radius = radius;
+					}
+					
 					for (row = row_0 - d_row; row <= (int)(row_0 + d_row); row++) {
 						if (row < 0 || row >= ny) continue;
 						for (col = col_0 - d_col[row]; col <= (int)(col_0 + d_col[row]); col++) {
 							if (col < 0 || col >= nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
 							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
-							if (distance > Ctrl->S.radius) continue;
+							if (distance > radius) continue;
 							Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
 						}
 					}
