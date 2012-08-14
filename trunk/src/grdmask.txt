@@ -46,7 +46,8 @@ Here, OPT(NP) includes the polygon perimeter as inside.
 .TP
 OPT(S)IT(search_radius)[IT(unit)]
 Set nodes depending on their distance from the nearest data point.  Nodes within IT(radius) [0] from
-a data point are considered inside; append a distance unit (see UNITS).
+a data point are considered inside; append a distance unit (see UNITS).  If IT(radius) is given as BD(z)
+then we instead read individual radii from the 3rd input column.
 If OPT(S) is not set then we consider the input data to define closed polygon(s) instead.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
@@ -74,7 +75,7 @@ grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
 .sp
 To assign polygon IDs to the gridnodes using the insides of the polygons in plates.gmt, based on the attribute POL_ID, do
 .sp
-grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID-V
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID -V
 .br
 .sp
 Same exercise, but instead compute running polygon IDs starting at 100, do
