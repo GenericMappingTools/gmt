@@ -168,6 +168,11 @@ set_target_properties (netcdf
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 	DEFINE_SYMBOL "DLL_EXPORT")
 
+# If a renaming of the netcdf dll has been set in ConfigUser.cmake
+if (WIN32 AND NETCDF_DLL_RENAME)
+	set_target_properties (netcdf PROPERTIES RUNTIME_OUTPUT_NAME ${NETCDF_DLL_RENAME})
+endif ()
+
 # Install include file
 install (FILES include/netcdf.h DESTINATION include)
 

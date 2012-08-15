@@ -24,6 +24,16 @@
 # Use this file to override variables
 #
 
+if (WIN32)
+	set (BITAGE 32)
+	# Detect if we are building a 32 or 64 bits version
+	if (CMAKE_SIZEOF_VOID_P EQUAL 8)
+		set(BITAGE 64)
+	endif ()
+	# Uncomment to have the dll named other than the default 'netcdf.dll'
+	#set (NETCDF_DLL_RENAME netcdf4_w${BITAGE})
+endif (WIN32)
+
 # Where netcdf will be installed:
 set (CMAKE_INSTALL_PREFIX z:/software)
 
