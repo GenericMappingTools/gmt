@@ -864,14 +864,15 @@ int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsi
 
 	if (height * width * z_size > NC_CACHE_SIZE) {
 		/* memory needed for subset exceeds the cache size */
+		unsigned int level;
 		size_t chunks_per_row = (size_t) ceil (width / chunksize[yx_dim[1]]);
 		*n_contiguous_chunk_rows = (size_t) floor (NC_CACHE_SIZE / (width * z_size) / chunksize[yx_dim[0]]);
-		GMT_report (C,
 #ifdef NC4_DEBUG
-				GMT_MSG_NORMAL,
+		level = GMT_MSG_NORMAL;
 #else
-				GMT_MSG_LONG_VERBOSE,
+		level = GMT_MSG_LONG_VERBOSE;
 #endif
+		GMT_report (C, level,
 				"processing at most %" PRIuS " (%" PRIuS "x%" PRIuS ") chunks at a time (%.1f MiB)...\n",
 				*n_contiguous_chunk_rows * chunks_per_row,
 				*n_contiguous_chunk_rows, chunks_per_row,
@@ -1218,12 +1219,13 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	}
 	else {
 		/* report z-range of grid (with scale and offset applied): */
-		GMT_report (C,
+		unsigned int level;
 #ifdef NC4_DEBUG
-				GMT_MSG_NORMAL,
+		level = GMT_MSG_NORMAL;
 #else
-				GMT_MSG_VERBOSE,
+		level = GMT_MSG_LONG_VERBOSE;
 #endif
+		GMT_report (C, level,
 				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
 	}
 
@@ -1240,7 +1242,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		unsigned pad_x = pad[XLO] + pad[XHI];
 		unsigned stride = header->stride ? header->stride : width;
 		float *p_data = grid + header->data_offset;
-		for (n=0; n<(stride + pad_x) * (height + pad[YLO] + pad[YHI]) * inc; ++n) {
+		for (n = 0; n < (stride + pad_x) * (height + pad[YLO] + pad[YHI]) * inc; n++) {
 			if (n % ((stride + pad_x) * inc) == 0)
 				fprintf (stderr, "\n");
 			fprintf (stderr, "%4.0f", p_data[n]);
@@ -1357,16 +1359,17 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	if (header->z_min <= header->z_max) {
 		/* Warn if z-range exceeds the precision of a single precision float: */
 		static const uint32_t exp2_24 = 0x1000000; /* exp2 (24) */
+		unsigned int level;
 		if (fabs(header->z_min) >= exp2_24 || fabs(header->z_max) >= exp2_24)
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: The z-range, [%g,%g], exceeds the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
 		/* report z-range of grid (with scale and offset applied): */
-		GMT_report (C,
 #ifdef NC4_DEBUG
-				GMT_MSG_NORMAL,
+		level = GMT_MSG_NORMAL;
 #else
-				GMT_MSG_VERBOSE,
+		level = GMT_MSG_LONG_VERBOSE;
 #endif
+		GMT_report (C, level,
 				"packed z-range: [%g,%g]\n", header->z_min, header->z_max);
 
 		/* Limits need to be written in actual, not internal grid, units: */
