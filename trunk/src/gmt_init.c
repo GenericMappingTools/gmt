@@ -572,6 +572,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
 			GMT_message (C, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
 			GMT_message (C, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
+			break;
 
 		case 'o':	/* -o option for output column order */
 
