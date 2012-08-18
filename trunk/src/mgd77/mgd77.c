@@ -1214,8 +1214,12 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL 
 		may_convert = !(MGD77_this_bit[i] & MGD77_FLOAT_BITS) || strcmp (currentField, mgd77defs[i].not_given);
 		if (may_convert) {	/* OK, we need to decode the value and scale it according to factor */
 			MGD77Record->bit_pattern |= MGD77_this_bit[i];	/* Turn on this bit */
-			if ((nconv = sscanf (currentField, mgd77defs[i].readMGD77, &value)) != 1)
-				return (MGD77_ERROR_CONV_DATA_REC);
+			if ((nconv = sscanf (currentField, mgd77defs[i].readMGD77, &value)) != 1) {
+				if (i == 12)        /* IFREMER mgd77 files not unusually have empty fields 58-59 (BATHYMETRIC CORRECTION CODE) */
+					value = 99;     /* In those cases, use the the 'Unspecified' code */
+				else
+					return (MGD77_ERROR_CONV_DATA_REC);
+			}
 			MGD77Record->number[i] = ((double) value) / mgd77defs[i].factor;
 		}
 		else 	/* Geophysical observation absent, assign NaN (assign NaN to unspecified time values??) */
