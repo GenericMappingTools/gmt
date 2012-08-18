@@ -1493,7 +1493,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	unsigned int id[2], n_ignore = 0, n_tracks = 0;
 	bool more, skip, two_values = false, check_box, keep = true, no_time = false;
 	size_t n_alloc_x, n_alloc_p, n_alloc_t;
-	uint64_t k, p, n_pairs;
+	uint64_t k, p, n_pairs, rec_no = 0;
 	double x, m, lon, dist[2], d_val;
 
 	fp = stdin;	/* Default to stdin if dbase is NULL */
@@ -1506,6 +1506,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	P = GMT_memory (C, NULL, n_alloc_p, struct X2SYS_COE_PAIR);
 
 	while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#') {	/* Process header recs */
+		rec_no++;
 		GMT_chop (line);	/* Get rid of [CR]LF */
 		/* Looking to process these two [three] key lines:
 		 * # Tag: MGD77
@@ -1570,21 +1571,25 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 	while (more) {	/* Read dbase until EOF */
 		GMT_chop (line);	/* Get rid of [CR]LF */
 		if (line[0] == '#') {	/* Skip a comment lines */
-			while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#');	/* Skip header recs */
+			while (fgets (line, GMT_BUFSIZ, fp) && line[0] == '#') rec_no++;	/* Skip header recs */
 			continue;	/* Return to top of while loop */
+		}
+		if (line[0] != '>') {	/* Trouble */
+			GMT_report (C, GMT_MSG_NORMAL, "Error: No segment header found [line %" PRIu64 "]\n", rec_no);
+			exit (EXIT_FAILURE);
 		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);
 		for (k = 0; k < strlen (trk[0]); k++) if (trk[0][k] == '.') trk[0][k] = '\0';
 		for (k = 0; k < strlen (trk[1]); k++) if (trk[1][k] == '.') trk[1][k] = '\0';
 		skip = false;
 		if (!(coe_kind & 1) && !strcmp (trk[0], trk[1])) skip = true;	/* Do not want internal crossovers */
-		if (!(coe_kind & 2) && strcmp (trk[0], trk[1])) skip = true;	/* Do not want external crossovers */
+		if (!(coe_kind & 2) &&  strcmp (trk[0], trk[1])) skip = true;	/* Do not want external crossovers */
 		if (one_trk && (strcmp (one_trk, trk[0]) && strcmp (one_trk, trk[1]))) skip = true;	/* Looking for a specific track and these do not match */
 		if (!skip && n_ignore) {	/* See if one of the tracks are in the ignore list */
 			for (k = 0; !skip && k < n_ignore; k++) if (!strcmp (trk[0], ignore[k]) || !strcmp (trk[1], ignore[k])) skip = true;
 		}
 		if (skip) {	/* Skip this pair's data records */
-			while ((t = fgets (line, GMT_BUFSIZ, fp)) && line[0] != '>');
+			while ((t = fgets (line, GMT_BUFSIZ, fp)) && line[0] != '>') rec_no++;
 			more = (t != NULL);
 			continue;	/* Back to top of loop */
 		}
@@ -1605,12 +1610,12 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		/* Sanity check - make sure we dont already have this pair */
 		for (p = 0, skip = false; !skip && p < n_pairs; p++) {
 			if ((P[p].id[0] == id[0] && P[p].id[1] == id[1]) || (P[p].id[0] == id[1] && P[p].id[1] == id[0])) {
-				GMT_report (C, GMT_MSG_NORMAL, "Warning: Pair %s and %s appear more than once - skipped\n", trk[0], trk[1]);
+				GMT_report (C, GMT_MSG_NORMAL, "Warning: Pair %s and %s appear more than once - skipped [line %" PRIu64 "]\n", trk[0], trk[1], rec_no);
 				skip = true;
 			}
 		}
 		if (skip) {
-			while ((t = fgets (line, GMT_BUFSIZ, fp)) && line[0] != '>');	/* Skip this pair's data records */
+			while ((t = fgets (line, GMT_BUFSIZ, fp)) && line[0] != '>') rec_no++;	/* Skip this pair's data records */
 			more = (t != NULL);
 			continue;	/* Back to top of loop */
 		}
@@ -1629,11 +1634,11 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				P[p].start[k] = P[p].stop[k] = C->session.d_NaN;
 			else {
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, start[k], GMT_IS_ABSTIME, &P[p].start[k]), start[k])) {
-					GMT_report (C, GMT_MSG_NORMAL, "Error: Header time specification tstart%d (%s) in wrong format\n", (k+1), start[k]);
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Header time specification tstart%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), start[k], rec_no);
 					exit (EXIT_FAILURE);
 				}
 				if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, stop[k], GMT_IS_ABSTIME, &P[p].stop[k]), stop[k])) {
-					GMT_report (C, GMT_MSG_NORMAL, "Error: Header time specification tstop%d (%s) in wrong format\n", (k+1), stop[k]);
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Header time specification tstop%d (%s) in wrong format [line %" PRIu64 "]\n", (k+1), stop[k], rec_no);
 					exit (EXIT_FAILURE);
 				}
 			}
@@ -1650,6 +1655,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 		P[p].COE = GMT_memory (C, NULL, n_alloc_x, struct X2SYS_COE);
 		k = 0;
 		while ((t = fgets (line, GMT_BUFSIZ, fp)) && !(line[0] == '>' || line[0] == '#')) {	/* As long as we are reading data records */
+			rec_no++;
 			GMT_chop (line);	/* Get rid of [CR]LF */
 			sscanf (line, fmt, x_txt, y_txt, t_txt[0], t_txt[1], d_txt[0], d_txt[1], h_txt[0], h_txt[1], v_txt[0], v_txt[1], z_txt[0], z_txt[1]);
 			if (GMT_scanf (C, x_txt, GMT_IS_FLOAT, &d_val) == GMT_IS_NAN) d_val = C->session.d_NaN;
@@ -1673,7 +1679,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *d
 				if (no_time || !strcmp (t_txt[i], "NaN"))
 					P[p].COE[k].data[i][COE_T] = C->session.d_NaN;
 				else if (GMT_verify_expectations (C, GMT_IS_ABSTIME, GMT_scanf (C, t_txt[i], GMT_IS_ABSTIME, &P[p].COE[k].data[i][COE_T]), t_txt[i])) {
-					GMT_report (C, GMT_MSG_NORMAL, "Error: Time specification t%d (%s) in wrong format\n", (i+1), t_txt[i]);
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Time specification t%d (%s) in wrong format [line %" PRIu64 "]\n", (i+1), t_txt[i], rec_no);
 					exit (EXIT_FAILURE);
 				}
 			}
