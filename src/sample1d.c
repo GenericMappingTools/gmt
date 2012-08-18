@@ -183,7 +183,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 				Ctrl->I.active = true;
 				Ctrl->I.inc = atof (opt->arg);
 				len = strlen (opt->arg) - 1;
-				if (strchr ("defkMn", opt->arg[len])) {
+				if (strchr (GMT_LEN_UNITS, opt->arg[len])) {
 					Ctrl->I.unit = opt->arg[len];
 					Ctrl->I.mode = INT_2D;
 				}
@@ -309,7 +309,8 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->I.active && Ctrl->I.mode == INT_2D) {
 		spatial = true;
-		inc_degrees = (Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Convert increment to spherical degrees */
+		inc_degrees = Ctrl->I.inc / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert increment to spherical degrees */
+		if (!GMT->current.map.dist[GMT_MAP_DIST].arc) inc_degrees /= GMT->current.proj.DIST_M_PR_DEG;	/* Convert distance in meters to spherical degrees */
 	}
 
 	Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
