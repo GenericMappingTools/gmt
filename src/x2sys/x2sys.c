@@ -1012,6 +1012,8 @@ int x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S, stru
 			switch (p[1]) {
 				/* Common parameters */
 				case 'R':
+					if (C->common.R.active)		/* It means that a -R was given in command line and we don't override it here */
+						break;
 					if (GMT_parse_common_options (C, "R", 'R', &p[2])) {
 						GMT_report (C, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
