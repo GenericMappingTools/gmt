@@ -5159,7 +5159,7 @@ int MGD77_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double
 
 	if (date < 2010.) {
 		t = 0.2 * (date - 1900.);
-		ll = lrint (t);
+		ll = (int) t;
 		one = (double) ll;
 		t -= one;
 		if (date < 1995.) {
@@ -5170,7 +5170,7 @@ int MGD77_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double
 		} else {
 			nmx = 13;
 			nc = nmx * (nmx + 2);
-			ll = lrint ((date - 1995.) * .2);
+			ll = (int) ((date - 1995.) * .2);
 			ll = nc * ll + 2280		/* 2280, position of first coeff of 1995 */;
 			kmx = (nmx + 1) * (nmx + 2) / 2;
 		}
