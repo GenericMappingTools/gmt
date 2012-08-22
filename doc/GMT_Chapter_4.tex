@@ -864,8 +864,8 @@ you want to split any line or polygon features that straddle the Dateline.
 \index{\Opt{bo} (select binary output)}
 
 All \GMT\ programs that accept table data input may read ASCII,
-native binary, or netCDF data.  Files may have a header section
-and the \Opt{h}\emph{n} option can be used to skip the first
+native binary, or netCDF data.  Native binary files may have a header section
+and the \Opt{h}\emph{n} option (see Section~\ref{sec:header}) can be used to skip the first
 \emph{n} bytes.  The data record can be in any format, mixing
 different data types and even containing byte-swapped items.  When
 using native binary data the user must be aware of the fact that
@@ -880,7 +880,8 @@ int16\_t), \textbf{H} (unsigned 2-byte int, uint16\_t), \textbf{i}
 uint32\_t), \textbf{l} (signed 8-byte int, int64\_t), \textbf{L}
 (unsigned 8-byte int, uint64\_t), \textbf{f} (4-byte
 single-precision float), and \textbf{d} (8-byte double-precision
-float).  For a mixed-type data record you can concatenate several
+float).  In addition, use \textbf{x} to skip \emph{n} bytes anywhere in the record.
+For a mixed-type data record you can concatenate several
 [\emph{n}]\textbf{t} combinations, separated by commas.  You may
 append \textbf{w} to any of the items to force byte-swapping.
 Alternatively, append \textbf{+L}$|$\textbf{B} to indicate that
