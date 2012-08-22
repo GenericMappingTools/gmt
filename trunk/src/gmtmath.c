@@ -323,7 +323,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtmath [-A<ftable>] [-C<cols>] [-I] [-L] [-N<n_col>/<t_col>] [-Q]\n");
+	GMT_message (GMT, "usage: gmtmath [-A<ftable>] [-C<cols>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q]\n");
 	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin>/<tmax>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
@@ -356,7 +356,8 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n"
 		"\t-I Reverse the output sequence into descending order [ascending].\n"
 		"\t-L Apply operators on a per-segment basis [cumulates operations across file].\n"
-		"\t-N Set the number of columns and the id of the time column (0 is first) [2/0].\n"
+		"\t-N Set the number of columns and optionally the id of the time column (0 is first) [2/0].\n"
+		"\t   If input files are given, -N will add extra columns initialized to zero, if needed.\n"
 		"\t-Q Quick scalar calculator. Shorthand for -Ca -N1/0 -T0/0/1.\n"
 		"\t-S Only write first row upon completion of calculations [write all rows].\n"
 		"\t   Optionally, append l for last row or f for first row [Default].\n"
@@ -423,9 +424,9 @@ int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct 
 			case 'L':	/* Apply operator per segment basis */
 				Ctrl->L.active = true;
 				break;
-			case 'N':	/* Sets no of columns and the time column */
+			case 'N':	/* Sets no of columns and optionally the time column [0] */
 				Ctrl->N.active = true;
-				sscanf (opt->arg, "%d/%d", &Ctrl->N.ncol, &Ctrl->N.tcol);
+				if (sscanf (opt->arg, "%d/%d", &Ctrl->N.ncol, &Ctrl->N.tcol) == 1) Ctrl->N.tcol = 0;
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
 				Ctrl->Q.active = true;
@@ -3034,6 +3035,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	if (D_in) {	/* Read a file, update columns */
+		if (Ctrl->N.ncol > D_in->n_columns) GMT_adjust_dataset (GMT, D_in, Ctrl->N.ncol);	/* Add more input columns */
 		use_t_col  = Ctrl->N.tcol;
 		n_columns  = D_in->n_columns;
 	}
@@ -3274,6 +3276,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 						GMT_report (GMT, GMT_MSG_NORMAL, "Error reading file %s\n", opt->arg);
 						Return (API->error);
 					}
+					if (Ctrl->N.ncol > stack[nstack]->n_columns) GMT_adjust_dataset (GMT, stack[nstack], Ctrl->N.ncol);	/* Add more input columns */
 					alloc_mode[nstack] = 2;
 				}
 				if (!same_size (stack[nstack], Template)) {

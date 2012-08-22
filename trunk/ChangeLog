@@ -5,6 +5,7 @@
 2012-08-22	pwessel
 	* blockmedian.c:	Added -Es to read and output source id for median value.
 	* blockmode.c:		Added -Es to read and output source id for median value.
+	* gmtmath.c:		Now, -N<ncol> with input files will add extra columns.
 
 2012-08-13	pwessel
 	* grdmask.c:		Added z as possible radius value in -S: Read radii from 3rd input column.
