@@ -91,6 +91,7 @@ struct BLK_SLH {	/* Holds std, low, and high values */
 #define BLK_DO_EXTEND4	2
 #define BLK_DO_INDEX_LO	4
 #define BLK_DO_INDEX_HI	8
+#define BLK_DO_SRC_ID	16
 
 enum GMT_enum_blks {BLK_Z	= 2,
 		BLK_W		= 3};
@@ -98,7 +99,7 @@ struct BLK_DATA {
 	double a[4];		/* a[0] = x, a[1] = y, a[2] = z, a[3] = w  */
 	uint64_t ij;	/* Grid index for data value */
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
-	uint64_t rec_no;	/* Data record on input */
+	uint64_t src_id;	/* Source id [Data record] on input */
 #endif
 };
 #endif
