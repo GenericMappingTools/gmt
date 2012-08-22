@@ -40,7 +40,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-C] [-E] [-Er[-]] [-Q] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_message (GMT, "\t[-C] [-E] [-Er|s[-]] [-Q] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -52,8 +52,9 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
 	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
-	GMT_message (GMT, "\t   Use -Er to report record number of the modal value per block.\n");
-	GMT_message (GMT, "\t   For ties, report record number of largest value; append - for smallest.\n");
+	GMT_message (GMT, "\t   Use -Er to report record number of the median value per block,\n");
+	GMT_message (GMT, "\t   or -Es to report an unsigned integer source is (sid) taken from the x,y,z[,w],sid input.\n");
+	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Set Weight options.\n");
@@ -92,8 +93,10 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 				break;
 			case 'E':
 				Ctrl->E.active = true;		/* Extended report with standard deviation, min, and max in cols 4-6 */
-				if (opt->arg[0] == 'r')
-					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number of median */
+				if (opt->arg[0] == 'r' || opt->arg[0] == 's') {
+					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number or sid of median */
+					if (opt->arg[0]) Ctrl->E.mode |= BLK_DO_SRC_ID;
+				}
 				else if (opt->arg[0] == '\0')
 					Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report LMSscale, low, high in cols 4-6 */
 				else
@@ -172,11 +175,11 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 		bottomj = d[j-1].a[k] - d[i].a[k];
 
 		if (bottomj == 0.0) {
-			if (index) *index = d[j-1].rec_no;
+			if (index) *index = d[j-1].src_id;
 			return (d[j-1].a[k]);
 		}
 		if (bottomi == 0.0) {
-			if (index) *index = d[i+1].rec_no;
+			if (index) *index = d[i+1].src_id;
 			return (d[i+1].a[k]);
 		}
 		pi = topi / bottomi;
@@ -195,10 +198,10 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 			j--;
 		}
 	}
-	if (emode && index) {	/* Also return best rec_no for this mode */
+	if (emode && index) {	/* Also return best src_id for this mode */
 		way = (d[j].a[k] >= d[i].a[k]) ? +1 : -1;
-		if (emode & BLK_DO_INDEX_HI) *index = (way == +1) ? d[j].rec_no : d[i].rec_no;
-		else *index = (way == +1) ? d[i].rec_no : d[j].rec_no;
+		if (emode & BLK_DO_INDEX_HI) *index = (way == +1) ? d[j].src_id : d[i].src_id;
+		else *index = (way == +1) ? d[i].src_id : d[j].src_id;
 	}
 	return (0.5 * (d[j].a[k] + d[i].a[k]));
 }
@@ -213,10 +216,10 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	int way;
 	
-	unsigned int row, col, w_col, i_col, emode = 0, n_output;
+	unsigned int row, col, w_col, i_col, sid_col, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
-	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, rec_no;
+	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 
@@ -268,7 +271,8 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 
 	/* Specify input and output expected columns */
-	if ((error = GMT_set_cols (GMT, GMT_IN,  3 + Ctrl->W.weighted[GMT_IN])) != GMT_OK) {
+	n_input = 3 + Ctrl->W.weighted[GMT_IN] + ((Ctrl->E.mode & BLK_DO_SRC_ID) ? 1 : 0);	/* 3 columns on output, plus 1 extra if -W and another if -Es  */
+	if ((error = GMT_set_cols (GMT, GMT_IN, n_input)) != GMT_OK) {
 		Return (error);
 	}
 	n_output = (Ctrl->W.weighted[GMT_OUT]) ? 4 : 3;
@@ -297,6 +301,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
+	sid_col = (Ctrl->W.weighted[GMT_IN]) ? 4 : 3;	/* Column with integer source id [if -Es is set] */
 	n_read = n_pitched = 0;	/* Initialize counters */
 
 	/* Read the input data */
@@ -331,7 +336,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (n_pitched == n_alloc) data = GMT_malloc (GMT, data, n_pitched, &n_alloc, struct BLK_DATA);
 		data[n_pitched].ij = node;
-		data[n_pitched].rec_no = n_read;
+		data[n_pitched].src_id = (Ctrl->E.mode & BLK_DO_SRC_ID) ? (uint64_t)lrint (in[sid_col]) : n_read;
 		if (mode_xy) {	/* Need to store (x,y) so we can compute modal location later */
 			data[n_pitched].a[GMT_X] = in[GMT_X];
 			data[n_pitched].a[GMT_Y] = in[GMT_Y];
@@ -370,7 +375,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (emode) {					/* Index column last, with weight col just before */
 		i_col = w_col--;
 		old_format = GMT->current.io.o_format[i_col];		/* Need to restore this at end */
-		GMT->current.io.o_format[i_col] = strdup ("%.0f");	/* Integer format for rec_no */
+		GMT->current.io.o_format[i_col] = strdup ("%.0f");	/* Integer format for src_id */
 	}
 
 	/* Sort on node and Z value */
@@ -413,7 +418,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		n_in_cell = first_in_new_cell - first_in_cell;
 		if (n_in_cell > 2) {	/* data are already sorted on z; get z mode  */
-			out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, 2, &rec_no);
+			out[GMT_Z] = weighted_mode (&data[first_in_cell], weight, emode, n_in_cell, 2, &src_id);
 			if (Ctrl->Q.active) {
 				i_n_in_cell = 1.0 / n_in_cell;
 				out[GMT_X] *= i_n_in_cell;
@@ -438,7 +443,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 					out[GMT_X] = data[first_in_cell].a[GMT_X];
 					out[GMT_Y] = data[first_in_cell].a[GMT_Y];
 				}
-				if (emode) rec_no = data[first_in_cell].rec_no;
+				if (emode) src_id = data[first_in_cell].src_id;
 			}
 			else if (data[first_in_cell].a[BLK_W] < data[first_in_cell+1].a[BLK_W]) {
 				out[GMT_Z] = data[first_in_cell+1].a[BLK_Z];
@@ -450,7 +455,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 					out[GMT_X] = data[first_in_cell+1].a[GMT_X];
 					out[GMT_Y] = data[first_in_cell+1].a[GMT_Y];
 				}
-				if (emode) rec_no = data[first_in_cell+1].rec_no;
+				if (emode) src_id = data[first_in_cell+1].src_id;
 			}
 			else {
 				if (mode_xy) {	/* Need average location */
@@ -460,14 +465,14 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 				out[GMT_Z] = 0.5 * (data[first_in_cell].a[BLK_Z] + data[first_in_cell+1].a[BLK_Z]);
 				if (emode) {
 					way = (data[first_in_cell+1].a[BLK_Z] >= data[first_in_cell].a[BLK_Z]) ? +1 : -1;
-					if (emode & BLK_DO_INDEX_HI) rec_no = (way == +1) ? data[first_in_cell+1].rec_no : data[first_in_cell].rec_no;
-					else rec_no = (way == +1) ? data[first_in_cell].rec_no : data[first_in_cell+1].rec_no;
+					if (emode & BLK_DO_INDEX_HI) src_id = (way == +1) ? data[first_in_cell+1].src_id : data[first_in_cell].src_id;
+					else src_id = (way == +1) ? data[first_in_cell].src_id : data[first_in_cell+1].src_id;
 				}
 			}
 		}
 		else {
 			out[GMT_Z] = data[first_in_cell].a[BLK_Z];
-			if (emode) rec_no = data[first_in_cell].rec_no;
+			if (emode) src_id = data[first_in_cell].src_id;
 		}
 
 		if (Ctrl->E.mode & BLK_DO_EXTEND3) {
@@ -484,7 +489,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 				out[3] = GMT->session.d_NaN;
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
-		if (emode) out[i_col] = rec_no;
+		if (emode) out[i_col] = src_id;
 
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 

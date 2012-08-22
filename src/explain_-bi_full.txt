@@ -7,7 +7,8 @@ aka unsigned char), BD(h) (int16_t, 2-byte signed int), BD(H) (uint16_t,
 2-byte unsigned int), BD(i) (int32_t, 4-byte signed int), BD(I)
 (uint32_t, 4-byte unsigned int), BD(l) (int64_t, 8-byte signed int),
 BD(L) (uint64_t, 8-byte unsigned int), BD(f) (4-byte single-precision
-float), and BD(d) (8-byte double-precision float).  Append BD(w) to any
+float), and BD(d) (8-byte double-precision float).  In addition, use
+BD(x) to skip IT(ncols) bytes anywhere in the record. Append BD(w) to any
 item to force byte-swapping.  Alternatively, append BD(+L)|BD(B) to
 indicate that the entire data file should be read as little- or
 big-endian, respectively. The total number of IT(ncols) may exceed the
