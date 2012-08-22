@@ -4,7 +4,7 @@
 gmtmath \- Reverse Polish Notation (RPN) calculator for data tables
 .SH SYNOPSIS
 BD(gmtmath) [ OPT(A)IT(t_f(t).d) ] [ OPT(C)IT(cols) ] [ OPT(I) ] 
-[ OPT(N)IT(n_col)/IT(t_col) ] [ OPT(Q) ] [ OPT(S)[BD(f)|BD(l)] ] 
+[ OPT(N)IT(n_col)[/IT(t_col)] ] [ OPT(Q) ] [ OPT(S)[BD(f)|BD(l)] ] 
 [ OPT(T)IT(t_min)/IT(t_max)/IT(t_inc)[BD(+)]|IT(tfile) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
 [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] 
 IT(operand) [ IT(operand) ] BD(OPERATOR) [ IT(operand) ] 
@@ -48,9 +48,10 @@ choices.
 OPT(I)
 Reverses the output row sequence from ascending time to descending [ascending].
 .TP
-OPT(N)IT(n_col)/IT(t_col)
-Select the number of columns and the column number that contains the
-"time" variable.  Columns are numbered starting at 0 [2/0].
+OPT(N)IT(n_col)[/IT(t_col)]
+Select the number of columns and optionally the column number that contains the
+"time" variable [0].  Columns are numbered starting at 0 [2/0].
+If input files are specified then OPT(N) will add any missing columns.
 .TP
 OPT(Q)
 Quick mode for scalar calculation.  Shorthand for OPT(Ca) OPT(N)1/0 OPT(T)0/0/1.
