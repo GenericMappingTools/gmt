@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psbasemap
+%%Title: GMT v5.0.1b_r10357 [64-bit] [C4] Document from psbasemap
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:52:19 2011
+%%CreationDate: Sun Jul  8 18:37:46 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1HS -P
+%%GMT: psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1HS -P
 %%PROJ: xy 0.20000000 0.35000000 0.00000000 1.00000000 0.350 0.200 0.000 1.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -634,20 +639,20 @@ def
 667 0 M 0 -188 D S
 /PSL_AH1 0
 175 F0
-(5pm) sh mx
-(6pm) sh mx
-(7pm) sh mx
-(8pm) sh mx
+(5am) sh mx
+(6am) sh mx
+(7am) sh mx
+(8am) sh mx
 def
 /PSL_A1_y PSL_A0_y PSL_A1_y mx 62 add PSL_AH1 add def
 5667 PSL_A1_y MM
-(5pm) bc Z
+(5am) bc Z
 4000 PSL_A1_y MM
-(6pm) bc Z
+(6am) bc Z
 2333 PSL_A1_y MM
-(7pm) bc Z
+(7am) bc Z
 667 PSL_A1_y MM
-(8pm) bc Z
+(8am) bc Z
 5944 0 M 0 -31 D S
 5806 0 M 0 -31 D S
 5528 0 M 0 -31 D S
