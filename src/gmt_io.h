@@ -151,7 +151,8 @@ enum GMT_enum_write {
 	GMT_WRITE_DOUBLE = 0,	/* Write double array to output */
 	GMT_WRITE_TEXT,		/* Write ASCII current record to output */
 	GMT_WRITE_SEGHEADER,	/* Write segment header record to output */
-	GMT_WRITE_TBLHEADER};	/* Write current record as table header to output */
+	GMT_WRITE_TBLHEADER,	/* Write current record as table header to output */
+	GMT_WRITE_NOLF = 16};	/* Do not write LF at end of ascii record, and not increment output rec number */
 
 enum GMT_enum_dest {
 	GMT_WRITE_OGR = -1,	/* Output OGR/GMT format [Requires proper -a setting] */
