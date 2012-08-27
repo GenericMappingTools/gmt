@@ -89,9 +89,10 @@ Selects a logarithmic interpolation scheme [Default is linear].  OPT(Qi) expects
 OPT(Qo) takes log10(z) first, assigns colors, and writes out z.
 #include "explain_-R.txt"
 .TP
-OPT(S)IT(zstart/zstop/zinc)
+OPT(S)IT(zstart/zstop/zinc) or OPT(S)IT(n)
 Set steps in cpt file.  Calculate entries in cpt file from IT(zstart) to IT(zstop)
-in steps of (IT(zinc)).  [Default chooses arbitrary values by a crazy scheme.]
+in steps of (IT(zinc)).  Default chooses arbitrary values by a crazy scheme.
+Use OPT(S)IT(n) to select IT(n) points from a cumulative normal distribution.
 .TP
 OPT(T)BD(-)|BD(+)|BD(_)|BD(=)
 Force the color table to be symmetric about zero (from -R to +R). Append flag to set the range R:
