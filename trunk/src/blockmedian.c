@@ -54,7 +54,7 @@ int GMT_blockmedian_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_message (GMT, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
 	GMT_message (GMT, "\t   Use -Er to report record number of the median value per block,\n");
-	GMT_message (GMT, "\t   or -Es to report an unsigned integer source is (sid) taken from the x,y,z[,w],sid input.\n");
+	GMT_message (GMT, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
 	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
 	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
@@ -99,7 +99,8 @@ int GMT_blockmedian_parse (struct GMTAPI_CTRL *C, struct BLOCKMEDIAN_CTRL *Ctrl,
 					Ctrl->E.mode = BLK_DO_EXTEND4;		/* Report min, 25%, 75% and max in cols 4-7 */
 				else if (opt->arg[0] == 'r' || opt->arg[0] == 's') {
 					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number or sid of median */
-					if (opt->arg[0]) Ctrl->E.mode |= BLK_DO_SRC_ID;
+					if (opt->arg[0] == 's') /* report sid */
+						Ctrl->E.mode |= BLK_DO_SRC_ID;
 				}
 				else if (opt->arg[0] == '\0')
 					Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report L1scale, low, high in cols 4-6 */

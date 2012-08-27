@@ -53,7 +53,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
 	GMT_message (GMT, "\t   Use -Er to report record number of the median value per block,\n");
-	GMT_message (GMT, "\t   or -Es to report an unsigned integer source is (sid) taken from the x,y,z[,w],sid input.\n");
+	GMT_message (GMT, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
 	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
 	GMT_explain_options (GMT, "V");
@@ -95,7 +95,8 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 				Ctrl->E.active = true;		/* Extended report with standard deviation, min, and max in cols 4-6 */
 				if (opt->arg[0] == 'r' || opt->arg[0] == 's') {
 					Ctrl->E.mode = (opt->arg[1] == '-') ? BLK_DO_INDEX_LO : BLK_DO_INDEX_HI;	/* Report row number or sid of median */
-					if (opt->arg[0]) Ctrl->E.mode |= BLK_DO_SRC_ID;
+					if (opt->arg[0] == 's') /* report sid */
+						Ctrl->E.mode |= BLK_DO_SRC_ID;
 				}
 				else if (opt->arg[0] == '\0')
 					Ctrl->E.mode = BLK_DO_EXTEND3;		/* Report LMSscale, low, high in cols 4-6 */
