@@ -427,16 +427,16 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl.C.active) {	/* With -C we only separate closed from open and then we are done */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Separated %" PRIu64 " closed and %" PRIu64 "open segments\n", n_closed, n_open);
-		wrap_up = 2;
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Separated %" PRIu64 " closed and %" PRIu64 " open segments\n", n_closed, n_open);
+		wrap_up = true;
 	}
 	else if (id == 0) {	/* All segments were already closed polygons */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "All segments already form closed polygons - no new segment file created\n");
-		wrap_up = 1;
+		wrap_up = true;
 	}
 	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (wrap_up) {	/* Write out results and return */
-		if (wrap_up == 2) {	/* Write n_open segments to D[OUT] and n_closed to C */
+		if (Ctrl.C.active) { /* Write n_open segments to D[OUT] and n_closed to C */
 			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_LINE_SEGMENT *);
 			D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_closed;
 			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl.C.file, C) != GMT_OK) {
