@@ -4903,11 +4903,13 @@ void gmt_alloc_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, int n_as
 void gmt_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_OGR *G)
 {	/* Allocates the OGR structure for a given segment and copies current values from table OGR segment */
 	unsigned int col;
-	
+
 	gmt_alloc_ogr_seg (C, S, G->n_aspatial);
 	for (col = 0; col < G->n_aspatial; col++) {
-		if (G->value[col]) S->ogr->value[col] = strdup (G->value[col]);
-		S->ogr->dvalue[col] = G->dvalue[col];
+		if (G->value != NULL && G->value[col])
+			S->ogr->value[col] = strdup (G->value[col]);
+		if (G->dvalue != NULL && G->dvalue[col])
+			S->ogr->dvalue[col] = G->dvalue[col];
 	}
 	S->ogr->pol_mode = G->pol_mode;
 }
