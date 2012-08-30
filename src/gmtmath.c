@@ -3035,9 +3035,10 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	if (D_in) {	/* Read a file, update columns */
-		if (Ctrl->N.ncol > D_in->n_columns) GMT_adjust_dataset (GMT, D_in, Ctrl->N.ncol);	/* Add more input columns */
+		if (Ctrl->N.active && Ctrl->N.ncol > D_in->n_columns) GMT_adjust_dataset (GMT, D_in, Ctrl->N.ncol);	/* Add more input columns */
 		use_t_col  = Ctrl->N.tcol;
 		n_columns  = D_in->n_columns;
+		if (n_columns == 1) Ctrl->T.notime = true;	/* Only one column to work with implies -T */
 	}
 	set_equidistant_t = (Ctrl->T.active && !Ctrl->T.file && !Ctrl->T.notime);	/* We were given -Tmin/max/inc */
 	if (D_in && set_equidistant_t) {
