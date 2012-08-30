@@ -1,7 +1,7 @@
 #! /bin/bash
 #	$Id$
 #
-
+# Observatory magnetic data dl from ottawa.intermagnet.org/apps/dl_data_prel_e.php
 
 ps=cm4.ps
 
@@ -37,7 +37,7 @@ mean=`gmtmath dif_T.dat MEAN -S = | $AWK '{printf "%.2f\n", $1}'`
 t=(`echo ${m2[2]} | $AWK '{print $1 + 4, $1 + 7, $1+12}'`)
 echo ${m1[0]} ${t[1]} Mean = $mean | pstext -F+f11p,Bookman-Demi+jLB -R -J -N -X0.5c -O -K >> $ps
 echo ${m1[0]} ${t[0]} STD = $std | pstext -F+f11p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
-echo ${m1[0]} ${t[2]} data | pstext -F+f12p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
+echo ${m1[0]} ${t[2]} $data | pstext -F+f12p,Bookman-Demi+jLB -R -J -N -O -K >> $ps
 station=`tail -n +4 $dia | head -1 | $AWK '{print $3}'`
 echo ${m1[0]} ${t[0]} Station -- $station | pstext -F+f14p,Bookman-Demi+jLB -R -J -N -Xa7.5c -Ya4.7c -O -K >> $ps
 
