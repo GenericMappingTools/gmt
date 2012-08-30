@@ -1541,6 +1541,9 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			if (error) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "You must use -D to delete the old information before adding the new information\n");
+			
+				MGD77_Free_Dataset (GMT, &D);
+				MGD77_Close_File (GMT, &In);
 				continue;
 			}
 		}
@@ -1588,8 +1591,8 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		sprintf (history, "%s [%s] Column %s added", ctime(&now), In.user, Ctrl->I.c_abbrev);
 		k = strlen (history);
 		for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
-		history[k++] = '\n';	history[k] = '\0';				/* Add LF at end of line */
-		k += strlen (D->H.history);
+		history[k++] = '\n';	history[k] = '\0';    /* Add LF at end of line */
+		k += (strlen (D->H.history) + 1);             /* +1 because the '\0' of 'history' that is also copied by strcat */
 		D->H.history = GMT_memory (GMT, D->H.history, k, char);
 		strcat (D->H.history, history);
 		MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "history", strlen (D->H.history), D->H.history));
@@ -1629,7 +1632,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		n_changed++;
 	}
 
-	if (got_table) GMT_free (GMT, colvalue);
+	if (colvalue) GMT_free (GMT, colvalue);
 	if (two_cols) GMT_free (GMT, coldnt);
 
 	if (Ctrl->D.active)
