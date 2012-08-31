@@ -3737,6 +3737,23 @@ void MGD77_Ignore_Format (struct GMT_CTRL *C, int format)
 		MGD77_format_allowed[format] = false;
 }
 
+void MGD77_Select_Format (struct GMT_CTRL *C, int format)
+{
+	/* Allow user to select just one format and turn off all others */
+
+	if (format >= MGD77_FORMAT_M77 && format <= MGD77_FORMAT_TBL) {
+	 	MGD77_format_allowed[MGD77_FORMAT_M77] = false;
+	 	MGD77_format_allowed[MGD77_FORMAT_CDF] = false;
+	 	MGD77_format_allowed[MGD77_FORMAT_TBL] = false;
+	 	MGD77_format_allowed[MGD77_FORMAT_M7T] = false;
+		MGD77_format_allowed[format] = true;
+	}
+	else {
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Bad file format (%d) selected!\n", format);
+		GMT_exit (EXIT_FAILURE);
+	}
+}
+
 void MGD77_Process_Ignore (struct GMT_CTRL *C, char code, char *format)
 {
 	unsigned int i;

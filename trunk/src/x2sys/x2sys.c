@@ -799,13 +799,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 
 	MGD77_Init (C, &M);			/* Initialize MGD77 Machinery */
 	M.format  = MGD77_FORMAT_CDF;		/* Set input file's format to netCDF */
-	//MGD77_Ignore_Format (C, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
-	/* Next line does exactly the contrary of what it says. By setting M.format to false
-	   it will make MGD77_Get_Path (line 2674) ignore this file */
-	//MGD77_Ignore_Format (C, M.format);		/* ...only allow the specified input format */
-	for (i = 0; i < MGD77_N_FORMATS; i++)
-		MGD77_format_allowed[i] = (M.format == i) ? TRUE : FALSE;	/* Only allow the specified input format */
-
+	MGD77_Select_Format (C, M.format);	/* Only allow the specified MGD77 input format */
 
 	for (i = 0; i < s->n_out_columns; i++)
 		//strcpy (M.desired_column[i], s->info[s->out_order[i]].name);	/* This crashes because desired_column[i] is not allocated */

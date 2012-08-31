@@ -507,6 +507,7 @@ EXTERN_MSC void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, i
 EXTERN_MSC void MGD77_nc_status (struct GMT_CTRL *C, int status);										/* Checks for netCDF errors and aborts with error message */
 EXTERN_MSC void MGD77_Process_Ignore (struct GMT_CTRL *C, char code, char *format);								/* Process the ignre-format option */
 EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *C, int format);										/* Dissallow some formats for consideration */
+EXTERN_MSC void MGD77_Select_Format (struct GMT_CTRL *C, int format);										/* Only select a specific format for consideration */
 EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *C);									/* Create an empty data set structure */
 EXTERN_MSC void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
 EXTERN_MSC void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
