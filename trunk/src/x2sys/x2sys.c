@@ -1145,7 +1145,8 @@ int x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S, stru
 		}
 		s->geographic = true;
 		s->geodetic = geodetic;	/* Override setting */
-		if (GMT_360_RANGE (B->wesn[XHI], B->wesn[XLO])) B->periodic = 1;
+		if (GMT_360_RANGE (B->wesn[XHI], B->wesn[XLO]))
+			B->periodic = true;
 	}
 	if (n_given[X2SYS_DIST_SELECTION]) s->unit[X2SYS_DIST_SELECTION][0] = unit[X2SYS_DIST_SELECTION][0];
 	if (n_given[X2SYS_SPEED_SELECTION]) s->unit[X2SYS_SPEED_SELECTION][0] = unit[X2SYS_SPEED_SELECTION][0];
