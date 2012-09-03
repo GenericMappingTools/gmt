@@ -501,7 +501,9 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		if (GMT_nc_get_att_text (C, C->current.io.ncid, C->current.io.varid[i], "units", units, GMT_TEXT_LEN256)) units[0] = 0;
 		GMT_str_tolower (long_name); GMT_str_tolower (units);
 
-		if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
+		if (C->current.io.col_type[GMT_IN][i] == GMT_IS_FLOAT)
+			{ /* Float type is preset, do not alter */ }
+		else if (!strcmp (long_name, "longitude") || strstr (units, "degrees_e"))
 			C->current.io.col_type[GMT_IN][i] = GMT_IS_LON;
 		else if (!strcmp (long_name, "latitude") || strstr (units, "degrees_n"))
 			C->current.io.col_type[GMT_IN][i] = GMT_IS_LAT;
@@ -516,7 +518,7 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 			C->current.io.add_offset[i] += GMT_DAY2SEC_F * ((time_system.rata_die - C->current.setting.time_system.rata_die) + (time_system.epoch_t0 - C->current.setting.time_system.epoch_t0));
 			C->current.io.add_offset[i] *= C->current.setting.time_system.i_scale;	/* Offset in internal time units */
 		}
-		else if (C->current.io.col_type[GMT_IN][i] == GMT_IS_UNKNOWN)
+		else
 			C->current.io.col_type[GMT_IN][i] = GMT_IS_FLOAT;
 	}
 
