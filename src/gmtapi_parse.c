@@ -293,7 +293,7 @@ struct GMT_OPTION * GMT_Prep_Options (struct GMTAPI_CTRL *API, int mode, void *a
 	return (options);
 }
 
-struct GMT_OPTION * GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg)
+struct GMT_OPTION *GMT_Make_Option (struct GMTAPI_CTRL *API, char option, char *arg)
 {
 	/* Create a structure option given the option character and the optional argument arg */
 	struct GMT_OPTION *new = NULL;
@@ -418,12 +418,14 @@ int GMT_Parse_Common (struct GMTAPI_CTRL *API, char *sorted, char *unsorted, str
 
 	for (i = 0; sorted[i]; i++) {
 		list[0] = sorted[i];	/* Just look for this particular option */
-		for (opt = options; opt; opt = opt->next) n_errors += GMT_parse_common_options (GMT, list, opt->option, opt->arg);
+		for (opt = options; opt; opt = opt->next)
+			n_errors += GMT_parse_common_options (GMT, list, opt->option, opt->arg);
 	}
 
 	/* Parse the common options in "unsorted" in the order they appear in the options list */
 
-	for (opt = options; opt; opt = opt->next) n_errors += GMT_parse_common_options (GMT, unsorted, opt->option, opt->arg);
+	for (opt = options; opt; opt = opt->next)
+		n_errors += GMT_parse_common_options (GMT, unsorted, opt->option, opt->arg);
 
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	return (GMT_OK);
