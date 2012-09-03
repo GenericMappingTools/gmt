@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-09-03	remko
+	* gmt_io.c:		Option -ff will now prevent gmt_nc_fopen from altering the data
+				type to GMT_IS_LON|LAT|RELTIME. This is to address issue #134.
+
 2012-08-22	pwessel
 	* blockmedian.c:	Added -Es to read and output source id for median value.
 	* blockmode.c:		Added -Es to read and output source id for median value.
