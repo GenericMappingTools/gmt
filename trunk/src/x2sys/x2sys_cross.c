@@ -39,33 +39,36 @@
 #define	VHI	2
 
 struct X2SYS_CROSS_CTRL {
-	struct A {	/* -A */
+	struct X2S_CROSS_A {	/* -A */
 		bool active;
 		char *file;
 	} A;
-	struct I {	/* -I */
+	struct X2S_CROSS_I {	/* -I */
 		bool active;
 		int mode;
 	} I;
-	struct S {	/* -S */
+	struct X2S_CROSS_S {	/* -S */
 		bool active[2];
 		double limit[3];
 	} S;
-	struct T {	/* -T */
+	struct X2S_CROSS_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct W {	/* -W */
+	struct X2S_CROSS_W {	/* -W */
 		bool active;
 		unsigned int width;
 	} W;
-	struct Q {	/* -Q */
+	struct X2S_CROSS_Q {	/* -Q */
 		bool active;
 		int mode;
 	} Q;
-	struct Z {	/* -Z */
+	struct X2S_CROSS_Z {	/* -Z */
 		bool active;
 	} Z;
+	struct X2S_CROSS_t {	/* -V[level]t */
+		bool active;
+	} runTime;
 };
 
 struct PAIR {				/* Used with -Kkombinations.lis option */
@@ -119,6 +122,7 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
 	GMT_message (GMT, "\t   -Su sets upper speed [Default is Infinity].\n");
 	GMT_explain_options (GMT, "V");
+	GMT_message (GMT, "\t   Optionally append a 't' to print run time for each pair, but have to explicitly set the level too.\n");
 	GMT_message (GMT, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3].\n");
 	GMT_message (GMT, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
 	GMT_explain_options (GMT, "D");
@@ -198,6 +202,10 @@ int GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *Ctrl,
 			case 'T':
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
+				break;
+			case 'V':			/* Exception (ab)use of a global option */
+				if (opt->arg[strlen(opt->arg)-1] == 't')	/* Print run times for each pair */
+					Ctrl->runTime.active = true;
 				break;
 			case 'W':	/* Get new window half-width as number of points */
 				Ctrl->W.active = true;
@@ -299,6 +307,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	double dist_scale;			/* Scale to give selected distance units */
 	double vel_scale;			/* Scale to give selected velocity units */
 
+	clock_t tic, toc;
 
 	struct X2SYS_INFO *s = NULL;			/* Data format information  */
 	struct GMT_XSEGMENT *ylist_A = NULL, *ylist_B = NULL;		/* y-indices sorted in increasing order */
@@ -311,7 +320,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 
-/*----------------------------------END OF VARIBLE DECLARATIONS-----------------------------------------------*/
+/*----------------------------------END OF VARIBLE DECLARATIONS---------------------------------------------*/
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -418,7 +427,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	got_time = (s->t_col >= 0);
 	if (!got_time) Ctrl->S.active[VLO] = false;	/* Cannot check speed if there is no time */
 
-	n_output = 10 + 2 * n_data_col;
+	n_output = (unsigned int)(10 + 2 * n_data_col);
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = (!strcmp (s->info[s->x_col].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_OUT][GMT_Y] = (!strcmp (s->info[s->x_col].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
 	GMT->current.io.col_type[GMT_OUT][GMT_Z] = GMT->current.io.col_type[GMT_OUT][3] = (got_time) ? GMT_IS_ABSTIME : GMT_IS_FLOAT;
@@ -534,6 +543,8 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
 			
+			if (Ctrl->runTime.active)	tic = clock();	/* To report execution time from this pair */
+
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 
 			if (same) {	/* Just set pointers */
@@ -797,7 +808,12 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (!got_time) GMT_free (GMT, time[1]);
 				GMT_free (GMT, ylist_B);
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
+			if (!Ctrl->runTime.active)
+				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
+			else {
+				toc = clock();
+				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f secs\n", nx, (double)(toc - tic)/1000);
+			}
 		}
 
 		/* Must free up memory for A */
@@ -807,6 +823,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!got_time) GMT_free (GMT, time[0]);
 		GMT_free (GMT, ylist_A);
 	}
+
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
