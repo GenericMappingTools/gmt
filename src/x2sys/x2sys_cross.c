@@ -43,6 +43,10 @@ struct X2SYS_CROSS_CTRL {
 		bool active;
 		char *file;
 	} A;
+	struct X2S_CROSS_C {	/* -C */
+		bool active;
+		char *file;
+	} C;
 	struct X2S_CROSS_I {	/* -I */
 		bool active;
 		int mode;
@@ -66,9 +70,6 @@ struct X2SYS_CROSS_CTRL {
 	struct X2S_CROSS_Z {	/* -Z */
 		bool active;
 	} Z;
-	struct X2S_CROSS_t {	/* -V[level]t */
-		bool active;
-	} runTime;
 };
 
 struct PAIR {				/* Used with -Kkombinations.lis option */
@@ -89,6 +90,7 @@ void *New_x2sys_cross_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 
 void Free_x2sys_cross_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* Deallocate control structure */
 	if (C->A.file) free (C->A.file);
+	if (C->C.file) free (C->C.file);
 	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
 }
@@ -97,8 +99,9 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-Il|a|c] [%s]\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-Qe|i] [%s] [-Sl|h|u<speed>] [%s] [-W<size>] [%s] [-Z]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
+	GMT_message (GMT, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-Il|a|c] [%s]\n", GMT_J_OPT);
+	GMT_message (GMT, "\t[-Qe|i] [%s] [-Sl|h|u<speed>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "\t[-W<size>] [%s] [-Z]\n\n", GMT_bo_OPT);
 
 	GMT_message (GMT, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
 	GMT_message (GMT, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n");
@@ -109,7 +112,18 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-T <TAG> is the system tag for the data set.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Give list of file pairs that are ok to compare [Default is all combinations].\n");
+	GMT_message (GMT, "\t-C Print run time for each pair. Optionally append <fname> to save them in file.\n");
 	GMT_message (GMT, "\t-I Set the interpolation mode.  Choose among:\n");
+	GMT_message (GMT, "\t   l Linear interpolation [Default].\n");
+	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
+	GMT_message (GMT, "\t   c Acubic spline interpolation.\n");
+	GMT_explain_options (GMT, "J");
+	GMT_message (GMT, "\t-Q Append e for external crossovers.\n");
+	GMT_message (GMT, "\t   Append i for internal crossovers [Default is all crossovers].\n");
+	GMT_explain_options (GMT, "R");
+	GMT_message (GMT, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
+	GMT_message (GMT, "\t   -Sl sets lower speed [Default is 0].\n");
+	GMT_message (GMT, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
 	GMT_message (GMT, "\t   l Linear interpolation [Default].\n");
 	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
 	GMT_message (GMT, "\t   c Acubic spline interpolation.\n");
@@ -122,7 +136,6 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
 	GMT_message (GMT, "\t   -Su sets upper speed [Default is Infinity].\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t   Optionally append a 't' to print run time for each pair, but have to explicitly set the level too.\n");
 	GMT_message (GMT, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3].\n");
 	GMT_message (GMT, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
 	GMT_explain_options (GMT, "D");
@@ -155,6 +168,11 @@ int GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *Ctrl,
 			case 'A':	/* Get list of approved filepair combinations to check */
 				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
+				break;
+			case 'C':
+				Ctrl->C.active = true;
+				if (strlen(opt->arg))
+					Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -202,10 +220,6 @@ int GMT_x2sys_cross_parse (struct GMTAPI_CTRL *C, struct X2SYS_CROSS_CTRL *Ctrl,
 			case 'T':
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
-				break;
-			case 'V':			/* Exception (ab)use of a global option */
-				if (opt->arg[strlen(opt->arg)-1] == 't')	/* Print run times for each pair */
-					Ctrl->runTime.active = true;
 				break;
 			case 'W':	/* Get new window half-width as number of points */
 				Ctrl->W.active = true;
@@ -315,7 +329,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_FILE_INFO data_set[2];		/* File information */
 	struct X2SYS_BIX Bix;
 	struct PAIR *pair = NULL;		/* Used with -Akombinations.lis option */
-	FILE *fp = NULL;
+	FILE *fp = NULL, *fpC = NULL;
 	struct X2SYS_CROSS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -417,6 +431,14 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		if (n_pairs < n_alloc) pair = GMT_memory (GMT, pair, n_pairs, struct PAIR);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", n_pairs);
+	}
+
+	if (Ctrl->C.file) {	/* Open file to store the per pair run time */
+		if ((fpC = fopen (Ctrl->C.file, "w")) == NULL) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not open save times file %s!\n", Ctrl->C.file);
+			free(Ctrl->C.file);
+			Ctrl->C.file = NULL;
+		}
 	}
 
 	X2SYS_NaN = GMT->session.d_NaN;
@@ -543,7 +565,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
 			
-			if (Ctrl->runTime.active)	tic = clock();	/* To report execution time from this pair */
+			if (Ctrl->C.active)	tic = clock();	/* To report execution time from this pair */
 
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 
@@ -808,11 +830,13 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (!got_time) GMT_free (GMT, time[1]);
 				GMT_free (GMT, ylist_B);
 			}
-			if (!Ctrl->runTime.active)
+			if (!Ctrl->C.active)
 				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
 			else {
 				toc = clock();
 				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f secs\n", nx, (double)(toc - tic)/1000);
+				if (fpC)	/* Save also the run time in file */
+					fprintf(fpC, "%s - %s\t%.3f\n", trk_name[A], trk_name[B], (double)(toc - tic)/1000);
 			}
 		}
 
@@ -823,6 +847,9 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!got_time) GMT_free (GMT, time[0]);
 		GMT_free (GMT, ylist_A);
 	}
+
+	if (fpC)
+		fclose(fpC);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
