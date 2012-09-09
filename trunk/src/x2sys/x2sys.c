@@ -1831,7 +1831,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *S, char *ctable
 	int ks;
 	char path[GMT_BUFSIZ], **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 
-	if (!ctable) {	/* Try default correction table */
+	if (!strlen(ctable)) {	/* Try default correction table */
 		sprintf (path, "%s/%s/%s_corrections.txt", X2SYS_HOME, S->TAG, S->TAG);
 		if (access (path, R_OK)) {
 			GMT_report (C, GMT_MSG_NORMAL, "No default X2SYS Correction table (%s) for %s found!\n", path, S->TAG);
