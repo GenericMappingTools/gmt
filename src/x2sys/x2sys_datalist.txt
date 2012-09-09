@@ -27,6 +27,10 @@ OPT(F)IT(name1),IT(name2),...)
 Give a comma-separated sub-set list of column names defined in the definition
 file. [Default selects all data columns].
 .TP
+OPT(I)[IT(list)]
+Name of ASCII file with a list of track names (one per record) that should be excluded from consideration
+[Default includes all tracks].
+.TP
 OPT(L)[IT(corrtable)]
 Apply optimal corrections to columns where such corrections are available.  Append the correction
 table to use [Default uses the correction table IT(TAG)_corrections.txt which is expected to reside

@@ -38,6 +38,10 @@ struct X2SYS_DATALIST_CTRL {
 		bool active;
 		char *flags;
 	} F;
+	struct I {	/* -I */
+		bool active;
+		char *file;
+	} I;
 	struct L {	/* -L */
 		bool active;
 		char *file;
@@ -68,6 +72,7 @@ void *New_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initializ
 
 void Free_x2sys_datalist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/* Deallocate control structure */
 	if (C->F.flags) free (C->F.flags);
+	if (C->I.file) free (C->I.file);
 	if (C->L.file) free (C->L.file);
 	if (C->T.TAG) free (C->T.TAG);
 	GMT_free (GMT, C);
@@ -77,7 +82,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_datalist <files> -T<TAG> [-A] [-F<fields>] [-L[<corrtable.txt>]]\n");
+	GMT_message (GMT, "usage: x2sys_datalist <files> -T<TAG> [-A] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n");
 	GMT_message (GMT, "\t[%s] [-S] [%s] [%s] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -88,6 +93,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-A Use any adjustment splines per track to redistribute COEs between tracks\n");
 	GMT_message (GMT, "\t   according to their relative weight [no adjustments].\n");
 	GMT_message (GMT, "\t-F Comma-separated list of column names to output [Default are all fields].\n");
+	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_explain_options (GMT, "R");
@@ -126,6 +132,10 @@ int GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_CTRL 
 			case 'F':
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
+				break;
+			case 'I':
+				Ctrl->I.active = true;
+				Ctrl->I.file = strdup (opt->arg);
 				break;
 			case 'L':	/* Crossover correction table */
 				Ctrl->L.active = true;
@@ -190,11 +200,11 @@ bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *t
 
 int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	char **trk_name = NULL;
+	char **trk_name = NULL, **ignore = NULL;
 
 	int is, this_col;
-	bool error = false,  cmdline_files, special_formatting = false, *adj_col = NULL;
-	unsigned int bad, trk_no, n_tracks, n_data_col_out = 0, k;
+	bool error = false,  cmdline_files, special_formatting = false, *adj_col = NULL, skip;
+	unsigned int bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
 	uint64_t i, j;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
@@ -235,6 +245,11 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "No datafiles given!\n");
 		Return (EXIT_FAILURE);		
+	}
+
+	if (Ctrl->I.active && (i = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
+		exit (EXIT_FAILURE);
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
@@ -359,6 +374,13 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	for (trk_no = 0; trk_no < n_tracks; trk_no++) {
 
+		/* First see if this track is in the ignore list */
+		if (Ctrl->I.active && n_ignore) {
+			for (k = 0, skip = false; !skip && k < n_ignore; k++)
+				if (!strcmp (trk_name[trk_no], ignore[k])) skip = true;
+			if (skip) continue;
+		}
+
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading track %s\n", trk_name[trk_no]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &j), trk_name[trk_no]);
@@ -445,6 +467,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, adj_col);
 	}
 	x2sys_free_list (GMT, trk_name, n_tracks);
+	if (Ctrl->I.active) x2sys_free_list (GMT, ignore, n_ignore);
 	
 	Return (GMT_OK);
 }
