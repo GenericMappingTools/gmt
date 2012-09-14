@@ -735,7 +735,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s...", ps_file);
 
-		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff */
+		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff, but pass any font encodings */
 			int dump = true;
 			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Strip GMT time-stamp...");
 			sprintf (no_U_file, "%s/ps2raster_%db.eps", Ctrl->D.dir, (int)getpid());
@@ -747,6 +747,8 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (dump && !strncmp (line, "% Begin GMT time-stamp", 22))
 					dump = false;
 				if (dump)
+					fprintf (fp2, "%s\n", line);
+				else if (!strncmp (line, "PSL_font_encode", 15))	/* Must always pass any font reencodings */
 					fprintf (fp2, "%s\n", line);
 				if (!dump && !strncmp (line, "% End GMT time-stamp", 20))
 					dump = true;
