@@ -191,8 +191,10 @@
 #		pragma warning( disable : 4996 )
 		/* Issue warning 4244 (conversion of int64_t to int32_t) only once */
 #		pragma warning( once : 4244 4267 )
-		/* Visual Studio does not understand C99 restrict keyword */
-#		define restrict
+#	 	if (_MSC_VER <= 1600)
+			/* Older Visual Studio do not understand C99 restrict keyword */
+#			define restrict
+# 		endif
 
 		/* isspace, isalpha, ...: avoid assert (only happens with debug CRT) 
 		   if passed a parameter that isn't EOF or in the range of 0 through 0xFF. */
