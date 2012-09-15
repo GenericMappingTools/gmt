@@ -923,7 +923,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
-			if (D->table[tbl]->n_headers && S.G.label_type == 2) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label);	/* Set first header as potential label */
+			if (D->table[tbl]->n_headers && S.G.label_type == 2) GMT_extract_label (GMT, &D->table[tbl]->header[0][1], S.G.label, NULL);	/* Set first header as potential label */
 
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 
@@ -963,7 +963,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 					PSL_setcolor (PSL, current_fill.rgb, PSL_IS_STROKE);
 				}
 				if (S.G.label_type == 2)	/* Get potential label from segment header */
-					GMT_extract_label (GMT, L->header, S.G.label);
+					GMT_extract_label (GMT, L->header, S.G.label, L->ogr);
 
 #if 0
 				/* This should never happen, GMT_Read_Data should already take care of this */

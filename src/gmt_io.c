@@ -4707,12 +4707,14 @@ int GMT_parse_segment_header (struct GMT_CTRL *C, char *header, struct GMT_PALET
 	return (change);
 }
 
-void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label)
-{	/* Pull out the label in a -L<label> option in a segment header w./w.o. quotes */
+void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label, struct GMT_OGR_SEG *G)
+{	/* Pull out the label in a -L<label> option in a segment header w./w.o. quotes.
+ 	 * If G is not NULL we use it (OGR stuff) instead. */
 	bool done;
 	unsigned int i = 0, k, j, j0;
 	char *p = NULL, q[2] = {'\"', '\''};
 
+	if (G && G->value && G->value[0]) { strcpy (label, G->value[0]); return ;}	/* Had an OGR segment label */
 	if (GMT_parse_segment_item (C, line, "-L", label)) return;	/* Found -L */
 
 	label[0] = '\0';	/* Remove previous label */

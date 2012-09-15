@@ -120,9 +120,11 @@ int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	struct stat buf;
 
 	if (!strcmp (header->name, "="))
-		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
+		return (GMT_GRDIO_PIPE_CODECHECK);		/* Cannot check on pipes */
+	if (stat (header->name, &buf))
+		return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
 	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
-		return (GMT_GRDIO_OPEN_FAILED);
+		return (GMT_GRDIO_OPEN_FAILED);			/* Opening the file failed somehow */
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
 		return (GMT_GRDIO_READ_FAILED);
 

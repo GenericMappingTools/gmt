@@ -28,7 +28,7 @@ already exist among the features in IT(file).  We consider the cases of exact (s
 and approximate matches (average distance between nearest points of two features is less than a threshold).
 We also consider that some features may have been reversed.  Features are considered approximate matches
 if their minimum distance is less than IT(dmax) [0] (see UNITS) and their closeness (defined as the ratio between the
-average distance between the features divided by their average length) is less than IT(cmin) [0.01].
+average distance between the features divided by their average length) is less than IT(cmax) [0.01].
 For each duplicate found, the output record begins with the single letter Y (exact match) or ~ (approximate match).
 If the two matching segments differ in length by more than a factor of 2 then we consider the duplicate to be
 either a subset (-) or a superset (+).  For polygons we also consider the fractional difference in areas;
