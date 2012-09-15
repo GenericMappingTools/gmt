@@ -130,6 +130,7 @@ void *New_gmtspatial_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->L.box_offset = 1.0e-10;	/* Minimum significant amplitude */
 	C->L.path_noise = 1.0e-10;	/* Minimum significant amplitude */
+	C->D.unit = 'X';		/* Cartesian units as default */
 	C->D.I.a_threshold = MIN_AREA_DIFF;
 	C->D.I.d_threshold = MIN_SEPARATION;
 	C->D.I.c_threshold = MIN_CLOSENESS;
@@ -543,18 +544,18 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
-	GMT_message (GMT, "\t-C Clip polygons to the given region box (requires -R), yielding a closed polygon.\n");
-	GMT_message (GMT, "\t   For truncation instead (yielding open polygons, i.e., lines), see -T.\n");
-	GMT_message (GMT, "\t-D Look for duplicates or near-duplicates in the data, or compare against <file> (if given).\n");
-	GMT_message (GMT, "\t   Near-duplicates have a min point separation less than <dmax> [0] and closeness\n");
-	GMT_message (GMT, "\t   (mean separation/length ratio) less than <cmax> [0.01].\n");
-	GMT_message (GMT, "\t   If near-duplicates has lengths that differ by <sfact> then they are subset/supersets [2].\n");
-	GMT_message (GMT, "\t   For polygons the fractional difference in areas must be less than <amax> [0.01].\n");
-	GMT_message (GMT, "\t   Use +C to use median separation [+c uses mean separation].\n");
+	GMT_message (GMT, "\t-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons.\n");
+	GMT_message (GMT, "\t   For truncation instead (possibly yielding open polygons, i.e., lines), see -T.\n");
+	GMT_message (GMT, "\t-D Look for (near-)duplicates in <table>, or append +f to compare <table> against <file>.\n");
+	GMT_message (GMT, "\t   Near-duplicates have a minimum point separation less than <dmax> [0] and a closeness\n");
+	GMT_message (GMT, "\t   ratio (mean separation/length) less than <cmax> [0.01].  Use +d and +c to change these.\n");
+	GMT_message (GMT, "\t   Use +C to use median separation instead [+c uses mean separation].\n");
+	GMT_message (GMT, "\t   If near-duplicates have lengths that differ by <sfact> or more then they are subsets or supersets [2].\n");
+	GMT_message (GMT, "\t   To flag duplicate polygons, the fractional difference in areas must be less than <amax> [0.01].\n");
 	GMT_message (GMT, "\t   By default we consider all points when comparing two lines.  Use +p to limit\n");
 	GMT_message (GMT, "\t   the comparison to points that project perpendicularly on to the other line.\n");
 	GMT_message (GMT, "\t-E Orient all polygons to have the same handedness.\n");
-	GMT_message (GMT, "\t   Append + for uint64_t-clockwise or - for clockwise handedness.\n");
+	GMT_message (GMT, "\t   Append + for counter-clockwise or - for clockwise handedness.\n");
 	GMT_message (GMT, "\t-I Compute Intersection locations between input polygon(s).\n");
 	GMT_message (GMT, "\t   Append e or i for external or internal crossings only [Default is both].\n");
 	GMT_message (GMT, "\t   Use uppercase E or I to consider all segments within the same table as one entity [separate].\n");
@@ -566,22 +567,22 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
 	GMT_message (GMT, "\t     b) Interpret segment labels (-Z<value>) as polygon IDs, else\n");
 	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as polygon IDs, else\n");
-	GMT_message (GMT, "\t     d) Append +p<ID> to set origin for running polygon IDs [0].\n");
+	GMT_message (GMT, "\t     d) Append +p<ID> to set origin for auto-incrementing polygon IDs [0].\n");
 	GMT_message (GMT, "\t   Modifier +a means all points of a feature (line, polygon) must be inside the ID polygon [mid point].\n");
 	GMT_message (GMT, "\t   Modifier +z means append the ID as a new output data column [Default adds -Z<ID> to segment header].\n");
 	GMT_message (GMT, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
 	GMT_message (GMT, "\t-Q Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
-	GMT_message (GMT, "\t   you may append unit %s [k]; otherwise it will be based on the input data units.\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_message (GMT, "\t   you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit.\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "\t   We also compute polygon centroid or line mid-point.\n");
-	GMT_message (GMT, "\t   Use -Q+ to place the (area, handedness) or length result in the segment header\n");
-	GMT_message (GMT, "\t   on output [Default only reports results to stdout].\n");
+	GMT_message (GMT, "\t   Append '+' to place the (area, handedness) or length result in the segment header on output\n");
+	GMT_message (GMT, "\t   [Default only reports results to stdout].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Spatial manipulation of polygons; choose among:\n");
 	GMT_message (GMT, "\t   i for intersection.\n");
 	GMT_message (GMT, "\t   u for union.\n");
 	GMT_message (GMT, "\t   s for splitting polygons that straddle the Dateline.\n");
 	GMT_message (GMT, "\t   j for joining polygons that were split by the Dateline.\n");
-	GMT_message (GMT, "\t-T Truncate polygons against the clip polygon <cpol>; if none is given we require -R\n");
+	GMT_message (GMT, "\t-T Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R\n");
 	GMT_message (GMT, "\t   and clip against a polygon derived from the region border.\n");
 	GMT_explain_options (GMT, "VfghC2D0io:.");
 	
@@ -631,10 +632,10 @@ int GMT_gmtspatial_parse (struct GMTAPI_CTRL *C, struct GMTSPATIAL_CTRL *Ctrl, s
 						case 'd':	/* Gave a new +d<dmax> value */
 							Ctrl->D.mode = GMT_get_distance (GMT, &p[1], &(Ctrl->D.I.d_threshold), &(Ctrl->D.unit));
 							break;
-						case 'C':	/* Gave a new +C<dmax> value */
+						case 'C':	/* Gave a new +C<cmax> value */
 							Ctrl->D.I.mode = 1;	/* Median instead of mean */
-						case 'c':	/* Gave a new +c<dmax> value */
-							Ctrl->D.I.c_threshold = atof (&p[1]);
+						case 'c':	/* Gave a new +c<cmax> value */
+							if (p[1]) Ctrl->D.I.c_threshold = atof (&p[1]);	/* This allows +C by itself just to change to median */
 							break;
 						case 's':	/* Gave a new +s<fact> value */
 							Ctrl->D.I.s_threshold = atof (&p[1]);
@@ -802,7 +803,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 			
 	/* Read input data set */
 	
-	if (Ctrl->D.active) geometry = GMT_IS_LINE;
+	if (Ctrl->D.active || Ctrl->Q.active) geometry = GMT_IS_LINE;	/* May be lines, may be polygons... */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
@@ -884,8 +885,8 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
-		if (Ctrl->Q.header) {
-			mode = GMT_IS_POLY;
+		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
+			mode = GMT_IS_LINE;	/* Dont know if line or polygon but passing GMT_IS_POLY would close any open polygon, which is not good for lines */
 		}
 		else {
 			mode = GMT_IS_POINT;
@@ -1146,7 +1147,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 		uint64_t seg, seg2;
 		bool same_feature = false;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
-		char record[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
+		char record[GMT_BUFSIZ], format[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
 		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
@@ -1177,6 +1178,8 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		GMT_init_distaz (GMT, Ctrl->D.unit, Ctrl->D.mode, GMT_MAP_DIST);
 
+		sprintf (format, "%%c : Input %%s %%s is an %%s duplicate of a %%s %%s in %%s, with d = %s c = %%.6g s = %%.4g", GMT->current.setting.format_float_out);
+		
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S1 = D->table[tbl]->segment[seg];
@@ -1206,8 +1209,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 						poly_D = (GMT_polygon_is_open (GMT, C->table[tbl2]->segment[seg2]->coord[GMT_X], C->table[tbl2]->segment[seg2]->coord[GMT_Y], C->table[tbl2]->segment[seg2]->n_rows)) ? 1 : 0;
 						sprintf (src, "[ table %d segment %" PRIu64 " ]", tbl, seg);
 						(C->n_tables == 1) ? sprintf (dup, "[ segment %" PRIu64 " ]", seg2) : sprintf (dup, "[ table %d segment %" PRIu64 " ]", tbl2, seg2);
-						sprintf (record, "%c : Input %s %s is an %s duplicate of a %s %s in %s, with d = %.3f c = %.6g s = %.4g", 
-							verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
+						sprintf (record, format, verdict[abs(I->mode)], feature[poly_D], src, kind[I->mode+4], feature[poly_S2], dup, from, I->distance, I->closeness, I->setratio);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 				}
