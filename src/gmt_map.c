@@ -7670,7 +7670,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char c, unsigned int mode, uns
 			C->current.map.dist[type].scale = 1.0 / METERS_IN_A_NAUTICAL_MILE;
 			break;
 			
-			/* Cartesian distances */
+			/* Cartesian distances.  Note: The X|C|S|P 'units' are only passed internally and are not available as user selections directly */
 			
 		case 'X':	/* Cartesian distances in user units */
 			proj_type = GMT_CARTESIAN;
@@ -7692,7 +7692,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char c, unsigned int mode, uns
 			break;
 			
 		default:
-			GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Distance units must be one of %s|X|C|S|P\n", GMT_LEN_UNITS_DISPLAY);
+			GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Distance units must be one of %s\n", GMT_LEN_UNITS_DISPLAY);
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
