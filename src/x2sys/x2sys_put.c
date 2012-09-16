@@ -287,8 +287,8 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		else if (Ctrl->D.active) {	/* Here we did not found the track: Give message and go back and read next track information */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "track %s was not found in the database!\n", track);
-			skip = true;
+			if (!Ctrl->F.active) GMT_report (GMT, GMT_MSG_VERBOSE, "track %s was not found in the database!\n", track);
+			skip = !Ctrl->F.active;	/* If not found but -F is active then we just add as normal */
 		}
 		else	/* Get here when we wish to add a new track not in the database */
 			skip = false;
