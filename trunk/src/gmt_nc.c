@@ -370,13 +370,13 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Get information about x variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[0]], header->x_units);
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (C, header->nx, xy, header->x_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
-			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_PIXEL_REG : GMT_GRIDLINE_REG;
-		}
-		else if (!j) {
+		if (!j) {
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
 			header->registration = GMT_GRIDLINE_REG;
+		}
+		else if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
+			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
+			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_PIXEL_REG : GMT_GRIDLINE_REG;
 		}
 		else {
 			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->nx-1;
@@ -388,10 +388,10 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Get information about y variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[1]], header->y_units);
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy))) gmt_nc_check_step (C, header->ny, xy, header->y_units, header->name);
-		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
-			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
-		else if (!j)
+		if (!j)
 			header->wesn[YLO] = xy[0], header->wesn[YHI] = xy[header->ny-1];
+		else if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
+			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
 		else
 			header->wesn[YLO] = 0.0, header->wesn[YHI] = (double) header->ny-1;
 		/* Check for reverse order of y-coordinate */
@@ -454,6 +454,17 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			}
 		}
 
+#ifdef NC4_DEBUG
+	GMT_report (C, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->row_order: %s\n", header->row_order == k_nc_start_south ? "S->N" : "N->S");
+	GMT_report (C, GMT_MSG_NORMAL, "head->nx: %3d   head->ny:%3d\n", header->nx, header->ny);
+	GMT_report (C, GMT_MSG_NORMAL, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
+	GMT_report (C, GMT_MSG_NORMAL, "head->nm: %3d head->size:%3d\n", header->nm, header->size);
+	GMT_report (C, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n", header->t_index[0], header->t_index[1], header->t_index[2]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT);
+#endif
 	}
 	else {
 		/* Store global attributes */
@@ -1025,7 +1036,8 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 	is_gridline_reg = header->registration != GMT_PIXEL_REG;
 
 #ifdef NC4_DEBUG
-	GMT_report (C, GMT_MSG_NORMAL, "    region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "  x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "  y-region: %g %g, grid: %g %g\n", wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI]);
 #endif
 
 	if (wesn[XLO] == 0 && wesn[XHI] == 0 && wesn[YLO] == 0 && wesn[YHI] == 0) {
@@ -1105,7 +1117,8 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 	dim[1] = last_col - first_col + 1;
 
 #ifdef NC4_DEBUG
-	GMT_report (C, GMT_MSG_NORMAL, "-> region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "-> x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "-> y-region: %g %g, grid: %g %g\n", wesn[YLO], wesn[YHI], header->wesn[YLO], header->wesn[YHI]);
 	GMT_report (C, GMT_MSG_NORMAL, "row: %u %u  col: %u %u  r_shift: %d\n", first_row, last_row, first_col, last_col, *n_shift);
 	GMT_report (C, GMT_MSG_NORMAL, "origin : %u,%u  dim : %u,%u\n", origin[0], origin[1], dim[0], dim[1]);
 	GMT_report (C, GMT_MSG_NORMAL, "origin2: %u,%u  dim2: %u,%u\n", origin2[0], origin2[1], dim2[0], dim2[1]);
@@ -1148,6 +1161,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 #ifdef NC4_DEBUG
 	GMT_report (C, GMT_MSG_NORMAL, "      wesn: %g %g %g %g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	GMT_report (C, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+	GMT_report (C, GMT_MSG_NORMAL, "head->row_order: %s\n", header->row_order == k_nc_start_south ? "S->N" : "N->S");
 	GMT_report (C, GMT_MSG_NORMAL, "width:    %3d     height:%3d\n", width, height);
 	GMT_report (C, GMT_MSG_NORMAL, "head->nx: %3d   head->ny:%3d\n", header->nx, header->ny);
 	GMT_report (C, GMT_MSG_NORMAL, "head->mx: %3d   head->my:%3d\n", header->mx, header->my);
