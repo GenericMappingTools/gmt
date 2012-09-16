@@ -258,6 +258,7 @@ int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 	X = GMT_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	
 	if (Ctrl->D.active) {
+		GMT_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST);
 		dist_bin = GMT_memory (GMT, NULL, B.nm_bin, double);
 	}
 
