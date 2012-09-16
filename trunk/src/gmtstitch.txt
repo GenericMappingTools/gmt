@@ -26,7 +26,7 @@ None.
 OPT(C)[IT(closed)]
 Write all the closed polygons to IT(closed) [gmtstitch_closed.txt] and all other segments as they
 are to stdout.  No stitching takes place.  Use OPT(T)IT(cutoff) to set a minimum separation [0],
-and if IT(cutoff) is > 0 then we also close the polygons on output.
+and if IT(cutoff) is > 0 then we also explicitly close the polygons on output.
 .TP
 OPT(D)[IT(template)]
 For multiple segment data, dump each segment to a separate output file [Default writes a single multiple segment

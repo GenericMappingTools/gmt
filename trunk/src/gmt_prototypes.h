@@ -222,6 +222,7 @@ EXTERN_MSC void GMT_str_setcase (struct GMT_CTRL *C, char *value, int mode);
 EXTERN_MSC char * GMT_putusername (struct GMT_CTRL *C);
 EXTERN_MSC unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, unsigned int *d_row, unsigned int *actual_max_d_col);
 EXTERN_MSC int GMT_detrend (struct GMT_CTRL *C, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode);
+EXTERN_MSC struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_cpt mode, double zmin, double zmax);
 
 /* gmt_calclock.c: */
 

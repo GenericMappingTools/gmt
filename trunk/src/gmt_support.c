@@ -2483,6 +2483,61 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 	return (X);
 }
 
+struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_cpt mode, double zmin, double zmax)
+{
+	/* Will read in a CPT file.  However, if file does not exist in the current directory we may provide
+	   a CPT for quick/dirty work provided mode == GMT_CPT_OPTIONAL and hence zmin/zmax are set to the desired data range */
+	
+	struct GMT_PALETTE *P = NULL;
+		
+	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT file to be present; GMT_Read_Data will work or fail accordingly */
+		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL);
+		return (P);
+	}
+	
+	/* Here, the cpt is optional (mode == GMT_CPT_OPTIONAL).  There are three possibilities:
+	   1. A cpt in current directory is given - simply read it and return.
+	   2. file is NULL and hence we default to master CPT name "rainbow".
+	   3. A specific master CPT name is given. If this does not exist then things will fail in GMT_makecpt.
+	
+	   For 2 & 3 we use zmin/zmax/16+ to build a 16 level CPT via makecpt and return it.
+	*/
+	
+	if (file && file[0] && !access (file, R_OK)) {	/* A cptfile was given and exists */
+		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL);
+	}
+	else {	/* Create a rought equidistant, continuous 16-level CPT on the fly */
+		char out_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ], *master = NULL;
+		int object_ID;
+
+		if (GMT_is_dnan (zmin) || GMT_is_dnan (zmax)) {	/* Safety valve 1 */
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
+			return (NULL);
+		}
+		if (zmax <= zmin) {	/* Safety valve 2 */
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Passing max <= zmin prevents automatic CPT generation!\n");
+			return (NULL);
+		}
+		/* Here it should be safe to let makecpt create a CPT for us */
+		if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_CPT, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {	/* Register output */
+			return (NULL);
+		}
+		if (GMT_Encode_ID (C->parent, out_string, object_ID)) {	/* Make filename with embedded object ID */
+			return (NULL);
+		}
+		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
+		sprintf (buffer, "-C%s -T%g/%g/16+ -Z ->%s", master, zmin, zmax, out_string);	/* Build actual makecpt command */
+		GMT_report (C, GMT_MSG_VERBOSE, "No CPT given, providing default CPT via makecpt -C%s -T%g/%g/16+ -Z\n", master, zmin, zmax);
+		if (GMT_makecpt (C->parent, 0, buffer) != GMT_OK) {	/* Build a CPT via makecpt */
+			return (NULL);
+		}
+		if ((P = GMT_Retrieve_Data (C->parent, object_ID)) == NULL) {	/* Retrieve the CPT structure */
+			return (NULL);
+		}
+	}
+	return (P);
+}
+
 void GMT_cpt_transparency (struct GMT_CTRL *C, struct GMT_PALETTE *P, double transparency, unsigned int mode)
 {
 	/* Set transparency for all slices, and possibly BNF */
