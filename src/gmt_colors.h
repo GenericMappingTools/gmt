@@ -34,6 +34,8 @@ enum GMT_enum_color {GMT_RGB	= 0,
 
 enum GMT_enum_bfn {GMT_BGD, GMT_FGD, GMT_NAN};
 
+enum GMT_enum_cpt {GMT_CPT_REQUIRED, GMT_CPT_OPTIONAL};
+
 /* Copy two RGB[T] arrays (a = b) */
 #define GMT_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 

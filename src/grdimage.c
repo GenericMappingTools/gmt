@@ -268,11 +268,11 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
 #ifdef USE_GDAL
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb && !Ctrl->D.active, 
-					"Syntax error: Must specify color palette table\n");
+//	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb && !Ctrl->D.active, 
+//					"Syntax error: Must specify color palette table\n");
 #else
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb, 
-					"Syntax error: Must specify color palette table\n");
+//	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb, 
+//					"Syntax error: Must specify color palette table\n");
 #endif
 	n_errors += GMT_check_condition (GMT, !(n_files == 1 || n_files == 3), 
 					"Syntax error: Must specify one (or three) input file(s)\n");
@@ -454,11 +454,27 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 #endif
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
+
+	if (!Ctrl->D.active) {
+		for (k = 0; k < n_grids; k++) {
+			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
+				Return (API->error);
+			}
+		}
+		if (!Ctrl->C.active) Ctrl->C.active = true;	/* Use default CPT stuff */
+	}
+
+	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set further above. Do it now */
+
 	/* Get/calculate a color palette file */
 
 	if (!Ctrl->In.do_rgb) {
 		if (Ctrl->C.active) {		/* Read palette file */
-			if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+			//if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+			//	Return (API->error);
+			//}
+			if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
 				Return (API->error);
 			}
 			gray_only = (P && P->is_gray);
@@ -489,18 +505,6 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 #endif
 	}
-
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
-
-	if (!Ctrl->D.active) {
-		for (k = 0; k < n_grids; k++) {
-			if ((Grid_orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL) {	/* Get header only */
-				Return (API->error);
-			}
-		}
-	}
-
-	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set further above. Do it now */
 
 	if (n_grids && Ctrl->In.do_rgb) {	/* Must ensure all three grids are coregistered */
 		if (!GMT_grd_same_region (GMT, Grid_orig[0], Grid_orig[1])) error++;

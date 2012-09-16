@@ -107,7 +107,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
-	GMT_message (GMT, "	[-T<z0>/<z1>/<dz> | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
+	GMT_message (GMT, "	[-T<z0>/<z1>[/<dz>[+]] | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -130,7 +130,9 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
 	GMT_message (GMT, "\t-T Give start, stop, and increment for colorscale in z-units,\n");
 	GMT_message (GMT, "\t   or filename with custom z-values.  If no -T option is given,\n");
-	GMT_message (GMT, "\t   then the range in the master cptfile will be used.\n");
+	GMT_message (GMT, "\t   then the range in the master cptfile will be used.  If no increment\n");
+	GMT_message (GMT, "\t   is given we match the number of entries in the master CPT file.\n");
+	GMT_message (GMT, "\t   Append + to increment to indicate number of z-values to produce instead.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
@@ -204,7 +206,10 @@ int GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, struct 
 					int n;
 					Ctrl->T.inc = 0.0;
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
-					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -T option: Must specify start/stop[/inc]\n");
+					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -T option: Must specify start/stop[/inc[+]]\n");
+					if (n == 3 && opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of levels instead; calculate inc */
+						Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / (Ctrl->T.inc - 1.0);
+					}
 				}
 				break;
 			case 'Q':	/* Logarithmic scale */
