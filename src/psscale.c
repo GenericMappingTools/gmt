@@ -1085,7 +1085,7 @@ int GMT_psscale (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;
-		GMT_report (GMT, GMT_MSG_VERBOSE, "CPT is for categorical data.");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "CPT is for categorical data.\n");
 	}
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "  CPT range from %g to %g\n", P->range[0].z_low, P->range[P->n_colors-1].z_high);
