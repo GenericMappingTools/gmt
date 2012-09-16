@@ -202,7 +202,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL, **ignore = NULL;
 
-	int is, this_col;
+	int is, this_col, xpos = -1, ypos = -1;
 	bool error = false,  cmdline_files, special_formatting = false, *adj_col = NULL, skip;
 	unsigned int bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
 	uint64_t i, j;
@@ -260,7 +260,32 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);
 
-	if (GMT->common.R.active) {
+	out = GMT_memory (GMT, NULL, s->n_fields, double);
+
+	for (i = is = 0; i < s->n_out_columns; i++, is++) {	/* Set output formats */
+		if (is == s->t_col)
+			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
+		else if (is == s->x_col) {
+			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
+			xpos = i;
+		}
+		else if (is == s->y_col) {
+			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
+			ypos = i;
+		}
+		else
+			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
+
+		if (s->info[s->out_order[i]].format[0] != '-') special_formatting = true;
+	}
+	if (GMT->common.b.active[GMT_OUT]) special_formatting = false;
+
+	if (GMT->common.R.active) {	/* Restrict output to given domain */
+		if (xpos == -1 || ypos == -1) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "The -R option was selected but lon,lat not included in -F\n");
+			x2sys_end (GMT, s);
+			Return (EXIT_FAILURE);		
+		}
 		/* Supply dummy linear proj */
 		GMT->current.proj.projection = GMT->current.proj.xyz_projection[0] = GMT->current.proj.xyz_projection[1] = GMT_LINEAR;
 		GMT->current.proj.pars[0] = GMT->current.proj.pars[1] = 1.0;
@@ -271,22 +296,6 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 	}
-
-	out = GMT_memory (GMT, NULL, s->n_fields, double);
-
-	for (i = is = 0; i < s->n_out_columns; i++, is++) {	/* Set output formats */
-		if (is == s->t_col)
-			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
-		else if (is == s->x_col)
-			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
-		else if (is == s->y_col)
-			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
-		else
-			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
-
-		if (s->info[s->out_order[i]].format[0] != '-') special_formatting = true;
-	}
-	if (GMT->common.b.active[GMT_OUT]) special_formatting = false;
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
 		for (i = n_data_col_out = 0; i < s->n_out_columns; i++) {
@@ -395,7 +404,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		cumulative_dist = 0.0;
 		for (j = 0; j < p.n_rows; j++) {
-			if (GMT->common.R.active && GMT_map_outside (GMT, data[s->x_col][j], data[s->y_col][j])) continue;
+			if (GMT->common.R.active && GMT_map_outside (GMT, data[xpos][j], data[ypos][j])) continue;
 			if (Ctrl->S.active) {
 				for (k = bad = 0; k < s->n_out_columns; k++) {
 					this_col = s->out_order[k];
