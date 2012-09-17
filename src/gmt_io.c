@@ -1259,7 +1259,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 
 		C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-		if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
+		if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strcpy (C->current.io.current_record, line);
 			C->current.io.status = GMT_IO_TBL_HEADER;
