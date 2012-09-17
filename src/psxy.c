@@ -951,7 +951,16 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
-					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+#ifdef GMT_COMPAT
+					if (S.v.parsed_v4) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
+						/* But have to improvise as far as outline|fill goes... */
+						if (outline_active) S.v.status |= PSL_VEC_OUTLINE;	/* Choosing to draw head outline */
+						if (fill_active) S.v.status |= PSL_VEC_FILL;		/* Choosing to fill head */
+						if (!(S.v.status & PSL_VEC_OUTLINE) && !(S.v.status & PSL_VEC_FILL)) S.v.status |= PSL_VEC_OUTLINE;	/* Gotta do something */
+					}
+					else
+#endif
+						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 					dim[0] = x_2, dim[1] = y_2;
 					dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
