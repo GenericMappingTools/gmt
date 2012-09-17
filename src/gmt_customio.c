@@ -1685,6 +1685,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 				}
 				grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
 			}
+			grid = &grid[0];	/* Put the pointer pointing back to first element in array */
 		}
 		else {		/* See note above about the degenerated cases */
 			for (j = 0; j < header->nm; j++)
