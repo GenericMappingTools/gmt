@@ -1195,8 +1195,8 @@ struct X2SYS_BIX_TRACK *x2sys_bix_make_track (struct GMT_CTRL *C, uint32_t id, u
 
 int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SYS_BIX *B, int mode, uint32_t *ID)
 {
-	/* Reads the binned track listing which is ASCII */
-	/* mode = 0 gives linked list, mode = 1 gives fixed array */
+	/* Reads the binned track listing which is ASCII.  32-bit limitation on flags and IDs */
+	/* mode = 0 gives linked list [for use in x2sys_put], mode = 1 gives fixed array [for use in x2sys_get] */
 	uint32_t id, flag, last_id = 0;
 	size_t n_alloc = GMT_CHUNK;
 	char track_file[GMT_BUFSIZ], track_path[GMT_BUFSIZ], line[GMT_BUFSIZ], name[GMT_BUFSIZ];
@@ -1214,7 +1214,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SY
 	if (mode == 1)
 		B->head = GMT_memory (C, NULL, n_alloc, struct X2SYS_BIX_TRACK_INFO);
 	else
-		B->head = this_info = x2sys_bix_make_entry (C, "-", 0, 0);
+		B->head = this_info = x2sys_bix_make_entry (C, "-", 0, 0);	/* The head cruise is not real and has name "-"; it is our list anchor */
 
 	if (!fgets (line, GMT_BUFSIZ, ftrack)) {	/* Skip header record */
 		GMT_report (C, GMT_MSG_NORMAL, "Read error in header record\n");
@@ -1228,18 +1228,18 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *S, struct X2SY
 	while (fgets (line, GMT_BUFSIZ, ftrack)) {
 		GMT_chop (line);	/* Remove trailing CR or LF */
 		sscanf (line, "%s %d %d", name, &id, &flag);
-		if (mode == 1) {
+		if (mode == 1) {	/* Add to array */
 			if (id >= n_alloc) {
 				size_t old_n_alloc = n_alloc;
 				while (id >= n_alloc) n_alloc += GMT_CHUNK;
 				B->head = GMT_memory (C, B->head, n_alloc, struct X2SYS_BIX_TRACK_INFO);
-				GMT_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set to NULL */
+				GMT_memset (&(B->head[old_n_alloc]), n_alloc - old_n_alloc, struct X2SYS_BIX_TRACK_INFO);	/* Set content of new space to NULL */
 			}
 			B->head[id].track_id = id;
 			B->head[id].flag = flag;
 			B->head[id].trackname = strdup (name);
 		}
-		else {
+		else {	/* Append to linked list */
 			this_info->next_info = x2sys_bix_make_entry (C, name, id, flag);
 			this_info = this_info->next_info;
 		}

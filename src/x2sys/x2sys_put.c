@@ -151,19 +151,20 @@ int x2sys_bix_remove_track (struct GMT_CTRL *GMT, uint32_t track_id, struct X2SY
 	for (bin = 0; bin < B->nm_bin; bin++) {
 		if (B->base[bin].n_tracks == 0) continue;	/* No tracks crossed this bin */
 
+		/* Start from anchor first_track (which is a dummy) and look if the next track in the list matches our ID */
 		for (track = B->base[bin].first_track; track->next_track && track->next_track->track_id != track_id; track = track->next_track);	/* Finds the track or end-of-list */
 
-		if (track->next_track) {	/* Ok, found it. Lets remove it from this bin's list */
-			skip_track = track->next_track;	/* These 3 lines sets the next points to skip the item to be removed */
-			track->next_track = skip_track->next_track;
-			skip_track->next_track = NULL;
-			B->base[bin].n_tracks--;	/* One less entry for this bin */
-			if (!track->next_track) B->base[bin].last_track = track;	/* Update the last track in case we just removed it */
-			GMT_free (GMT,  skip_track);	/* Remove memory associated with the track to be removed */
-			if (B->base[bin].n_tracks == 0) GMT_free (GMT, B->base[bin].first_track);	/* OK, that was the only track in this bin, apparently */
-		}
+		if (!track->next_track) continue;	/* Got end-of-list so not found in this bin; move on */
+		
+		/* Ok, found it. Remove it from this bin's list by moving pointer and freeing the memory */
+		skip_track = track->next_track;			/* Get pointer to item to be removed */
+		track->next_track = skip_track->next_track;	/* Bypass this item in the link */
+		GMT_free (GMT, skip_track);			/* Remove memory associated with the track we removed */
+		B->base[bin].n_tracks--;			/* One less entry for this bin */
+		if (!track->next_track) B->base[bin].last_track = track;			/* Update the last track in case we just removed it */
+		if (B->base[bin].n_tracks == 0) GMT_free (GMT, B->base[bin].first_track);	/* OK, that was the only track in this bin, apparently */
 	}
-	return (track_id);
+	return (track_id);	/* Return the track id we passed in */
 }
 
 struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, bool *found_it, struct X2SYS_BIX *B)
@@ -288,7 +289,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		else if (Ctrl->D.active) {	/* Here we did not found the track: Give message and go back and read next track information */
 			if (!Ctrl->F.active) GMT_report (GMT, GMT_MSG_VERBOSE, "track %s was not found in the database!\n", track);
-			skip = !Ctrl->F.active;	/* If not found but -F is active then we just add as normal */
+			skip = !Ctrl->F.active;	/* If not found but -F is active then we just add this track as normal */
 		}
 		else	/* Get here when we wish to add a new track not in the database */
 			skip = false;
@@ -298,13 +299,13 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "Read error in a segment line of track binindex file\n");
 				Return (EXIT_FAILURE);
 			}
-			while (line[0] != '>' && (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));
+			while (line[0] != '>' && (GMT_fgets (GMT, line, GMT_BUFSIZ, fp) != NULL));	/* Keep reading until EOF of next segment header */
 		}
 		else {	/* Read the tbf information for this track */
 
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Adding track: %s\n", track);
 
-			/* If a track is replaced, then use the same id_no, else increment to get a new one */
+			/* If a track is replaced, then use the same id_no recover above, else increment to get a new one */
 
 			id = (free_id) ? free_id : ++last_id;
 			if (!free_id) {	/* Must create a new entry */
@@ -324,7 +325,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 					exit (EXIT_FAILURE);
 				}
 				else if (flag > max_flag) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "data flag (%d) exceed maximum (%d) for track %s!\n", flag, max_flag, track);
+					GMT_report (GMT, GMT_MSG_NORMAL, "data flag (%d) exceeds maximum (%d) for track %s!\n", flag, max_flag, track);
 					exit (EXIT_FAILURE);
 				}
 				if (B.base[index].n_tracks == 0) {	/* First track to cross this bin */
