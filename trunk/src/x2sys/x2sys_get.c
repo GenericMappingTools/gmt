@@ -166,7 +166,7 @@ int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
 {	/* Return track id # for this leg */
 	unsigned int i;
 	
-	for (i = 0; i < n; i++) if (!strcmp (name, B->head[i].trackname)) return (i);
+	for (i = 0; i < n; i++) if (B->head[i].trackname && !strcmp (name, B->head[i].trackname)) return (i);
 	return (-1);
 }
 
@@ -185,13 +185,11 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_BIX B;
 	struct X2SYS_BIX_TRACK *track = NULL;
 
-	bool error = false, no_suffix = false, y_ok, n_ok, first;
+	bool error = false, no_suffix = false, y_ok, n_ok, first, *include = NULL;
 	int i, j, k, start_j, start_i, stop_j, stop_i;
 	unsigned int combo = 0, n_tracks_found, n_tracks, ii;
 	unsigned int id1, id2, item, n_flags = 0;
-	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk;
-	unsigned char *include = NULL;
-	uint64_t ID;
+	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 	
 	unsigned int bit, missing = 0, *matrix = NULL;	/* Needs to be a 32-bit unsigned int, not int */
 
@@ -227,7 +225,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 		GMT->current.io.geo.range = s->geodetic;
 	}
-	else
+	else	/* Cartesian data */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 		
 	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region */
@@ -253,7 +251,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->L.active) {
 		n_flags = lrint (ceil (n_tracks / 32.0));
-		include = GMT_memory (GMT, NULL, n_tracks, unsigned char);
+		include = GMT_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
