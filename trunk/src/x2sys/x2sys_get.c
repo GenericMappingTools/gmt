@@ -177,7 +177,10 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ], *p = NULL;
 	
+	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
+
 	uint32_t *in_bin_flag = NULL;	/* Match type in struct X2SYS_BIX_TRACK */
+	uint32_t *matrix = NULL;	/* Needs to be a 32-bit unsigned int, not int */
 	
 	double x, y;
 
@@ -188,10 +191,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	bool error = false, no_suffix = false, y_ok, n_ok, first, *include = NULL;
 	int i, j, k, start_j, start_i, stop_j, stop_i;
 	unsigned int combo = 0, n_tracks_found, n_tracks, ii;
-	unsigned int id1, id2, item, n_flags = 0;
-	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
-	
-	unsigned int bit, missing = 0, *matrix = NULL;	/* Needs to be a 32-bit unsigned int, not int */
+	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0;
 
 	FILE *fp = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -220,7 +220,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 		
-	if (s->geographic) {
+	if (s->geographic) {	/* Meaning longitude, latitude */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 		GMT->current.io.geo.range = s->geodetic;
@@ -228,7 +228,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	else	/* Cartesian data */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 		
-	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region */
+	if (!GMT->common.R.active) GMT_memcpy (GMT->common.R.wesn, B.wesn, 4, double);	/* Set default region to match TAG region */
 
 	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
 	for (ii = combo = 0; ii < s->n_out_columns; ii++) combo |= X2SYS_bit (s->out_order[ii]);
@@ -273,7 +273,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		else {	/* Use all */
 			for (ii = 0; ii < n_tracks; ii++) include[ii] = true;
 		}
-		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags, unsigned int);
+		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags, uint32_t);
 		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, uint64_t);
 	}
 	else {
