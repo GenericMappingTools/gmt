@@ -370,13 +370,13 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Get information about x variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[0]], header->x_units);
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (C, header->nx, xy, header->x_units, header->name);
-		if (!j) {
-			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
-			header->registration = GMT_GRIDLINE_REG;
-		}
-		else if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
 			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_PIXEL_REG : GMT_GRIDLINE_REG;
+		}
+		else if (!j) {
+			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
+			header->registration = GMT_GRIDLINE_REG;
 		}
 		else {
 			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->nx-1;
@@ -388,10 +388,10 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		/* Get information about y variable */
 		gmt_nc_get_units (C, ncid, ids[header->xy_dim[1]], header->y_units);
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[1]], xy))) gmt_nc_check_step (C, header->ny, xy, header->y_units, header->name);
-		if (!j)
-			header->wesn[YLO] = xy[0], header->wesn[YHI] = xy[header->ny-1];
-		else if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
+		if (!nc_get_att_double (ncid, ids[header->xy_dim[1]], "actual_range", dummy))
 			header->wesn[YLO] = dummy[0], header->wesn[YHI] = dummy[1];
+		else if (!j)
+			header->wesn[YLO] = xy[0], header->wesn[YHI] = xy[header->ny-1];
 		else
 			header->wesn[YLO] = 0.0, header->wesn[YHI] = (double) header->ny-1;
 		/* Check for reverse order of y-coordinate */
@@ -488,6 +488,10 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		}
 		else
 			nc_del_att (ncid, NC_GLOBAL, "node_offset");
+
+		/* Avoid NaN increments */
+		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (GMT_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
 
 		/* Define x variable */
 		gmt_nc_put_units (ncid, ids[header->xy_dim[0]], header->x_units);
