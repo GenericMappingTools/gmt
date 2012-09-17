@@ -573,7 +573,6 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	double	xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
 	int	bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
 	double	adfMinMax[2];		/* Dataset Min Max */
-	double	nodata;
 
 	/* ------------------------------------------------------------------------- */
 	/* Open the file (if we can). */
@@ -754,11 +753,7 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* ------------------------------------------------------------------------- */
 	/* Get the first band NoData Value */
 	/* ------------------------------------------------------------------------- */
-	nodata = (double) (GDALGetRasterNoDataValue ( hBand, &status ) );
-	if ( status == 0 )
-		Ctrl->nodata = nodata;
-	else
-		Ctrl->nodata = 0;	/* How the hell I set a novalue-nodatavalue ? */
+	Ctrl->nodata = (double) (GDALGetRasterNoDataValue ( hBand, &status ) );
 
 	/* ------------------------------------------------------------------------- */
 	/* Get the Color Map of first band (if any) */
