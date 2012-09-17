@@ -1598,7 +1598,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 	int nBand, subset;
-	uint64_t i, j;
+	uint64_t i, j, row, col;
 	char strR[128];
 
 	/* Allocate new control structures */
@@ -1654,6 +1654,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	}
 	else {
 		/* Convert everything else do float */
+		/* Aren't those 'degenerated' cases? They are converted to float but grid has no PADing */
 		nBand = 0;		/* Need a solution to RGB or multiband files */
 		i = nBand * header->nm;
 		if (from_gdalread->UInt8.active)
@@ -1674,10 +1675,21 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 		}
 	}
 
-	if (from_gdalread->nodata != 0) {	/* Data has a nodata value */
-		if (!GMT_is_dnan (from_gdalread->nodata)) {
+	if (from_gdalread->nodata && !GMT_is_dnan (from_gdalread->nodata)) {	/* Data has a nodata value */
+		if (from_gdalread->Float.active) {	/* Pointer arithmetic solution that should be parallelizable */
+			grid += (header->pad[YLO] * header->mx + header->pad[XLO]);	/* Position pointer at start of first row taking pad into acount */
+			for (row = 0; row < header->ny; row++) {
+				for (col = 0; col < header->nx; col++) {
+					if (*grid == (float)from_gdalread->nodata)	/* cast to avoid round-off errors */
+						*grid = C->session.f_NaN;
+					grid++;
+				}
+				grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
+			}
+		}
+		else {		/* See note above about the degenerated cases */
 			for (j = 0; j < header->nm; j++)
-				if (grid[j] == (float)header->nan_value) /* cast to avoid round-off errors */
+				if (grid[j] == (float)from_gdalread->nodata) /* cast to avoid round-off errors */
 					grid[j] = C->session.f_NaN;
 		}
 	}
