@@ -7004,12 +7004,12 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
 		char arg[GMT_TEXT_LEN64];
-		bool old_parsed = false;
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
 		if (n == 1) strcpy (arg, &text[1]);	/* No modifiers present, set arg to text following symbol code */
 		k = 1;
 #ifdef GMT_COMPAT
-		if (strchr (text, '/')) {	/* Gave old-style arrow dimensions */
+		p->v.parsed_v4 = false;
+		if (strchr (text, '/')) {	/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
 			p->v.status |= GMT_VEC_END;		/* Default is head at end */
 			p->size_y = p->given_size_y = 0.0;
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
@@ -7017,9 +7017,9 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			p->v.v_width  = (float)GMT_to_inch (C, txt_a);
 			p->v.h_length = (float)GMT_to_inch (C, txt_b);
-			p->v.h_width  = (float)GMT_to_inch (C, txt_c);
-			p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length);
-			old_parsed = true;
+			p->v.h_width  = (float)GMT_to_inch (C, txt_c) * 2.0;
+			p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length) * 2.0;
+			p->v.parsed_v4 = true;
 			p->size_x = p->given_size_x = p->v.h_length;
 		}
 		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
@@ -7040,7 +7040,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			col_off++;
 		}
-		else if (!old_parsed)	/* Got arrow size (length) */
+		else if (!p->v.parsed_v4)	/* Got arrow size (length) */
 			p->size_x = p->given_size_x = GMT_to_inch (C, arg);
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
@@ -7426,11 +7426,13 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 						if (k >= 0) { p->u = k; p->u_set = true;}
 						text[len] = 0;
 					}
-					sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-					p->v.v_width  = (float)GMT_to_inch (C, txt_a);
-					p->v.h_length = (float)GMT_to_inch (C, txt_b);
-					p->v.h_width  = (float)GMT_to_inch (C, txt_c);
-					p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length);
+					if (!p->v.parsed_v4) {
+						sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+						p->v.v_width  = (float)GMT_to_inch (C, txt_a);
+						p->v.h_length = (float)GMT_to_inch (C, txt_b);
+						p->v.h_width  = (float)GMT_to_inch (C, txt_c) * 2.0;
+						p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length) * 2.0;
+					}
 				}
 				if (p->v.v_norm >= 0.0) text[j] = 'n';	/* Put back the n<shrink> part */
 			}

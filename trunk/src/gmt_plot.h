@@ -115,6 +115,9 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 struct GMT_VECT_ATTR {
 	/* Container for common attributes for plot attributes of vectors */
 	unsigned int status;	/* Bit flags for vector information (see GMT_enum_vecattr above) */
+#ifdef GMT_COMPAT
+	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
+#endif
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
 	float v_width;		/* Width of vector stem in inches */
