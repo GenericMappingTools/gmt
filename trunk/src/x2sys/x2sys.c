@@ -61,6 +61,49 @@
  *
  */
 
+/*
+ *--------------------------------------------------------------------------------
+ * Overview of how x2sys deals with data columns and selects those to use:
+ *
+ * The information of what data columns exist in a data set is maintained
+ * in the <tag>.def file set up during x2sys_init.  So all x2sys programs
+ * reading data knows this information, which is stored in an X2SYS_INFO
+ * structure; call it s here.  To keep things clear, let icol refer to one
+ * of the incoming (data file) columns while ocol refers to one of the
+ * chosen outgoing (e.g., printed output) columns,  Thus,
+ * 	s->n_fields		Total number of in-columns in file
+ * In addition, a few special data columns are marked via column-variables:
+ *	s->t_col		icol with time (or -1 if N/A)
+ *	s->x_col		icol with longitude|x (or -1 if N/A)
+ *	s->y_col		icol with latitude|y (or -1 if N/A)
+ * Of course, these columns start at 0 for first column [C-counting].
+ * Next, each column has an info struct, i.e., s->info[icol], in which
+ * information about that column is kept.  Some examples:
+ *	s->info[icol].name	text string with column name, e.g., "depth".
+ *	s->info[icol].scale	factor to scale data, etc., most likely 1.
+ * Now, many programs just want to extract a subset of all these columns and
+ * the output order can be anything desired.  This selection is done by giving
+ * an option like -Flon,lat,depth,faa
+ * This string is parsed by x2sys_pick_fields which determines several things:
+ *	s->n_out_cols		Number of items we selected (here 4)
+ * It also fills out three important arrays allocated to length s->n_fields:
+ *	s->use_column[icol]	true if column <icol> was selected for output
+ *	s->out_order[ocol]	Refers to which icol goes with each ocol
+ *				e.g., if time is the 4th input column (icol = 3)
+ *				and we gave -Ftime,lat then s->out_order[0] = 3.
+ * By looping ocol over s->out_order we find which icol to output.
+ *	s->in_order[icol]	Refers to which ocol goes with each icol;
+ *				this is the inverse of out_order.
+ *				So if we want to know what ocol will be used
+ *				for a given icol we look at s->in_order[icol]
+ *				in colsultation with use_column[icol] since if
+ *				that is false then that columns was not requested.
+ * In case -F is not given then s->n_out_cols = s->n_fields, in|out_order are
+ * initialized to 0,1,2,... and use_column[] = true so that by default all columns
+ * are output in the same order as stored in the file.
+ *--------------------------------------------------------------------------------
+ */
+
 #include "x2sys.h"
 #include "gmt_internals.h"
 #include "common_byteswap.h"
@@ -331,10 +374,11 @@ int x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GMT_IO 
 		strcpy (G->w_mode, "wb");
 		strcpy (G->a_mode, "ab+");
 	}
+	X->in_order   = GMT_memory (C, NULL, X->n_fields, unsigned int);
 	X->out_order  = GMT_memory (C, NULL, X->n_fields, unsigned int);
 	X->use_column = GMT_memory (C, NULL, X->n_fields, bool);
 	for (i = is = 0; i < X->n_fields; i++, is++) {	/* Default is same order and use all columns */
-		X->out_order[i] = i;
+		X->in_order[i] = X->out_order[i] = i;
 		X->use_column[i] = 1;
 		G->col_type[GMT_IN][i] = G->col_type[GMT_OUT][i] = (X->x_col == is) ? GMT_IS_LON : ((X->y_col == is) ? GMT_IS_LAT : GMT_IS_UNKNOWN);
 	}
@@ -350,6 +394,7 @@ void x2sys_end (struct GMT_CTRL *C, struct X2SYS_INFO *X)
 	unsigned int id;
 	if (X2SYS_HOME) GMT_free (C, X2SYS_HOME);
 	if (!X) return;
+	if (X->in_order) GMT_free (C, X->in_order);
 	if (X->out_order) GMT_free (C, X->out_order);
 	if (X->use_column) GMT_free (C, X->use_column);
 	free (X->TAG);	/* free since allocated by strdup */
@@ -406,7 +451,9 @@ int x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO *s)
 	/* Scan the -Fstring and select which columns to use and which order
 	 * they should appear on output.  Default is all columns and the same
 	 * order as on input.  Once this is set you can loop through i = 0:n_out_columns
-	 * and use out_order[i] to get the original column number.
+	 * and use out_order[i] to get the original column number. Or you can loop
+	 * over all in_order[i] to determine what output column they will be put in,
+	 * provided use_column[i] is true.
 	 */
 
 	char line[GMT_BUFSIZ], p[GMT_BUFSIZ];
@@ -421,6 +468,7 @@ int x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO *s)
 		while (j < s->n_fields && strcmp (p, s->info[j].name)) j++;
 		if (j < s->n_fields) {
 			s->out_order[i] = j;
+			s->in_order[j]  = i;
 			s->use_column[j] = true;
 		}
 		else {

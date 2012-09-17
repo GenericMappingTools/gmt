@@ -131,24 +131,25 @@ struct X2SYS_INFO {
 	/* Information of this datasets particular organization */
 
 	char *TAG;			/* The system TAG */
-	unsigned int n_fields;	/* Number of input columns */
+	unsigned int n_fields;		/* Number of input columns */
 	unsigned int n_out_columns;	/* Number of output columns */
 	unsigned int n_data_cols;	/* Number of data columns (other than x,y,t) */
 	size_t rec_size;		/* Number of bytes for a potential x2sys_dbase_*.b file */
 	int x_col, y_col, t_col;	/* Column numbers for x, y, and t [== -1 if not set] */
 	unsigned int skip;		/* Number of header records to skip */
 	unsigned int flags;		/* Various processing flags for internal use */
-	unsigned int *out_order;	/* Array with column number in the order for output */
+	unsigned int *in_order;		/* Array with output column number as function of input column */
+	unsigned int *out_order;	/* Array with input column number as function of output column */
 	bool *use_column;		/* Array of T/F for which columns to use */
 	unsigned int geodetic;		/* How longitudes should be stored: 0: (0-360), 1: (-360,0), 2 (-180/+180) */
 	unsigned int dist_flag;		/* How distances are calulated: (0 = Cartesian, 1 = Flat earth, 2 = great circle, 3 = geodesic) */
 	/* read_file is a pointer to function that reads this file */
 	int (*read_file) (struct GMT_CTRL *, char *, double ***, struct X2SYS_INFO *, struct X2SYS_FILE_INFO *, struct GMT_IO *, uint64_t *);
 	unsigned int file_type;		/* 0 = ASCII, 1 = native binary, 2 = netCDF */
-	bool ascii_out;		/* true if output should be in ascii */
+	bool ascii_out;			/* true if output should be in ascii */
 	bool multi_segment;		/* true if there are multiple segments in this file */
 	bool geographic;		/* true if x/y data are lon/lat */
-	bool ms_next;		/* true if we just read 1st record in a new segments in this file */
+	bool ms_next;			/* true if we just read 1st record in a new segments in this file */
 	char unit[2][2];		/* Units for distance (c = Cartesian, e = meter, k = km, m = miles, n = nautical miles)
 	 				   and speed (c = Cartesian, e = m/s, k = km/hr, m = miles/hr, n = knots) */
 	char ms_flag;			/* Multi-segment header flag */
