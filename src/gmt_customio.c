@@ -230,6 +230,7 @@ int GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
+	GMT_memset (&h, 1, struct rasterfile);
 	if (GMT_read_rasheader (fp, &h))
 		return (GMT_GRDIO_READ_FAILED);
 	if (h.magic != RAS_MAGIC)
@@ -256,6 +257,7 @@ int GMT_ras_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
+	GMT_memset (&h, 1, struct rasterfile);
 	if (GMT_read_rasheader (fp, &h)) return (GMT_GRDIO_READ_FAILED);
 	if (h.magic != RAS_MAGIC) return (GMT_GRDIO_NOT_RAS);
 	if (h.type != 1 || h.depth != 8) return (GMT_GRDIO_NOT_8BIT_RAS);
@@ -324,6 +326,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	unsigned char *tmp = NULL;
 	struct rasterfile h;
 
+	GMT_memset (&h, 1, struct rasterfile);
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
 		GMT_setmode (C, GMT_IN);

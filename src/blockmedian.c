@@ -242,7 +242,7 @@ int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	bool error = false, do_extra;
 	
-	unsigned int row, col, w_col, i_col, sid_col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
+	unsigned int row, col, w_col, i_col = 0, sid_col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
 	
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, *in = NULL, *z_tmp = NULL;
 

@@ -217,7 +217,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	int way;
 	
-	unsigned int row, col, w_col, i_col, sid_col, emode = 0, n_input, n_output;
+	unsigned int row, col, w_col, i_col = 0, sid_col, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
