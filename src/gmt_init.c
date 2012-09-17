@@ -7004,6 +7004,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
 		char arg[GMT_TEXT_LEN64];
+		bool old_parsed = false;
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
 		if (n == 1) strcpy (arg, &text[1]);	/* No modifiers present, set arg to text following symbol code */
 		k = 1;
@@ -7012,6 +7013,14 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			p->v.status |= GMT_VEC_END;		/* Default is head at end */
 			p->size_y = p->given_size_y = 0.0;
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: <size> = <vectorwidth/headlength/headwidth> is deprecated; see -S%c syntax.\n", text[0]);
+			one = (strchr ("bhstBHST", text[1])) ? 2 : 1;
+			sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+			p->v.v_width  = (float)GMT_to_inch (C, txt_a);
+			p->v.h_length = (float)GMT_to_inch (C, txt_b);
+			p->v.h_width  = (float)GMT_to_inch (C, txt_c);
+			p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length);
+			old_parsed = true;
+			p->size_x = p->given_size_x = p->v.h_length;
 		}
 		else if (strchr ("vV", symbol_type) && text[1] && strchr ("bhstBHST", text[1])) {	/* Old style */
 			GMT_report (C, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated; see -S%c syntax.\n", text[0]);
@@ -7031,7 +7040,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			col_off++;
 		}
-		else	/* Got arrow size (length) */
+		else if (!old_parsed)	/* Got arrow size (length) */
 			p->size_x = p->given_size_x = GMT_to_inch (C, arg);
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */

@@ -50,7 +50,8 @@ Upper case (e.g., BD(W)) means draw axis/tickmarks AND annotate it, whereas lowe
 (e.g., BD(w)) will only draw axis/tickmarks.  If ONLY s is appended, separate it with a comma to avoid
 its interpretation as the unit of second.  If a 3-D basemap is selected with OPT(p) and
 OPT(Jz), append BD(Z) or BD(z) to control the appearance
-of the vertical axis.  Append BD(+) to draw the outline of the cube defined by OPT(R).  Note
+of the vertical axis.  Append BD(+) to draw the outline of the cube defined by OPT(R); this is
+also needed to display gridlines in the x-z, y-z planes.  Note
 that for 3-D views the title, if given, will be suppressed.  Finally, to paint the inside of the
 map region, append BD(+g)IT(fill) [no fill].
 .br
