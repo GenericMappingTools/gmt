@@ -175,7 +175,8 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	}
 
 	if (metadata_only) {
-		populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max);
+		if (populate_metadata (C, Ctrl, gdal_filename, got_R, nXSize, nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max))
+			return(-1);
 
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
 		if (!Ctrl->hdr[6]) {		/* Grid registration */
