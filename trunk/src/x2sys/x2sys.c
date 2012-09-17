@@ -982,8 +982,8 @@ int x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S, stru
 	char tag_file[GMT_BUFSIZ], line[GMT_BUFSIZ], p[GMT_BUFSIZ], sfile[GMT_BUFSIZ], suffix[16], unit[2][2];
 	unsigned int n, k, pos = 0, geodetic = 0;
 	int dist_flag = 0;
-	bool geographic = false, n_given[2] = {false, false}, c_given = false;
-	double dist;
+	bool geographic = false, parsed_command_R = false, n_given[2] = {false, false}, c_given = false;
+	double dist, save_R_wesn[4];
 	FILE *fp = NULL;
 	struct X2SYS_INFO *s = NULL;
 
@@ -1012,14 +1012,18 @@ int x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S, stru
 		if (p[0] == '-') {
 			switch (p[1]) {
 				/* Common parameters */
-				case 'R':
-					if (C->common.R.active)		/* It means that a -R was given in command line and we don't override it here */
-						break;
+				case 'R':	/* Must be smart enough to deal with any command-line -R setting also given by user */
+					if (C->common.R.active) {	/* Have already parsed a command line setting */
+						parsed_command_R = true;	C->common.R.active = false;	/* Set to false so 2nd parse will work */
+						GMT_memcpy (save_R_wesn, C->common.R.wesn, 4, double);	/* Save command-line -R values */
+					}
 					if (GMT_parse_common_options (C, "R", 'R', &p[2])) {
 						GMT_report (C, GMT_MSG_NORMAL, "Error processing %s setting in %s!\n", &p[1], tag_file);
 						return (GMT_GRDIO_READ_FAILED);
 					}
 					GMT_memcpy (B->wesn, C->common.R.wesn, 4, double);
+					if (parsed_command_R) GMT_memcpy (C->common.R.wesn, save_R_wesn, 4, double);	/* Restore command-line -R values */
+					C->common.R.active = parsed_command_R;	/* Only true if command-line -R was parsed, not this tag file */
 					break;
 
 #ifdef GMT_COMPAT

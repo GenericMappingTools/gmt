@@ -217,9 +217,9 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	if ((error = GMT_x2sys_get_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the x2sys_get main code ----------------------------*/
-
+	
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
-
+		
 	if (s->geographic) {
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 		GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;

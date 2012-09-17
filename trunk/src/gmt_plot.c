@@ -4073,7 +4073,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 	int n1, n2, n, add, heads, side, justify;
 	bool longway = false;
 	size_t n_alloc;
-	double lon[2], lat[2], tlon, tlat, mlon, mlat, r, r0, A[3], B[3], P[3], Ax[3], Bx[3];
+	double lon[2], lat[2], tlon, tlat, mlon, mlat, r = 0.0, r0 = 0.0, A[3], B[3], P[3], Ax[3], Bx[3];
 	double x, y, dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
 	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
