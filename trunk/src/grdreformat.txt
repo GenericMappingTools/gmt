@@ -41,7 +41,7 @@ offset of packed integer grids (=IT(id/a) is a shorthand for =IT(id/a/a)).
 When IT(id)=IT(gd), the file will be saved using the GDAL library.  Append the format
 IT(:driver) and optionally the output IT(datatype).  The driver names are those used
 by GDAL itself (e.g., netCDF, GTiFF, etc.), and the data type is one of
-IT(u8)|IT(i8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u' denote
+IT(u8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u' denote
 signed and unsigned integers respectively.  The default type is IT(float32).  Note
 also that both driver names and data types are case insensitive.
 .br
