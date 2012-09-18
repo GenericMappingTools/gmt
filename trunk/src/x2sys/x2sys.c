@@ -1157,6 +1157,22 @@ int x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **S, stru
 
 	x2sys_err_pass (C, x2sys_initialize (C, TAG, sfile, G, &s), sfile);	/* Initialize X2SYS and info structure */
 
+	if (!strcmp (s->info[s->x_col].name, "lon") && !geographic) {
+		GMT_report (C, GMT_MSG_NORMAL, "Your data have longitude but geographic (-G) not specified!\n");
+		return (X2SYS_CONFLICTING_ARGS);
+	}
+	if (!strcmp (s->info[s->y_col].name, "lat") && !geographic) {
+		GMT_report (C, GMT_MSG_NORMAL, "Your data have latitude but geographic (-G) not specified!\n");
+		return (X2SYS_CONFLICTING_ARGS);
+	}
+	if (!strcmp (s->info[s->x_col].name, "x") && geographic) {
+		GMT_report (C, GMT_MSG_NORMAL, "Your data have Cartesian x but geographic was specified!\n");
+		return (X2SYS_CONFLICTING_ARGS);
+	}
+	if (!strcmp (s->info[s->y_col].name, "y") && geographic) {
+		GMT_report (C, GMT_MSG_NORMAL, "Your data have Cartesian y but geographic was specified!\n");
+		return (X2SYS_CONFLICTING_ARGS);
+	}
 	if (B->time_gap < 0.0) {
 		GMT_report (C, GMT_MSG_NORMAL, "Error -Wt: maximum gap must be > 0!\n");
 		exit (EXIT_FAILURE);
