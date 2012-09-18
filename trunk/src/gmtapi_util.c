@@ -1428,7 +1428,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			done = (mode == GMT_GRID_HEADER) ? false : true;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {		/* Must init header and read the header information from file */
 				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S_obj->filename, I_obj), S_obj->filename))
-					return_null (API, GMT_BAD_PERMISSION);
+					return_null (API, GMT_IMAGE_READ_ERROR);
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read the grid data themselves. */
@@ -1634,7 +1634,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			done = (mode == GMT_GRID_HEADER) ? false : true;	/* Not done until we read grid */
 			if (mode != GMT_GRID_DATA) {		/* Must init header and read the header information from file */
 				if (GMT_err_pass (API->GMT, GMT_read_grd_info (API->GMT, S_obj->filename, G_obj->header), S_obj->filename)) 
-					return_null (API, GMT_BAD_PERMISSION);
+					return_null (API, GMT_GRID_READ_ERROR);
 				if (mode == GMT_GRID_HEADER) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read the grid data themselves. */
@@ -2476,12 +2476,13 @@ int GMT_Report_Error (struct GMTAPI_CTRL *API, int error)
 {	/* Write error message to log or stderr, then return error code back.
  	 * All functions can call this, even if API has not been initialized. */
 	FILE *fp = NULL;
-	if (error != GMT_OK) {	/* Report error */
+	bool report = (API) ? API->error != API->last_error : true;
+	if (report && error != GMT_OK) {	/* Report error */
 		if (!API || !API->GMT || (fp = API->GMT->session.std[GMT_ERR]) == NULL) fp = stderr;
 		if (API && API->session_tag) fprintf (fp, "[Session %s (%d)]: ", API->session_tag, API->session_ID);
 		fprintf (fp, "Error returned from GMT API: %s (%d)\n", g_api_error_string[error], error);
 	}
-	if (API) API->error = error;	/* Update API error value of API exists */
+	if (API) API->last_error = API->error, API->error = error;	/* Update API error value if API exists */
 	return (error);
 }
 

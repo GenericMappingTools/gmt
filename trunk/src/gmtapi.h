@@ -122,6 +122,7 @@ struct GMTAPI_CTRL {
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
+	int last_error;				/* Error code from previous API call [GMT_OK] */
 	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
