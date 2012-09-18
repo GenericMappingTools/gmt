@@ -1654,20 +1654,19 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	}
 	else {
 		/* Convert everything else do float */
-		/* Aren't those 'degenerated' cases? They are converted to float but grid has no PADing */
 		nBand = 0;		/* Need a solution to RGB or multiband files */
-		i = nBand * header->nm;
+		i = nBand * header->size;
 		if (from_gdalread->UInt8.active)
-			for (j = 0; j < header->nm; j++)
+			for (j = 0; j < header->size; j++)
 				grid[j] = (float)from_gdalread->UInt8.data[j+i];
 		else if (from_gdalread->UInt16.active)
-			for (j = 0; j < header->nm; j++)
+			for (j = 0; j < header->size; j++)
 				grid[j] = (float)from_gdalread->UInt16.data[j+i];
 		else if (from_gdalread->Int16.active)
-			for (j = 0; j < header->nm; j++)
+			for (j = 0; j < header->size; j++)
 				grid[j] = (float)from_gdalread->Int16.data[j+i];
 		else if (from_gdalread->Int32.active)
-			for (j = 0; j < header->nm; j++)
+			for (j = 0; j < header->size; j++)
 				grid[j] = (float)from_gdalread->Int32.data[j+i];
 		else {
 			GMT_report (C, GMT_MSG_NORMAL, "ERROR data type not suported with gdalread in gmt_customio.\n");
@@ -1676,22 +1675,20 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	}
 
 	if (from_gdalread->nodata && !GMT_is_dnan (from_gdalread->nodata)) {	/* Data has a nodata value */
-		if (from_gdalread->Float.active) {	/* Pointer arithmetic solution that should be parallelizable */
-			grid += (header->pad[YLO] * header->mx + header->pad[XLO]);	/* Position pointer at start of first row taking pad into acount */
-			for (row = 0; row < header->ny; row++) {
-				for (col = 0; col < header->nx; col++, grid++) {
-					if (*grid == (float)from_gdalread->nodata)	/* cast to avoid round-off errors */
-						*grid = C->session.f_NaN;
-				}
-				grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
+		/* Since all originally integer types were actually converted to float above, we can use
+		   the same test to search for nodata values other than NaN. Note that gmt_galread sets
+		   unknown nodata return by GDAL as NaN, so in those cases this block of code is not executed */
+
+		/* Pointer arithmetic solution that should be parallelizable */
+		grid += (header->pad[YHI] * header->mx + header->pad[XLO]);	/* Position pointer at start of first row taking pad into acount */
+		for (row = 0; row < header->ny; row++) {
+			for (col = 0; col < header->nx; col++, grid++) {
+				if (*grid == (float)from_gdalread->nodata)
+					*grid = C->session.f_NaN;
 			}
-			grid = &grid[0];	/* Put the pointer pointing back to first element in array */
+			grid += (header->pad[XLO] + header->pad[XHI]);	/* Advance the pad number of columns */
 		}
-		else {		/* See note above about the degenerated cases */
-			for (j = 0; j < header->nm; j++)
-				if (grid[j] == (float)from_gdalread->nodata) /* cast to avoid round-off errors */
-					grid[j] = C->session.f_NaN;
-		}
+		grid = &grid[0];	/* Put the pointer pointing back to first element in array */
 	}
 	header->nan_value = C->session.f_NaN;
 
