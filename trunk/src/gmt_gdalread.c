@@ -516,6 +516,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	return (GMT_NOERROR);
 }
 
+int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
 /* =============================================================================================== */
 /*
  * This routine queries the GDAL raster file for some metadata
@@ -557,8 +558,15 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
  *        for this data set. Pixel_reg is 1 for pixel registration and 0 for grid node
  *        registration, but it is actually set the -F option [default is 0]
  *
+ *    nodata:
+ *        A special marker value used to mark nodes that contain not valid data. Its values is
+ *        fetch from that of the first Band. In case that band has no defines 'nodata' than the 
+ *        C->session.d_NaN value is used. Besides this, the Ctrl->band_field_names[nBand].nodata
+ *        also stores the nodata for each band exactly as returned by GDALGetRasterNoDataValue().
+ *        That is, without checking for the contents of 'status' that is used to indicate if a
+ *        nodata values is actually associated with that layer.
+ *
  * */
-int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_filename, int got_R, int nXSize, int nYSize, double dfULX, double dfULY, double dfLRX, double dfLRY, double z_min, double z_max) {
 
 	GDALDriverH hDriver;		/* This is the driver chosen by the GDAL library to query the dataset. */
 	GDALDatasetH hDataset;		/* pointer structure used to query the gdal file. */
@@ -573,7 +581,8 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	double	tmpdble;		/* temporary value */
 	double	xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
 	int	bGotMin, bGotMax;	/* To know if driver transmited Min/Max */
-	double	adfMinMax[2];		/* Dataset Min Max */
+	double	adfMinMax[2];	/* Dataset Min Max */
+	double	dfNoDataValue;
 
 	/* ------------------------------------------------------------------------- */
 	/* Open the file (if we can). */
@@ -754,7 +763,11 @@ int populate_metadata (struct GMT_CTRL *C, struct GD_CTRL *Ctrl, char *gdal_file
 	/* ------------------------------------------------------------------------- */
 	/* Get the first band NoData Value */
 	/* ------------------------------------------------------------------------- */
-	Ctrl->nodata = (double) (GDALGetRasterNoDataValue ( hBand, &status ) );
+	dfNoDataValue = (GDALGetRasterNoDataValue ( hBand, &status ) );
+	if (status)
+		Ctrl->nodata = dfNoDataValue;
+	else
+		Ctrl->nodata = C->session.d_NaN;
 
 	/* ------------------------------------------------------------------------- */
 	/* Get the Color Map of first band (if any) */
