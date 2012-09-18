@@ -415,7 +415,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (this_col == s->t_col) continue;
 					if (this_col == s->x_col) continue;
 					if (this_col == s->y_col) continue;
-					if (GMT_is_dnan (data[this_col][j])) bad++;
+					if (GMT_is_dnan (data[ocol][j])) bad++;
 				}
 				if (bad == n_data_col_out) continue;	/* Yep, just NaNs here */
 			}
