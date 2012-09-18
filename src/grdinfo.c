@@ -283,14 +283,18 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 
 			n_nan = G->header->nm - n;
-			col = GMT_col (G->header, ij_min);
-			row = GMT_row (G->header, ij_min);
-			x_min = GMT_grd_col_to_x (GMT, col, G->header);
-			y_min = GMT_grd_row_to_y (GMT, row, G->header);
-			col = GMT_col (G->header, ij_max);
-			row = GMT_row (G->header, ij_max);
-			x_max = GMT_grd_col_to_x (GMT, col, G->header);
-			y_max = GMT_grd_row_to_y (GMT, row, G->header);
+			if (n) {	/* Meaning at least one non-NaN node was found */
+				col = GMT_col (G->header, ij_min);
+				row = GMT_row (G->header, ij_min);
+				x_min = GMT_grd_col_to_x (GMT, col, G->header);
+				y_min = GMT_grd_row_to_y (GMT, row, G->header);
+				col = GMT_col (G->header, ij_max);
+				row = GMT_row (G->header, ij_max);
+				x_max = GMT_grd_col_to_x (GMT, col, G->header);
+				y_max = GMT_grd_row_to_y (GMT, row, G->header);
+			}
+			else	/* Not a single valid node */
+				x_min = x_max = y_min = y_max = GMT->session.d_NaN;
 		}
 
 		if (Ctrl->L.norm & 1) {	/* Calculate the median and L1 scale */

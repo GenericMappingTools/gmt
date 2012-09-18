@@ -98,6 +98,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
+	GMT_message (GMT, "\t   (Note: data columns exclude navigation (lon|x|alt|y|time) columns.)\n");
 	GMT_explain_options (GMT, "VD");
 	GMT_message (GMT, "\t-m Write a multi-segment header between the output from each file.\n");
 	
@@ -202,9 +203,9 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	char **trk_name = NULL, **ignore = NULL;
 
-	int is, this_col, xpos = -1, ypos = -1;
-	bool error = false,  cmdline_files, special_formatting = false, *adj_col = NULL, skip;
-	unsigned int bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
+	int this_col, xpos = -1, ypos = -1, tpos = -1;
+	bool error = false,  cmdline_files, gmt_formatting = false, *adj_col = NULL, skip;
+	unsigned int ocol, last_col, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
 	uint64_t i, j;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
@@ -254,7 +255,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
-	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");
+	if (Ctrl->F.flags) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->F.flags, s), "-F");	/* Determine output order of selected columns */
 
 	s->ascii_out = !GMT->common.b.active[1];
 
@@ -262,23 +263,25 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	out = GMT_memory (GMT, NULL, s->n_fields, double);
 
-	for (i = is = 0; i < s->n_out_columns; i++, is++) {	/* Set output formats */
-		if (is == s->t_col)
-			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_ABSTIME;
-		else if (is == s->x_col) {
-			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lon")) ? GMT_IS_LON : GMT_IS_FLOAT;
-			xpos = i;
+	for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Set output formats for each output column */
+		if ((int)s->out_order[ocol] == s->t_col) {
+			GMT->current.io.col_type[GMT_OUT][ocol] = GMT_IS_ABSTIME;
+			tpos = ocol;	/* This is the output column with time */
 		}
-		else if (is == s->y_col) {
-			GMT->current.io.col_type[GMT_OUT][i] = (!strcmp (s->info[s->out_order[i]].name, "lat")) ? GMT_IS_LAT : GMT_IS_FLOAT;
-			ypos = i;
+		else if ((int)s->out_order[ocol] == s->x_col) {
+			GMT->current.io.col_type[GMT_OUT][ocol] = (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT;
+			xpos = ocol;	/* This is the output column with x */
+		}
+		else if ((int)s->out_order[ocol] == s->y_col) {
+			GMT->current.io.col_type[GMT_OUT][ocol] = (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT;
+			ypos = ocol;	/* This is the output column with y */
 		}
 		else
-			GMT->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;
+			GMT->current.io.col_type[GMT_OUT][ocol] = GMT_IS_FLOAT;
 
-		if (s->info[s->out_order[i]].format[0] != '-') special_formatting = true;
+		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
 	}
-	if (GMT->common.b.active[GMT_OUT]) special_formatting = false;
+	if (GMT->common.b.active[GMT_OUT]) gmt_formatting = false;
 
 	if (GMT->common.R.active) {	/* Restrict output to given domain */
 		if (xpos == -1 || ypos == -1) {
@@ -298,8 +301,8 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl->S.active) {	/* Must count output data columns (except t, x, y) */
-		for (i = n_data_col_out = 0; i < s->n_out_columns; i++) {
-			this_col = s->out_order[i];
+		for (ocol = n_data_col_out = 0; ocol < s->n_out_columns; ocol++) {
+			this_col = s->out_order[ocol];
 			if (this_col == s->t_col) continue;
 			if (this_col == s->x_col) continue;
 			if (this_col == s->y_col) continue;
@@ -376,18 +379,19 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-	if (Ctrl->A.active) {
+	if (Ctrl->A.active) {	/* Allocate an along-track adjustment table */
 		A = GMT_memory (GMT, NULL, s->n_out_columns, struct X2SYS_ADJUST *);
 		adj_col = GMT_memory (GMT, NULL, s->n_out_columns, bool);
 	}
 	
-	for (trk_no = 0; trk_no < n_tracks; trk_no++) {
+	last_col = s->n_out_columns - 1;	/* column number of last output column */
+	
+	for (trk_no = 0; trk_no < n_tracks; trk_no++) {	/* Process each track */
 
-		/* First see if this track is in the ignore list */
-		if (Ctrl->I.active && n_ignore) {
+		if (Ctrl->I.active && n_ignore) {	/* First see if this track is in the ignore list */
 			for (k = 0, skip = false; !skip && k < n_ignore; k++)
 				if (!strcmp (trk_name[trk_no], ignore[k])) skip = true;
-			if (skip) continue;
+			if (skip) continue;	/* Found it, so skip */
 		}
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading track %s\n", trk_name[trk_no]);
@@ -396,62 +400,62 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (Ctrl->L.active && s->t_col >= 0) MGD77_Init_Correction (GMT, CORR[trk_no], data);	/* Initialize origins if needed */
 
-		if (Ctrl->A.active) {
+		if (Ctrl->A.active) {	/* Load along-track adjustments */
 			for (k = 0; k < s->n_out_columns; k++) adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
 		}
 
 		if (GMT->current.io.multi_segments[GMT_OUT]) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], s->n_fields);
 
 		cumulative_dist = 0.0;
-		for (j = 0; j < p.n_rows; j++) {
-			if (GMT->common.R.active && GMT_map_outside (GMT, data[xpos][j], data[ypos][j])) continue;
-			if (Ctrl->S.active) {
-				for (k = bad = 0; k < s->n_out_columns; k++) {
-					this_col = s->out_order[k];
+		for (j = 0; j < p.n_rows; j++) {	/* Process all records in this file */
+			if (GMT->common.R.active && GMT_map_outside (GMT, data[xpos][j], data[ypos][j])) continue;	/* Point is outside region */
+			if (Ctrl->S.active) {	/* Skip record if all data columns are NaN (not considering lon,lat,time) */
+				for (ocol = bad = 0; ocol < s->n_out_columns; ocol++) {
+					this_col = s->out_order[ocol];
 					if (this_col == s->t_col) continue;
 					if (this_col == s->x_col) continue;
 					if (this_col == s->y_col) continue;
-					if (GMT_is_dnan (data[s->out_order[k]][j])) bad++;
+					if (GMT_is_dnan (data[this_col][j])) bad++;
 				}
-				if (bad == n_data_col_out) continue;
+				if (bad == n_data_col_out) continue;	/* Yep, just NaNs here */
 			}
-			if (auxlist[MGD77_AUX_AZ].requested) {
-				if (j == 0)	/* Look forward at first point to get an azimuth */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[s->x_col][1], data[s->y_col][1], data[s->x_col][0], data[s->y_col][0], false);
-				else		/* else go from previous to this point */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[s->x_col][j], data[s->y_col][j], data[s->x_col][j-1], data[s->y_col][j-1], false);
+			if (auxlist[MGD77_AUX_AZ].requested) {	/* Need azimuths to be computed from track coordinates */
+				if (j == 0)	/* Look forward from first to second point to get an azimuth at the first point */
+					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][1], data[ypos][1], data[xpos][0], data[ypos][0], false);
+				else		/* else go from previous to current point */
+					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][j], data[ypos][j], data[xpos][j-1], data[ypos][j-1], false);
 			}
-			if (auxlist[MGD77_AUX_DS].requested) {
-				ds = (j == 0) ? 0.0 : dist_scale * GMT_distance (GMT, data[s->x_col][j], data[s->y_col][j], data[s->x_col][j-1], data[s->y_col][j-1]);
+			if (auxlist[MGD77_AUX_DS].requested) {	/* Need distances to be computed from track coordinates */
+				ds = (j == 0) ? 0.0 : dist_scale * GMT_distance (GMT, data[xpos][j], data[ypos][j], data[xpos][j-1], data[ypos][j-1]);
 				cumulative_dist += ds;
 				aux_dvalue[MGD77_AUX_DS] = cumulative_dist;
 			}
-			if (auxlist[MGD77_AUX_SP].requested) {
-				dt =  (j == 0) ? data[s->t_col][1] - data[s->t_col][0] : data[s->t_col][j] - data[s->t_col][j-1];
+			if (auxlist[MGD77_AUX_SP].requested) {	/* Need speed to be computed from track coordinates and time */
+				dt = (j == 0) ? data[tpos][1] - data[tpos][0] : data[tpos][j] - data[tpos][j-1];
 				aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
 			}
-			for (k = 0; k < s->n_out_columns; k++) {	/* Load output record */
-				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][k].term, data, aux_dvalue, j) : 0.0;
-				if (Ctrl->A.active && adj_col[k]) {
-					if (GMT_intpol (GMT, A[k]->d, A[k]->c, A[k]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[k]].name, j);
+			for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Load output record one column at the time */
+				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, j) : 0.0;
+				if (Ctrl->A.active && adj_col[ocol]) {	/* Determine along-track adjustment */
+					if (GMT_intpol (GMT, A[ocol]->d, A[ocol]->c, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, j);
 						adj_amount = 0.0;
 					}
 					correction -= adj_amount;
 				}
-				out[k] = data[s->out_order[k]][j] - correction;	/* This loads out in the correct output order */
+				out[ocol] = data[ocol][j] - correction;	/* Save final [possibly corrected and adjusted] value */
 			}
-			if (special_formatting)  {	/* use the specified formats */
-				for (k = 0; k < s->n_out_columns; k++) {
-					if (s->info[s->out_order[k]].format[0] == '-')
-						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[k], k);
+			if (gmt_formatting)  {	/* Must use the specified formats in the definition file for one or more columns */
+				for (ocol = 0; ocol < s->n_out_columns; ocol++) {
+					if (s->info[s->out_order[ocol]].format[0] == '-')
+						GMT_ascii_output_col (GMT, GMT->session.std[GMT_OUT], out[ocol], ocol);
 					else {
-						if (!GMT_is_dnan (out[k]))
-							fprintf (GMT->session.std[GMT_OUT], s->info[s->out_order[k]].format, out[k]);
-						else
+						if (GMT_is_dnan (out[ocol]))
 							fprintf (GMT->session.std[GMT_OUT], "NaN");
+						else
+							fprintf (GMT->session.std[GMT_OUT], s->info[s->out_order[ocol]].format, out[ocol]);
 					}
-					(k == (s->n_out_columns - 1)) ? fprintf (GMT->session.std[GMT_OUT], "\n") : fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
+					(ocol == last_col) ? fprintf (GMT->session.std[GMT_OUT], "\n") : fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
 				}
 			}
 			else {
@@ -459,14 +463,17 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 
+		/* Free memory allocated for the current data set */
 		x2sys_free_data (GMT, data, s->n_out_columns, &p);
-		for (k = 0; k < s->n_out_columns; k++) if (Ctrl->A.active && adj_col[k]) {
-			GMT_free (GMT, A[k]->d);
-			GMT_free (GMT, A[k]->c);
-			GMT_free (GMT, A[k]);
+		for (ocol = 0; ocol < s->n_out_columns; ocol++) if (Ctrl->A.active && adj_col[ocol]) {
+			GMT_free (GMT, A[ocol]->d);
+			GMT_free (GMT, A[ocol]->c);
+			GMT_free (GMT, A[ocol]);
 		}
 	}
 
+	/* Clean up before quitting */
+	
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
 
 	x2sys_end (GMT, s);
