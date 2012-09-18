@@ -80,7 +80,7 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 #ifdef USE_GDAL
 	GMT_message (GMT, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
 	GMT_message (GMT, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
-	GMT_message (GMT, "	<dataType> is u8|i8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
+	GMT_message (GMT, "	<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
 	GMT_message (GMT, "	Both driver names and data types are case insensitive.\n");
 #endif
 	return (EXIT_FAILURE);
