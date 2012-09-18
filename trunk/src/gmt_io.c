@@ -1605,6 +1605,7 @@ int GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *ptr)
 {
 	unsigned int i, col, last, n_out;
 	int e = 0, wn = 0;
+	double val;
 
 	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
 	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
@@ -1618,7 +1619,8 @@ int GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *ptr)
 			col = 1 - i;	/* Write lat/lon instead of lon/lat */
 		else
 			col = i;	/* Just goto next column */
-		e = GMT_ascii_output_col (C, fp, ptr[col], col);	/* Write one item without any separator at the end */
+		val = (col >= n) ? C->session.d_NaN : ptr[col];	/* If we request beyond length of array, return NaN */
+		e = GMT_ascii_output_col (C, fp, val, col);	/* Write one item without any separator at the end */
 
 		if (i == last)					/* This is the last field, must add newline */
 			putc ('\n', fp);
@@ -1756,6 +1758,8 @@ void GMT_io_init (struct GMT_CTRL *C)
 	for (i = 0; i < 2; i++) C->current.io.skip_if_NaN[i] = true;								/* x/y must be non-NaN */
 	for (i = 0; i < 2; i++) C->current.io.col_type[GMT_IN][i] = C->current.io.col_type[GMT_OUT][i] = GMT_IS_UNKNOWN;	/* Must be told [or find out] what x/y are */
 	for (i = 2; i < GMT_MAX_COLUMNS; i++) C->current.io.col_type[GMT_IN][i] = C->current.io.col_type[GMT_OUT][i] = GMT_IS_FLOAT;	/* Other columns default to floats */
+	GMT_memset (C->current.io.curr_rec, GMT_MAX_COLUMNS, double);	/* Initialize current and previous records to zero */
+	GMT_memset (C->current.io.prev_rec, GMT_MAX_COLUMNS, double);
 }
 
 void GMT_lon_range_adjust (unsigned int range, double *lon)

@@ -266,7 +266,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 
 int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool match = false, warn = false, ogr_match = false;
+	bool match = false, ogr_match = false;
 	int error = 0, ogr_item = 0;
 	unsigned int out_col, col, n_cols_in, n_cols_out, tbl;
 	unsigned int n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
@@ -341,7 +341,6 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
-	if (warn) GMT_report (GMT, GMT_MSG_VERBOSE, "Some requested columns are outside the range of some tables and will be skipped.\n");
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_cols_out)) != GMT_OK) {
 		Return (error);
 	}
