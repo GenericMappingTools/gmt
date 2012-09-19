@@ -1190,10 +1190,14 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 
 	strcpy (C->common.R.string, item);	/* Verbatim copy */
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
-		if (item[0] == 'g')	/* -Rg is shorthand for -R0/360/-90/90 */
+		if (item[0] == 'g') {	/* -Rg is shorthand for -R0/360/-90/90 */
 			C->common.R.wesn[XLO] = 0.0, C->common.R.wesn[XHI] = 360.0;
-		else			/* -Rd is shorthand for -R-180/+180/-90/90 */
+			C->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+		}
+		else {			/* -Rd is shorthand for -R-180/+180/-90/90 */
 			C->common.R.wesn[XLO] = -180.0, C->common.R.wesn[XHI] = 180.0;
+			C->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+		}
 		C->common.R.wesn[YLO] = -90.0;	C->common.R.wesn[YHI] = +90.0;
 		C->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 		return (GMT_NOERROR);
@@ -1215,6 +1219,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	if (item[0] == 'g' || item[0] == 'd') {	/* Here we have a region appended to -Rd|g */
 		C->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 		strcpy (string, &item[1]);
+		C->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
 	else
 		strcpy (string, item);
@@ -1260,6 +1265,11 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		i++;
 	}
 	if (C->common.R.oblique) double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
+	if (GMT_is_geographic (C, GMT_IN) && p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
+		double w = p[0], e = p[1];
+		if (C->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
+		GMT_report (C, GMT_MSG_VERBOSE, "Warning -R: Given west and east values [%g %g] were adjusted so west < east [%g %g]\n", w, e, p[0], p[1]);
+	}
 	if (i < 4 || i > 6 || ((!C->common.R.oblique && GMT_check_region (C, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	GMT_memcpy (C->common.R.wesn, p, 6, double);	/* This will probably be reset by GMT_map_setup */
 	error += GMT_check_condition (C, i == 6 && !C->current.proj.JZ_set, "Error: -R with six parameters requires -Jz|Z\n");
