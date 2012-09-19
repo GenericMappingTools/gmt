@@ -2960,7 +2960,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (GMT_Parse_Common (API, "-VRbf:", "ghinrs" GMT_OPT("F"), options)) Return1 (API->error);
+	if (GMT_Parse_Common (API, "-VfRb:", "ghinrs" GMT_OPT("F"), options)) Return1 (API->error);
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/

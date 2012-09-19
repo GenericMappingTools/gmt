@@ -194,7 +194,7 @@ int GMT_gmtaverage (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRbf:", "aghior>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfRb:", "aghior>" GMT_OPT("H"), options)) Return (API->error);
 	Ctrl = New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtaverage_parse (API, Ctrl, options))) Return (error);
 

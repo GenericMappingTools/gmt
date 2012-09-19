@@ -254,7 +254,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbf:", "hirs>" GMT_OPT("FHm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb:", "hirs>" GMT_OPT("FHm"), options)) Return (API->error);
 	Ctrl = New_triangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_triangulate_parse (API, Ctrl, options))) Return (error);
 

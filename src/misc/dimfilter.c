@@ -410,7 +410,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
 	GMT = GMT_begin_module (API, "dimfilter", &GMT_cpy);	/* Save current state */
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);

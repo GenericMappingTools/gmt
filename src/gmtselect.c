@@ -441,7 +441,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtselect_parse (API, Ctrl, options))) Return (error);
 

@@ -535,7 +535,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXYacghipst>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb:", "BKOPUXYacghipst>" GMT_OPT("HMm"), options)) Return (API->error);
 
 	/* Initialize GMT_SYMBOL structure */
 
