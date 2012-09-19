@@ -321,7 +321,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	double dist_scale;			/* Scale to give selected distance units */
 	double vel_scale;			/* Scale to give selected velocity units */
 
-	clock_t tic, toc;
+	clock_t tic = 0, toc = 0;
 
 	struct X2SYS_INFO *s = NULL;			/* Data format information  */
 	struct GMT_XSEGMENT *ylist_A = NULL, *ylist_B = NULL;		/* y-indices sorted in increasing order */
@@ -565,7 +565,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (Ctrl->A.active && !combo_ok (trk_name[A], trk_name[B], pair, n_pairs)) continue;	/* Do not want this combo */
 			
-			if (Ctrl->C.active)	tic = clock();	/* To report execution time from this pair */
+			if (Ctrl->C.active) tic = clock();	/* To report execution time from this pair */
 
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s - %s : ", trk_name[A], trk_name[B]);
 
@@ -836,7 +836,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 				toc = clock();
 				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f secs\n", nx, (double)(toc - tic)/1000);
 				if (fpC)	/* Save also the run time in file */
-					fprintf(fpC, "%s - %s\t%.3f\n", trk_name[A], trk_name[B], (double)(toc - tic)/1000);
+					fprintf (fpC, "%s - %s\t%.3f\n", trk_name[A], trk_name[B], (double)(toc - tic)/1000);
 			}
 		}
 
@@ -849,7 +849,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (fpC)
-		fclose(fpC);
+		fclose (fpC);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);

@@ -4,7 +4,7 @@
 BD(x2sys_cross) \- Calculate crossovers between track data files
 .SH SYNOPSIS
 BD(x2sys_cross) IT(track(s)) OPT(T)IT(TAG) 
-[ OPT(A)IT(combi.lis) ] [ OPT(Il)|BD(a)|BD(c) ] 
+[ OPT(A)IT(combi.lis) ] [ OPT(C)[IT(runtimes)] ] [ OPT(Il)|BD(a)|BD(c) ] 
 [ GMT_J_OPT ] 
 [ OPT(Qe)|BD(i) ] [ OPT(Sl)|BD(u)|BD(h)IT(speed) ] 
 [ GMT_V_OPT ] [ OPT(W)IT(size) ] [ OPT(Z) ] [ GMT_bo_OPT ]
@@ -24,6 +24,10 @@ you may choose to project all data using one of the map-projections prior to cal
 OPT(A)IT(combi.lis)
 Only process the pair-combinations found in the file IT(combi.lis)
 [Default process all possible combinations among the specified files].
+.TP
+OPT(C)[IT(runtimes)]
+Compute and append the processing run-time for each pair to the progress message.
+Append a filename to save these run-times to file.
 .TP
 OPT(Il)|BD(a)|BD(c)
 Sets the interpolation mode for estimating values at the crossover. Choose among:

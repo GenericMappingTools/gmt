@@ -228,7 +228,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	float mask_val[3];
 	
-	double distance, xx, yy, z_value, xtmp, radius, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
+	double distance, xx, yy, z_value, xtmp, radius = 0.0, last_radius = -DBL_MAX, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
