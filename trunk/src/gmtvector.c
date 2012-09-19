@@ -238,6 +238,8 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 		}
 	}
 
+	if (Ctrl->T.mode == DO_ROT3D && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set for 3-D rots */
+	
 	n_in = (Ctrl->C.active[GMT_IN] && GMT_is_geographic (GMT, GMT_IN)) ? 3 : 2;
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_in;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < n_in, "Syntax error: Binary input data (-bi) must have at least %d columns\n", n_in);
@@ -469,7 +471,9 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	if ((error = GMT_gmtvector_parse (API, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
-			
+	
+	if (Ctrl->E.active) GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
+	
 	if (Ctrl->T.mode == DO_ROT3D)
 		make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D) {
