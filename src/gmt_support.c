@@ -6119,7 +6119,7 @@ int GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 			switch (C->common.n.BC[i]) {
 				case 'g':	/* Geographic sets everything */
 					h->gn = h->gs = true;
-					h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_POLE;
+					h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_GEO;
 					break;
 				case 'n':	/* Natural BCs */
 					if (C->common.n.BC[i+1] == 'x') { h->BC[0] = h->BC[1] = GMT_BC_IS_NATURAL; i++; }
@@ -6138,13 +6138,13 @@ int GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
 			}
 			i++;
 		}
-		if (h->gn && !(h->BC[0] == GMT_BC_IS_POLE && h->BC[1] == GMT_BC_IS_POLE && h->BC[2] == GMT_BC_IS_POLE && h->BC[3] == GMT_BC_IS_POLE)) {
+		if (h->gn && !(h->BC[0] == GMT_BC_IS_GEO && h->BC[1] == GMT_BC_IS_GEO && h->BC[2] == GMT_BC_IS_GEO && h->BC[3] == GMT_BC_IS_GEO)) {
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: GMT boundary condition g overrides n[x|y] or p[x|y]\n");
-			h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_POLE;
+			h->BC[0] = h->BC[1] = h->BC[2] = h->BC[3] = GMT_BC_IS_GEO;
 		}
 	}
 	else {	/* Determine BC based on whether grid is geographic or not */
-		type = (GMT_x_is_lon (C, GMT_IN)) ? GMT_BC_IS_POLE : GMT_BC_IS_NATURAL;
+		type = (GMT_x_is_lon (C, GMT_IN)) ? GMT_BC_IS_GEO : GMT_BC_IS_NATURAL;
 		for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = type;
 	}
 
@@ -6511,7 +6511,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[jno2 + i] = G->data[j2p + i180];
 			}
 			if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_POLE;
+				G->header->BC[YHI] = GMT_BC_IS_GEO;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
 			}
 		}
@@ -6561,7 +6561,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[jso2 + i] = G->data[j2p + i180];
 			}
 			if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_POLE;
+				G->header->BC[YLO] = GMT_BC_IS_GEO;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
 			}
 		}
@@ -6920,7 +6920,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 				}
 			}
 			if (set[YHI]) {
-				G->header->BC[YHI] = GMT_BC_IS_POLE;
+				G->header->BC[YHI] = GMT_BC_IS_GEO;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
 			}
 		}
@@ -6979,7 +6979,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 				}
 			}
 			if (set[YLO]) {
-				G->header->BC[YLO] = GMT_BC_IS_POLE;
+				G->header->BC[YLO] = GMT_BC_IS_GEO;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
 			}
 		}
