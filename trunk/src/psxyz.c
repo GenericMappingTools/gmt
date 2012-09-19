@@ -392,7 +392,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYyacghipst>" GMT_OPT("EZHMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb:", "BKOPUXxYyacghipst>" GMT_OPT("EZHMm"), options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 
 	GMT_memset (&S, 1, struct GMT_SYMBOL);

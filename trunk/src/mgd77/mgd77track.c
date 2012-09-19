@@ -577,7 +577,7 @@ int GMT_mgd77track (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	if (GMT_Parse_Common (API, "-VJRbf", "BKOPUXYcp>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb", "BKOPUXYcp>", options)) Return (API->error);
 	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */
 

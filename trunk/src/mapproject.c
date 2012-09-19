@@ -445,7 +445,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'I', options)) == NULL && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Unless -I, implicitly set -fg unless already set */
 	Ctrl = New_mapproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mapproject_parse (API, Ctrl, options))) Return (error);

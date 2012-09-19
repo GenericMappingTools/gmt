@@ -215,7 +215,7 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRbf:", "hos>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfRb:", "hos>" GMT_OPT("H"), options)) Return (API->error);
 	Ctrl = New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2xyz_parse (API, Ctrl, &io, options))) Return (error);
 	

@@ -212,7 +212,7 @@ int GMT_psclip (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbf:", "BKOPUXxYycghipst>" GMT_OPT("EZMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfRb:", "BKOPUXxYycghipst>" GMT_OPT("EZMm"), options)) Return (API->error);
 	Ctrl = New_psclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psclip_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */

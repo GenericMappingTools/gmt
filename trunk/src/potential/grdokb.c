@@ -323,7 +323,7 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRf:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
 	Ctrl = New_grdokb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdokb_parse (API, Ctrl, options))) Return (error);
 

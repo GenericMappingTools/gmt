@@ -244,7 +244,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRbf:", "ghior>" GMT_OPT("FH"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfRb:", "ghior>" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_blockmode_parse (API, Ctrl, options))) Return (error);
 

@@ -1566,15 +1566,17 @@ int gmt_bin_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *ptr)
 {
 	int k;
 	unsigned int i, n_out, col_pos;
+	double val;
 	
 	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
 	if (C->current.setting.io_lonlat_toggle[GMT_OUT]) double_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
 	for (i = k = 0; i < n_out; i++) {
 		col_pos = (C->common.o.active) ? C->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
-		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C->current.io.geo.range, &ptr[col_pos]);
+		val = (col_pos >= n) ? C->session.d_NaN : ptr[col_pos];	/* If we request beyond length of array, return NaN */
+		if (C->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (C->current.io.geo.range, &val);
 		if (C->current.io.fmt[GMT_OUT][i].skip < 0) gmt_x_write (C, fp, -C->current.io.fmt[GMT_OUT][i].skip);	/* Pre-fill */
-		k += C->current.io.fmt[GMT_OUT][i].io (C, fp, 1, &ptr[col_pos]);
+		k += C->current.io.fmt[GMT_OUT][i].io (C, fp, 1, &val);
 		if (C->current.io.fmt[GMT_OUT][i].skip > 0) gmt_x_write (C, fp, C->current.io.fmt[GMT_OUT][i].skip);	/* Post-fill */
 	}
 	return (k);

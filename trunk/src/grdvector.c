@@ -318,7 +318,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRf", "BKOPUXxYycpt>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJfR", "BKOPUXxYycpt>", options)) Return (API->error);
 	Ctrl = New_grdvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdvector_parse (API, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;		/* This module also needs PSL */

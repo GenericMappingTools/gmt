@@ -550,8 +550,8 @@ int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRf:", "ghrs>" GMT_OPT("F"), options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
+	if (GMT_Parse_Common (API, "-VfR:", "ghrs>" GMT_OPT("F"), options)) Return (API->error);
 	Ctrl = New_grdspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdspotter_parse (API, Ctrl, options))) Return (error);
 
