@@ -407,7 +407,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	unsigned int cap = PSL->internal.line_cap, join = PSL->internal.line_join;
 	unsigned int nx = 0, ny = 0, nm, barmem, k, justify, l_justify, n_use_labels = 0;
 	int this_just;
-	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_equi = true;
+	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -431,7 +431,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		}
 		ndec = GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 	}
-	else {	/* Do annotations explicitly, one by one.  Do automatic guessing of decimals if equidistant cpt */
+	else {	/* Do annotations explicitly, one by one.  Try automatic guessing of decimals if equidistant cpt */
+		bool const_interval = true, exp_notation = false;
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->range[i].label) n_use_labels++;
 			if (P->range[i].annot & 1) {
@@ -446,13 +447,17 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					ndec = dec;
 				}
 			}
+			if (strchr (format, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
 			prev_del_z = this_del_z;
 			this_del_z = P->range[i].z_high - P->range[i].z_low;
-			if (i && !doubleAlmostEqualZero (this_del_z, prev_del_z)) cpt_equi = false;
+			if (i && !doubleAlmostEqualZero (this_del_z, prev_del_z)) const_interval = false;
 			if (P->range[i].annot) all = false;
 		}
-		if (!cpt_equi) {	/* Abandon automatic format detection and use FORMAT_FLOAT_MAP */
-			ndec = 0;
+		if (!const_interval) {	/* May have to abandon automatic format guessing */
+			if (exp_notation && !strchr (GMT->current.setting.format_float_map, 'e')) {	/* Unwanted exponential notation: Abandon automatic format detection and use FORMAT_FLOAT_MAP */
+				cpt_auto_fmt = false;
+				ndec = 0;
+			}
 		}
 	}
 	if (equi && n_use_labels == P->n_colors)
@@ -983,7 +988,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					}
 					else
 						sprintf (text, format, P->range[i].z_low);
-					if (!cpt_equi) this_just = l_justify;
+					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, -90.0, -this_just, form);
 				}
 				else
@@ -1008,7 +1013,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					}
 					else
 						sprintf (text, format, P->range[i].z_high);
-					if (!cpt_equi) this_just = l_justify;
+					if (!cpt_auto_fmt) this_just = l_justify;
 					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[0].size, text, -90.0, -this_just, form);
 				}
 				else
