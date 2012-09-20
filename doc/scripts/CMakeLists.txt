@@ -67,16 +67,29 @@ set (_install_pdf GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_lett
 foreach (_fig ${_scripts_ps})
 	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
 	list (APPEND _scripts_pdf ${_pdf_fig})
-	add_custom_command (
-		OUTPUT ${_pdf_fig}
-		COMMAND
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
-		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -A -P -Tf
-		-D${CMAKE_CURRENT_BINARY_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ps2raster ${_fig})
+	if (WIN32)
+		add_custom_command (
+			OUTPUT ${_pdf_fig}
+			COMMAND
+			set GMT_USERDIR=${GMT_BINARY_DIR}/share
+			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -A -P -Tf
+			-D${CMAKE_CURRENT_BINARY_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS ps2raster ${_fig})
+	else (WIN32)
+		add_custom_command (
+			OUTPUT ${_pdf_fig}
+			COMMAND
+			GMT_USERDIR=${GMT_BINARY_DIR}/share
+			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -A -P -Tf
+			-D${CMAKE_CURRENT_BINARY_DIR}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS ps2raster ${_fig})
+	endif (WIN32)
 endforeach (_fig ${_scripts_ps})
 
 if (PDFLATEX_COMPILER)
