@@ -1323,9 +1323,9 @@ int GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, u
 			shift_x = 0.0;
 
 		wesn[XLO] = h->wesn[XLO] + lrint ((wesn[XLO] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
-		wesn[XHI] = h->wesn[XHI] + lrint ((wesn[XHI] - h->wesn[XLO] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
+		wesn[XHI] = h->wesn[XHI] + lrint ((wesn[XHI] - h->wesn[XHI] + shift_x) * h->r_inc[GMT_X]) * h->inc[GMT_X];
 		wesn[YLO] = h->wesn[YLO] + lrint ((wesn[YLO] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
-		wesn[YHI] = h->wesn[YHI] + lrint ((wesn[YHI] - h->wesn[YLO]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
+		wesn[YHI] = h->wesn[YHI] + lrint ((wesn[YHI] - h->wesn[YHI]) * h->r_inc[GMT_Y]) * h->inc[GMT_Y];
 
 		/* Make sure we do not exceed grid domain (which can happen if C->common.R.wesn exceeds the grid limits) */
 		if (wesn[XLO] < h->wesn[XLO] && !grid_global) wesn[XLO] = h->wesn[XLO];
