@@ -1252,7 +1252,8 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 		grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
 
 	/* Add padding with border replication */
-	pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
+	// pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
+	pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_zero);
 
 #ifdef NC4_DEBUG
 	if (header->size < 160) {
