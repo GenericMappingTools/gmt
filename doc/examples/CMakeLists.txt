@@ -27,16 +27,29 @@ foreach (_ps ${_examples})
 	string (REPLACE ".ps" ".pdf" _pdf ${_pdf})
 	list (APPEND _examples_pdf ${CMAKE_CURRENT_BINARY_DIR}/${_pdf})
 
-	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
-		COMMAND
-		GMT_USERDIR=${GMT_BINARY_DIR}/share
-		GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-		${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -Au -P -Tf
-		-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
-		-F${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
-		${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
-		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ps2raster ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+	if (WIN32)
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+			COMMAND
+			set GMT_USERDIR=${GMT_BINARY_DIR}/share
+			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -Au -P -Tf
+			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
+			-F${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS ps2raster ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+	else (WIN32)
+		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+			COMMAND
+			GMT_USERDIR=${GMT_BINARY_DIR}/share
+			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -Au -P -Tf
+			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
+			-F${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS ps2raster ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+	endif (WIN32)
 endforeach (_ps ${_examples})
 
 # List of job scripts and convert to verbatim
