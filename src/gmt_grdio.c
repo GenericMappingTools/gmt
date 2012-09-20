@@ -1107,11 +1107,12 @@ int GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, int row_no, flo
 
 		n_items = G->header.nx;
 		if (GMT_fread (G->v_row, G->size, n_items, G->fp) != n_items)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-		for (col = 0; col < G->header.nx; col++) {
+		for (col = 0; col < G->header.nx; col++)
 			row[col] = GMT_decode (C, G->v_row, col, C->session.grdformat[G->header.type][1]);	/* Convert whatever to float */
-			if (G->check && row[col] == (float)G->header.nan_value) /* cast to avoid round-off errors */
-				row[col] = C->session.f_NaN;
-		}
+	}
+	if (G->check) {	/* Replace NaN-marker with actual NaN */
+		for (col = 0; col < G->header.nx; col++) if (row[col] == (float)G->header.nan_value) /* cast to avoid round-off errors */
+			row[col] = C->session.f_NaN;
 	}
 	GMT_scale_and_offset_f (C, row, G->header.nx, G->scale, G->offset);
 	G->row++;
