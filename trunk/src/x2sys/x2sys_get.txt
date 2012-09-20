@@ -20,6 +20,10 @@ OPT(C)
 Instead of reporting the track names, just output the coordinates of the
 center of each bin that has at least one track with the specified data.
 .TP
+OPT(D)
+Only report the track names [Default adds the availability of
+data for each field].
+.TP
 OPT(F)IT(flags)
 Give a comma-separated list of column names (as described in the definition
 file) that should be present. [Default selects all data columns].

@@ -32,29 +32,32 @@
 #include "x2sys.h"
 
 struct X2SYS_GET_CTRL {
-	struct C {	/* -C */
+	struct S2S_GET_C {	/* -C */
 		bool active;
 	} C;
-	struct F {	/* -F */
+	struct S2S_GET_D {	/* -D */
+		bool active;
+	} D;
+	struct S2S_GET_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct G {	/* -G */
+	struct S2S_GET_G {	/* -G */
 		bool active;
 	} G;
-	struct L {	/* -L */
+	struct S2S_GET_L {	/* -L */
 		bool active;
 		int mode;
 		char *file;
 	} L;
-	struct N {	/* -N */
+	struct S2S_GET_N {	/* -N */
 		bool active;
 		char *flags;
 	} N;
-	struct S {	/* -S */
+	struct S2S_GET_S {	/* -S */
 		bool active;
 	} S;
-	struct T {	/* -T */
+	struct S2S_GET_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
@@ -83,12 +86,13 @@ int GMT_x2sys_get_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_get -T<TAG> [-C] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: x2sys_get -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Report center of each tile with tracks instead [Default is track files].\n");
+	GMT_message (GMT, "\t-D only reports the track names and not the report on each field.\n");
 	GMT_message (GMT, "\t-F Comma-separated list of column names that must ALL be present [Default is any field].\n");
 	GMT_message (GMT, "\t-G Report global flags per track [Default reports for segments inside region].\n");
 	GMT_message (GMT, "\t-L Setup mode: Return all pairs of cruises that might intersect given\n");
@@ -127,6 +131,11 @@ int GMT_x2sys_get_parse (struct GMTAPI_CTRL *C, struct X2SYS_GET_CTRL *Ctrl, str
 
 			case 'C':
 				Ctrl->C.active = true;
+				break;
+			case 'D':
+				Ctrl->D.active = true;
+				break;
+			case 'E':	/* Just accept and ignore (it was an option in GMT4 but the dedault in 5) */
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -364,12 +373,16 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (n_tracks_found) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Found %d tracks\n", n_tracks_found);
 
-			printf ("# Search command: %s", gmt_module_name(GMT));
-			for (opt = options; opt; opt = opt->next)
-				(opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-			printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
-			for (ii = 0; ii < (s->n_fields-1); ii++) printf ("%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
-			printf ("%s\n", s->info[s->n_fields-1].name);
+			if (!Ctrl->D.active) {
+				printf ("# Search command: %s", gmt_module_name(GMT));
+				for (opt = options; opt; opt = opt->next)
+					(opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
+				printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
+				for (ii = 0; ii < (s->n_fields-1); ii++)
+					printf ("%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
+				printf ("%s\n", s->info[s->n_fields-1].name);
+			}
+
 			for (kk = 0; kk < n_tracks; kk++) {
 				if (y_match[kk] == 0 || n_match[kk] == 1) continue;
 				if (no_suffix) {
@@ -377,8 +390,10 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (i) B.head[kk].trackname[i] = '\0';
 				}
 				printf ("%s", B.head[kk].trackname);
-				for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
-					(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
+				if (!Ctrl->D.active) {
+					for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
+						(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
+					}
 				}
 				printf ("\n");
 			}
