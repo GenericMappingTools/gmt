@@ -32,7 +32,7 @@ By default, the storage types used in a MGD77+ netCDF file greatly exceed the pr
 imposed by the ASCII MGD77 format.  However, for the five items BD(faa), BD(eot),
 BD(mag), BD(diur) and BD(msd) we use 2-byte integers with implied precisions of 0.1 mGal,
 0.1 nTesla, and 1 m as in the MGD77 format.  It is possible that at some point these items will
-need to be stored as 4-byte ints which would allow precisions of 1 fTesla, 1 nGal, and 0.01 mm,
+need to be stored as 4-byte ints which would allow precisions of 10 fTesla, 1 nGal, and 0.01 mm,
 respectively.  This option activates such storage [Default uses 2-byte integers].
 .TP
 OPT(L)[BD(w)][BD(e)][BD(+)]

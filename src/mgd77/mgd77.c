@@ -2580,7 +2580,7 @@ void MGD77_select_high_resolution (struct GMT_CTRL *C)
 	 * these entries in the mgd77cdf structure array.
 	 */
 
-	mgd77cdf[16].type = mgd77cdf[18].type = NC_INT;		/* MAG & DIUR:  4-byte integer with 100 fTesla precision */
+	mgd77cdf[16].type = mgd77cdf[18].type = NC_INT;		/* MAG & DIUR:  4-byte integer with 10 fTesla (0.01 pTesla) precision  */
 	mgd77cdf[16].factor = mgd77cdf[18].factor = 1.0e-4;
 	mgd77cdf[21].type = mgd77cdf[22].type = NC_INT;		/* EOT & FAA :  4-byte integer with 10 nGal precision */
 	mgd77cdf[21].factor = mgd77cdf[22].factor = 1.0e-5;
