@@ -138,7 +138,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<cruises> is one or more MGD77+ legnames, e.g., 01010083.\n");
+	MGD77_Cruise_Explain (GMT);
 	GMT_message (GMT, "\n\tOPTIONS:\n\n");
 	GMT_message (GMT, "\t-A Append a new data column to the given files.  The code letters are:\n");
 	GMT_message (GMT, "\t   +: Optional.  Will overwrite an existing column with same name with new data.\n");
@@ -550,8 +550,8 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options && options->option == '?') return (GMT_mgd77manage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77manage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77manage_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77manage_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

@@ -423,19 +423,19 @@ described by alphabetic characters for each of the 24 numeric fields in MGD77 fo
 To scan for excessive values or gradients, try
 .br
 .sp
-BD(mgd77sniffer) 08010001
+mgd77sniffer 08010001
 .br
 .sp
 To dump cruise gradients, try
 .br
 .sp
-BD(mgd77sniffer) 08010001 -Ds
+mgd77sniffer 08010001 -Ds
 .br
 .sp
 To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try
 .br
 .sp
-BD(mgd77sniffer) 08010001 OPT(G)depth,/data/GRIDS/etopo5_hdr.i2 OPT(g)faa,/data/GRIDS/grav.11.2.img,0.1,1
+mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 .br
 .sp
 .SH "SEE ALSO"

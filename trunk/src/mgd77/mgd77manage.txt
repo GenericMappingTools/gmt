@@ -144,26 +144,26 @@ To append Geosat/ERS-1 gravity version 11.2 as an extra data column in the cruis
 01010047.nc and 01010008.nc, storing the values as mGal*10 in a 2-byte short integer, try
 .br
 .sp
-BD(mgd77manage) 01010047 01010008 OPT(Ai)10/1/grav.11.2.img OPT(I)satgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" OPT(V)
+mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img -Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
 .br
 .sp
 To append a filtered version of magnetics as an extra data column of type float for the cruise 01010047.nc, and
 interpolate the filtered data at the times given in the MGD77+ file, try
 .br
 .sp
-BD(mgd77manage) 01010047 OPT(AT)mymag.tm OPT(I)filtmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" OPT(V)
+mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
 .br
 .sp
 To delete the existing extra columns satfaa, coastdist, and satvgg from all MGD77+ files, try
 .br
 .sp
-BD(mgd77manage) `cat allmgd77.lis` OPT(D)satfaa,coastdist,satvgg OPT(V)
+mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
 .br
 .sp
 To create a 4-byte float column with the correct IGRF reference field in all MGD77+ files, try
 .br
 .sp
-BD(mgd77manage) `cat allmgd77.lis` OPT(Acm) OPT(I)igrf/"IGRF reference field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" OPT(V)
+mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
 .br
 .sp
 .SH DISCUSSION
@@ -196,7 +196,7 @@ Typically, you will make a list of all the cruises to be converted (with or with
 extension), and you then run
 .br
 .sp
-	BD(mgd77convert) OPT(Fa) OPT(Tc) OPT(V) OPT(Lwe+) `cat cruises.lis` > log.txt
+	mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
 .br
 .sp
 The verbose settings will ensure that all problems found during conversion will be reported.

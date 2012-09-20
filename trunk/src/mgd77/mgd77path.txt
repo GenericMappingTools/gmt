@@ -30,19 +30,19 @@ Reports the total number of cruises found.
 To obtain pathnames for cruises 01010008 and 01010007, run
 .br
 .sp
-BD(mgd77path) 01010008 01010007
+mgd77path 01010008 01010007
 .br
 .sp
 To obtain pathnames for cruises 01010008 and 01010007, but only if there are MGD77+ version in netCDF, run
 .br
 .sp
-BD(mgd77path) 01010008 01010007 OPT(Ia) OPT(It)
+mgd77path 01010008 01010007 -Ia -It
 .br
 .sp
 To see the list of active directories where MGD77 files might be stored, run
 .br
 .sp
-BD(mgd77path) OPT(D)
+mgd77path -D
 .SH "SEE ALSO"
 .IR GMT (1)
 .IR mgd77info (1)

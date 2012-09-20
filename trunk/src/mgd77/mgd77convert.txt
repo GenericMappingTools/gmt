@@ -4,7 +4,7 @@
 mgd77convert \- Convert MGD77 data to other file formats
 .SH SYNOPSIS
 BD(mgd77convert) IT(NGDC-ids) OPT(Fa)|BD(c)|BD(t) OPT(T)[BD(+)]BD(a)|BD(b)|BD(t) 
-[ OPT(D) ] [ OPT(L)[BD(w)][BD(e)][BD(+)] ] [ GMT_V_OPT ]
+[ OPT(C) ] [ OPT(D) ] [ OPT(L)[BD(w)][BD(e)][BD(+)] ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 BD(mgd77convert) reads versions of MGD77 files and writes the same
 data in (probably) another format to a new file in the current directory.  Both pre-
@@ -27,6 +27,11 @@ MGD77 ASCII table (with extension .mgd77), BD(c) for the new MGD77+ netCDF forma
 exist in the current directory.  Prepend BD(+) to override this policy.
 .SH OPTIONAL ARGUMENTS
 .TP
+OPT(C)
+Convert from NGDC two-file data sets *.h77, *.a77 to single file *.mgd77.  No other
+options (except OPT(V)) are allowed.  Give one or more names of *.h77 files, *.a77
+files, or just the file prefixes.
+.TP
 OPT(D)
 By default, the storage types used in a MGD77+ netCDF file greatly exceed the precision
 imposed by the ASCII MGD77 format.  However, for the five items BD(faa), BD(eot),
@@ -42,20 +47,26 @@ such log information to stdout.
 #include "explain_-V.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
+To convert a large set of *.a77/*.h77 pairs to proper *.mgd77 files, tyr
+.br
+.sp
+mgd77convert -C *.h77
+.br
+.sp
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files, and
 capture all verification messages, try
 .br
 .sp
-BD(mgd77convert) 01010047 01010008 OPT(Fa) OPT(Tc) OPT(V) OPT(Lew+) > log.lis
+mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+ > log.lis
 .br
 .sp
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical to the
 original file, try (Bourne shell syntax)
 .br
 .sp
-orig=`BD(mgd77path) 01010047 OPT(Ic)`
+orig=`mgd77path 01010047 -Ic`
 .br
-BD(mgd77convert) 01010047 OPT(Fc) OPT(Ta) OPT(V)
+mgd77convert 01010047 -Fc -Ta -V
 .br
 diff $orig 01010047.mgd77
 .br
@@ -63,13 +74,13 @@ diff $orig 01010047.mgd77
 To convert 01010047.nc to a plain ASCII table for manual editing, overwriting any existing table, try
 .br
 .sp
-BD(mgd77convert) 01010047 OPT(Fc) OPT(T+t) OPT(V)
+mgd77convert 01010047 -Fc -T+t -V
 .br
 .sp
 To recover the original NGDC MGD77 version of 01020051.nc and ignore any E77 corrections,
 use
 .br
-BD(mgd77convert) 01020051 OPT(FC) OPT(Ta) OPT(V)
+mgd77convert 01020051 -FC -Ta -V
 .br
 .SH FILE FORMATS
 BD(mgd77convert) handles three different formats. (1) The MGD77 ASCII tables are

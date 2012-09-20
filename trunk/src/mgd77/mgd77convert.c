@@ -30,6 +30,9 @@ void MGD77_select_high_resolution (struct GMT_CTRL *C);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
+	struct C {	/* -C */
+		bool active;
+	} C;
 	struct D {	/* -D */
 		bool active;
 	} D;
@@ -71,7 +74,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-D] [-L[e][w][+]] [-V]\n\n");
+	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-C] [-D] [-L[e][w][+]] [-V]\n\n");
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
@@ -82,6 +85,8 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
 	GMT_message (GMT, "\t   By default we will refuse to overwrite existing files.  Prepend + to override this policy.\n");
 	GMT_message (GMT, "\tOPTIONS:\n\n");
+	GMT_message (GMT, "\t-C Convert from NGDC (*.h77, *.a77) to *.mgd77 format; no other options allowed.\n");
+	GMT_message (GMT, "\t   Give one or more names of h77-files, a77-files, or just cruise prefixes.\n");
 	GMT_message (GMT, "\t-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");
 	GMT_message (GMT, "\t   of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision].\n");
 	GMT_message (GMT, "\t-L Set log level and destination setting for verification reporting.  Append a combination\n");
@@ -170,6 +175,9 @@ int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctr
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead.\n");
 #endif
+			case 'C':
+				Ctrl->C.active = true;
+				break;
 			case 'D':
 				Ctrl->D.active = true;
 				break;
@@ -179,8 +187,13 @@ int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctr
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error: Must specify format of input files\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error: Must specify format of output files\n");
+	if (Ctrl->C.active) {
+		n_errors += GMT_check_condition (GMT, Ctrl->D.active || Ctrl->F.active || Ctrl->L.active || Ctrl->T.active, "Syntax error -C: No other options allowed\n");
+	}
+	else {
+		n_errors += GMT_check_condition (GMT, Ctrl->F.format == MGD77_NOT_SET, "Syntax error: Must specify format of input files\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->T.format == MGD77_NOT_SET, "Syntax error: Must specify format of output files\n");
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -207,8 +220,8 @@ int GMT_mgd77convert (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options && options->option == '?') return (GMT_mgd77convert_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77convert_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77convert_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77convert_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -219,6 +232,50 @@ int GMT_mgd77convert (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
+	if (Ctrl->C.active) {	/* Just build *.mgd77 from *.h77 and *.a77 */
+		char a77_file[GMT_BUFSIZ], h77_file[GMT_BUFSIZ], mgd77_file[GMT_BUFSIZ], prefix[GMT_BUFSIZ];
+		int pos, c, n_files = 0;
+		struct GMT_OPTION *opt = NULL;
+		FILE *fpa77, *fph77, *fpout;
+		
+		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
+
+			if (opt->option != '<') continue;	/* We are only processing filenames here */
+			if ((pos = strlen (opt->arg) - 4) < 0) continue;	/* Odd item, skip */
+			strcpy (prefix, opt->arg);	/* Make copy of name/file */
+			if (!strncmp (&prefix[pos], ".a77", 4U) || !strncmp (&prefix[pos], ".h77", 4U)) prefix[pos] = 0;	/* Truncate any extension */
+			sprintf (a77_file, "%s.a77", prefix);
+			sprintf (h77_file, "%s.h77", prefix);
+			if (access (a77_file, R_OK)) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: A77 file %s not found - skipping conversion\n", a77_file);
+				continue;
+			}
+			if (access (h77_file, R_OK)) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: H77 file %s not found - skipping conversion\n", h77_file);
+				continue;
+			}
+			sprintf (mgd77_file, "%s.mgd77", prefix);
+			if ((fpout = fopen (mgd77_file, "w")) == NULL) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot create MGD77 file %s - skipping conversion\n", mgd77_file);
+				continue;
+			}
+			if ((fph77 = fopen (h77_file, "r")) == NULL) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot read H77 file %s - skipping conversion\n", h77_file);
+				continue;
+			}
+			if ((fpa77 = fopen (a77_file, "r")) == NULL) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot read A77 file %s - skipping conversion\n", a77_file);
+				continue;
+			}
+			GMT_report (GMT, GMT_MSG_NORMAL, "Assemble %s + %s --> %s\n", h77_file, a77_file, mgd77_file);
+			while ((c = fgetc (fph77)) != EOF) fputc (c, fpout);	fclose (fph77);
+			while ((c = fgetc (fpa77)) != EOF) fputc (c, fpout);	fclose (fpa77);
+			fclose (fpout);
+			++n_files;
+		}
+		GMT_report (GMT, GMT_MSG_NORMAL, "Assembled %d H77/A77 files to MGD77 format\n", n_files);
+		Return (GMT_OK);
+	}
 	/* Initialize MGD77 output order and other parameters*/
 	
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */

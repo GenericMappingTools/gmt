@@ -55,37 +55,37 @@ institution.  The following is the list of institutions:
 To get one-line summary information about the cruises 01010047.mgd77 and 01010008.mgd77, try
 .br
 .sp
-BD(mgd77info) 01010047 01010008 OPT(E) > listing.lis
+mgd77info 01010047 01010008 -E > listing.lis
 .br
 .sp
 To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 .br
 .sp
-BD(mgd77info) 01010047 OPT(Mr)
+mgd77info 01010047 -Mr
 .br
 .sp
 To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 .br
 .sp
-BD(mgd77info) 01010047 OPT(Mf) | grep Gravity
+mgd77info 01010047 -Mf | grep Gravity
 .br
 .sp
 To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
 .br
 .sp
-BD(mgd77info) 01010047 OPT(Mf)Magnetics_Sampling_Rate
+mgd77info 01010047 -MfMagnetics_Sampling_Rate
 .br
 .sp
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 .br
 .sp
-BD(mgd77info) 01010047 OPT(C)
+mgd77info 01010047 -C
 .br
 .sp
-To see the E77 status of all MGD77+ cruises collected by the University of Hawaii, run
+To see the E77 status of all MGD77+ cruises collected by the University of Hawaii (institution 08), run
 .br
 .sp
-BD(mgd77info) 08 OPT(Ia) OPT(Me)
+mgd77info 08 -Ia -Me
 .SH "SEE ALSO"
 .IR mgd77list (1),
 .IR mgd77manage (1),
