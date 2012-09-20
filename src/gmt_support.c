@@ -4834,12 +4834,12 @@ bool gmt_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this_label,
 				sprintf (this_label, format, this_dist * C->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			else {
-				sprintf (this_label, C->current.setting.format_float_out, this_dist * C->session.u2u[GMT_INCH][G->dist_unit]);
+				sprintf (this_label, C->current.setting.format_float_map, this_dist * C->session.u2u[GMT_INCH][G->dist_unit]);
 			}
 			break;
 
 		case 4:
-			sprintf (this_label, C->current.setting.format_float_out, this_value_dist);
+			sprintf (this_label, C->current.setting.format_float_map, this_value_dist);
 			break;
 
 		case 5:
@@ -5240,11 +5240,12 @@ int GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefi
 	bool general = false;
 	char text[GMT_BUFSIZ];
 
-	if (strchr (C->current.setting.format_float_out, 'g')) {	/* General format requested */
+	//if (strchr (C->current.setting.format_float_map, 'g')) {	/* General format requested */
+	if (!strcmp (C->current.setting.format_float_map, "%.12g")) {	/* Default map format given means auto-detect decimals */
 
 		/* Find number of decimals needed in the format statement */
 
-		sprintf (text, "%.12g", interval);
+		sprintf (text, C->current.setting.format_float_map, interval);
 		for (i = 0; text[i] && text[i] != '.'; i++);
 		if (text[i]) {	/* Found a decimal point */
 			for (j = i + 1; text[j] && text[j] != 'e'; j++);
@@ -5255,7 +5256,7 @@ int GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefi
 			}
 		}
 		general = true;
-		strcpy (format, C->current.setting.format_float_out);
+		strcpy (format, C->current.setting.format_float_map);
 	}
 
 	if (unit && unit[0]) {	/* Must append the unit string */
@@ -5272,22 +5273,22 @@ int GMT_get_format (struct GMT_CTRL *C, double interval, char *unit, char *prefi
 			if (ndec > 0)
 				sprintf (format, "%%.%df%s", ndec, &text[1]);
 			else
-				sprintf (format, "%s%s", C->current.setting.format_float_out, &text[1]);
+				sprintf (format, "%s%s", C->current.setting.format_float_map, &text[1]);
 		}
 		else {			/* 1 space between annotation and unit */
 			if (ndec > 0)
 				sprintf (format, "%%.%df %s", ndec, text);
 			else
-				sprintf (format, "%s %s", C->current.setting.format_float_out, text);
+				sprintf (format, "%s %s", C->current.setting.format_float_map, text);
 		}
 		if (ndec == 0) ndec = 1;	/* To avoid resetting format later */
 	}
 	else if (ndec > 0)
 		sprintf (format, "%%.%df", ndec);
 	else if (!general) {	/* Pull ndec from given format if .<precision> is given */
-		for (i = 0, j = -1; j == -1 && C->current.setting.format_float_out[i]; i++) if (C->current.setting.format_float_out[i] == '.') j = i;
-		if (j > -1) ndec = atoi (&C->current.setting.format_float_out[j+1]);
-		strcpy (format, C->current.setting.format_float_out);
+		for (i = 0, j = -1; j == -1 && C->current.setting.format_float_map[i]; i++) if (C->current.setting.format_float_map[i] == '.') j = i;
+		if (j > -1) ndec = atoi (&C->current.setting.format_float_map[j+1]);
+		strcpy (format, C->current.setting.format_float_map);
 	}
 	if (prefix && prefix[0]) {	/* Must prepend the prefix string */
 		if (prefix[0] == '-')	/* No space between annotation and unit */
@@ -8746,7 +8747,7 @@ void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, bool do_m
 	type = (C->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
 
 	if (C->current.plot.r_theta_annot && lonlat) {	/* Special check for the r in r-theta (set in )*/
-		sprintf (format, "%s", C->current.setting.format_float_out);
+		sprintf (format, "%s", C->current.setting.format_float_map);
 		sprintf (label, format, val);
 	}
 	else if (C->current.plot.calclock.geo.decimal)
