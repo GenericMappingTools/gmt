@@ -207,6 +207,9 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
 	bool must_swab, OK, first = true;
+#ifdef MEMDEBUG
+	bool mem_track_enabled;
+#endif
 	
 	uint64_t dim[4] = {1, 0, 2, 0};
 	
@@ -239,7 +242,8 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 #ifdef MEMDEBUG
-	GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-Vbfo:", "m", options)) Return (API->error);
@@ -428,7 +432,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 
 #ifdef MEMDEBUG
-	GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 	Return (GMT_OK);
 }

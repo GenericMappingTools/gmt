@@ -4059,6 +4059,9 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	int i;
 	unsigned int n = 0, n_dig, j, k;
 	bool all, NGDC_ID_likely;
+#ifdef MEMDEBUG
+	bool mem_track_enabled;
+#endif
 	size_t n_alloc = 0, length;
 	struct GMT_OPTION *opt = NULL;
 	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
@@ -4070,7 +4073,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 #endif
 #ifdef MEMDEBUG
 	/* Since the sorting throws this machinery off */
-	GMT_memtrack_off (C, &g_mem_keeper);
+	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (C, &g_mem_keeper);
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -4179,7 +4183,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 	if (n != n_alloc) L = GMT_memory (C, L, n, char *);
 	*list = L;
 #ifdef MEMDEBUG
-	GMT_memtrack_on (C, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (C, &g_mem_keeper);
 #endif
 	return (n);
 }
@@ -4187,18 +4191,22 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 void MGD77_Path_Free (struct GMT_CTRL *C, uint64_t n, char **list)
 {	/* Free list of cruise IDs */
 	uint64_t i;
+#ifdef MEMDEBUG
+	bool mem_track_enabled;
+#endif
 #ifdef DEBUG
 #endif
 	if (n == 0) return;
 
 #ifdef MEMDEBUG
 	/* Since the sorting throws this machinery off */
-	GMT_memtrack_off (C, &g_mem_keeper);
+	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (C, &g_mem_keeper);
 #endif
 	for (i = 0; i < n; i++) GMT_free (C, list[i]);
 	GMT_free (C, list);
 #ifdef MEMDEBUG
-	GMT_memtrack_on (C, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (C, &g_mem_keeper);
 #endif
 }
 
