@@ -102,7 +102,7 @@ with ticks every 6 hours and 250 km, and send the plot to the default printer,
 enter the following command:
 .br
 .sp
-BD(mgd77track) 01010007 OPT(R)70W/20E/40S/20N SCALE2 OPT(B)10BD(g)5 OPT(A)10 OPT(L)a1da1000kf6hf250k | lpr
+mgd77track 01010007 -R70W/20E/40S/20N SCALE2 -B10g5 -A10 -La1da1000kf6hf250k | lpr
 .SH "SEE ALSO"
 .IR mgd77info (1),
 .IR psbasemap (1)

@@ -745,8 +745,8 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (options && options->option == '?') return (GMT_mgd77list_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options && options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77list_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77list_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77list_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

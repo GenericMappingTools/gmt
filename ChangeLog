@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-09-20	pwessel
+	* mgd77/mgd77convert.c:	Added -C option to assemble *.mgd77 files from *.h77/*.a77 pairs.
+
 2012-09-14	pwessel
 	* ps2raster.c:		The -Au option could suppress a font reencoding call, thus causing
 				trouble with special symbols in basemaps.

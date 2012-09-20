@@ -379,21 +379,21 @@ To get a (distance, heading, gravity, bathymetry) listing from 01010047.mgd77,
 starting at June 3 1971 20:45 and ending at distance = 5000 km, use the following command:
 .br
 .sp
-BD(mgd77list) 01010047 OPT(Da)1971-06-03T20:45 OPT(Sb)5000 OPT(F)dist,azim,faa,depth > myfile.d
+mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
 .br
 .sp
 To make input for BD(blockmean) and BD(surface) using free-air anomalies from all the cruises listed in the file cruises.lis,
 but only the data that are inside the specified area, and make the output binary:
 .br
 .sp
-BD(mgd77list) `cat cruises.lis` OPT(F)lon,lat,faa OPT(R)-40/-30/25/35 OPT(bo) > allgrav.b
+mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
 .br
 .sp
 To extract the locations of depths exceeding 9000 meter that were not interpolated (BD(btc) != 1)
 from all the cruises listed in the file cruises.lis:
 .br
 .sp
-BD(mgd77list) `cat cruises.lis` OPT(F)"depth,DEPTH>9000,BTC!=1" > really_deep.d
+mgd77list `cat cruises.lis` -F"depth,DEPTH>9000,BTC!=1" > really_deep.d
 .br
 .sp
 To extract dist, faa, and grav12_2 from records whose depths are shallower than 3 km
@@ -401,7 +401,7 @@ and where none of the requested fields are NaN, from all the MGD77+ netCDF files
 cruise ids are listed in the file cruises.lis, we try
 .br
 .sp
-BD(mgd77list) `cat cruises.lis` OPT(E) OPT(Ia) OPT(F)"dist,faa,grav12_2,depth<3000" > shallow_grav.d
+mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2,depth<3000" > shallow_grav.d
 .br
 .sp
 To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files whose
@@ -409,14 +409,14 @@ cruise ids are listed in the file cruises.lis, but only retrieve records
 whose bitflag for faa indicates BAD values, we try
 .br
 .sp
-BD(mgd77list) `cat cruises.lis` OPT(E) OPT(Ia) OPT(F)"dist,faa,grav12_2:+faa" > bad_grav.d
+mgd77list `cat cruises.lis` -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.d
 .br
 .sp
 To output lon, lat, mag, and faa from all the cruises listed in the file cruises.lis,
 but recalculate the two residuals based on the latest reference fields, try:
 .br
 .sp
-BD(mgd77list) `cat cruises.lis` OPT(F)lon,lat,mag,faa OPT(Af)2,4 OPT(Am)2 > data.d
+mgd77list `cat cruises.lis` -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
 .SH RECALCULATED ANOMALIES
 When recalculated anomalies are requested (either explicitly via the OPT(A) option or implicitly
 via E77 metadata in the MGD77+ file) we only do so for the records whose original anomaly was
