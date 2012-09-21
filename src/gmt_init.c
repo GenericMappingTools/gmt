@@ -1180,9 +1180,64 @@ bool GMT_check_region (struct GMT_CTRL *C, double wesn[])
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
+int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn[])
+{
+	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
+	 * call GMT_mapproject to convert this to geographic degrees. */
+	
+	int object_ID;
+	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a data set with two records */
+	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
+	struct GMT_DATASET *In = NULL, *Out = NULL;
+
+	/* Create dataset to hold the rect coordinates */
+	if ((In = GMT_Create_Data (C->parent, GMT_IS_DATASET, dim)) == NULL) return (GMT_MEMORY_ERROR);
+	
+	In->table[0]->segment[0]->coord[GMT_X][0] = rect[XLO];
+	In->table[0]->segment[0]->coord[GMT_Y][0] = rect[YLO];
+	In->table[0]->segment[0]->coord[GMT_X][1] = rect[XHI];
+	In->table[0]->segment[0]->coord[GMT_Y][1] = rect[YHI];
+	
+	/* Set up machinery to call mapproject */
+
+	/* Register In as input source via ref */
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, NULL, In)) == GMTAPI_NOTSET) {
+		return (C->parent->error);
+	}
+	if (GMT_Encode_ID (C->parent, in_string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
+		return (C->parent->error);
+	}
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
+		return (C->parent->error);
+	}
+	if (GMT_Encode_ID (C->parent, out_string, object_ID)) {
+		return (C->parent->error);	/* Make filename with embedded object ID */
+	}
+	C->common.R.active = C->common.J.active = false;	/* To allow new entries */
+	
+	sprintf (buffer, "-Rg -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", C->common.J.string, unit, in_string, out_string);
+	if (GMT_mapproject (C->parent, 0, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
+		return (C->parent->error);
+	}
+	C->common.R.active = C->common.J.active = true;
+	if ((Out = GMT_Retrieve_Data (C->parent, object_ID)) == NULL) {
+		return (C->parent->error);
+	}
+	wesn[XLO] = Out->table[0]->segment[0]->coord[GMT_X][0];
+	wesn[YLO] = Out->table[0]->segment[0]->coord[GMT_Y][0];
+	wesn[XHI] = Out->table[0]->segment[0]->coord[GMT_X][1];
+	wesn[YHI] = Out->table[0]->segment[0]->coord[GMT_Y][1];
+	
+	GMT_free_dataset (C, &In);
+	GMT_free_dataset (C, &Out);
+	
+	return (GMT_NOERROR);
+}
+
 int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	unsigned int i, icol, pos, error = 0;
 	int got, col_type[2], expect_to_read;
+	bool inv_project = false;
 	char text[GMT_BUFSIZ], string[GMT_BUFSIZ];
 	double p[6];
 
@@ -1221,7 +1276,11 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		strcpy (string, &item[1]);
 		C->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
-	else
+	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Specified min/max in projected distance units */
+		strcpy (string, &item[1]);
+		inv_project = true;
+	}
+	else	/* Plain old -Rw/e/s/n */
 		strcpy (string, item);
 
 	/* Now decode the string */
@@ -1248,8 +1307,10 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		else
 			icol = i/2;
 		if (icol < 2 && C->current.setting.io_lonlat_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
-		/* If column is either RELTIME or ABSTIME, use ARGTIME */
-		if (C->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
+		/* If column is either RELTIME or ABSTIME, use ARGTIME; if inv_project then just read floats via atof */
+		if (inv_project)	/* input is distance units */
+			p[i] = atof (text);
+		else if (C->current.io.col_type[GMT_IN][icol] == GMT_IS_UNKNOWN) {	/* No -J or -f set, proceed with caution */
 			got = GMT_scanf_arg (C, text, C->current.io.col_type[GMT_IN][icol], &p[i]);
 			if (got & GMT_IS_GEO)
 				C->current.io.col_type[GMT_IN][icol] = got;
@@ -1265,6 +1326,13 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		i++;
 	}
 	if (C->common.R.oblique) double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
+	if (inv_project) {	/* Convert rectangular distances to geographic corner coordinates */
+		double wesn[4];
+		error += gmt_rectR_to_geoR (C, item[0], p, wesn);
+		GMT_memcpy (p, wesn, 4, double);
+		C->common.R.oblique = true;
+	}
+	
 	if (GMT_is_geographic (C, GMT_IN) && p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
 		double w = p[0], e = p[1];
 		if (C->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
@@ -6187,6 +6255,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	GMT_memset (l_pos, 3, int);	GMT_memset (p_pos, 3, int);
 	GMT_memset (t_pos, 3, int);	GMT_memset (d_pos, 3, int);
 
+	strcpy (C->common.J.string, args);	/* Verbatim copy */
 	project = gmt_project_type (args, &i, &width_given);
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
 	args += i;
@@ -7512,14 +7581,14 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 }
 
 void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name) {
-	/* unit is 0-6 and stands for m, km, miles, nautical miles, inch, cm, or point */
+	/* unit is 0-7 and stands for m, km, miles, nautical miles, inch, cm, point or feet */
 	/* fwd_scale is used to convert user distance units to meter */
 	/* inv_scale is used to convert meters to user distance units */
 	/* inch_to_unit is used to convert internal inches to users units (c, i, p) */
 	/* unit_to_inch is used to convert users units (c, i, p) to internal inches */
 	/* unit_name is the name of the users measure unit (cm/inch/m/point) */
 
-	double scales[7];
+	double scales[8];
 
 	/* These scales are used if 1 to 1 scaling is chosen */
 
@@ -7530,6 +7599,7 @@ void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, 
 	scales[4] = 0.0254;		/* m in inch */
 	scales[5] = 0.01;		/* m in cm */
 	scales[6] = 0.0254 / 72.0;	/* m in points */
+	scales[7] = METERS_IN_A_FOOT;	/* m in feet */
 
 	/* These scales are used when 1:1 is not set to ensure that the
 	 * output (or input with -I) is given (taken) in the units set

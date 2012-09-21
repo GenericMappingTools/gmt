@@ -57,6 +57,7 @@ struct GMT_COMMON {
 		bool active, zactive;
 		unsigned int id;
 		double par[6];
+		char string[GMT_TEXT_LEN256];
 	} J;		
 	struct K {	/* -K */
 		bool active;
