@@ -1328,6 +1328,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	if (C->common.R.oblique) double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
 	if (inv_project) {	/* Convert rectangular distances to geographic corner coordinates */
 		double wesn[4];
+		C->common.R.oblique = false;
 		error += gmt_rectR_to_geoR (C, item[0], p, wesn);
 		GMT_memcpy (p, wesn, 4, double);
 		C->common.R.oblique = true;
