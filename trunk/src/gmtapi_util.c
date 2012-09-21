@@ -3268,7 +3268,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 						}
 						p[2]++;
 						n_fields = API->GMT->common.b.ncol[GMT_IN] = DS_obj->n_columns;
-						if (n_nan == S_obj->n_columns) {
+						if (n_nan == DS_obj->n_columns) {
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
 							record = NULL;
 						}
@@ -3388,7 +3388,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				struct GMT_TABLE *T_obj = NULL;
 				if (!D_obj) {	/* First time allocation */
-					D_obj = GMT_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, true);	
+					D_obj = GMT_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, true);	/* No cols or rows yet */
 					S_obj->resource = D_obj;
 					API->GMT->current.io.curr_pos[GMT_OUT][1] = 0;	/* Start at seg = 0 */
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
@@ -3413,9 +3413,8 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 						if (API->GMT->common.b.ncol[GMT_OUT] == 0) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
 						if (!T_obj->segment[p[1]]) T_obj->segment[p[1]] = GMT_memory (API->GMT, NULL, 1, struct GMT_LINE_SEGMENT);	
 						if (p[2] == T_obj->segment[p[1]]->n_alloc) {
-							int64_t n_alloc_signed = T_obj->segment[p[1]]->n_alloc;
 							T_obj->segment[p[1]]->n_alloc = (T_obj->segment[p[1]]->n_alloc == 0) ? GMT_CHUNK : T_obj->segment[p[1]]->n_alloc << 1;
-							GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], -n_alloc_signed, T_obj->n_columns, T_obj->segment[p[1]]->n_rows == 0);
+							GMT_alloc_segment (API->GMT, T_obj->segment[p[1]], T_obj->segment[p[1]]->n_alloc, T_obj->n_columns, T_obj->segment[p[1]]->n_rows == 0);
 						}
 						for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) T_obj->segment[p[1]]->coord[col][p[2]] = ((double *)record)[col];
 						p[2]++;	T_obj->segment[p[1]]->n_rows++;
