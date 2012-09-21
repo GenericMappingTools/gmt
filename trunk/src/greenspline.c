@@ -1345,7 +1345,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 	else {	/* Fill in an equidistant output table or grid */
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
-		Grid->header->registration = (int)GMT->common.r.active;
+		Grid->header->registration = (unsigned int)GMT->common.r.active;
 		Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
 		Z.nz = Grid->header->ny = 1;	/* So that output logic will work for lower dimensions */
 		if (dimension > 1) {
