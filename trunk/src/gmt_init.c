@@ -1186,7 +1186,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn
 	 * call GMT_mapproject to convert this to geographic degrees. */
 	
 	int object_ID;
-	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a data set with two records */
+	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
