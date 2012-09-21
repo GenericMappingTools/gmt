@@ -47,7 +47,7 @@ such log information to stdout.
 #include "explain_-V.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
-To convert a large set of *.a77/*.h77 pairs to proper *.mgd77 files, tyr
+To convert a large set of a77,h77 pairs to proper mgd77 files, try
 .br
 .sp
 mgd77convert -C *.h77
