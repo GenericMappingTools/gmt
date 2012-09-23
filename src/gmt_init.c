@@ -1185,11 +1185,20 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn
 	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
 	 * call GMT_mapproject to convert this to geographic degrees. */
 	
-	int object_ID;
+	int object_ID, proj_class;
 	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
+	double w, e, s, n;
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
+	if (GMT_is_dnan (C->current.proj.lon0)) {
+		GMT_report (C, GMT_MSG_NORMAL, "Central meridian is not known; cannot convert -R<unit>... to geographic corners\n");
+		return (GMT_MAP_NO_PROJECTION);
+	}
+	if (GMT_is_dnan (C->current.proj.lat0)) {
+		GMT_report (C, GMT_MSG_NORMAL, "Projection standard latitude is not known; cannot convert -R<unit>... to geographic corners\n");
+		return (GMT_MAP_NO_PROJECTION);
+	}
 	/* Create dataset to hold the rect coordinates */
 	if ((In = GMT_Create_Data (C->parent, GMT_IS_DATASET, dim)) == NULL) return (GMT_MEMORY_ERROR);
 	
@@ -1215,7 +1224,37 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn
 	}
 	C->common.R.active = C->common.J.active = false;	/* To allow new entries */
 	
-	sprintf (buffer, "-Rg -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", C->common.J.string, unit, in_string, out_string);
+	/* Determine suitable -R setting for this projection */
+	
+	/* Default w/e/s/n is small patch centered on projection center - this may change below */
+	w = C->current.proj.lon0 - 1.0;	e = C->current.proj.lon0 + 1.0;
+	s = MAX (C->current.proj.lat0 -1.0, -90.0);	n = MIN (C->current.proj.lat0 + 1.0, 90.0);
+	
+	proj_class = C->current.proj.projection / 100;	/* 1-4 for valid projections */
+	switch (proj_class) {
+		case 1:	/* Cylindrical: pick small equatoral patch centered on central meridian */
+			s = -1.0;	n = 1.0;
+			break;
+		case 2: /* Conical: Use default patch */
+			break;
+		case 3: /* Azimuthal: Use default patch, or hemisphere for polar projections */
+			w = C->current.proj.lon0 - 180.0;	e = C->current.proj.lon0 + 180.0;
+			if (doubleAlmostEqualZero (C->current.proj.lat0, 90.0)) {
+				s = 0.0;	n = 90.0;
+			}
+			else if (doubleAlmostEqualZero (C->current.proj.lat0, -90.0)) {
+				s = -90.0;	n = 0.0;
+			}
+			break;
+		case 4: /* Global: Give global region */
+			w = 0.0;	e = 360.0;	s = -90.0;	n = 90.0;
+			break;
+		default:	/* Linear? Use default patch */
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: No map projection specified to auto-determine geographic region\n");
+			break;
+	}
+	sprintf (buffer, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", w, e, s, n, C->common.J.string, unit, in_string, out_string);
+	GMT_report (C, GMT_MSG_DEBUG, "Obtain geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_mapproject (C->parent, 0, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
 		return (C->parent->error);
 	}
@@ -6255,6 +6294,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 	GMT_memset (l_pos, 3, int);	GMT_memset (p_pos, 3, int);
 	GMT_memset (t_pos, 3, int);	GMT_memset (d_pos, 3, int);
+	C->current.proj.lon0 = C->current.proj.lat0 = C->session.d_NaN;	/* Projection center, to be set via -J */
 
 	strcpy (C->common.J.string, args);	/* Verbatim copy */
 	project = gmt_project_type (args, &i, &width_given);
@@ -6502,6 +6542,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			else if (n_slashes == 1) {
 				n = sscanf (args, "%[^/]/%s", txt_a, txt_b);
 				error += GMT_verify_expectations (C, GMT_IS_LON, GMT_scanf (C, txt_a, GMT_IS_LON, &C->current.proj.pars[0]), txt_a);
+				C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = 0.0;
 			}
 			error += gmt_scale_or_width (C, txt_b, &C->current.proj.pars[1]);
 			error += !(n == n_slashes + 1);
@@ -6523,8 +6564,14 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				n = sscanf (args, "%[^/]/%s", txt_a, txt_c);
 			else if (n_slashes == 2)
 				n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-			if (txt_a[0]) error += GMT_verify_expectations (C, GMT_IS_LON, GMT_scanf (C, txt_a, GMT_IS_LON, &C->current.proj.pars[0]), txt_a);
-			if (txt_b[0]) error += GMT_verify_expectations (C, GMT_IS_LAT, GMT_scanf (C, txt_b, GMT_IS_LAT, &C->current.proj.pars[1]), txt_b);
+			if (txt_a[0]) {
+				error += GMT_verify_expectations (C, GMT_IS_LON, GMT_scanf (C, txt_a, GMT_IS_LON, &C->current.proj.pars[0]), txt_a);
+				C->current.proj.lon0 = C->current.proj.pars[0];
+			}
+			if (txt_b[0]) {
+				error += GMT_verify_expectations (C, GMT_IS_LAT, GMT_scanf (C, txt_b, GMT_IS_LAT, &C->current.proj.pars[1]), txt_b);
+				C->current.proj.lat0 = C->current.proj.pars[1];
+			}
 			error += gmt_scale_or_width (C, txt_c, &C->current.proj.pars[2]);
 			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_TM || project == GMT_POLYCONIC)
 				&& fabs (C->current.proj.pars[1]) >= 90.0);
@@ -6542,6 +6589,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			error += gmt_scale_or_width (C, txt_e, &C->current.proj.pars[4]);
 			error += (C->current.proj.pars[2] == C->current.proj.pars[3]);
 			error += !(n_slashes == 4 && n == 5);
+			C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = C->current.proj.pars[1];
 			break;
 
 		case GMT_ORTHO:
@@ -6590,6 +6638,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			error += (C->current.proj.pars[2] <= 0.0 || C->current.proj.pars[2] > 180.0 || C->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
 			error += (project == GMT_GNOMONIC && C->current.proj.pars[2] >= 90.0);
 			error += (project == GMT_ORTHO && C->current.proj.pars[2] >= 180.0);
+			C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = C->current.proj.pars[1];
 			break;
 
 		case GMT_STEREO:	/* Stereographic */
@@ -6631,6 +6680,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			error += GMT_verify_expectations (C, GMT_IS_LAT, GMT_scanf (C, txt_b, GMT_IS_LAT, &C->current.proj.pars[1]), txt_b);
 			error += GMT_verify_expectations (C, GMT_IS_LON, GMT_scanf (C, txt_c, GMT_IS_LON, &C->current.proj.pars[2]), txt_c);
 			error += (C->current.proj.pars[2] <= 0.0 || C->current.proj.pars[2] >= 180.0 || C->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
+			C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = C->current.proj.pars[1];
 			break;
 
 		case GMT_GENPER:	/* General perspective */
@@ -6752,6 +6802,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			}
 			error += (C->current.proj.pars[2] <= 0.0 || (k >= 0 && width_given));
 			if (error) GMT_message (C, "final error %d\n", error);
+			C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = C->current.proj.pars[1];
 			break;
 
 		case GMT_OBLIQUE_MERC:		/* Oblique mercator, specifying origin and azimuth or second point */
@@ -6773,6 +6824,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			error += gmt_scale_or_width (C, txt_e, &C->current.proj.pars[4]);
 			C->current.proj.pars[6] = 0.0;
 			error += !(n == n_slashes + 1);
+			C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = C->current.proj.pars[1];
 			break;
 
 		case GMT_OBLIQUE_MERC_POLE:	/* Oblique mercator, specifying orgin and pole */
@@ -6790,6 +6842,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			C->current.proj.pars[6] = 1.0;
 			error += !(n_slashes == 4 && n == 5);
 			project = GMT_OBLIQUE_MERC;
+			C->current.proj.lon0 = C->current.proj.pars[0];	C->current.proj.lat0 = C->current.proj.pars[1];
 			break;
 
 		case GMT_UTM:	/* Universal Transverse Mercator */
@@ -6815,7 +6868,10 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				if (mod == 'I' || mod == 'O') error++;	/* No such zones */
 			}
 			C->current.proj.pars[0] = fabs (C->current.proj.pars[0]);
+			C->current.proj.lat0 = 0.0;
 			k = lrint (C->current.proj.pars[0]);
+			C->current.proj.lon0 = -180.0 + k * 6.0 - 3.0;
+			
 			error += (k < 1 || k > 60);	/* Zones must be 1-60 */
 			C->current.proj.utm_zonex = k;
 			error += gmt_scale_or_width (C, txt_b, &C->current.proj.pars[1]);
