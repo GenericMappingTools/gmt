@@ -436,18 +436,21 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		for (i = 0; i < P->n_colors; i++) {
 			if (P->range[i].label) n_use_labels++;
 			if (P->range[i].annot & 1) {
-				if ((dec = GMT_get_format (GMT, P->range[i].z_low, NULL, NULL, text)) > ndec) {
+				z = P->range[i].z_low;
+				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strcpy (format, text);
 					ndec = dec;
 				}
 			}
 			if (P->range[i].annot & 2) {
-				if ((dec = GMT_get_format (GMT, P->range[i].z_high, NULL, NULL, text)) > ndec) {
+				z = P->range[i].z_high;
+				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
 					strcpy (format, text);
 					ndec = dec;
 				}
 			}
-			if (strchr (format, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
+			sprintf (text, format, z);
+			if (strchr (text, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
 			prev_del_z = this_del_z;
 			this_del_z = P->range[i].z_high - P->range[i].z_low;
 			if (i && !doubleAlmostEqualZero (this_del_z, prev_del_z)) const_interval = false;
