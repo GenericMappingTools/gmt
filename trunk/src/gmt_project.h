@@ -247,7 +247,8 @@ struct GMT_PROJ {
 	double i_scale[3];		/* Inverse Scaling for meters to map-distance (typically inch) conversion (x, y, z) */
 	double z_level;			/* Level at which to draw basemap [0] */
 	double unit;			/* Gives meters pr plot unit (0.01 or 0.0254) */
-	double central_meridian;	/* Central meridian for projection */
+	double central_meridian;	/* Central meridian for projection [NaN] */
+	double lon0, lat0;		/* Projection center [NaN/NaN if not specified in -J] */
 	double pole;			/* +90 pr -90, depending on which pole */
 	double EQ_RAD, i_EQ_RAD;	/* Current ellipsoid parameters */
 	double ECC, ECC2, ECC4, ECC6;	/* Powers of eccentricity */
