@@ -1180,14 +1180,14 @@ bool GMT_check_region (struct GMT_CTRL *C, double wesn[])
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
-int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn[])
+int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_wesn[])
 {
 	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
 	 * call GMT_mapproject to convert this to geographic degrees. */
 	
 	int object_ID, proj_class;
 	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
-	double w, e, s, n;
+	double wesn[4];
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
@@ -1227,33 +1227,40 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn
 	/* Determine suitable -R setting for this projection */
 	
 	/* Default w/e/s/n is small patch centered on projection center - this may change below */
-	w = C->current.proj.lon0 - 1.0;	e = C->current.proj.lon0 + 1.0;
-	s = MAX (C->current.proj.lat0 -1.0, -90.0);	n = MIN (C->current.proj.lat0 + 1.0, 90.0);
+	wesn[XLO] = C->current.proj.lon0 - 1.0;			wesn[XHI] = C->current.proj.lon0 + 1.0;
+	wesn[YLO] = MAX (C->current.proj.lat0 -1.0, -90.0);	wesn[YHI] = MIN (C->current.proj.lat0 + 1.0, 90.0);
 	
 	proj_class = C->current.proj.projection / 100;	/* 1-4 for valid projections */
 	switch (proj_class) {
 		case 1:	/* Cylindrical: pick small equatoral patch centered on central meridian */
-			s = -1.0;	n = 1.0;
+			if (C->current.proj.projection == GMT_UTM && !GMT_UTMzone_to_wesn (C, C->current.proj.utm_zonex, C->current.proj.utm_zoney, C->current.proj.utm_hemisphere, wesn))
+			{
+				GMT_report (C, GMT_MSG_NORMAL, "Warning: UTM projection insufficiently specified to auto-determine geographic region\n");
+				return (GMT_MAP_NO_PROJECTION);
+			}
+			else {
+				wesn[YLO] = -1.0;	wesn[YHI] = 1.0;
+			}
 			break;
 		case 2: /* Conical: Use default patch */
 			break;
 		case 3: /* Azimuthal: Use default patch, or hemisphere for polar projections */
-			w = C->current.proj.lon0 - 180.0;	e = C->current.proj.lon0 + 180.0;
+			wesn[XLO] = C->current.proj.lon0 - 180.0;	wesn[XHI] = C->current.proj.lon0 + 180.0;
 			if (doubleAlmostEqualZero (C->current.proj.lat0, 90.0)) {
-				s = 0.0;	n = 90.0;
+				wesn[YLO] = 0.0;	wesn[YHI] = 90.0;
 			}
 			else if (doubleAlmostEqualZero (C->current.proj.lat0, -90.0)) {
-				s = -90.0;	n = 0.0;
+				wesn[YLO] = -90.0;	wesn[YHI] = 0.0;
 			}
 			break;
 		case 4: /* Global: Give global region */
-			w = 0.0;	e = 360.0;	s = -90.0;	n = 90.0;
+			wesn[XLO] = 0.0;	wesn[XHI] = 360.0;	wesn[YLO] = -90.0;	wesn[YHI] = 90.0;
 			break;
 		default:	/* Linear? Use default patch */
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: No map projection specified to auto-determine geographic region\n");
 			break;
 	}
-	sprintf (buffer, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", w, e, s, n, C->common.J.string, unit, in_string, out_string);
+	sprintf (buffer, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], C->common.J.string, unit, in_string, out_string);
 	GMT_report (C, GMT_MSG_DEBUG, "Obtain geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_mapproject (C->parent, 0, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
 		return (C->parent->error);
@@ -1262,10 +1269,10 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double wesn
 	if ((Out = GMT_Retrieve_Data (C->parent, object_ID)) == NULL) {
 		return (C->parent->error);
 	}
-	wesn[XLO] = Out->table[0]->segment[0]->coord[GMT_X][0];
-	wesn[YLO] = Out->table[0]->segment[0]->coord[GMT_Y][0];
-	wesn[XHI] = Out->table[0]->segment[0]->coord[GMT_X][1];
-	wesn[YHI] = Out->table[0]->segment[0]->coord[GMT_Y][1];
+	out_wesn[XLO] = Out->table[0]->segment[0]->coord[GMT_X][0];
+	out_wesn[YLO] = Out->table[0]->segment[0]->coord[GMT_Y][0];
+	out_wesn[XHI] = Out->table[0]->segment[0]->coord[GMT_X][1];
+	out_wesn[YHI] = Out->table[0]->segment[0]->coord[GMT_Y][1];
 	
 	GMT_free_dataset (C, &In);
 	GMT_free_dataset (C, &Out);

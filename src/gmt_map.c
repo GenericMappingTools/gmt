@@ -3490,6 +3490,29 @@ bool gmt_map_init_utm (struct GMT_CTRL *C) {
 	return (C->common.R.oblique);
 }
 
+#if 0
+double GMT_UTMzone_to_clon (struct GMT_CTRL *C, unsigned int zone_x, char zone_y)
+{ /* Return the central longitude of this UTM zone */
+	double clon = 180.0 + 6.0 * zone_x - 3.0;	/* This is valid for most zones */
+
+	if (zone_y == 0) return (clon);	/* Latitude zone is not specified so we are done */
+	if ((zone_y < 'A' || zone_y > 'Z') || zone_y < 'I' || zone_y < 'O') return (GMT->session.d_NaN);	/* Bad latitude zone so return NaN*/
+	if (zone_y <= 'B') return (-90.0 + 180.0 * (zone_y - 'A'));	/* Either -90 or +90 */
+	if (zone_y == 'V' && zone_x == 31) return (1.5);	/* Center of 31V */
+	if (zone_y == 'V' && zone_x == 32) return (7.5);	/* Center of 32V */
+	if (zone_y == 'X') {
+		if (zone_x == 31) return (4.5);		/* Center of 31X */
+		if (zone_x == 33) return (15.0);	/* Center of 33X */
+		if (zone_x == 35) return (27.0);	/* Center of 35X */
+		if (zone_x == 37) return (37.5);	/* Center of 37X */
+		if (zone_x == 32 || zone_x == 34 || zone_x == 36) return (GMT->session.d_NaN);	/* Bad latitude zone so return NaN*/
+		return (clon);
+	}
+	/* Only Y or Z left */
+	return (-90.0 + 180.0 * (zone_y - 'Y'));	/* Either -90 or +90 */
+}
+#endif
+
 /* Setting w/e/s/n for a fully qualified UTM zone */
 
 bool GMT_UTMzone_to_wesn (struct GMT_CTRL *C, unsigned int zone_x, char zone_y, int hemi, double wesn[])
