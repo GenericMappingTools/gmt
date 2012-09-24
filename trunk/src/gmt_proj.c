@@ -199,7 +199,6 @@ void GMT_vmerc (struct GMT_CTRL *C, double lon0, double slat)
 	C->current.proj.central_meridian = lon0;
 	C->current.proj.j_x = cosd (slat) / d_sqrt (1.0 - C->current.proj.ECC2 * sind (slat) * sind (slat)) * C->current.proj.EQ_RAD;
 	C->current.proj.j_ix = 1.0 / C->current.proj.j_x;
-	C->current.proj.m_y0 = C->current.proj.j_x * d_log (C, tand (45.0 + 0.5 * slat));
 }
 
 /* Mercator projection for the sphere */
@@ -211,14 +210,14 @@ void GMT_merc_sph (struct GMT_CTRL *C, double lon, double lat, double *x, double
 	if (C->current.proj.GMT_convert_latitudes) lat = GMT_latg_to_latc (C, lat);
 
 	*x = C->current.proj.j_x * D2R * lon;
-	*y = (fabs (lat) < 90.0) ? C->current.proj.j_x * d_log (C, tand (45.0 + 0.5 * lat)) - C->current.proj.m_y0 : copysign (DBL_MAX, lat);
+	*y = (fabs (lat) < 90.0) ? C->current.proj.j_x * d_log (C, tand (45.0 + 0.5 * lat)) : copysign (DBL_MAX, lat);
 }
 
 void GMT_imerc_sph (struct GMT_CTRL *C, double *lon, double *lat, double x, double y)
 {	/* Convert Mercator x/y to lon/lat  (C->current.proj.EQ_RAD in C->current.proj.j_ix) */
 
 	*lon = x * C->current.proj.j_ix * R2D + C->current.proj.central_meridian;
-	*lat = atand (sinh ((y + C->current.proj.m_y0) * C->current.proj.j_ix));
+	*lat = atand (sinh (y * C->current.proj.j_ix));
 	if (C->current.proj.GMT_convert_latitudes) *lat = GMT_latc_to_latg (C, *lat);
 }
 
