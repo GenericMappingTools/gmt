@@ -297,6 +297,10 @@ struct GMT_PROJ {
 	unsigned int utm_zonex;	/* The longitude component 1-60 */
 	char utm_zoney;			/* The latitude component A-Z */
 
+	/* Mercator projection */
+	
+	double m_y0;			/* Raw Mercator y-value relative to equator [0] */
+
 	/* Lambert Azimuthal Equal-Area Projection */
 
 	double sinp;
