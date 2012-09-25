@@ -143,24 +143,22 @@ the given specifications, use
 .br
 .sp
 pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
-.br
 .sp
 To add a typeset figure caption for a 3-inch wide illustration, use
-.br
 .sp
 pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
-.br
+.sp
 This is an optional header record
-.br
+.sp
 > 0 -0.5 12 0 4 LT 13p 3i j
-.br
+.sp
 @%5%Figure 1.@%%  This illustration shows nothing useful, but it still needs
-.br
+.sp
 a figure caption.  Highlighted in @;255/0/0;red@;; you can see the locations
-.br
+.sp
 of cities where it is @_impossible@_ to get any good Thai food; these are to
 be avoided.
-.br
+.sp
 EOF
 .br
 .SH WINDOWS REMARKS
@@ -173,7 +171,7 @@ is processed by DOS.  Data files that are opened and read by BD(pstext) do not n
 In paragraph mode, the presence of composite
 characters and other escape sequences may lead to unfortunate word splitting. Also, if a font
 is requested with an outline pen it will not be used in paragraph mode.
-.br
+.sp
 The OPT(N) option does not adjust the BoundingBox information so you may
 have to post-process the IT(PostScript) output with ps2raster to obtain
 a correct BoundingBox.

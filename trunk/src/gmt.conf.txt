@@ -149,26 +149,25 @@ is then used to guide the writing of geographical coordinates in data fields.  T
 general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].  By default, longitudes will be reported in the range [-180,180].
 The various terms have the following purpose:
 .sp
-.br
-+	Output longitude in the range [0,360]
-.br
--	Output longitude in the range [-360,0]
-.br
-D	Use BD(FORMAT_FLOAT_OUT) for floating point degrees.
-.br
-ddd	Fixed format integer degrees
-.br
-:	delimiter used
-.br
-mm	Fixed format integer arc minutes
-.br
-ss	Fixed format integer arc seconds
-.br
-\.xxx	Floating fraction of previous integer field, fixed width.
-.br
-F	Encode sign using WESN suffix
-.br
-G	Same as F but with a leading space before suffix
+    + Output longitude in the range [0,360]
+.sp
+    - Output longitude in the range [-360,0]
+.sp
+    D Use BD(FORMAT_FLOAT_OUT) for floating point degrees.
+.sp
+    ddd Fixed format integer degrees
+.sp
+    : delimiter used
+.sp
+    mm Fixed format integer arc minutes
+.sp
+    ss Fixed format integer arc seconds
+.sp
+    \.xxx Floating fraction of previous integer field, fixed width.
+.sp
+    F Encode sign using WESN suffix
+.sp
+    G Same as F but with a leading space before suffix
 .br
 .sp
 The default is D.
@@ -430,13 +429,16 @@ ellipsoid name than those mentioned here is given, BD(GMT) will attempt to parse
 name to extract the semi-major axis (IT(a) in m) and the flattening. Formats allowed are:
 .br
 .sp
-	IT(a)		implies a zero flattening
+    IT(a) implies a zero flattening
 .br
-	IT(a),IT(inv_f)	where IT(inv_f) is the inverse flattening
+.sp
+    IT(a),IT(inv_f) where IT(inv_f) is the inverse flattening
 .br
-	IT(a),BD(b=)IT(b)	where IT(b) is the semi-minor axis (in m)
+.sp
+    IT(a),BD(b=)IT(b) where IT(b) is the semi-minor axis (in m)
 .br
-	IT(a),BD(f=)IT(f)	where IT(f) is the flattening
+.sp
+    IT(a),BD(f=)IT(f) where IT(f) is the flattening
 .br
 .sp
 This way a
@@ -497,69 +499,100 @@ site-specific formats may be specified in
 the gmt_custom_media.conf file in BD($GMT_SHAREDIR)/conf or ~/.gmt; see that file for details):
 .br
 .sp
-Media	width	height
+Media  width  height
 .br
-A0	2380	3368
+.sp
+A0     2380   3368
 .br
-A1	1684	2380
+.sp
+A1     1684   2380
 .br
-A2	1190	1684
+.sp
+A2     1190   1684
 .br
-A3	842	1190
+.sp
+A3      842   1190
 .br
-A4	595	842
+.sp
+A4      595    842
 .br
-A5	421	595
+.sp
+A5      421    595
 .br
-A6	297	421
+.sp
+A6      297    421
 .br
-A7	210	297
+.sp
+A7      210    297
 .br
-A8	148	210
+.sp
+A8      148    210
 .br
-A9	105	148
+.sp
+A9      105    148
 .br
-A10	74	105
+.sp
+A10      74    105
 .br
-B0	2836	4008
+.sp
+B0     2836   4008
 .br
-B1	2004	2836
+.sp
+B1     2004   2836
 .br
-B2	1418	2004
+.sp
+B2     1418   2004
 .br
-B3	1002	1418
+.sp
+B3     1002   1418
 .br
-B4	709	1002
+.sp
+B4      709   1002
 .br
-B5	501	709
+.sp
+B5      501    709
 .br
-archA	648	864
+.sp
+archA   648    864
 .br
-archB	864	1296
+.sp
+archB   864   1296
 .br
-archC	1296	1728
+.sp
+archC  1296   1728
 .br
-archD	1728	2592
+.sp
+archD  1728   2592
 .br
-archE	2592	3456
+.sp
+archE  2592   3456
 .br
-flsa	612	936
+.sp
+flsa    612    936
 .br
-halfletter	396	612
+.sp
+halfletter 396 612
 .br
-statement	396	612
+.sp
+statement  396 612
 .br
-note	540	720
+.sp
+note    540    720
 .br
-letter	612	792
+.sp
+letter  612    792
 .br
-legal	612	1008
+.sp
+legal   612   1008
 .br
-11x17	792	1224
+.sp
+11x17   792   1224
 .br
-tabloid	792	1224
+.sp
+tabloid 792   1224
 .br
-ledger	1224	792
+.sp
+ledger 1224    792
 .br
 .sp
 For a completely custom format (e.g., for large format plotters) you may also
@@ -617,61 +650,89 @@ then that date is interpreted to mean 1999-12-01T00:00:00.0 (start of December) 
 .B TIME_LANGUAGE
 Language to use when plotting calendar items such as months and days.  Select from:
 .br
-BR	Brazilian Portuguese
+.sp
+BR  Brazilian Portuguese
 .br
-CN1	Simplified Chinese
+.sp
+CN1 Simplified Chinese
 .br
-CN2	Traditional Chinese
+.sp
+CN2 Traditional Chinese
 .br
-DE	German
+.sp
+DE  German
 .br
-DK	Danish
+.sp
+DK  Danish
 .br
-EH	Basque
+.sp
+EH  Basque
 .br
-ES	Spanish
+.sp
+ES  Spanish
 .br
-FI	Finnish
+.sp
+FI  Finnish
 .br
-FR	French
+.sp
+FR  French
 .br
-GR	Greek
+.sp
+GR  Greek
 .br
-HI	Hawaiian
+.sp
+HI  Hawaiian
 .br
-HU	Hungarian
+.sp
+HU  Hungarian
 .br
-IE	Irish
+.sp
+IE  Irish
 .br
-IL	Hebrew
+.sp
+IL  Hebrew
 .br
-IS	Icelandic
+.sp
+IS  Icelandic
 .br
-IT	Italian
+.sp
+IT  Italian
 .br
-JP	Japanese
+.sp
+JP  Japanese
 .br
-NL	Dutch
+.sp
+NL  Dutch
 .br
-NO	Norwegian
+.sp
+NO  Norwegian
 .br
-PL	Polish
+.sp
+PL  Polish
 .br
-PT	Portuguese
+.sp
+PT  Portuguese
+.b  
+.sp
+RU  Russian
 .br
-RU	Russian
+.sp
+SE  Swedish
 .br
-SE	Swedish
+.sp
+SG  Scottish Gaelic
 .br
-SG	Scottish Gaelic
+.sp
+TO  Tongan
+.br 
+.sp
+TR  Turkish
 .br
-TO	Tongan
+.sp
+UK  British English
 .br
-TR	Turkish
-.br
-UK	British English
-.br
-US	US English
+.sp
+US  US English
 .br
 .sp
 If your language is not supported, please examine the BD($GMT_SHAREDIR)/time/us.d file and
@@ -684,20 +745,28 @@ Shorthand for a combination of BD(TIME_EPOCH) and BD(TIME_UNIT), specifying
 which time epoch the relative time refers to and what the units are.
 Choose from one of the preset systems below (epoch and units are indicated):
 .br
-JD	-4713-11-25T12:00:00	d	(Julian Date)
+.sp
+JD    -4713-11-25T12:00:00  d  (Julian Date)
 .br
-MJD	1858-11-27T00:00:00	d	(Modified Julian Date)
+.sp
+MJD    1858-11-27T00:00:00  d  (Modified Julian Date)
 .br
-J2000	2000-01-01T12:00:00	d	(Astronomical time)
+.sp
+J2000  2000-01-01T12:00:00  d  (Astronomical time)
 .br
-S1985	1985-01-01T00:00:00	s	(Altimetric time)
+.sp
+S1985  1985-01-01T00:00:00  s  (Altimetric time)
 .br
-UNIX	1970-01-01T00:00:00	s	(UNIX time)
+.sp
+UNIX   1970-01-01T00:00:00  s  (UNIX time)
 .br
-RD0001	0001-01-01T00:00:00	s
+.sp
+RD0001 0001-01-01T00:00:00  s
 .br
-RATA	0000-12-31T00:00:00	d
+.sp
+RATA   0000-12-31T00:00:00  d
 .br
+.sp
 This parameter is not stored in the BD(gmt.conf) file but is translated to the respective
 values of BD(TIME_EPOCH) and BD(TIME_UNIT).
 .TP

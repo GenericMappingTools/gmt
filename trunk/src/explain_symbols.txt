@@ -17,11 +17,11 @@ data column
 then you may convert those values to symbol sizes by appending BD(+s)IT(scale)[/IT(origin)][BD(l)]
 which will compute size = (data - IT(origin)) * IT(scale), where IT(origin) defaults to 0.  If BD(l)
 is appended we take log10 of data and IT(origin) first [IT(origin) then defaults to 1].
-.br
+.sp
 The uppercase symbols BD(A), BD(C), BD(D), BD(G), BD(H), BD(I), BD(N), BD(S), BD(T)
 are normalized to have the same area as a circle with diameter IT(size),
 while the size of the corresponding lowercase symbols refers to the diameter of a circumscribed circle.
-.br
+.sp
 Choose between these symbol codes:
 .TP
 OPT(S-)

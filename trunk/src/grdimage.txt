@@ -23,7 +23,7 @@ grid using BD(grdgradient) and, optionally, modified by BD(grdmath) or BD(grdhis
 Yet as a third alternative available when GMT is build with GDAL support the grd_z file can be an 
 image referenced or not (than see OPT(Dr)). In this case the images can be illuminated with the file 
 provided via the OPT(I) option. Here if image has no coordinates those of the intensity file will be used.
-.br
+.sp
 When using map projections, the grid is first resampled on a new rectangular grid with the same
 dimensions. Higher resolution images can be obtained by using the OPT(E) option.
 To obtain the resampled value (and hence shade or color) of each map pixel, its location
@@ -32,10 +32,10 @@ surrounding input grid values. By default bi-cubic interpolation is used.
 Aliasing is avoided by also forward projecting the input grid nodes. If two or more nodes are
 projected onto the same pixel, their average will dominate in the calculation of the pixel
 value. Interpolation and aliasing is controlled with the OPT(n) option.
-.br
+.sp
 The OPT(R) option can be used to select a map region larger or smaller than that
 implied by the extent of the grid.
-.br
+.sp
 A (color) IT(PostScript) file is output.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
@@ -124,28 +124,22 @@ To gray-shade the file hawaii_grav.nc with shades given in shades.cpt on a Lambe
 at LEN_L cm/degree along the standard parallels 18 and 24, and using 1 degree tickmarks:
 .br
 .sp
-grdimage hawaii_grav.nc SCALE1 -Cshades.cpt -B1 > hawaii_grav_image.ps
-.br
+    grdimage hawaii_grav.nc SCALE1 -Cshades.cpt -B1 > hawaii_grav_image.ps
 .sp
 To create an illuminated color IT(PostScript) plot of the gridded data set image.nc, using the
 intensities provided by the file intens.nc, and color
 levels in the file colors.cpt, with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
-.br
 .sp
-grdimage image.nc SCALE2 -Ccolors.cpt -Iintens.nc -B5 > image.ps
-.br
+    grdimage image.nc SCALE2 -Ccolors.cpt -Iintens.nc -B5 > image.ps
 .sp
 To create an false color IT(PostScript) plot from the three grid files red.nc, green.nc, and blue.nc,
 with linear scaling at LEN_X inch/x-unit, tickmarks every 5 units:
-.br
 .sp
-grdimage red.nc green.nc blue.nc SCALE2 -B5 > rgbimage.ps
-.br
+    grdimage red.nc green.nc blue.nc SCALE2 -B5 > rgbimage.ps
 .sp
 When GDAL support is built in: To create a sinusoidal projection of a remotely located Jessica Rabbit
-.br
 .sp
-grdimage -JI15c -Rd -Dr http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P > jess.ps
+    grdimage -JI15c -Rd -Dr http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg -P > jess.ps
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2rgb (1),

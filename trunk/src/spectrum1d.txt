@@ -93,19 +93,19 @@ Write Wavelength rather than frequency in column 1 of the output file[s] [Defaul
 Suppose data.g is gravity data in mGal, sampled every 1.5 km.  To write its power spectrum, in mGal**2-km, 
 to the file data.xpower, use  
 .sp
-spectrum1d data.g -S256 -D1.5 -Ndata
+    spectrum1d data.g -S256 -D1.5 -Ndata
 .sp
 Suppose in addition to data.g you have data.t, which is topography in meters sampled at the same points as 
 data.g.  To estimate various features of the transfer function, considering data.t as input and data.g as 
 output, use
 .sp
-paste data.t data.g | spectrum1d -S256 -D1.5 -Ndata -C
+    paste data.t data.g | spectrum1d -S256 -D1.5 -Ndata -C
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdfft (1)
 .SH REFERENCES
 Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed., John Wiley & Sons.
-.br
+.sp
 Welch, P. D., 1967, The use of Fast Fourier Transform for the estimation of power spectra:  a method 
 based on time averaging over short, modified periodograms, IEEE Transactions on Audio and Electroacoustics, 
 Vol AU-15, No 2.

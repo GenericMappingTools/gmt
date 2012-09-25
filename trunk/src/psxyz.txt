@@ -47,7 +47,7 @@ Offset the plot symbol or line locations by the given amounts IT(dx/dy)[IT(dz)] 
 .TP
 OPT(G)IT(fill)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
-.br
+.sp
 Note that BD(psxyz) will search for OPT(G) and OPT(W)
 strings in all the segment headers and let any values thus found over-ride the command line settings.
 .TP
@@ -102,21 +102,21 @@ psxyz heights.xyz -R0/10/0/10/0/100 OPT_1
 -Gblue -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 -Uc -W -P > heights.ps
 .SH SEGMENT HEADER PARSING
 Segment header records may contain one of more of the following options:
-.br
+.sp
 OPT(G)IT(fill) Use the new IT(fill) and turn filling on
-.br
+.sp
 OPT(G-) Turn filling off
-.br
+.sp
 OPT(G) Revert to default fill (none if not set on command line)
-.br
+.sp
 OPT(W)IT(pen) Use the new IT(pen) and turn outline on
-.br
+.sp
 OPT(W) Revert to default pen ()MAP_DEFAULT_PENBD( if not set on command line)
-.br
+.sp
 OPT(W-) Turn outline off
-.br
+.sp
 OPT(Z)IT(zval) Obtain fill via cpt lookup using z-value IT(zval)
-.br
+.sp
 OPT(ZNaN) Get the NaN color from the cpt file
 .SH CUSTOM SYMBOLS
 BD(psxyz) allows users to define and plot their own custom symbols.
@@ -132,11 +132,11 @@ painted and filled with a pattern.  Other standard geometric symbols can also be
 No hidden line removal is employed for polygons and lines.  Symbols, however, are first sorted
 according to their distance from the viewpoint so that nearby symbols will overprint more distant
 ones should they project to the same x,y position.
-.br
+.sp
 BD(psxyz) cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
 make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
 will combine to give the desired effect when filled; to draw outline use the original polygon.
-.br
+.sp
 The OPT(N) option does not adjust the BoundingBox information so you may
 have to post-process the IT(PostScript) output with BD(ps2raster) OPT(A) to obtain
 the correct BoundingBox.

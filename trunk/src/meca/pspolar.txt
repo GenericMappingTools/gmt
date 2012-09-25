@@ -122,37 +122,37 @@ OPT(W)).
 .SH EXAMPLES
 .sp
 BD(pspolar) OPT(R)239/240/34/35.2 OPT(JM)8 OPT(N) OPT(Sc)0.4 OPT(H)1 OPT(D)239.5/34.5 OPT(M)5 <<END > test.ps
-.br
+.sp
 stat azim  ih pol
-.br
+.sp
 0481   11  147   c
-.br
+.sp
 6185  247  120   d
-.br
+.sp
 0485  288  114   +
-.br
+.sp
 0490  223  112   -
-.br
+.sp
 0487  212  109   .
-.br
+.sp
 END
-.br
+.sp
 or
-.br
+.sp
 BD(pspolar) OPT(R)239/240/34/35.2 OPT(JM)8 OPT(N) OPT(Sc)0.4 OPT(H)1 OPT(D)239.5/34.5 OPT(M)5 OPT(h) <<END > test.ps
-.br
+.sp
 Date   Or. time stat azim  ih                                    
-.br
+.sp
 910223   1 22   0481   11  147   ipu0
-.br
+.sp
 910223   1 22   6185  247  120   ipd0
-.br
+.sp
 910223   1 22   0485  288  114   epu0
-.br
+.sp
 910223   1 22   0490  223  112   epd0
-.br
+.sp
 910223   1 22   0487  212  109   epu0
-.br
+.sp
 END
 .br
 .sp
@@ -161,16 +161,8 @@ END
 .IR psbasemap (1),
 .IR psxy (1)
 .SH REFERENCES
-.br
 Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
-.br
+.sp
 Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 .SH AUTHORS
-Genevieve Patau
-.br
-Seismology Dept.
-.br
-Institut de Physique du Globe de Paris
-.br
-(patau@ipgp.jussieu.fr)
-.br
+Genevieve Patau Seismology Dept. Institut de Physique du Globe de Paris (patau@ipgp.jussieu.fr)

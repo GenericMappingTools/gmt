@@ -37,16 +37,13 @@ not Cartesian then append the distance unit (see UNITS).
 .SH EXAMPLES
 .sp
 To reduce the geographic line segment.d using a tolerance of 2 km, run 
-.br
 .sp
-gmtdp segment.d -T2k > new_segment.d
-.br
+    gmtdp segment.d -T2k > new_segment.d
 .sp
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45
 and write the reduced lines to file new_xylines.d, run 
-.br
 .sp
-gmtdp xylines.d -T0.45 > new_xylines.d
+    gmtdp xylines.d -T0.45 > new_xylines.d
 .SH BUGS
 One known issue with the Douglas-Peucker has to do with crossovers.
 Specifically, it cannot be guaranteed that the reduced line does
@@ -59,7 +56,7 @@ calculation mode to Flat Earth.
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
 of the number of points required to represent a digitized line
 of its caricature, IT(Can. Cartogr.), BD(10), 112-122, 1973.
-.br
+.sp
 This implementation of the algorithm has been kindly provided by
 Dr. Gary J. Robinson, Environmental Systems Science Centre,
 University of Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his

@@ -11,7 +11,7 @@ BD(surface) [ IT(table) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A
 BD(surface) reads randomly-spaced (x,y,z) triples from standard input [or IT(table)] and produces
 a binary grid file of gridded values z(x,y) by solving:
 .sp
-	(1 - T) * L (L (z)) + T * L (z) = 0
+    (1 - T) * L (L (z)) + T * L (z) = 0
 .sp
 where T is a tension factor between 0 and 1, and L indicates the Laplacian operator.
 T = 0 gives the "minimum curvature" solution which is equivalent to SuperMISP and the ISM
@@ -107,7 +107,7 @@ grid spacing is so small that you need more decimals in the output format used b
 BD(blockm*).  You may specify more decimal places by editing the
 parameter BD(FORMAT_FLOAT_OUT) in your BD(gmt.conf) file prior to running BD(blockm*),
 or choose binary input and/or output using single or double precision storage.
-.br
+.sp
 Note that only gridline registration is possible with BD(surface).  If you need a pixel-registered
 grid you can resample a gridline registered grid using BD(grdsample) OPT(T).
 .SH "SEE ALSO"

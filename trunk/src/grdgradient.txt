@@ -13,7 +13,7 @@ BD(grdgradient) may be used to compute the directional derivative
 in a given direction (OPT(A)),
 or the direction (OPT(S)) [and the magnitude (OPT(D))] of the  
 vector gradient of the data.
-.br
+.sp
 Estimated values in the first/last row/column of output depend on  
 boundary conditions (see OPT(L)).
 #include "explain_commonitems.txt"
@@ -41,19 +41,16 @@ the correct sense for shading the illumination of an image (see
 BD(grdimage) and BD(grdview)) by a
 light source above the x,y plane shining from the IT(azim)  
 direction.  Optionally, supply two azimuths, OPT(A)IT(azim)/IT(azim2),
-in which case the gradients in each of these directions  
-are calculated
+in which case the gradients in each of these directions are calculated
 and the one larger in magnitude is retained; this is useful for  
 illuminating data with two directions of
 lineated structures, e.g., OPT(A)IT(0)/IT(270) illuminates from  
 the north (top) and west (left).
 .TP
 OPT(D)[BD(c)][BD(o)][BD(n)]
-Find the direction of the gradient of the data.  By default, the  
-directions
-are measured clockwise from north, as IT(azim) in OPT(A) above.   
-Append
-BD(c) to use conventional Cartesian angles measured  
+Find the direction of the gradient of the data.  By default, the directions
+are measured clockwise from north, as IT(azim) in OPT(A) above. Append
+BD(c) to use conventional Cartesian angles measured 
 counterclockwise from
 the positive x (east) direction.  Append BD(o) to report  
 orientations (0-180)
@@ -132,24 +129,15 @@ Requires OPT(D) but makes OPT(G) optional.
 .SH HINTS
 If you don't know what \fB\-N\fP options to use to make an intensity file for\"'
 BD(grdimage) or BD(grdview), a good first try is OPT(Ne)0.6.
-.br
 .sp
 Usually 255 shades are more than enough for visualization purposes.  You
-can save 75% disk space by appending =nb/a to the output filename
-IT(out_grdfile).
-.br
+can save 75% disk space by appending =nb/a to the output filename IT(out_grdfile).
 .sp
-If you want to make several illuminated maps of subregions of a large  
-data set,
-and you need the illumination effects to be consistent across all the  
-maps, use
-the OPT(N) option and supply the same value of IT(sigma) and  
-IT(offset)
-to BD(grdgradient) for each map.  A good guess is IT(offset) = 0  
-and IT(sigma)
-found by BD(grdinfo) OPT(L2) or OPT(L1) applied to an unnormalized  
-gradient grd.
-.br
+If you want to make several illuminated maps of subregions of a large data set,
+and you need the illumination effects to be consistent across all the maps, use
+the OPT(N) option and supply the same value of IT(sigma) and IT(offset)
+to BD(grdgradient) for each map.  A good guess is IT(offset) = 0 and IT(sigma)
+found by BD(grdinfo) OPT(L2) or OPT(L1) applied to an unnormalized gradient grd.
 .sp
 If you simply need the IT(x)- or IT(y)-derivatives of the grid, use
 BD(grdmath).
@@ -160,21 +148,16 @@ normalized gradients in the range [-0.6,0.6]
 imitating light sources in the north and west directions:
 .br
 .sp
-grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
-.br
+    grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
 .sp
-To find the azimuth orientations of seafloor fabric in the file  
-topo.nc:
-.br
+To find the azimuth orientations of seafloor fabric in the file topo.nc:
 .sp
-grdgradient topo.nc -Dno -Gazimuths.nc -V
+    grdgradient topo.nc -Dno -Gazimuths.nc -V
 .br
 .sp
 .SH REFERENCES
-Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of  
-the IEEE,
-Vol. 69, No. 1, January 1981, pp. 14-47. (http://people.csail.mit.edu/ 
-bkph/papers/Hill-Shading.pdf)
+Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the IEEE,
+Vol. 69, No. 1, January 1981, pp. 14-47. (http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf)
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

@@ -4,9 +4,10 @@
 gmtcolors \- Explanation of color codes in BD(GMT)
 .SH DESCRIPTION
 Colors can be specified in BD(GMT) as arguments to commands, generally as part of the OPT(G) or OPT(W) options
-to select polygon fill or outline pen. Colors are also used in color pallette tables (cpt files) that help convert
-numerical values to colors.
+to select polygon fill or outline pen. Colors are also used in color pallette tables (cpt files) that
+help convert numerical values to colors.
 .br
+.sp
 BD(GMT) allows several ways to represent a color:
 .TP
 .B Colorname
@@ -36,7 +37,7 @@ This representation is used by most color printers.
 The following list contains the named colors that can be used in BD(GMT) and their equivalent color codes.
 .sp
 BD(R	G	B	Name)
-.br
+.sp
 #include "Colors.i"
 .SH "FURTHER INFORMATION"
 For more information on the use of color, read Appendix I of the BD(GMT TECHNICAL REFERENCE AND COOKBOOK).

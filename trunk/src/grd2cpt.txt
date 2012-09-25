@@ -20,17 +20,17 @@ distributed in area on the plot.  Let z be the data values in the grid.
 Define CDF(Z) = (# of z < Z) / (# of z in grid).  (NaNs are ignored).
 These z-values are then normalized to the master cpt file and colors are
 sampled at the desired intervals.
-.br
+.sp
 The color palette includes three additional colors beyond the range of z-values. These are
 the background color (B) assigned to values lower than the lowest IT(z)-value,
 the foreground color (F) assigned to values higher than the highest IT(z)-value,
 and the NaN color (N) painted whereever values are undefined.
-.br
+.sp
 If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
 If not, the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN) from
 the BD(gmt.conf) file or the command line will be used. This default behavior can be overruled
 using the options OPT(D), OPT(M) or OPT(N).
-.br
+.sp
 The color model (RGB, HSV or CMYK) of the palette created by BD(makecpt) will be the same as
 specified in the header of the master cpt file. When there is no BD(COLOR_MODEL) entry in the
 master cpt file, the BD(COLOR_MODEL) specified in the BD(gmt.conf) file or on the command line
@@ -118,15 +118,13 @@ learn from BD(grdinfo).  So you can do this to see some points on the
 CDF(Z) curve (use OPT(V) option to see more):
 .br
 .sp
-grd2cpt mydata.nc -V > /dev/null
-.br
+    grd2cpt mydata.nc -V > /dev/null
 .sp
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
 data below zero in computing CDF(Z), and use the built-in master cpt file
 relief, run
-.br
 .sp
-grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
+    grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

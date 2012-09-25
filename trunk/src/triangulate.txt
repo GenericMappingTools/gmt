@@ -82,15 +82,12 @@ make a grid for the given area and spacing, use
 .br
 .sp
 triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
-.br
 .sp
 To draw the optimal Delaunay triangulation network based on the same file using a
 LEN-cm-wide Mercator map, use
-.br
 .sp
 triangulate samples.xyz -M -R-100/-90/30/34 SCALE | psxy -R-100/-90/30/34 SCALE
 -W0.5p -B1 > network.ps
-.br
 .sp
 To instead plot the Voronoi cell outlines, try
 .br
@@ -101,9 +98,9 @@ triangulate samples.xyz -M -Q -R-100/-90/30/34 SCALE | psxy -R-100/-90/30/34 SCA
 .IR pscontour (1)
 .SH REFERENCES
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, IT(Comp. & Geosci.), BD(8), 97\-101.
-.br
+.sp
 Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational Geometry
 (Philadelphia, PA), 124-133, ACM, May 1996.
-.br
+.sp
 www.cs.cmu.edu/~quake/triangle.html

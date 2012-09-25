@@ -69,29 +69,29 @@ of bytes (probably a header).  If the byte-order or the words needs to be swappe
 one of several data types (all binary except BD(a)):
 .br
 .sp
-	BD(A)  ASCII representation of one or more floating point values per record
+    BD(A)  ASCII representation of one or more floating point values per record
 .sp
-	BD(a)  ASCII representation of a single item per record
-.br
-	BD(c)  int8_t, signed 1-byte character
-.br
-	BD(u)  uint8_t, unsigned 1-byte character
-.br
-	BD(h)  int16_t, signed 2-byte integer
-.br
-	BD(H)  uint16_t, unsigned 2-byte integer
-.br
-	BD(i)  int32_t, signed 4-byte integer
-.br
-	BD(I)  uint32_t, unsigned 4-byte integer
-.br
-	BD(l)  int64_t, long (8-byte) integer
-.br
-	BD(L)  uint64_t, unsigned long (8-byte) integer
-.br
-	BD(f)  4-byte floating point single precision
-.br
-	BD(d)  8-byte floating point double precision
+    BD(a)  ASCII representation of a single item per record
+.sp
+    BD(c)  int8_t, signed 1-byte character
+.sp
+    BD(u)  uint8_t, unsigned 1-byte character
+.sp
+    BD(h)  int16_t, signed 2-byte integer
+.sp
+    BD(H)  uint16_t, unsigned 2-byte integer
+.sp
+    BD(i)  int32_t, signed 4-byte integer
+.sp
+    BD(I)  uint32_t, unsigned 4-byte integer
+.sp
+    BD(l)  int64_t, long (8-byte) integer
+.sp
+    BD(L)  uint64_t, unsigned long (8-byte) integer
+.sp
+    BD(f)  4-byte floating point single precision
+.sp
+    BD(d)  8-byte floating point double precision
 .br
 .sp
 Default format is scanline orientation of ASCII numbers: OPT(ZTLa).
@@ -117,30 +117,23 @@ is used no grids are implied and we read data into an intermediate double contai
 but 64-bit integers can be represented using the double type's 53-bit mantissa.
 .SH EXAMPLES
 To create a grid file from the ASCII data in hawaii_grv.xyz, use
-.br
 .sp
 xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used"
 -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
-.br
 .sp
 To create a grid file from the raw binary (3-column, single-precision scanline-oriented data raw.b, use
-.br
 .sp
 xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
-.br
 .sp
 To make a grid file from the raw binary USGS DEM (short integer scanline-oriented data topo30. on the NGDC
 global relief Data CD-ROM, with values of -9999 indicate missing data, one must on some machine reverse the byte-order.
 On such machines (like Sun, use
-.br
 .sp
 xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
-.br
 .sp
 Say you have received a binary file with 4-byte floating points that were
 written on a machine of different byte-order than yours.  You can swap the
 byte-order with
-.br
 .sp
 xyz2grd floats.bin -Snew_floats.bin -V -Zf
 .SH "SEE ALSO"

@@ -60,7 +60,7 @@ Specify a subset of the grid.
 .TP
 OPT(S)[BD(l)]IT(scale)
 Sets scale for vector length in data units per distance measurement unit [1].  Append BD(c), BD(i), or BD(p)
-to indicate the measurement unit (cm, inch,or point).  Prepend BD(l) to indicate a fixed length for
+to indicate the measurement unit (cm, inch,or point). Prepend BD(l) to indicate a fixed length for
 all vectors.
 .TP
 OPT(T)
@@ -88,8 +88,7 @@ using vector rather than stick plot, scale vector magnitudes so that LEN2 units
 equal 1 inch, and center vectors on the node locations, run 
 .br
 .sp
-grdvector r.nc theta.nc SCALE -A -Q0.1i+e+jc SCL2 > gradient.ps
-.br
+    grdvector r.nc theta.nc SCALE -A -Q0.1i+e+jc SCL2 > gradient.ps
 .sp
 .SH "SEE ALSO"
 .IR gmt (1),

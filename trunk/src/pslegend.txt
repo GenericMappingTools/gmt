@@ -151,70 +151,70 @@ To add an example of a legend to a Mercator plot (map.ps) with the given specifi
 .sp
 pslegend -R-10/10/-10/10 -JM6i -Gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
 -C0.1i/0.1i -L1.2 -Fr -B5f1 << EOF >> map.ps
-.br
+.sp
 \# Legend test for pslegend
-.br
+.sp
 \# G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
-.br
+.sp
 \# H is header, L is label, S is symbol, T is paragraph text, M is map scale.
-.br
+.sp
 \#
-.br
+.sp
 G -0.1i
-.br
+.sp
 H 24 Times-Roman My Map Legend
-.br
+.sp
 D 0.2i 1p
-.br
+.sp
 N 2
-.br
+.sp
 V 0 1p
-.br
+.sp
 S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
-.br
+.sp
 S 0.1i e 0.15i 255/255/0 0.25p 0.3i This ellipse is yellow
-.br
+.sp
 S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green
-.br
+.sp
 S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a fault
-.br
+.sp
 S 0.1i - 0.15i - 0.25tap 0.3i A contour
-.br
+.sp
 S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This is a vector
-.br
+.sp
 S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
-.br
+.sp
 V 0 1p
-.br
+.sp
 D 0.2i 1p
-.br
+.sp
 N 1
-.br
+.sp
 M 5 5 600+u f
-.br
+.sp
 G 0.05i
-.br
+.sp
 I SOEST_logo.ras 3i CT
-.br
+.sp
 G 0.05i
-.br
+.sp
 B colors.cpt 0.2i 0.2i
-.br
+.sp
 G 0.05i
 L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
-.br
+.sp
 G 0.1i
-.br
+.sp
 P
-.br
+.sp
 T Let us just try some simple text that can go on a few lines.
-.br
+.sp
 T There is no easy way to predetermine how many lines will be required,
-.br
+.sp
 T so we may have to adjust the box height to get the right size box.
-.br
+.sp
 EOF
-.br
+.sp
 .SH WINDOWS REMARKS
 Note that under Windows, the percent sign (%) is a variable indicator (like $ under Unix).
 To indicate a plain percentage sign in a batch script you need to repeat it (%%);

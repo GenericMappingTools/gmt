@@ -16,8 +16,8 @@ be used to create plots.  The resulting IT(PostScript) code is ASCII text (with 
 exceptions for images if so desired) and can thus be edited using any text editor.  Thus,
 it is possible to modify a plot file even after it has been created, e.g.,
 to change text strings, set new gray shades or colors, experiment with various
-pen widths, etc.  Furthermore, various tools exist that can parse IT(PostScript) and let you make such edits via
-a graphical user interface (e.g., Adobe Illustrator).
+pen widths, etc.  Furthermore, various tools exist that can parse IT(PostScript) and
+let you make such edits via a graphical user interface (e.g., Adobe Illustrator).
 PSLIB is written in C but includes FORTRAN bindings
 and can therefore be called from both C and FORTRAN programs.
 To use this library, you must link your plotting program with
@@ -75,13 +75,13 @@ apply. Nine different values are possible, as shown schematically in this diagra
 .LP
 .RS 5
 9------------10----------- 11
-.br
+.sp
 |                           |
-.br
+.sp
 5             6             7
-.br
+.sp
 |                           |
-.br
+.sp
 1------------ 2------------ 3
 .RE
 The box represents the text or image.  E.g., to plot a text string with its center
@@ -720,7 +720,7 @@ The comment are prefixed with with %% .
 .RE
 .SH AUTHORS
 Paul Wessel, School of Ocean and Earth Science and Technology, http://www.soest.hawaii.edu.
-.br
+.sp
 Remko Scharroo, Altimetrics, http://www.altimetrics.com.
 .SH BUGS
 Caveat Emptor:  The authors are BD(not) responsible for any disasters, suicide attempts, or ulcers

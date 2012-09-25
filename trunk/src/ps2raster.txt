@@ -95,15 +95,15 @@ inside the image and therefore does not compromise the coordinate computations. 
 the cases when the plot has any of the sides with whites only because than the algorithm will fail 
 miserably as those whites will be eaten by the GhostScript. In that case you really must use OPT(B)
 or use a slightly off-white color.
-.br
+.sp
 Together with OPT(V) it prints on screen the gdal_translate (gdal_translate is a command line tool from the GDAL package)
 command that reads the raster + world file and creates a true geotiff file. Use OPT(W+g) to do a system call 
 to gdal_translate and create a geoTIFF image right away. The output file will have a .tiff extension.
-.br
+.sp
 The world file naming follows the convention of jamming a 'w' in the file extension. So, if
 output is tif OPT(Tt) the world file is a .tfw, for jpeg we have a .jgw and so on.
 This option automatically sets OPT(A) OPT(P).
-.br
+.sp
 Use OPT(W+k) to create a minimalist KML file that allows loading the image in
 GoogleEarth. Note that for this option the image must be in geographical
 coordinates. If not, a warning is issued but the KML file is created anyway. Several modifier
@@ -120,20 +120,20 @@ KML file then you can issue a KML snipped without the KML header and trailer by 
 BD(+o)IT(foldername) modification; it will enclose the image and associated KML code within a
 KML folder of the specified name.
 See the KML documentation for further explanation (http://code.google.com/apis/kml/documentation/).
-.br
+.sp
 Further notes on the creation of georeferenced rasters. BD(ps2raster) can create a georeferenced raster 
 image with a world file OR uses GDAL to convert the GMT IT(PostScript) file to geotiff.
 GDAL uses Proj.4 for it's projection library. To provide with the information it needs to do 
 the georeferencing, GMT 4.5 embeds a comment near the start of the IT(PostScript) file defining the projection 
 using Proj.4 syntax. Users with pre-GMT v4.5 IT(PostScript) files, or even non-GMT ps files, can provide the 
 information BD(ps2raster) requires by manually editing a line into the IT(PostScript) file, prefixed with %%PROJ. 
-.br
+.sp
 For example the command BD(pscoast) OPT(JM0/12c) OPT(R)-10/-4/37/43 OPT(W1) OPT(Di) OPT(Bg30m) --MAP_FRAME_TYPE=inside > cara.ps 
-.br
+.sp
 adds this comment line 
-.br
+.sp
 %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963 4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0 +a=6378137.0 +b=6356752.314245
-.br
+.sp
 where 'merc' is the keyword for the coordinate conversion; the 2 to 5th elements contain the map limits, 
 6 to 9th the map limits in projected coordinates and the rest of the line has the regular proj4 string
 for this projection.
@@ -171,51 +171,36 @@ To convert the file psfile.ps to PNG using a tight BoundingBox and rotating it b
 orientation in case it was in Landscape mode:
 .br
 .sp
-ps2raster psfile.ps -A -P -Tg
-.br
+    ps2raster psfile.ps -A -P -Tg
 .sp
 To create a 3 pages PDF file from 3 individual PS files
-.br
 .sp
-ps2raster -TF -Fabc a.ps b.ps c.ps
-.br
+    ps2raster -TF -Fabc a.ps b.ps c.ps
 .sp
 To create a simple linear map with pscoast and convert it to tif with a .tfw
 the tight BoundingBox computation.
-.br
 .sp
-pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
-.br
+    pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
 .sp
-ps2raster cara -Tt -W
-.br
+    ps2raster cara -Tt -W
 .sp
 To create a Mercator version of the above example and use GDAL to produce a true geotiff file.
-.br
 .sp
-pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
-.br
+    pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
 .sp
-gdalwarp -s_srs +proj=merc cara.tif carageo.tiff 
-.br
+    gdalwarp -s_srs +proj=merc cara.tif carageo.tiff 
 .sp
 To create a Polar Stereographic geotiff file of Patagonia
-.br
 .sp
-pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
-.br
+    pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
 .sp
-ps2raster patagonia.ps -Tt -W+g -V 
-.br
+    ps2raster patagonia.ps -Tt -W+g -V 
 .sp
 To create a simple KMZ file for use in Google Earth, try
-.br
 .sp
-grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
-.br
+    grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
 .sp
-ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V 
-.br
+    ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V 
 .sp
 (These commands assume that GhostScript can be found in your system's path.)\"'
 .SH BINARY DATA

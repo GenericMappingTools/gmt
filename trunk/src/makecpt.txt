@@ -12,17 +12,17 @@ BD(makecpt) is a utility that will help you make color palette tables (cpt files
 an equidistant set of contour intervals or pass your own z-table, and create a new cpt file based on
 an existing master cpt file.  The resulting cpt file can be reversed relative
 to the master cpt, and can be made continuous or discrete.
-.br
+.sp
 The color palette includes three additional colors beyond the range of z-values. These are
 the background color (B) assigned to values lower than the lowest IT(z)-value,
 the foreground color (F) assigned to values higher than the highest IT(z)-value,
 and the NaN color (N) painted whereever values are undefined.
-.br
+.sp
 If the master cpt file includes B, F, and N entries, these will be copied into the new master file.
 If not, the parameters BD(COLOR_BACKGROUND), BD(COLOR_FOREGROUND), and BD(COLOR_NAN) from
 the BD(gmt.conf) file or the command line will be used. This default behavior can be overruled
 using the options OPT(D), OPT(M) or OPT(N).
-.br
+.sp
 The color model (RGB, HSV or CMYK) of the palette created by BD(makecpt) will be the same as
 specified in the header of the master cpt file. When there is no BD(COLOR_MODEL) entry in the
 master cpt file, the BD(COLOR_MODEL) specified in the BD(gmt.conf) file or on the command line
@@ -91,20 +91,16 @@ To make a cpt file with z-values from -200 to 200, with discrete color changes e
 25, and using a polar blue-white-red colortable:
 .br
 .sp
-makecpt -Cpolar -T-200/200/25 > colors.cpt
-.br
+    makecpt -Cpolar -T-200/200/25 > colors.cpt
 .sp
 To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
 continuous default rainbow colors:
-.br
 .sp
-makecpt -T-2/6/1 -Z > rainbow.cpt
-.br
+    makecpt -T-2/6/1 -Z > rainbow.cpt
 .sp
 To make a GEBCO look-alike cpt file for bathymetry, run
-.br
 .sp
-makecpt -Cgebco > my_gebco.cpt
+    makecpt -Cgebco > my_gebco.cpt
 .SH BUGS
 Since BD(makecpt) will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names

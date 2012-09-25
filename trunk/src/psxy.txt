@@ -72,7 +72,7 @@ the uncertainty in the median.  Then a 5th extra data column is expected to cont
 .TP
 OPT(G)IT(fill)
 Select color or pattern for filling of symbols or polygons [Default is no fill].
-.br
+.sp
 Note that BD(psxy) will search for OPT(G) and OPT(W)
 strings in all the segment headers and let any values thus found over-ride the command line settings.
 .TP
@@ -128,25 +128,19 @@ and gridlines every 15 minutes, use
 .br
 .sp
 BD(psxy) DSDP.xy OPT(R)150/154/18/23 OPT_1 OPR(G)red OPT(B)1BD(g)15BD(m) > map.ps
-.br
 .sp
 To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
 4th column and color based on the depth in the third using the color palette cpt on a linear map, use
-.br
 .sp
 BD(psxy) quakes.xyzm OPT(R)0/1000/0/1000 OPT_2 OPT(Sc) OPT(C)cpt OPT(B)200 > map.ps
-.br
 .sp
 To plot the file trench.xy on a Mercator map, with white triangles with sides LEN_1 inch on the left
 side of the line, spaced every LEN_3 inch, use
-.br
 .sp
 BD(psxy) trench.xy OPT(R)150/200/20/50 OPT_3 OPT(G)white OPT(W) OPT(B)10 > map.ps
-.br
 .sp
 To plot the data in the file misc.d as symbols determined by the code in the last column, and with size given
 by the magnitude in the 4th column, and color based on the third column via the color palette cpt on a linear map, use
-.br
 .sp
 BD(psxy) misc.d OPT(R)0/100/-50/100 OPT_2 OPT(S) OPT(C)cpt OPT(B)20 > map.ps
 .SH SEGMENT HEADER PARSING
@@ -185,7 +179,7 @@ BD(psxy) will look for the definition files in (1) the current directory, (2) th
 directory, and (3) the BD($GMT_SHAREDIR)/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of circles) can be designed - these polygons can be
 painted and filled with a pattern.  Other standard geometric symbols can also be used.  See Appendix N for macro definitions.
-.br
+.sp
 BD(psxy) cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
 make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
 will combine to give the desired effect when filled; to draw outline use the original polygon.
