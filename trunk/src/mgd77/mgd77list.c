@@ -63,6 +63,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		int GF_version;
 		bool fake_times;
 		double sound_speed;
+		double sensor_offset;
 	} A;
 	struct C {	/* -C */
 		bool active;
@@ -389,12 +390,16 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->A.code[ADJ_GR] |= code;
 						break;
 					case 'm':	/* mag adjustment */
-						code = atoi (&opt->arg[k+1]);
-						if (code < 1 || code > 31) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
-							n_errors++;
+						if (opt->arg[k+1] == 'c')
+							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]);
+						else {
+							code = atoi (&opt->arg[k+1]);
+							if (code < 1 || code > 31) {
+								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
+								n_errors++;
+							}
+							Ctrl->A.code[ADJ_MG] |= code;
 						}
-						Ctrl->A.code[ADJ_MG] |= code;
 						break;
 					case 't':	/* fake time requires */
 						Ctrl->A.fake_times = true;
@@ -638,10 +643,11 @@ int separate_aux_columns (struct MGD77_CONTROL *F, char *fx_setting, struct MGD7
 {
 	unsigned int i, j, k, n_aux;
 	int this_aux;
-	
+
 	fx_setting[0] = '\0';
 	for (i = k = n_aux = 0; i < F->n_out_columns; i++) {
-		for (j = 0, this_aux = MGD77_NOT_SET; j < N_MGD77_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, F->desired_column[i])) this_aux = j;
+		for (j = 0, this_aux = MGD77_NOT_SET; j < N_MGD77_AUX && this_aux == MGD77_NOT_SET; j++)
+			if (!strcmp (auxlist[j].name, F->desired_column[i])) this_aux = j;
 		if (this_aux == MGD77_NOT_SET) {	/* Just pass other columns through */
 			if (k) strcat (fx_setting, ",");
 			strcat (fx_setting, F->desired_column[i]);
@@ -665,7 +671,8 @@ int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *a
 	int i, j, k, this_aux, n;
 	
 	for (i = k = 0, n = n_aux; i < n_items; i++) {
-		for (j = 0, this_aux = MGD77_NOT_SET; j < N_MGD77_AUX && this_aux == MGD77_NOT_SET; j++) if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
+		for (j = 0, this_aux = MGD77_NOT_SET; j < N_MGD77_AUX && this_aux == MGD77_NOT_SET; j++)
+			if (!strcmp (auxlist[j].name, item_name[i])) this_aux = j;
 		if (this_aux != MGD77_NOT_SET && !auxlist[this_aux].requested) {	/* Found a request for an auxillary column not yet requested  */
 			aux[n].type = auxlist[this_aux].type;
 			aux[n].text = auxlist[this_aux].text;
@@ -703,6 +710,8 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, *out = NULL;
 	double dist_scale, vel_scale, ds, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
 	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, *dvalue[MGD77_MAX_COLS];
+	double *cumdist = NULL;
+	float  *mtf_bak = NULL;
 	
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;
@@ -816,14 +825,14 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	aux_tvalue[MGD77_AUX_DA] = GMT_memory (GMT, NULL, GMT_TEXT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 	
-	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the required data columns
-	 * then we must append them to make sure we have access to the values we need to calculate the auxillary values.
-	 * Also, so limit tests on data records (e.g., distances, region, or time) also implies the need for certain data
-	 * columns such as time, lon, and lat.
+	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the
+	   required data columns then we must append them to make sure we have access to the values we need
+	   to calculate the auxillary values. Also, so limit tests on data records (e.g., distances, region,
+	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
 	 
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested);	/* Distance is requested */
-	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times);	/* Need lon, lat to calculate reference fields or Carter correction */
+	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.sensor_offset);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested || auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested);
 #ifdef USE_CM4
 	if (auxlist[MGD77_AUX_CM].requested) need_lonlat = need_time = true;
@@ -850,7 +859,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->A.code[ADJ_GR] == 3) {	/* Need eot */
 		 if (MGD77_Get_Column (GMT, "eot", &M) == MGD77_NOT_SET) strcat (fx_setting, ",eot"), n_sub++;	/* Must append eot to requested list */
 	}
-	if (Ctrl->A.code[ADJ_MG] > 1) {	/* Need mtf1,2, and msens */
+	if (Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.sensor_offset) {	/* Need mtf1,2, and msens */
 		 if (MGD77_Get_Column (GMT, "mtf1", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf1"), n_sub++;	/* Must append mtf1 to requested list */
 		 if (MGD77_Get_Column (GMT, "mtf2", &M) == MGD77_NOT_SET) strcat (fx_setting, ",mtf2"), n_sub++;	/* Must append mtf2 to requested list */
 		 if (MGD77_Get_Column (GMT, "msens", &M) == MGD77_NOT_SET) strcat (fx_setting, ",msens"), n_sub++;	/* Must append msens to requested list */
@@ -1028,7 +1037,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->A.code[ADJ_GR] > 1) g_col = MGD77_Get_Column (GMT, "gobs",  &M);
 		if (Ctrl->A.code[ADJ_GR] == 3) e_col = MGD77_Get_Column (GMT, "eot",  &M);
 		if (Ctrl->A.code[ADJ_MG]) m_col = MGD77_Get_Column (GMT, "mag",  &M);
-		if (Ctrl->A.code[ADJ_MG] > 1) {	/* Need more magnetics items */
+		if (Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.sensor_offset) {	/* Need more magnetics items */
 			m1_col = MGD77_Get_Column (GMT, "mtf1",  &M);
 			m2_col = MGD77_Get_Column (GMT, "mtf2",  &M);
 			ms_col = MGD77_Get_Column (GMT, "msens",  &M);
@@ -1074,9 +1083,28 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		prevrec = UINTMAX_MAX;	/* Not determined */
 		for (rec = 0; rec < D->H.n_records; rec++) {
-		
+
 			/* Compute accumulated distance along track (Great circles or Flat Earth) */
-		
+
+			if (Ctrl->A.sensor_offset && rec == 0) {
+			/* For the cable correction we need to know ALL cumulative distances. So compute them now. */
+				uint64_t rec_;
+				cumdist = GMT_memory(GMT, NULL, D->H.n_records, double);
+				mtf_bak = GMT_memory(GMT, NULL, D->H.n_records, float);		/* We need a copy */
+				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][0]) || GMT_is_dnan (dvalue[y_col][0]));
+				prevrec = 0;
+				mtf_bak[0] = (float)dvalue[m1_col][0];
+				for (rec_ = 1; rec_ < D->H.n_records; rec_++) {	/* Very bad luck if first rec has NaNs in coords */
+					ds = dist_scale * GMT_distance (GMT, dvalue[x_col][rec_], dvalue[y_col][rec_], dvalue[x_col][prevrec], dvalue[y_col][prevrec]);
+					cumulative_dist += ds;
+					cumdist[rec_] = cumulative_dist;
+					mtf_bak[rec_] = (float)dvalue[m1_col][rec_];	/* Make a copy */
+					if (lonlat_not_NaN) prevrec = rec_;
+				}
+				prevrec = UINTMAX_MAX;	/* Reset for eventual reuse in (need_distances) */
+				cumulative_dist = 0;
+			}
+
 			if (need_distances) {
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][rec]) || GMT_is_dnan (dvalue[y_col][rec]));
 				if (rec == 0) {	/* Azimuth at 1st point set to azimuth of 2nd point since there is no previous point */
@@ -1276,7 +1304,22 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 				if (Ctrl->A.force || !GMT_is_dnan(dvalue[m_col][rec])) dvalue[m_col][rec] = m;
 			}
-			
+
+			if (m1_col != MGD77_NOT_SET && Ctrl->A.sensor_offset) {	/* Request to adjust for magnetometer offset */
+				double d;
+				uint64_t n;
+				n = rec;
+				if (cumdist[rec] < Ctrl->A.sensor_offset)		/* First points (distance < sensor_offset) are lost */
+					dvalue[m1_col][rec] = GMT->session.d_NaN;
+				else {
+					while ((d = cumdist[rec] - cumdist[n]) < Ctrl->A.sensor_offset) n--;
+					if (d < Ctrl->A.sensor_offset * 1.5)		/* If no data gap */ 
+						dvalue[m1_col][rec] = mtf_bak[n];
+					else					/* We have a gap wider than 1.5 the sensor offset */
+						dvalue[m1_col][rec] = GMT->session.d_NaN;
+				}
+			}
+
 			if (negative_depth) dvalue[z_col][rec] = -dvalue[z_col][rec];
 			if (negative_msd) dvalue[m_col][rec] = -dvalue[m_col][rec];
 			
@@ -1345,6 +1388,11 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], n_out_columns, out);
 			}
 			n_out++;
+		}
+
+		if (cumdist) {
+			GMT_free(GMT, cumdist);		cumdist = NULL;	/* Free and reset for eventual reuse */		
+			GMT_free(GMT, mtf_bak);		mtf_bak = NULL;	/* Free and reset for eventual reuse */		
 		}
 		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;
