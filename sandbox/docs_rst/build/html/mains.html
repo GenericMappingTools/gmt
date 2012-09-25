@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="GMT5 v0 documentation" href="index.html" />
-    <link rel="next" title="blockmean" href="blockmean.html" />
+    <link rel="next" title="GMT API" href="GMT_API.html" />
     <link rel="prev" title="Welcome to GMT5’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -34,7 +34,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="blockmean.html" title="blockmean"
+          <a href="GMT_API.html" title="GMT API"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to GMT5’s documentation!"
@@ -52,6 +52,11 @@
 <h1>Mains<a class="headerlink" href="#mains" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="GMT_API.html">GMT API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GMT_API.html#introduction">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GMT_API.html#overview-of-the-gmt-c-application-program-interface">Overview of the GMT C Application Program Interface</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="blockmean.html">blockmean</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="blockmean.html#id1">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="blockmean.html#id2">Description</a></li>
@@ -124,18 +129,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gmt.conf.html#id3">See Also</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="gmt.html">gmt</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id1">Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id2">Synopsis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id3">Gmt Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id4">The Common Gmt Options</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id5">Description</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id10">Ascii Format Precision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id11">Grid File Formats</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id13">See Also</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmt.html#id14">References</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="gmt.html">gmt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gmt2kml.html">gmt2kml</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="gmt2kml.html#id1">Synopsis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gmt2kml.html#id2">Description</a></li>
@@ -255,13 +249,12 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gmtset.html">gmtset</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id1">Name</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id2">Synopsis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id3">Description</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id4">Required Arguments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id5">Optional Arguments</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id6">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id7">See Also</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id1">Synopsis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id2">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id3">Required Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id4">Optional Arguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id5">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmtset.html#id6">See Also</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="gmt_shell_functions.html">gmt_shell_functions</a><ul>
@@ -987,8 +980,9 @@
 <li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id4">Required Arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id5">Optional Arguments</a></li>
 <li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id6">Ascii Format Precision</a></li>
-<li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id7">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id8">See Also</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id7">Distance Calculations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id8">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="splitxyz.html#id9">See Also</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="surface.html">surface</a><ul>
@@ -1062,8 +1056,9 @@
 <li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id6">Grid Values Precision</a></li>
 <li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id7">Grid File Formats</a></li>
 <li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id8">Geographical And Time Coordinates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id9">Examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id10">See Also</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id9">Swapping Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id10">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="xyz2grd.html#id11">See Also</a></li>
 </ul>
 </li>
 </ul>
@@ -1080,8 +1075,8 @@
   <p class="topless"><a href="index.html"
                         title="previous chapter">Welcome to GMT5&#8217;s documentation!</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="blockmean.html"
-                        title="next chapter">blockmean</a></p>
+  <p class="topless"><a href="GMT_API.html"
+                        title="next chapter">GMT API</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/mains.txt"
@@ -1111,7 +1106,7 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="blockmean.html" title="blockmean"
+          <a href="GMT_API.html" title="GMT API"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to GMT5’s documentation!"

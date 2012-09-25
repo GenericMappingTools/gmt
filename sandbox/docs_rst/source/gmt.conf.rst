@@ -2,7 +2,6 @@
 gmt.conf
 ********
 
-
 gmt.conf - Configuration for **GMT**
 
 `Description <#toc1>`_
@@ -60,6 +59,13 @@ fonts can be found in the **gmt** man page.
 **COLOR\_NAN**
     Color used for the non-defined areas of images (i.e., where z ==
     NaN) [127.5].
+**DIR\_GSHHG**
+    Path to GSHHG files. Defaults to **$GMT\_SHAREDIR**/coast if empty.
+**DIR\_TMP**
+    Replaces the session temp dir **$GMT\_TMPDIR** from the environment.
+**DIR\_USER**
+    Replaces the session user dir **$GMT\_USERDIR** from the
+    environment.
 **FONT**
     Sets the default for all fonts, except FONT\_LOGO. This setting is
     not included in the **gmt.conf** file.
@@ -92,7 +98,7 @@ fonts can be found in the **gmt** man page.
     Formatting template that indicates how an output clock string is to
     be formatted. This template is then used to guide the writing of
     clock strings in data fields. To use a floating point format for the
-    smallest unit (e.g. seconds), append .xxx, where the number of x
+    smallest unit (e.g., seconds), append .xxx, where the number of x
     indicates the desired precision. If no floating point is indicated
     then the smallest specified unit will be rounded off to nearest
     integer. For 12-hour clocks, append am, AM, a.m., or A.M. (**GMT**
@@ -153,18 +159,28 @@ fonts can be found in the **gmt** man page.
     coordinate is to be formatted. This template is then used to guide
     the writing of geographical coordinates in data fields. The template
     is in general of the form [+\|-]D or [+\|-]ddd[:mm[:ss]][.xxx][F].
-    By default, longitudes will be reported in the -180/+180 range. The
+    By default, longitudes will be reported in the range [-180,180]. The
     various terms have the following purpose:
 
-     +\ `` `` `` `` Output longitude in the 0 to 360 range [-180/+180]
-     -`` `` `` `` Output longitude in the -360 to 0 range [-180/+180]
-     D\ `` `` `` `` Use **FORMAT\_FLOAT\_OUT** for floating point degrees.
-     ddd\ `` `` `` `` Fixed format integer degrees
-     :`` `` `` `` delimiter used
-     mm\ `` `` `` `` Fixed format integer arc minutes
-     ss\ `` `` `` `` Fixed format integer arc seconds
-     F\ `` `` `` `` Encode sign using WESN suffix
-     G\ `` `` `` `` Same as F but with a leading space before suffix
+    + Output longitude in the range [0,360]
+
+    - Output longitude in the range [-360,0]
+
+    D Use **FORMAT\_FLOAT\_OUT** for floating point degrees.
+
+    ddd Fixed format integer degrees
+
+    : delimiter used
+
+    mm Fixed format integer arc minutes
+
+    ss Fixed format integer arc seconds
+
+    .xxx Floating fraction of previous integer field, fixed width.
+
+    F Encode sign using WESN suffix
+
+    G Same as F but with a leading space before suffix
 
     The default is D.
 
@@ -188,26 +204,28 @@ fonts can be found in the **gmt** man page.
     information) [%Y %b %d %H:%M:%S].
 **FORMAT\_TIME\_PRIMARY\_MAP**
     Controls how primary month-, week-, and weekday-names are formatted.
-    Choose among full, abbreviated, and character. If the leading f, a,
-    or c are replaced with F, A, and C the entire annotation will be in
-    upper case [full].
+    Choose among **full**, **abbreviated**, and **character**. If the
+    leading **f**, **a**, or **c** are replaced with **F**, **A**, and
+    **C** the entire annotation will be in upper case [full].
 **FORMAT\_TIME\_SECONDARY\_MAP**
     Controls how secondary month-, week-, and weekday-names are
-    formatted. Choose among full, abbreviated, and character. If the
-    leading f, a, or c are replaced with F, A, and C the entire
-    annotation will be in upper case [full].
+    formatted. Choose among **full**, **abbreviated**, and
+    **character**. If the leading **f**, **a**, or **c** are replaced
+    with **F**, **A**, and **C** the entire annotation will be in upper
+    case [full].
 **GMT\_FFT**
     Determines which Fast Fourier Transform should be used among those
-    that have been configured during installation. Choose from auto
+    that have been configured during installation. Choose from **auto**
     (pick the most suitable for the task among available algorithms),
-    brenner (GMT’s version of Normal Brenner’s Fortran multi-dimensional
-    FFT), fftw (The Fastest Fourier Transform in the West), accelerate
-    (Use the Accelerate Framework under OS X), fftpack (use Paul N.
-    Swarztrauber FFT pack translated from Fortran) or perflib (Sun
-    Performance Library under Solaris) [auto].
+    **fftw3** (The Fastest Fourier Transform in the West),
+    **accelerate** (Use the Accelerate Framework under OS X; Note, that
+    the number of samples to be processed must be a base 2 exponent.),
+    **kiss** (Kiss FFT) [auto].
 **GMT\_HISTORY**
-    If true, passes the history of past common command options via the
-    hidden .gmtcommands file [true].
+    Passes the history of past common command options via the hidden
+    .gmtcommands file. The dfferent values for this setting are:
+    **true**, **readonly**, **false**, to either read and write to the
+    .gmtcommands file, only read, or not use the file at all [true].
 **GMT\_INTERPOLANT**
     Determines if linear (linear), Akima’s spline (akima), natural cubic
     spline (cubic) or no interpolation (none) should be used for 1-D
@@ -219,10 +237,10 @@ fonts can be found in the **gmt** man page.
     constructions.
 **GMT\_VERBOSE**
     (**\* -V**) Determines the level of verbosity used by **GMT**
-    programs. Choose among 5 levels; each level adds to the verbosity of
-    the lower levels: 0 = silence, 1 = fatal errors, 2 = warnings and
-    progress reports, 3 = extensive progress reports, 4 = debugging
-    messages [1].
+    programs. Choose among 6 levels; each level adds to the verbosity of
+    the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
+    **c**\ ompatibility warnings, (v)erbose progress reports, (l)ong
+    verbose progress reports, **d**\ ebugging messages [c].
 **IO\_COL\_SEPARATOR**
     This setting determines what character will separate ASCII output
     data columns written by **GMT**. Choose from tab, space, comma, and
@@ -230,13 +248,16 @@ fonts can be found in the **gmt** man page.
 **IO\_GRIDFILE\_FORMAT**
     Default file format for grids, with optional scale, offset and
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
-    2-letter format indicator can be one of [**bcnsr**\ ][**bsifd**\ ].
-    The first letter indicates native **GMT** binary, old format netCDF,
-    COARDS-compliant netCDF, Surfer format or Sun Raster format. The
-    second letter stands for byte, short, int, float and double,
-    respectively. When /*invalid* is omitted the appropriate value for
-    the given format is used (NaN or largest negative). When
-    /*scale*/*offset* is omitted, /1.0/0.0 is used. [nf].
+    2-letter format indicator can be one of
+    [**abcegnrs**\ ][**bsifd**\ ]. See
+    `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the
+    GMT Technical Reference and Cookbook for more information. The
+    *scale* and *offset* modifiers may be left empty to select default
+    values (scale = 1, offset = 0), or you may specify *a* for
+    auto-adjusting the scale and/or offset of packed integer grids
+    (=*id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
+    the appropriate value for the given format is used (NaN or largest
+    negative). [nf].
 **IO\_GRIDFILE\_SHORTHAND**
     If true, all grid file names are examined to see if they use the
     file extension shorthand discussed in Section 4.17 of the **GMT**
@@ -263,6 +284,25 @@ fonts can be found in the **gmt** man page.
     NaNs as well, but some will interpret these NaN records to indicate
     gaps in a series; programs may then use that information to detect
     segmentation (if applicable).
+**IO\_NC4\_CHUNK\_SIZE**
+    Sets the default chunk size for the **lat** and **lon** dimension of
+    the **z** variable. This produces netCDF version 4 files which can
+    only be read with the netCDF 4 library. Very large chunk sizes and
+    sizes smaller than 128 should be avoided because they can lead to
+    unexpectedly bad performance. Note that a chunk of a single
+    precision floating point variable of size 2896x2896 completely fills
+    the chunk cache of 32MiB. Specify the chunk size for each dimension
+    separeted by a comma, or **a**\ uto for optimally chosen chunk sizes
+    in the range [128,256]. Set IO\_NC4\_CHUNK\_SIZE to **c**\ lassic
+    for classic netCDF. [auto]
+**IO\_NC4\_DEFLATION\_LEVEL**
+    Sets the compression level for netCDF4 files upon output. This
+    produces netCDF version 4 files which can only be read with the
+    netCDF 4 library. Values allowed are integers between 0 (no
+    compression) to 9 (maximum compression). Enabling compression level
+    1 can dramatically improve performance and reduce the size of
+    certain data. While higher compression levels further reduce the
+    data size, they do so at the cost of extra processing time. [0]
 **IO\_SEGMENT\_MARKER**
     This holds the character we expect to indicate a segment header in
     an incoming ASCII data or text table [>]. If this marker should be
@@ -280,27 +320,26 @@ fonts can be found in the **gmt** man page.
     If the angle between the map boundary and the annotation baseline is
     less than this minimum value (in degrees), the annotation is not
     plotted (this may occur for certain oblique projections.) Give a
-    value in the range 0-90. [20]
+    value in the range [0,90]. [20]
 **MAP\_ANNOT\_MIN\_SPACING**
     If an annotation would be plotted less than this minimum distance
     from its closest neighbor, the annotation is not plotted (this may
     occur for certain oblique projections.) [0p]
 **MAP\_ANNOT\_OBLIQUE**
     This integer is a sum of 6 bit flags (most of which only are
-    relevant for oblique projections): If bit 1 is `set
-    (1) <set.1.html>`_ , annotations will occur wherever a gridline
-    crosses the map boundaries, else longitudes will be annotated on the
-    lower and upper boundaries only, and latitudes will be annotated on
-    the left and right boundaries only. If bit 2 is `set
-    (2) <set.2.html>`_ , then longitude annotations will be plotted
-    horizontally. If bit 3 is `set (4) <set.4.html>`_ , then latitude
-    annotations will be plotted horizontally. If bit 4 is `set
-    (8) <set.8.html>`_ , then oblique tickmarks are extended to give a
-    projection equal to the specified tick length. If bit 5 is set (16),
-    tickmarks will be drawn normal to the border regardless of gridline
-    angle. If bit 6 is set (32), then latitude annotations will be
-    plotted parallel to the border. To set a combination of these, add
-    up the values in parentheses. [1].
+    relevant for oblique projections): If bit 1 is `set (1) <set.html>`_
+    , annotations will occur wherever a gridline crosses the map
+    boundaries, else longitudes will be annotated on the lower and upper
+    boundaries only, and latitudes will be annotated on the left and
+    right boundaries only. If bit 2 is `set (2) <set.2.html>`_ , then
+    longitude annotations will be plotted horizontally. If bit 3 is `set
+    (4) <set.4.html>`_ , then latitude annotations will be plotted
+    horizontally. If bit 4 is `set (8) <set.8.html>`_ , then oblique
+    tickmarks are extended to give a projection equal to the specified
+    tick length. If bit 5 is set (16), tickmarks will be drawn normal to
+    the border regardless of gridline angle. If bit 6 is set (32), then
+    latitude annotations will be plotted parallel to the border. To set
+    a combination of these, add up the values in parentheses. [1].
 **MAP\_ANNOT\_OFFSET\_PRIMARY**
     Distance from end of tickmark to start of annotation [5p].
 **MAP\_ANNOT\_OFFSET\_SECONDARY**
@@ -409,7 +448,7 @@ fonts can be found in the **gmt** man page.
 **MAP\_VECTOR\_SHAPE**
     Determines the shape of the head of a vector. Normally (i.e., for
     vector\_shape = 0), the head will be triangular, but can be changed
-    to an `arrow (1) <arrow.1.html>`_ or an open `V (2) <V.2.html>`_ .
+    to an `arrow (1) <arrow.html>`_ or an open `V (2) <V.2.html>`_ .
     Intermediate settings give something in between. Negative values (up
     to -2) are allowed as well [0].
 **PROJ\_ELLIPSOID**
@@ -439,20 +478,25 @@ fonts can be found in the **gmt** man page.
      Delambre: Applies to Belgium (1810)
      Engelis: Goddard Earth Models (1985)
      Everest-1830: India, Burma, Pakistan, Afghanistan, Thailand (1830)
-     Everest-1830-Kalianpur: Modified Everest for Kalianpur (1956) (1830)
-     Everest-1830-Kertau: Modified Everest for Kertau, Malaysia & Singapore (1830)
+     Everest-1830-Kalianpur: Modified Everest for Kalianpur (1956)
+    (1830)
+     Everest-1830-Kertau: Modified Everest for Kertau, Malaysia &
+    Singapore (1830)
      Everest-1830-Pakistan: Modified Everest for Pakistan (1830)
-     Everest-1830-Timbalai: Modified Everest for Timbalai, Sabah Sarawak (1830)
+     Everest-1830-Timbalai: Modified Everest for Timbalai, Sabah Sarawak
+    (1830)
      Fischer-1960: Used by NASA for Mercury program (1960)
      Fischer-1960-SouthAsia: Same as Modified-Fischer-1960 (1960)
      Fischer-1968: Used by NASA for Mercury program (1968)
-     FlatEarth: As Sphere, but implies fast "Flat Earth" distance calculations (1984)
+     FlatEarth: As Sphere, but implies fast "Flat Earth" distance
+    calculations (1984)
      GRS-67: International Geodetic Reference System (1967)
      GRS-80: International Geodetic Reference System (1980)
      Hayford-1909: Same as the International 1924 (1909)
      Helmert-1906: Applies to Egypt (1906)
      Hough: Applies to the Marshall Islands (1960)
-     Hughes-1980: Hughes Aircraft Company for DMSP SSM/I grid products (1980)
+     Hughes-1980: Hughes Aircraft Company for DMSP SSM/I grid products
+    (1980)
      IAG-75: International Association of Geodesy (1975)
      Indonesian: Applies to Indonesia (1974)
      International-1924: Worldwide use (1924)
@@ -473,7 +517,8 @@ fonts can be found in the **gmt** man page.
      Plessis: Old ellipsoid used in France (1817)
      SGS-85: Soviet Geodetic System (1985)
      South-American: Applies to South America (1969)
-     Sphere: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)
+     Sphere: The mean radius in WGS-84 (for spherical/plate tectonics
+    applications) (1984)
      Struve: Friedrich Georg Wilhelm Struve (1860)
      TOPEX: Used commonly for altimetry (1990)
      Walbeck: First least squares solution by Finnish astronomer (1819)
@@ -499,13 +544,13 @@ fonts can be found in the **gmt** man page.
     given, **GMT** will attempt to parse the name to extract the
     semi-major axis (*a* in m) and the flattening. Formats allowed are:
 
-    `` `` `` `` *a*\ `` `` `` `` `` `` `` `` implies a zero flattening
-     `` `` `` `` *a*,\ *inv\_f*\ `` `` `` `` where *inv\_f* is the
-    inverse flattening
-     `` `` `` `` *a*,\ **b=**\ *b*\ `` `` `` `` where *b* is the
-    semi-minor axis (in m)
-     `` `` `` `` *a*,\ **f=**\ *f*\ `` `` `` `` where *f* is the
-    flattening
+    *a* implies a zero flattening
+
+    *a*,\ *inv\_f*\ `` `` `` `` where *inv\_f* is the inverse flattening
+
+    *a*,\ **b=**\ *b* where *b* is the semi-minor axis (in m)
+
+    *a*,\ **f=**\ *f* where *f* is the flattening
 
     This way a custom ellipsoid (e.g., those used for other planets) may
     be used. Further note that coordinate transformations in
@@ -529,8 +574,8 @@ fonts can be found in the **gmt** man page.
     files and in command line parameters. This allows **GMT** to ensure
     that the *PostScript* output generates the correct characters on the
     plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
-    ISO-8859-x (where x is in the ranges 1-10 or 13-15). See Appendix F
-    for details [ISOLatin1+ (or Standard+)].
+    ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
+    Appendix F for details [ISOLatin1+ (or Standard+)].
 **PS\_COLOR\_MODEL**
     Determines whether *PostScript* output should use RGB, HSV, CMYK, or
     GRAY when specifying color [rgb]. Note if HSV is selected it does
@@ -571,45 +616,76 @@ fonts can be found in the **gmt** man page.
     gmt\_custom\_media.conf file in **$GMT\_SHAREDIR**/conf or ~/.gmt;
     see that file for details):
 
-    Media\ `` `` `` `` width\ `` `` `` `` height
-     A0\ `` `` `` `` 2380\ `` `` `` `` 3368
-     A1\ `` `` `` `` 1684\ `` `` `` `` 2380
-     A2\ `` `` `` `` 1190\ `` `` `` `` 1684
-     A3\ `` `` `` `` 842\ `` `` `` `` 1190
-     A4\ `` `` `` `` 595\ `` `` `` `` 842
-     A5\ `` `` `` `` 421\ `` `` `` `` 595
-     A6\ `` `` `` `` 297\ `` `` `` `` 421
-     A7\ `` `` `` `` 210\ `` `` `` `` 297
-     A8\ `` `` `` `` 148\ `` `` `` `` 210
-     A9\ `` `` `` `` 105\ `` `` `` `` 148
-     A10\ `` `` `` `` 74\ `` `` `` `` 105
-     B0\ `` `` `` `` 2836\ `` `` `` `` 4008
-     B1\ `` `` `` `` 2004\ `` `` `` `` 2836
-     B2\ `` `` `` `` 1418\ `` `` `` `` 2004
-     B3\ `` `` `` `` 1002\ `` `` `` `` 1418
-     B4\ `` `` `` `` 709\ `` `` `` `` 1002
-     B5\ `` `` `` `` 501\ `` `` `` `` 709
-     archA\ `` `` `` `` 648\ `` `` `` `` 864
-     archB\ `` `` `` `` 864\ `` `` `` `` 1296
-     archC\ `` `` `` `` 1296\ `` `` `` `` 1728
-     archD\ `` `` `` `` 1728\ `` `` `` `` 2592
-     archE\ `` `` `` `` 2592\ `` `` `` `` 3456
-     flsa\ `` `` `` `` 612\ `` `` `` `` 936
-     halfletter\ `` `` `` `` 396\ `` `` `` `` 612
-     statement\ `` `` `` `` 396\ `` `` `` `` 612
-     note\ `` `` `` `` 540\ `` `` `` `` 720
-     letter\ `` `` `` `` 612\ `` `` `` `` 792
-     legal\ `` `` `` `` 612\ `` `` `` `` 1008
-     11x17\ `` `` `` `` 792\ `` `` `` `` 1224
-     tabloid\ `` `` `` `` 792\ `` `` `` `` 1224
-     ledger\ `` `` `` `` 1224\ `` `` `` `` 792
+    Media width height
+
+    A0 2380 3368
+
+    A1 1684 2380
+
+    A2 1190 1684
+
+    A3 842 1190
+
+    A4 595 842
+
+    A5 421 595
+
+    A6 297 421
+
+    A7 210 297
+
+    A8 148 210
+
+    A9 105 148
+
+    A10 74 105
+
+    B0 2836 4008
+
+    B1 2004 2836
+
+    B2 1418 2004
+
+    B3 1002 1418
+
+    B4 709 1002
+
+    B5 501 709
+
+    archA 648 864
+
+    archB 864 1296
+
+    archC 1296 1728
+
+    archD 1728 2592
+
+    archE 2592 3456
+
+    flsa 612 936
+
+    halfletter 396 612
+
+    statement 396 612
+
+    note 540 720
+
+    letter 612 792
+
+    legal 612 1008
+
+    11x17 792 1224
+
+    tabloid 792 1224
+
+    ledger 1224 792
 
     For a completely custom format (e.g., for large format plotters) you
     may also specify WxH, where W and H are in points unless you append
     a unit to each dimension (**c**, **i**, **m** or **p** [Default]).
 
 **PS\_MITER\_LIMIT**
-    Sets the threshold angle in degrees (integer in 0-180 range) used
+    Sets the threshold angle in degrees (integer in range [0,180]) used
     for mitered joins only. When the angle between joining line segments
     is smaller than the threshold the corner will be bevelled instead of
     mitered. The default threshold is 35 degrees. Setting the threshold
@@ -662,71 +738,105 @@ fonts can be found in the **gmt** man page.
 **TIME\_LANGUAGE**
     Language to use when plotting calendar items such as months and
     days. Select from:
-     BR\ `` `` `` `` Brazilian Portuguese
-     CN1\ `` `` `` `` Simplified Chinese
-     CN2\ `` `` `` `` Traditional Chinese
-     DE\ `` `` `` `` German
-     DK\ `` `` `` `` Danish
-     EH\ `` `` `` `` Basque
-     ES\ `` `` `` `` Spanish
-     FI\ `` `` `` `` Finnish
-     FR\ `` `` `` `` French
-     GR\ `` `` `` `` Greek
-     HI\ `` `` `` `` Hawaiian
-     HU\ `` `` `` `` Hungarian
-     IE\ `` `` `` `` Irish
-     IL\ `` `` `` `` Hebrew
-     IS\ `` `` `` `` Icelandic
-     IT\ `` `` `` `` Italian
-     JP\ `` `` `` `` Japanese
-     NL\ `` `` `` `` Dutch
-     NO\ `` `` `` `` Norwegian
-     PL\ `` `` `` `` Polish
-     PT\ `` `` `` `` Portuguese
-     RU\ `` `` `` `` Russian
-     SE\ `` `` `` `` Swedish
-     SG\ `` `` `` `` Scottish Gaelic
-     TO\ `` `` `` `` Tongan
-     TR\ `` `` `` `` Turkish
-     UK\ `` `` `` `` British English
-     US\ `` `` `` `` US English
+
+    BR Brazilian Portuguese
+
+    CN1 Simplified Chinese
+
+    CN2 Traditional Chinese
+
+    DE German
+
+    DK Danish
+
+    EH Basque
+
+    ES Spanish
+
+    FI Finnish
+
+    FR French
+
+    GR Greek
+
+    HI Hawaiian
+
+    HU Hungarian
+
+    IE Irish
+
+    IL Hebrew
+
+    IS Icelandic
+
+    IT Italian
+
+    JP Japanese
+
+    NL Dutch
+
+    NO Norwegian
+
+    PL Polish
+
+    PT\ `` `` `` `` Portuguese
+
+    RU Russian
+
+    SE Swedish
+
+    SG Scottish Gaelic
+
+    TO\ `` `` `` `` Tongan
+
+    TR Turkish
+
+    UK British English
+
+    US US English
+
     If your language is not supported, please examine the
     **$GMT\_SHAREDIR**/time/us.d file and make a similar file. Please
     submit it to the **GMT** Developers for official inclusion. Custom
     language files can be placed in directories **$GMT\_SHAREDIR**/time
     or ~/.gmt. Note: Some of these languages may require you to also
     change the **PS\_CHAR\_ENCODING** setting.
+
 **TIME\_SYSTEM**
     Shorthand for a combination of **TIME\_EPOCH** and **TIME\_UNIT**,
     specifying which time epoch the relative time refers to and what the
     units are. Choose from one of the preset systems below (epoch and
     units are indicated):
-     JD\ `` `` `` `` -4713-11-25T12:00:00\ `` `` `` `` d\ `` `` `` ``
-    (Julian Date)
-     MJD\ `` `` `` `` 1858-11-27T00:00:00\ `` `` `` `` d\ `` `` `` ``
-    (Modified Julian Date)
-     J2000\ `` `` `` `` 2000-01-01T12:00:00\ `` `` `` `` d\ `` `` `` ``
-    (Astronomical time)
-     S1985\ `` `` `` `` 1985-01-01T00:00:00\ `` `` `` `` s\ `` `` `` ``
-    (Altimetric time)
-     UNIX\ `` `` `` `` 1970-01-01T00:00:00\ `` `` `` `` s\ `` `` `` ``
-    (UNIX time)
-     RD0001\ `` `` `` `` 0001-01-01T00:00:00\ `` `` `` `` s
-     RATA\ `` `` `` `` 0000-12-31T00:00:00\ `` `` `` `` d
-     This parameter is not stored in the **gmt.conf** file but is
+
+    JD -4713-11-25T12:00:00 d (Julian Date)
+
+    MJD 1858-11-27T00:00:00 d (Modified Julian Date)
+
+    J2000 2000-01-01T12:00:00 d (Astronomical time)
+
+    S1985 1985-01-01T00:00:00 s (Altimetric time)
+
+    UNIX 1970-01-01T00:00:00 s (UNIX time)
+
+    RD0001 0001-01-01T00:00:00 s
+
+    RATA 0000-12-31T00:00:00 d
+
+    This parameter is not stored in the **gmt.conf** file but is
     translated to the respective values of **TIME\_EPOCH** and
     **TIME\_UNIT**.
+
 **TIME\_EPOCH**
-    Specifies the epoch for relative time [2000-01-01T12:00:00].
+    Specifies the epoch for relative time [1970-01-01T00:00:00].
 **TIME\_UNIT**
     Specifies the units of relative time data since epoch (see
     **TIME\_EPOCH**). Choose y (year - assumes all years are 365.2425
     days), o (month - assumes all months are of equal length y/12), d
-    (day), h (hour), m (minute), or s (second) [d].
+    (day), h (hour), m (minute), or s (second) [s].
 **TIME\_WEEK\_START**
     When weeks are indicated on time axes, this parameter determines the
     first day of the week for Gregorian calendars. (The ISO weekly
-    calendar always begins weeks with Monday.) [Sunday].
+    calendar always begins weeks with Monday.) [Monday (or Sunday)].
 **TIME\_Y2K\_OFFSET\_YEAR**
     When 2-digit years are used to represent 4-digit years (see various
     **FORMAT\_DATE**\ s), **TIME\_Y2K\_OFFSET\_YEAR** gives the first
@@ -738,7 +848,6 @@ fonts can be found in the **gmt** man page.
 `See Also <#toc3>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ , `*gmtdefaults*\ <gmtdefaults.html>`_
-, `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*gmtget*\ <gmtget.html>`_ , `*gmtset*\ <gmtset.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtdefaults*\ (1) <gmtdefaults.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ , `*gmtget*\ (1) <gmtget.html>`_ ,
+`*gmtset*\ (1) <gmtset.html>`_

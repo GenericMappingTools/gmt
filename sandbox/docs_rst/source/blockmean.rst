@@ -1,6 +1,6 @@
-*********
+********
 blockmean
-*********
+********
 
 blockmean - Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
 
@@ -74,9 +74,9 @@ space is allowed between the option flag and the associated arguments.
 
 *table*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
-    **-bi**\ [*ncol*\ ][**t**\ ]] holding (*x*,\ *y*,\ *z*\ [,*w*]) data
-    values. [*w*\ ] is an optional weight for the data. If no file is
-    specified, **blockmean** will read from standard input.
+    **-bi**\ [*ncols*\ ][*type*\ ]] holding (*x*,\ *y*,\ *z*\ [,*w*])
+    data values. [*w*\ ] is an optional weight for the data. If no file
+    is specified, **blockmean** will read from standard input.
 **-C**
     Use the center of the block as the output location [Default uses the
     mean location].
@@ -92,7 +92,7 @@ space is allowed between the option flag and the associated arguments.
     to report the sum of weights [Default (or **-Sm** reports mean
     value].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**i**\ \|\ **o**]
     Weighted modifier[s]. Unweighted input and output has 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
@@ -101,16 +101,16 @@ space is allowed between the option flag and the associated arguments.
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, **-Wo** for weighted output only. [Default uses
     unweighted i/o].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 (or 4 if **-Wi** is set)].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 3 (or 4 if **-Wo** is set)].
     **-E** adds 3 additional columns.
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -127,6 +127,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -153,8 +157,7 @@ blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii\_5x5.xyg
 
 `*blockmedian*\ (1) <blockmedian.html>`_ ,
 `*blockmode*\ (1) <blockmode.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
+`*gmt.conf*\ (5) <gmt.conf.html>`_ ,
 `*nearneighbor*\ (1) <nearneighbor.html>`_ ,
 `*surface*\ (1) <surface.html>`_ ,
 `*triangulate*\ (1) <triangulate.html>`_
-

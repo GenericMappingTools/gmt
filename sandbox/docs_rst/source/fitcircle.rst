@@ -9,7 +9,7 @@ circle to points on a sphere.
 -------------------
 
 **fitcircle** [ *table* ] **-L**\ *norm* [ **-S**\ [*lat*\ ] ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
@@ -68,7 +68,7 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncol*\ ][**t**\ ]]
+    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
     files containing lon,lat [or lat,lon; see
     **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
@@ -79,16 +79,17 @@ space is allowed between the option flag and the associated arguments.
     Optionally append the desired fixed latitude of the small circle
     [Default will determine the latitude].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -99,6 +100,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -133,6 +138,5 @@ ship.xyg
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ , `*project*\ <project.html>`_ ,
-`*sample1d*\ <sample1d.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*project*\ (1) <project.html>`_ ,
+`*sample1d*\ (1) <sample1d.html>`_

@@ -2,7 +2,6 @@
 gmtspatial
 **********
 
-
 gmtspatial - Do geospatial operations on lines and polygons
 
 `Synopsis <#toc1>`_
@@ -17,8 +16,8 @@ gmtspatial - Do geospatial operations on lines and polygons
 **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ] [
 **-T**\ [*clippolygon*\ ] ] [[ **-V**\ [*level*\ ] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
-[
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
+] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -49,9 +48,9 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-C**
     Clips polygons to the map region, including map boundary to the
     polygon as needed. The result is a closed polygon (see **-T** for
@@ -66,7 +65,7 @@ None.
     reversed. Features are considered approximate matches if their
     minimum distance is less than *dmax* [0] (see UNITS) and their
     closeness (defined as the ratio between the average distance between
-    the features divided by their average length) is less than *cmin*
+    the features divided by their average length) is less than *cmax*
     [0.01]. For each duplicate found, the output record begins with the
     single letter Y (exact match) or ~ (approximate match). If the two
     matching segments differ in length by more than a factor of 2 then
@@ -135,18 +134,19 @@ None.
     polygons of length 4 or 5 that exactly match the **-R** clipping
     polygon.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -157,6 +157,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -202,5 +206,4 @@ gmtspatial A.d B.d -Ce > crossovers.d
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_

@@ -2,7 +2,6 @@
 grdtrend
 ********
 
-
 grdtrend - Fit trend surface to grids and compute residuals
 
 `Synopsis <#toc1>`_
@@ -64,7 +63,7 @@ space is allowed between the option flag and the associated arguments.
 **-T**\ *trend.nc*
     Write the fitted trend to the file *trend.nc*.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *weight.nc*
     If *weight.nc* exists, it will be read and used to solve a weighted
     least-squares problem. [Default: Ordinary least-squares fit.] If the
@@ -75,6 +74,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Remarks <#toc6>`_
 ------------------
@@ -96,7 +99,7 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
@@ -104,7 +107,7 @@ offset, the user should add the suffix
 to all grid values, and *nan* is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
+names. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
@@ -116,7 +119,7 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-`**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.18 of the GMT
+`**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the GMT
 Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.
 
@@ -137,6 +140,5 @@ grdtrend hawaii\_topo.nc -N10r -Thawaii\_trend.nc -Whawaii\_weight.nc -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grdfft*\ (1) <grdfft.1.html>`_ ,
-`*grdfilter*\ (1) <grdfilter.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grdfft*\ (1) <grdfft.html>`_ ,
+`*grdfilter*\ (1) <grdfilter.html>`_

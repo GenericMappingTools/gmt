@@ -2,7 +2,6 @@
 grdmath
 *******
 
-
 grdmath - Reverse Polish Notation (RPN) calculator for grids (element by
 element)
 
@@ -13,7 +12,7 @@ element)
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-M** ] [ **-N** ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ *colinfo* ] [
+] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ]
 ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -92,19 +91,21 @@ space is allowed between the option flag and the associated arguments.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. The binary input option only applies to the
     data files needed by operators **LDIST**, **PDIST**, and **INSIDE**.
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] (\*)
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+(\*)
     Select interpolation mode for grids.
 **-r**
     Set pixel node registration [gridline]. Only used with **-R**
@@ -114,6 +115,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Operators <#toc6>`_
 --------------------
@@ -348,7 +353,7 @@ and output arguments.
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **RAND**        | 2 1    | Uniform random values between A and B                                                        |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
-| **RINT**        | 1 1    | rint (A) (nearest integer)                                                                   |
+| **RINT**        | 1 1    | rint (A) (round to integral value nearest to A)                                              |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **ROTX**        | 2 1    | Rotate A by the (constant) shift B in x-direction                                            |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
@@ -486,10 +491,11 @@ two grids, the real (cosine) and imaginary (sine) component of the
 complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
 get rid of one of them, or save both by giving two consecutive = file.nc
 calls.
+
 The orthonormalized complex harmonics **YLM** are most commonly used in
 physics and seismology. The square of **YLM** integrates to 1 over a
 sphere. In geophysics, **YLMg** is normalized to produce unit power when
-averaging the cosine and sine terms (separately!) over a sphere (i.e.
+averaging the cosine and sine terms (separately!) over a sphere (i.e.,
 their squares each integrate to 4 pi). The Condon-Shortley phase (-1)^M
 is not included in **YLM** or **YLMg**, but it can be added by using -M
 as argument.
@@ -527,7 +533,7 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
@@ -535,7 +541,7 @@ offset, the user should add the suffix
 to all grid values, and *nan* is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
+names. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
@@ -547,7 +553,7 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-`**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.18 of the GMT
+`**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the GMT
 Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.
 
@@ -611,27 +617,29 @@ To extract the locations of local maxima that exceed 100 mGal in the
 file faa.nc:
 
 grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
- grd2xyz z.nc -S > max.xyz
+
+grd2xyz z.nc -S > max.xyz
 
 `References <#toc14>`_
 ----------------------
 
 Abramowitz, M., and I. A. Stegun, 1964, *Handbook of Mathematical
 Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
+
 Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
 Clenshaw summation and the recursive computation of very high degree and
 order normalised associated Legendre functions. *Journal of Geodesy*,
 76, 279-299.
+
 Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 1992, *Numerical Recipes*, 2nd edition, Cambridge Univ., New York.
-Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*,
-Hemisphere Publishing Corp.
+
+Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
+Publishing Corp.
 
 `See Also <#toc15>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtmath*\ (1) <gmtmath.1.html>`_ ,
-`*grd2xyz*\ (1) <grd2xyz.1.html>`_ , `*grdedit*\ (1) <grdedit.1.html>`_
-, `*grdinfo*\ (1) <grdinfo.1.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtmath*\ (1) <gmtmath.html>`_ ,
+`*grd2xyz*\ (1) <grd2xyz.html>`_ , `*grdedit*\ (1) <grdedit.html>`_ ,
+`*grdinfo*\ (1) <grdinfo.html>`_ , `*xyz2grd*\ (1) <xyz2grd.html>`_

@@ -67,8 +67,8 @@
 <h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>grdgradient</strong> may be used to compute the directional derivative in a
 given direction (<strong>-A</strong>), or the direction (<strong>-S</strong>) [and the magnitude
-(<strong>-D</strong>)] of the vector gradient of the data.
-Estimated values in the first/last row/column of output depend on
+(<strong>-D</strong>)] of the vector gradient of the data.</p>
+<p>Estimated values in the first/last row/column of output depend on
 boundary conditions (see <strong>-L</strong>).</p>
 </div>
 <div class="section" id="id3">
@@ -105,7 +105,7 @@ shining from the <em>azim</em> direction. Optionally, supply two azimuths,
 <strong>-A</strong><em>azim</em>/<em>azim2</em>, in which case the gradients in each of these
 directions are calculated and the one larger in magnitude is
 retained; this is useful for illuminating data with two directions
-of lineated structures, e.g. <strong>-A</strong><em>0</em>/<em>270</em> illuminates from the
+of lineated structures, e.g., <strong>-A</strong><em>0</em>/<em>270</em> illuminates from the
 north (top) and west (left).</dd>
 <dt><strong>-D</strong>[<strong>c</strong>][<strong>o</strong>][<strong>n</strong>]</dt>
 <dd>Find the direction of the gradient of the data. By default, the
@@ -161,7 +161,7 @@ boundaries of the grid, only the common region will be extracted.</dd>
 <dd>Name of output grid file with scalar magnitudes of gradient vectors.
 Requires <strong>-D</strong> but makes <strong>-G</strong> optional.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
 <dt><strong>-^</strong> (*)</dt>
@@ -169,12 +169,19 @@ Requires <strong>-D</strong> but makes <strong>-G</strong> optional.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Hints</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>If you don’t know what <strong>-N</strong> options to use to make an intensity file
 for <strong>grdimage</strong> or <strong>grdview</strong>, a good first try is <strong>-Ne</strong>0.6.</p>
+<p>Usually 255 shades are more than enough for visualization purposes. You
+can save 75% disk space by appending =nb/a to the output filename
+<em>out_grdfile</em>.</p>
 <p>If you want to make several illuminated maps of subregions of a large
 data set, and you need the illumination effects to be consistent across
 all the maps, use the <strong>-N</strong> option and supply the same value of <em>sigma</em>
@@ -190,7 +197,7 @@ unnormalized gradient grd.</p>
 COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called &#8220;packing&#8221; of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 <strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
 <em>id</em> is a two-letter identifier of the grid type and precision, and
@@ -198,7 +205,7 @@ offset, the user should add the suffix
 to all grid values, and <em>nan</em> is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+names. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.</p>
 <p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
 read, by default, the first 2-dimensional grid that can find in that
@@ -209,16 +216,16 @@ special meaning of <strong>?</strong> in your shell program by putting a backsla
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The <strong>?</strong><em>varname</em> suffix can also be used for output
 grids to specify a variable name different from the default: &#8220;z&#8221;. See
-<a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.18 of the GMT
+<a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20 of the GMT
 Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc8">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>To make a file for illuminating the data in geoid.nc using exp-
-normalized gradients imitating light sources in the north and west
-directions:</p>
-<p>grdgradient geoid.nc -A0/270 -Ggradients.nc -Ne0.6 -V</p>
+normalized gradients in the range [-0.6,0.6] imitating light sources in
+the north and west directions:</p>
+<p>grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V</p>
 <p>To find the azimuth orientations of seafloor fabric in the file topo.nc:</p>
 <p>grdgradient topo.nc -Dno -Gazimuths.nc -V</p>
 </div>
@@ -226,16 +233,14 @@ directions:</p>
 <h2><a class="reference external" href="#toc9">References</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <p>Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the
 IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
-(<a class="reference external" href="http://people.csail.mit.edu/">http://people.csail.mit.edu/</a>
-bkph/papers/Hill-Shading.pdf)</p>
+(<a class="reference external" href="http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf">http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf</a>)</p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc10">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.5.html">*gmt.conf*(5)</a> ,
-<a class="reference external" href="grdhisteq.1.html">*grdhisteq*(1)</a> ,
-<a class="reference external" href="grdimage.1.html">*grdimage*(1)</a> ,
-<a class="reference external" href="grdview.1.html">*grdview*(1)</a> ,
-<a class="reference external" href="grdvector.1.html">*grdvector*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="grdhisteq.html">*grdhisteq*(1)</a> ,
+<a class="reference external" href="grdimage.html">*grdimage*(1)</a> , <a class="reference external" href="grdview.html">*grdview*(1)</a> ,
+<a class="reference external" href="grdvector.html">*grdvector*(1)</a></p>
 </div>
 </div>
 

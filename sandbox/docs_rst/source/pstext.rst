@@ -2,7 +2,6 @@
 pstext
 ******
 
-
 pstext - Plot or typeset text on maps
 
 `Synopsis <#toc1>`_
@@ -170,12 +169,13 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
     **-T**) [Default is width = default, color = black, style = solid].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-Z**
     For 3-D projections: expect each item to have its own level given in
@@ -191,7 +191,8 @@ space is allowed between the option flag and the associated arguments.
     Skip or produce header record(s).
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view. (Not implemented for paragraph mode).
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -200,6 +201,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -207,17 +212,26 @@ space is allowed between the option flag and the associated arguments.
 To plot just the red outlines of the (lon at text strings) stored in the
 file text.d on a Mercator plot with the given specifications, use
 
-pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
+pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red
+-B5 > plot.ps
 
 To add a typeset figure caption for a 3-inch wide illustration, use
 
 pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
+
 This is an optional header record
+
 > 0 -0.5 12 0 4 LT 13p 3i j
-@%5%Figure 1.@%% This illustration shows nothing useful, but it still needs
-a figure caption. Highlighted in @;255/0/0;red@;; you can see the locations
+
+@%5%Figure 1.@%% This illustration shows nothing useful, but it still
+needs
+
+a figure caption. Highlighted in @;255/0/0;red@;; you can see the
+locations
+
 of cities where it is @\_impossible@\_ to get any good Thai food; these
 are to be avoided.
+
 EOF
 
 `Windows Remarks <#toc7>`_
@@ -237,16 +251,16 @@ such duplication.
 In paragraph mode, the presence of composite characters and other escape
 sequences may lead to unfortunate word splitting. Also, if a font is
 requested with an outline pen it will not be used in paragraph mode.
-The **-N** option does not adjust the BoundingBox information so you
-may have to post-process the *PostScript* output with ps2raster to
-obtain a correct BoundingBox.
+
+The **-N** option does not adjust the BoundingBox information so you may
+have to post-process the *PostScript* output with ps2raster to obtain a
+correct BoundingBox.
 
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*ps2raster*\ (1) <ps2raster.1.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*pslegend*\ (1) <pslegend.1.html>`_ , `*psxy*\ (1) <psxy.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*ps2raster*\ (1) <ps2raster.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ ,
+`*pslegend*\ (1) <pslegend.html>`_ , `*psxy*\ (1) <psxy.html>`_

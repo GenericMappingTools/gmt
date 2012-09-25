@@ -44,15 +44,15 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**
     The records from the input files should be pasted horizontally, not
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
-    (as set with **-bi**\ [*ncol*\ ][**t**\ ]); ascii tables can have
+    (as set with **-bi**\ [*ncols*\ ][*type*\ ]); ascii tables can have
     different number of columns.
 **-N**
     Do not write records that only contain NaNs in every field [Default
@@ -70,18 +70,19 @@ space is allowed between the option flag and the associated arguments.
 **-T**
     Suppress the writing of segment headers on output.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input.
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -94,6 +95,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -144,5 +149,4 @@ colmath big\_file.d -S"RIDGE AXIS" > subset.d
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ , `*minmax*\ <minmax.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*minmax*\ (1) <minmax.html>`_

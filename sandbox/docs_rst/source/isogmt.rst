@@ -2,7 +2,6 @@
 isogmt
 ******
 
-
 isogmt - Run GMT command or script in isolation mode
 
 `Synopsis <#toc1>`_
@@ -31,5 +30,4 @@ isogmt sh script.gmt
 `See Also <#toc4>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ , `*gmt.conf*\ <gmt.conf.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_

@@ -22,7 +22,10 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" /> 
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="gmtvector" href="gmtvector.html" />
+    <link rel="prev" title="gmtstitch" href="gmtstitch.html" /> 
   </head>
   <body>
     <div class="related">
@@ -31,7 +34,14 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="gmtvector.html" title="gmtvector"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="gmtstitch.html" title="gmtstitch"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -82,22 +92,24 @@ those that pertain to that particular program.</dd>
 first time will examine your hard disk starting at / and look for
 directories with GMT4 or GMT5 in the name. This will fail to find the
 subversion directories and possibly others you have placed elsewhere.
-The fastest way to get up and running is this:
-1. Edit/Create ~/.gmtversions and add the paths to all GMT
-installations you have or care to consider. Each path goes on separate
-lines and points to the top dir of each distribution, e.g.,
-/Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7
-2. In your .bashrc or .[t]csrh or wherever you are maintaining your
-PATH or path variable, remove any directories you have added that
-contain GMT, and add the new path $HOME/this_gmt/bin (might be $home
-for csh users).
-3. Make the new path take effect (quit/restart terminal, logout/login,
-etc).
-4. cd to the most recent GMT directory where a gmtswitch version lives,
+The fastest way to get up and running is this:</p>
+<p>1. Edit/Create ~/.gmtversions and add the paths to all GMT installations
+you have or care to consider. Each path goes on separate lines and
+points to the top dir of each distribution, e.g.,
+/Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7</p>
+<p>2. In your .bashrc or .[t]csrh or wherever you are maintaining your PATH
+or path variable, remove any directories you have added that contain
+GMT, and add the new path $HOME/this_gmt/bin (might be $home for csh
+users).</p>
+<p>3. Make the new path take effect (quit/restart terminal, logout/login,
+etc).</p>
+<p>4. cd to the most recent GMT directory where a gmtswitch version lives,
 and run gmtswitch with no argument. Select one of the version from the
-menu.
-5. If in csh you may have to say rehash afterwards.
-6. Type &#8220;psxy -&#8221; and the synopsis should tell you that you got the
+menu.</p>
+<ol class="arabic simple" start="5">
+<li>If in csh you may have to say rehash afterwards.</li>
+</ol>
+<p>6. Type &#8220;psxy -&#8221; and the synopsis should tell you that you got the
 correct version. You can now run gmtswitch from anywhere; try it out and
 make sure that you can switch between the versions.</p>
 </div>
@@ -125,30 +137,33 @@ things after installation.</p>
 <p>Under Windows use gmtswitch.bat which is a batch script that changes the
 Windows PATH variable so that the BIN directory of the preferred version
 always comes first. To do that the batch works in two alternative modes:</p>
-<p>1 - Permanent mode
-2 - Temporary mode</p>
+<p>1 - Permanent mode</p>
+<p>2 - Temporary mode</p>
 <p>The permanent mode makes use of the free executable program &#8220;EditPath&#8221;
 to change the user path in the registry. It’s called permanent because
 the changes remains until ... next change. See</p>
-<p><a class="reference external" href="http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml">http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml</a>
-Of course the editpath.exe binary must be in your system’s path as
-well. WARNING: The path change will not be visible on the shell cmd
-where it was executed. For the change to be active you will need to open
-a new cmd window.
-The second mode is temporary because the path to the selected GMT
-binary dir is prepended to the previous path via a shell command line.
-This modification disappears when the shell cmd window where it was
-executes is deleted.
-It is the user responsibility to set the contents of the G32_32 to
+<p><a class="reference external" href="http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml">http://www.softpedia.com/get/Tweak/Registry-Tweak/EditPath.shtml</a></p>
+<p>Of course the editpath.exe binary must be in your system’s path as well.
+WARNING: The path change will not be visible on the shell cmd where it
+was executed. For the change to be active you will need to open a new
+cmd window.</p>
+<p>The second mode is temporary because the path to the selected GMT binary
+dir is prepended to the previous path via a shell command line. This
+modification disappears when the shell cmd window where it was executes
+is deleted.</p>
+<p>It is the user responsibility to set the contents of the G32_32 to
 G5_64 below to valid paths where the binaries of the different GMT
 versions are installed Note that it is not mandatory to have all four of
 them in you computer. For the ones you do not have just let them
-pointing to nothing e.g. set G4_64=
-The permanent mode is the default one (but this can be changed. See
-edit section) To run in the temporary mode just give a second argument
-(doesn’t matter what)
-Example usage to set a GMT5 64 bits permanent gmtswitch g5_64</p>
-<p>To temporary set a GMT4 32 bits do gmtswitch g4_32 1</p>
+pointing to nothing e.g.,</p>
+<p>set G4_64=</p>
+<p>The permanent mode is the default one (but this can be changed. See edit
+section) To run in the temporary mode just give a second argument
+(doesn’t matter what)</p>
+<p>Example usage to set a GMT5 64 bits permanent</p>
+<p>gmtswitch g5_64</p>
+<p>To temporary set a GMT4 32 bits do</p>
+<p>gmtswitch g4_32 1</p>
 <p>Run without arguments to get a &#8220;Usage&#8221; (for permanent mode)</p>
 </div>
 </div>
@@ -174,6 +189,12 @@ Example usage to set a GMT5 64 bits permanent gmtswitch g5_64</p>
 </li>
 </ul>
 
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="gmtstitch.html"
+                        title="previous chapter">gmtstitch</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gmtvector.html"
+                        title="next chapter">gmtvector</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/gmtswitch.txt"
@@ -202,7 +223,14 @@ Example usage to set a GMT5 64 bits permanent gmtswitch g5_64</p>
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="gmtvector.html" title="gmtvector"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="gmtstitch.html" title="gmtstitch"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

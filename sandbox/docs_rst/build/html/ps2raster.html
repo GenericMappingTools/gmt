@@ -88,7 +88,7 @@ space is allowed between the option flag and the associated arguments.</p>
 <dt><em>psfiles</em></dt>
 <dd>Names of <em>PostScript</em> files to be converted. The output files will
 have the same name (unless <strong>-F</strong> is used) but with the conventional
-extension name associated to the raster format (e.g. .jpg for the
+extension name associated to the raster format (e.g., .jpg for the
 jpeg format). Use <strong>-D</strong> to redirect the output to a different
 directory.</dd>
 </dl>
@@ -96,7 +96,7 @@ directory.</dd>
 <div class="section" id="id5">
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt><strong>-A</strong>[<strong>u</strong>[<em>margins</em>]|-]</dt>
+<dt><strong>-A</strong>[<strong>u</strong>][<em>margins</em>][<strong>-</strong>]</dt>
 <dd>Adjust the BoundingBox and HiResBoundingBox to the minimum required
 by the image content. Append <strong>u</strong> to first remove any GMT-produced
 time-stamps. Optionally, append extra margins to the bounding box.
@@ -133,12 +133,13 @@ So in case of ’get from registry’ failure the default name (when no
 <dd>The <em>listfile</em> is an ASCII file with the names of the <em>PostScript</em>
 files to be converted.</dd>
 </dl>
-<p><strong>-M</strong></p>
-<dl class="docutils">
-<dt><strong>-N</strong></dt>
-<dd>This option is obsolete. Use <strong>-S</strong> to print the GhostScript
+<p><strong>-M</strong>
+<strong>-N</strong></p>
+<blockquote>
+<div>This option is obsolete. Use <strong>-S</strong> to print the GhostScript
 command, if applicable. Use <strong>-Te</strong> to save the intermediate EPS
-file.</dd>
+file.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-P</strong></dt>
 <dd>Force Portrait mode. All Landscape mode plots will be rotated back
 so that they show unrotated in Portrait mode. This is practical when
@@ -163,9 +164,9 @@ creates both an EPS and a PDF file. The <strong>-TF</strong> creates a multi-pag
 PDF file from the list of input PS or PDF files. It requires <strong>-F</strong>
 option.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong>[<strong>+g</strong>][<strong>+t</strong><em>docname</em>][<strong>+n</strong><em>layername</em>][<strong>+o</strong><em>foldername</em>][<strong>+a</strong><em>altmode</em>[<em>alt</em>]][<strong>+l</strong><em>minLOD/maxLOD</em>][<strong>+f</strong><em>minfade/maxfade</em>][<strong>+u</strong><em>URL</em>]</dt>
-<dd>Write a ESRI type world file suitable to make (e.g) .tif files be
+<dd><p class="first">Write a ESRI type world file suitable to make (e.g) .tif files be
 recognized as geotiff by softwares that know how to do it. Be aware,
 however, that different results are obtained depending on the image
 contents and if the <strong>-B</strong> option has been used or not. The trouble
@@ -178,23 +179,23 @@ compromise the coordinate computations. Pay attention also to the
 cases when the plot has any of the sides with whites only because
 than the algorithm will fail miserably as those whites will be eaten
 by the GhostScript. In that case you really must use <strong>-B</strong> or use a
-slightly off-white color.
-Together with <strong>-V</strong> it prints on screen the gdal_translate
+slightly off-white color.</p>
+<p>Together with <strong>-V</strong> it prints on screen the gdal_translate
 (gdal_translate is a command line tool from the GDAL package)
 command that reads the raster + world file and creates a true
 geotiff file. Use <strong>-W+g</strong> to do a system call to gdal_translate
 and create a geoTIFF image right away. The output file will have a
-.tiff extension.
-The world file naming follows the convention of jamming a ’w’ in
-the file extension. So, if output is tif <strong>-Tt</strong> the world file is a
+.tiff extension.</p>
+<p>The world file naming follows the convention of jamming a ’w’ in the
+file extension. So, if output is tif <strong>-Tt</strong> the world file is a
 .tfw, for jpeg we have a .jgw and so on. This option automatically
-sets <strong>-A</strong> <strong>-P</strong>.
-Use <strong>-W+k</strong> to create a minimalist KML file that allows loading
-the image in GoogleEarth. Note that for this option the image must
-be in geographical coordinates. If not, a warning is issued but the
-KML file is created anyway. Several modifier options are available
-to customize the KML file in the form of <strong>+</strong><em>opt</em> strings.
-Append <strong>+t</strong><em>title</em> to set the document title [GMT KML Document],
+sets <strong>-A</strong> <strong>-P</strong>.</p>
+<p>Use <strong>-W+k</strong> to create a minimalist KML file that allows loading the
+image in GoogleEarth. Note that for this option the image must be in
+geographical coordinates. If not, a warning is issued but the KML
+file is created anyway. Several modifier options are available to
+customize the KML file in the form of <strong>+</strong><em>opt</em> strings. Append
+<strong>+t</strong><em>title</em> to set the document title [GMT KML Document],
 <strong>+n</strong><em>layername</em> to set the layer name, and
 <strong>+a</strong><em>/altmode</em>[<em>altitude</em>] to select one of 5 altitude modes
 recognized by Google Earth that determines the altitude (in m) of
@@ -210,8 +211,8 @@ without the KML header and trailer by using the <strong>+o</strong><em>foldernam
 modification; it will enclose the image and associated KML code
 within a KML folder of the specified name. See the KML documentation
 for further explanation
-(<a class="reference external" href="http://code.google.com/apis/kml/documentation/">http://code.google.com/apis/kml/documentation/</a>).
-Further notes on the creation of georeferenced rasters.
+(<a class="reference external" href="http://code.google.com/apis/kml/documentation/">http://code.google.com/apis/kml/documentation/</a>).</p>
+<p>Further notes on the creation of georeferenced rasters.
 <strong>ps2raster</strong> can create a georeferenced raster image with a world
 file OR uses GDAL to convert the GMT <em>PostScript</em> file to geotiff.
 GDAL uses Proj.4 for it’s projection library. To provide with the
@@ -220,22 +221,27 @@ comment near the start of the <em>PostScript</em> file defining the
 projection using Proj.4 syntax. Users with pre-GMT v4.5 <em>PostScript</em>
 files, or even non-GMT ps files, can provide the information
 <strong>ps2raster</strong> requires by manually editing a line into the
-<em>PostScript</em> file, prefixed with %%PROJ.
-For example the command <strong>pscoast</strong> <strong>-JM0/12c</strong> <strong>-R</strong>-10/-4/37/43
-<strong>-W1</strong> <strong>-Di</strong> <strong>-Bg30m</strong> &#8211;MAP_FRAME_TYPE=inside &gt; cara.ps
-adds this comment line
-%%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
+<em>PostScript</em> file, prefixed with %%PROJ.</p>
+<p>For example the command <strong>pscoast</strong> <strong>-JM0/12c</strong> <strong>-R</strong>-10/-4/37/43
+<strong>-W1</strong> <strong>-Di</strong> <strong>-Bg30m</strong> &#8211;MAP_FRAME_TYPE=inside &gt; cara.ps</p>
+<p>adds this comment line</p>
+<p>%%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
 4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0
-+a=6378137.0 +b=6356752.314245
-where ’merc’ is the keyword for the coordinate conversion; the 2 to
++a=6378137.0 +b=6356752.314245</p>
+<p class="last">where ’merc’ is the keyword for the coordinate conversion; the 2 to
 5th elements contain the map limits, 6 to 9th the map limits in
 projected coordinates and the rest of the line has the regular proj4
-string for this projection.</dd>
+string for this projection.</p>
+</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -320,7 +326,7 @@ documentation.</p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">See Also</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="gs.html">*gs*</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gs.html">*gs*(1)</a></p>
 </div>
 </div>
 

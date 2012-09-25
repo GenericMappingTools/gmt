@@ -2,7 +2,6 @@
 greenspline
 ***********
 
-
 greenspline - Interpolate using Green’s functions for splines in 1-3
 dimensions
 
@@ -16,8 +15,8 @@ dimensions
 ] [ **-Q**\ *az*\ \|\ *x/y/z* ] [
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]] ] [
 **-S**\ **c\|t\|g\|p\|q**\ [*pars*\ ] ] [ **-T**\ *maskgrid* ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
+**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
@@ -29,14 +28,14 @@ chosen spline and geometry to interpolate data at regular [or arbitrary]
 output locations. Mathematically, the solution is composed as
 *w*\ (**x**) = sum {*c*\ (*i*) G(\ **x’**; **x**\ (*i*))}, for *i* = 1,
 *n*, the number of data points {**x**\ (*i*), *w*\ (*i*)}. Once the *n*
-coefficients *c*\ (*i*) have been found then the sum can be evaluated at
-any output point **x**. Choose between ten minimum curvature,
-regularized, or continuous curvature splines in tension for either 1-D,
-2-D, or 3-D Cartesian coordinates or spherical surface coordinates.
-After first removing a linear or planar trend (Cartesian geometries) or
-mean value (spherical surface) and normalizing these residuals, the
-least-squares matrix solution for the spline coefficients *c*\ (*i*) is
-found by solving the *n* by *n* linear system *w*\ (*j*) = sum-over-*i*
+coefficients *c*\ (*i*) have been found the sum can be evaluated at any
+output point **x**. Choose between minimum curvature, regularized, or
+continuous curvature splines in tension for either 1-D, 2-D, or 3-D
+Cartesian coordinates or spherical surface coordinates. After first
+removing a linear or planar trend (Cartesian geometries) or mean value
+(spherical surface) and normalizing these residuals, the least-squares
+matrix solution for the spline coefficients *c*\ (*i*) is found by
+solving the *n* by *n* linear system *w*\ (*j*) = sum-over-*i*
 {*c*\ (*i*) G(\ **x**\ (*j*); **x**\ (*i*))}, for *j* = 1, *n*; this
 solution yields an exact interpolation of the supplied data points.
 Alternatively, you may choose to perform a singular value decomposition
@@ -62,7 +61,7 @@ None.
 
 *table*
     The name of one or more ASCII [or binary, see
-    **-bi**\ [*ncol*\ ][**t**\ ]] files holding the **x**, *w* data
+    **-bi**\ [*ncols*\ ][*type*\ ]] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
     The solution will partly be constrained by surface gradients **v** =
@@ -117,7 +116,7 @@ None.
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) If **-N** is
     selected then the output is an ASCII (or binary; see
-    **-bo**\ [*ncol*\ ][**t**\ ]) table; if **-G** is not given then
+    **-bo**\ [*ncols*\ ][*type*\ ]) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
     **-C**\ 0 is given.
 **-I**\ *xinc*\ [*yinc*\ [*zinc*\ ]]
@@ -134,7 +133,7 @@ None.
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
     record and written to the file given in **-G** [or stdout if not
-    specified]; see **-bo**\ [*ncol*\ ][**t**\ ] for binary output
+    specified]; see **-bo**\ [*ncols*\ ][*type*\ ] for binary output
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.
 **-Q**\ *az*\ \|\ *x/y/z*
@@ -145,7 +144,9 @@ None.
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]]
     Specify the domain for an equidistant lattice where output
     predictions are required. Requires **-I** and optionally **-r**.
+
     *1-D:* Give *xmin/xmax*, the minimum and maximum *x* coordinates.
+
     *2-D:* Give *xmin/xmax/ymin/ymax*, the minimum and maximum *x* and
     *y* coordinates. These may be Cartesian or geographical. If
     geographical, then *west*, *east*, *south*, and *north* specify the
@@ -153,10 +154,12 @@ None.
     in [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. The two shorthands **-Rg**
     and **-Rd** stand for global domain (0/360 and -180/+180 in
     longitude respectively, with -90/+90 in latitude).
-    *3-D:* Give *xmin/xmax/ymin/ymax/zmin/zmax*, the minimum and
-    maximum *x*, *y* and *z* coordinates. See the 2-D section if your
-    horizontal coordinates are geographical; note the shorthands **-Rg**
-    and **-Rd** cannot be used if a 3-D domain is specified.
+
+    *3-D:* Give *xmin/xmax/ymin/ymax/zmin/zmax*, the minimum and maximum
+    *x*, *y* and *z* coordinates. See the 2-D section if your horizontal
+    coordinates are geographical; note the shorthands **-Rg** and
+    **-Rd** cannot be used if a 3-D domain is specified.
+
 **-S**\ **c\|t\|g\|p\|q**\ [*pars*\ ]
     Select one of five different splines. The first two are used for
     1-D, 2-D, or 3-D Cartesian splines (see **-D** for discussion). Note
@@ -182,15 +185,15 @@ None.
     in the *maskgrid* that are not equal to NaN. This option eliminates
     the need to specify options **-R**, **-I**, and **-r**.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2-4 input columns (**x**,\ *w*);
     the number depends on the chosen dimension].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -201,6 +204,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `1-d Examples <#toc6>`_
 -----------------------
@@ -210,13 +217,17 @@ and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
 using a minimum cubic spline, try
 
 gmtmath -T0/10/1 0 1 NRAND = 1D.txt
+
 psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
+
 greenspline 1D.txt -R0/10 -I0.1 -Sc -V \| psxy -R -J -O -Wthin >> 1D.ps
 
 To apply a spline in tension instead, using a tension of 0.7, try
 
 psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
-greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V \| psxy -R -J -O -Wthin >> 1Dt.ps
+
+greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V \| psxy -R -J -O -Wthin >>
+1Dt.ps
 
 `2-d Examples <#toc7>`_
 -----------------------
@@ -226,8 +237,10 @@ Cartesian data set from Davis (1986) that is used in the GMT Technical
 Reference and Cookbook example 16, try
 
 greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
- psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table\_5.11 -K > 2D.ps
- grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
+
+psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table\_5.11 -K > 2D.ps
+
+grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
 
 To use Cartesian splines in tension but only evaluate the solution where
 the input mask grid is not NaN, try
@@ -245,7 +258,8 @@ surface where the input data is a single surface value (pt.d) and the
 remaining constraints specify only the surface slope and direction
 (slopes.d), use
 
-greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
+greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d
+-Gslopes.nc
 
 `3-d Examples <#toc8>`_
 -----------------------
@@ -279,6 +293,7 @@ For most applications this is fine as the region typically is
 arbitrarily set to reflect the extent of your data. However, if your
 application requires particular boundary conditions then you may
 consider using **surface** instead.
+
 (2) In all cases, the solution is obtained by inverting a *n* x *n*
 double precision matrix for the Green function coefficients, where *n*
 is the number of data constraints. Hence, your computer’s memory may
@@ -288,6 +303,7 @@ place restrictions on how large data sets you can process with
 may also control the size of *n*. For information, if *n* = 1024 then
 only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
 that **greenspline** is fully 64-bit compliant if compiled as such.
+
 (3) The inversion for coefficients can become numerically unstable when
 data neighbors are very close compared to the overall span of the data.
 You can remedy this by pre-processing the data, e.g., by averaging
@@ -332,17 +348,15 @@ tension: a Green’s function approach, *Math. Geol.*, **30**, 77-93.
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized
 Green’s function for a spherical surface spline in tension, *Geophys. J.
 Int*, **174**, 21-28.
-
-Wessel, P., 2009, A general-purpose Green’s function interpolator,
+ Wessel, P., 2009, A general-purpose Green’s function interpolator,
 *Computers & Geosciences*, **35**, 1247-1254,
 doi:10.1016/j.cageo.2008.08.012.
 
 `See Also <#toc13>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtmath*\ (1) <gmtmath.1.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.1.html>`_ ,
-`*psxy*\ (1) <psxy.1.html>`_ , `*surface*\ (1) <surface.1.html>`_ ,
-`*triangulate*\ (1) <triangulate.1.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtmath*\ (1) <gmtmath.html>`_ ,
+`*nearneighbor*\ (1) <nearneighbor.html>`_ , `*psxy*\ (1) <psxy.html>`_
+, `*surface*\ (1) <surface.html>`_ ,
+`*triangulate*\ (1) <triangulate.html>`_ ,
+`*xyz2grd*\ (1) <xyz2grd.html>`_

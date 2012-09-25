@@ -2,7 +2,6 @@
 sample1d
 ********
 
-
 sample1d - Resample 1-D table data using splines
 
 `Synopsis <#toc1>`_
@@ -49,7 +48,7 @@ None.
 
 *table*
     This is one or more ASCII [of binary, see
-    **-bi**\ [*ncol*\ ][**t**\ ]] files with one column containing the
+    **-bi**\ [*ncols*\ ][*type*\ ]] files with one column containing the
     independent variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
@@ -74,8 +73,10 @@ None.
     parallels.
 **-N**\ *knotfile*
     *knotfile* is an optional ASCII file with the x locations where the
-    data set will be resampled in the first column. Note: if **-H** is
-    selected it applies to both *infile* and *knotfile*.
+    data set will be resampled in the first column. Note: If **-H** is
+    selected it applies to both *infile* and *knotfile*. Also note that
+    **-i** never applies to *knotfile* since we always consider the
+    first column only.
 **-S**\ *start*
     For equidistant sampling, *start* indicates the location of the
     first output value. [Default is the smallest even multiple of *inc*
@@ -83,21 +84,23 @@ None.
     indicate the location of the last output value [Default is the
     largest even multiple of *inc* inside the range of *infile*].
 **-T**\ *col*
-    Sets the column number of the independent variable [Default is 0 (first)].
+    Sets the column number of the independent variable [Default is 0
+    (first)].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 (or at least the number of
     columns implied by **-T**)].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -106,6 +109,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -161,6 +168,5 @@ sample1d track.txt -I2n > new\_track.dt
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*filter1d*\ (1) <filter1d.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*filter1d*\ (1) <filter1d.html>`_

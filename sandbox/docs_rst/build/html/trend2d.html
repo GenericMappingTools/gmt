@@ -110,7 +110,7 @@ order to create columns of ASCII [or binary] output. <strong>x</strong> = x,
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII [or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]]
+<dd>One or more ASCII [or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]]
 files containing x,y,z [w] values in the first 3 [4] columns. If no
 files are specified, <strong>trend2d</strong> will read from standard input.</dd>
 <dt><strong>-C</strong><em>condition_number</em></dt>
@@ -127,21 +127,21 @@ set <strong>-I</strong> only, without an attached number; in this case the fit
 will be iterative with a default confidence level of 0.51. Or choose
 your own level between 0 and 1. See remarks section.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong></dt>
 <dd>Weights are supplied in input column 4. Do a weighted least squares
 fit [or start with these weights when doing the iterative robust
 fit]. [Default reads only the first 3 columns.]</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 3 (or 4 if <strong>-W</strong> is set) input
 columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is 1-6 columns as set by <strong>-F</strong>].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
 <dd>Swap 1st and 2nd column on input and/or output.</dd>
@@ -150,6 +150,10 @@ columns].</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -215,9 +219,8 @@ significant in fitting data.xyz, use:</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdmath.1.html">*grdmath*(1)</a> ,
-<a class="reference external" href="grdtrend.1.html">*grdtrend*(1)</a> ,
-<a class="reference external" href="trend1d.1.html">*trend1d*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="grdmath.html">*grdmath*(1)</a> ,
+<a class="reference external" href="grdtrend.html">*grdtrend*(1)</a> , <a class="reference external" href="trend1d.html">*trend1d*(1)</a></p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">References</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>

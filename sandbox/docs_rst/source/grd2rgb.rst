@@ -2,7 +2,6 @@
 grd2rgb
 *******
 
-
 grd2rgb - Write r/g/b grid files from a grid file, a raw RGB file, or
 SUN rasterfile
 
@@ -33,8 +32,8 @@ via the **-W** option.
 -----------------------------
 
 *infile*
-    `The (1) <The.1.html>`_ Sun raster file, (2) 2-D binary grid file,
-    `or (3) <or.3.html>`_ raw raster file to be converted.
+    `The (1) <The.html>`_ Sun raster file, (2) 2-D binary grid file, `or
+    (3) <or.html>`_ raw raster file to be converted.
 **-G**\ *template*
     Provide an output name template for the three output grids. The
     template should be a regular grid file name except it must contain
@@ -81,7 +80,7 @@ space is allowed between the option flag and the associated arguments.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *width*/*height*\ [/*n\_bytes*]
     Sets the size of the raw raster file. By default an RGB file (which
     has 3 bytes/pixel) is assumed. For RGBA files use *n\_bytes* = 4.
@@ -96,6 +95,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -112,8 +115,6 @@ grd2rgb radiation.ras -Lr -Gcomp\_%c.nc
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*grdedit*\ (1) <grdedit.1.html>`_ ,
-`*grdimage*\ (1) <grdimage.1.html>`_ ,
-`*grdmath*\ (1) <grdmath.1.html>`_ , `*grdview*\ (1) <grdview.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*grdedit*\ (1) <grdedit.html>`_ , `*grdimage*\ (1) <grdimage.html>`_ ,
+`*grdmath*\ (1) <grdmath.html>`_ , `*grdview*\ (1) <grdview.html>`_

@@ -112,7 +112,7 @@ For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em
 <div class="section" id="id5">
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <p><em>table</em></p>
-<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.</p>
 <p><strong>-A</strong>[<strong>-</strong>][<em>labelinfo</em>]</p>
@@ -197,7 +197,8 @@ Use <strong>+T</strong> to save x, y, angle, text instead.</dd>
 leading hyphen (-) then there will be no space between label
 value and the unit. [Default is no unit].</dd>
 <dt><strong>+v</strong></dt>
-<dd>Specifies curved labels following the path [Default is straight labels].</dd>
+<dd>Specifies curved labels following the path [Default is straight
+labels].</dd>
 <dt><strong>+w</strong></dt>
 <dd>Specifies how many (<em>x</em>,<em>y</em>) points will be used to estimate
 label angles [Default is 10].</dd>
@@ -220,7 +221,7 @@ contours are organized. If the float format %f is present (standard
 modifications to width and precision are allowed, e.g., %f7.3f), then
 the filenames will contain the contour value and lines are thus
 separated into files based on a common contour value. If the integer
-format %d is present (including modifications like %5.5d), then all
+format %d is present (including modifications like %05d), then all
 contours are written to individual segment files; if any of the other
 specifiers are present they just affect the file names. Finally, if the
 character format %c is present it is replaced with the letters C (for
@@ -320,7 +321,7 @@ then only contours marked with upper case C or A will have tickmarks
 <dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
 <dd>Draw GMT time stamp logo on plot.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong>[<strong>+</strong>]<em>pen</em></dt>
 <dd>Select contouring and set contour pen attributes. If the <strong>+</strong> flag
 is prepended then the color of the contour lines are taken from the
@@ -329,25 +330,30 @@ from the cpt file is applied both to the contours and the contour
 annotations.</dd>
 </dl>
 <p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
-<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+(*)</p>
 <blockquote>
 <div>Shift plot origin.</div></blockquote>
 <dl class="docutils">
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 3 input columns]. Use 4-byte
 integer triplets for node ids (<strong>-Q</strong>).</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is 3 output columns].</dd>
 <dt><strong>-c</strong><em>copies</em> (*)</dt>
 <dd>Specify number of plot copies [Default is 1].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
 <dd>Swap 1st and 2nd column on input and/or output.</dd>
-<dt><strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>] (*)</dt>
-<dd>Select perspective view.</dd>
+</dl>
+<p><strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]
+(*)</p>
+<blockquote>
+<div>Select perspective view.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-t</strong>[<em>transp</em>] (*)</dt>
 <dd>Set PDF transparency level.</dd>
 <dt><strong>-^</strong> (*)</dt>
@@ -355,6 +361,10 @@ integer triplets for node ids (<strong>-Q</strong>).</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -374,30 +384,30 @@ file mesh.ijk, using the colors in temp.cpt, run</p>
 <h2><a class="reference external" href="#toc7">Bugs</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <p>Sometimes there will appear to be thin lines of the wrong color in the
 image. This is a round-off problem which may be remedied by using a
-higher value of <strong>PS_DPI</strong> in the <strong>gmt.conf</strong> file.
-To save the triangulated 100-m contour lines in topo.txt and separate
+higher value of <strong>PS_DPI</strong> in the <strong>gmt.conf</strong> file.</p>
+<p>To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try</p>
 <p>pscontour topo.txt -C100 -Dcontours_%.0f.txt</p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.5.html">*gmt.conf*(5)</a> ,
-<a class="reference external" href="gmtcolors.5.html">*gmtcolors*(5)</a> ,
-<a class="reference external" href="grdcontour.1.html">*grdcontour*(1)</a> ,
-<a class="reference external" href="grdimage.1.html">*grdimage*(1)</a> ,
-<a class="reference external" href="nearneighbor.1.html">*nearneighbor*(1)</a> ,
-<a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
-<a class="reference external" href="psscale.1.html">*psscale*(1)</a> , <a class="reference external" href="surface.1.html">*surface*(1)</a>
-, <a class="reference external" href="triangulate.1.html">*triangulate*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="gmtcolors.html">*gmtcolors*(5)</a> ,
+<a class="reference external" href="grdcontour.html">*grdcontour*(1)</a> ,
+<a class="reference external" href="grdimage.html">*grdimage*(1)</a> ,
+<a class="reference external" href="nearneighbor.html">*nearneighbor*(1)</a> ,
+<a class="reference external" href="psbasemap.html">*psbasemap*(1)</a> , <a class="reference external" href="psscale.html">*psscale*(1)</a>
+, <a class="reference external" href="surface.html">*surface*(1)</a> ,
+<a class="reference external" href="triangulate.html">*triangulate*(1)</a></p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">References</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>Watson, D. F., 1982, Acord: Automatic contouring of raw data, <em>Comp. &amp;
-Geosci.</em>, <strong>8</strong>, 97-101.
-Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh
-Generator and Delaunay Triangulator, First Workshop on Applied
-Computational Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
-www.cs.cmu.edu/~quake/triangle.html</p>
+Geosci.</em>, <strong>8</strong>, 97-101.</p>
+<p>Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational
+Geometry (Philadelphia, PA), 124-133, ACM, May 1996.</p>
+<p>www.cs.cmu.edu/~quake/triangle.html</p>
 </div>
 </div>
 

@@ -2,9 +2,6 @@
 gmtset
 ******
 
-`Name <#toc0>`_
----------------
-
 gmtset - Change individual **GMT** default parameters
 
 `Synopsis <#toc1>`_
@@ -19,7 +16,7 @@ PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 ----------------------
 
 **gmtset** will adjust individual **GMT** defaults settings in the
-current directory’s BD(gmt.conf) file. If no such file exists one will
+current directory’s **gmt.conf** file. If no such file exists one will
 be created. The main purpose of **gmtset** is temporarily to change
 certain parameters inside a shell script, e.g., set the dots-per-inch to
 72, run the script, and reset to 1200 dpi. Optionally, you can specify
@@ -57,6 +54,10 @@ PARAMETER *value*
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc5>`_
 -------------------
@@ -70,7 +71,6 @@ MAP\_GRID\_CROSS\_SIZE\_PRIMARY 0.1i MAP\_ANNOT\_OFFSET\_PRIMARY 0.2c
 `See Also <#toc6>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtdefaults*\ (1) <gmtdefaults.1.html>`_ ,
-`*gmtget*\ (1) <gmtget.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtdefaults*\ (1) <gmtdefaults.html>`_ ,
+`*gmtget*\ (1) <gmtget.html>`_

@@ -2,7 +2,6 @@
 psmask
 ******
 
-
 psmask - Use data tables to clip or mask map areas with no coverage
 
 `Synopsis <#toc1>`_
@@ -21,7 +20,7 @@ psmask - Use data tables to clip or mask map areas with no coverage
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [ **-c**\ *copies* ] [
+] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [
@@ -88,9 +87,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
     Set map boundary intervals.
 **-C**
@@ -101,12 +100,13 @@ space is allowed between the option flag and the associated arguments.
     Dump the (x,y) coordinates of each clipping polygon to one or more
     output files (or *stdout* if *template* is not given). No plotting
     will take place. If *template* contains the C-format specifier %d
-    (including modifications like %5.5d) then polygons will be written
-    to different files; otherwise all polygons are written to the
-    specified file (*template*). The files are ASCII unless
-    **-bo**\ [*ncol*\ ][**t**\ ] is used. See **-Q** to exclude small
+    (including modifications like %05d) then polygons will be written to
+    different files; otherwise all polygons are written to the specified
+    file (*template*). The files are ASCII unless
+    **-bo**\ [*ncols*\ ][*type*\ ] is used. See **-Q** to exclude small
     polygons from consideration.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is
@@ -116,7 +116,7 @@ space is allowed between the option flag and the associated arguments.
 **-K** (\*)
     Do not finalize the *PostScript* plot.
 **-N**
-    Invert the sense of the test, i.e. clip regions where there is data
+    Invert the sense of the test, i.e., clip regions where there is data
     coverage.
 **-O** (\*)
     Append to existing *PostScript* plot.
@@ -136,19 +136,21 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s). Not used with binary data.
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-r**
     Set pixel node registration [gridline].
@@ -161,6 +163,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -195,8 +201,6 @@ mask.ps
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*grdmask*\ (1) <grdmask.1.html>`_ , `*surface*\ (1) <surface.1.html>`_
-, `*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*psclip*\ (1) <psclip.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*grdmask*\ (1) <grdmask.html>`_ , `*surface*\ (1) <surface.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ , `*psclip*\ (1) <psclip.html>`_

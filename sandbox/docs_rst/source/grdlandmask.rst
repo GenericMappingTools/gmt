@@ -2,7 +2,6 @@
 grdlandmask
 ***********
 
-
 grdlandmask - Create a "wet-dry" mask grid from shoreline data base
 
 `Synopsis <#toc1>`_
@@ -101,11 +100,15 @@ space is allowed between the option flag and the associated arguments.
     number, including the textstring NaN. Append **o** to let nodes
     exactly on feature boundaries be considered outside [Default is
     inside]. Specify this information using 1 of 2 formats:
-    `` `` `` `` **-N**\ *wet/dry*.
-    `` `` `` `` **-N**\ *ocean/land/lake/island/pond*.
+
+    **-N**\ *wet/dry*.
+
+    **-N**\ *ocean/land/lake/island/pond*.
+
     [Default is 0/1/0/1/0 (i.e., 0/1)].
+
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-r**
     Set pixel node registration [gridline].
 **-^** (\*)
@@ -113,6 +116,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -121,14 +128,14 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.
 
 When writing a netCDF file, the grid is stored by default with the
 variable name "z". To specify another variable name *varname*, append
@@ -174,7 +181,6 @@ further details.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grdmath*\ (1) <grdmath.1.html>`_ ,
-`*grdclip*\ (1) <grdclip.1.html>`_ , `*psmask*\ (1) <psmask.1.html>`_ ,
-`*psclip*\ (1) <psclip.1.html>`_ , `*pscoast*\ (1) <pscoast.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grdmath*\ (1) <grdmath.html>`_ ,
+`*grdclip*\ (1) <grdclip.html>`_ , `*psmask*\ (1) <psmask.html>`_ ,
+`*psclip*\ (1) <psclip.html>`_ , `*pscoast*\ (1) <pscoast.html>`_

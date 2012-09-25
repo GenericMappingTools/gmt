@@ -135,9 +135,9 @@ Finally, if only a gridfile name is found we will use the grid
 domain as inner region and set weight to 1. If the ASCII file is not
 given <strong>grdblend</strong> will read standard input. Alternatively, if you
 have more than one grid file to blend and you wish (a) all input
-grids to have the same <a class="reference external" href="weight.1.html">weight (1)</a> and (b) all
-grids should use their region as the interior region, then you may
-simply list all the grids on the command line instead of providing a
+grids to have the same <a class="reference external" href="weight.html">weight (1)</a> and (b) all grids
+should use their region as the interior region, then you may simply
+list all the grids on the command line instead of providing a
 <em>blendfile</em>. You must specify at least 2 input grids for this
 mechanism to work. Any grid that is not coregistered with the
 desired output layout implied by <strong>-R</strong>, <strong>-I</strong> (and <strong>-r</strong>) will
@@ -154,12 +154,14 @@ ordering of grids in the <em>blendfile</em> will dictate which grid
 contributes to the final result. Weights and cosine tapering are not
 considered when clobber mode is active.</dd>
 <dt><strong>-N</strong><em>nodata</em></dt>
-<dd>No data. Set nodes with no input grid to this value [Default is NaN].</dd>
+<dd>No data. Set nodes with no input grid to this value [Default is
+NaN].</dd>
 <dt><strong>-Q</strong></dt>
 <dd>Create a header-less grid file suitable for use with <strong>grdraster</strong>.
-Requires that the output grid file is a native format (i.e., not netCDF).</dd>
+Requires that the output grid file is a native format (i.e., not
+netCDF).</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong></dt>
 <dd>Do not blend, just output the weights used for each node. This
 option is valid when only one input grid is provided [Default makes
@@ -175,6 +177,10 @@ the blend].</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -183,14 +189,14 @@ options, then exits.</dd>
 COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called &#8220;packing&#8221; of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 <strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
 <em>id</em> is a two-letter identifier of the grid type and precision, and
 <em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
 to all grid values, and <em>nan</em> is the value used to indicate missing
-data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.</p>
+data. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.</p>
 <p>When writing a netCDF file, the grid is stored by default with the
 variable name &#8220;z&#8221;. To specify another variable name <em>varname</em>, append
 <strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
@@ -214,10 +220,10 @@ will indicate both this unit and epoch.</p>
 <h2><a class="reference external" href="#toc8">Examples</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>To create a grid file from the four grid files piece_?.nc, make the
 blendfile like this</p>
-<p>piece_1.nc`` `` `` `` -R&lt;subregion_1&gt; 1
-piece_2.nc`` `` `` `` -R&lt;subregion_2&gt; 1
-piece_3.nc`` `` `` `` -R&lt;subregion_3&gt; 1
-piece_4.nc`` `` `` `` -R&lt;subregion_4&gt; 1</p>
+<p>piece_1.nc -R&lt;subregion_1&gt; 1</p>
+<p>piece_2.nc -R&lt;subregion_2&gt; 1</p>
+<p>piece_3.nc -R&lt;subregion_3&gt; 1</p>
+<p>piece_4.nc -R&lt;subregion_4&gt; 1</p>
 <p>Then run</p>
 <p>grdblend blend.job -Gblend.nc -R&lt;full_region&gt; -I&lt;dx/dy&gt; -V</p>
 <p>To blend all the grids called MB_*.nc given them all equal weight, try</p>
@@ -225,9 +231,8 @@ piece_4.nc`` `` `` `` -R&lt;subregion_4&gt; 1</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grd2xyz.1.html">*grd2xyz*(1)</a> ,
-<a class="reference external" href="grdedit.1.html">*grdedit*(1)</a>
-<a class="reference external" href="grdraster.1.html">*grdraster*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="grd2xyz.html">*grd2xyz*(1)</a> ,
+<a class="reference external" href="grdedit.html">*grdedit*(1)</a> <a class="reference external" href="grdraster.html">*grdraster*(1)</a></p>
 </div>
 </div>
 

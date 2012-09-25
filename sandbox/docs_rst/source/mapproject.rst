@@ -2,7 +2,6 @@
 mapproject
 **********
 
-
 mapproject - Do forward and inverse map transformations, datum
 conversions and geodesy
 
@@ -65,9 +64,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*]
     **-Af** calculates the (forward) azimuth from fixed point *lon/lat*
     to each data point. Use **-Ab** to get back-azimuth from data points
@@ -113,7 +112,7 @@ space is allowed between the option flag and the associated arguments.
     incremental distance between successive points. Append **+** to
     specify the 2nd point via two extra columns in the input file.
 **-I**
-    Do the Inverse transformation, i.e. get (longitude,latitude) from
+    Do the Inverse transformation, i.e., get (longitude,latitude) from
     (x,y) data.
 **-L**\ *line.xy*\ [/*unit*][**+**\ ]
     Determine the shortest distance from the input data points to the
@@ -151,18 +150,19 @@ space is allowed between the option flag and the associated arguments.
     after the inverse projection). Make sure that the
     **PROJ\_ELLIPSOID** setting is correct for your case.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -175,6 +175,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -213,7 +217,8 @@ To transform several 2-column, binary, double precision files with
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run
 
-mapproject tracks.\* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
+mapproject tracks.\* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2
+> tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
 old.dat from the NAD27 CONUS datum (Datum ID 131 which uses the
@@ -239,6 +244,7 @@ values they are mapped onto. Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly,
 or alternatively, use **awk** to scale and shift the (x,y) values before
 transforming.
+
 For some projection, a spherical solution may be used despite the user
 having selected an ellipsoid. This occurs when the users **-R** setting
 implies a region that exceeds the domain in which the ellipsoidal series
@@ -247,7 +253,7 @@ Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical
 solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
 (**-JT**) and UTM (**-JU**) will will use the spherical solution when
 either the west or east boundary given in **-R** is more than 10 degrees
-from the central meridian, `and (3) <and.3.html>`_ same for Cassini
+from the central meridian, `and (3) <and.html>`_ same for Cassini
 (**-JC**) but with a limit of only 4 degrees.
 
 `Ellipsoids And Spheroids <#toc10>`_
@@ -286,15 +292,16 @@ results produced with other settings.
 `See Also <#toc11>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*project*\ (1) <project.1.html>`_
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*project*\ (1) <project.html>`_
 
 `References <#toc12>`_
 ----------------------
 
 Bomford, G., 1952, Geodesy, Oxford U. Press.
-Snyder, J. P., 1987, Map Projections - A Working Manual, U.S.
-Geological Survey Prof. Paper 1395.
+
+Snyder, J. P., 1987, Map Projections - A Working Manual, U.S. Geological
+Survey Prof. Paper 1395.
+
 Vanicek, P. and Krakiwsky, E, 1982, Geodesy - The Concepts,
 North-Holland Publ., ISBN: 0 444 86149 1.
-

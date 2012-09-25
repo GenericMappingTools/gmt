@@ -2,7 +2,6 @@
 psscale
 *******
 
-
 psscale - Plot a gray-scale or color-scale on maps
 
 `Synopsis <#toc1>`_
@@ -80,7 +79,8 @@ space is allowed between the option flag and the associated arguments.
     provided, the default is to annotate every color level based on the
     numerical entries in the cpt file (which may be overridden by ULB
     flags in the cpt file). To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the cpt file.
+    intervals, you must append ;\ *annotation* to each z-slice in the
+    cpt file.
 **-C**\ *cpt\_file*
     *cpt\_file* is the color palette file to be used. By default all
     color changes are annotated. To use a subset, add an extra column to
@@ -153,9 +153,10 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-Z**\ *zfile*
     File with colorbar-width per color entry. By default, width of entry
@@ -163,7 +164,8 @@ space is allowed between the option flag and the associated arguments.
     = 100-150 (Also see **-L**).
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view. (Required **-R** and **-J** for proper
     functioning).
 **-t**\ [*transp*\ ] (\*)
@@ -173,6 +175,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -195,6 +201,5 @@ colors for the two methods given identical RGB values.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*makecpt*\ (1) <makecpt.1.html>`_ ,
-`*grd2cpt*\ (1) <grd2cpt.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*makecpt*\ (1) <makecpt.html>`_ ,
+`*grd2cpt*\ (1) <grd2cpt.html>`_

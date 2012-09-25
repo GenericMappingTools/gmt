@@ -2,7 +2,6 @@
 grd2xyz
 *******
 
-
 grd2xyz - Convert grid file to data table
 
 `Synopsis <#toc1>`_
@@ -10,7 +9,7 @@ grd2xyz - Convert grid file to data table
 
 **grd2xyz** *grid* [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ]
 [ **-V**\ [*level*\ ] ] [ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ]
-[ **-bo**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ *colinfo* ] [
+[ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
 **-ho**\ [*n*\ ] ] [ **-o**\ *cols*\ [,*...*] ] [
 **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ]
 
@@ -48,7 +47,7 @@ space is allowed between the option flag and the associated arguments.
     a subsection of the grid. If this subsection exceeds the boundaries
     of the grid, only the common region will be output.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [*weight*\ ]
     Write out x,y,z,w, where w is the supplied *weight* (or 1 if not
     supplied) [Default writes x,y,z only].
@@ -68,23 +67,32 @@ space is allowed between the option flag and the associated arguments.
     appending **y**. If the byte-order needs to be swapped, append
     **w**. Select one of several data types (all binary except **a**):
 
-    `` `` `` `` **a** ASCII representation of a single item per record
-    `` `` `` `` **c** signed 1-byte character
-    `` `` `` `` **u** unsigned 1-byte character
-    `` `` `` `` **h** short 2-byte integer
-    `` `` `` `` **H** unsigned short 2-byte integer
-    `` `` `` `` **i** 4-byte integer
-    `` `` `` `` **I** unsigned 4-byte integer
-    `` `` `` `` **l** long (8-byte) integer [requires 64-bit mode]
-    `` `` `` `` **L** unsigned long (8-byte) integer [requires 64-bit
-    mode]
-    `` `` `` `` **f** 4-byte floating point single precision
-    `` `` `` `` **d** 8-byte floating point double precision
+    **a** ASCII representation of a single item per record
+
+    **c** int8\_t, signed 1-byte character
+
+    **u** uint8\_t, unsigned 1-byte character
+
+    **h** int16\_t, short 2-byte integer
+
+    **H** uint16\_t, unsigned short 2-byte integer
+
+    **i** int32\_t, 4-byte integer
+
+    **I** uint32\_t, unsigned 4-byte integer
+
+    **l** int64\_t, long (8-byte) integer
+
+    **L** uint64\_t, unsigned long (8-byte) integer
+
+    **f** 4-byte floating point single precision
+
+    **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
     Note that **-Z** only applies to 1-column output.
 
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 3]. This option only applies to
     xyz output; see **-Z** for z table output.
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
@@ -101,6 +109,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -125,8 +137,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -135,7 +147,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -168,8 +180,7 @@ grd2xyz raw\_data.nc -ZTLf > hawaii\_grv.b
 `See Also <#toc10>`_
 --------------------
 
-`*gmt.conf*\ (5) <gmt.conf.5.html>`_ , `*gmt*\ (1) <gmt.1.html>`_ ,
-`*grdedit*\ (1) <grdedit.1.html>`_ ,
-`*grdreformat*\ (1) <grdreformat.1.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.1.html>`_
-
+`*gmt.conf*\ (5) <gmt.conf.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
+`*grdedit*\ (1) <grdedit.html>`_ ,
+`*grdreformat*\ (1) <grdreformat.html>`_ ,
+`*xyz2grd*\ (1) <xyz2grd.html>`_

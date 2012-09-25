@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="GMT5 v0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
-    <link rel="next" title="Name" href="gmtaverage.html" />
+    <link rel="next" title="gmtaverage" href="gmtaverage.html" />
     <link rel="prev" title="gmt" href="gmt.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="gmtaverage.html" title="Name"
+          <a href="gmtaverage.html" title="gmtaverage"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="gmt.html" title="gmt"
@@ -65,8 +65,8 @@
 <strong>-Ra</strong>|<em>w/e/s/n</em> ] [ <strong>-S</strong><strong>c</strong>|<strong>n</strong><em>scale</em>] ] [
 <strong>-T</strong><em>title</em>[/<em>foldername</em>] ] [ <strong>-V</strong>[<em>level</em>] ] [
 <strong>-W</strong>[<strong>-</strong>|<strong>+</strong>]<em>pen</em> ] [ <strong>-Z</strong><em>args</em> ] [
-<strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ]
-[ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
+<strong>-bi</strong>[<em>ncols</em>][<em>type</em>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em>
+] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
 <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
 ] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ] [ &gt; <em>output.kml</em> ]</p>
@@ -79,11 +79,10 @@ points, lines, or polygons, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
 and data descriptions. You may also extend the feature down to ground
 level (assuming it is above it) and use custom icons for point symbols.</p>
-<blockquote>
-<div>The input files should contain the following columns:
-<em>lon</em> <em>lat</em> [ <em>alt</em> ] [ <em>timestart</em> [ <em>timestop</em> ] ]
-where <em>lon</em> and <em>lat</em> are required for all features, <em>alt</em> is optional</div></blockquote>
-<p>for all features (see also <strong>-A</strong> and <strong>-C</strong>), and <em>timestart</em> and
+<p>The input files should contain the following columns:</p>
+<p><em>lon</em> <em>lat</em> [ <em>alt</em> ] [ <em>timestart</em> [ <em>timestop</em> ] ]</p>
+<p>where <em>lon</em> and <em>lat</em> are required for all features, <em>alt</em> is optional
+for all features (see also <strong>-A</strong> and <strong>-C</strong>), and <em>timestart</em> and
 <em>timestop</em> apply to events and timespan features.</p>
 </div>
 <div class="section" id="id3">
@@ -101,9 +100,9 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-A</strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>alt</em>|<strong>x</strong><em>scale</em>]</dt>
 <dd>Select one of three altitude modes recognized by Google Earth that
 determines the altitude (in m) of the feature: <strong>a</strong> absolute
@@ -164,22 +163,20 @@ columns to exist in the input and they will be encoded in the KML
 file as Extended Data sets, whose attributes will be available in
 the Google Earth balloon when the item is selected.</dd>
 <dt><strong>-N</strong>[+|*name_template*|<em>name</em>]</dt>
-<dd><p class="first">By default, if segment headers contain a <strong>-L</strong>&#8220;label string&#8221; then
+<dd>By default, if segment headers contain a <strong>-L</strong>&#8220;label string&#8221; then
 we use that for the name of the KML feature (polygon, line segment
 or set of symbols). Default names for these segments are &#8220;Line %d&#8221;
 and &#8220;Point Set %d&#8221;, depending on the feature, where %d is a sequence
 number of line segments within a file. Each point within a line
 segment will be named after the line segment plus a sequence number.
-Default is simply &#8220;Point %d&#8221;.</p>
-<blockquote>
-<div>Alternatively, select one of these options: (1) append <strong>+</strong> to</div></blockquote>
-<p class="last">supply individual symbol labels directly at the end of the data
+Default is simply &#8220;Point %d&#8221;.
+Alternatively, select one of these options: (1) append <strong>+</strong> to
+supply individual symbol labels directly at the end of the data
 record, (2) append a string that may include %d or a similar integer
 format to assign unique name IDs for each feature, with the segment
 number (for lines and polygons) or point number (symbols) appearing
 where %d is placed, (3) give no arguments to turn symbol labeling
-off; line segments will still be named.</p>
-</dd>
+off; line segments will still be named.</dd>
 <dt><strong>-O</strong></dt>
 <dd>Appended KML code to an existing KML file [initialize a new KML
 file].</dd>
@@ -198,7 +195,7 @@ features into folders within the KML document. [The default folder
 name is &#8220;<em>Name</em> Features&#8221;, where <em>Name</em> is Point, Event, Timespan,
 Line, or Polygon].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong>[<strong>-</strong>|<strong>+</strong>]<em>pen</em></dt>
 <dd>Set pen attributes for lines or polygon outlines. Append pen
 attributes to use [Defaults: width = default, color = black, style =
@@ -217,15 +214,19 @@ is visible to infinite size. Append <strong>+f</strong><em>fade_min/fade_max</em
 fade in and out over a ramp [abrupt]. Append <strong>+v</strong> to make a
 feature <em>not</em> visible when loaded [visible]. Append <strong>+o</strong> to open a
 folder or document in the sidebar when loaded [closed].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
 <dd>Swap 1st and 2nd column on input and/or output.</dd>
@@ -234,6 +235,10 @@ folder or document in the sidebar when loaded [closed].</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -261,11 +266,9 @@ mytimepoints.kml</p>
 <p>To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
 transparency), try</p>
-<dl class="docutils">
-<dt>grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt</dt>
-<dd>gmt2kml contours.txt -Fl -W1p,red&#64;75 -K &gt; contours.kml
-gmt2kml -O -N+ -Fs -Sn2 -Gnred&#64;0 label.txt -I- &gt;&gt; contours.kml</dd>
-</dl>
+<p>grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt</p>
+<p>gmt2kml contours.txt -Fl -W1p,red&#64;75 -K &gt; contours.kml</p>
+<p>gmt2kml -O -N+ -Fs -Sn2 -Gnred&#64;0 label.txt -I- &gt;&gt; contours.kml</p>
 <p>To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try</p>
 <p>gmt2kml contours.txt -Fl -Ccontours.cpt &gt; contours.kml</p>
@@ -294,34 +297,32 @@ type (when using <strong>-O</strong>, <strong>-K</strong> or <strong>-T/</strong
 segment header, or <strong>-N</strong>). This makes it more easy in Google Earth to
 switch on or off parts of the contents of the Document. The following is
 a crude example:</p>
-<dl class="docutils">
-<dt>[ KML header information; not present if <strong>-O</strong> was used ]</dt>
-<dd>&lt;Document&gt;&lt;name&gt;GMT Data Document&lt;/name&gt;
-&lt;Folder&gt;&lt;name&gt;Point Features&lt;/name&gt;
-&lt;!&#8211;This level of folder is inserted only when using -O, -K&gt;
-&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt;
-&lt;!&#8211;One folder for each input file (not when standard input)&gt;
-&lt;Folder&gt;&lt;name&gt;Point Set 0&lt;/name&gt;
-&lt;!&#8211;One folder per line segment&gt;
-&lt;!&#8211;Points from the first line segment in file file1.dat go here&gt;
-&lt;Folder&gt;&lt;name&gt;Point Set 1&lt;/name&gt;
-&lt;!&#8211;Points from the second line segment in file file1.dat go here&gt;
-&lt;/Folder&gt;
-&lt;/Folder&gt;
-&lt;Folder&gt;&lt;name&gt;Line Features&lt;/name&gt;
-&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt;
-&lt;!&#8211;One folder for each input file (not when standard input)&gt;
-&lt;Placemark&gt;&lt;name&gt;Line 0&lt;/name&gt;
-&lt;!&#8211;Here goes the first line segment&gt;
-&lt;/Placemark&gt;
-&lt;Placemark&gt;&lt;name&gt;Line 1&lt;/name&gt;
-&lt;!&#8211;Here goes the second line segment&gt;
-&lt;/Placemark&gt;
-&lt;/Folder&gt;
-&lt;Folder&gt;
-&lt;/Document&gt;
-[ KML trailer information; not present if <strong>-K</strong> was used ]</dd>
-</dl>
+<p>[ KML header information; not present if <strong>-O</strong> was used ]</p>
+<p>&lt;Document&gt;&lt;name&gt;GMT Data Document&lt;/name&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Point Features&lt;/name&gt;</p>
+<p>&lt;!&#8211;This level of folder is inserted only when using -O, -K&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt;</p>
+<p>&lt;!&#8211;One folder for each input file (not when standard input)&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Point Set 0&lt;/name&gt;</p>
+<p>&lt;!&#8211;One folder per line segment&gt;</p>
+<p>&lt;!&#8211;Points from the first line segment in file file1.dat go here&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Point Set 1&lt;/name&gt;</p>
+<p>&lt;!&#8211;Points from the second line segment in file file1.dat go here&gt;</p>
+<p>&lt;/Folder&gt;</p>
+<p>&lt;/Folder&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;Line Features&lt;/name&gt;</p>
+<p>&lt;Folder&gt;&lt;name&gt;file1.dat&lt;/name&gt;</p>
+<p>&lt;!&#8211;One folder for each input file (not when standard input)&gt;</p>
+<p>&lt;Placemark&gt;&lt;name&gt;Line 0&lt;/name&gt;</p>
+<p>&lt;!&#8211;Here goes the first line segment&gt;</p>
+<p>&lt;/Placemark&gt;</p>
+<p>&lt;Placemark&gt;&lt;name&gt;Line 1&lt;/name&gt;</p>
+<p>&lt;!&#8211;Here goes the second line segment&gt;</p>
+<p>&lt;/Placemark&gt;</p>
+<p>&lt;/Folder&gt;</p>
+<p>&lt;Folder&gt;</p>
+<p>&lt;/Document&gt;</p>
+<p>[ KML trailer information; not present if <strong>-K</strong> was used ]</p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">Segment Information</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
@@ -332,10 +333,9 @@ description tags, respectively, for the current feature.</p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc11">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*</a> ,
-<a class="reference external" href="img2google.html">*img2google*</a> ,
-<a class="reference external" href="kml2gmt.html">*kml2gmt*</a> ,
-<a class="reference external" href="ps2raster.html">*ps2raster*</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="img2google.html">*img2google*(1)</a> ,
+<a class="reference external" href="kml2gmt.html">*kml2gmt*(1)</a> , <a class="reference external" href="ps2raster.html">*ps2raster*(1)</a></p>
 </div>
 </div>
 
@@ -368,7 +368,7 @@ description tags, respectively, for the current feature.</p>
                         title="previous chapter">gmt</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gmtaverage.html"
-                        title="next chapter">Name</a></p>
+                        title="next chapter">gmtaverage</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/gmt2kml.txt"
@@ -398,7 +398,7 @@ description tags, respectively, for the current feature.</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="gmtaverage.html" title="Name"
+          <a href="gmtaverage.html" title="gmtaverage"
              >next</a> |</li>
         <li class="right" >
           <a href="gmt.html" title="gmt"

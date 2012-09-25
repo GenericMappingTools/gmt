@@ -2,7 +2,6 @@
 gmtselect
 *********
 
-
 gmtselect - Select data table subsets based on multiple spatial criteria
 
 `Synopsis <#toc1>`_
@@ -58,9 +57,9 @@ None
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
     Features with an area smaller than *min\_area* in km^2 or of
     hierarchical level that is lower than *min\_level* or higher than
@@ -102,19 +101,23 @@ None
     in the multiple-segment file *polygonfile*. For spherical polygons
     (lon, lat), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
-    ASCII regardless of whether **-bi**\ [*ncol*\ ][**t**\ ] is used.
+    ASCII regardless of whether **-bi**\ [*ncols*\ ][*type*\ ] is used.
 **-I**\ [**cflrsz**\ ]
     Reverses the sense of the test for each of the criteria specified:
-     `` `` `` `` **c** select records NOT inside any point’s circle of
-    influence.
-     `` `` `` `` **f** select records NOT inside any of the polygons.
-     `` `` `` `` **l** select records NOT within the specified distance
-    of any line.
-     `` `` `` `` **r** select records NOT inside the specified
-    rectangular region.
-     `` `` `` `` **s** select records NOT considered inside as specified
-    by **-N** (and **-A**, **-D**).
-     `` `` `` `` **z** select records NOT within the range specified by **-Z**.
+
+    **c** select records NOT inside any point’s circle of influence.
+
+    **f** select records NOT inside any of the polygons.
+
+    **l** select records NOT within the specified distance of any line.
+
+    **r** select records NOT inside the specified rectangular region.
+
+    **s** select records NOT considered inside as specified by **-N**
+    (and **-A**, **-D**).
+
+    **z** select records NOT within the range specified by **-Z**.
+
 **-J**\ *parameters* (\*)
     Select map projection.
 **-L**\ [**p**\ ]\ *dist*\ [*unit*\ ]/\ *linefile*
@@ -135,30 +138,36 @@ None
     Pass all records whose location is inside specified geographical
     features. Specify if records should be skipped (s) or kept (k) using
     1 of 2 formats:
-    `` `` `` `` **-N**\ *wet/dry*.
-    `` `` `` `` **-N**\ *ocean/land/lake/island/pond*.
-    [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
+
+    **-N**\ *wet/dry*.
+
+    **-N**\ *ocean/land/lake/island/pond*.
+
+    [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry
+    land].
+
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. If no map projection is supplied we
     implicitly set **-Jx**\ 1.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-Z**\ *min/max*]
     Pass all records whose 3rd column (z) lies within the given range.
     Input file must have at least three columns. To indicate no limit on
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -171,6 +180,10 @@ None
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -195,6 +208,7 @@ can lead to loss of precision in the output, which can lead to various
 problems downstream. If you find the output is not written with enough
 precision, consider switching to binary output (**-bo** if available) or
 specify more decimals using the **FORMAT\_FLOAT\_OUT** setting.
+
 This note applies to ASCII output only in combination with binary or
 netCDF input or the **-:** option. See also the note below.
 
@@ -216,6 +230,7 @@ and in user units; use **-fg** to imply spherical distances in km and
 geographical (lon, lat) coordinates. Alternatively, specify **-R** and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
 or points, as determined by **PROJ\_LENGTH\_UNIT**).
+
 This program has evolved over the years. Originally, the **-R** and
 **-J** were mandatory in order to handle geographic data, but now there
 is full support for spherical calculations. Thus, **-J** should only be
@@ -281,7 +296,6 @@ further details.
 `See Also <#toc13>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf(5)
-,* <gmt.conf.5.html>`_\ `*grdlandmask*\ (1) <grdlandmask.1.html>`_ ,
-`*pscoast*\ (1) <pscoast.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf(5)
+,* <gmt.conf.html>`_\ `*grdlandmask*\ (1) <grdlandmask.html>`_ ,
+`*pscoast*\ (1) <pscoast.html>`_

@@ -10,8 +10,9 @@ blockmedian - Block average (*x*,\ *y*,\ *z*) data tables by L1 norm
 **blockmedian** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] [ **-C** ] [
-**-E**\ [**b**\ ] ] [ **-Q** ] [ **-T**\ *quantile* ] [
-**-V**\ [*level*\ ] ] [ **-W**\ [**i**\ \|\ **o**] ] [
+**-E**\ [**b**\ ] ] [ **-E**\ **r**\ \|\ **s**\ [**-**\ ] ] [ **-Q** ] [
+**-T**\ *quantile* ] [ **-V**\ [*level*\ ] ] [
+**-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
@@ -74,7 +75,7 @@ space is allowed between the option flag and the associated arguments.
 
 *table*
     3 [or 4, see **-W**] column ASCII data table] column ASCII file(s)
-    [or binary, see **-bi**\ [*ncol*\ ][**t**\ ]] holding
+    [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]] holding
     (*x*,\ *y*,\ *z*\ [,*w*]) data values. [*w*\ ] is an optional weight
     for the data. If no file is specified, **blockmedian** will read
     from standard input.
@@ -91,6 +92,15 @@ space is allowed between the option flag and the associated arguments.
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,*w*], where *q25* and
     *q75* are the 25% and 75% quantiles, respectively. See **-W** for
     *w* output.
+**-E**\ **r**\ \|\ **s**\ [**-**\ ]
+    Provide source id **s** or record number **r** output, i.e., append
+    the source id or record number associated with the median value. If
+    tied then report the record number of the higher of the two values;
+    append **-** to instead report the record number of the lower value.
+    Note that both **-E**\ [**b**\ ] and **-E**\ **r**\ [**-**\ ] may be
+    specified. For **-E**\ **s** we expect input records of the form
+    *x*,\ *y*,\ *z*\ [,*w*],\ *sid*, where *sid* is an unsigned integer
+    source id.
 **-Q**
     (Quicker) Finds median *z* and (*x*,\ *y*) at that the median *z*
     [Default finds median *x*, median *y* independent of *z*]. Also see
@@ -99,7 +109,7 @@ space is allowed between the option flag and the associated arguments.
     Sets the *quantile* of the distribution to be returned [Default is
     0.5 which returns the median *z*]. Here, 0 < *quantile* < 1.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**i**\ \|\ **o**]
     Weighted modifier[s]. Unweighted input and output has 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
@@ -108,16 +118,16 @@ space is allowed between the option flag and the associated arguments.
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, **-Wo** for weighted output only. [Default uses
     unweighted i/o].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 (or 4 if **-Wi** is set)].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 3 (or 4 if **-Wo** is set)].
     **-E** adds 3 additional columns.
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -134,6 +144,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -167,8 +181,7 @@ blockmedian depths.xyz -Rg -I5 -Eb -r > depths\_5x5.txt
 
 `*blockmean*\ (1) <blockmean.html>`_ ,
 `*blockmode*\ (1) <blockmode.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
+`*gmt.conf*\ (5) <gmt.conf.html>`_ ,
 `*nearneighbor*\ (1) <nearneighbor.html>`_ ,
 `*surface*\ (1) <surface.html>`_ ,
 `*triangulate*\ (1) <triangulate.html>`_
-

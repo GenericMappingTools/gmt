@@ -2,7 +2,6 @@
 gmtcolors
 *********
 
-
 gmtcolors - Explanation of color codes in **GMT**
 
 `Description <#toc1>`_
@@ -12,6 +11,7 @@ Colors can be specified in **GMT** as arguments to commands, generally
 as part of the **-G** or **-W** options to select polygon fill or
 outline pen. Colors are also used in color pallette tables (cpt files)
 that help convert numerical values to colors.
+
 **GMT** allows several ways to represent a color:
 
 **Colorname**
@@ -46,6 +46,7 @@ The following list contains the named colors that can be used in **GMT**
 and their equivalent color codes.
 
 **R\ `` `` `` `` G\ `` `` `` `` B\ `` `` `` `` Name**
+
  255\ `` `` `` `` 250\ `` `` `` `` 250\ `` `` `` `` snow
  248\ `` `` `` `` 248\ `` `` `` `` 255\ `` `` `` `` ghostwhite
  255\ `` `` `` `` 250\ `` `` `` `` 240\ `` `` `` `` floralwhite
@@ -559,18 +560,15 @@ TECHNICAL REFERENCE AND COOKBOOK**.
 `See Also <#toc4>`_
 -------------------
 
-`*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtlogo*\ (1) <gmtlogo.1.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.1.html>`_ ,
-`*grdvector*\ (1) <grdvector.1.html>`_ ,
-`*grdview*\ (1) <grdview.1.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*pscoast*\ (1) <pscoast.1.html>`_ ,
-`*pscontour*\ (1) <pscontour.1.html>`_ ,
-`*pshistogram*\ (1) <pshistogram.1.html>`_ ,
-`*psimage*\ (1) <psimage.1.html>`_ ,
-`*pslegend*\ (1) <pslegend.1.html>`_ , `*psmask*\ (1) <psmask.1.html>`_
-, `*psrose*\ (1) <psrose.1.html>`_ , `*pstext*\ (1) <pstext.1.html>`_ ,
-`*pswiggle*\ (1) <pswiggle.1.html>`_ , `*psxy*\ (1) <psxy.1.html>`_ ,
-`*psxyz*\ (1) <psxyz.1.html>`_
+`*gmt.conf*\ (5) <gmt.conf.html>`_ , `*gmtlogo*\ (1) <gmtlogo.html>`_ ,
+`*grdcontour*\ (1) <grdcontour.html>`_ ,
+`*grdvector*\ (1) <grdvector.html>`_ , `*grdview*\ (1) <grdview.html>`_
+, `*psbasemap*\ (1) <psbasemap.html>`_ ,
+`*pscoast*\ (1) <pscoast.html>`_ , `*pscontour*\ (1) <pscontour.html>`_
+, `*pshistogram*\ (1) <pshistogram.html>`_ ,
+`*psimage*\ (1) <psimage.html>`_ , `*pslegend*\ (1) <pslegend.html>`_ ,
+`*psmask*\ (1) <psmask.html>`_ , `*psrose*\ (1) <psrose.html>`_ ,
+`*pstext*\ (1) <pstext.html>`_ , `*pswiggle*\ (1) <pswiggle.html>`_ ,
+`*psxy*\ (1) <psxy.html>`_ , `*psxyz*\ (1) <psxyz.html>`_
+
 

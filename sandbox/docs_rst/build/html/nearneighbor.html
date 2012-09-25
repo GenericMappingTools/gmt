@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="GMT5 v0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
-    <link rel="next" title="Supplements" href="supplements/supplements.html" />
+    <link rel="next" title="project" href="project.html" />
     <link rel="prev" title="minmax" href="minmax.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="supplements/supplements.html" title="Supplements"
+          <a href="project.html" title="project"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="minmax.html" title="minmax"
@@ -60,7 +60,7 @@
 <strong>-N</strong><em>sectors</em>[/<em>min_sectors</em>]
 <strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>]
 <strong>-S</strong><em>search_radius</em>[<em>unit</em>] [ <strong>-E</strong><em>empty</em> ] [
-<strong>-V</strong>[<em>level</em>] ] [ <strong>-W</strong> ] [ <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] ] [
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-W</strong> ] [ <strong>-bi</strong>[<em>ncols</em>][<em>type</em>] ] [
 <strong>-f</strong><em>colinfo</em> ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
 ] [ <strong>-n</strong>[<strong>+b</strong><em>BC</em>] ] [ <strong>-r</strong> ] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
@@ -133,23 +133,24 @@ considered close to a node. Append the distance unit (see UNITS).</dd>
 <dl class="docutils">
 <dt><em>table</em></dt>
 <dd>3 [or 4, see <strong>-W</strong>] column ASCII file(s) [or binary, see
-<strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]] holding (x,y,z[,w]) data values. If no
-file is specified, <strong>nearneighbor</strong> will read from standard input.</dd>
+<strong>-bi</strong>[<em>ncols</em>][<em>type</em>]] holding (x,y,z[,w]) data values. If
+no file is specified, <strong>nearneighbor</strong> will read from standard
+input.</dd>
 <dt><strong>-E</strong><em>empty</em></dt>
 <dd>Set the value assigned to empty nodes [NaN].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong></dt>
 <dd>Input data have a 4th column containing observation point weights.
 These are multiplied with the geometrical weight factor to determine
 the actual weights used in the calculations.</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 3 (or 4 if <strong>-W</strong> is set) columns].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>]</dt>
 <dd>Append <strong>+b</strong><em>BC</em> to set any boundary conditions to be used,
@@ -166,6 +167,10 @@ or <strong>y</strong> to specify just one direction, otherwise both are assumed.
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -205,11 +210,11 @@ at least one value:</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="blockmean.1.html">*blockmean*(1)</a> ,
-<a class="reference external" href="blockmedian.1.html">*blockmedian*(1)</a> ,
-<a class="reference external" href="blockmode.1.html">*blockmode*(1)</a> , <a class="reference external" href="gmt.1.html">*gmt*(1)</a> ,
-<a class="reference external" href="surface.1.html">*surface*(1)</a> ,
-<a class="reference external" href="triangulate.1.html">*triangulate*(1)</a></p>
+<p><a class="reference external" href="blockmean.html">*blockmean*(1)</a> ,
+<a class="reference external" href="blockmedian.html">*blockmedian*(1)</a> ,
+<a class="reference external" href="blockmode.html">*blockmode*(1)</a> , <a class="reference external" href="gmt.html">*gmt*(1)</a> ,
+<a class="reference external" href="surface.html">*surface*(1)</a> ,
+<a class="reference external" href="triangulate.html">*triangulate*(1)</a></p>
 </div>
 </div>
 
@@ -239,8 +244,8 @@ at least one value:</p>
   <p class="topless"><a href="minmax.html"
                         title="previous chapter">minmax</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="supplements/supplements.html"
-                        title="next chapter">Supplements</a></p>
+  <p class="topless"><a href="project.html"
+                        title="next chapter">project</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/nearneighbor.txt"
@@ -270,7 +275,7 @@ at least one value:</p>
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="supplements/supplements.html" title="Supplements"
+          <a href="project.html" title="project"
              >next</a> |</li>
         <li class="right" >
           <a href="minmax.html" title="minmax"

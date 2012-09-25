@@ -2,7 +2,6 @@
 testapi
 *******
 
-
 testapi - Test API i/o methods for any data type
 
 `Synopsis <#toc1>`_
@@ -61,12 +60,13 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 
 `Examples <#toc6>`_
 -------------------
 
-To check if reading and writing the test dataset file yields an identical copy, try
+To check if reading and writing the test dataset file yields an
+identical copy, try
 
 testapi -Td -If -Wf -V
 
@@ -83,5 +83,4 @@ testapi -Tg -Ic/m -Wf/m -V
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ ,
-
+`*gmt*\ (1) <gmt.html>`_ ,

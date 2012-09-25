@@ -2,14 +2,13 @@
 kml2gmt
 *******
 
-
 kml2gmt - Extract GMT table data from Google Earth KML files
 
 `Synopsis <#toc1>`_
 -------------------
 
 **kml2gmt** [ *kmlfiles* ] [ **-V**\ [*level*\ ] ] [ **-Z** ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -46,8 +45,8 @@ None.
     Output the altitude coordinates as GMT z coordinates [Default will
     output just longitude and latitude].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output.
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
@@ -56,6 +55,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -67,8 +70,6 @@ kml2gmt google.kml -V > google.txt
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*img2google*\ (1) <img2google.1.html>`_ ,
-`*ps2raster*\ (1) <ps2raster.1.html>`_
-`*gmt2kml*\ (1) <gmt2kml.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*img2google*\ (1) <img2google.html>`_ ,
+`*ps2raster*\ (1) <ps2raster.html>`_ `*gmt2kml*\ (1) <gmt2kml.html>`_

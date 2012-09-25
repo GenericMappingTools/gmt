@@ -2,7 +2,6 @@
 gmtdp
 *****
 
-
 gmtdp - Line reduction using the Douglas-Peucker algorithm
 
 `Synopsis <#toc1>`_
@@ -11,7 +10,8 @@ gmtdp - Line reduction using the Douglas-Peucker algorithm
 **gmtdp** [ *table* ] **-T**\ *tolerance*\ [*unit*\ ] [
 **-V**\ [*level*\ ] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
+] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -47,22 +47,23 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -73,6 +74,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -127,6 +132,7 @@ calculation mode to Flat Earth.
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction of the
 number of points required to represent a digitized line of its
 caricature, *Can. Cartogr.*, **10**, 112-122, 1973.
+
 This implementation of the algorithm has been kindly provided by Dr.
 Gary J. Robinson, Environmental Systems Science Centre, University of
 Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his subroutine forms
@@ -135,5 +141,4 @@ the basis for this program.
 `See Also <#toc11>`_
 --------------------
 
-`*gmt*\ <gmt.html>`_
-
+`*gmt*\ (1) <gmt.html>`_

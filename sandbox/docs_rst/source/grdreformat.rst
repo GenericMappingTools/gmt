@@ -2,15 +2,14 @@
 grdreformat
 ***********
 
-
 grdreformat - Convert between different grid formats
 
 `Synopsis <#toc1>`_
 -------------------
 
 **grdreformat** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]]]
-*outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]]] [ **-N** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
+*outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]][\ *:driver*\ [*/datatype*\ ]]]
+[ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-V**\ [*level*\ ] ]
 
 `Description <#toc2>`_
@@ -28,7 +27,7 @@ options. Their full syntax as well as how to specify pens, pattern
 fills, colors, and fonts can be found in the **gmt** man page. Note: No
 space is allowed between the option flag and the associated arguments.
 
-`Required Arguments <#toc5>`_
+`Required Arguments <#toc4>`_
 -----------------------------
 
 *ingrdfile*
@@ -40,7 +39,9 @@ space is allowed between the option flag and the associated arguments.
     If *scale* and *offset* are supplied you may also append a value
     that represents ’Not-a-Number’ (for floating-point grids this is
     unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available.)
+    value which means no data available). The *scale* and *offset*
+    modifiers may be left empty to select default values (scale = 1,
+    offset = 0).
 *outgrdfile*
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
@@ -50,12 +51,29 @@ space is allowed between the option flag and the associated arguments.
     Since the scale and offset are applied in reverse order when
     reading, this does not affect the data values (except for
     round-offs).
+
     If *scale* and *offset* are supplied you may also append a value
     that represents ’Not-a-Number’ (for floating-point grids this is
     unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available.)
+    value which means no data available). The *scale* and *offset*
+    modifiers may be left empty to select default values (scale = 1,
+    offset = 0), or you may specify *a* for auto-adjusting the scale
+    and/or offset of packed integer grids (=*id/a* is a shorthand for
+    =\ *id/a/a*). When *id*\ =\ *gd*, the file will be saved using the
+    GDAL library. Append the format *:driver* and optionally the output
+    *datatype*. The driver names are those used by GDAL itself (e.g.,
+    netCDF, GTiFF, etc.), and the data type is one of
+    *u8*\ \|\ *u16*\ \|\ *i16*\ \|\ *u32*\ \|\ *i32*\ \|\ *float32*,
+    where ’i’ and ’u’ denote signed and unsigned integers respectively.
+    The default type is *float32*. Note also that both driver names and
+    data types are case insensitive.
 
-`Optional Arguments <#toc6>`_
+    Consider setting **IO\_NC4\_DEFLATION\_LEVEL** to reduce file size
+    and to further increase read/write performace. Especially when
+    working with subsets of global grids, masks, and grids with
+    repeating grid values, the improvement is usually significant.
+
+`Optional Arguments <#toc5>`_
 -----------------------------
 
 **-N**
@@ -65,7 +83,7 @@ space is allowed between the option flag and the associated arguments.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-^** (\*)
@@ -73,8 +91,12 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
-`Format Identifier <#toc7>`_
+`Format Identifier <#toc6>`_
 ----------------------------
 
 By default, grids will be written as floating point data stored in
@@ -84,37 +106,64 @@ produced netCDF files that did not conform to these conventions.
 Although these files are still supported, their use is deprecated. To
 write other than floating point COARDS-compliant netCDF files, append
 the =\ *id* suffix to the filename *outgrdfile*.
-When reading files, **grdreformat** and other **GMT** programs will
-automatically recognize any type of netCDF grid file. These can be in
-either COARDS-compliant or pre-4.1 format, and contain floating-point or
-integer data. To read other types of grid files, append the =\ *id*
-suffix to the filename *ingrdfile*.
-**nb** GMT netCDF format (byte) (COARDS-compliant)
-**ns** GMT netCDF format (short) (COARDS-compliant)
-**ni** GMT netCDF format (int) (COARDS-compliant)
-**nf** GMT netCDF format (float) (COARDS-compliant)
-**nd** GMT netCDF format (double) (COARDS-compliant)
-**cb** GMT netCDF format (byte) (deprecated)
-**cs** GMT netCDF format (short) (deprecated)
-**ci** GMT netCDF format (int) (deprecated)
-**cf** GMT netCDF format (float) (deprecated)
-**cd** GMT netCDF format (double) (deprecated)
-**bm** GMT native, C-binary format (bit-mask)
-**bb** GMT native, C-binary format (byte)
-**bs** GMT native, C-binary format (short)
-**bi** GMT native, C-binary format (int)
-**bf** GMT native, C-binary format (float)
-**bd** GMT native, C-binary format (double)
-**rb** SUN rasterfile format (8-bit standard)
-**rf** GEODAS grid format GRD98 (NGDC)
-**sf** Golden Software Surfer format 6 (float)
-**sd** Golden Software Surfer format 7 (double, read-only)
-**af** Atlantic Geoscience Center format AGC (float)
-**ei** ESRI Arc/Info ASCII Grid Interchange format (integer)
-**ef** ESRI Arc/Info ASCII Grid Interchange format (float)
-**gd** Import through GDAL (convert to float)
 
-`Gmt Standard Netcdf Files <#toc8>`_
+When reading files, **grdreformat** and other **GMT** programs will try
+to automatically recognize the type of the input grid file. If this
+fails you may append the =\ *id* suffix to the filename *ingrdfile*.
+
++----------+---------------------------------------------------------------+
+| ID       | Explanation                                                   |
++----------+---------------------------------------------------------------+
+| **nb**   | GMT netCDF format (8-bit integer, COARDS, CF-1.5)             |
++----------+---------------------------------------------------------------+
+| **ns**   | GMT netCDF format (16-bit integer, COARDS, CF-1.5)            |
++----------+---------------------------------------------------------------+
+| **ni**   | GMT netCDF format (32-bit integer, COARDS, CF-1.5)            |
++----------+---------------------------------------------------------------+
+| **nf**   | GMT netCDF format (32-bit float, COARDS, CF-1.5)              |
++----------+---------------------------------------------------------------+
+| **nd**   | GMT netCDF format (64-bit float, COARDS, CF-1.5)              |
++----------+---------------------------------------------------------------+
+| **cb**   | GMT netCDF format (8-bit integer, deprecated)                 |
++----------+---------------------------------------------------------------+
+| **cs**   | GMT netCDF format (16-bit integer, deprecated)                |
++----------+---------------------------------------------------------------+
+| **ci**   | GMT netCDF format (32-bit integer, deprecated)                |
++----------+---------------------------------------------------------------+
+| **cf**   | GMT netCDF format (32-bit float, deprecated)                  |
++----------+---------------------------------------------------------------+
+| **cd**   | GMT netCDF format (64-bit float, deprecated)                  |
++----------+---------------------------------------------------------------+
+| **bm**   | GMT native, C-binary format (bit-mask)                        |
++----------+---------------------------------------------------------------+
+| **bb**   | GMT native, C-binary format (8-bit integer)                   |
++----------+---------------------------------------------------------------+
+| **bs**   | GMT native, C-binary format (16-bit integer)                  |
++----------+---------------------------------------------------------------+
+| **bi**   | GMT native, C-binary format (32-bit integer)                  |
++----------+---------------------------------------------------------------+
+| **bf**   | GMT native, C-binary format (32-bit float)                    |
++----------+---------------------------------------------------------------+
+| **bd**   | GMT native, C-binary format (64-bit float)                    |
++----------+---------------------------------------------------------------+
+| **rb**   | SUN rasterfile format (8-bit standard)                        |
++----------+---------------------------------------------------------------+
+| **rf**   | GEODAS grid format GRD98 (NGDC)                               |
++----------+---------------------------------------------------------------+
+| **sf**   | Golden Software Surfer format 6 (32-bit float)                |
++----------+---------------------------------------------------------------+
+| **sd**   | Golden Software Surfer format 7 (64-bit float, read-only)     |
++----------+---------------------------------------------------------------+
+| **af**   | Atlantic Geoscience Center format AGC (32-bit float)          |
++----------+---------------------------------------------------------------+
+| **ei**   | ESRI Arc/Info ASCII Grid Interchange format (ASCII integer)   |
++----------+---------------------------------------------------------------+
+| **ef**   | ESRI Arc/Info ASCII Grid Interchange format (ASCII float)     |
++----------+---------------------------------------------------------------+
+| **gd**   | Import/export through GDAL                                    |
++----------+---------------------------------------------------------------+
+
+`Gmt Standard Netcdf Files <#toc7>`_
 ------------------------------------
 
 The standard format used for grdfiles is based on netCDF and conforms to
@@ -126,6 +175,7 @@ without loss of data range or significance. For more details, see
 Appendix B.
 
 **Multi-variable grid files**
+
 By default, **GMT** programs will read the first 2-dimensional grid
 contained in a COARDS-compliant netCDF file. Alternatively, use
 *ingrdfile*\ **?**\ *varname* (ahead of any optional suffix **=**\ *id*)
@@ -134,6 +184,7 @@ meaning as a wildcard, escape this meaning by placing the full filename
 and suffix between quotes.
 
 **Multi-dimensional grids**
+
 To extract one *layer* or *level* from a 3-dimensional grid stored in a
 COARDS-compliant netCDF file, append both the name of the variable and
 the index associated with the layer (starting at zero) in the form:
@@ -141,16 +192,18 @@ the index associated with the layer (starting at zero) in the form:
 specify the value associated with that layer using parentheses in stead
 of brackets:
 *ingridfile*\ **?\ `*varname*\ **(**\ *level*\ **)** <varname.level.html>`_
-.
+.**
+
 In a similar way layers can be extracted from 4- or even 5-dimensional
 grids. For example, if a grid has the dimensions (parameter, time,
 depth, latitude, longitude), a map can be selected by using:
 *ingridfile*\ **?**\ *varname*\ **(**\ *parameter*,\ *time*,\ *depth*\ **)**.
+
 Since question marks, brackets and parentheses have special meanings on
 the command line, escape these meanings by placing the full filename and
-suffix between quotes.**
+suffix between quotes.
 
-`Native Binary Files <#toc9>`_
+`Native Binary Files <#toc8>`_
 ------------------------------
 
 For binary native **GMT** files the size of the **GMT** grdheader block
@@ -159,16 +212,16 @@ is *hsize* = 892 bytes, and the total size of the file is *hsize* + *nx*
 element (1, 2, 4). Bit grids are stored using 4-byte integers, each
 holding 32 bits, so for these files the size equation is modified by
 using ceil (*nx* / 32) \* 4 instead of *nx*. Note that these files are
-platform-dependent. Files written on Little Endian machines (e.g. PCs)
-can not be read on Big Endian machines (e.g. most workstations). Also
+platform-dependent. Files written on Little Endian machines (e.g., PCs)
+can not be read on Big Endian machines (e.g., most workstations). Also
 note that it is not possible for **GMT** to determine uniquely if a
 4-byte grid is float or int; in such cases it is best to use the *=ID*
 mechanism to specify the file format. In all cases a native grid is
 considered to be signed (i.e., there are no provision for unsigned short
 ints or unsigned bytes). For header and grid details, see Appendix B.
 
-`Grid Values Precision <#toc10>`_
----------------------------------
+`Grid Values Precision <#toc9>`_
+--------------------------------
 
 Regardless of the precision of the input data, GMT programs that create
 grid files will internally hold the grids in 4-byte floating point
@@ -179,7 +232,7 @@ precision once GMT operates on the grid or writes out new grids. To
 limit loss of precision when processing data you should always consider
 normalizing the data prior to processing.
 
-`Examples <#toc11>`_
+`Examples <#toc10>`_
 --------------------
 
 To extract the second layer from a 3-dimensional grid named temp from a
@@ -206,8 +259,12 @@ To convert etopo2.nc to etopo2.i2 that can be used by **grdraster**, try
 
 grdreformat etopo2.nc etopo2.i2=bs -N -V
 
-`See Also <#toc12>`_
+To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
+
+grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+
+`See Also <#toc11>`_
 --------------------
 
-`*gmt*\ <gmt.html>`_ , `*grdmath*\ <grdmath.html>`_
-
+`*gmt.conf*\ (5) <gmt.conf.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
+`*grdmath*\ (1) <grdmath.html>`_

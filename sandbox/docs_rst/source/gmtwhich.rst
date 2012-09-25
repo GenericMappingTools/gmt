@@ -2,7 +2,6 @@
 gmtwhich
 ********
 
-
 gmtwhich - Find full path to specified files
 
 `Synopsis <#toc1>`_
@@ -14,7 +13,7 @@ gmtwhich - Find full path to specified files
 ----------------------
 
 **gmtwhich** reports the full paths to the files given on the command
-line. We look for the file `in (1) <in.1.html>`_ the current directory,
+line. We look for the file `in (1) <in.html>`_ the current directory,
 (2) in $GMT\_USERDIR (if defined), (3) in $GMT\_DATADIR (if defined). If
 found we print the full path name to the file, or a confirmation (see
 **-C**). The $GMT\_USERDIR and $GMT\_DATADIR environment variables can
@@ -43,15 +42,18 @@ space is allowed between the option flag and the associated arguments.
     Instead of reporting the paths, print the confirmation Y if the file
     is found and N if it is not.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-^** (\*)
     Print a short message about the syntax of the command, then exits.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `See Also <#toc6>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_
-
+`*gmt*\ (1) <gmt.html>`_

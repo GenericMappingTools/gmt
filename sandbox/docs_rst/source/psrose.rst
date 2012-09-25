@@ -2,7 +2,6 @@
 psrose
 ******
 
-
 psrose - Plot a polar histogram (rose, sector, windrose diagrams)
 
 `Synopsis <#toc1>`_
@@ -19,7 +18,7 @@ psrose - Plot a polar histogram (rose, sector, windrose diagrams)
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *scale* ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+] [ **-Z**\ **u**\ \|\ *scale* ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [
@@ -53,9 +52,12 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input. If a file with only
+    azimuths are given, use **-i** to indicate the single column with
+    azimuths; then all lengths are set to unity (see **-Zu** to set
+    actual lengths to unity as well).
 **-A**\ *sector\_width*\ [**r**\ ]
     Gives the sector width in degrees for sector and rose diagram.
     [Default 0 means windrose diagram]. Append **r** to draw rose
@@ -97,8 +99,8 @@ None.
     Select "Portrait" plot orientation.
 **-R**\ *r0*/*r1*/*az\_0*/*az\_1*
     Specifies the ’region’ of interest in (r,azimuth) space. r0 is 0, r1
-    is max length in units. For azimuth, specify -90/90 for half circle
-    plot or 0/360 for full circle.
+    is max length in units. For azimuth, specify either -90/90 or 0/180
+    for half circle plot or 0/360 for full circle.
 **-S**\ *radial\_scale*\ [**n**\ ]
     Specifies radius of circle. Append **n** to normalize input radii to
     go from 0 to 1.
@@ -108,29 +110,33 @@ None.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *pen*
     Set pen attributes for sector outline or rose plot. [Default is no
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
     (requires **-C**) [Default is same as sector outline].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-Z**\ *scale*
     Multiply the data radii by *scale*. E.g., use **-Z**\ 0.001 to
-    convert your data from m to km [Default is no scaling].
+    convert your data from m to km. To exclude the radii from
+    consideration, set them all to unity with **-Zu** [Default is no
+    scaling].
 **-:**
     Input file has (azimuth,radius) pairs rather than the expected
     (radius,azimuth).
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -139,6 +145,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Vector Attributes <#toc6>`_
 ----------------------------
@@ -148,18 +158,25 @@ specify the placement of vector heads, their shapes, and the
 justification of the vector:
 
 **+a**\ *angle* sets the angle of the vector head apex [30].
+
 **+b** places a vector head at the beginning of the vector path [none].
+
 **+e** places a vector head at the end of the vector path [none].
+
 **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
 head fill [Default fill is used, which may be no fill].
+
 **+l** draws half-arrows, using only the left side [both].
+
 **+n**\ *norm* scales down vector attributes (pen thickness, head size)
 with decreasing length, where vectors shorter than *norm* will have
 their attributes scaled by length/\ *norm* [arrow attributes remains
 invariant to length].
+
 **+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
 leading - then the head outline is not drawn. [Default pen is used, and
 head outline is drawn]
+
 **+r** draws half-arrows, using only the right side [both].
 
 In addition, all but circular vectors may take these modifiers:
@@ -167,6 +184,7 @@ In addition, all but circular vectors may take these modifiers:
 **+j**\ *just* determines how the input *x*,\ *y* point relates to the
 vector. Choose from **b**\ eginning [default], **e**\ nd, or
 **c**\ enter.
+
 **+s** means the input *angle*, *length* is instead the *x*, *y*
 coordinates of the vector end point.
 
@@ -203,7 +221,6 @@ must run **psrose** **-I** to find max length in binned data set.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*pshistogram*\ (1) <pshistogram.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*pshistogram*\ (1) <pshistogram.html>`_

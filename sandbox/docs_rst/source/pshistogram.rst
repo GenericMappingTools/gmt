@@ -2,7 +2,6 @@
 pshistogram
 ***********
 
-
 pshistogram - Calculate and plot histograms
 
 `Synopsis <#toc1>`_
@@ -19,8 +18,8 @@ pshistogram - Calculate and plot histograms
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *type* ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [ **-c**\ *copies*
-] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
+] [ **-Z**\ *type* ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
+**-c**\ *copies* ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [
@@ -56,9 +55,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**
     Plot the histogram horizontally from x = 0 [Default is vertically
     from y = 0].
@@ -100,16 +99,17 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-Z**\ *type*
     Choose between 6 types of histograms: 0 = counts [Default], 1 =
     frequency\_percent, 2 = log (1.0 + count), 3 = log (1.0 +
     frequency\_percent), 4 = log10 (1.0 + count), 5 = log10 (1.0 +
     frequency\_percent).
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
@@ -117,9 +117,10 @@ space is allowed between the option flag and the associated arguments.
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -128,6 +129,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -160,7 +165,6 @@ the current setting of **TIME\_UNIT**.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*psrose*\ (1) <psrose.1.html>`_ , `*psxy*\ (1) <psxy.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ , `*psrose*\ (1) <psrose.html>`_ ,
+`*psxy*\ (1) <psxy.html>`_

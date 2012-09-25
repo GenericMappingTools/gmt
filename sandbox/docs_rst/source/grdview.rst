@@ -2,7 +2,6 @@
 grdview
 *******
 
-
 grdview - Create 3-D perspective image or surface mesh from a grid
 
 `Synopsis <#toc1>`_
@@ -63,7 +62,7 @@ space is allowed between the option flag and the associated arguments.
     Set map boundary intervals.
 **-C**\ *cptfile*
     name of the color palette file. Must be present if you `want
-    (1) <want.1.html>`_ mesh plot with contours (**-Qm**), `or
+    (1) <want.html>`_ mesh plot with contours (**-Qm**), `or
     (2) <or.2.html>`_ shaded/colored perspective image (**-Qs** or
     **-Qi**). For **-Qs**: You can specify that you want to skip a
     z-slice by setting red = -; to use a pattern give red =
@@ -125,7 +124,7 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ **type**\ *pen*
 **-Wc**
     Draw contour lines on top of surface or mesh (not image). Append pen
@@ -140,13 +139,16 @@ space is allowed between the option flag and the associated arguments.
     0.25p, color = black, style = solid]. You must also select **-N**
     for the facade outline to be drawn.
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] (\*)
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+(\*)
     Select interpolation mode for grids.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -155,6 +157,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -167,8 +173,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -177,7 +183,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -221,7 +227,8 @@ to get the red, green, and blue grids, and then drape this image over
 the topography and shade the result for good measure. The commands are
 
 grd2rgb veggies.ras -Glayer\_%c.nc
- grdview topo.nc **-JM**\ 6\ **i** -Qi -p140/30 -Itopo\_intens.nc
+
+grdview topo.nc **-JM**\ 6\ **i** -Qi -p140/30 -Itopo\_intens.nc
 -Glayer\_r.nc,layer\_g.nc,layer\_b.nc > image.ps
 
 `Remarks <#toc8>`_
@@ -240,12 +247,11 @@ polygons.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grd2rgb*\ (1) <grd2rgb.1.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.1.html>`_ ,
-`*grdimage*\ (1) <grdimage.1.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.1.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*pscontour*\ (1) <pscontour.1.html>`_ ,
-`*pstext*\ (1) <pstext.1.html>`_ , `*surface*\ (1) <surface.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grd2rgb*\ (1) <grd2rgb.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*grdcontour*\ (1) <grdcontour.html>`_ ,
+`*grdimage*\ (1) <grdimage.html>`_ ,
+`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ ,
+`*pscontour*\ (1) <pscontour.html>`_ , `*pstext*\ (1) <pstext.html>`_ ,
+`*surface*\ (1) <surface.html>`_

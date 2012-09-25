@@ -2,7 +2,6 @@
 grdraster
 *********
 
-
 grdraster - Extract subregion from a binary raster and save as a GMT
 grid
 
@@ -13,7 +12,7 @@ grid
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-G**\ *grdfile* ] [
 **-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ] [
 **-J**\ *parameters* ] [ **-V**\ [*level*\ ] ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-o**\ *cols*\ [,*...*] ]
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-o**\ *cols*\ [,*...*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -74,8 +73,8 @@ space is allowed between the option flag and the associated arguments.
 
 **-G**\ *grdfile*
     Name of output grid file. If not set, the grid will be written as
-    ASCII (or binary; see **-bo**\ [*ncol*\ ][**t**\ ]) xyz-triplets to
-    stdout instead.
+    ASCII (or binary; see **-bo**\ [*ncols*\ ][*type*\ ]) xyz-triplets
+    to stdout instead.
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
     *x\_inc* [and optionally *y\_inc*] is the grid spacing. Optionally,
     append a suffix modifier. **Geographical (degrees) coordinates**:
@@ -101,8 +100,8 @@ space is allowed between the option flag and the associated arguments.
 **-J**\ *parameters* (\*)
     Select map projection.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns. This option applies only if no **-G** option
@@ -112,6 +111,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -139,9 +142,9 @@ binary double precision xyz-triplets to standard output:
 `See Also <#toc7>`_
 -------------------
 
-`*gmtdefaults*\ (1) <gmtdefaults.1.html>`_ , `*GMT*\ (1) <GMT.1.html>`_
-, `*grdsample*\ (1) <grdsample.1.html>`_ ,
-`*grdfilter*\ (1) <grdfilter.1.html>`_
+`*gmtdefaults*\ (1) <gmtdefaults.html>`_ , `*GMT*\ (1) <GMT.html>`_ ,
+`*grdsample*\ (1) <grdsample.html>`_ ,
+`*grdfilter*\ (1) <grdfilter.html>`_
 
 `References <#toc8>`_
 ---------------------
@@ -149,14 +152,14 @@ binary double precision xyz-triplets to standard output:
 Wessel, P., W. H. F. Smith, R. Scharroo, and J. Luis, 2011, The Generic
 Mapping Tools (GMT) version 5.0.0b Technical Reference & Cookbook,
 SOEST/NOAA.
-Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
+ Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
 Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.
-Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
+ Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
 Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.
-Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
+ Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
 Mapping Tools Released,
 `http://www.agu.org/eos\_elec/95154e.html, <http://www.agu.org/eos_elec/95154e.html,>`_
 Copyright 1995 by the American Geophysical Union.
-Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
+ Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
 Display Data, EOS Trans., AGU, 72 (41), p. 441.
 

@@ -2,7 +2,6 @@
 triangulate
 ***********
 
-
 triangulate - Do optimal (Delaunay) triangulation and gridding of
 Cartesian table data [method]
 
@@ -57,9 +56,9 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-Dx**\ \|\ **y**
     Take either the *x*- or *y*-derivatives of surface represented by
     the planar facets (only used when **-G** is set).
@@ -92,20 +91,20 @@ None.
     Output triangles as polygon segments separated by a segment header
     record. Requires Delaunay triangulation.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-Z**
     Controls whether we read (x,y) or (x,y,z) data and if z should be
     output when **-M** or **-S** are used [Read (x,y) only].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input]. Node ids are
     stored as double triplets.
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-r**
     Set pixel node registration [gridline]. Only valid with **-G**).
@@ -116,6 +115,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -163,7 +166,7 @@ psxy -R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > cells.ps
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*pscontour*\ (1) <pscontour.1.html>`_
+`*gmt*\ (1) <gmt.html>`_ , `*pscontour*\ (1) <pscontour.html>`_
 
 `References <#toc10>`_
 ----------------------
@@ -171,8 +174,8 @@ psxy -R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > cells.ps
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
 Geosci.*, **8**, 97-101.
 
-Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh
-Generator and Delaunay Triangulator, First Workshop on Applied
-Computational Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
-www.cs.cmu.edu/~quake/triangle.html
+Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational
+Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
 
+www.cs.cmu.edu/~quake/triangle.html

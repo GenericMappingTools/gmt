@@ -2,7 +2,6 @@
 ps2raster
 *********
 
-
 ps2raster - Convert [E]PS file(s) to other formats using GhostScript
 
 `Synopsis <#toc1>`_
@@ -43,14 +42,14 @@ space is allowed between the option flag and the associated arguments.
 *psfiles*
     Names of *PostScript* files to be converted. The output files will
     have the same name (unless **-F** is used) but with the conventional
-    extension name associated to the raster format (e.g. .jpg for the
+    extension name associated to the raster format (e.g., .jpg for the
     jpeg format). Use **-D** to redirect the output to a different
     directory.
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-A**\ [**u**\ [*margins*\ ]\|-]
+**-A**\ [**u**\ ][*margins*\ ][**-**\ ]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
     time-stamps. Optionally, append extra margins to the bounding box.
@@ -87,7 +86,6 @@ space is allowed between the option flag and the associated arguments.
     The *listfile* is an ASCII file with the names of the *PostScript*
     files to be converted.
 **-M**
-
 **-N**
     This option is obsolete. Use **-S** to print the GhostScript
     command, if applicable. Use **-Te** to save the intermediate EPS
@@ -116,7 +114,7 @@ space is allowed between the option flag and the associated arguments.
     PDF file from the list of input PS or PDF files. It requires **-F**
     option.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*]
     Write a ESRI type world file suitable to make (e.g) .tif files be
     recognized as geotiff by softwares that know how to do it. Be aware,
@@ -132,22 +130,25 @@ space is allowed between the option flag and the associated arguments.
     than the algorithm will fail miserably as those whites will be eaten
     by the GhostScript. In that case you really must use **-B** or use a
     slightly off-white color.
+
     Together with **-V** it prints on screen the gdal\_translate
     (gdal\_translate is a command line tool from the GDAL package)
     command that reads the raster + world file and creates a true
     geotiff file. Use **-W+g** to do a system call to gdal\_translate
     and create a geoTIFF image right away. The output file will have a
     .tiff extension.
-    The world file naming follows the convention of jamming a ’w’ in
-    the file extension. So, if output is tif **-Tt** the world file is a
+
+    The world file naming follows the convention of jamming a ’w’ in the
+    file extension. So, if output is tif **-Tt** the world file is a
     .tfw, for jpeg we have a .jgw and so on. This option automatically
     sets **-A** **-P**.
-    Use **-W+k** to create a minimalist KML file that allows loading
-    the image in GoogleEarth. Note that for this option the image must
-    be in geographical coordinates. If not, a warning is issued but the
-    KML file is created anyway. Several modifier options are available
-    to customize the KML file in the form of **+**\ *opt* strings.
-    Append **+t**\ *title* to set the document title [GMT KML Document],
+
+    Use **-W+k** to create a minimalist KML file that allows loading the
+    image in GoogleEarth. Note that for this option the image must be in
+    geographical coordinates. If not, a warning is issued but the KML
+    file is created anyway. Several modifier options are available to
+    customize the KML file in the form of **+**\ *opt* strings. Append
+    **+t**\ *title* to set the document title [GMT KML Document],
     **+n**\ *layername* to set the layer name, and
     **+a**\ */altmode*\ [*altitude*\ ] to select one of 5 altitude modes
     recognized by Google Earth that determines the altitude (in m) of
@@ -164,6 +165,7 @@ space is allowed between the option flag and the associated arguments.
     within a KML folder of the specified name. See the KML documentation
     for further explanation
     (http://code.google.com/apis/kml/documentation/).
+
     Further notes on the creation of georeferenced rasters.
     **ps2raster** can create a georeferenced raster image with a world
     file OR uses GDAL to convert the GMT *PostScript* file to geotiff.
@@ -174,21 +176,30 @@ space is allowed between the option flag and the associated arguments.
     files, or even non-GMT ps files, can provide the information
     **ps2raster** requires by manually editing a line into the
     *PostScript* file, prefixed with %%PROJ.
+
     For example the command **pscoast** **-JM0/12c** **-R**-10/-4/37/43
     **-W1** **-Di** **-Bg30m** --MAP\_FRAME\_TYPE=inside > cara.ps
+
     adds this comment line
+
     %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
     4413389.889 5282821.824 +proj=merc +lon\_0=0 +k=-1 +x\_0=0 +y\_0=0
     +a=6378137.0 +b=6356752.314245
+
     where ’merc’ is the keyword for the coordinate conversion; the 2 to
     5th elements contain the map limits, 6 to 9th the map limits in
     projected coordinates and the rest of the line has the regular proj4
     string for this projection.
+
 **-^** (\*)
     Print a short message about the syntax of the command, then exits.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Notes <#toc6>`_
 ----------------
@@ -297,5 +308,4 @@ documentation.
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ <gmt.html>`_ , `*gs*\ <gs.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gs*\ (1) <gs.html>`_

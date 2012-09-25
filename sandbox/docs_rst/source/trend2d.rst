@@ -2,7 +2,6 @@
 trend2d
 *******
 
-
 trend2d - Fit a [weighted] [robust] polynomial model for z = f(x,y) to
 xyz[w] data
 
@@ -66,7 +65,7 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncol*\ ][**t**\ ]]
+    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
     files containing x,y,z [w] values in the first 3 [4] columns. If no
     files are specified, **trend2d** will read from standard input.
 **-C**\ *condition\_number*
@@ -83,21 +82,21 @@ space is allowed between the option flag and the associated arguments.
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**
     Weights are supplied in input column 4. Do a weighted least squares
     fit [or start with these weights when doing the iterative robust
     fit]. [Default reads only the first 3 columns.]
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 (or 4 if **-W** is set) input
     columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 1-6 columns as set by **-F**].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
@@ -106,6 +105,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Remarks <#toc6>`_
 ------------------
@@ -181,9 +184,8 @@ trend2d data.xyz -N10r -I -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grdmath*\ (1) <grdmath.1.html>`_ ,
-`*grdtrend*\ (1) <grdtrend.1.html>`_ ,
-`*trend1d*\ (1) <trend1d.1.html>`_
+`*gmt*\ (1) <gmt.html>`_ , `*grdmath*\ (1) <grdmath.html>`_ ,
+`*grdtrend*\ (1) <grdtrend.html>`_ , `*trend1d*\ (1) <trend1d.html>`_
 
 `References <#toc10>`_
 ----------------------
@@ -193,4 +195,3 @@ Math. Stat.*, **35**, 73-101.
 
 Menke, W., 1989, Geophysical Data Analysis: Discrete Inverse Theory,
 Revised Edition, Academic Press, San Diego.
-

@@ -2,7 +2,6 @@
 grdvector
 *********
 
-
 grdvector - Plot vector field from two component grids
 
 `Synopsis <#toc1>`_
@@ -95,12 +94,13 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *pen*
     Set pen attributes used for vector outlines [Default: width =
     default, color = black, style = solid].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-Z**
     Means the angles provided are azimuths rather than direction
@@ -109,7 +109,8 @@ space is allowed between the option flag and the associated arguments.
     Specify number of plot copies [Default is 1].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -118,6 +119,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -130,8 +135,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -140,7 +145,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -153,18 +158,25 @@ specify the placement of vector heads, their shapes, and the
 justification of the vector:
 
 **+a**\ *angle* sets the angle of the vector head apex [30].
+
 **+b** places a vector head at the beginning of the vector path [none].
+
 **+e** places a vector head at the end of the vector path [none].
+
 **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
 head fill [Default fill is used, which may be no fill].
+
 **+l** draws half-arrows, using only the left side [both].
+
 **+n**\ *norm* scales down vector attributes (pen thickness, head size)
 with decreasing length, where vectors shorter than *norm* will have
 their attributes scaled by length/\ *norm* [arrow attributes remains
 invariant to length].
+
 **+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
 leading - then the head outline is not drawn. [Default pen is used, and
 head outline is drawn]
+
 **+r** draws half-arrows, using only the right side [both].
 
 In addition, all but circular vectors may take these modifiers:
@@ -172,6 +184,7 @@ In addition, all but circular vectors may take these modifiers:
 **+j**\ *just* determines how the input *x*,\ *y* point relates to the
 vector. Choose from **b**\ eginning [default], **e**\ nd, or
 **c**\ enter.
+
 **+s** means the input *angle*, *length* is instead the *x*, *y*
 coordinates of the vector end point.
 
@@ -189,6 +202,5 @@ grdvector r.nc theta.nc **-Jx**\ 5\ **c** -A -Q0.1i+e+jc
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.1.html>`_ , `*psxy*\ (1) <psxy.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*grdcontour*\ (1) <grdcontour.html>`_ , `*psxy*\ (1) <psxy.html>`_

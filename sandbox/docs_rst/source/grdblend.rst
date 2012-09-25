@@ -2,7 +2,6 @@
 grdblend
 ********
 
-
 grdblend - Blend several partially over-lapping grids into one large
 grid
 
@@ -89,9 +88,9 @@ space is allowed between the option flag and the associated arguments.
     domain as inner region and set weight to 1. If the ASCII file is not
     given **grdblend** will read standard input. Alternatively, if you
     have more than one grid file to blend and you wish (a) all input
-    grids to have the same `weight (1) <weight.1.html>`_ and (b) all
-    grids should use their region as the interior region, then you may
-    simply list all the grids on the command line instead of providing a
+    grids to have the same `weight (1) <weight.html>`_ and (b) all grids
+    should use their region as the interior region, then you may simply
+    list all the grids on the command line instead of providing a
     *blendfile*. You must specify at least 2 input grids for this
     mechanism to work. Any grid that is not coregistered with the
     desired output layout implied by **-R**, **-I** (and **-r**) will
@@ -108,12 +107,14 @@ space is allowed between the option flag and the associated arguments.
     contributes to the final result. Weights and cosine tapering are not
     considered when clobber mode is active.
 **-N**\ *nodata*
-    No data. Set nodes with no input grid to this value [Default is NaN].
+    No data. Set nodes with no input grid to this value [Default is
+    NaN].
 **-Q**
     Create a header-less grid file suitable for use with **grdraster**.
-    Requires that the output grid file is a native format (i.e., not netCDF).
+    Requires that the output grid file is a native format (i.e., not
+    netCDF).
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**
     Do not blend, just output the weights used for each node. This
     option is valid when only one input grid is provided [Default makes
@@ -129,6 +130,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -137,14 +142,14 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.
 
 When writing a netCDF file, the grid is stored by default with the
 variable name "z". To specify another variable name *varname*, append
@@ -172,10 +177,13 @@ will indicate both this unit and epoch.
 To create a grid file from the four grid files piece\_?.nc, make the
 blendfile like this
 
-piece\_1.nc\ `` `` `` `` -R<subregion\_1> 1
-piece\_2.nc\ `` `` `` `` -R<subregion\_2> 1
-piece\_3.nc\ `` `` `` `` -R<subregion\_3> 1
-piece\_4.nc\ `` `` `` `` -R<subregion\_4> 1
+piece\_1.nc -R<subregion\_1> 1
+
+piece\_2.nc -R<subregion\_2> 1
+
+piece\_3.nc -R<subregion\_3> 1
+
+piece\_4.nc -R<subregion\_4> 1
 
 Then run
 
@@ -188,7 +196,5 @@ grdblend MB\_\*.nc -Gblend.nc -R<full\_region> -I<dx/dy> -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grd2xyz*\ (1) <grd2xyz.1.html>`_ ,
-`*grdedit*\ (1) <grdedit.1.html>`_
-`*grdraster*\ (1) <grdraster.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grd2xyz*\ (1) <grd2xyz.html>`_ ,
+`*grdedit*\ (1) <grdedit.html>`_ `*grdraster*\ (1) <grdraster.html>`_

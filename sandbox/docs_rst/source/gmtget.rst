@@ -1,7 +1,6 @@
-######
+******
 gmtget
-######
-
+******
 
 gmtget - Get individual **GMT** default parameters
 
@@ -52,6 +51,5 @@ try
 `See Also <#toc6>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ , `*gmt.conf*\ <gmt.conf.html>`_ ,
-`*gmtset*\ <gmtset.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtset*\ (1) <gmtset.html>`_

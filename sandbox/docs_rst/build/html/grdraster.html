@@ -60,7 +60,7 @@ grid</p>
 <strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] [ <strong>-G</strong><em>grdfile</em> ] [
 <strong>-I</strong><em>xinc</em>[<strong>m</strong>|<strong>s</strong>][/<em>yinc</em>[<strong>m</strong>|<strong>s</strong>]] ] [
 <strong>-J</strong><em>parameters</em> ] [ <strong>-V</strong>[<em>level</em>] ] [
-<strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-o</strong><em>cols</em>[,*...*] ]</p>
+<strong>-bo</strong>[<em>ncols</em>][<em>type</em>] ] [ <strong>-o</strong><em>cols</em>[,*...*] ]</p>
 </div>
 <div class="section" id="id2">
 <h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -120,8 +120,8 @@ dimensions.</dd>
 <dl class="docutils">
 <dt><strong>-G</strong><em>grdfile</em></dt>
 <dd>Name of output grid file. If not set, the grid will be written as
-ASCII (or binary; see <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>]) xyz-triplets to
-stdout instead.</dd>
+ASCII (or binary; see <strong>-bo</strong>[<em>ncols</em>][<em>type</em>]) xyz-triplets
+to stdout instead.</dd>
 <dt><strong>-I</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]</dt>
 <dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
 append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
@@ -147,8 +147,8 @@ has already been initialized; use <strong>-I</strong> to override the values.</d
 <dt><strong>-J</strong><em>parameters</em> (*)</dt>
 <dd>Select map projection.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output.</dd>
 <dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
 <dd>Select output columns. This option applies only if no <strong>-G</strong> option
@@ -158,6 +158,10 @@ has been set.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -179,25 +183,29 @@ binary double precision xyz-triplets to standard output:</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmtdefaults.1.html">*gmtdefaults*(1)</a> , <a class="reference external" href="GMT.1.html">*GMT*(1)</a>
-, <a class="reference external" href="grdsample.1.html">*grdsample*(1)</a> ,
-<a class="reference external" href="grdfilter.1.html">*grdfilter*(1)</a></p>
+<p><a class="reference external" href="gmtdefaults.html">*gmtdefaults*(1)</a> , <a class="reference external" href="GMT.html">*GMT*(1)</a> ,
+<a class="reference external" href="grdsample.html">*grdsample*(1)</a> ,
+<a class="reference external" href="grdfilter.html">*grdfilter*(1)</a></p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
 <p>Wessel, P., W. H. F. Smith, R. Scharroo, and J. Luis, 2011, The Generic
 Mapping Tools (GMT) version 5.0.0b Technical Reference &amp; Cookbook,
-SOEST/NOAA.
-Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
-Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.
-Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.
-Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released,
+SOEST/NOAA.</p>
+<blockquote>
+<div>Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic</div></blockquote>
+<dl class="docutils">
+<dt>Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.</dt>
+<dd>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic</dd>
+<dt>Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.</dt>
+<dd>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic</dd>
+</dl>
+<p>Mapping Tools Released,
 <a class="reference external" href="http://www.agu.org/eos_elec/95154e.html,">http://www.agu.org/eos_elec/95154e.html,</a>
-Copyright 1995 by the American Geophysical Union.
-Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
-Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
+Copyright 1995 by the American Geophysical Union.</p>
+<blockquote>
+<div>Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and</div></blockquote>
+<p>Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
 </div>
 </div>
 

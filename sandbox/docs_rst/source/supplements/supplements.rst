@@ -5,14 +5,13 @@ Supplements
 .. toctree::
    :maxdepth: 2
 
-   gshhs/list
-   imgsrc/list
-   meca/list
-   mgd77/list
-   mgg/list
-   misc/list
-   potential/list
-   segyprogs/list
-   sph/list
-   spotter/list
-   x2sys/list
+   list_gshhg
+   list_imgsrc
+   list_meca
+   list_mgd77
+   list_misc
+   list_potential
+   list_segyprogs
+   list_sph
+   list_spotter
+   list_x2sys

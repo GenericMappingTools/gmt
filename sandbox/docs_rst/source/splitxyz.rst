@@ -2,7 +2,6 @@
 splitxyz
 ********
 
-
 splitxyz - Split xyz[dh] data tables into individual segments
 
 `Synopsis <#toc1>`_
@@ -32,7 +31,7 @@ values and/or the x,y values. **splitxyz** is a useful filter between
 data extraction and **pswiggle** plotting, and can also be used to
 divide a large x,y,z dataset into segments. The output is always in the
 ASCII format; input may be ASCII or binary (see
-**-bi**\ [*ncol*\ ][**t**\ ]).
+**-bi**\ [*ncols*\ ][*type*\ ]).
 
 `Common Arguments And Specifications <#toc3>`_
 ----------------------------------------------
@@ -53,7 +52,7 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncol*\ ][**t**\ ]]
+    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
     files with 3 (or 2, see **-Z**) [or 5] columns holding (x,y,z[,d,h])
     data values. To use (x,y,z,d,h) input, sorted so that d is
     non-decreasing, specify the **-S** option; default expects (x,y,z)
@@ -83,28 +82,23 @@ space is allowed between the option flag and the associated arguments.
     filtered separately. This may introduce edge effects at the ends of
     each segment, but prevents a low-pass x,y filter from rounding off
     the corners of track segments. [Default = no filtering].
-**-M**
-    Use Map units. Then x,y are in degrees of longitude, latitude,
-    distances are in kilometers, and angles are azimuths. [Default:
-    distances are cartesian in same units as x,y and angles are
-    counter-clockwise from horizontal].
 **-N**\ *template*
     Write each segment to a separate output file [Default writes a
     multiple segment file to stdout]. Append a format template for the
     individual file names; this template **must** contain a C format
-    specifier that can format an long integer argument (the running
-    segment number across all tables); this is usually %ld but could be
-    %8.8ld which gives leading zeros, etc. [Default is
-    splitxyz\_segment\_%ld.{txt\|bin}, depending on
-    **-bo**\ [*ncol*\ ][**t**\ ]]. Alternatively, give a template with
+    specifier that can format an integer argument (the running segment
+    number across all tables); this is usually %d but could be %08d
+    which gives leading zeros, etc. [Default is
+    splitxyz\_segment\_%d.{txt\|bin}, depending on
+    **-bo**\ [*ncols*\ ][*type*\ ]]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
 **-Q**\ *flags*
     Specify your desired output using any combination of *xyzdh*, in any
     order. Do not space between the letters. Use lower case. The output
-    will be ASCII (or binary, see **-bo**\ [*ncol*\ ][**t**\ ]) columns
-    of values corresponding to *xyzdh* [Default is **-Q**\ *xyzdh*
-    (**-Q**\ *xydh* if **-Z** is set)].
+    will be ASCII (or binary, see **-bo**\ [*ncols*\ ][*type*\ ])
+    columns of values corresponding to *xyzdh* [Default is
+    **-Q**\ *xyzdh* (**-Q**\ *xydh* if **-Z** is set)].
 **-S**
     Both d and h are supplied. In this case, input contains x,y,z,d,h.
     [Default expects (x,y,z) input, and d,h are computed from delta x,
@@ -114,13 +108,13 @@ space is allowed between the option flag and the associated arguments.
     distances are Cartesian in same units as x,y and angles are
     counter-clockwise from horizontal].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-Z**
     Data have x,y only (no z-column).
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2, 3, or 5 input columns as set by
     **-S**, **-Z**].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 1-5 output columns as set by
     **-Q**].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
@@ -130,7 +124,7 @@ space is allowed between the option flag and the associated arguments.
     into two segments. [Default ignores gaps].
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s). Not used with binary data.
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
@@ -139,6 +133,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -152,7 +150,15 @@ problems downstream. If you find the output is not written with enough
 precision, consider switching to binary output (**-bo** if available) or
 specify more decimals using the **FORMAT\_FLOAT\_OUT** setting.
 
-`Examples <#toc7>`_
+`Distance Calculations <#toc7>`_
+--------------------------------
+
+The type of input data is dictated by the **-f** option. If **-fg** is
+given then x,y are in degrees of longitude, latitude, distances are in
+kilometers, and angles are azimuths. Otherwise, distances are Cartesian
+in same units as x,y and angles are counter-clockwise from horizontal.
+
+`Examples <#toc8>`_
 -------------------
 
 Suppose you want to make a wiggle plot of magnetic anomalies on segments
@@ -174,11 +180,10 @@ lat, lon, gravity values from a survey, and you want to split it into
 profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try
 this:
 
-splitxyz survey.bin -Nsurvey\_%3.3d.txt -V -gd100k -D100 -: -fg -bi3d
+splitxyz survey.bin -Nsurvey\_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
-`See Also <#toc8>`_
+`See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*mgd77list*\ (1) <mgd77list.1.html>`_ ,
-`*pswiggle*\ (1) <pswiggle.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*mgd77list*\ (1) <mgd77list.html>`_ ,
+`*pswiggle*\ (1) <pswiggle.html>`_

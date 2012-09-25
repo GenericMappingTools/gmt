@@ -31,21 +31,24 @@ the colors will be uniformly distributed in area on the plot. Let z be
 the data values in the grid. Define CDF(Z) = (# of z < Z) / (# of z in
 grid). (NaNs are ignored). These z-values are then normalized to the
 master cpt file and colors are sampled at the desired intervals.
+
 The color palette includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
 than the lowest *z*-value, the foreground color (F) assigned to values
 higher than the highest *z*-value, and the NaN color (N) painted
 whereever values are undefined.
+
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
 **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN** from
 the **gmt.conf** file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
-The color model (RGB, HSV or CMYK) of the palette created by
-**makecpt** will be the same as specified in the header of the master
-cpt file. When there is no **COLOR\_MODEL** entry in the master cpt
-file, the **COLOR\_MODEL** specified in the **gmt.conf** file or on the
-command line will be used.
+
+The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
+will be the same as specified in the header of the master cpt file. When
+there is no **COLOR\_MODEL** entry in the master cpt file, the
+**COLOR\_MODEL** specified in the **gmt.conf** file or on the command
+line will be used.
 
 `Common Arguments And Specifications <#toc3>`_
 ----------------------------------------------
@@ -69,7 +72,7 @@ space is allowed between the option flag and the associated arguments.
 **-A**\ [**+**\ ]\ *transparency*
     Sets a constant level of transparency (0-100) for all color slices.
     Prepend **+** to also affect the fore-, back-, and nan-colors
-    [Default is no transparency, i.e. 0 (opaque)].
+    [Default is no transparency, i.e., 0 (opaque)].
 **-C**\ *cptmaster*
     Selects the master color table to use in the interpolation. Choose
     among the built-in tables (type **grd2cpt** to see the list) or give
@@ -113,10 +116,11 @@ space is allowed between the option flag and the associated arguments.
     colors, and writes out z.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
-**-S**\ *zstart/zstop/zinc*
+**-S**\ *zstart/zstop/zinc* or **-S**\ *n*
     Set steps in cpt file. Calculate entries in cpt file from *zstart*
-    to *zstop* in steps of (*zinc*). [Default chooses arbitrary values
-    by a crazy scheme.]
+    to *zstop* in steps of (*zinc*). Default chooses arbitrary values by
+    a crazy scheme. Use **-S**\ *n* to select *n* points from a
+    cumulative normal distribution.
 **-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=**
     Force the color table to be symmetric about zero (from -R to +R).
     Append flag to set the range R: **-** for R =\|zmin\|, **+** for R =
@@ -138,6 +142,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -150,8 +158,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -160,7 +168,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -184,7 +192,6 @@ grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*grdhisteq*\ (1) <grdhisteq.1.html>`_ ,
-`*grdinfo*\ (1) <grdinfo.1.html>`_ , `*makecpt*\ (1) <makecpt.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*grdhisteq*\ (1) <grdhisteq.html>`_ , `*grdinfo*\ (1) <grdinfo.html>`_
+, `*makecpt*\ (1) <makecpt.html>`_

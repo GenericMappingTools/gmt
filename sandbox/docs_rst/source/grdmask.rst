@@ -2,7 +2,6 @@
 grdmask
 *******
 
-
 grdmask - Create mask grid from polygons or point coverage
 
 `Synopsis <#toc1>`_
@@ -14,7 +13,7 @@ grdmask - Create mask grid from polygons or point coverage
 **-A**\ [**m**\ \|\ **p**] ] [
 **-N**\ [**i**\ \|\ **I**\ \|\ **p**\ \|\ **P**]\ *values* ] [
 **-S**\ *search\_radius*\ [*unit*\ ] ] [ **-V**\ [*level*\ ] ] [
-**-bi**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ *colinfo* ] [
+**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -48,7 +47,7 @@ space is allowed between the option flag and the associated arguments.
 
 *pathfiles*
     The name of 1 or more ASCII [or binary, see
-    **-bi**\ [*ncol*\ ][**t**\ ]] files holding the polygon(s) or data
+    **-bi**\ [*ncols*\ ][*type*\ ]] files holding the polygon(s) or data
     points.
 **-G**\ *mask\_grd\_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS
@@ -88,32 +87,36 @@ space is allowed between the option flag and the associated arguments.
     Alternatively, append **m** to have sides first follow meridians,
     then parallels. Or append **p** to first follow parallels, then
     meridians.
-**-N**\ [**i**\ \|\ **I**\ \|\ **p**\ \|\ **P**]\ *values*
+**-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values*
     Sets the *out/edge/in* that will be assigned to nodes that are
     *out*\ side the polygons, on the *edge*, or *in*\ side. Values can
     be any number, including the textstring NaN [Default is 0/0/1].
-    Optionally, use **Ni** to set polygon insides to the polygon ID
-    obtained from the data (either segment header **-L**\ *header* or
-    via **-a**); use **-NI** to consider the polygon boundary as part of
-    the inside. Alternatively, use **-Np** to use a running number as
-    polygon ID; optionally append start of the sequence [0]. Here,
-    **-NP** includes the polygon perimeter as inside.
+    Optionally, use **Nz** to set polygon insides to the z-value
+    obtained from the data (either segment header **-Z**\ *zval*,
+    **-L**\ *header* or via **-a**\ Z=\ *name*); use **-NZ** to consider
+    the polygon boundary as part of the inside. Alternatively, use
+    **-Np** to use a running number as polygon ID; optionally append
+    start of the sequence [0]. Here, **-NP** includes the polygon
+    perimeter as inside.
 **-S**\ *search\_radius*\ [*unit*\ ]
     Set nodes depending on their distance from the nearest data point.
     Nodes within *radius* [0] from a data point are considered inside;
-    append a distance unit (see UNITS). If **-S** is not set then we
-    consider the input data to define closed polygon(s) instead.
+    append a distance unit (see UNITS). If *radius* is given as **z**
+    then we instead read individual radii from the 3rd input column. If
+    **-S** is not set then we consider the input data to define closed
+    polygon(s) instead.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-r**
     Set pixel node registration [gridline].
@@ -122,6 +125,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -142,14 +149,14 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.
 
 When writing a netCDF file, the grid is stored by default with the
 variable name "z". To specify another variable name *varname*, append
@@ -177,26 +184,28 @@ will indicate both this unit and epoch.
 To set all nodes inside and on the polygons coastline\_\*.xy to 0, and
 outside points to 1, do
 
-grdmask coastline\_\*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland\_mask.nc -V
+grdmask coastline\_\*.xy -R-60/-40/-40/-30 -I5m -N1/0/0
+-Gland\_mask.nc=nb -V
 
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 
-grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata\_mask.nc -V
+grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k
+-Gdata\_mask.nc=nb -V
 
 To assign polygon IDs to the gridnodes using the insides of the polygons
-in plates.gmt, do
+in plates.gmt, based on the attribute POL\_ID, do
 
-grdmask plates.gmt -R-40/40/-40/40 -I2m -Ni -Gplate\_IDs.nc -V
+grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate\_IDs.nc -aZ=POL\_ID
+-V
 
-Same exercise, but instead compute running polygon IDs starting at 100, do
+Same exercise, but instead compute running polygon IDs starting at 100,
+do
 
 grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate\_IDs.nc -V
 
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grdlandmask*\ (1) <grdlandmask.1.html>`_
-, `*grdmath*\ (1) <grdmath.1.html>`_ ,
-`*grdclip*\ (1) <grdclip.1.html>`_ , `*psmask*\ (1) <psmask.1.html>`_ ,
-`*psclip*\ (1) <psclip.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grdlandmask*\ (1) <grdlandmask.html>`_ ,
+`*grdmath*\ (1) <grdmath.html>`_ , `*grdclip*\ (1) <grdclip.html>`_ ,
+`*psmask*\ (1) <psmask.html>`_ , `*psclip*\ (1) <psclip.html>`_

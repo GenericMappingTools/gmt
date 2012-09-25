@@ -2,7 +2,6 @@
 pscontour
 *********
 
-
 pscontour - Contour table data by direct triangulation [method]
 
 `Synopsis <#toc1>`_
@@ -68,7 +67,7 @@ space is allowed between the option flag and the associated arguments.
 
 *table*
 
-One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
+One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.
 
@@ -172,7 +171,8 @@ made up of any of the following control arguments:
         leading hyphen (-) then there will be no space between label
         value and the unit. [Default is no unit].
     **+v**
-        Specifies curved labels following the path [Default is straight labels].
+        Specifies curved labels following the path [Default is straight
+        labels].
     **+w**
         Specifies how many (*x*,\ *y*) points will be used to estimate
         label angles [Default is 10].
@@ -197,7 +197,7 @@ contours are organized. If the float format %f is present (standard
 modifications to width and precision are allowed, e.g., %f7.3f), then
 the filenames will contain the contour value and lines are thus
 separated into files based on a common contour value. If the integer
-format %d is present (including modifications like %5.5d), then all
+format %d is present (including modifications like %05d), then all
 contours are written to individual segment files; if any of the other
 specifiers are present they just affect the file names. Finally, if the
 character format %c is present it is replaced with the letters C (for
@@ -299,7 +299,7 @@ controlling algorithms:
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**+**\ ]\ *pen*
     Select contouring and set contour pen attributes. If the **+** flag
     is prepended then the color of the contour lines are taken from the
@@ -307,22 +307,24 @@ controlling algorithms:
     from the cpt file is applied both to the contours and the contour
     annotations.
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 input columns]. Use 4-byte
     integer triplets for node ids (**-Q**).
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 3 output columns].
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -331,6 +333,10 @@ controlling algorithms:
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -355,6 +361,7 @@ pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 Sometimes there will appear to be thin lines of the wrong color in the
 image. This is a round-off problem which may be remedied by using a
 higher value of **PS\_DPI** in the **gmt.conf** file.
+
 To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try
 
@@ -363,22 +370,23 @@ pscontour topo.txt -C100 -Dcontours\_%.0f.txt
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.1.html>`_ ,
-`*grdimage*\ (1) <grdimage.1.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.1.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*psscale*\ (1) <psscale.1.html>`_ , `*surface*\ (1) <surface.1.html>`_
-, `*triangulate*\ (1) <triangulate.1.html>`_
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*grdcontour*\ (1) <grdcontour.html>`_ ,
+`*grdimage*\ (1) <grdimage.html>`_ ,
+`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ , `*psscale*\ (1) <psscale.html>`_
+, `*surface*\ (1) <surface.html>`_ ,
+`*triangulate*\ (1) <triangulate.html>`_
 
 `References <#toc9>`_
 ---------------------
 
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
 Geosci.*, **8**, 97-101.
-Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh
-Generator and Delaunay Triangulator, First Workshop on Applied
-Computational Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
-www.cs.cmu.edu/~quake/triangle.html
 
+Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational
+Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
+
+www.cs.cmu.edu/~quake/triangle.html

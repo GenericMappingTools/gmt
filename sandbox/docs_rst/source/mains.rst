@@ -5,6 +5,7 @@ Mains
 .. toctree::
    :maxdepth: 2
 
+   GMT_API
    blockmean
    blockmedian
    blockmode

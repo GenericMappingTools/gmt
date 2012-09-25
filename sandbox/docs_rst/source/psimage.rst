@@ -2,7 +2,6 @@
 psimage
 *******
 
-
 psimage - Place images or EPS files on maps
 
 `Synopsis <#toc1>`_
@@ -28,10 +27,10 @@ psimage - Place images or EPS files on maps
 
 **psimage** reads an Encapsulated *PostScript* file or a raster image
 file and plots it on a map. The image can be scaled arbitrarily, and
-1-bit raster images can `be (1) <be.1.html>`_ inverted, i.e., black
+1-bit raster images can `be (1) <be.html>`_ inverted, i.e., black
 `pixels (on) <pixels.on.html>`_ becomes white (off) and vice versa, `or
 (2) <or.2.html>`_ colorized, by assigning different foreground and
-background colors, `and (3) <and.3.html>`_ made transparent where one of
+background colors, `and (3) <and.html>`_ made transparent where one of
 back- or foreground is painted only. As an option, the user may choose
 to convert colored raster images to grayscale using TV’s
 YIQ-transformation. For raster files, the user can select which color to
@@ -77,7 +76,8 @@ space is allowed between the option flag and the associated arguments.
     position of the lower left corner of the image, but this can be
     changed by specifying justification [0/0/BL].
 **-F**\ *pen*
-    Draws a rectangular frame around the image with the given pen [no frame].
+    Draws a rectangular frame around the image with the given pen [no
+    frame].
 **-J**\ *parameters* (\*)
     Select map projection.
 **-Jz**\ \|\ **Z**\ *parameters* (\*)
@@ -109,13 +109,15 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 
 These options are for 1-bit images only. They have no effect when
@@ -139,7 +141,8 @@ no effect when plotting 1-bit images or *PostScript* files.
     Assigns the color that is to be made transparent. Sun Raster files
     do not support transparency, so indicate here which color to be made
     transparent.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view. (Requires **-R** and **-J** for proper
     functioning).
 **-t**\ [*transp*\ ] (\*)
@@ -149,6 +152,10 @@ no effect when plotting 1-bit images or *PostScript* files.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -180,6 +187,5 @@ psimage 1\_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*psxy*\ (1) <psxy.1.html>`_ `*convert*\ (1) <convert.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*psxy*\ (1) <psxy.html>`_ `*convert*\ (1) <convert.html>`_

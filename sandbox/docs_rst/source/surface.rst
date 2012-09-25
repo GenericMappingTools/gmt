@@ -2,7 +2,6 @@
 surface
 *******
 
-
 surface - Grid table data using adjustable tension continuous curvature
 splines
 
@@ -16,8 +15,8 @@ splines
 **-Ll**\ *lower* ] [ **-Lu**\ *upper* ] [ **-N**\ *max\_iterations* ] [
 **-Q** ] [ **-S**\ *search\_radius*\ [**m**\ \|\ **s**] ] [
 **-T**\ *tension\_factor*\ [**i**\ \|\ **b**] ] [ **-V**\ [*level*\ ] ]
-[ **-Z**\ *over-relaxation\_factor* ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
-**-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
+[ **-Z**\ *over-relaxation\_factor* ] [ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
@@ -28,7 +27,7 @@ splines
 [or *table*] and produces a binary grid file of gridded values z(x,y) by
 solving:
 
-`` `` `` `` (1 - T) \* L (L (z)) + T \* L (z) = 0
+(1 - T) \* L (L (z)) + T \* L (z) = 0
 
 where T is a tension factor between 0 and 1, and L indicates the
 Laplacian operator. T = 0 gives the "minimum curvature" solution which
@@ -88,9 +87,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**\ *aspect\_ratio*
     Aspect ratio. If desired, grid anisotropy can be added to the
     equations. Enter *aspect\_ratio*, where dy = dx / *aspect\_ratio*
@@ -131,13 +130,13 @@ space is allowed between the option flag and the associated arguments.
     spurious oscillations) and in the boundary conditions (where it
     tends to flatten the solution approaching the edges). Using zero for
     both values results in a minimum curvature surface with free edges,
-    i.e. a natural bicubic spline. Use **-T**\ *tension\_factor*\ **i**
+    i.e., a natural bicubic spline. Use **-T**\ *tension\_factor*\ **i**
     to set interior tension, and **-T**\ *tension\_factor*\ **b** to set
     boundary tension. If you do not append **i** or **b**, both will be
     set to the same value. [Default = 0 for both gives minimum curvature
     solution.]
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1]. **-V3** will report the convergence
+    Select verbosity level [c]. **-V3** will report the convergence
     after each iteration; **-V** will report only after each regional
     grid is converged.
 **-Z**\ *over-relaxation\_factor*
@@ -149,13 +148,13 @@ space is allowed between the option flag and the associated arguments.
     unstable. If you use a large value for this factor, it is a good
     idea to monitor each iteration with the **-Vl** option. [Default =
     1.4 converges quickly and is almost always stable.]
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s). Not used with binary data.
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
@@ -164,6 +163,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid Values Precision <#toc6>`_
 --------------------------------
@@ -200,6 +203,7 @@ specify more decimal places by editing the parameter
 **FORMAT\_FLOAT\_OUT** in your **gmt.conf** file prior to running
 **blockm\***, or choose binary input and/or output using single or
 double precision storage.
+
 Note that only gridline registration is possible with **surface**. If
 you need a pixel-registered grid you can resample a gridline registered
 grid using **grdsample** **-T**.
@@ -207,15 +211,14 @@ grid using **grdsample** **-T**.
 `See Also <#toc9>`_
 -------------------
 
-`*blockmean*\ (1) <blockmean.1.html>`_ ,
-`*blockmedian*\ (1) <blockmedian.1.html>`_ ,
-`*blockmode*\ (1) <blockmode.1.html>`_ , `*gmt*\ (1) <gmt.1.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.1.html>`_ ,
-`*triangulate*\ (1) <triangulate.1.html>`_
+`*blockmean*\ (1) <blockmean.html>`_ ,
+`*blockmedian*\ (1) <blockmedian.html>`_ ,
+`*blockmode*\ (1) <blockmode.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
+`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
+`*triangulate*\ (1) <triangulate.html>`_
 
 `References <#toc10>`_
 ----------------------
 
 Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature
 splines in tension, *Geophysics*, 55, 293-305.
-

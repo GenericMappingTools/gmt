@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Name &mdash; GMT5 v0 documentation</title>
+    <title>pspolar &mdash; GMT5 v0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -40,13 +40,11 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <p><a class="reference external" href="#toc">Table of Contents</a></p>
-<div class="section" id="id1">
-<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="pspolar">
+<h1>pspolar<a class="headerlink" href="#pspolar" title="Permalink to this headline">¶</a></h1>
 <p><strong>pspolar</strong> - Plot polarities on the inferior focal half-sphere on maps</p>
-</div>
-<div class="section" id="id2">
-<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div>pspolar [ <em>table</em> ] <strong>-J</strong><em>parameters</em></div></blockquote>
 <p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] <strong>-D</strong><em>lon</em>/<em>lat</em>
@@ -66,8 +64,8 @@
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
 ]</p>
 </div>
-<div class="section" id="id3">
-<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>pspolar</strong> reads data values from <em>files</em> [or standard input] and
 generates <em>PostScript</em> code that will plot stations on focal mechanisms
 on a map. The <em>PostScript</em> code is written to standard output.</p>
@@ -91,20 +89,20 @@ on a map. The <em>PostScript</em> code is written to standard output.</p>
 <p>not defined is anything else</p>
 </div></blockquote>
 </div>
-<div class="section" id="id4">
-<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>All options marked with an asterisk (*) are common GMT command-line
 options. Their full syntax as well as how to specify pens, pattern
 fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
 space is allowed between the option flag and the associated arguments.</p>
 </div>
-<div class="section" id="id5">
-<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-J</strong><em>parameters</em> (*)</dt>
 <dd>Select map projection.</dd>
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
@@ -129,8 +127,8 @@ st(<em>a</em>)r, (<em>c</em>)ircle, (<em>d</em>)iamond, (<em>h</em>)exagon, (<em
 triangle, (<em>p</em>)oint, (<em>s</em>)quare, (<em>t</em>)riangle, (<em>x</em>)cross.</dd>
 </dl>
 </div>
-<div class="section" id="id6">
-<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> (*)</dt>
 <dd>Set map boundary intervals.</dd>
@@ -163,7 +161,7 @@ plots points inside border only].</dd>
 <dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
 <dd>Draw GMT time stamp logo on plot.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>pen</em></dt>
 <dd>Set current pen attributes [Defaults: width = default, color =
 black, style = solid].</dd>
@@ -204,66 +202,49 @@ half-size,v_width,h_length,h_width in inch (unless <strong>c</strong>, <strong>i
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
-<div class="section" id="id7">
-<h1><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p><strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4
 <strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 &lt;&lt;END &gt; test.ps</p>
-<blockquote>
-<div>stat azim ih pol
-0481 11 147 c
-6185 247 120 d
-0485 288 114 +
-0490 223 112 -
-0487 212 109 .
-END
-or
-<strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4</div></blockquote>
-<dl class="docutils">
-<dt><strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 <strong>-h</strong> &lt;&lt;END &gt; test.ps</dt>
-<dd>Date Or. time stat azim ih
-910223 1 22 0481 11 147 ipu0
-910223 1 22 6185 247 120 ipd0
-910223 1 22 0485 288 114 epu0
-910223 1 22 0490 223 112 epd0
-910223 1 22 0487 212 109 epu0
-END</dd>
-</dl>
+<p>stat azim ih pol</p>
+<p>0481 11 147 c</p>
+<p>6185 247 120 d</p>
+<p>0485 288 114 +</p>
+<p>0490 223 112 -</p>
+<p>0487 212 109 .</p>
+<p>END</p>
+<p>or</p>
+<p><strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4
+<strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 <strong>-h</strong> &lt;&lt;END &gt; test.ps</p>
+<p>Date Or. time stat azim ih</p>
+<p>910223 1 22 0481 11 147 ipu0</p>
+<p>910223 1 22 6185 247 120 ipd0</p>
+<p>910223 1 22 0485 288 114 epu0</p>
+<p>910223 1 22 0490 223 112 epd0</p>
+<p>910223 1 22 0487 212 109 epu0</p>
+<p>END</p>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psxy.html">*psxy*(1)</a></p>
 </div>
 <div class="section" id="id8">
-<h1><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
-<a class="reference external" href="psxy.1.html">*psxy*(1)</a></p>
+<h2><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p>Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.</p>
+<p>Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.</p>
 </div>
 <div class="section" id="id9">
-<h1><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
-<blockquote>
-<div>Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
-Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.</div></blockquote>
+<h2><a class="reference external" href="#toc9">Authors</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
+<p>Genevieve Patau Seismology Dept. Institut de Physique du Globe de Paris
+(<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</p>
 </div>
-<div class="section" id="id10">
-<h1><a class="reference external" href="#toc9">Authors</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h1>
-<dl class="docutils">
-<dt>Genevieve Patau</dt>
-<dd>Seismology Dept.
-Institut de Physique du Globe de Paris
-(<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</dd>
-</dl>
-<hr class="docutils" />
-<p><strong>Table of Contents</strong></p>
-<ul class="simple">
-<li><a class="reference external" href="#sect0">Name</a></li>
-<li><a class="reference external" href="#sect1">Synopsis</a></li>
-<li><a class="reference external" href="#sect2">Description</a></li>
-<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
-<li><a class="reference external" href="#sect4">Required Arguments</a></li>
-<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
-<li><a class="reference external" href="#sect6">Examples</a></li>
-<li><a class="reference external" href="#sect7">See Also</a></li>
-<li><a class="reference external" href="#sect8">References</a></li>
-<li><a class="reference external" href="#sect9">Authors</a></li>
-</ul>
 </div>
 
 
@@ -274,16 +255,18 @@ Institut de Physique du Globe de Paris
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Name</a></li>
-<li><a class="reference internal" href="#id2">Synopsis</a></li>
-<li><a class="reference internal" href="#id3">Description</a></li>
-<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
-<li><a class="reference internal" href="#id5">Required Arguments</a></li>
-<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
-<li><a class="reference internal" href="#id7">Examples</a></li>
-<li><a class="reference internal" href="#id8">See Also</a></li>
-<li><a class="reference internal" href="#id9">References</a></li>
-<li><a class="reference internal" href="#id10">Authors</a></li>
+<li><a class="reference internal" href="#">pspolar</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+<li><a class="reference internal" href="#id7">See Also</a></li>
+<li><a class="reference internal" href="#id8">References</a></li>
+<li><a class="reference internal" href="#id9">Authors</a></li>
+</ul>
+</li>
 </ul>
 
   <h3>This Page</h3>

@@ -2,7 +2,6 @@
 gmt2kml
 *******
 
-
 gmt2kml - Convert GMT data tables to KML files for Google Earth
 
 `Synopsis <#toc1>`_
@@ -18,8 +17,8 @@ gmt2kml - Convert GMT data tables to KML files for Google Earth
 **-Ra**\ \|\ *w/e/s/n* ] [ **-S**\ **c**\ \|\ **n**\ *scale*] ] [
 **-T**\ *title*\ [/*foldername*] ] [ **-V**\ [*level*\ ] ] [
 **-W**\ [**-**\ \|\ **+**]\ *pen* ] [ **-Z**\ *args* ] [
-**-bi**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
-[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
+**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
+] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ] [ > *output.kml* ]
@@ -33,9 +32,12 @@ points, lines, or polygons, and you may specify additional attributes
 such as title, altitude mode, colors, pen widths, transparency, regions,
 and data descriptions. You may also extend the feature down to ground
 level (assuming it is above it) and use custom icons for point symbols.
- The input files should contain the following columns:
- *lon* *lat* [ *alt* ] [ *timestart* [ *timestop* ] ]
- where *lon* and *lat* are required for all features, *alt* is optional
+
+The input files should contain the following columns:
+
+*lon* *lat* [ *alt* ] [ *timestart* [ *timestop* ] ]
+
+where *lon* and *lat* are required for all features, *alt* is optional
 for all features (see also **-A** and **-C**), and *timestart* and
 *timestop* apply to events and timespan features.
 
@@ -56,9 +58,9 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*]
     Select one of three altitude modes recognized by Google Earth that
     determines the altitude (in m) of the feature: **a** absolute
@@ -126,7 +128,7 @@ None.
     number of line segments within a file. Each point within a line
     segment will be named after the line segment plus a sequence number.
     Default is simply "Point %d".
-     Alternatively, select one of these options: (1) append **+** to
+    Alternatively, select one of these options: (1) append **+** to
     supply individual symbol labels directly at the end of the data
     record, (2) append a string that may include %d or a similar integer
     format to assign unique name IDs for each feature, with the segment
@@ -151,7 +153,7 @@ None.
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, or Polygon].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**-**\ \|\ **+**]\ *pen*
     Set pen attributes for lines or polygon outlines. Append pen
     attributes to use [Defaults: width = default, color = black, style =
@@ -170,15 +172,16 @@ None.
     fade in and out over a ramp [abrupt]. Append **+v** to make a
     feature *not* visible when loaded [visible]. Append **+o** to open a
     folder or document in the sidebar when loaded [closed].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-:**\ [**i**\ \|\ **o**] (\*)
     Swap 1st and 2nd column on input and/or output.
@@ -187,6 +190,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -224,8 +231,10 @@ plot them in KML, using red lines at 75% transparency and red labels (no
 transparency), try
 
 grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
- gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
- gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+
+gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
+
+gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
@@ -261,31 +270,56 @@ switch on or off parts of the contents of the Document. The following is
 a crude example:
 
 [ KML header information; not present if **-O** was used ]
- <Document><name>GMT Data Document</name>
- <Folder><name>Point Features</name>
- <!--This level of folder is inserted only when using -O, -K>
- <Folder><name>file1.dat</name>
- <!--One folder for each input file (not when standard input)>
- <Folder><name>Point Set 0</name>
- <!--One folder per line segment>
- <!--Points from the first line segment in file file1.dat go here>
- <Folder><name>Point Set 1</name>
- <!--Points from the second line segment in file file1.dat go here>
- </Folder>
- </Folder>
- <Folder><name>Line Features</name>
- <Folder><name>file1.dat</name>
- <!--One folder for each input file (not when standard input)>
- <Placemark><name>Line 0</name>
- <!--Here goes the first line segment>
- </Placemark>
- <Placemark><name>Line 1</name>
- <!--Here goes the second line segment>
- </Placemark>
- </Folder>
- <Folder>
- </Document>
- [ KML trailer information; not present if **-K** was used ]
+
+<Document><name>GMT Data Document</name>
+
+<Folder><name>Point Features</name>
+
+<!--This level of folder is inserted only when using -O, -K>
+
+<Folder><name>file1.dat</name>
+
+<!--One folder for each input file (not when standard input)>
+
+<Folder><name>Point Set 0</name>
+
+<!--One folder per line segment>
+
+<!--Points from the first line segment in file file1.dat go here>
+
+<Folder><name>Point Set 1</name>
+
+<!--Points from the second line segment in file file1.dat go here>
+
+</Folder>
+
+</Folder>
+
+<Folder><name>Line Features</name>
+
+<Folder><name>file1.dat</name>
+
+<!--One folder for each input file (not when standard input)>
+
+<Placemark><name>Line 0</name>
+
+<!--Here goes the first line segment>
+
+</Placemark>
+
+<Placemark><name>Line 1</name>
+
+<!--Here goes the second line segment>
+
+</Placemark>
+
+</Folder>
+
+<Folder>
+
+</Document>
+
+[ KML trailer information; not present if **-K** was used ]
 
 `Segment Information <#toc10>`_
 -------------------------------
@@ -298,8 +332,6 @@ description tags, respectively, for the current feature.
 `See Also <#toc11>`_
 --------------------
 
-`*gmt*\ <gmt.html>`_ , `*gmt.conf*\ <gmt.conf.html>`_ ,
-`*img2google*\ <img2google.html>`_ ,
-`*kml2gmt*\ <kml2gmt.html>`_ ,
-`*ps2raster*\ <ps2raster.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*img2google*\ (1) <img2google.html>`_ ,
+`*kml2gmt*\ (1) <kml2gmt.html>`_ , `*ps2raster*\ (1) <ps2raster.html>`_

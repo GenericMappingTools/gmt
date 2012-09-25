@@ -56,10 +56,12 @@
 <div class="section" id="id1">
 <h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p><strong>grdtrack</strong> [ <em>xyfile</em> ] <strong>-G</strong><em>grd1</em> <strong>-G</strong><em>grd2</em> ... [
-<strong>-A</strong><strong>m</strong>|<strong>p</strong> ] [ <strong>-C</strong><em>length</em>/<em>ds</em>[<em>spacing</em>] ] [
-<strong>-D</strong><em>dfile</em> ] [ <strong>-L</strong><em>flag</em> ] [ <strong>-N</strong> ] [
-<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [ <strong>-V</strong>[<em>level</em>]
-] [ <strong>-Z</strong> ] [ <strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
+<strong>-A</strong><strong>m</strong>|<strong>p</strong> ] [
+<strong>-C</strong><em>length</em>/<em>ds</em>[<em>spacing</em>][<strong>+a</strong>] ] [ <strong>-D</strong><em>dfile</em> ] [
+<strong>-L</strong><em>flag</em> ] [ <strong>-N</strong> ] [
+<strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [
+<strong>-S</strong><em>method</em>/<em>modifiers</em> ][ <strong>-V</strong>[<em>level</em>] ] [ <strong>-Z</strong> ] [
+<strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
 <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
 <strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
 ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
@@ -101,21 +103,21 @@ multiply the data (usually 1 or 0.1), the mode which stand for the
 following: (0) Img files with no constraint code, returns data at
 all points, (1) Img file with constraints coded, return data at all
 points, (2) Img file with constraints coded, return data only at
-constrained points and NaN elsewhere, <a class="reference external" href="and.3.html">and (3)</a> Img
-file with constraints coded, return 1 at constraints and 0
-elsewhere, and optionally the max latitude in the IMG file [80.738].
-You may repeat <strong>-G</strong> as many times as you have grids you wish to
-sample. The grids are sampled and results are output in the order
-given. (See GRID FILE FORMAT below.)</dd>
+constrained points and NaN elsewhere, <a class="reference external" href="and.html">and (3)</a> Img file
+with constraints coded, return 1 at constraints and 0 elsewhere, and
+optionally the max latitude in the IMG file [80.738]. You may repeat
+<strong>-G</strong> as many times as you have grids you wish to sample. The grids
+are sampled and results are output in the order given. (See GRID
+FILE FORMAT below.)</dd>
 </dl>
 </div>
 <div class="section" id="id5">
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>xyfile</em></dt>
-<dd>This is an ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) file
-where the first 2 columns hold the (x,y) positions where the user
-wants to sample the 2-D data set.</dd>
+<dd>This is an ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+file where the first 2 columns hold the (x,y) positions where the
+user wants to sample the 2-D data set.</dd>
 <dt><strong>-A</strong><strong>m</strong>|<strong>p</strong></dt>
 <dd>For spherical surface resampling we resample along great circle
 arcs. Alternatively, use <strong>-Am</strong> to resample by first following a
@@ -130,10 +132,12 @@ Specify two length scales that control how the sampling is done:
 <em>length</em> sets the full length of each cross-profile, while <em>ds</em> is
 the distance increment along each cross-profile. Optionally, append
 <strong>/</strong><em>spacing</em> for an equidistant spacing between cross-profiles
-[Default erects cross-profiles at the input coordinates]. Append
-suitable units for each length scale (See UNITS below). The output
-columns will be <em>lon</em>, <em>lat</em>, <em>dist</em>, <em>azimuth</em>, <em>z1</em>, <em>z2</em>, ...
-(sampled value for each grid)</dd>
+[Default erects cross-profiles at the input coordinates]. By
+default, all cross-profiles have the same direction. Append <strong>+a</strong>
+to alternate the direction of cross-profiles. Append suitable units
+for each length scale (See UNITS below). The output columns will be
+<em>lon</em>, <em>lat</em>, <em>dist</em>, <em>azimuth</em>, <em>z1</em>, <em>z2</em>, ... (sampled value for
+each grid)</dd>
 <dt><strong>-D</strong><em>dfile</em></dt>
 <dd>In concert with <strong>-C</strong> we can save the (possibly resampled) original
 lines to the file <em>dfile</em> [Default only saves the cross-profiles].
@@ -151,27 +155,61 @@ periodic.]</dd>
 [Default only output points within grid domain].</dd>
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest.</dd>
+<dt><strong>-S</strong><em>method</em>/<em>modifiers</em></dt>
+<dd>In conjunction with <strong>-C</strong>, compute a single stacked profile from
+all profiles across each segment. Append how stacking should be
+computed: <strong>a</strong> = mean (average), <strong>m</strong> = median, <strong>p</strong> = mode
+(maximum likelihood), <strong>l</strong> = lower, <strong>L</strong> = lower but only consider
+positive values, <strong>u</strong> = upper, <strong>U</strong> = upper but only consider
+negative values [<strong>a</strong>]. The <em>modifiers</em> control the output;
+choose one or more among these choices: <strong>+a</strong> : Append stacked
+values to all cross-profiles. <strong>+d</strong> : Append stack deviations to
+all cross-profiles. <strong>+d</strong> : Append data residuals (data - stack) to
+all cross-profiles. <strong>+s</strong>[<em>file</em>] : Save stacked profile to
+<em>file</em> [grdtrack_stacked_profile.txt]. <strong>+c</strong><em>fact</em> : Compute
+envelope on stacked profile as +/- <em>fact</em>*<em>deviation</em> [2].
+Notes: (1) Deviations depend on <em>method</em> and are st.dev (<strong>a</strong>), L1
+scale (<strong>e</strong> and <strong>p</strong>), or half-range (upper-lower)/2. (2) The
+stacked profile file contains 1 plus groups of 4-6 columns, one
+group for each sampled grid. The first column holds cross distance,
+while the first 4 in a group hold stacked value, deviation, min
+value, and max value. If <em>method</em> is one of
+<strong>a</strong>|<strong>m</strong>|<strong>p</strong> then we also write the lower and upper
+confidence bounds (see <strong>+c</strong>). When one or more of <strong>+a</strong>, <strong>+d</strong>,
+and <strong>+r</strong> are used then we append the results to the end of each
+row for all cross-profiles. The order is always stacked value
+(<strong>+a</strong>), followed by deviations (<strong>+d</strong>) and residuals (<strong>+r</strong>).
+When more than one grid is sampled this sequence of 1-3 columns are
+repeated for each grid.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-Z</strong></dt>
 <dd>Only write out the sampled z-values [Default writes all columns].</dd>
 <dt><strong>-:</strong></dt>
 <dd>Toggles between (longitude,latitude) and (latitude,longitude)
 input/output. [Default is (longitude,latitude)].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is one more than input].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
-<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>] (*)</dt>
-<dd>Select interpolation mode for grids.</dd>
+</dl>
+<p><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>]
+(*)</p>
+<blockquote>
+<div>Select interpolation mode for grids.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
 <dd>Select output columns.</dd>
 <dt><strong>-s</strong>[<em>cols</em>][<strong>a</strong>|<strong>r</strong>] (*)</dt>
@@ -181,6 +219,10 @@ input/output. [Default is (longitude,latitude)].</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -215,8 +257,8 @@ you can add the suffix
 <em>id</em> is a two-letter identifier of the grid type and precision, and
 <em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
 to all grid values, and <em>nan</em> is the value used to indicate missing
-data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.</p>
+data. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.</p>
 <p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
 read, by default, the first 2-dimensional grid that can find in that
 file. To coax <strong>GMT</strong> into reading another multi-dimensional variable in
@@ -224,7 +266,7 @@ the grid file, append <strong>?</strong><em>varname</em> to the file name, where
 is the name of the variable. Note that you may need to escape the
 special meaning of <strong>?</strong> in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and
+double quotes. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.</p>
@@ -260,8 +302,8 @@ try</p>
 </div>
 <div class="section" id="id12">
 <h2><a class="reference external" href="#toc11">See Also</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="surface.1.html">*surface*(1)</a> ,
-<a class="reference external" href="sample1d.1.html">*sample1d*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="surface.html">*surface*(1)</a> ,
+<a class="reference external" href="sample1d.html">*sample1d*(1)</a></p>
 </div>
 </div>
 

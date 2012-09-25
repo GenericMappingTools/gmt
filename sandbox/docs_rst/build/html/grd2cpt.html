@@ -77,22 +77,22 @@ resulting cpt file are used in <strong>grdimage</strong> with a linear projectio
 the colors will be uniformly distributed in area on the plot. Let z be
 the data values in the grid. Define CDF(Z) = (# of z &lt; Z) / (# of z in
 grid). (NaNs are ignored). These z-values are then normalized to the
-master cpt file and colors are sampled at the desired intervals.
-The color palette includes three additional colors beyond the range of
+master cpt file and colors are sampled at the desired intervals.</p>
+<p>The color palette includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
 than the lowest <em>z</em>-value, the foreground color (F) assigned to values
 higher than the highest <em>z</em>-value, and the NaN color (N) painted
-whereever values are undefined.
-If the master cpt file includes B, F, and N entries, these will be
+whereever values are undefined.</p>
+<p>If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
 <strong>COLOR_BACKGROUND</strong>, <strong>COLOR_FOREGROUND</strong>, and <strong>COLOR_NAN</strong> from
 the <strong>gmt.conf</strong> file or the command line will be used. This default
-behavior can be overruled using the options <strong>-D</strong>, <strong>-M</strong> or <strong>-N</strong>.
-The color model (RGB, HSV or CMYK) of the palette created by
-<strong>makecpt</strong> will be the same as specified in the header of the master
-cpt file. When there is no <strong>COLOR_MODEL</strong> entry in the master cpt
-file, the <strong>COLOR_MODEL</strong> specified in the <strong>gmt.conf</strong> file or on the
-command line will be used.</p>
+behavior can be overruled using the options <strong>-D</strong>, <strong>-M</strong> or <strong>-N</strong>.</p>
+<p>The color model (RGB, HSV or CMYK) of the palette created by <strong>makecpt</strong>
+will be the same as specified in the header of the master cpt file. When
+there is no <strong>COLOR_MODEL</strong> entry in the master cpt file, the
+<strong>COLOR_MODEL</strong> specified in the <strong>gmt.conf</strong> file or on the command
+line will be used.</p>
 </div>
 <div class="section" id="id3">
 <h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
@@ -116,7 +116,7 @@ GRID FILE FORMATS below).</dd>
 <dt><strong>-A</strong>[<strong>+</strong>]<em>transparency</em></dt>
 <dd>Sets a constant level of transparency (0-100) for all color slices.
 Prepend <strong>+</strong> to also affect the fore-, back-, and nan-colors
-[Default is no transparency, i.e. 0 (opaque)].</dd>
+[Default is no transparency, i.e., 0 (opaque)].</dd>
 <dt><strong>-C</strong><em>cptmaster</em></dt>
 <dd>Selects the master color table to use in the interpolation. Choose
 among the built-in tables (type <strong>grd2cpt</strong> to see the list) or give
@@ -160,10 +160,11 @@ writes out z [Default]. <strong>-Qo</strong> takes log10(z) first, assigns
 colors, and writes out z.</dd>
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest.</dd>
-<dt><strong>-S</strong><em>zstart/zstop/zinc</em></dt>
+<dt><strong>-S</strong><em>zstart/zstop/zinc</em> or <strong>-S</strong><em>n</em></dt>
 <dd>Set steps in cpt file. Calculate entries in cpt file from <em>zstart</em>
-to <em>zstop</em> in steps of (<em>zinc</em>). [Default chooses arbitrary values
-by a crazy scheme.]</dd>
+to <em>zstop</em> in steps of (<em>zinc</em>). Default chooses arbitrary values by
+a crazy scheme. Use <strong>-S</strong><em>n</em> to select <em>n</em> points from a
+cumulative normal distribution.</dd>
 <dt><strong>-T</strong><strong>-</strong>|<strong>+</strong>|<strong>_</strong>|<strong>=</strong></dt>
 <dd>Force the color table to be symmetric about zero (from -R to +R).
 Append flag to set the range R: <strong>-</strong> for R =|zmin|, <strong>+</strong> for R =
@@ -185,6 +186,10 @@ i.e., constant color intervals]</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -197,8 +202,8 @@ you can add the suffix
 <em>id</em> is a two-letter identifier of the grid type and precision, and
 <em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
 to all grid values, and <em>nan</em> is the value used to indicate missing
-data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.</p>
+data. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.</p>
 <p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
 read, by default, the first 2-dimensional grid that can find in that
 file. To coax <strong>GMT</strong> into reading another multi-dimensional variable in
@@ -206,7 +211,7 @@ the grid file, append <strong>?</strong><em>varname</em> to the file name, where
 is the name of the variable. Note that you may need to escape the
 special meaning of <strong>?</strong> in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and
+double quotes. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.</p>
@@ -225,9 +230,9 @@ file relief, run</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.5.html">*gmt.conf*(5)</a> ,
-<a class="reference external" href="grdhisteq.1.html">*grdhisteq*(1)</a> ,
-<a class="reference external" href="grdinfo.1.html">*grdinfo*(1)</a> , <a class="reference external" href="makecpt.1.html">*makecpt*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="grdhisteq.html">*grdhisteq*(1)</a> , <a class="reference external" href="grdinfo.html">*grdinfo*(1)</a>
+, <a class="reference external" href="makecpt.html">*makecpt*(1)</a></p>
 </div>
 </div>
 

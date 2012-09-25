@@ -143,15 +143,16 @@ because the coastlines differ in details a node in a mask file using
 one resolution is not guaranteed to remain inside [or outside] when
 a different resolution is selected.</dd>
 <dt><strong>-N</strong><em>maskvalues</em>[<strong>o</strong>]</dt>
-<dd>Sets the values that will be assigned to nodes. Values can be any
+<dd><p class="first">Sets the values that will be assigned to nodes. Values can be any
 number, including the textstring NaN. Append <strong>o</strong> to let nodes
 exactly on feature boundaries be considered outside [Default is
-inside]. Specify this information using 1 of 2 formats:
-`` `` `` `` <strong>-N</strong><em>wet/dry</em>.
-`` `` `` `` <strong>-N</strong><em>ocean/land/lake/island/pond</em>.
-[Default is 0/1/0/1/0 (i.e., 0/1)].</dd>
+inside]. Specify this information using 1 of 2 formats:</p>
+<p><strong>-N</strong><em>wet/dry</em>.</p>
+<p><strong>-N</strong><em>ocean/land/lake/island/pond</em>.</p>
+<p class="last">[Default is 0/1/0/1/0 (i.e., 0/1)].</p>
+</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-r</strong></dt>
 <dd>Set pixel node registration [gridline].</dd>
 <dt><strong>-^</strong> (*)</dt>
@@ -159,6 +160,10 @@ inside]. Specify this information using 1 of 2 formats:
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -167,14 +172,14 @@ options, then exits.</dd>
 COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called &#8220;packing&#8221; of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 <strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
 <em>id</em> is a two-letter identifier of the grid type and precision, and
 <em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
 to all grid values, and <em>nan</em> is the value used to indicate missing
-data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.</p>
+data. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.</p>
 <p>When writing a netCDF file, the grid is stored by default with the
 variable name &#8220;z&#8221;. To specify another variable name <em>varname</em>, append
 <strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
@@ -213,9 +218,9 @@ further details.</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdmath.1.html">*grdmath*(1)</a> ,
-<a class="reference external" href="grdclip.1.html">*grdclip*(1)</a> , <a class="reference external" href="psmask.1.html">*psmask*(1)</a> ,
-<a class="reference external" href="psclip.1.html">*psclip*(1)</a> , <a class="reference external" href="pscoast.1.html">*pscoast*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="grdmath.html">*grdmath*(1)</a> ,
+<a class="reference external" href="grdclip.html">*grdclip*(1)</a> , <a class="reference external" href="psmask.html">*psmask*(1)</a> ,
+<a class="reference external" href="psclip.html">*psclip*(1)</a> , <a class="reference external" href="pscoast.html">*pscoast*(1)</a></p>
 </div>
 </div>
 

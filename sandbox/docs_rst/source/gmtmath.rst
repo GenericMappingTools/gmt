@@ -2,15 +2,14 @@
 gmtmath
 *******
 
-
 gmtmath - Reverse Polish Notation (RPN) calculator for data tables
 
 `Synopsis <#toc1>`_
 -------------------
 
 **gmtmath** [ **-A**\ *t\_f(t).d* ] [ **-C**\ *cols* ] [ **-I** ] [
-**-N**\ *n\_col*/*t\_col* ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**] ] [
-**-T**\ *t\_min*/*t\_max*/*t\_inc*\ [**+**\ ]\|\ *tfile* ] [
+**-N**\ *n\_col*\ [/*t\_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
+] [ **-T**\ *t\_min*/*t\_max*/*t\_inc*\ [**+**\ ]\|\ *tfile* ] [
 **-V**\ [*level*\ ] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
@@ -33,7 +32,7 @@ data tables are on the stack, each element in file A is modified by the
 corresponding element in file B. However, some operators only require
 one operand (see below). If no data tables are used in the expression
 then options **-T**, **-N** can be set (and optionally
-**-bo**\ [*ncol*\ ][**t**\ ] to indicate the data type). If STDIN is
+**-bo**\ [*ncols*\ ][*type*\ ] to indicate the data type). If STDIN is
 given, <stdin> will be read and placed on the stack as if a file with
 that content had been given on the command line. By default, all columns
 except the "time" column are operated on, but this can be changed (see
@@ -52,11 +51,11 @@ space is allowed between the option flag and the associated arguments.
 
 *operand*
     If *operand* can be opened as a file it will be read as an ASCII (or
-    binary, see **-bi**\ [*ncol*\ ][**t**\ ]) table data file. If not a
-    file, it is interpreted as a numerical constant or a special symbol
-    (see below). The special argument STDIN means that *stdin* will be
-    read and placed on the stack; STDIN can appear more than once if
-    necessary.
+    binary, see **-bi**\ [*ncols*\ ][*type*\ ]) table data file. If not
+    a file, it is interpreted as a numerical constant or a special
+    symbol (see below). The special argument STDIN means that *stdin*
+    will be read and placed on the stack; STDIN can appear more than
+    once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
     not given then the output is sent to stdout.
@@ -79,9 +78,11 @@ space is allowed between the option flag and the associated arguments.
 **-I**
     Reverses the output row sequence from ascending time to descending
     [ascending].
-**-N**\ *n\_col*/*t\_col*
-    Select the number of columns and the column number that contains the
-    "time" variable. Columns are numbered starting at 0 [2/0].
+**-N**\ *n\_col*\ [/*t\_col*]
+    Select the number of columns and optionally the column number that
+    contains the "time" variable [0]. Columns are numbered starting at 0
+    [2/0]. If input files are specified then **-N** will add any missing
+    columns.
 **-Q**
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0
     **-T**\ 0/0/1.
@@ -100,18 +101,19 @@ space is allowed between the option flag and the associated arguments.
     implies **-Ca**. Alternatively, give the name of a file whose first
     column contains the desired t-coordinates which may be irregular.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input.
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input, but see **-o**]
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -122,6 +124,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Operators <#toc6>`_
 --------------------
@@ -336,7 +342,7 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **RAND**        | 2 1    | Uniform random values between A and B                                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
-| **RINT**        | 1 1    | rint (A) (nearest integer)                                                                 |
+| **RINT**        | 1 1    | rint (A) (round to integral value nearest to A)                                            |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **ROTT**        | 2 1    | Rotate A by the (constant) shift B in the t-direction                                      |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -448,7 +454,7 @@ until ultra high degrees (at least 3000).
 
 (2) Files that have the same names as some operators, e.g., **ADD**,
 **SIGN**, **=**, etc. should be identified by prepending the current
-directory (i.e., ./LOG).
+directory (i.e., ./).
 
 (3) The stack depth limit is hard-wired to 100.
 
@@ -549,17 +555,19 @@ solution is simply
 
 Abramowitz, M., and I. A. Stegun, 1964, *Handbook of Mathematical
 Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
+
 Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the
 Clenshaw summation and the recursive computation of very high degree and
 order normalized associated Legendre functions. *Journal of Geodesy*,
 76, 279-299.
+
 Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 1992, *Numerical Recipes*, 2nd edition, Cambridge Univ., New York.
-Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*,
-Hemisphere Publishing Corp.
+
+Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
+Publishing Corp.
 
 `See Also <#toc13>`_
 --------------------
 
-`*gmt*\ <gmt.html>`_ , `*grdmath*\ <grdmath.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grdmath*\ (1) <grdmath.html>`_

@@ -61,7 +61,7 @@
 <strong>-A</strong>[<strong>m</strong>|<strong>p</strong>] ] [
 <strong>-N</strong>[<strong>i</strong>|<strong>I</strong>|<strong>p</strong>|<strong>P</strong>]<em>values</em> ] [
 <strong>-S</strong><em>search_radius</em>[<em>unit</em>] ] [ <strong>-V</strong>[<em>level</em>] ] [
-<strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-f</strong><em>colinfo</em> ] [
+<strong>-bi</strong>[<em>ncols</em>][<em>type</em>] ] [ <strong>-f</strong><em>colinfo</em> ] [
 <strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
 ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
@@ -93,7 +93,7 @@ space is allowed between the option flag and the associated arguments.</p>
 <dl class="docutils">
 <dt><em>pathfiles</em></dt>
 <dd>The name of 1 or more ASCII [or binary, see
-<strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]] files holding the polygon(s) or data
+<strong>-bi</strong>[<em>ncols</em>][<em>type</em>]] files holding the polygon(s) or data
 points.</dd>
 <dt><strong>-G</strong><em>mask_grd_file</em>]</dt>
 <dd>Name of resulting output mask grid file. (See GRID FILE FORMATS
@@ -134,32 +134,39 @@ When using the <strong>-A</strong> sides will be regarded as straight lines.
 Alternatively, append <strong>m</strong> to have sides first follow meridians,
 then parallels. Or append <strong>p</strong> to first follow parallels, then
 meridians.</dd>
-<dt><strong>-N</strong>[<strong>i</strong>|<strong>I</strong>|<strong>p</strong>|<strong>P</strong>]<em>values</em></dt>
+<dt><strong>-N</strong>[<strong>z</strong>|<strong>Z</strong>|<strong>p</strong>|<strong>P</strong>]<em>values</em></dt>
 <dd>Sets the <em>out/edge/in</em> that will be assigned to nodes that are
 <em>out</em>side the polygons, on the <em>edge</em>, or <em>in</em>side. Values can
 be any number, including the textstring NaN [Default is 0/0/1].
-Optionally, use <strong>Ni</strong> to set polygon insides to the polygon ID
-obtained from the data (either segment header <strong>-L</strong><em>header</em> or
-via <strong>-a</strong>); use <strong>-NI</strong> to consider the polygon boundary as part of
-the inside. Alternatively, use <strong>-Np</strong> to use a running number as
-polygon ID; optionally append start of the sequence [0]. Here,
-<strong>-NP</strong> includes the polygon perimeter as inside.</dd>
+Optionally, use <strong>Nz</strong> to set polygon insides to the z-value
+obtained from the data (either segment header <strong>-Z</strong><em>zval</em>,
+<strong>-L</strong><em>header</em> or via <strong>-a</strong>Z=<em>name</em>); use <strong>-NZ</strong> to consider
+the polygon boundary as part of the inside. Alternatively, use
+<strong>-Np</strong> to use a running number as polygon ID; optionally append
+start of the sequence [0]. Here, <strong>-NP</strong> includes the polygon
+perimeter as inside.</dd>
 <dt><strong>-S</strong><em>search_radius</em>[<em>unit</em>]</dt>
 <dd>Set nodes depending on their distance from the nearest data point.
 Nodes within <em>radius</em> [0] from a data point are considered inside;
-append a distance unit (see UNITS). If <strong>-S</strong> is not set then we
-consider the input data to define closed polygon(s) instead.</dd>
+append a distance unit (see UNITS). If <em>radius</em> is given as <strong>z</strong>
+then we instead read individual radii from the 3rd input column. If
+<strong>-S</strong> is not set then we consider the input data to define closed
+polygon(s) instead.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-r</strong></dt>
 <dd>Set pixel node registration [gridline].</dd>
@@ -168,6 +175,10 @@ consider the input data to define closed polygon(s) instead.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -187,14 +198,14 @@ calculations (slower but more accurate).</p>
 COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called &#8220;packing&#8221; of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 <strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
 <em>id</em> is a two-letter identifier of the grid type and precision, and
 <em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
 to all grid values, and <em>nan</em> is the value used to indicate missing
-data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.</p>
+data. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.</p>
 <p>When writing a netCDF file, the grid is stored by default with the
 variable name &#8220;z&#8221;. To specify another variable name <em>varname</em>, append
 <strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
@@ -218,21 +229,24 @@ will indicate both this unit and epoch.</p>
 <h2><a class="reference external" href="#toc9">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>To set all nodes inside and on the polygons coastline_*.xy to 0, and
 outside points to 1, do</p>
-<p>grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc -V</p>
+<p>grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0
+-Gland_mask.nc=nb -V</p>
 <p>To set nodes within 50 km of data points to 1 and other nodes to NaN, do</p>
-<p>grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc -V</p>
+<p>grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k
+-Gdata_mask.nc=nb -V</p>
 <p>To assign polygon IDs to the gridnodes using the insides of the polygons
-in plates.gmt, do</p>
-<p>grdmask plates.gmt -R-40/40/-40/40 -I2m -Ni -Gplate_IDs.nc -V</p>
-<p>Same exercise, but instead compute running polygon IDs starting at 100, do</p>
+in plates.gmt, based on the attribute POL_ID, do</p>
+<p>grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID
+-V</p>
+<p>Same exercise, but instead compute running polygon IDs starting at 100,
+do</p>
 <p>grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V</p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">See Also</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdlandmask.1.html">*grdlandmask*(1)</a>
-, <a class="reference external" href="grdmath.1.html">*grdmath*(1)</a> ,
-<a class="reference external" href="grdclip.1.html">*grdclip*(1)</a> , <a class="reference external" href="psmask.1.html">*psmask*(1)</a> ,
-<a class="reference external" href="psclip.1.html">*psclip*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="grdlandmask.html">*grdlandmask*(1)</a> ,
+<a class="reference external" href="grdmath.html">*grdmath*(1)</a> , <a class="reference external" href="grdclip.html">*grdclip*(1)</a> ,
+<a class="reference external" href="psmask.html">*psmask*(1)</a> , <a class="reference external" href="psclip.html">*psclip*(1)</a></p>
 </div>
 </div>
 

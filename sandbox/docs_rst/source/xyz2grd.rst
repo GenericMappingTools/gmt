@@ -2,7 +2,6 @@
 xyz2grd
 *******
 
-
 xyz2grd - Convert data table to a grid file
 
 `Synopsis <#toc1>`_
@@ -14,7 +13,7 @@ xyz2grd - Convert data table to a grid file
 **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
 ] [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
 [ **-N**\ *nodata* ] [ **-S**\ [*zfile*\ ] ] [ **-V**\ [*level*\ ] ] [
-**-Z**\ [*flags*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+**-Z**\ [*flags*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
@@ -73,9 +72,10 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncol*\ ][**t**\ ]]
+    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
     files holding z or (x,y,z) values. The xyz triplets do not have to
-    be sorted. One-column z tables must be sorted and the **-Z** must be set.
+    be sorted. One-column z tables must be sorted and the **-Z** must be
+    set.
 **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
     By default we will calculate mean values if multiple entries fall on
     the same node. Use **-A** to change this behavior, except it is
@@ -103,7 +103,7 @@ space is allowed between the option flag and the associated arguments.
     must also supply the **-Z** option. The output is written to *zfile*
     (or stdout if not supplied).
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-Z**\ [*flags*\ ]
     Read a 1-column ASCII [or binary] table. This assumes that all the
     nodes are present and sorted according to specified ordering
@@ -113,28 +113,40 @@ space is allowed between the option flag and the associated arguments.
     Then, append **L** or **R** to indicate that first element is at
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
-    **B** to position first element in a row. For gridline registered
-    grids: If data are periodic in x but the incoming data do not
-    contain the (redundant) column at x = xmax, append **x**. For data
-    periodic in y without redundant row at y = ymax, append **y**.
-    Append **s**\ *n* to skip the first *n* number of bytes (probably a
-    header). If the byte-order needs to be swapped, append **w**. Select
-    one of several data types (all binary except **a**):
+    **B** to position first element in a row. Note: These two row/column
+    indicators are only required for grids; for other tables they do not
+    apply. For gridline registered grids: If data are periodic in x but
+    the incoming data do not contain the (redundant) column at x = xmax,
+    append **x**. For data periodic in y without redundant row at y =
+    ymax, append **y**. Append **s**\ *n* to skip the first *n* number
+    of bytes (probably a header). If the byte-order or the words needs
+    to be swapped, append **w**. Select one of several data types (all
+    binary except **a**):
 
-    `` `` `` `` **A** ASCII representation of one or more floating point
-    values per record
+    **A** ASCII representation of one or more floating point values per
+    record
 
-    `` `` `` `` **a** ASCII representation of a single item per record
-    `` `` `` `` **c** signed 1-byte character
-    `` `` `` `` **u** unsigned 1-byte character
-    `` `` `` `` **h** signed 2-byte integer
-    `` `` `` `` **H** unsigned 2-byte integer
-    `` `` `` `` **i** signed 4-byte integer
-    `` `` `` `` **I** unsigned 4-byte integer
-    `` `` `` `` **l** long (8-byte) integer [requires 64-bit mode]
-    `` `` `` `` **L** unsigned long (8-byte) integer [requires 64-bit mode]
-    `` `` `` `` **f** 4-byte floating point single precision
-    `` `` `` `` **d** 8-byte floating point double precision
+    **a** ASCII representation of a single item per record
+
+    **c** int8\_t, signed 1-byte character
+
+    **u** uint8\_t, unsigned 1-byte character
+
+    **h** int16\_t, signed 2-byte integer
+
+    **H** uint16\_t, unsigned 2-byte integer
+
+    **i** int32\_t, signed 4-byte integer
+
+    **I** uint32\_t, unsigned 4-byte integer
+
+    **l** int64\_t, long (8-byte) integer
+
+    **L** uint64\_t, unsigned long (8-byte) integer
+
+    **f** 4-byte floating point single precision
+
+    **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
     Note that **-Z** only applies to 1-column input. The difference
@@ -142,14 +154,14 @@ space is allowed between the option flag and the associated arguments.
     *date*\ **T**\ *clock* and *ddd:mm:ss[.xx]* formats while the former
     is strictly for regular floating point values.
 
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 input columns]. This option only
     applies to xyz input files; see **-Z** for z tables.
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s). Not used with binary data.
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-r**
     Set pixel node registration [gridline].
@@ -160,6 +172,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid Values Precision <#toc6>`_
 --------------------------------
@@ -180,14 +196,14 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of
+the GMT Technical Reference and Cookbook for more information.
 
 When writing a netCDF file, the grid is stored by default with the
 variable name "z". To specify another variable name *varname*, append
@@ -209,8 +225,18 @@ stored in the grid as relative time since epoch as specified by
 command line. In addition, the **unit** attribute of the time variable
 will indicate both this unit and epoch.
 
-`Examples <#toc9>`_
--------------------
+`Swapping Limitations <#toc9>`_
+-------------------------------
+
+All data types can be read, even 64-bit integers, but internally grids
+are stored using floats. Hence, integer values exceeding the float
+type’s 23-bit mantissa may not be represented exactly. When OPT(S) is
+used no grids are implied and we read data into an intermediate double
+container. This means all but 64-bit integers can be represented using
+the double type’s 53-bit mantissa.
+
+`Examples <#toc10>`_
+--------------------
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
@@ -237,10 +263,9 @@ swap the byte-order with
 
 xyz2grd floats.bin -Snew\_floats.bin -V -Zf
 
-`See Also <#toc10>`_
+`See Also <#toc11>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grd2xyz*\ (1) <grd2xyz.1.html>`_ ,
-`*grdedit*\ (1) <grdedit.1.html>`_
-`*grdreformat*\ (1) <grdreformat.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grd2xyz*\ (1) <grd2xyz.html>`_ ,
+`*grdedit*\ (1) <grdedit.html>`_
+`*grdreformat*\ (1) <grdreformat.html>`_

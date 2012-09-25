@@ -111,9 +111,9 @@ ellipsoidal solution (See RESTRICTIONS for more information).</dd>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-Ab</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>]</dt>
 <dd><strong>-Af</strong> calculates the (forward) azimuth from fixed point <em>lon/lat</em>
 to each data point. Use <strong>-Ab</strong> to get back-azimuth from data points
@@ -159,7 +159,7 @@ we calculate cumulate distances along track. Append <strong>-</strong> to obtain
 incremental distance between successive points. Append <strong>+</strong> to
 specify the 2nd point via two extra columns in the input file.</dd>
 <dt><strong>-I</strong></dt>
-<dd>Do the Inverse transformation, i.e. get (longitude,latitude) from
+<dd>Do the Inverse transformation, i.e., get (longitude,latitude) from
 (x,y) data.</dd>
 <dt><strong>-L</strong><em>line.xy</em>[/<em>unit</em>][<strong>+</strong>]</dt>
 <dd>Determine the shortest distance from the input data points to the
@@ -197,18 +197,22 @@ coordinate projection (add <strong>-I</strong> to apply the datum conversion
 after the inverse projection). Make sure that the
 <strong>PROJ_ELLIPSOID</strong> setting is correct for your case.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is same as input].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
 <dd>Select output columns.</dd>
@@ -221,6 +225,10 @@ after the inverse projection). Make sure that the
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -254,7 +262,8 @@ on a Mercator grid for a given scale of 0.5 cm per degree, run</p>
 (latitude,longitude) into (x,y) positions in inch on a Transverse
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run</p>
-<p>mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 &gt; tmfile.b</p>
+<p>mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2
+&gt; tmfile.b</p>
 <p>To convert the geodetic coordinates (lon, lat, height) in the file
 old.dat from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run</p>
@@ -274,8 +283,8 @@ through <strong>mapproject</strong> using the appropriate scale and see what (x,
 values they are mapped onto. Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly,
 or alternatively, use <strong>awk</strong> to scale and shift the (x,y) values before
-transforming.
-For some projection, a spherical solution may be used despite the user
+transforming.</p>
+<p>For some projection, a spherical solution may be used despite the user
 having selected an ellipsoid. This occurs when the users <strong>-R</strong> setting
 implies a region that exceeds the domain in which the ellipsoidal series
 expansions are valid. These are the conditions: (1) Lambert Conformal
@@ -283,7 +292,7 @@ Conic (<strong>-JL</strong>)and Albers Equal-Area (<strong>-JB</strong>) will us
 solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
 (<strong>-JT</strong>) and UTM (<strong>-JU</strong>) will will use the spherical solution when
 either the west or east boundary given in <strong>-R</strong> is more than 10 degrees
-from the central meridian, <a class="reference external" href="and.3.html">and (3)</a> same for Cassini
+from the central meridian, <a class="reference external" href="and.html">and (3)</a> same for Cassini
 (<strong>-JC</strong>) but with a limit of only 4 degrees.</p>
 </div>
 <div class="section" id="id10">
@@ -320,15 +329,15 @@ results produced with other settings.</p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc11">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.5.html">*gmt.conf*(5)</a> ,
-<a class="reference external" href="project.1.html">*project*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="project.html">*project*(1)</a></p>
 </div>
 <div class="section" id="id12">
 <h2><a class="reference external" href="#toc12">References</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
-<p>Bomford, G., 1952, Geodesy, Oxford U. Press.
-Snyder, J. P., 1987, Map Projections - A Working Manual, U.S.
-Geological Survey Prof. Paper 1395.
-Vanicek, P. and Krakiwsky, E, 1982, Geodesy - The Concepts,
+<p>Bomford, G., 1952, Geodesy, Oxford U. Press.</p>
+<p>Snyder, J. P., 1987, Map Projections - A Working Manual, U.S. Geological
+Survey Prof. Paper 1395.</p>
+<p>Vanicek, P. and Krakiwsky, E, 1982, Geodesy - The Concepts,
 North-Holland Publ., ISBN: 0 444 86149 1.</p>
 </div>
 </div>

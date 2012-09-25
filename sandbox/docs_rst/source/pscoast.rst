@@ -2,7 +2,6 @@
 pscoast
 *******
 
-
 pscoast - Plot continents, shorelines, rivers, and borders on maps
 
 `Synopsis <#toc1>`_
@@ -24,7 +23,7 @@ pscoast - Plot continents, shorelines, rivers, and borders on maps
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bo**\ [*ncol*\ ][**t**\ ] ] [ **-c**\ *copies* ] [
+] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
 **-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
@@ -33,8 +32,8 @@ pscoast - Plot continents, shorelines, rivers, and borders on maps
 
 **pscoast** plots grayshaded, colored, or textured land-masses [or
 water-masses] on maps and [optionally] draws coastlines, rivers, and
-political boundaries. Alternatively, it `can (1) <can.1.html>`_ issue
-clip paths that will contain all land or all water areas, `or
+political boundaries. Alternatively, it `can (1) <can.html>`_ issue clip
+paths that will contain all land or all water areas, `or
 (2) <or.2.html>`_ dump the data to an ASCII table. The data files come
 in 5 different resolutions: (**f**)ull, (**h**)igh, (**i**)ntermediate,
 (**l**)ow, and (**c**)rude. The full resolution files amount to more
@@ -105,31 +104,52 @@ space is allowed between the option flag and the associated arguments.
     Draw rivers. Specify the type of rivers and [optionally] append pen
     attributes [Default pen: width = default, color = black, style =
     solid].
+
     Choose from the list of river types below; repeat option **-I** as
     often as necessary.
-    `` `` `` `` 0 = Double-lined rivers (river-lakes)
-    `` `` `` `` 1 = Permanent major rivers
-    `` `` `` `` 2 = Additional major rivers
-    `` `` `` `` 3 = Additional rivers
-    `` `` `` `` 4 = Minor rivers
-    `` `` `` `` 5 = Intermittent rivers - major
-    `` `` `` `` 6 = Intermittent rivers - additional
-    `` `` `` `` 7 = Intermittent rivers - minor
-    `` `` `` `` 8 = Major canals
-    `` `` `` `` 9 = Minor canals
-    `` `` `` `` 10 = Irrigation canals
-    `` `` `` `` You can also choose from several preconfigured river groups:
-    `` `` `` `` a = All rivers and canals (0-10)
-    `` `` `` `` A = All rivers and canals except river-lakes (1-10)
-    `` `` `` `` r = All permanent rivers (0-4)
-    `` `` `` `` R = All permanent rivers except river-lakes (1-4)
-    `` `` `` `` i = All intermittent rivers (5-7)
-    `` `` `` `` c = All canals (8-10)
+
+    0 = Double-lined rivers (river-lakes)
+
+    1 = Permanent major rivers
+
+    2 = Additional major rivers
+
+    3 = Additional rivers
+
+    4 = Minor rivers
+
+    5 = Intermittent rivers - major
+
+    6 = Intermittent rivers - additional
+
+    7 = Intermittent rivers - minor
+
+    8 = Major canals
+
+    9 = Minor canals
+
+    10 = Irrigation canals
+
+    You can also choose from several preconfigured river groups:
+
+    a = All rivers and canals (0-10)
+
+    A = All rivers and canals except river-lakes (1-10)
+
+    r = All permanent rivers (0-4)
+
+    R = All permanent rivers except river-lakes (1-4)
+
+    i = All intermittent rivers (5-7)
+
+    c = All canals (8-10)
+
 **-Jz**\ \|\ **Z**\ *parameters* (\*)
     Set z-axis scaling; same syntax as **-Jx**.
 **-K** (\*)
     Do not finalize the *PostScript* plot.
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ] ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+]
     Draws a simple map scale centered on *lon0/lat0*. Use **-Lx** to
     specify x/y position instead. Scale is calculated at latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
@@ -147,18 +167,24 @@ space is allowed between the option flag and the associated arguments.
     **+f**\ *fill* parameters.
 **-M**
     Dumps a single multisegment ASCII (or binary, see
-    **-bo**\ [*ncol*\ ][**t**\ ]) file to standard output. No plotting
+    **-bo**\ [*ncols*\ ][*type*\ ]) file to standard output. No plotting
     occurs. Specify any combination of **-W**, **-I**, **-N**.
 **-N**\ *border*\ [/*pen*]
     Draw political boundaries. Specify the type of boundary and
     [optionally] append pen attributes [Default pen: width = default,
     color = black, style = solid].
+
     Choose from the list of boundaries below. Repeat option **-N** as
     often as necessary.
-    `` `` `` `` 1 = National boundaries
-    `` `` `` `` 2 = State boundaries within the Americas
-    `` `` `` `` 3 = Marine boundaries
-    `` `` `` `` a = All boundaries (1-3)
+
+    1 = National boundaries
+
+    2 = State boundaries within the Americas
+
+    3 = Marine boundaries
+
+    a = All boundaries (1-3)
+
 **-O** (\*)
     Append to existing *PostScript* plot.
 **-P** (\*)
@@ -197,7 +223,7 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [*level*/]*pen*
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = default, color = black, style = solid] which
@@ -207,13 +233,15 @@ space is allowed between the option flag and the associated arguments.
     Repeat **-W** as needed. When specific level pens are set, those not
     listed will not be drawn [Default draws all levels; but see **-A**].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output.
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -222,6 +250,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -244,7 +276,9 @@ gridded topography is only seen over land, using a Mercator map at scale
 0.1 inch/degree, use
 
 pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -Gc -P -K > africa.ps
+
 grdimage **-Jm**\ 0.1\ **i** etopo5.nc -Ccolors.cpt -O -K >> africa.ps
+
 pscoast -Q -O >> africa.ps
 
 **pscoast** will first look for coastline files in directory
@@ -285,15 +319,18 @@ not, try to avoid using projection center coordinates that are even
 multiples of the coastline bin size (1, 2, 5, 10, and 20 degrees for
 **f**, **h**, **i**, **l**, **c**, respectively). This projection is not
 supported for clipping.
+
 The political borders are for the most part 1970s-style but have been
 updated to reflect more recent border rearrangements in Europe and
 elsewhere. Let us know if you find something out of date.
+
 The full-resolution coastlines are also from a digitizing effort in the
 1970-80s and it is difficult to assess the accuracy. Users who zoom in
 close enough may find that the GSHHS coastline is not matching other
 data, e.g., satellite images, more recent coastline data, etc. We are
 aware of such mismatches but cannot undertake band-aid solutions each
 time this occurs.
+
 Some users of **pscoast** will not be satisfied with what they find for
 the Antarctic shoreline. In Antarctica, the boundary between ice and
 ocean varies seasonally and inter-annually. There are some areas of
@@ -314,8 +351,7 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*grdlandmask*\ (1) <grdlandmask.1.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*grdlandmask*\ (1) <grdlandmask.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_

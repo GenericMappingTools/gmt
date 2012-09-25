@@ -2,7 +2,6 @@
 gmtvector
 *********
 
-
 gmtvector - Basic manipulation of Cartesian vectors
 
 `Synopsis <#toc1>`_
@@ -12,7 +11,7 @@ gmtvector - Basic manipulation of Cartesian vectors
 **-C**\ [**i**\ \|\ **o**] ] [ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
 [
 **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**]
-] [ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+] [ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
@@ -54,11 +53,11 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncol*\ ][**t**\ ]] file
-    containing lon,lat [lat,lon if **-:**] values in the first 2 columns
-    (if **-fg** is given) or (r, theta), or perhaps (x, y[, z]) if
-    **-Ci** is given). If no file is specified, **gmtvector**, will read
-    from standard input.
+    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    file containing lon,lat [lat,lon if **-:**] values in the first 2
+    columns (if **-fg** is given) or (r, theta), or perhaps (x, y[, z])
+    if **-Ci** is given). If no file is specified, **gmtvector**, will
+    read from standard input.
 **-A**\ **m**\ [*conf*\ ]\|\ *vector*
     Specify a single, primary vector instead of reading *infiles*; see
     *infiles* for possible vector formats. Alternatively, append **m**
@@ -95,16 +94,17 @@ None.
     output is determined by other options such as **-A**, **-C**,
     **-E**, and **-N**.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 or 3 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -115,6 +115,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -171,6 +175,5 @@ reconstructions, see the GMT "spotter" supplement.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*project*\ (1) <project.1.html>`_ ,
-`*mapproject*\ (1) <mapproject.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*project*\ (1) <project.html>`_ ,
+`*mapproject*\ (1) <mapproject.html>`_

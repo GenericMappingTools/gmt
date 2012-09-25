@@ -2,7 +2,6 @@
 pslegend
 ********
 
-
 pslegend - Plot legends on maps
 
 `Synopsis <#toc1>`_
@@ -186,13 +185,15 @@ records are presented below:
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -201,6 +202,10 @@ records are presented below:
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -210,37 +215,69 @@ specifications, use
 
 pslegend -R-10/10/-10/10 -JM6i -Gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
 -C0.1i/0.1i -L1.2 -Fr -B5f1 << EOF >> map.ps
+
 # Legend test for pslegend
+
 # G is vertical gap, V is vertical line, N sets # of columns, D draws
 horizontal line.
-# H is header, L is label, S is symbol, T is paragraph text, M is map scale.
+
+# H is header, L is label, S is symbol, T is paragraph text, M is map
+scale.
+
 #
+
 G -0.1i
+
 H 24 Times-Roman My Map Legend
+
 D 0.2i 1p
+
 N 2
+
 V 0 1p
+
 S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
+
 S 0.1i e 0.15i 255/255/0 0.25p 0.3i This ellipse is yellow
+
 S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green
+
 S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a fault
+
 S 0.1i - 0.15i - 0.25tap 0.3i A contour
+
 S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This is a vector
+
 S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
+
 V 0 1p
+
 D 0.2i 1p
+
 N 1
+
 M 5 5 600+u f
+
 G 0.05i
+
 I SOEST\_logo.ras 3i CT
+
 G 0.05i
+
 B colors.cpt 0.2i 0.2i
+
 G 0.05i L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
+
 G 0.1i
+
 P
+
 T Let us just try some simple text that can go on a few lines.
+
 T There is no easy way to predetermine how many lines will be required,
+
 T so we may have to adjust the box height to get the right size box.
+
 EOF
 
 `Windows Remarks <#toc7>`_
@@ -257,8 +294,7 @@ such duplication.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*pstext*\ (1) <pstext.1.html>`_ , `*psxy*\ (1) <psxy.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ , `*pstext*\ (1) <pstext.html>`_ ,
+`*psxy*\ (1) <psxy.html>`_

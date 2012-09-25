@@ -2,17 +2,18 @@
 grdtrack
 ********
 
-
 grdtrack - Sample grids at specified (x,y) locations
 
 `Synopsis <#toc1>`_
 -------------------
 
 **grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ... [
-**-A**\ **m**\ \|\ **p** ] [ **-C**\ *length*/*ds*\ [*spacing*\ ] ] [
-**-D**\ *dfile* ] [ **-L**\ *flag* ] [ **-N** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-Z** ] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
+**-A**\ **m**\ \|\ **p** ] [
+**-C**\ *length*/*ds*\ [*spacing*\ ][**+a**\ ] ] [ **-D**\ *dfile* ] [
+**-L**\ *flag* ] [ **-N** ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
+**-S**\ *method*/*modifiers* ][ **-V**\ [*level*\ ] ] [ **-Z** ] [
+**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
@@ -56,20 +57,20 @@ space is allowed between the option flag and the associated arguments.
     following: (0) Img files with no constraint code, returns data at
     all points, (1) Img file with constraints coded, return data at all
     points, (2) Img file with constraints coded, return data only at
-    constrained points and NaN elsewhere, `and (3) <and.3.html>`_ Img
-    file with constraints coded, return 1 at constraints and 0
-    elsewhere, and optionally the max latitude in the IMG file [80.738].
-    You may repeat **-G** as many times as you have grids you wish to
-    sample. The grids are sampled and results are output in the order
-    given. (See GRID FILE FORMAT below.)
+    constrained points and NaN elsewhere, `and (3) <and.html>`_ Img file
+    with constraints coded, return 1 at constraints and 0 elsewhere, and
+    optionally the max latitude in the IMG file [80.738]. You may repeat
+    **-G** as many times as you have grids you wish to sample. The grids
+    are sampled and results are output in the order given. (See GRID
+    FILE FORMAT below.)
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
 *xyfile*
-    This is an ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) file
-    where the first 2 columns hold the (x,y) positions where the user
-    wants to sample the 2-D data set.
+    This is an ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    file where the first 2 columns hold the (x,y) positions where the
+    user wants to sample the 2-D data set.
 **-A**\ **m**\ \|\ **p**
     For spherical surface resampling we resample along great circle
     arcs. Alternatively, use **-Am** to resample by first following a
@@ -84,10 +85,12 @@ space is allowed between the option flag and the associated arguments.
     *length* sets the full length of each cross-profile, while *ds* is
     the distance increment along each cross-profile. Optionally, append
     **/**\ *spacing* for an equidistant spacing between cross-profiles
-    [Default erects cross-profiles at the input coordinates]. Append
-    suitable units for each length scale (See UNITS below). The output
-    columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
-    (sampled value for each grid)
+    [Default erects cross-profiles at the input coordinates]. By
+    default, all cross-profiles have the same direction. Append **+a**
+    to alternate the direction of cross-profiles. Append suitable units
+    for each length scale (See UNITS below). The output columns will be
+    *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ... (sampled value for
+    each grid)
 **-D**\ *dfile*
     In concert with **-C** we can save the (possibly resampled) original
     lines to the file *dfile* [Default only saves the cross-profiles].
@@ -105,26 +108,54 @@ space is allowed between the option flag and the associated arguments.
     [Default only output points within grid domain].
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
+**-S**\ *method*/*modifiers*
+    In conjunction with **-C**, compute a single stacked profile from
+    all profiles across each segment. Append how stacking should be
+    computed: **a** = mean (average), **m** = median, **p** = mode
+    (maximum likelihood), **l** = lower, **L** = lower but only consider
+    positive values, **u** = upper, **U** = upper but only consider
+    negative values [**a**\ ]. The *modifiers* control the output;
+    choose one or more among these choices: **+a** : Append stacked
+    values to all cross-profiles. **+d** : Append stack deviations to
+    all cross-profiles. **+d** : Append data residuals (data - stack) to
+    all cross-profiles. **+s**\ [*file*\ ] : Save stacked profile to
+    *file* [grdtrack\_stacked\_profile.txt]. **+c**\ *fact* : Compute
+    envelope on stacked profile as +/- *fact*\ \*\ *deviation* [2].
+    Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
+    scale (**e** and **p**), or half-range (upper-lower)/2. (2) The
+    stacked profile file contains 1 plus groups of 4-6 columns, one
+    group for each sampled grid. The first column holds cross distance,
+    while the first 4 in a group hold stacked value, deviation, min
+    value, and max value. If *method* is one of
+    **a**\ \|\ **m**\ \|\ **p** then we also write the lower and upper
+    confidence bounds (see **+c**). When one or more of **+a**, **+d**,
+    and **+r** are used then we append the results to the end of each
+    row for all cross-profiles. The order is always stacked value
+    (**+a**), followed by deviations (**+d**) and residuals (**+r**).
+    When more than one grid is sampled this sequence of 1-3 columns are
+    repeated for each grid.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-Z**
     Only write out the sampled z-values [Default writes all columns].
 **-:**
     Toggles between (longitude,latitude) and (latitude,longitude)
     input/output. [Default is (longitude,latitude)].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is one more than input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] (\*)
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+(\*)
     Select interpolation mode for grids.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -135,6 +166,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -171,8 +206,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -181,7 +216,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -225,6 +260,5 @@ grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3k/25k > xprofiles.d
 `See Also <#toc11>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*surface*\ (1) <surface.1.html>`_ ,
-`*sample1d*\ (1) <sample1d.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*surface*\ (1) <surface.html>`_ ,
+`*sample1d*\ (1) <sample1d.html>`_

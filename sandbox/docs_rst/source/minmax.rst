@@ -2,7 +2,6 @@
 minmax
 ******
 
-
 minmax - Find extreme values in data tables
 
 `Synopsis <#toc1>`_
@@ -12,12 +11,12 @@ minmax - Find extreme values in data tables
 [ **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ] [
 **-I**\ [**p**\ ]\ *dx*\ [/*dy*\ [/*dz*...] ] [
 **-S**\ [**x**\ ][**y**\ ] ] [ **-T**\ *dz*\ [/*col*] ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -50,9 +49,9 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**\ **a**\ \|\ **f**\ \|\ **s**
     Specify how the range should be reported. Choose **-Aa** for the
     range of all files combined, **-Af** to report the range for each
@@ -60,7 +59,8 @@ None.
     (in multisegment files) separately. [Default is **-Aa**].
 **-C**
     Report the min/max values per column in separate columns [Default
-    uses <min/max> format].
+    uses <min/max> format]. When used, users may also use **-o** to
+    limit which output columns should be reported [all].
 **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col*
     Returns the record whose column *col* contains the `minimum
     (**l**) <minimum.l.html>`_ or maximum (**h**) value. Upper case
@@ -93,16 +93,17 @@ None.
     To use another column, append /*col*. Only works when **-I** is
     selected.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-r**
     Set pixel node registration [gridline].
@@ -113,6 +114,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -160,5 +165,4 @@ the current setting of **TIME\_UNIT**.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_
-
+`*gmt*\ (1) <gmt.html>`_

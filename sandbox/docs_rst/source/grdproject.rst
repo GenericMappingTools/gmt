@@ -2,7 +2,6 @@
 grdproject
 **********
 
-
 grdproject - Forward and inverse map transformation of grids
 
 `Synopsis <#toc1>`_
@@ -35,6 +34,7 @@ controlled with the **-n** option. The new node spacing may be
 determined in one of several ways by specifying the grid spacing, number
 of nodes, or resolution. Nodes not constrained by input data are set to
 NaN.
+
 The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid file.
 
@@ -91,8 +91,9 @@ space is allowed between the option flag and the associated arguments.
     of the grid by specifying a smaller input *w/e/s/n* region [Default
     is the region given by the grid file].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] (\*)
+    Select verbosity level [c].
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
+(\*)
     Select interpolation mode for grids.
 **-r**
     Set pixel node registration [gridline].
@@ -101,6 +102,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -109,7 +114,7 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
@@ -117,7 +122,7 @@ offset, the user should add the suffix
 to all grid values, and *nan* is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
+names. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
@@ -129,7 +134,7 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-`**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.18 of the GMT
+`**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the GMT
 Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.
 
@@ -150,6 +155,7 @@ grdproject topo\_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V
 
 This assumes, of course, that the coordinates in topo\_tm.nc were
 created with the same projection parameters.
+
 To inversely transform the file topo\_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
@@ -168,6 +174,5 @@ than you are interested in.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*mapproject*\ (1) <mapproject.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*mapproject*\ (1) <mapproject.html>`_

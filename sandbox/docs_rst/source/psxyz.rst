@@ -2,7 +2,6 @@
 psxyz
 *****
 
-
 psxyz - Plot lines, polygons, and symbols in 3-D
 
 `Synopsis <#toc1>`_
@@ -20,8 +19,9 @@ psxyz - Plot lines, polygons, and symbols in 3-D
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ]
-] [ **-c**\ *copies* ] [ **-f**\ *colinfo* ] [
+] [ **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [
+**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
+**-f**\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -69,7 +69,7 @@ space is allowed between the option flag and the associated arguments.
 
 *table*
 
-One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
+One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.
 
@@ -96,9 +96,10 @@ Offset the plot symbol or line locations by the given amounts
 
 Select color or pattern for filling of symbols or polygons [Default is
 no fill].
- Note that **psxyz** will search for **-G** and **-W** strings in all
-the segment headers and let any values thus found over-ride the command
-line settings.
+
+Note that **psxyz** will search for **-G** and **-W** strings in all the
+segment headers and let any values thus found over-ride the command line
+settings.
 
 **-I**\ *intens*
 
@@ -137,20 +138,23 @@ Plot symbols. If present, *size* is symbol size in the unit set in
 **gmt.conf** (unless **c**, **i**, or **p** is appended). If the symbol
 code (see below) is not given it will be read from the last column in
 the input data; this cannot be used in conjunction with
-**-bi**\ [*ncol*\ ][**t**\ ]. Optionally, append **c**, **i**, or **p**
-to indicate that the size information in the input data is in units of
-cm, inch, or point, respectively [Default is **PROJ\_LENGTH\_UNIT**].
-Note: if you give both size and symbol via the input file you must use
-**PROJ\_LENGTH\_UNIT** to indicate the units used for the symbol size.
-If the symbol size is expected via the fourth data column then you may
-convert those values to symbol sizes by appending
-**+s**\ *scale*\ [/*origin*][**l**\ ] which will compute size = (data -
-*origin*) \* *scale*, where *origin* defaults to 0. If **l** is appended
-we take log10 of data and *origin* first [*origin* then defaults to 1].
+**-bi**\ [*ncols*\ ][*type*\ ]. Optionally, append **c**, **i**, or
+**p** to indicate that the size information in the input data is in
+units of cm, inch, or point, respectively [Default is
+**PROJ\_LENGTH\_UNIT**]. Note: if you give both size and symbol via the
+input file you must use **PROJ\_LENGTH\_UNIT** to indicate the units
+used for the symbol size. If the symbol size is expected via the fourth
+data column then you may convert those values to symbol sizes by
+appending **+s**\ *scale*\ [/*origin*][**l**\ ] which will compute size
+= (data - *origin*) \* *scale*, where *origin* defaults to 0. If **l**
+is appended we take log10 of data and *origin* first [*origin* then
+defaults to 1].
+
 The uppercase symbols **A**, **C**, **D**, **G**, **H**, **I**, **N**,
 **S**, **T** are normalized to have the same area as a circle with
 diameter *size*, while the size of the corresponding lowercase symbols
 refers to the diameter of a circumscribed circle.
+
 Choose between these symbol codes:
 
 **-S-**
@@ -246,8 +250,8 @@ which we assume the dimensions are given in the same units as **-R**.
 **-Sk**
 
 **k**\ ustom symbol. Append <name>/*size*, and we will look for a
-definition file called <name>.def `in (1) <in.1.html>`_ the current
-directory `or (2) <or.2.html>`_ in ~/.gmt `or (3) <or.3.html>`_ in
+definition file called <name>.def `in (1) <in.html>`_ the current
+directory `or (2) <or.2.html>`_ in ~/.gmt `or (3) <or.html>`_ in
 **$GMT\_SHAREDIR**/custom. The symbol as defined in that file is of size
 1.0 by default; the appended *size* will scale symbol accordingly. The
 symbols are plotted in the *x-y* plane. Users may add their own custom
@@ -506,7 +510,7 @@ the quoted text attributes on a segment-by-segment basis.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**-**\ \|\ **+**][*pen*\ ]
     Set pen attributes for lines or the outline of symbols [Defaults:
     width = default, color = black, style = solid]. A leading **+** will
@@ -514,25 +518,28 @@ the quoted text attributes on a segment-by-segment basis.
     pen color, while a leading **-** will set outline pen color and turn
     off symbol fill.
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-a**\ *col*\ =\ *name*\ [*...*\ ] (\*)
     Set aspatial column associations *col*\ =\ *name*.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is the required number of columns
     given the chosen settings].
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks. The **-g** option is ignored if
     **-S** is set.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -543,6 +550,10 @@ the quoted text attributes on a segment-by-segment basis.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Vector Attributes <#toc6>`_
 ----------------------------
@@ -552,18 +563,25 @@ specify the placement of vector heads, their shapes, and the
 justification of the vector:
 
 **+a**\ *angle* sets the angle of the vector head apex [30].
+
 **+b** places a vector head at the beginning of the vector path [none].
+
 **+e** places a vector head at the end of the vector path [none].
+
 **+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
 head fill [Default fill is used, which may be no fill].
+
 **+l** draws half-arrows, using only the left side [both].
+
 **+n**\ *norm* scales down vector attributes (pen thickness, head size)
 with decreasing length, where vectors shorter than *norm* will have
 their attributes scaled by length/\ *norm* [arrow attributes remains
 invariant to length].
+
 **+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
 leading - then the head outline is not drawn. [Default pen is used, and
 head outline is drawn]
+
 **+r** draws half-arrows, using only the right side [both].
 
 In addition, all but circular vectors may take these modifiers:
@@ -571,6 +589,7 @@ In addition, all but circular vectors may take these modifiers:
 **+j**\ *just* determines how the input *x*,\ *y* point relates to the
 vector. Choose from **b**\ eginning [default], **e**\ nd, or
 **c**\ enter.
+
 **+s** means the input *angle*, *length* is instead the *x*, *y*
 coordinates of the vector end point.
 
@@ -591,13 +610,22 @@ heights.ps
 ---------------------------------
 
 Segment header records may contain one of more of the following options:
+
 **-G**\ *fill* Use the new *fill* and turn filling on
+
 **-G-** Turn filling off
+
 **-G** Revert to default fill (none if not set on command line)
+
 **-W**\ *pen* Use the new *pen* and turn outline on
-**-W** Revert to default pen ()MAP\_DEFAULT\_PENBD( if not set on command line)
+
+**-W** Revert to default pen ()MAP\_DEFAULT\_PENBD( if not set on
+command line)
+
 **-W-** Turn outline off
+
 **-Z**\ *zval* Obtain fill via cpt lookup using z-value *zval*
+
 **-ZNaN** Get the NaN color from the cpt file
 
 `Custom Symbols <#toc9>`_
@@ -611,8 +639,8 @@ without giving the extension (e.g., the symbol file tsunami.def is used
 by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
 lines (starting with #). **psxyz** will look for the definition files
-`in (1) <in.1.html>`_ the current directory, (2) the ~/.gmt directory,
-`and (3) <and.3.html>`_ the **$GMT\_SHAREDIR**/custom directory, in that
+`in (1) <in.html>`_ the current directory, (2) the ~/.gmt directory,
+`and (3) <and.html>`_ the **$GMT\_SHAREDIR**/custom directory, in that
 order. Freeform polygons (made up of straight line segments and arcs of
 circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See
@@ -625,19 +653,20 @@ No hidden line removal is employed for polygons and lines. Symbols,
 however, are first sorted according to their distance from the viewpoint
 so that nearby symbols will overprint more distant ones should they
 project to the same x,y position.
+
 **psxyz** cannot handle filling of polygons that contain the south or
 north pole. For such a polygon, make a copy and split it into two and
 make each explicitly contain the polar point. The two polygons will
 combine to give the desired effect when filled; to draw outline use the
 original polygon.
-The **-N** option does not adjust the BoundingBox information so you
-may have to post-process the *PostScript* output with **ps2raster**
-**-A** to obtain the correct BoundingBox.
+
+The **-N** option does not adjust the BoundingBox information so you may
+have to post-process the *PostScript* output with **ps2raster** **-A**
+to obtain the correct BoundingBox.
 
 `See Also <#toc11>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ , `*psxy*\ (1) <psxy.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ , `*psxy*\ (1) <psxy.html>`_

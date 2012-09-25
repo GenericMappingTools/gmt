@@ -56,29 +56,29 @@
 shell scripts</p>
 <div class="section" id="id1">
 <h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt_init_tmpdir</strong>
-<strong>gmt_remove_tmpdir</strong>
-<strong>gmt_clean_up</strong> [<em>prefix</em>]
-<strong>gmt_message</strong> <em>message</em>
-<strong>gmt_abort</strong> <em>message</em>
-<strong>gmt_nrecords</strong> <em>file(s)</em>
-<strong>gmt_nfields</strong> <em>string</em>
-<strong>gmt_get_field</strong> <em>string</em>
-<strong>gmt_get_region</strong> <em>file(s)</em> [<em>options</em>]
-<strong>gmt_get_gridregion</strong> <em>file</em> [<em>options</em>]
-<strong>gmt_get_map_width</strong> <strong>-R</strong> <strong>-J</strong>
-<strong>gmt_get_map_height</strong> <strong>-R</strong> <strong>-J</strong>
-<strong>gmt_set_psfile</strong> <em>file</em>
-<strong>gmt_set_framename</strong> <em>prefix framenumber</em>
-<strong>gmt_set_framenext</strong> <em>framenumber</em></p>
+<p><strong>gmt_init_tmpdir</strong></p>
+<p><strong>gmt_remove_tmpdir</strong></p>
+<p><strong>gmt_clean_up</strong> [<em>prefix</em>]</p>
+<p><strong>gmt_message</strong> <em>message</em></p>
+<p><strong>gmt_abort</strong> <em>message</em></p>
+<p><strong>gmt_nrecords</strong> <em>file(s)</em></p>
+<p><strong>gmt_nfields</strong> <em>string</em></p>
+<p><strong>gmt_get_field</strong> <em>string</em></p>
+<p><strong>gmt_get_region</strong> <em>file(s)</em> [<em>options</em>]</p>
+<p><strong>gmt_get_gridregion</strong> <em>file</em> [<em>options</em>]</p>
+<p><strong>gmt_get_map_width</strong> <strong>-R</strong> <strong>-J</strong></p>
+<p><strong>gmt_get_map_height</strong> <strong>-R</strong> <strong>-J</strong></p>
+<p><strong>gmt_set_psfile</strong> <em>file</em></p>
+<p><strong>gmt_set_framename</strong> <em>prefix framenumber</em></p>
+<p><strong>gmt_set_framenext</strong> <em>framenumber</em></p>
 </div>
 <div class="section" id="id2">
 <h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt_shell_functions.sh</strong> provides a set of functions to Bourne
 (again) shell scripts in support of <strong>GMT</strong>. The calling shell script
-should include the following line, before the functions can be used:
-<strong>. gmt_shell_functions.sh</strong>
-Once included in a shell script, <strong>gmt_shell_functions.sh</strong> allows
+should include the following line, before the functions can be used:</p>
+<p><strong>. gmt_shell_functions.sh</strong></p>
+<p>Once included in a shell script, <strong>gmt_shell_functions.sh</strong> allows
 <strong>GMT</strong> users to do some scripting more easily than otherwise. The
 functions made available are:</p>
 <dl class="docutils">
@@ -87,7 +87,7 @@ functions made available are:</p>
 directory specified by the environment variable <strong>TMPDIR</strong>. The name
 of the temporary directory is returned as environment variable
 <strong>GMT_TMPDIR</strong>. This function also causes <strong>GMT</strong> to run in
-‘isolation mode’, i.e. all temporary files will be created in
+‘isolation mode’, i.e., all temporary files will be created in
 <strong>GMT_TMPDIR</strong> and the <strong>gmt.conf</strong> file will not be adjusted.</dd>
 <dt><strong>gmt_remove_tmpdir</strong></dt>
 <dd>Removes the temporary directory and unsets the <strong>GMT_TMPDIR</strong>
@@ -135,20 +135,24 @@ integer counter.</dd>
 </div>
 <div class="section" id="id3">
 <h2><a class="reference external" href="#toc3">Notes</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p>1. These functions only work in the bourne shell (<strong>sh</strong>) and their
-derivatives (like <strong>ash</strong>, <strong>bash</strong>, <strong>ksh</strong> and <strong>zsh</strong>). These
+<blockquote>
+<div><ol class="arabic simple">
+<li>These functions only work in the bourne shell (<strong>sh</strong>) and their</li>
+</ol>
+</div></blockquote>
+<p>derivatives (like <strong>ash</strong>, <strong>bash</strong>, <strong>ksh</strong> and <strong>zsh</strong>). These
 functions do not work in the C shell (<strong>csh</strong>) or their derivatives
-(like <strong>tcsh</strong>), and cannot be used in DOS batch scripts either.
-2. <strong>gmt_shell_functions.sh</strong> were first introduced in <strong>GMT</strong>
-version 4.2.2 and have since been regularly expanded with other
-practical scripting short-cuts. If you want to suggest other functions,
-please do so by mailing to the GMT mailing list:
-<a class="reference external" href="mailto:gmt-help&#37;&#52;&#48;lists&#46;hawaii&#46;edu">gmt-help<span>&#64;</span>lists<span>&#46;</span>hawaii<span>&#46;</span>edu</a>.</p>
+(like <strong>tcsh</strong>), and cannot be used in DOS batch scripts either.</p>
+<p>2. <strong>gmt_shell_functions.sh</strong> were first introduced in <strong>GMT</strong> version
+4.2.2 and have since been regularly expanded with other practical
+scripting short-cuts. If you want to suggest other functions, please do
+so by mailing to the GMT mailing list: <a class="reference external" href="mailto:gmt-help&#37;&#52;&#48;lists&#46;hawaii&#46;edu">gmt-help<span>&#64;</span>lists<span>&#46;</span>hawaii<span>&#46;</span>edu</a>.</p>
 </div>
 <div class="section" id="id4">
 <h2><a class="reference external" href="#toc4">See Also</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*</a> ,
-<a class="reference external" href="minmax.html">*minmax*</a> , <a class="reference external" href="grdinfo.html">*grdinfo*</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmt.conf.html">*gmt.conf*(5)</a> ,
+<a class="reference external" href="sh.html">*sh*(1)</a> , <a class="reference external" href="bash.html">*bash*(1)</a> ,
+<a class="reference external" href="minmax.html">*minmax*(1)</a> , <a class="reference external" href="grdinfo.html">*grdinfo*(1)</a></p>
 </div>
 </div>
 

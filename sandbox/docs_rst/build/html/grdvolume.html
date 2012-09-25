@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="GMT5 v0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
-    <link rel="next" title="Supplements" href="supplements/supplements.html" />
+    <link rel="next" title="greenspline" href="greenspline.html" />
     <link rel="prev" title="grdview" href="grdview.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="supplements/supplements.html" title="Supplements"
+          <a href="greenspline.html" title="greenspline"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="grdview.html" title="grdview"
@@ -58,7 +58,8 @@
 <p><strong>grdvolume</strong> <em>grdfile</em> [ <strong>-C</strong><em>cval</em> or <strong>-C</strong><em>low/high/delta</em> ] [
 <strong>-L</strong><em>base</em> ] [ <strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [
 <strong>-S</strong>[<em>unit</em>] ] [ <strong>-T</strong>[<strong>c</strong>|<strong>h</strong>] ] [
-<strong>-V</strong>[<em>level</em>] ] [ <strong>-Z</strong><em>fact</em>[/<em>shift</em>] ] [ <strong>-f</strong><em>colinfo</em> ]</p>
+<strong>-V</strong>[<em>level</em>] ] [ <strong>-Z</strong><em>fact</em>[/<em>shift</em>] ] [ <strong>-f</strong><em>colinfo</em>
+] [ <strong>-o</strong><em>cols</em>[,*...*] ]</p>
 </div>
 <div class="section" id="id2">
 <h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -83,17 +84,19 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>grdfile</em></dt>
-<dd>The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)</dd>
+<dd>The name of the input 2-D binary grid file. (See GRID FILE FORMAT
+below.)</dd>
 </dl>
 </div>
 <div class="section" id="id5">
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>-C</strong><em>cval</em> or <strong>-C</strong><em>low/high/delta</em></dt>
-<dd>find area and volume inside the <em>cval</em> contour. Alternatively,
-search using all contours from <em>low</em> to <em>high</em> in steps of <em>delta</em>.
-[Default returns entire area and volume of grid]. The area is
-measured in the plane of the contour.</dd>
+<dd>find area, volume and mean height (volume/area) inside the <em>cval</em>
+contour. Alternatively, search using all contours from <em>low</em> to
+<em>high</em> in steps of <em>delta</em>. [Default returns area, volume and mean
+height of the entire grid]. The area is measured in the plane of the
+contour.</dd>
 <dt><strong>-L</strong><em>base</em></dt>
 <dd>Also add in the volume from the level of the contour down to <em>base</em>
 [Default base is contour].</dd>
@@ -109,18 +112,24 @@ to pick the best contour value (requires <strong>-C</strong>).</dd>
 <dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-Z</strong><em>fact</em>[/<em>shift</em>]</dt>
 <dd>Optionally subtract <em>shift</em> before scaling data by <em>fact</em>. [Default
 is no scaling]. (Numbers in <strong>-C</strong>, <strong>-L</strong> refer to values after
 this scaling has occurred).</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
+<dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
+<dd>Select output columns.</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -133,8 +142,8 @@ you can add the suffix
 <em>id</em> is a two-letter identifier of the grid type and precision, and
 <em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
 to all grid values, and <em>nan</em> is the value used to indicate missing
-data. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.</p>
+data. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.</p>
 <p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
 read, by default, the first 2-dimensional grid that can find in that
 file. To coax <strong>GMT</strong> into reading another multi-dimensional variable in
@@ -142,7 +151,7 @@ the grid file, append <strong>?</strong><em>varname</em> to the file name, where
 is the name of the variable. Note that you may need to escape the
 special meaning of <strong>?</strong> in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and
+double quotes. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.</p>
@@ -175,7 +184,7 @@ rim in pixel oriented grids is ignored when using the <strong>-C</strong> flag.<
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a> , <a class="reference external" href="grdfilter.1.html">*grdfilter*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="grdfilter.html">*grdfilter*(1)</a></p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc10">References</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
@@ -212,8 +221,8 @@ regional-residual separation of geophysical data, <em>Math. Geol.</em>,
   <p class="topless"><a href="grdview.html"
                         title="previous chapter">grdview</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="supplements/supplements.html"
-                        title="next chapter">Supplements</a></p>
+  <p class="topless"><a href="greenspline.html"
+                        title="next chapter">greenspline</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/grdvolume.txt"
@@ -243,7 +252,7 @@ regional-residual separation of geophysical data, <em>Math. Geol.</em>,
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="supplements/supplements.html" title="Supplements"
+          <a href="greenspline.html" title="greenspline"
              >next</a> |</li>
         <li class="right" >
           <a href="grdview.html" title="grdview"

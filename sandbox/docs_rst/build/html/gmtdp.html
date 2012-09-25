@@ -58,7 +58,8 @@
 <p><strong>gmtdp</strong> [ <em>table</em> ] <strong>-T</strong><em>tolerance</em>[<em>unit</em>] [
 <strong>-V</strong>[<em>level</em>] ] [
 <strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
-<strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ] [
+<strong>-bo</strong>[<em>ncols</em>][<em>type</em>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em>
+] [
 <strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
 ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
@@ -93,22 +94,26 @@ data is not Cartesian then append the distance unit (see UNITS).</dd>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is same as input].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
 <dd>Select output columns.</dd>
@@ -119,6 +124,10 @@ given then we read from standard input.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -165,15 +174,15 @@ calculation mode to Flat Earth.</p>
 <h2><a class="reference external" href="#toc10">References</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
 <p>Douglas, D. H., and T. K. Peucker, Algorithms for the reduction of the
 number of points required to represent a digitized line of its
-caricature, <em>Can. Cartogr.</em>, <strong>10</strong>, 112-122, 1973.
-This implementation of the algorithm has been kindly provided by Dr.
+caricature, <em>Can. Cartogr.</em>, <strong>10</strong>, 112-122, 1973.</p>
+<p>This implementation of the algorithm has been kindly provided by Dr.
 Gary J. Robinson, Environmental Systems Science Centre, University of
 Reading, Reading, UK (<a class="reference external" href="mailto:gazza&#37;&#52;&#48;mail&#46;nerc-essc&#46;ac&#46;uk">gazza<span>&#64;</span>mail<span>&#46;</span>nerc-essc<span>&#46;</span>ac<span>&#46;</span>uk</a>); his subroutine forms
 the basis for this program.</p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc11">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.html">*gmt*</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a></p>
 </div>
 </div>
 

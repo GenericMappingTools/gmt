@@ -2,7 +2,6 @@
 grdcontour
 **********
 
-
 grdcontour - Make contour map using a grid
 
 `Synopsis <#toc1>`_
@@ -24,7 +23,8 @@ grdcontour - Make contour map using a grid
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
 ] [ **-Z**\ [*factor*\ [/*shift*]][**p**\ ] ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-c**\ *copies* ] [ **-ho**\ [*n*\ ] ] [
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [ **-ho**\ [*n*\ ]
+] [
 **-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
@@ -54,12 +54,14 @@ space is allowed between the option flag and the associated arguments.
 **-C**\ *cont\_int*
     The contours to be drawn may be specified in one of three possible
     ways:
+
     (1) If *cont\_int* has the suffix ".cpt" and can be opened as a
     file, it is assumed to be a color palette table. The color
     boundaries are then used as contour levels. If the cpt-file has
     annotation flags in the last column then those contours will be
     annotated. By default all contours are labeled; use **-A-** to
     disable all annotations.
+
     (2) If *cont\_int* is a file but not a cpt-file, it is expected to
     contain contour levels in column 1 and a
     `C(ontour) <C.ontour.html>`_ OR `A(nnotate) <A.nnotate.html>`_ in
@@ -67,13 +69,16 @@ space is allowed between the option flag and the associated arguments.
     (or a) are contoured and annotated. Optionally, a third column may
     be present and contain the fixed annotation angle for this contour
     level.
+
     (3) If no file is found, then *cont\_int* is interpreted as a
     constant contour interval. If **-A** is set and **-C** is not, then
     the contour interval is set equal to the specified annotation
     interval.
-    If a file is given and **-T** is set, then only contours marked
-    with upper case C or A will have tickmarks. In all cases the contour
+
+    If a file is given and **-T** is set, then only contours marked with
+    upper case C or A will have tickmarks. In all cases the contour
     values have the same units as the grid.
+
 **-J**\ *parameters* (\*)
     Select map projection.
 
@@ -167,7 +172,7 @@ contours are organized. If the float format %f is present (standard
 modifications to width and precision are allowed, e.g., %f7.3f), then
 the filenames will contain the contour value and lines are thus
 separated into files based on a common contour value. If the integer
-format %d is present (including modifications like %5.5d), then all
+format %d is present (including modifications like %05d), then all
 contours are written to individual segment files; if any of the other
 specifiers are present they just affect the file names. Finally, if the
 character format %c is present it is replaced with the letters C (for
@@ -275,7 +280,7 @@ controlling algorithms:
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ [**+**\ ][*type*\ ]\ *pen*
     *type*, if present, can be **a** for annotated contours or **c** for
     regular contours [Default]. *pen* sets the attributes for the
@@ -285,7 +290,8 @@ controlling algorithms:
     **-C**). If the **-** flag is prepended then the color from the cpt
     file is applied both to the contours and the contour annotations.
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-Z**\ [*factor*\ [/*shift*]][**p**\ ]
     Use to subtract *shift* from the data and multiply the results by
@@ -295,7 +301,7 @@ controlling algorithms:
     periodic in 360 degrees (e.g., phase data, angular distributions)
     and that special precautions must be taken when determining
     0-contours.
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output.
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
@@ -303,7 +309,8 @@ controlling algorithms:
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -312,6 +319,10 @@ controlling algorithms:
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -336,8 +347,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -346,7 +357,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -368,12 +379,13 @@ plot-title, use a thick red pen for annotated contours, and a thin,
 dashed, blue pen for the rest, and send the output to the default
 printer:
 
-grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS Misfit":
--Wathick,red -Wcthinnest,blue,- \| lp
+grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS
+Misfit":-Wathick,red -Wcthinnest,blue,- \| lp
 
 The labeling of local highs and lows may plot outside the innermost
 contour since only the mean value of the contour coordinates is used to
 position the label.
+
 To save the smoothed 100-m contour lines in topo.nc and separate them
 into two multisegment files: contours\_C.txt for closed and
 contours\_O.txt for open contours, try
@@ -383,10 +395,8 @@ grdcontour topo.nc -C100 -S4 -Dcontours\_%c.txt
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*grdimage*\ (1) <grdimage.1.html>`_ ,
-`*grdview*\ (1) <grdview.1.html>`_ ,
-`*pscontour*\ (1) <pscontour.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ ,
+`*grdimage*\ (1) <grdimage.html>`_ , `*grdview*\ (1) <grdview.html>`_ ,
+`*pscontour*\ (1) <pscontour.html>`_

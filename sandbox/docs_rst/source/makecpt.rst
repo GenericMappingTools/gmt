@@ -2,7 +2,6 @@
 makecpt
 *******
 
-
 makecpt - Make GMT color palette tables
 
 `Synopsis <#toc1>`_
@@ -11,8 +10,9 @@ makecpt - Make GMT color palette tables
 **makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *table* ] [
 **-D**\ [**i**\ \|\ **o**] ] [
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [ **-M** ]
-[ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ] [ **-T**\ *z0*/*z1*\ [/*dz*]
-\| **-T**\ *ztable* ] [ **-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
+[ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ] [
+**-T**\ *z0*/*z1*\ [/*dz*\ [+]] \| **-T**\ *ztable* ] [
+**-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
 
 `Description <#toc2>`_
 ----------------------
@@ -22,21 +22,24 @@ makecpt - Make GMT color palette tables
 your own z-table, and create a new cpt file based on an existing master
 cpt file. The resulting cpt file can be reversed relative to the master
 cpt, and can be made continuous or discrete.
+
 The color palette includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
 than the lowest *z*-value, the foreground color (F) assigned to values
 higher than the highest *z*-value, and the NaN color (N) painted
 whereever values are undefined.
+
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
 **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN** from
 the **gmt.conf** file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
-The color model (RGB, HSV or CMYK) of the palette created by
-**makecpt** will be the same as specified in the header of the master
-cpt file. When there is no **COLOR\_MODEL** entry in the master cpt
-file, the **COLOR\_MODEL** specified in the **gmt.conf** file or on the
-command line will be used.
+
+The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
+will be the same as specified in the header of the master cpt file. When
+there is no **COLOR\_MODEL** entry in the master cpt file, the
+**COLOR\_MODEL** specified in the **gmt.conf** file or on the command
+line will be used.
 
 `Common Arguments And Specifications <#toc3>`_
 ----------------------------------------------
@@ -57,7 +60,7 @@ None.
 **-A**\ [**+**\ ]\ *transparency*
     Sets a constant level of transparency (0-100) for all color slices.
     Prepend **+** to also affect the fore-, back-, and nan-colors
-    [Default is no transparency, i.e. 0 (opaque)].
+    [Default is no transparency, i.e., 0 (opaque)].
 **-C**\ *table*
     Selects the master color table *table* to use in the interpolation.
     Choose among the built-in tables (type **makecpt** to see the list)
@@ -93,28 +96,34 @@ None.
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
-**-T**\ *z0*/*z1*\ [/*dz*] \| **-T**\ *ztable*
+**-T**\ *z0*/*z1*\ [/*dz*\ [+]] \| **-T**\ *ztable*
     Defines the range of the new cpt file by giving the lowest and
-    highest z-value and interval. When used with **-C** and the interval
-    is not specified, the number of intervals remains the same as in the
-    input palette. Alternatively, give the name of a ASCII file that has
-    one z-value per record. If **-T** is not given, the existing range
-    in the master cpt file will be used intact.
+    highest z-value and interval. When used with **-C** and *dz* is not
+    specified, the number of intervals remains the same as in the input
+    palette. If *dz* is specified with a trailing ’+’ we interpret *dz*
+    as the number of desired intervals instead. Alternatively, give the
+    name of a ASCII file that has one z-value per record. If **-T** is
+    not given, the existing range in the master cpt file will be used
+    intact.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
     combination with a categorical color table. Cannot be used in
     combination with **-Z**.
 **-Z**
-    Creates a continuous cpt file [Default is discontinuous, i.e.
+    Creates a continuous cpt file [Default is discontinuous, i.e.,
     constant colors for each interval].
 **-^** (\*)
     Print a short message about the syntax of the command, then exits.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -143,5 +152,4 @@ as an output filename; hence the my\_gebco.cpt in the example.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grd2cpt*\ (1) <grd2cpt.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grd2cpt*\ (1) <grd2cpt.html>`_

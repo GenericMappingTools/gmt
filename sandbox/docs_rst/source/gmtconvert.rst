@@ -2,7 +2,6 @@
 gmtconvert
 **********
 
-
 gmtconvert - Convert, Paste, and/or Extract columns from data tables
 
 `Synopsis <#toc1>`_
@@ -53,25 +52,25 @@ None
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**
     The records from the input files should be pasted horizontally, not
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
-    (as set with **-bi**\ [*ncol*\ ][**t**\ ]); ascii tables can have
+    (as set with **-bi**\ [*ncols*\ ][*type*\ ]); ascii tables can have
     different number of columns.
 **-D**\ [*template*\ ]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to stdout]. Append a
     format template for the individual file names; this template
-    **must** contain a C format specifier that can format an long
-    integer argument (the running segment number across all tables);
-    this is usually %ld but could be %8.8ld which gives leading zeros,
-    etc. [Default is gmtconvert\_segment\_%ld.{txt\|bin}, depending on
-    **-bo**\ [*ncol*\ ][**t**\ ]]. Alternatively, give a template with
+    **must** contain a C format specifier that can format an integer
+    argument (the running segment number across all tables); this is
+    usually %d but could be %08d which gives leading zeros, etc.
+    [Default is gmtconvert\_segment\_%d.{txt\|bin}, depending on
+    **-bo**\ [*ncols*\ ][*type*\ ]]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]
@@ -94,8 +93,10 @@ None
     Do not write records that only contain NaNs in every field [Default
     writes all records].
 **-Q**\ *seg*
-    Only write segment number *seg* and skip all others. Cannot be used with **-S**.
-**-S**\ [**~**\ ]\ *"search string"* or **-S**\ [**~**\ ]/\ *regexp*/[**i**\ ]
+    Only write segment number *seg* and skip all others. Cannot be used
+    with **-S**.
+**-S**\ [**~**\ ]\ *"search string"* or
+**-S**\ [**~**\ ]/\ *regexp*/[**i**\ ]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
@@ -112,20 +113,21 @@ None
 **-T**
     Suppress the writing of segment headers on output.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-a**\ *col*\ =\ *name*\ [*...*\ ] (\*)
     Set aspatial column associations *col*\ =\ *name*.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input.
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -138,6 +140,10 @@ None
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -198,5 +204,4 @@ gmtconvert lots of segments.txt -Is > last\_segment\_first.txt
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*minmax*\ (1) <minmax.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*minmax*\ (1) <minmax.html>`_

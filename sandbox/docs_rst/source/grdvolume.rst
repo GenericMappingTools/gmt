@@ -2,7 +2,6 @@
 grdvolume
 *********
 
-
 grdvolume - Calculate grid volume and area constrained by a contour
 
 `Synopsis <#toc1>`_
@@ -11,7 +10,8 @@ grdvolume - Calculate grid volume and area constrained by a contour
 **grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* ] [
 **-L**\ *base* ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-S**\ [*unit*\ ] ] [ **-T**\ [**c**\ \|\ **h**] ] [
-**-V**\ [*level*\ ] ] [ **-Z**\ *fact*\ [/*shift*] ] [ **-f**\ *colinfo* ]
+**-V**\ [*level*\ ] ] [ **-Z**\ *fact*\ [/*shift*] ] [ **-f**\ *colinfo*
+] [ **-o**\ *cols*\ [,*...*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -38,16 +38,18 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *grdfile*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+    The name of the input 2-D binary grid file. (See GRID FILE FORMAT
+    below.)
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
 **-C**\ *cval* or **-C**\ *low/high/delta*
-    find area and volume inside the *cval* contour. Alternatively,
-    search using all contours from *low* to *high* in steps of *delta*.
-    [Default returns entire area and volume of grid]. The area is
-    measured in the plane of the contour.
+    find area, volume and mean height (volume/area) inside the *cval*
+    contour. Alternatively, search using all contours from *low* to
+    *high* in steps of *delta*. [Default returns area, volume and mean
+    height of the entire grid]. The area is measured in the plane of the
+    contour.
 **-L**\ *base*
     Also add in the volume from the level of the contour down to *base*
     [Default base is contour].
@@ -63,18 +65,24 @@ space is allowed between the option flag and the associated arguments.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-Z**\ *fact*\ [/*shift*]
     Optionally subtract *shift* before scaling data by *fact*. [Default
     is no scaling]. (Numbers in **-C**, **-L** refer to values after
     this scaling has occurred).
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
+**-o**\ *cols*\ [,*...*] (\*)
+    Select output columns.
 **-^** (\*)
     Print a short message about the syntax of the command, then exits.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -87,8 +95,8 @@ you can add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
-of the GMT Technical Reference and Cookbook for more information.
+data. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.17 of
+the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
 read, by default, the first 2-dimensional grid that can find in that
@@ -97,7 +105,7 @@ the grid file, append **?**\ *varname* to the file name, where *varname*
 is the name of the variable. Note that you may need to escape the
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
-double quotes. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and
+double quotes. See `**grdreformat**\ (1) <grdreformat.html>`_ and
 Section 4.18 of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read splices of 3-, 4-, or
 5-dimensional grids.
@@ -140,7 +148,7 @@ rim in pixel oriented grids is ignored when using the **-C** flag.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grdfilter*\ (1) <grdfilter.1.html>`_
+`*gmt*\ (1) <gmt.html>`_ , `*grdfilter*\ (1) <grdfilter.html>`_
 
 `References <#toc10>`_
 ----------------------
@@ -148,4 +156,3 @@ rim in pixel oriented grids is ignored when using the **-C** flag.
 Wessel, P., 1998, An empirical method for optimal robust
 regional-residual separation of geophysical data, *Math. Geol.*,
 **30**\ (4), 391-408.
-

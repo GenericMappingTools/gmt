@@ -2,7 +2,6 @@
 gmtstitch
 *********
 
-
 gmtstitch - Join individual lines whose end points match within
 tolerance
 
@@ -14,8 +13,8 @@ tolerance
 **-Q**\ [*template*\ ] ] [ **-T**\ *cutoff*\ [*unit*\ ][/\ *nn\_dist*] ]
 [ **-V**\ [*level*\ ] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-bo**\ [*ncol*\ ][**t**\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
-[
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
+] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -24,16 +23,16 @@ tolerance
 `Description <#toc2>`_
 ----------------------
 
-**gmtstitch** reads standard input or one or more data files (which may
-be multisegment files; see **-m**) and examines the coordinates of the
-end points of all line segments. If a pair of end points are identical
-or closer to each other than the specified separation tolerance then the
-two line segments are joined into a single segment. The process repeats
-until all the remaining endpoints no longer pass the tolerance test; the
-resulting segments are then written out to standard output or specified
-output file. It it is not clear what the separation tolerance should be
-then use **-L** to get a list of all separation distances and analyze
-them to determine a suitable cutoff.
+**gmtstitch** reads standard input or one or more data files, which may
+be multisegment files, and examines the coordinates of the end points of
+all line segments. If a pair of end points are identical or closer to
+each other than the specified separation tolerance then the two line
+segments are joined into a single segment. The process repeats until all
+the remaining endpoints no longer pass the tolerance test; the resulting
+segments are then written out to standard output or specified output
+file. If it is not clear what the separation tolerance should be then
+use **-L** to get a list of all separation distances and analyze them to
+determine a suitable cutoff.
 
 `Common Arguments And Specifications <#toc3>`_
 ----------------------------------------------
@@ -52,20 +51,21 @@ None.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-C**\ [*closed*\ ]
     Write all the closed polygons to *closed* [gmtstitch\_closed.txt]
     and all other segments as they are to stdout. No stitching takes
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and if
-    *cutoff* is > 0 then we also close the polygons on output.
+    *cutoff* is > 0 then we also explicitly close the polygons on
+    output.
 **-D**\ [*template*\ ]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a single multiple segment file]. Append a
     format template for the individual file names; this template
     **must** contain a C format specifier that can format an integer
-    argument (the segment number); this is usually %d but could be %8.8d
+    argument (the segment number); this is usually %d but could be %08d
     which gives leading zeros, etc. Optionally, it may also contain the
     format %c *before* the integer; this will then be replaced by C
     (closed) or O (open) to indicate segment type. [Default is
@@ -95,18 +95,19 @@ None.
     if the second closest connection exceeds the *nn\_dist*. The latter
     distance must be given in the same units as *cutoff*.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -117,6 +118,10 @@ None.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -157,7 +162,7 @@ possible, assuming the end points slop could be up to 150 m, and write
 the complete segments to separate files called Map\_segment\_0001.dat,
 Map\_segment\_0002.dat, etc., run
 
-gmtstitch my\_lines.txt -T150e -DMap\_segment\_%4.4d.dat
+gmtstitch my\_lines.txt -T150e -DMap\_segment\_%04d.dat
 
 `Bugs <#toc9>`_
 ---------------
@@ -170,5 +175,4 @@ all close lines.
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*mapproject*\ (1) <mapproject.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*mapproject*\ (1) <mapproject.html>`_

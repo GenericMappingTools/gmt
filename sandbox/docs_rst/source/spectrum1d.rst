@@ -2,7 +2,6 @@
 spectrum1d
 **********
 
-
 spectrum1d - Compute auto- [and cross- ] spectra from one [or two]
 time-series
 
@@ -16,7 +15,8 @@ time-series
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
+]
 
 `Description <#toc2>`_
 ----------------------
@@ -34,7 +34,7 @@ frequency or wavelength, p is the spectral density estimate, and e is
 the one standard deviation error bar size. These files are named based
 on *name\_stem*. If the **-C** option is used, up to eight files are
 created; otherwise only one (xpower) is written. The files (which are
-ASCII unless **-bo**\ [*ncol*\ ][**t**\ ] is set) are as follows:
+ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
 
 *name\_stem*.xpower
     Power spectral density of X(t). Units of X \* X \* *dt*.
@@ -45,7 +45,8 @@ ASCII unless **-bo**\ [*ncol*\ ][**t**\ ] is set) are as follows:
 *name\_stem*.npower
     Power spectral density of the noise output. Units same as ypower.
 *name\_stem*.gain
-    Gain spectrum, or modulus of the transfer function. Units of (Y / X).
+    Gain spectrum, or modulus of the transfer function. Units of (Y /
+    X).
 *name\_stem*.phase
     Phase spectrum, or phase of the transfer function. Units are
     radians.
@@ -83,7 +84,7 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ])
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
     files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
     no files are specified, **spectrum1d** will read from standard
     input.
@@ -98,33 +99,39 @@ space is allowed between the option flag and the associated arguments.
     default [all]. **x** = xpower, **y** = ypower, **c** = cpower, **n**
     = npower, **p** = phase, **a** = admit, **g** = gain, **o** = coh.
 **-D**\ *dt*
-    *dt* Set the spacing between samples in the time-series [Default = 1].
+    *dt* Set the spacing between samples in the time-series [Default =
+    1].
 **-N**\ [**+**\ ]\ *name\_stem*
     *name\_stem* Supply the name stem to be used for output files
     [Default = "spectrum"]. To place all the computed output columns in
     a single table, use **-N+**.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**
     Write Wavelength rather than frequency in column 1 of the output
     file[s] [Default = frequency, (cycles / *dt*)].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is 2 output columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-^** (\*)
     Print a short message about the syntax of the command, then exits.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -156,15 +163,15 @@ paste data.t data.g \| spectrum1d -S256 -D1.5 -Ndata -C
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grdfft*\ (1) <grdfft.1.html>`_
+`*gmt*\ (1) <gmt.html>`_ , `*grdfft*\ (1) <grdfft.html>`_
 
 `References <#toc9>`_
 ---------------------
 
 Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed.,
 John Wiley & Sons.
-Welch, P. D., 1967, The use of Fast Fourier Transform for the
-estimation of power spectra: a method based on time averaging over
-short, modified periodograms, IEEE Transactions on Audio and
-Electroacoustics, Vol AU-15, No 2.
 
+Welch, P. D., 1967, The use of Fast Fourier Transform for the estimation
+of power spectra: a method based on time averaging over short, modified
+periodograms, IEEE Transactions on Audio and Electroacoustics, Vol
+AU-15, No 2.

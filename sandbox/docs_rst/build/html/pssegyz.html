@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Name &mdash; GMT5 v0 documentation</title>
+    <title>pssegyz &mdash; GMT5 v0 documentation</title>
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -40,13 +40,11 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <p><a class="reference external" href="#toc">Table of Contents</a></p>
-<div class="section" id="id1">
-<h1><a class="reference external" href="#toc0">Name</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="pssegyz">
+<h1>pssegyz<a class="headerlink" href="#pssegyz" title="Permalink to this headline">¶</a></h1>
 <p>pssegyz - Create imagemasked postscript from SEGY file</p>
-</div>
-<div class="section" id="id2">
-<h1><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p><strong>pssegyz</strong> <em>SEGYfile</em> <strong>-J</strong><em>parameters</em>
 <strong>-Jz</strong>|<strong>Z</strong><em>parameters</em>
 <strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]
@@ -59,8 +57,8 @@
 <strong>-p</strong><em>azim</em>/<em>elev</em>[/<em>zlevel</em>][<strong>+w</strong><em>lon0</em>/<em>lat0</em>[/<em>z0</em>]][<strong>+v</strong><em>x0</em>/<em>y0</em>]
 ] [ <strong>-t</strong>[<em>transp</em>] ]</p>
 </div>
-<div class="section" id="id3">
-<h1><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id2">
+<h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
 <p><strong>pssegyz</strong> reads a native (IEEE) format SEGY file and produces a
 <em>PostScript</em> image of the seismic data. The <em>imagemask</em> operator is used
 so that the seismic data are plotted as a 1-bit deep bitmap in a single
@@ -83,15 +81,15 @@ text header, which is ignored, 400 byte binary reel header, and 240 byte
 header for each trace) with samples as native real*4 (IEEE real on all
 the platforms to which I have access)</p>
 </div>
-<div class="section" id="id4">
-<h1><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id3">
+<h2><a class="reference external" href="#toc3">Common Arguments And Specifications</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
 <p>All options marked with an asterisk (*) are common GMT command-line
 options. Their full syntax as well as how to specify pens, pattern
 fills, colors, and fonts can be found in the <strong>gmt</strong> man page. Note: No
 space is allowed between the option flag and the associated arguments.</p>
 </div>
-<div class="section" id="id5">
-<h1><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id4">
+<h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>SEGYfile</em></dt>
 <dd>Seismic data set to be imaged</dd>
@@ -119,8 +117,8 @@ gray gives the color with which the imagemask is filled.</dd>
 </dl>
 <p>You <em>must</em> specify at least one of <strong>-W</strong> and <strong>-F</strong>.</p>
 </div>
-<div class="section" id="id6">
-<h1><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id5">
+<h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>-A</strong></dt>
 <dd>Flip the default byte-swap state (default assumes data have a
@@ -161,7 +159,7 @@ redvel/|offset|. Negative velocity removes existing reduction.
 Units should be consistent with offset in trace header and sample
 interval.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-X</strong><em>scale</em></dt>
 <dd>Multiply trace locations by scale before plotting.</dd>
 <dt><strong>-Y</strong><em>sample_int</em></dt>
@@ -181,10 +179,14 @@ interval.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
-<div class="section" id="id7">
-<h1><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id6">
+<h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at +-3 and with wiggle trace and positive
 variable area shading in black, use</p>
@@ -192,30 +194,18 @@ variable area shading in black, use</p>
 <strong>-R</strong>0/100/0/10/0/10 <strong>-C</strong>3 <strong>-N</strong> <strong>-S</strong>o <strong>-W</strong> <strong>-F</strong>black
 &gt; segy.ps</p>
 </div>
-<div class="section" id="id8">
-<h1><a class="reference external" href="#toc7">Bugs</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id7">
+<h2><a class="reference external" href="#toc7">Bugs</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
 <p>Variable area involves filling four-sided figures of distressing
 generality. I <em>know</em> that some of the more complex degenerate cases are
 not dealt with correctly or at all; the incidence of such cases
 increases as viewing angles become more oblique, and particularly as the
 viewing elevation increases. Wiggle-trace plotting is not affected.</p>
 </div>
-<div class="section" id="id9">
-<h1><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h1>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="pssegy.1.html">*pssegy*(1)</a></p>
-<hr class="docutils" />
-<p><strong>Table of Contents</strong></p>
-<ul class="simple">
-<li><a class="reference external" href="#sect0">Name</a></li>
-<li><a class="reference external" href="#sect1">Synopsis</a></li>
-<li><a class="reference external" href="#sect2">Description</a></li>
-<li><a class="reference external" href="#sect3">Common Arguments And Specifications</a></li>
-<li><a class="reference external" href="#sect4">Required Arguments</a></li>
-<li><a class="reference external" href="#sect5">Optional Arguments</a></li>
-<li><a class="reference external" href="#sect6">Examples</a></li>
-<li><a class="reference external" href="#sect7">Bugs</a></li>
-<li><a class="reference external" href="#sect8">See Also</a></li>
-</ul>
+<div class="section" id="id8">
+<h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="pssegy.html">*pssegy*(1)</a></p>
+</div>
 </div>
 
 
@@ -226,15 +216,17 @@ viewing elevation increases. Wiggle-trace plotting is not affected.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Name</a></li>
-<li><a class="reference internal" href="#id2">Synopsis</a></li>
-<li><a class="reference internal" href="#id3">Description</a></li>
-<li><a class="reference internal" href="#id4">Common Arguments And Specifications</a></li>
-<li><a class="reference internal" href="#id5">Required Arguments</a></li>
-<li><a class="reference internal" href="#id6">Optional Arguments</a></li>
-<li><a class="reference internal" href="#id7">Examples</a></li>
-<li><a class="reference internal" href="#id8">Bugs</a></li>
-<li><a class="reference internal" href="#id9">See Also</a></li>
+<li><a class="reference internal" href="#">pssegyz</a><ul>
+<li><a class="reference internal" href="#id1">Synopsis</a></li>
+<li><a class="reference internal" href="#id2">Description</a></li>
+<li><a class="reference internal" href="#id3">Common Arguments And Specifications</a></li>
+<li><a class="reference internal" href="#id4">Required Arguments</a></li>
+<li><a class="reference internal" href="#id5">Optional Arguments</a></li>
+<li><a class="reference internal" href="#id6">Examples</a></li>
+<li><a class="reference internal" href="#id7">Bugs</a></li>
+<li><a class="reference internal" href="#id8">See Also</a></li>
+</ul>
+</li>
 </ul>
 
   <h3>This Page</h3>

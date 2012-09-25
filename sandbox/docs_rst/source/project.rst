@@ -2,7 +2,6 @@
 project
 *******
 
-
 project - Project table data onto lines or great circles, generate
 tracks, or translate coordinates
 
@@ -58,30 +57,36 @@ the distance perpendicular to the great circle path. When moving in the
 *azimuth* direction), the positive (*q*) direction is to your left. If a
 Pole has been specified, then the positive (*q*) direction is toward the
 pole.
-To specify an oblique projection, use the **-T** option to set the
-Pole. Then the equator of the projection is already determined and the
-**-C** option is used to locate the *p* = 0 meridian. The Center *cx/cy*
-will be taken as a point through which the *p* = 0 meridian passes. If
-you do not care to choose a particular point, use the South pole (*ox* =
-0, *oy* = -90).
-Data can be selectively windowed by using the **-L** and **-W**
-options. If **-W** is used, the projection Width is set to use only
-points with *w\_min* < q < *w\_max*. If **-L** is set, then the Length
-is set to use only those points with *l\_min* < p < *l\_max*. If the
-**-E** option has been used to define the projection, then **-Lw** may
-be selected to window the length of the projection to exactly the span
-from **O** to **B**.
+
+To specify an oblique projection, use the **-T** option to set the Pole.
+Then the equator of the projection is already determined and the **-C**
+option is used to locate the *p* = 0 meridian. The Center *cx/cy* will
+be taken as a point through which the *p* = 0 meridian passes. If you do
+not care to choose a particular point, use the South pole (*ox* = 0,
+*oy* = -90).
+
+Data can be selectively windowed by using the **-L** and **-W** options.
+If **-W** is used, the projection Width is set to use only points with
+*w\_min* < q < *w\_max*. If **-L** is set, then the Length is set to use
+only those points with *l\_min* < p < *l\_max*. If the **-E** option has
+been used to define the projection, then **-Lw** may be selected to
+window the length of the projection to exactly the span from **O** to
+**B**.
+
 Flat Earth (Cartesian) coordinate transformations can also be made. Set
 **-N** and remember that *azimuth* is clockwise from North (the *y*
 axis), NOT the usual cartesian theta, which is counterclockwise from the
 *x* axis. *azimuth* = 90 - theta.
-No assumptions are made regarding the units for *x*, *y*, *r*, *s*,
-*p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*. If **-Q** is
+
+No assumptions are made regarding the units for *x*, *y*, *r*, *s*, *p*,
+*q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*. If **-Q** is
 selected, map units are assumed and *x*, *y*, *r*, *s* must be in
 degrees and *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*
 will be in km.
+
 Calculations of specific great-circle and geodesic distances or for
 back-azimuths or azimuths are better done using **mapproject**.
+
 **project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
 xyzpqrs letters in **-flags**.
@@ -107,9 +112,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**\ *azimuth*
     *azimuth* defines the azimuth of the projection (Definition 1).
 **-E**\ *bx*/*by*
@@ -117,7 +122,7 @@ space is allowed between the option flag and the associated arguments.
 **-F**\ *flags*
     Specify your desired output using any combination of *xyzpqrs*, in
     any order. Do not space between the letters. Use lower case. The
-    output will be ASCII (or binary, see **-bo**\ [*ncol*\ ][**t**\ ])
+    output will be ASCII (or binary, see **-bo**\ [*ncols*\ ][*type*\ ])
     columns of values corresponding to *xyzpqrs* [Default]. If both
     input and output are using ASCII format then the *z* data are
     treated as textstring(s). If the **-G** option is selected, the
@@ -150,21 +155,22 @@ space is allowed between the option flag and the associated arguments.
     *px/py* sets the position of the rotation pole of the projection.
     (Definition 3).
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *w\_min*/*w\_max*
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is given by **-F** or **-G**].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] (\*)
     Set handling of NaN records.
@@ -175,6 +181,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -259,7 +269,6 @@ This gives coordinates for an oblique small circle.
 `See Also <#toc8>`_
 -------------------
 
-`*fitcircle*\ (1) <fitcircle.1.html>`_ , `*gmt*\ (1) <gmt.1.html>`_ ,
-`*mapproject*\ (1) <mapproject.1.html>`_ ,
-`*grdproject*\ (1) <grdproject.1.html>`_
-
+`*fitcircle*\ (1) <fitcircle.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
+`*mapproject*\ (1) <mapproject.html>`_ ,
+`*grdproject*\ (1) <grdproject.html>`_

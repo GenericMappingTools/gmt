@@ -25,7 +25,7 @@
     <link rel="top" title="GMT5 v0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="gmtstitch" href="gmtstitch.html" />
-    <link rel="prev" title="gmtset" href="gmtset.html" /> 
+    <link rel="prev" title="gmt_shell_functions" href="gmt_shell_functions.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,7 @@
           <a href="gmtstitch.html" title="gmtstitch"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="gmtset.html" title="gmtset"
+          <a href="gmt_shell_functions.html" title="gmt_shell_functions"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
@@ -64,8 +64,8 @@
 <strong>-S</strong><strong>i</strong>|<strong>u</strong>|<strong>s</strong>|<strong>j</strong> ] [
 <strong>-T</strong>[<em>clippolygon</em>] ] [[ <strong>-V</strong>[<em>level</em>] ] [
 <strong>-b</strong>[<em>ncol</em>][<strong>t</strong>][<strong>+L</strong>|<strong>+B</strong>] ] [
-<strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> ]
-[
+<strong>-bo</strong>[<em>ncols</em>][<em>type</em>] ] [ <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em>
+] [
 <strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
 ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
@@ -93,9 +93,9 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-C</strong></dt>
 <dd>Clips polygons to the map region, including map boundary to the
 polygon as needed. The result is a closed polygon (see <strong>-T</strong> for
@@ -110,7 +110,7 @@ threshold). We also consider that some features may have been
 reversed. Features are considered approximate matches if their
 minimum distance is less than <em>dmax</em> [0] (see UNITS) and their
 closeness (defined as the ratio between the average distance between
-the features divided by their average length) is less than <em>cmin</em>
+the features divided by their average length) is less than <em>cmax</em>
 [0.01]. For each duplicate found, the output record begins with the
 single letter Y (exact match) or ~ (approximate match). If the two
 matching segments differ in length by more than a factor of 2 then
@@ -179,18 +179,22 @@ that when the <strong>-R</strong> clipping is in effect we will also look for
 polygons of length 4 or 5 that exactly match the <strong>-R</strong> clipping
 polygon.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is same as input].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-o</strong><em>cols</em>[,*...*] (*)</dt>
 <dd>Select output columns.</dd>
@@ -201,6 +205,10 @@ polygon.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -238,7 +246,7 @@ their areas to the segment headers, run</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.1.html">*gmt*(1)</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a></p>
 </div>
 </div>
 
@@ -265,8 +273,8 @@ their areas to the segment headers, run</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="gmtset.html"
-                        title="previous chapter">gmtset</a></p>
+  <p class="topless"><a href="gmt_shell_functions.html"
+                        title="previous chapter">gmt_shell_functions</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gmtstitch.html"
                         title="next chapter">gmtstitch</a></p>
@@ -302,7 +310,7 @@ their areas to the segment headers, run</p>
           <a href="gmtstitch.html" title="gmtstitch"
              >next</a> |</li>
         <li class="right" >
-          <a href="gmtset.html" title="gmtset"
+          <a href="gmt_shell_functions.html" title="gmt_shell_functions"
              >previous</a> |</li>
         <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 

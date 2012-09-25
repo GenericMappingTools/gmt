@@ -1,0 +1,1588 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>GMT API &mdash; GMT5 v0 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="up" title="Mains" href="mains.html" />
+    <link rel="next" title="blockmean" href="blockmean.html" />
+    <link rel="prev" title="Mains" href="mains.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="blockmean.html" title="blockmean"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mains.html" title="Mains"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gmt-api">
+<h1>GMT API<a class="headerlink" href="#gmt-api" title="Permalink to this headline">¶</a></h1>
+<p>roman GMT<sub>C</sub>over</p>
+<p>headings</p>
+<p>headings</p>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>arabic headings</p>
+<div class="section" id="preamble">
+<h3>Preamble<a class="headerlink" href="#preamble" title="Permalink to this headline">¶</a></h3>
+<p>[h] <img alt="image" src="GMT4_mode.png" /> GMT 4 programs contain all the high-level functionality.</p>
+<p>Prior to version 5, the bulk of &nbsp;functionality was coded directly in the
+standard &nbsp;C program modules (e.g., surface.c, psxy.c, grdimage.c). The
+&nbsp;library only offered access to lower-level functions from which those
+high-level &nbsp;programs were built. The standard &nbsp;programs have been very
+successful, with tens of thousands of users world-wide. However, the
+design of the main programs prevented developers from leveraging
+&nbsp;functionality from within other programming environments since access
+to &nbsp;tools could only be achieved via system calls. Consequently, all
+data i/o had to be done via temporary files. The design also prevented
+the &nbsp;developers themselves from taking advantage of these modules
+directly. For instance, the tool pslegend needed to make extensive use
+of system calls to psxy and pstext in order to plot the lines, symbols
+and text that make up a map legend.</p>
+<p>[h] <img alt="image1" src="GMT5_mode.png" /> GMT 4 programs contain all the high-level functionality.</p>
+<p>Starting with &nbsp;version 5, all standard &nbsp;programs are split into short
+driver program (the “new” &nbsp; programs) and a function “module”. The
+drivers simply call the corresponding &nbsp;modules; it is these modules that
+do most of the work. These new functions have been placed in a new
+&nbsp;high-level API library and can be called from a variety of environments
+(C/C++, Fortran, Python, Matlab, Visual Basic, etc.) <a class="footnote-reference" href="#id3" id="id1">[1]</a>. For example,
+the main program blockmean.c has been reconfigured as a high-level
+function GMT_blockmean(), which does the actual spatial averaging and
+passes the result back to the calling program. The previous behavior of
+blockmean.c is replicated by a short driver program that simply collects
+user arguments and then calls GMT_blockmean(). Indeed, the driver
+programs for all the standard &nbsp;programs are so short and simple that the
+makefile generates them on-the-fly when it compiles and links them with
+the &nbsp;library into executables. Thus, blockmean.c and others do no longer
+exist.</p>
+<p>In order for this interface to be as flexible as possible we have
+generalized the notion of input and output. Now, data that already
+reside in an application’s memory may serve as input to a &nbsp;function.
+Other sources of input may be file pointers and file descriptors (as
+well as the already-supported mechanism for passing file names). For
+standard data table i/o, the &nbsp;API takes care of the task of assembling
+any combination of files, pointers, and memory locations into a single
+virtual data set from which the function may read (a) all records at
+once into memory, or (b) read one record at a time. Likewise, &nbsp;functions
+may write their output to a virtual destination, which might be a memory
+location in the user’s application, a file pointer or descriptor, or an
+output file. The &nbsp;functions are unaware of these details and simply read
+from a “source” and write to a “destination”.</p>
+<p>Here, we document the new functions in the &nbsp;API library for application
+developers who wish to call these functions from their own custom
+programs. At this point, only the new high-level &nbsp;API is fully
+documented and intended for public use. The structure and documentation
+of the under-lying lower-level &nbsp;library is not finalized Developers
+using these functions may risk disruption to their programs due to
+changes we may make in the library in support of the &nbsp;API.</p>
+</div>
+<div class="section" id="definitions">
+<h3>Definitions<a class="headerlink" href="#definitions" title="Permalink to this headline">¶</a></h3>
+<p>For the purpose of this documentation a few definitions are needed:</p>
+<ol class="arabic simple">
+<li>“Standard &nbsp;program” refers to one of the traditional stand-alone
+command-line executables known to all &nbsp;users, e.g., blockmean, psxy,
+grdimage, etc. Prior to version 5, these were the only &nbsp;executables
+available.</li>
+<li>“&nbsp;module” refers to the function in the &nbsp;API library that is
+responsible for all the action taken by the corresponding &nbsp;program.
+All such modules are given the same name as the corresponding program
+but carry the prefix <tt class="docutils literal"><span class="pre">GMT_</span></tt>, e.g., <tt class="docutils literal"><span class="pre">GMT_blockmean</span></tt>.</li>
+<li>“&nbsp;application” refers to a new application written by developers and
+may call one or more &nbsp;functions to create a new -compatible
+executable.</li>
+<li>In the API description that follows we will use the type <tt class="docutils literal"><span class="pre">long</span></tt> to
+mean a 4-byte (for 32-bit systems) or 8-byte (for 64-bit systems)
+integer. Since different operating systems have their own way of
+defining 8-byte integers it is recommended that developers use the
+type <tt class="docutils literal"><span class="pre">GMT_LONG</span></tt> for this purpose; it is guaranteed to yield the
+correct type that the &nbsp;functions expect.</li>
+</ol>
+<p>In version 5, the standard &nbsp;programs are themselves specific but overly
+simple examples of &nbsp;applications that only call the single &nbsp;function
+they are associated with. However, some exceptions such as pslegend and
+gmtconvert call several modules.</p>
+</div>
+<div class="section" id="recognized-resources">
+<h3>Recognized resources<a class="headerlink" href="#recognized-resources" title="Permalink to this headline">¶</a></h3>
+<p>The &nbsp;API knows how to read and write five types of data common to
+&nbsp;operations: CPT palette tables, data tables (ASCII or binary), text
+tables, &nbsp;grids and images (reading only). In addition, we have two data
+types to facilitate the passing of simple user arrays (one or more data
+columns of any data type, e.g., double, char) and 2-D user matrices (of
+any data type and column/row organization). There are many attributes
+for each of these two entities and therefore we use a top-level
+structure for each to keep them all in one container. These containers
+are given or returned by the &nbsp;API functions using pointers (<tt class="docutils literal"><span class="pre">void</span> <span class="pre">*</span></tt>).
+Below we discuss these containers in some detail; we will later present
+how they are used when importing or exporting them to or from files,
+memory locations, or streams. The first five are the standard &nbsp;objects,
+while the latter two are the special user data containers.</p>
+<div class="section" id="cpt-palette-tables">
+<h4>CPT palette tables<a class="headerlink" href="#cpt-palette-tables" title="Permalink to this headline">¶</a></h4>
+<p>The color palette table files, or just CPT tables, contain colors and
+patterns used for plotting data such as surfaces (i.e., &nbsp;grids) or
+symbols, lines and polygons (i.e., &nbsp;tables). &nbsp;programs will generally
+read in a CPT palette table, make it the current palette, do the
+plotting, and destroy the table when done. The information is referred
+to via a pointer to <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_PALETTE</span></tt>. Thus, the arguments to &nbsp;API
+functions that handle palettes expect this type of variable.</p>
+</div>
+<div class="section" id="data-tables">
+<h4>Data tables<a class="headerlink" href="#data-tables" title="Permalink to this headline">¶</a></h4>
+<p>Much data processed in &nbsp;come in the form of ASCII or binary data tables.
+These may have any number of header records (ASCII only) and perhaps
+segment headers. &nbsp;programs will read one or many such tables when
+importing data. However, to avoid memory duplication some programs may
+prefer to read records one at the time. The &nbsp;API has functions that let
+you read record-by-record by presenting a virtual data set that combines
+all the data tables specified as input. This simplifies record
+processing considerably. A <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_DATASET</span></tt> may contain any number
+of tables, each with any number of segments, and each segment with any
+number of records. Thus, the arguments to &nbsp;API functions that handle
+such data sets expect this type of variable. All segments are expected
+to have the same number of columns.</p>
+</div>
+<div class="section" id="text-tables">
+<h4>Text tables<a class="headerlink" href="#text-tables" title="Permalink to this headline">¶</a></h4>
+<p>Some data needed by &nbsp;are simply free-form ASCII text tables. These are
+handled similarly to data tables. E.g., they may have any number of
+header records and even segment headers, and &nbsp;programs can read one or
+more tables or get text records one at the time. A
+<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_TEXTSET</span></tt> may contain any number of tables, each with any
+number of segments, and each segment with any number of records. Thus,
+the arguments to &nbsp;API functions that handle such data sets expect this
+type of variable.</p>
+</div>
+<div class="section" id="gmt-grids">
+<h4>GMT grids<a class="headerlink" href="#gmt-grids" title="Permalink to this headline">¶</a></h4>
+<p>&nbsp;grids are used to represent equidistant and organized 2-D surfaces.
+These can be plotted as contour maps, color images, or as perspective
+surfaces. Because the native &nbsp;grid is simply a 1-D float array with all
+the metadata kept in a separate header, we pass this information via a
+<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_GRID</span></tt>, which is a container that holds both items. Thus,
+the arguments to &nbsp;API functions that handle such &nbsp;grids expect this type
+of variable.</p>
+</div>
+<div class="section" id="gmt-images">
+<h4>GMT images<a class="headerlink" href="#gmt-images" title="Permalink to this headline">¶</a></h4>
+<p>&nbsp;images are used to represent bit-mapped images obtained via the GDAL
+bridge. These can be reprojected internally, such as when used in
+grdimage. Since images and grids share the concept of a header, we use
+the same header structure for grids as for images; however, some
+additional metadata attributes are also needed. Finally, the image
+itself may be of any data type. Both image and header information are
+passed via a <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_IMAGE</span></tt>, which is a container that holds both
+items. Thus, the arguments to &nbsp;API functions that handle such &nbsp;images
+expect this type of variable. Unlike the other objects, images can only
+be read and not written.</p>
+</div>
+<div class="section" id="user-data-columns">
+<h4>User data columns<a class="headerlink" href="#user-data-columns" title="Permalink to this headline">¶</a></h4>
+<p>[h]</p>
+<p>ll</p>
+<p>2l<tt class="docutils literal"><span class="pre">union</span> <span class="pre">GMT_UNIVECTOR</span> <span class="pre">{</span></tt>
+`` unsigned char <em>uc1;`` &amp; /* *Pointer for unsigned char array</em> */
+`` char <em>sc1;`` &amp; /* *Pointer for signed char array</em> */
+`` unsigned short <em>ui2;`` &amp; /* *Pointer for unsigned short array</em> */
+`` short <em>si2;`` &amp; /* *Pointer for signed short array</em> */
+`` unsigned int <em>ui4;`` &amp; /* *Pointer for unsigned int array</em> */
+`` int <em>si4;`` &amp; /* *Pointer for signed int array</em> */
+`` unsigned long <em>ui8;`` &amp; /* *Pointer for unsigned long array</em> */
+`` long <em>si8;`` &amp; /* *Pointer for signed long array</em> */
+`` float <em>f4;`` &amp; /* *Pointer for float array</em> */
+`` double <em>f8;`` &amp; /* *Pointer for double array</em> */
+<tt class="docutils literal"><span class="pre">};</span></tt> &amp;</p>
+<p>Definition of the GMT_UNIVECTOR union that hold a pointer to any array
+type. [tbl:univector]</p>
+<p>[h]</p>
+<p>ll</p>
+<p>2l<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_VECTOR</span> <span class="pre">{</span></tt>
+`` long id;`` &amp; /* <em>An identification number</em> */
+`` long n_rows;`` &amp; /* <em>Number of rows in each vector</em> */
+`` long n_columns;`` &amp; /* <em>Number of vectors</em> */
+`` long alloc_mode;`` &amp; /* <em>Determines if we may free the vectors or
+not</em> */
+`` long <em>type;`` &amp; /* *Array with data type for each vector</em> */
+`` union GMT_UNIVECTOR <em>data;`` &amp; /* *Array with unions for each
+column</em> */
+<tt class="docutils literal"><span class="pre">};</span></tt> &amp;</p>
+<p>Definition of the GMT_VECTOR structure used to pass user data columns.
+[tbl:vector]</p>
+<p>Programs that may wish to call &nbsp;modules may have input data in their own
+particular structures. For instance, the user’s program may have three
+column arrays of type float and wishes to use these as the input source
+to the <tt class="docutils literal"><span class="pre">GMT_surface</span></tt> module, which normally expects a
+<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_DATASET</span></tt> via file or reference. Simply create a
+<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_VECTOR</span></tt> (see section&nbsp;[sec:create]) and assign the union
+array pointers (see Table&nbsp;[tbl:univector]) to your data columns and
+provide the required information on length and data types (see
+Table&nbsp;[tbl:vector]). By letting the &nbsp;module know you are passing a data
+set via a <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_VECTOR</span></tt> it will know how to read the data
+properly.</p>
+</div>
+<div class="section" id="user-data-matrices">
+<h4>User data matrices<a class="headerlink" href="#user-data-matrices" title="Permalink to this headline">¶</a></h4>
+<p>[h]</p>
+<p>ll</p>
+<p>2l<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_MATRIX</span> <span class="pre">{</span></tt>
+`` long id;`` &amp; /* <em>An identification number</em> */
+`` long n_rows;`` &amp; /* <em>Number of rows in the matrix</em> */
+`` long n_columns;`` &amp; /* <em>Number of columns in the matrix</em> */
+`` long n_layers;`` &amp; /* <em>Number of layers in a 3-D matrix</em> */
+`` long registration;`` &amp; /* <em>0 for gridline and 1 for pixel
+registration</em> */
+`` long shape;`` &amp; /* <em>0 = C (rows) and 1 = Fortran (cols)</em> */
+`` long dim;`` &amp; /* <em>Length of dimension for row (C) or column
+(Fortran)</em> */
+`` long alloc_mode;`` &amp; /* <em>Determines if we may free the vectors or
+not</em> */
+`` long type;`` &amp; /* <em>The matrix data type</em> */
+`` double limit[6];`` &amp; /* <em>The min and max limits on x-, y-, and
+z-ranges</em> */
+`` union GMT_UNIVECTOR data;`` &amp; /* <em>Union with pointers a data matrix
+of any type</em> */
+<tt class="docutils literal"><span class="pre">};</span></tt> &amp;</p>
+<p>Definition of the GMT_MATRIX structure used to pass a user data matrix.
+[tbl:matrix]</p>
+<p>Likewise, a programs may have an integer 2-D matrix in memory and wish
+to use that as the input grid to the <tt class="docutils literal"><span class="pre">GMT_grdfilter</span></tt> module, which
+normally expects a <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_GRID</span></tt> via file or reference. As for
+user vectors, we create a <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_MATRIX</span></tt> (see
+section&nbsp;[sec:create]), assign the appropriate union pointer to your data
+matrix and provide information on dimensions and data type (see
+Table&nbsp;[tbl:matrix]). Letting the &nbsp;module know you are passing a grid via
+a <tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_MATRIX</span></tt> it will know how to read the matrix properly.</p>
+</div>
+</div>
+</div>
+<div class="section" id="overview-of-the-gmt-c-application-program-interface">
+<h2>Overview of the GMT C Application Program Interface<a class="headerlink" href="#overview-of-the-gmt-c-application-program-interface" title="Permalink to this headline">¶</a></h2>
+<p>Users who wish to create their own &nbsp;applications based on the API must
+make sure their program goes through the steps below; details for each
+step will be revealed in the sections to follow. We have kept the API
+simple: In addition to the &nbsp;modules, there are only 17 public functions
+to become familiar with. All functions sets the variable <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>
+to the appropriate error code (when things go wrong); otherwise it is
+set to GMT_OK (0). The layout here assumes you wish to use data in
+memory as input sources; if the data are simply command-line files then
+things simplify considerably.</p>
+<ol class="arabic simple">
+<li>Initialize a new &nbsp;session by calling <tt class="docutils literal"><span class="pre">GMT_Create_Session</span></tt>, which
+allocates a &nbsp;API control structure and returns a pointer to it. This
+pointer must be used as first argument to all subsequent &nbsp;API
+function calls within the same session.</li>
+<li>For each intended call to a &nbsp;function, several steps are involved:<ol class="arabic">
+<li>Register the input sources and register the output destination
+using <tt class="docutils literal"><span class="pre">GMT_Register_IO</span></tt>, unless you know you are working with a
+single file or standard input/output. The resources will typically
+be files, memory locations, already-opened file handles, and even
+process streams.</li>
+<li>Each resource registration will generate a unique ID number. For
+memory resources, these numbers are then converted to unique
+filenames of the form “&#64;GMTAPI&#64;-######” that are used with
+&nbsp;modules. When &nbsp;i/o library functions encounter such filenames
+they extract the ID and make a connection to the resource
+registered under that ID. Any number of table data or text sources
+will be combined into a single virtual source for &nbsp;functions to
+operate on. In contrast, CPT, Grid, and image resources are
+operated on individually.</li>
+<li>Enable data import once all registrations are complete.</li>
+<li>Read into memory all data that will be passed to &nbsp;modules via
+pointers. You may choose to read everything into memory at once or
+process the data record-by-record (tables only).</li>
+<li>Prepare the program options required and call the &nbsp;module you wish
+to use.</li>
+<li>Process the results that were returned to memory via pointers
+rather than written to files.</li>
+<li>Explicitly destroy the resources allocated by &nbsp;modules to hold the
+results, or let the garbage collector do this automatically at the
+end of the module and at the end of the session.</li>
+</ol>
+</li>
+<li>Repeat steps a–f as many times as your application requires. All API
+functions return a status code which is GMTAPI_OK (0) if all is
+well. For non-zero return values, use <tt class="docutils literal"><span class="pre">GMT_Report_Error</span></tt> to
+generate an error message.</li>
+<li>We terminate the GMT session by calling <tt class="docutils literal"><span class="pre">GMT_Destroy_Session</span></tt>.</li>
+</ol>
+<p>Advanced programs may be calling more than one &nbsp;session and thus run
+several sessions, perhaps concurrently as different threads on
+multi-core machines. We will now discuss these steps in more detail.</p>
+<div class="section" id="initialize-a-new-gmt-session">
+<h3>Initialize a new GMT&nbsp;session<a class="headerlink" href="#initialize-a-new-gmt-session" title="Permalink to this headline">¶</a></h3>
+<p>Most applications will need to initialize only a single &nbsp;session. This
+is true of all the standard &nbsp;programs since they only call one &nbsp;module
+and then exit. Most user-developed &nbsp;applications are likely to only
+initialize one session even though they may call many &nbsp;modules. However,
+the &nbsp;API supports any number of simultaneous sessions should the
+programmer wish to take advantage of it. This might be useful when you
+have access to several CPUs and want to spread the computing load <a class="footnote-reference" href="#id4" id="id2">[2]</a>.
+In the following discussion we will simplify our treatment to the use of
+a single session only.</p>
+<p>The <tt class="docutils literal"><span class="pre">GMT_Create_Session</span></tt> is used to initiate the new session. The full
+function prototype is</p>
+<div class="highlight-python"><pre>struct GMTAPI_CTRL * GMT_Create_Session (char *tag, long mode)</pre>
+</div>
+<p>and you will typically call it thus:</p>
+<div class="highlight-python"><pre>GMT_LONG mode = GMTAPI_GMT;
+struct GMTAPI_CTRL *API = NULL;
+API = GMT_Create_Session ("Session name", mode);</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">API</span></tt> is a pointer to the allocated &nbsp;API control structure. You
+will need to pass this pointer to <em>all</em> subsequent &nbsp;API functions. The
+key task of this initialization is to set up the &nbsp;machinery and its
+internal variables used for map projections, plotting, etc. The
+initialization also allocates space for internal structures used to
+register resources. If you expect to call modules that also require the
+PSL library, then set <tt class="docutils literal"><span class="pre">mode</span></tt> to GMTAPI_GMTPSL (1); else simply pass
+GMTAPI_GMT (0). Should something go wrong then <tt class="docutils literal"><span class="pre">API</span></tt> will be returned
+as <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+</div>
+<div class="section" id="register-input-or-output-resources">
+<h3>Register input or output resources<a class="headerlink" href="#register-input-or-output-resources" title="Permalink to this headline">¶</a></h3>
+<p>When using the standard &nbsp;programs, you specify input files on the
+command line or via special program options (e.g., I<em>intensity.nc</em>).
+The output of the programs are either written to standard output (which
+you redirect to files or pipe to other programs) or to files specified
+by specific program options (e.g., G<em>output.nc</em>). However, the &nbsp;API
+allows you to also specify input (and output) to come from (or go to)
+open file handles or program memory locations. We will examine this more
+closely below. Registering a resource is a required step before
+attempting to import or export data other that via file options and
+standard input/output.</p>
+<div class="section" id="resource-registration">
+<h4>Resource registration<a class="headerlink" href="#resource-registration" title="Permalink to this headline">¶</a></h4>
+<p>The basic registration machinery involves a direct or indirect call to</p>
+<div class="highlight-python"><pre>long GMT_Register_IO (struct GMTAPI_CTRL *API, long family, long method, \
+   long geometry, long direction, void *ptr, double wesn[])</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">family</span></tt> specifies what kind of resource is to be registered
+(see Table [tbl:family] for list of all families), <tt class="docutils literal"><span class="pre">method</span></tt> specifies
+how we expect to access this resource (see Table [tbl:methods] for
+recognized methods, as well as modifiers you can add; these are listed
+in Table [tbl:via]), <tt class="docutils literal"><span class="pre">geometry</span></tt> specifies the geometry of the data
+(see Table [tbl:geometry] for recognized geometries), <tt class="docutils literal"><span class="pre">ptr</span></tt> is the
+address of the pointer to the named input resource. If <tt class="docutils literal"><span class="pre">direction</span></tt> is
+GMT_OUT and the <tt class="docutils literal"><span class="pre">method</span></tt> is not related to a file (filename, stream,
+or handle), then <tt class="docutils literal"><span class="pre">ptr</span></tt> must be NULL. After the &nbsp;module has written the
+data you can use <tt class="docutils literal"><span class="pre">GMT_Retrieve_Data</span></tt> to assign a pointer to the memory
+location where the output container was allocated. For grid (and image)
+resources you may request to obtain a subset via the <tt class="docutils literal"><span class="pre">wesn</span></tt> array (see
+Table&nbsp;[tbl:wesn] for information); otherwise, pass NULL to obtain the
+entire grid (or image). The <tt class="docutils literal"><span class="pre">direction</span></tt> indicates input or output and
+is either GMT_IN (0) or GMT_OUT (1). Finally, the function returns a
+unique resource ID, or GMTAPI_NOTSET (-1) if there was an error (with
+error code returned via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>).</p>
+</div>
+<div class="section" id="object-id-encoding">
+<h4>Object ID encoding<a class="headerlink" href="#object-id-encoding" title="Permalink to this headline">¶</a></h4>
+<p>If registered resources are to be given as program input or output
+arguments you will need to pass them via a text string that represents a
+special file name. The proper filename formatting is guaranteed by using
+the function</p>
+<div class="highlight-python"><pre>long GMT_Encode_ID (struct GMTAPI_CTRL *API, char *filename, long ID)</pre>
+</div>
+<p>which accepts the unique <tt class="docutils literal"><span class="pre">ID</span></tt> and writes the <tt class="docutils literal"><span class="pre">filename</span></tt> that you can
+use as argument to a program option. <tt class="docutils literal"><span class="pre">filename</span></tt> must have enough space
+to hold 16 bytes. The function returns TRUE (1) if there is an error
+(which is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>), otherwise it returns FALSE
+(0).</p>
+<p>[h]</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">1|c|<em>family</em></th>
+<th class="head">1c|<em>source points to</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>GMT_IS_DATASET</td>
+<td>A [multi-segment] table file</td>
+</tr>
+<tr><td>GMT_IS_TEXTSET</td>
+<td>A [multi-segment] text file</td>
+</tr>
+<tr><td>GMT_IS_GMTGRID</td>
+<td>A &nbsp;grid file</td>
+</tr>
+<tr><td>GMT_IS_CPT</td>
+<td>A CPT file</td>
+</tr>
+</tbody>
+</table>
+<p>Integer constants defined for use when specifying input or output data
+families. [tbl:family]</p>
+<p>[h]</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="74%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">1|c|<em>method</em></th>
+<th class="head">1c|<em>how to read/write data</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>GMT_IS_FILE</td>
+<td>Pointer to name of a file</td>
+</tr>
+<tr><td>GMT_IS_STREAM</td>
+<td>Pointer to open file (or process)</td>
+</tr>
+<tr><td>GMT_IS_FDESC</td>
+<td>Pointer to integer file descriptor</td>
+</tr>
+<tr><td>GMT_IS_COPY</td>
+<td>Pointer to memory to <em>copy</em> data from</td>
+</tr>
+<tr><td>GMT_IS_REF</td>
+<td>Pointer to memory to <em>reference</em> data from (realloc OK)</td>
+</tr>
+<tr><td>GMT_IS_READONLY</td>
+<td>Pointer to memory to <em>read</em> data from</td>
+</tr>
+</tbody>
+</table>
+<p>Integer constants defined for use when specifying input or output
+methods. [tbl:methods]</p>
+<p>[h]</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">1|c|<em>approach</em></th>
+<th class="head">1c|<em>how method is modified</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>GMT_VIA_VECTOR</td>
+<td>The user’s data columns are addressed via a GMT_VECTOR structure</td>
+</tr>
+<tr><td>GMT_VIA_MATRIX</td>
+<td>The user’s grid is addressed via a GMT_MATRIX structure</td>
+</tr>
+</tbody>
+</table>
+<p>Integer constants defined for use when user data forms are involved.
+These are to be added to the <em>method</em> used when registering the
+resource. [tbl:via]</p>
+<p>[h]</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="34%" />
+<col width="66%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">1|c|<em>geometry</em></th>
+<th class="head">1c|<em>description</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>GMT_IS_TEXT</td>
+<td>Not a geographic item</td>
+</tr>
+<tr><td>GMT_IS_POINT</td>
+<td>Multi-dimensional point data</td>
+</tr>
+<tr><td>GMT_IS_LINE</td>
+<td>Geographic or Cartesian line segments</td>
+</tr>
+<tr><td>GMT_IS_POLYGON</td>
+<td>Geographic or Cartesian closed polygons</td>
+</tr>
+<tr><td>GMT_IS_SURFACE</td>
+<td>2-D gridded surface</td>
+</tr>
+</tbody>
+</table>
+<p>Integer constants defined to register different geometries.
+[tbl:geometry]</p>
+<p>[h]</p>
+<p>|c|l|l|</p>
+<p>2|c|<em>Index</em> &amp; 1c|<em>content</em>
+0 &amp; XLO &amp; x_min (west) boundary of grid subset
+1 &amp; XHI &amp; x_max (east) boundary of grid subset
+2 &amp; YLO &amp; y_min (south) boundary of grid subset
+3 &amp; YHI &amp; y_max (north) boundary of grid subset</p>
+<p>Domain boundaries (<tt class="docutils literal"><span class="pre">wesn</span></tt>) used when selecting subsets of grids.
+[tbl:wesn]</p>
+</div>
+<div class="section" id="resource-initialization">
+<h4>Resource initialization<a class="headerlink" href="#resource-initialization" title="Permalink to this headline">¶</a></h4>
+<p>All &nbsp;programs dealing with (a) input or output files given on the
+command line or (b) defaulting to the standard input or output streams
+if no files are given, must call the i/o initializer function
+<tt class="docutils literal"><span class="pre">GMT_Init_IO</span></tt> once for each direction required (i.e., input and
+output). For input it will determine how many input sources have already
+been registered. If none have been registered then it will scan the
+program arguments for any filenames given on the command line, and
+register these input resources. Finally, if we still have found no input
+sources we will specify the standard input stream as the single input
+source. Likewise, for output: If no single destination has been
+registered we specify the standard output stream as the output
+destination. Only one output destination is allowed to be active when
+the module writes data. The prototype for this function is</p>
+<div class="highlight-python"><pre>long GMT_Init_IO (struct GMTAPI_CTRL *API, long family, long geometry, \
+    long direction, long mode, struct GMT_OPTION *head)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">family</span></tt> specifies what kind of resource is to be registered,
+<tt class="docutils literal"><span class="pre">geometry</span></tt> specifies the geometry of the data, the <tt class="docutils literal"><span class="pre">direction</span></tt> is
+either <tt class="docutils literal"><span class="pre">GMT_IN</span></tt> or <tt class="docutils literal"><span class="pre">GMT_OUT</span></tt>, the <tt class="docutils literal"><span class="pre">mode</span></tt> is a bit flag that
+determines what we do if no resources have been registered. The choices
+are</p>
+<dl class="docutils">
+<dt>1</dt>
+<dd>(or GMT_REG_FILES_IF_NONE) means “add command line (option)
+files if none have been registered already”</dd>
+<dt>2</dt>
+<dd>(or GMT_REG_FILES_ALWAYS) means “always add any command line
+files”</dd>
+<dt>4</dt>
+<dd>(or GMT_REG_STD_IF_NONE) means “add std* if no other
+input/output have been specified”</dd>
+<dt>8</dt>
+<dd>(or GMT_REG_STD_ALWAYS) means “always add std* even if resources
+have been registered”.</dd>
+</dl>
+<p>The standard behavior is 5 (or GMT_REG_DEFAULT). Finally, <tt class="docutils literal"><span class="pre">head</span></tt> is
+the first element of the option structure list.</p>
+<p>Many programs will register an export location to hold the results of a
+&nbsp;function (say, a filtered grid), but then wish to use that location as
+an <em>input</em> resource in the next step. This is accomplished by
+re-registering the same array location as an import source, thereby
+changing the <em>direction</em> of the data set. The function returns TRUE (1)
+if there is an error (which is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>),
+otherwise it returns FALSE (0).</p>
+</div>
+<div class="section" id="dimension-parameters-for-user-column-vectors">
+<h4>Dimension parameters for user column vectors<a class="headerlink" href="#dimension-parameters-for-user-column-vectors" title="Permalink to this headline">¶</a></h4>
+<p>We refer to Table&nbsp;[tbl:vector]. The <tt class="docutils literal"><span class="pre">type</span></tt> array must hold the data
+type of each data column in the user’s program. All types other than
+GMTAPI_DOUBLE will need to be converted internally in &nbsp;to <tt class="docutils literal"><span class="pre">double</span></tt>,
+thus possibly increasing memory requirements. If the type is
+GMTAPI_DOUBLE then &nbsp;will be able to use the column directly by
+reference. The <tt class="docutils literal"><span class="pre">n_columns</span></tt> and <tt class="docutils literal"><span class="pre">n_rows</span></tt> parameters inform of the
+number of vectors and their common length. These are known in the case
+of input but may be unknowable in the case of output; if so you may pass
+0 for these values and set <tt class="docutils literal"><span class="pre">alloc_mode</span></tt> to 1; this will make sure
+&nbsp;will allocate the necessary memory at the location you specify.</p>
+</div>
+<div class="section" id="dimension-parameters-for-user-2-d-table-arrays">
+<h4>Dimension parameters for user 2-D table arrays<a class="headerlink" href="#dimension-parameters-for-user-2-d-table-arrays" title="Permalink to this headline">¶</a></h4>
+<p>We refer to Table&nbsp;[tbl:matrix]. The <tt class="docutils literal"><span class="pre">type</span></tt> parameter specifies the
+data type used for the array in the user’s program. All types other than
+GMTAPI_FLOAT will need to be converted internally in &nbsp;to <tt class="docutils literal"><span class="pre">float</span></tt>,
+thus possibly increasing memory requirements. If the type is
+GMTAPI_FLOAT then &nbsp;may be able to use the matrix directly by reference.
+The <tt class="docutils literal"><span class="pre">n_rows</span></tt> and <tt class="docutils literal"><span class="pre">n_columns</span></tt> parameters simply specify the
+dimensions of the matrix. These are known in the case of input but may
+be unknowable in the case of output; if so you may pass 0 for these
+values and set <tt class="docutils literal"><span class="pre">alloc_mode</span></tt> to 1; this will make sure &nbsp;will allocate
+the necessary memory at the location you specify. Fortran users will
+instead have to specify a size large enough to hold the anticipated
+output data. The <tt class="docutils literal"><span class="pre">registration</span></tt> and <tt class="docutils literal"><span class="pre">limit</span></tt> gives the grid
+registration and domain. Finally, use the <tt class="docutils literal"><span class="pre">dim</span></tt> entry to indicate if
+the memory matrix has a dimension that exceeds that of the leading row
+(or column) dimension. Note: For GMT_IS_TEXTSET the user matrix is
+expected to be a 2-D character array with row length by <tt class="docutils literal"><span class="pre">dim]</span></tt> but we
+only consider the first <tt class="docutils literal"><span class="pre">n_columns</span></tt> characters. For data grids you
+will also need to specify the <tt class="docutils literal"><span class="pre">registration</span></tt> (see the &nbsp;Cookbook and
+Reference, Appendix B for description of the two forms of registration)
+and data domain <tt class="docutils literal"><span class="pre">limits</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="create-empty-resources">
+<h3>Create empty resources<a class="headerlink" href="#create-empty-resources" title="Permalink to this headline">¶</a></h3>
+<p>[sec:create]</p>
+<p>If your session needs to build and populate &nbsp;resources in ways that do
+not depend on external resources (files, memory locations, etc.), then
+you can obtain a “blank slate” of certain &nbsp;structures. This is done with
+the <tt class="docutils literal"><span class="pre">GMT_Create_Data</span></tt> function, whose prototype is .</p>
+<div class="highlight-python"><pre>void * GMT_Create_Data (struct GMTAPI_CTRL *API, long family, long par[])</pre>
+</div>
+<p>which returns a pointer to the allocated resource. Pass <tt class="docutils literal"><span class="pre">family</span></tt> as
+one of GMT_IS_GMTGRID, GMT_IS_DATASET, GMT_IS_TEXTSET, or
+GMT_IS_CPT, or the special families GMT_IS_VECTOR or GMT_IS_MATRIX
+when handling user data. Depending on the data type chosen you may need
+to pass additional parameters via the <tt class="docutils literal"><span class="pre">par</span></tt> array, as indicated below:</p>
+<dl class="docutils">
+<dt>GMT_IS_GMTGRID</dt>
+<dd>: An empty GMT_GRID structure with a header is allocated; the data
+array is NULL. The <tt class="docutils literal"><span class="pre">par</span></tt> argument is not used.</dd>
+<dt>GMT_IS_DATASET</dt>
+<dd>: An empty GMT_DATASET structure consisting of <tt class="docutils literal"><span class="pre">par[0]</span></tt> tables,
+each with <tt class="docutils literal"><span class="pre">par[1]</span></tt> segments, each with <tt class="docutils literal"><span class="pre">par[2]</span></tt> columns, all
+with <tt class="docutils literal"><span class="pre">par[3]</span></tt> rows, is allocated.</dd>
+<dt>GMT_IS_TEXTSET</dt>
+<dd>: An empty GMT_TEXTSET structure consisting of <tt class="docutils literal"><span class="pre">par[0]</span></tt> tables,
+each with <tt class="docutils literal"><span class="pre">par[1]</span></tt> segments, all with <tt class="docutils literal"><span class="pre">par[2]</span></tt> text record, is
+allocated.</dd>
+<dt>GMT_IS_CPT</dt>
+<dd>: An empty GMT_PALETTE structure with <tt class="docutils literal"><span class="pre">par[0]</span></tt> palette entries is
+allocated.</dd>
+<dt>GMT_IS_VECTOR</dt>
+<dd>: An empty GMT_VECTOR structure with <tt class="docutils literal"><span class="pre">par[0]</span></tt> column entries is
+allocated.</dd>
+<dt>GMT_IS_MATRIX</dt>
+<dd>: An empty GMT_VECTOR structure is allocated.</dd>
+</dl>
+<p>In all cases the data entries are initialized to zero (NULL in the case
+of text). Note: if you need to duplicate an existing data structure the
+simplest way is to use <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> after registering the original
+structure as the data source. The function returns a pointer to the data
+container. In case of an error we return a NULL pointer and pass an
+error code via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>.</p>
+</div>
+<div class="section" id="import-data">
+<h3>Import Data<a class="headerlink" href="#import-data" title="Permalink to this headline">¶</a></h3>
+<p>If your main program needs to read any of the five recognized data types
+(CPT files, data tables, text tables, &nbsp;grids, or images) you will use
+the <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> or <tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt> functions, which both returns
+entire data sets. In the case of data and text tables, you may also
+consider reading record-by-record using the <tt class="docutils literal"><span class="pre">GMT_Get_Record</span></tt> function.
+As a general rule, your program organization will simplify if you can
+read the entire resource into memory with <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> or
+<tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt>. However, if this leads to unacceptable waste of
+memory or if the program logic is particularly simple, it may be better
+to obtain one data record at the time via <tt class="docutils literal"><span class="pre">GMT_Get_Record</span></tt>.</p>
+<p>All of these input functions takes a parameter called <tt class="docutils literal"><span class="pre">mode</span></tt>. The
+<tt class="docutils literal"><span class="pre">mode</span></tt> parameter generally takes on different meanings for the
+different data types and will be discussed below. However, one bit
+setting is common to all types: By default, you are only allowed to read
+a data source once; the source is then flagged as having been read and
+subsequent attempts to read from the same source will result in a
+warning and no reading takes place. In the unlikely event you need to
+re-read a source you can override this default behavior by adding
+GMT_IO_RESET to your <tt class="docutils literal"><span class="pre">mode</span></tt> parameter. Note that this override does
+not apply to sources that are streams or file handles.</p>
+<div class="section" id="enable-data-import">
+<h4>Enable Data Import<a class="headerlink" href="#enable-data-import" title="Permalink to this headline">¶</a></h4>
+<p>Once all input resources have been registered, we signal the API that we
+are done with the registration phase and are ready to start the actual
+data import. This step is only required when reading one record at the
+time. We initialize record-by-record reading by calling
+<tt class="docutils literal"><span class="pre">GMT_Begin_IO</span></tt>. This function enables dataset and text set
+record-by-record import and prepares the registered sources for the
+upcoming import. The prototype is</p>
+<div class="highlight-python"><pre>long GMT_Begin_IO (struct GMTAPI_CTRL *API, long family, long direction)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">family</span></tt> specifies what kind of resources is about to be read or
+written (see Table [tbl:family] for list of all families; only
+GMT_IS_DATASET and GMT_IS_TEXTSET are available for record-by-record
+handling). The <tt class="docutils literal"><span class="pre">direction</span></tt> is either GMT_IN or GMT_out, and for
+import we obviously use GMT_IN. The function determines which is the
+first input file and sets up procedures for skipping to the next input
+file in a virtual data set. The <tt class="docutils literal"><span class="pre">GMT_Get_Record</span></tt> function will not be
+able to read any data before <tt class="docutils literal"><span class="pre">GMT_Begin_IO</span></tt> has been called. As you
+might guess, there is a companion <tt class="docutils literal"><span class="pre">GMT_End_IO</span></tt> function that
+completes, then disables record-by-record data access. You can use these
+several times to switch modes between registering data resources, doing
+the importing/exporting, and disabling further data access, perhaps to
+do more registration. We will discuss <tt class="docutils literal"><span class="pre">GMT_End_IO</span></tt> once we are done
+with the data import. The function returns TRUE (1) if there is an error
+(which is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>), otherwise it returns FALSE
+(0).</p>
+</div>
+<div class="section" id="import-a-data-set">
+<h4>Import a data set<a class="headerlink" href="#import-a-data-set" title="Permalink to this headline">¶</a></h4>
+<p>If your main program needs to import any of the five recognized data
+types (CPT table, data table, text table, &nbsp;grid, or image) you will use
+either the <tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt> or <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> functions. The former
+is typically used when reading from files, streams (e.g., <tt class="docutils literal"><span class="pre">stdin</span></tt>), or
+an open file handle, while the latter is only used with a registered
+resource via its ID. Because of the similarities of these five import
+functions we use an generic form that covers all of them.</p>
+<div class="section" id="import-from-a-file-stream-or-handle">
+<h5>Import from a file, stream, or handle<a class="headerlink" href="#import-from-a-file-stream-or-handle" title="Permalink to this headline">¶</a></h5>
+<p>To read an entire data set from a file, a stream, or file handle, use</p>
+<div class="highlight-python"><pre>void * GMT_Read_Data (struct GMTAPI_CTRL *API, long family, long method, \
+    long geometry, double wesn[], long mode, char *input, void *data)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">data</span></tt> is usually NULL except when reading grids in two steps
+(i.e., first get a grid structure with a header, then read the data).
+Most of these arguments have been discussed earlier. This function can
+be called in three different situations:</p>
+<ol class="arabic simple">
+<li>If you have a single source (filename, stream pointer, etc.) you can
+call <tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt> directly; there is no need to first register
+the source with <tt class="docutils literal"><span class="pre">GMT_Register_IO</span></tt> or gather the sources with
+<tt class="docutils literal"><span class="pre">GMT_Init_IO</span></tt>. However, if you did register a single source you can
+still pass it via an encoded filename (see <tt class="docutils literal"><span class="pre">GMT_Encode_ID</span></tt>) or you
+can instead use <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> using the integer ID directly (see
+next section).</li>
+<li>If you want to specify <tt class="docutils literal"><span class="pre">stdin</span></tt> as source then use <tt class="docutils literal"><span class="pre">input</span></tt> as
+NULL.</li>
+<li>If you already registered all available sources with <tt class="docutils literal"><span class="pre">GMT_Init_IO</span></tt>
+then you pass <tt class="docutils literal"><span class="pre">geometry</span></tt> = 0.</li>
+</ol>
+<p>Space will be allocated to hold the results, if needed, and a pointer to
+the object is returned. If there are errors we simply return NULL and
+pass back the error code via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>. The <tt class="docutils literal"><span class="pre">mode</span></tt> parameter
+takes on different meanings for the different data types.</p>
+<dl class="docutils">
+<dt>CPT table</dt>
+<dd>: <tt class="docutils literal"><span class="pre">mode</span></tt> are bit-flags that controls how the CPT file’s back-,
+fore-, and NaN-colors should be initialized. Select 0 to read the
+CPT file’s back-, fore-, and NaN-colors, 2 to replace these with the
+&nbsp;default values, or 4 to replace them with the color tables entries
+for highest and lowest value.</dd>
+<dt>Data table</dt>
+<dd>: <tt class="docutils literal"><span class="pre">mode</span></tt> is not used.</dd>
+<dt>Text table</dt>
+<dd>: <tt class="docutils literal"><span class="pre">mode</span></tt> is not used.</dd>
+<dt>GMT grid</dt>
+<dd>: Here <tt class="docutils literal"><span class="pre">mode</span></tt> determines how we read the grid: To get the entire
+grid and its header, pass GMT_GRID_ALL. However, if you need to
+extract a sub-region you must first get the header only by passing
+GMT_GRID_HEADER, then use the header structure attributes
+<tt class="docutils literal"><span class="pre">wesn</span></tt>, to specify a subset via the array <tt class="docutils literal"><span class="pre">wesn</span></tt>, and then call
+<tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt> a second time, with <tt class="docutils literal"><span class="pre">mode</span></tt> = GMT_GRID_DATA and
+passing your <tt class="docutils literal"><span class="pre">wesn</span></tt> array and the grid structure returned from the
+first call. In the event your data array should be allocated to hold
+both the real and imaginary parts of a complex data set you must add
+either GMT_GRID_COMPLEX_REAL or GMT_GRID_COMPLEX_IMAG to
+<tt class="docutils literal"><span class="pre">mode</span></tt> so as to allow for the extra space and to position the
+input values correctly.</dd>
+</dl>
+</div>
+<div class="section" id="import-from-a-memory-location">
+<h5>Import from a memory location<a class="headerlink" href="#import-from-a-memory-location" title="Permalink to this headline">¶</a></h5>
+<p>However, if you are importing from memory locations or prefer to first
+register the source, then you should use <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> instead. This
+function requires fewer arguments since you simply pass the unique ID
+number of the resource. The function is described as follows:</p>
+<div class="highlight-python"><pre>void * GMT_Get_Data (struct GMTAPI_CTRL *API, long ID, long mode, \
+    void *data)</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">ID</span></tt> is the unique object ID you received when registering the
+resource earlier, <tt class="docutils literal"><span class="pre">mode</span></tt> controls some aspects of the import (see
+<tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt> above), while <tt class="docutils literal"><span class="pre">data</span></tt> is usually NULL except when
+reading grids in two steps (i.e., first get a grid structure with a
+header, then read the data). Most of the other arguments have been
+discussed earlier. Space will be allocated to hold the results, if
+needed, and a pointer to the object is returned. If there are errors we
+simply return NULL and pass back the error code via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>.</p>
+</div>
+<div class="section" id="retrieve-an-allocated-result">
+<h5>Retrieve an allocated result<a class="headerlink" href="#retrieve-an-allocated-result" title="Permalink to this headline">¶</a></h5>
+<p>Finally, if you need to access the result that a GMT&nbsp;module normally
+will write to an output file, then you need to register an output
+destination with <tt class="docutils literal"><span class="pre">GMT_Register_IO</span></tt> first (passing <tt class="docutils literal"><span class="pre">ptr</span></tt> == NULL).
+The GMT&nbsp;module will then allocate space to hold the output and let the
+API know where this memory resides. You can then use
+<tt class="docutils literal"><span class="pre">GMT_Retrieve_Data</span></tt> to get a pointer to the container where the data
+was stored. This function requires fewer arguments since you simply pass
+the unique ID number of the resource. The function is described as
+follows:</p>
+<div class="highlight-python"><pre>void * GMT_Retrieve_Data (struct GMTAPI_CTRL *API, long ID)</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">ID</span></tt> is the unique object ID you received when registering the
+NULL resource earlier, Since this container has already been created, a
+pointer to the object is returned. If there are errors we simply return
+NULL and pass back the error code via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>.</p>
+</div>
+</div>
+<div class="section" id="importing-a-data-record">
+<h4>Importing a data record<a class="headerlink" href="#importing-a-data-record" title="Permalink to this headline">¶</a></h4>
+<p>If your program must read data table records one-by-one you must first
+enable this input mechanism with <tt class="docutils literal"><span class="pre">GMT_Begin_IO</span></tt> and then use the
+<tt class="docutils literal"><span class="pre">GMT_Get_Record</span></tt> function in a loop; the prototype is</p>
+<div class="highlight-python"><pre>void * GMT_Get_Record (struct GMTAPI_CTRL *API, long mode, long *nfields)</pre>
+</div>
+<p>where the returned value is either a pointer to a double array with the
+current row or a pointer to a character string with the current row,
+depending on <tt class="docutils literal"><span class="pre">mode</span></tt>. In either case these pointers point to memory
+internal to &nbsp;and should be considered read-only. When we reach
+end-of-file, encounter conversion problems, read header comments, or
+identify segment headers we return a NULL pointer, with the status of
+the current record returned via <tt class="docutils literal"><span class="pre">API-&gt;GMT-&gt;current.io.status</span></tt>.
+Typically, this status is examined using macros that return TRUE or
+FALSE depending on the particular check. There are 11 macros available
+to programmers; for a list see Table&nbsp;[tbl:iomacros]. The <tt class="docutils literal"><span class="pre">nfields</span></tt>
+pointer will return the number of fields read; pass NULL if your program
+does not need this information.</p>
+<p>Normally (<tt class="docutils literal"><span class="pre">mode</span></tt> == GMT_READ_DOUBLE or 0), we return a pointer to
+the double array. To read text record, supply instead <tt class="docutils literal"><span class="pre">mode</span></tt> ==
+GMT_READ_TEXT (or 1) and we instead return a pointer to the text
+record. However, if you have input records that mixes organized
+floating-point columns with text items you could pass <tt class="docutils literal"><span class="pre">mode</span></tt> ==
+GMT_READ_MIXED (2). Then, &nbsp;will attempt to extract the floating-point
+values; you can still access the record string, as discussed below.
+Finally, if your application needs to be notified when &nbsp;closes one file
+and opens another, add GMT_FILE_BREAK to <tt class="docutils literal"><span class="pre">mode</span></tt> and check for the
+return code GMT_IO_NEXT_FILE (By default, we treat the combination of
+many input files as one virtual file). Using <tt class="docutils literal"><span class="pre">GMT_Get_Record</span></tt> requires
+you to first initialize the source(s) with <tt class="docutils literal"><span class="pre">GMT_Init_IO</span></tt>. This
+function returns NULL if there are problems and sets status codes that
+your program will need to examine to take appropriate response:</p>
+<dl class="docutils">
+<dt>GMT_IO_TABLE_HEADER</dt>
+<dd>: We read a table header; to examine this text string (if working
+with ASCII data), see <tt class="docutils literal"><span class="pre">API-&gt;GMT-&gt;current.io.segment_header</span></tt>.</dd>
+<dt>GMT_IO_SEGMENT_HEADER</dt>
+<dd>: We read a segment header; to examine this text string (if working
+with ASCII data), see <tt class="docutils literal"><span class="pre">API-&gt;GMT-&gt;current.io.current_record</span></tt>.</dd>
+<dt>GMT_IO_MISMATCH</dt>
+<dd>: The number of columns read is less than what the program expected.</dd>
+<dt>GMT_IO_EOF</dt>
+<dd>: We have reached the end of the source.</dd>
+<dt>GMT_IO_NAN</dt>
+<dd>: The record has NaNs in fields that we do not allow to have NaNs,
+and hence, it is a bad record (see ’s IO_NAN_RECORD defaults).</dd>
+<dt>GMT_IO_GAP</dt>
+<dd>: A user-defined data gap has been encountered (see ’s g option)</dd>
+</dl>
+<p>Developers who need to import data on a record-by-record basis should
+consult the source code of, say, blockmean_func.c or pstext_func.c.</p>
+<p>[h]</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">1|c|<em>Macro</em></th>
+<th class="head">1c|<em>description</em></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_TBL_HEADER(API)</span></tt></td>
+<td>TRUE if we read a table header</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_SEG_HEADER(API)</span></tt></td>
+<td>TRUE if we read a segment header</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_ANY_HEADER(API)</span></tt></td>
+<td>TRUE if we read either header type</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_ERROR(API)</span></tt></td>
+<td>TRUE if we had a read or conversion failure</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_EOF(API)</span></tt></td>
+<td>TRUE if we reached the end of the file (EOF)</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_NAN(API)</span></tt></td>
+<td>TRUE if we only read NaNs</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_GAP(API)</span></tt></td>
+<td>TRUE if this record implies a data gap</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_NEW_SEGMENT(API)</span></tt></td>
+<td>TRUE if we enter a new segment</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_LINE_BREAK(API)</span></tt></td>
+<td>TRUE if we encountered a segment header, EOF, NaNs or gap</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_FILE_BREAK(API)</span></tt></td>
+<td>TRUE if we finished one file but not the last</td>
+</tr>
+<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_DATA(API)</span></tt></td>
+<td>TRUE if we read a data record</td>
+</tr>
+</tbody>
+</table>
+<p>Macros used to determine status of current data record. The gap macro
+depends on the current g settings. [tbl:iomacros]</p>
+</div>
+<div class="section" id="disable-data-import">
+<h4>Disable Data Import<a class="headerlink" href="#disable-data-import" title="Permalink to this headline">¶</a></h4>
+<p>Once the record-by-record input processing has completed we disable
+further input to prevent accidental reading from occurring (due to poor
+program structure, bugs, etc.). We do so by calling <tt class="docutils literal"><span class="pre">GMT_End_IO</span></tt>. This
+function disables further record-by-record data import; its prototype is</p>
+<div class="highlight-python"><pre>long GMT_End_IO (struct GMTAPI_CTRL *API, long direction, long mode)</pre>
+</div>
+<p>and we specify <tt class="docutils literal"><span class="pre">direction</span></tt> = GMT_IN. At the moment, <tt class="docutils literal"><span class="pre">mode</span></tt> is not
+used. This call will also reallocate any arrays obtained into their
+proper lengths. The function returns TRUE (1) if there is an error
+(which is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>), otherwise it returns FALSE
+(0).</p>
+</div>
+</div>
+<div class="section" id="prepare-program-options">
+<h3>Prepare program options<a class="headerlink" href="#prepare-program-options" title="Permalink to this headline">¶</a></h3>
+<p>[sec:func] The module prototype interface is</p>
+<div class="highlight-python"><pre>long GMT_module (struct GMTAPI_CTRL *API, long mode, void *args)</pre>
+</div>
+<p>All GMT modules may be called with one of three sets of <tt class="docutils literal"><span class="pre">args</span></tt>
+depending on <tt class="docutils literal"><span class="pre">mode</span></tt>. The three modes differ in how the options are
+passed to the module:</p>
+<dl class="docutils">
+<dt><img class="math" src="_images/math/f1366bd1fe71f6fbac5e613c65b9abeb4b776912.png" alt="mode &gt; 0"/></dt>
+<dd>: Expects <tt class="docutils literal"><span class="pre">args</span></tt> to be an array of text options <tt class="docutils literal"><span class="pre">mode</span></tt> to be a
+count of how many options are passed (i.e., the <tt class="docutils literal"><span class="pre">argc,</span> <span class="pre">argv[]</span></tt>
+model).</dd>
+<dt><img class="math" src="_images/math/fa78f516fdc2341a7905e07748934645889841bc.png" alt="mode &lt; 0"/></dt>
+<dd>: Expects <tt class="docutils literal"><span class="pre">args</span></tt> to be a pointer to a doubly-linked list of
+objects with individual options for the current program.</dd>
+<dt><img class="math" src="_images/math/63dfd29f58af7ad4c8c327b311d98e8931d53030.png" alt="mode == 0"/></dt>
+<dd>: Expects <tt class="docutils literal"><span class="pre">args</span></tt> to be a single text string with all required
+options.</dd>
+</dl>
+<p>Here, <tt class="docutils literal"><span class="pre">GMT_module</span></tt> stands for any of the &nbsp;modules, such as
+<tt class="docutils literal"><span class="pre">GMT_psxy</span></tt>. All modules returns FALSE (o) if they returned
+successfully; otherwise they return an error code back to the calling
+environment.</p>
+<div class="section" id="set-program-options-via-text-array-arguments">
+<h4>Set program options via text array arguments<a class="headerlink" href="#set-program-options-via-text-array-arguments" title="Permalink to this headline">¶</a></h4>
+<p>When textttmode <img class="math" src="_images/math/1b98a367e7a3b900016ce23ba8ecaa33ce029c6a.png" alt="&gt; 0"/> we expect an array <tt class="docutils literal"><span class="pre">args</span></tt> of character
+strings that each holds a single command line argument (e.g.,
+“R<em>120:30/134:45/8S/3N</em>”) and interpret <tt class="docutils literal"><span class="pre">mode</span></tt> to be the count of
+how many options are passed. This, of course, is almost exactly how the
+stand-alone programs are called (and reflects how they themselves are
+activated internally). We call this the “argc–argv” mode. Depending on
+how your program obtains the necessary options you may find that this
+interface offers all you need.</p>
+</div>
+<div class="section" id="set-program-options-via-text-command">
+<h4>Set program options via text command<a class="headerlink" href="#set-program-options-via-text-command" title="Permalink to this headline">¶</a></h4>
+<p>If <tt class="docutils literal"><span class="pre">mode</span></tt> == 0 then <tt class="docutils literal"><span class="pre">args</span></tt> will be examined to see if it contains
+several options within a single command string. If so we will break
+these into separate options. This is useful if you wish to pass a single
+string such as “R<em>120:30/134:45/8S/3N</em> JM<em>6i</em> mydata.txt Sc0.2c”. We
+call this the “command” mode.</p>
+</div>
+<div class="section" id="set-program-options-via-linked-structures">
+<h4>Set program options via linked structures<a class="headerlink" href="#set-program-options-via-linked-structures" title="Permalink to this headline">¶</a></h4>
+<p>The third, linked-list interface allows developers using higher-level
+programming languages to pass all command options via a pointer to a
+NULL-terminated, doubly-linked list of option structures, each
+containing information about a single option. Here, instead of text
+arguments we pass the pointer to the linked list of options mentioned
+above, and <tt class="docutils literal"><span class="pre">mode</span></tt> must be passed as -1 (or any negative value). Using
+this interface can be more involved since you need to generate the
+linked list of program options; however, utility functions exist to
+simplify its use. This interface is intended for programs whose internal
+workings are better suited to generate such arguments – we call this the
+“options” mode. The order in the list is not important as &nbsp;will sort it
+internally according to need. The option structure is defined in Table
+[tbl:options].</p>
+<p>[h]</p>
+<p>ll</p>
+<p>2l<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_OPTION</span> <span class="pre">{</span></tt>
+<tt class="docutils literal"><span class="pre">char</span> <span class="pre">option;</span></tt> &amp; /* <em>Single character of the option (e.g.,’G’ for</em> G
+*/
+<tt class="docutils literal"><span class="pre">char</span> <span class="pre">*arg;</span></tt> &amp; /* <em>String pointer with arguments (NULL if not used)</em>
+*/
+<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_OPTION</span> <span class="pre">*next;</span></tt> &amp; /* <em>Pointer to next option (NULL for
+last option)</em> */
+<tt class="docutils literal"><span class="pre">struct</span> <span class="pre">GMT_OPTION</span> <span class="pre">*prev;</span></tt> &amp; /* <em>Pointer to previous option (NULL for
+first option)</em> */
+<tt class="docutils literal"><span class="pre">};</span></tt> &amp;</p>
+<p>Definition of the structure used to hold a single program option.
+[tbl:options]</p>
+</div>
+<div class="section" id="convert-between-text-and-linked-structures">
+<h4>Convert between text and linked structures<a class="headerlink" href="#convert-between-text-and-linked-structures" title="Permalink to this headline">¶</a></h4>
+<p>To assist programmers there are also two convenience functions that
+allow you to convert between the two argument formats. They are</p>
+<div class="highlight-python"><pre>struct GMT_OPTIONS * GMT_Create_Options (struct GMTAPI_CTRL *API, \
+    long argc, void *args)</pre>
+</div>
+<p>This function accepts your array of text arguments (cast via a void
+pointer), allocates the necessary space, performs the conversion, and
+returns a pointer to the head of the linked list of program options.
+However, in case of an error we return a NULL pointer and set
+<tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> to indicate the nature of the problem. Otherwise, the
+pointer may now be passed to the relevant <tt class="docutils literal"><span class="pre">GMT_module</span></tt>. Note that if
+your list of text arguments were obtained from a C <tt class="docutils literal"><span class="pre">main()</span></tt> function
+then <tt class="docutils literal"><span class="pre">argv[0]</span></tt> will contain the name of the calling program. To avoid
+passing this as a file name option, call <tt class="docutils literal"><span class="pre">GMT_Create_Options</span></tt> with
+<tt class="docutils literal"><span class="pre">argc-1</span></tt> and <tt class="docutils literal"><span class="pre">argv+1</span></tt>. If, you wish to pass a single text string
+with multiple options (in lieu of an array of text strings), then pass
+<tt class="docutils literal"><span class="pre">arg</span></tt> = 0. When no longer needed you can remove the entire list by
+calling</p>
+<div class="highlight-python"><pre>long GMT_Destroy_Options (struct GMTAPI_CTRL *API, \
+    struct GMT_OPTION **list)</pre>
+</div>
+<p>The function returns TRUE (1) if there is an error (which is passed back
+with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>), otherwise it returns FALSE (0).</p>
+<p>The inverse function prototype is</p>
+<div class="highlight-python"><pre>char ** GMT_Create_Args (struct GMTAPI_CTRL *API, long *argc, \
+    struct GMT_OPTIONS *list)</pre>
+</div>
+<p>which allocates space for the text strings and performs the conversion;
+it passes back the count of the arguments via <tt class="docutils literal"><span class="pre">argc</span></tt> and returns a
+pointer to the text array. In the case of an error we return a NULL
+pointer and set <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> to reflect the error type. Note that
+<tt class="docutils literal"><span class="pre">argv[0]</span></tt> will not contain the name of the program as is the case the
+arguments presented by a C <tt class="docutils literal"><span class="pre">main()</span></tt> function. When you no longer have
+any use for the text array, call</p>
+<div class="highlight-python"><pre>long GMT_Destroy_Args (struct GMTAPI_CTRL *API, long argc, char *argv[])</pre>
+</div>
+<p>to deallocate the space used. This function returns TRUE (1) if there is
+an error (which is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>), otherwise it
+returns FALSE (0).</p>
+<p>Finally, to convert the linked list of option structures to a single
+text string command, use</p>
+<div class="highlight-python"><pre>char * GMT_Create_Cmd (struct GMTAPI_CTRL *API, struct GMT_OPTION *list)</pre>
+</div>
+<p>Developers who plan to import and export &nbsp;shell scripts might find it
+convenient to use these functions. In case of an error we return a NULL
+pointer and set <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>, otherwise a pointer to an allocated
+string is returned. It</p>
+</div>
+<div class="section" id="manage-the-linked-list-of-options">
+<h4>Manage the linked list of options<a class="headerlink" href="#manage-the-linked-list-of-options" title="Permalink to this headline">¶</a></h4>
+<p>Several additional utility functions are available for programmers who
+wish to manipulate program option structures within their own programs.
+These allow you to create new option structures, append them to the
+linked list, replace existing options with new values, find a particular
+option, and remove options from the list. Note: The order in which the
+options appear in the linked list is of no consequence to . Internally,
+&nbsp;will sort and process the options in the manner required. Externally,
+you are free to maintain your own order.</p>
+<div class="section" id="make-a-new-option-structure">
+<h5>Make a new option structure<a class="headerlink" href="#make-a-new-option-structure" title="Permalink to this headline">¶</a></h5>
+<p><tt class="docutils literal"><span class="pre">GMT_Make_Option</span></tt> will allocate a new option structure, assign it
+values given the <tt class="docutils literal"><span class="pre">option</span></tt> and <tt class="docutils literal"><span class="pre">arg</span></tt> parameter (pass NULL if there is
+no argument for this option), and returns a pointer to the allocated
+structure. The prototype is</p>
+<div class="highlight-python"><pre>struct GMT_OPTION *GMT_Make_Option (struct GMTAPI_CTRL *API, char option, \
+    char *arg)</pre>
+</div>
+<p>Should memory allocation fail the function will print an error message
+set an error code via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>, and return NULL.</p>
+</div>
+<div class="section" id="append-an-option-to-the-linked-list">
+<h5>Append an option to the linked list<a class="headerlink" href="#append-an-option-to-the-linked-list" title="Permalink to this headline">¶</a></h5>
+<p><tt class="docutils literal"><span class="pre">GMT_Append_Option</span></tt> will append the specified <tt class="docutils literal"><span class="pre">option</span></tt> to the end of
+the doubly-linked <tt class="docutils literal"><span class="pre">list</span></tt>. The prototype is</p>
+<div class="highlight-python"><pre>struct GMT_OPTION * GMT_Append_Option (struct GMTAPI_CTRL *API, \
+    struct GMT_OPTION *option, struct GMT_OPTION *list)</pre>
+</div>
+<p>We return the list back, and if <tt class="docutils literal"><span class="pre">list</span></tt> is given as NULL we return
+<tt class="docutils literal"><span class="pre">option</span></tt> as the start of the new list. Any errors results in a NULL
+pointer with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> holding the error type.</p>
+</div>
+<div class="section" id="find-an-option-in-the-linked-list">
+<h5>Find an option in the linked list<a class="headerlink" href="#find-an-option-in-the-linked-list" title="Permalink to this headline">¶</a></h5>
+<p><tt class="docutils literal"><span class="pre">GMT_Find_Option</span></tt> will return a pointer <tt class="docutils literal"><span class="pre">ptr</span></tt> to the first option in
+the linked list starting at <tt class="docutils literal"><span class="pre">list</span></tt> whose option character equals
+<tt class="docutils literal"><span class="pre">option</span></tt>. If not found we return NULL. While this is not necessarily
+an error we still set <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> accordingly. The prototype is</p>
+<div class="highlight-python"><pre>struct GMT_OPTION *GMT_Find_Option (struct GMTAPI_CTRL *API, char option, \
+    struct GMT_OPTION *list)</pre>
+</div>
+<p>If you need to look for multiple occurrences of a certain option you
+will need to call <tt class="docutils literal"><span class="pre">GMT_Find_Option</span></tt> again, passing the option
+following the previously found option as the <tt class="docutils literal"><span class="pre">list</span></tt> entry, i.e.,</p>
+<div class="highlight-python"><pre>list = *ptr-&gt;next;</pre>
+</div>
+</div>
+<div class="section" id="update-an-existing-option-in-the-list">
+<h5>Update an existing option in the list<a class="headerlink" href="#update-an-existing-option-in-the-list" title="Permalink to this headline">¶</a></h5>
+<p><tt class="docutils literal"><span class="pre">GMT_Update_Option</span></tt> will first determine if <tt class="docutils literal"><span class="pre">option</span></tt> exists; if so
+it will delete it. Then, it will make a new option from the arguments
+and append it to the end of the linked <tt class="docutils literal"><span class="pre">list</span></tt>. The prototype is</p>
+<div class="highlight-python"><pre>long GMT_Update_Option (struct GMTAPI_CTRL *API, char option, \
+    char *arg, struct GMT_OPTION *list)</pre>
+</div>
+<p>An error will be reported if (a) <tt class="docutils literal"><span class="pre">list</span></tt> is NULL or (b) the option is
+not found. The function returns TRUE (1) if there is an error (i.e.,
+<tt class="docutils literal"><span class="pre">list</span></tt> is NULL or the option is not found); the error code is passed
+back via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>. Otherwise it returns FALSE (0).</p>
+</div>
+<div class="section" id="delete-an-existing-option-in-the-linked-list">
+<h5>Delete an existing option in the linked list<a class="headerlink" href="#delete-an-existing-option-in-the-linked-list" title="Permalink to this headline">¶</a></h5>
+<p>You may use <tt class="docutils literal"><span class="pre">GMT_Delete_Option</span></tt> to remove <tt class="docutils literal"><span class="pre">option</span></tt> from the linked
+<tt class="docutils literal"><span class="pre">list</span></tt>. The prototype is</p>
+<div class="highlight-python"><pre>long GMT_Delete_Option (struct GMTAPI_CTRL *API, \
+    struct GMT_OPTION *current)</pre>
+</div>
+<p>We return TRUE if the option is not found in the list and set
+<tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> accordingly. Note: Only the first occurrence of the
+specified option will be deleted. If you need to delete all such options
+you will need to call this function in a loop until it returns a
+non-zero status.</p>
+</div>
+<div class="section" id="specify-a-file-via-an-linked-option">
+<h5>Specify a file via an linked option<a class="headerlink" href="#specify-a-file-via-an-linked-option" title="Permalink to this headline">¶</a></h5>
+<p>To specify an input file name via an option, simply use <img class="math" src="_images/math/262a080d0d87e973b817945967a512346d8bfc49.png" alt="&lt;"/> as the
+option (this is what <tt class="docutils literal"><span class="pre">GMT_Create_Options</span></tt> does when it finds filenames
+on the command line). Likewise, <img class="math" src="_images/math/77f0cdbd0dbecd281387229d95a014017a0a395a.png" alt="&gt;"/> can be used to explicitly
+indicate an output file. In order to append to an existing file, use
+<img class="math" src="_images/math/5932cf477ee410db37bf2918838f45c52bf09a7a.png" alt="&gt;&gt;"/>. For example the following command would read from file.A and
+append to file.B:</p>
+<div class="highlight-python"><pre>gmtconvert -&lt;file.A -&gt;&gt;file.B</pre>
+</div>
+<p>These options also work on the command line but usually one would have
+to escape the special characters <img class="math" src="_images/math/262a080d0d87e973b817945967a512346d8bfc49.png" alt="&lt;"/> and <img class="math" src="_images/math/77f0cdbd0dbecd281387229d95a014017a0a395a.png" alt="&gt;"/> as they are
+used for file redirection.</p>
+</div>
+</div>
+<div class="section" id="parsing-gmt-common-options">
+<h4>Parsing GMT common options<a class="headerlink" href="#parsing-gmt-common-options" title="Permalink to this headline">¶</a></h4>
+<p>While all the main &nbsp;modules have their own specific option parser, we
+also provide a general parser that only examines the common &nbsp;options
+such as R, J, V, etc. The prototype of this parser is</p>
+<div class="highlight-python"><pre>long GMT_Parse_Common (struct GMTAPI_CTRL *API, \
+    struct GMT_OPTION *list)</pre>
+</div>
+<p>An error will be reported via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> if any of the common
+&nbsp;options fail to parse, and if so we return TRUE; if not errors we
+return FALSE. All other options, including file names, will be silently
+ignored. The parsing will update the internal information structure that
+affects program operations.</p>
+</div>
+</div>
+<div class="section" id="calling-a-gmt-module">
+<h3>Calling a GMT module<a class="headerlink" href="#calling-a-gmt-module" title="Permalink to this headline">¶</a></h3>
+<p>Given your linked list of program options (or text array) and possibly
+some registered resources, you can now call the required &nbsp;module using
+one of the two flavors discussed in section [sec:func]. All modules
+return an error or status code that your program should consider before
+processing the results.</p>
+</div>
+<div class="section" id="exporting-data">
+<h3>Exporting Data<a class="headerlink" href="#exporting-data" title="Permalink to this headline">¶</a></h3>
+<p>If your program needs to write any of the four recognized data types
+(CPT files, data tables, text tables, or &nbsp;grids) you can use the
+<tt class="docutils literal"><span class="pre">GMT_Put_Data</span></tt>. In the case of data and text tables, you may also
+consider the <tt class="docutils literal"><span class="pre">GMT_Put_Record</span></tt> function. As a general rule, your
+program organization may simplify if you can write the export the entire
+resource with <tt class="docutils literal"><span class="pre">GMT_Put_Data</span></tt>. However, if the program logic is simple
+or already involves using <tt class="docutils literal"><span class="pre">GMT_Get_Record</span></tt>, it may be better to export
+one data record at the time via <tt class="docutils literal"><span class="pre">GMT_Put_Record</span></tt>.</p>
+<p>Both of these output functions takes a parameter called <tt class="docutils literal"><span class="pre">mode</span></tt>. The
+<tt class="docutils literal"><span class="pre">mode</span></tt> parameter generally takes on different meanings for the
+different data types and will be discussed below. However, one bit
+setting is common to all types: By default, you are only allowed to
+write a data resource once; the resource is then flagged to have been
+written and subsequent attempts to write to the same resource will
+quietly be ignored. In the unlikely event you need to re-write a
+resource you can override this default behavior by adding GMT_IO_RESET
+to your <tt class="docutils literal"><span class="pre">mode</span></tt> parameter.</p>
+<div class="section" id="enable-data-export">
+<h4>Enable Data Export<a class="headerlink" href="#enable-data-export" title="Permalink to this headline">¶</a></h4>
+<p>Similar to the data import procedures, once all output destinations have
+been registered, we signal the API that we are done with the
+registration phase and are ready to start the actual data export. As for
+input, this step is only needed when dealing with record-by-record
+writing. Again, we enable record-by-record writing by calling
+<tt class="docutils literal"><span class="pre">GMT_Begin_IO</span></tt>, this time with <tt class="docutils literal"><span class="pre">direction</span></tt> = GMT_OUT. This function
+enables data export and prepares the registered destinations for the
+upcoming writing.</p>
+</div>
+<div class="section" id="exporting-a-data-set">
+<h4>Exporting a data set<a class="headerlink" href="#exporting-a-data-set" title="Permalink to this headline">¶</a></h4>
+<p>To have your program accept results from &nbsp;modules and write them
+separately requires you to use the <tt class="docutils literal"><span class="pre">GMT_Write_Data</span></tt> or
+<tt class="docutils literal"><span class="pre">GMT_Put_Data</span></tt> functions. They are very similar to the
+<tt class="docutils literal"><span class="pre">GMT_Read_Data</span></tt> and <tt class="docutils literal"><span class="pre">GMT_Get_Data</span></tt> functions encountered earlier.</p>
+<div class="section" id="exporting-a-data-set-to-a-file-stream-or-handle">
+<h5>Exporting a data set to a file, stream, or handle<a class="headerlink" href="#exporting-a-data-set-to-a-file-stream-or-handle" title="Permalink to this headline">¶</a></h5>
+<p>The prototype for writing to a file (via name, stream, or file handle)
+is</p>
+<div class="highlight-python"><pre>long GMT_Write_Data (struct GMTAPI_CTRL *API, long family, long method, \
+    long geometry, double wesn[], long mode, void *output, void *data)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">data</span></tt> is a pointer to any of the four structures discussed
+previously. Again, the <tt class="docutils literal"><span class="pre">mode</span></tt> parameter is specific to each data type:</p>
+<dl class="docutils">
+<dt>CPT table</dt>
+<dd>: <tt class="docutils literal"><span class="pre">mode</span></tt> controls if the CPT table’s back-, fore-, and NaN-colors
+should be written (1) or not (0).</dd>
+<dt>Data table</dt>
+<dd><p class="first">: If <tt class="docutils literal"><span class="pre">method</span></tt> is GMT_IS_FILE, then the value of <tt class="docutils literal"><span class="pre">mode</span></tt> affects
+how the data set is written:</p>
+<dl class="last docutils">
+<dt>GMT_WRITE_DATASET</dt>
+<dd>: The entire data set will be written to the single file [0].</dd>
+<dt>GMT_WRITE_TABLES</dt>
+<dd>: Each table in the data set is written to individual files [1].
+You can either specify an output file name that <em>must</em> contain
+one C-style format specifier for a long variable (e.g.,
+“New_Table_%6.6ld.txt”), which will be replaced with the table
+number (a running number from 0) <em>or</em> you must assign to each
+table <em>i</em> a unique output file name via the
+<tt class="docutils literal"><span class="pre">D-&gt;table[i]-&gt;file[GMT_OUT]</span></tt> variables prior to calling the
+function.</dd>
+<dt>GMT_WRITE_SEGMENTS</dt>
+<dd>: Each segment in the data set is written to an individual file
+[2]. Same setup as for GMT_WRITE_TABLES except we use
+sequential segment numbers to build the file names.</dd>
+<dt>GMT_WRITE_TABLE_SEGMENTS</dt>
+<dd>: Each segment in the data set is written to an individual file
+[3]. You can either specify an output file name that <em>must</em>
+contain two C-style format specifiers for two long variables
+(e.g., “New_Table_%6.6ld_Segment_%3.3ld.txt”), which will be
+replaced with the table and segment numbers, <em>or</em> you must
+assign to each segment <em>j</em> in each table <em>i</em> a unique output
+file name via the <tt class="docutils literal"><span class="pre">D-&gt;table[i]-&gt;segment[j]-&gt;file[GMT_OUT]</span></tt>
+variables prior to calling the function.</dd>
+<dt>GMT_WRITE_OGR</dt>
+<dd>: Writes the dataset in OGR/GMT format in conjunction with the a
+setting [4].</dd>
+</dl>
+</dd>
+<dt>Text table</dt>
+<dd>: The <tt class="docutils literal"><span class="pre">mode</span></tt> is used the same way as for data tables.</dd>
+<dt>GMT grid</dt>
+<dd>: Here, <tt class="docutils literal"><span class="pre">mode</span></tt> may be GMT_GRID_HEADER to only update a file’s
+header structure, but normally it is simply GMT_GRID_ALL (0) so
+the entire grid and its header will be exported (a subset is not
+allowed during export). However, in the event your data array holds
+both the real and imaginary parts of a complex data set you must add
+either GMT_GRID_COMPLEX_REAL (4) or GMT_GRID_COMPLEX_IMAG (16)
+to <tt class="docutils literal"><span class="pre">mode</span></tt> so as to export the corresponding grid values correctly.
+Finally, for native binary grids you may skip writing the grid
+header by adding GMT_GRID_NO_HEADER (16); this setting is ignored
+for other grid formats.</dd>
+</dl>
+<p>If successful the function returns FALSE (0); otherwise we return TRUE
+(1) and set <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> to reflect to cause.</p>
+</div>
+<div class="section" id="exporting-a-data-set-to-memory">
+<h5>Exporting a data set to memory<a class="headerlink" href="#exporting-a-data-set-to-memory" title="Permalink to this headline">¶</a></h5>
+<p>If writing to a memory destination you will want to first register that
+destination and then use the returned ID with <tt class="docutils literal"><span class="pre">GMT_Put_Data</span></tt> instead:</p>
+<div class="highlight-python"><pre>long GMT_Put_Data (struct GMTAPI_CTRL *API, long ID, long mode, \
+    void *data)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">ID</span></tt> is the unique ID of the registered destination, <tt class="docutils literal"><span class="pre">mode</span></tt> is
+specific to each data type (and controls aspects of the output
+structuring), and <tt class="docutils literal"><span class="pre">data</span></tt> is a pointer to any of the four structures
+discussed previously. For more detail, see <tt class="docutils literal"><span class="pre">GMT_Write_Data</span></tt> above. If
+successful the function returns FALSE (0); otherwise we return TRUE (1)
+and set <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> to reflect to cause.</p>
+</div>
+</div>
+<div class="section" id="exporting-a-data-record">
+<h4>Exporting a data record<a class="headerlink" href="#exporting-a-data-record" title="Permalink to this headline">¶</a></h4>
+<p>If your program must write data table records one-by-one you must first
+enable record-by-record writing with <tt class="docutils literal"><span class="pre">GMT_Begin_IO</span></tt> and then use the
+<tt class="docutils literal"><span class="pre">GMT_Put_Record</span></tt> function in a loop; the prototype is</p>
+<div class="highlight-python"><pre>long GMT_Put_Record (struct GMTAPI_CTRL *API, long mode, void *rec)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">rec</span></tt> is a pointer to either (a) a double-precision array with
+the current row. Then, <tt class="docutils literal"><span class="pre">rec</span></tt> is expected to hold at least as many
+items as the current setting of <tt class="docutils literal"><span class="pre">n_col[GMT_OUT]</span></tt>, which represents the
+number of columns in the output destination. Alternatively (b), <tt class="docutils literal"><span class="pre">rec</span></tt>
+points to a text string. The <tt class="docutils literal"><span class="pre">mode</span></tt> parameter must be set to reflect
+what is passed. Using <tt class="docutils literal"><span class="pre">GMT_Put_Record</span></tt> requires you to first
+initialize the destination with <tt class="docutils literal"><span class="pre">GMT_Init_IO</span></tt>. Note that for families
+GMT_IS_DATASET and GMT_IS_TEXTSET the methods GMT_IS_COPY and
+GMT_IS_REF are not supported since you can simply populate the
+GMT_DATASET structure directly. As mentioned, <tt class="docutils literal"><span class="pre">mode</span></tt> affects what is
+actually written:</p>
+<dl class="docutils">
+<dt>GMT_WRITE_DOUBLE</dt>
+<dd>: Normal operation that builds the current output record from the
+values in <tt class="docutils literal"><span class="pre">rec</span></tt> [0].</dd>
+<dt>GMT_WRITE_TEXT</dt>
+<dd>: For ASCII output mode we write the text string <tt class="docutils literal"><span class="pre">rec</span></tt>. If <tt class="docutils literal"><span class="pre">rec</span></tt>
+is NULL then we use the current (last imported) text record. If
+binary output mode we quietly skip writing this record [1].</dd>
+<dt>GMT_WRITE_TBLHEADER</dt>
+<dd>: For ASCII output mode we write the text string <tt class="docutils literal"><span class="pre">rec</span></tt>. If <tt class="docutils literal"><span class="pre">rec</span></tt>
+is NULL then we write the last read header record (and ensures it
+starts with #). If binary output mode we quietly skip writing this
+record [2].</dd>
+<dt>GMT_WRITE_SEGHEADER</dt>
+<dd>: For ASCII output mode we use the text string <tt class="docutils literal"><span class="pre">rec</span></tt> as the
+segment header. If <tt class="docutils literal"><span class="pre">rec</span></tt> is NULL then we use the current (last
+read) segment header record. If binary output mode instead we write
+a record composed of NaNs [1].</dd>
+</dl>
+<p>The function returns TRUE (1) if there was an error associated with the
+writing (which is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>), otherwise it returns
+FALSE (0).</p>
+</div>
+<div class="section" id="disable-data-export">
+<h4>Disable Data Export<a class="headerlink" href="#disable-data-export" title="Permalink to this headline">¶</a></h4>
+<p>Once the record-by-record output has completed we disable further output
+to prevent accidental writing from occurring (due to poor program
+structure, bugs, etc.). We do so by calling <tt class="docutils literal"><span class="pre">GMT_End_IO</span></tt>. This
+function disables further record-by-record data export; here, we
+obviously pass <tt class="docutils literal"><span class="pre">direction</span></tt> = GMT_OUT.</p>
+</div>
+</div>
+<div class="section" id="destroy-allocated-resources">
+<h3>Destroy allocated resources<a class="headerlink" href="#destroy-allocated-resources" title="Permalink to this headline">¶</a></h3>
+<p>If your session imported any data sets into memory then you may
+explicitly free this memory once it is no longer needed and before
+terminating the session. This is done with the <tt class="docutils literal"><span class="pre">GMT_Destroy_Data</span></tt>
+function, whose prototype is</p>
+<div class="highlight-python"><pre>long GMT_Destroy_Data (struct GMTAPI_CTRL *API, long mode, void *data)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">data</span></tt> is the address of the pointer to a data container. Pass
+<tt class="docutils literal"><span class="pre">mode</span></tt> either as GMT_ALLOCATED or GMT_REFERENCE. The former is used
+internally by the &nbsp;modules since they can only free resources that are
+not destined to live on in the memory of their calling program. The
+latter mode is used to free resources in your calling program. Note that
+when each module completes it will automatically free memory created by
+the API; similarly, when the session is destroyed we also automatically
+free up memory. Thus, <tt class="docutils literal"><span class="pre">GMT_Destroy_Data</span></tt> is therefore generally only
+needed when you wish to directly free up memory to avoid running out of
+it. The function returns TRUE (1) if there is an error when trying to
+free the memory (the error code is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>),
+otherwise it returns FALSE (0).</p>
+</div>
+<div class="section" id="terminate-a-gmt-session">
+<h3>Terminate a GMT session<a class="headerlink" href="#terminate-a-gmt-session" title="Permalink to this headline">¶</a></h3>
+<p>Before your program exits it should properly terminate the &nbsp;session,
+which involves a call to</p>
+<div class="highlight-python"><pre>long GMT_Destroy_Session (struct GMTAPI_CTRL **API)</pre>
+</div>
+<p>which simply takes the address of the pointer to the &nbsp;API control
+structure as its only arguments. It terminates the &nbsp;machinery with a
+call to <tt class="docutils literal"><span class="pre">GMT_end</span></tt> and deallocates all memory used by the &nbsp;API
+book-keeping. If you requested PSL during creation then the PSL
+resources are freed as well. It also unregisters any remaining resources
+previously registered with the session. The &nbsp;API will only close files
+that it was responsible for opening in the first place. Finally, the API
+structure itself is freed so your main program does not need to do so.
+The function returns TRUE (1) if there is an error when trying to free
+the memory (the error code is passed back with <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>),
+otherwise it returns FALSE (0).</p>
+</div>
+<div class="section" id="report-errors">
+<h3>Report errors<a class="headerlink" href="#report-errors" title="Permalink to this headline">¶</a></h3>
+<p>Since all API functions returns a status code via <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt>, you
+should always check this code before moving to the next step. All API
+functions will issue an error message before returning control to the
+calling program. This function is</p>
+<div class="highlight-python"><pre>long GMT_Report_Error (struct GMTAPI_CTRL *API, long error);</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">error</span></tt> is the status code return by any API function. Note: The
+error message is only issued if the verbosity level of the &nbsp;session is
+not set to 0 [Default is 1], and messages are normally written to
+<tt class="docutils literal"><span class="pre">stderr</span></tt> unless this stream has been redirected. Note that this
+function also updates <tt class="docutils literal"><span class="pre">API-&gt;error</span></tt> to the given value.</p>
+</div>
+<div class="section" id="fortran-77-interface">
+<h3>FORTRAN 77 interface<a class="headerlink" href="#fortran-77-interface" title="Permalink to this headline">¶</a></h3>
+<p>FORTRAN 77 developers who wish to use the &nbsp;API may use the same 17 API
+functions as discussed in Chapter 2. However, as pointers to structures
+and such are not available, the FORTRAN bindings provided simplifies the
+interface in two ways:</p>
+<ul class="simple">
+<li>The first argument to the functions (the GMTAPI Control structure
+pointer) is not provided. Instead, the bindings use a hidden, global
+external structure for this purpose and pass the pointer to it down
+to the C version of the functions.</li>
+<li>The resource arguments in <tt class="docutils literal"><span class="pre">GMT_Register_IO</span></tt> are not pointers to
+items but the items themselves.</li>
+</ul>
+<p>The list of the basic 17 FORTRAN prototype functions thus becomes</p>
+<div class="highlight-python"><pre>function GMT_Create_Session (tag, mode)
+function GMT_Destroy_Session ()
+function GMT_Register_IO (family, method, geometry, direction, \
+    resource, wesn)
+function GMT_Encode_ID (filename, ID)
+function GMT_Init_IO (family, geometry, direction, head)
+function GMT_Begin_IO (family, geometry, direction)
+function GMT_Create_Data (family, geometry, ipar)
+function GMT_Read_Data (family, method, geometry, wesn, mode, \
+    input, data)
+function GMT_Get_Data (ID, mode, data)
+function GMT_Retrieve_Data (ID)
+function GMT_Get_Record (rec, mode, nfields)
+function GMT_Write_Data (family, method, geometry, wesn, mode, \
+    output, data)
+function GMT_Put_Data (ID, mode, data)
+function GMT_Put_Record (mode, rec)
+function GMT_End_IO (direction, mode)
+function GMT_Destroy_Data (mode, ptr)
+function GMT_Report_Error (error)</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">method</span></tt>, <tt class="docutils literal"><span class="pre">geometry</span></tt>, <tt class="docutils literal"><span class="pre">direction</span></tt>, <tt class="docutils literal"><span class="pre">ID</span></tt> and <tt class="docutils literal"><span class="pre">error</span></tt> are
+integers, <tt class="docutils literal"><span class="pre">ipar</span></tt> is an integer parameter array, <tt class="docutils literal"><span class="pre">wesn</span></tt> is a real
+(double precision) array, and <tt class="docutils literal"><span class="pre">resource</span></tt> are source or destination
+addresses.</p>
+<p>headings headings</p>
+<table class="docutils footnote" frame="void" id="id3" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>Currently, only C/C++ and Matlab are being tested.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>However, there is no thread-support yet.</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GMT API</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#preamble">Preamble</a></li>
+<li><a class="reference internal" href="#definitions">Definitions</a></li>
+<li><a class="reference internal" href="#recognized-resources">Recognized resources</a><ul>
+<li><a class="reference internal" href="#cpt-palette-tables">CPT palette tables</a></li>
+<li><a class="reference internal" href="#data-tables">Data tables</a></li>
+<li><a class="reference internal" href="#text-tables">Text tables</a></li>
+<li><a class="reference internal" href="#gmt-grids">GMT grids</a></li>
+<li><a class="reference internal" href="#gmt-images">GMT images</a></li>
+<li><a class="reference internal" href="#user-data-columns">User data columns</a></li>
+<li><a class="reference internal" href="#user-data-matrices">User data matrices</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#overview-of-the-gmt-c-application-program-interface">Overview of the GMT C Application Program Interface</a><ul>
+<li><a class="reference internal" href="#initialize-a-new-gmt-session">Initialize a new GMT&nbsp;session</a></li>
+<li><a class="reference internal" href="#register-input-or-output-resources">Register input or output resources</a><ul>
+<li><a class="reference internal" href="#resource-registration">Resource registration</a></li>
+<li><a class="reference internal" href="#object-id-encoding">Object ID encoding</a></li>
+<li><a class="reference internal" href="#resource-initialization">Resource initialization</a></li>
+<li><a class="reference internal" href="#dimension-parameters-for-user-column-vectors">Dimension parameters for user column vectors</a></li>
+<li><a class="reference internal" href="#dimension-parameters-for-user-2-d-table-arrays">Dimension parameters for user 2-D table arrays</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#create-empty-resources">Create empty resources</a></li>
+<li><a class="reference internal" href="#import-data">Import Data</a><ul>
+<li><a class="reference internal" href="#enable-data-import">Enable Data Import</a></li>
+<li><a class="reference internal" href="#import-a-data-set">Import a data set</a><ul>
+<li><a class="reference internal" href="#import-from-a-file-stream-or-handle">Import from a file, stream, or handle</a></li>
+<li><a class="reference internal" href="#import-from-a-memory-location">Import from a memory location</a></li>
+<li><a class="reference internal" href="#retrieve-an-allocated-result">Retrieve an allocated result</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#importing-a-data-record">Importing a data record</a></li>
+<li><a class="reference internal" href="#disable-data-import">Disable Data Import</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prepare-program-options">Prepare program options</a><ul>
+<li><a class="reference internal" href="#set-program-options-via-text-array-arguments">Set program options via text array arguments</a></li>
+<li><a class="reference internal" href="#set-program-options-via-text-command">Set program options via text command</a></li>
+<li><a class="reference internal" href="#set-program-options-via-linked-structures">Set program options via linked structures</a></li>
+<li><a class="reference internal" href="#convert-between-text-and-linked-structures">Convert between text and linked structures</a></li>
+<li><a class="reference internal" href="#manage-the-linked-list-of-options">Manage the linked list of options</a><ul>
+<li><a class="reference internal" href="#make-a-new-option-structure">Make a new option structure</a></li>
+<li><a class="reference internal" href="#append-an-option-to-the-linked-list">Append an option to the linked list</a></li>
+<li><a class="reference internal" href="#find-an-option-in-the-linked-list">Find an option in the linked list</a></li>
+<li><a class="reference internal" href="#update-an-existing-option-in-the-list">Update an existing option in the list</a></li>
+<li><a class="reference internal" href="#delete-an-existing-option-in-the-linked-list">Delete an existing option in the linked list</a></li>
+<li><a class="reference internal" href="#specify-a-file-via-an-linked-option">Specify a file via an linked option</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#parsing-gmt-common-options">Parsing GMT common options</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#calling-a-gmt-module">Calling a GMT module</a></li>
+<li><a class="reference internal" href="#exporting-data">Exporting Data</a><ul>
+<li><a class="reference internal" href="#enable-data-export">Enable Data Export</a></li>
+<li><a class="reference internal" href="#exporting-a-data-set">Exporting a data set</a><ul>
+<li><a class="reference internal" href="#exporting-a-data-set-to-a-file-stream-or-handle">Exporting a data set to a file, stream, or handle</a></li>
+<li><a class="reference internal" href="#exporting-a-data-set-to-memory">Exporting a data set to memory</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exporting-a-data-record">Exporting a data record</a></li>
+<li><a class="reference internal" href="#disable-data-export">Disable Data Export</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#destroy-allocated-resources">Destroy allocated resources</a></li>
+<li><a class="reference internal" href="#terminate-a-gmt-session">Terminate a GMT session</a></li>
+<li><a class="reference internal" href="#report-errors">Report errors</a></li>
+<li><a class="reference internal" href="#fortran-77-interface">FORTRAN 77 interface</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mains.html"
+                        title="previous chapter">Mains</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="blockmean.html"
+                        title="next chapter">blockmean</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/GMT_API.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="blockmean.html" title="blockmean"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mains.html" title="Mains"
+             >previous</a> |</li>
+        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+    </div>
+  </body>
+</html>

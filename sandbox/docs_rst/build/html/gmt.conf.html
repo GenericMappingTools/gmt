@@ -106,6 +106,13 @@ in CMYK but interpolates in RGB).</dd>
 <dt><strong>COLOR_NAN</strong></dt>
 <dd>Color used for the non-defined areas of images (i.e., where z ==
 NaN) [127.5].</dd>
+<dt><strong>DIR_GSHHG</strong></dt>
+<dd>Path to GSHHG files. Defaults to <strong>$GMT_SHAREDIR</strong>/coast if empty.</dd>
+<dt><strong>DIR_TMP</strong></dt>
+<dd>Replaces the session temp dir <strong>$GMT_TMPDIR</strong> from the environment.</dd>
+<dt><strong>DIR_USER</strong></dt>
+<dd>Replaces the session user dir <strong>$GMT_USERDIR</strong> from the
+environment.</dd>
 <dt><strong>FONT</strong></dt>
 <dd>Sets the default for all fonts, except FONT_LOGO. This setting is
 not included in the <strong>gmt.conf</strong> file.</dd>
@@ -138,7 +145,7 @@ details. [hh:mm:ss].</dd>
 <dd>Formatting template that indicates how an output clock string is to
 be formatted. This template is then used to guide the writing of
 clock strings in data fields. To use a floating point format for the
-smallest unit (e.g. seconds), append .xxx, where the number of x
+smallest unit (e.g., seconds), append .xxx, where the number of x
 indicates the desired precision. If no floating point is indicated
 then the smallest specified unit will be rounded off to nearest
 integer. For 12-hour clocks, append am, AM, a.m., or A.M. (<strong>GMT</strong>
@@ -199,18 +206,22 @@ annotation interval.</dd>
 coordinate is to be formatted. This template is then used to guide
 the writing of geographical coordinates in data fields. The template
 is in general of the form [+|-]D or [+|-]ddd[:mm[:ss]][.xxx][F].
-By default, longitudes will be reported in the -180/+180 range. The
+By default, longitudes will be reported in the range [-180,180]. The
 various terms have the following purpose:</p>
-<blockquote>
-<div>+`` `` `` `` Output longitude in the 0 to 360 range [-180/+180]
--`` `` `` `` Output longitude in the -360 to 0 range [-180/+180]
-D`` `` `` `` Use <strong>FORMAT_FLOAT_OUT</strong> for floating point degrees.
-ddd`` `` `` `` Fixed format integer degrees
-:`` `` `` `` delimiter used
-mm`` `` `` `` Fixed format integer arc minutes
-ss`` `` `` `` Fixed format integer arc seconds
-F`` `` `` `` Encode sign using WESN suffix
-G`` `` `` `` Same as F but with a leading space before suffix</div></blockquote>
+<ul class="simple">
+<li>Output longitude in the range [0,360]</li>
+</ul>
+<ul class="simple">
+<li>Output longitude in the range [-360,0]</li>
+</ul>
+<p>D Use <strong>FORMAT_FLOAT_OUT</strong> for floating point degrees.</p>
+<p>ddd Fixed format integer degrees</p>
+<p>: delimiter used</p>
+<p>mm Fixed format integer arc minutes</p>
+<p>ss Fixed format integer arc seconds</p>
+<p>.xxx Floating fraction of previous integer field, fixed width.</p>
+<p>F Encode sign using WESN suffix</p>
+<p>G Same as F but with a leading space before suffix</p>
 <p class="last">The default is D.</p>
 </dd>
 <dt><strong>FORMAT_FLOAT_MAP</strong></dt>
@@ -233,26 +244,28 @@ virtually any text can be used (even not containing any time
 information) [%Y %b %d %H:%M:%S].</dd>
 <dt><strong>FORMAT_TIME_PRIMARY_MAP</strong></dt>
 <dd>Controls how primary month-, week-, and weekday-names are formatted.
-Choose among full, abbreviated, and character. If the leading f, a,
-or c are replaced with F, A, and C the entire annotation will be in
-upper case [full].</dd>
+Choose among <strong>full</strong>, <strong>abbreviated</strong>, and <strong>character</strong>. If the
+leading <strong>f</strong>, <strong>a</strong>, or <strong>c</strong> are replaced with <strong>F</strong>, <strong>A</strong>, and
+<strong>C</strong> the entire annotation will be in upper case [full].</dd>
 <dt><strong>FORMAT_TIME_SECONDARY_MAP</strong></dt>
 <dd>Controls how secondary month-, week-, and weekday-names are
-formatted. Choose among full, abbreviated, and character. If the
-leading f, a, or c are replaced with F, A, and C the entire
-annotation will be in upper case [full].</dd>
+formatted. Choose among <strong>full</strong>, <strong>abbreviated</strong>, and
+<strong>character</strong>. If the leading <strong>f</strong>, <strong>a</strong>, or <strong>c</strong> are replaced
+with <strong>F</strong>, <strong>A</strong>, and <strong>C</strong> the entire annotation will be in upper
+case [full].</dd>
 <dt><strong>GMT_FFT</strong></dt>
 <dd>Determines which Fast Fourier Transform should be used among those
-that have been configured during installation. Choose from auto
+that have been configured during installation. Choose from <strong>auto</strong>
 (pick the most suitable for the task among available algorithms),
-brenner (GMT’s version of Normal Brenner’s Fortran multi-dimensional
-FFT), fftw (The Fastest Fourier Transform in the West), accelerate
-(Use the Accelerate Framework under OS X), fftpack (use Paul N.
-Swarztrauber FFT pack translated from Fortran) or perflib (Sun
-Performance Library under Solaris) [auto].</dd>
+<strong>fftw3</strong> (The Fastest Fourier Transform in the West),
+<strong>accelerate</strong> (Use the Accelerate Framework under OS X; Note, that
+the number of samples to be processed must be a base 2 exponent.),
+<strong>kiss</strong> (Kiss FFT) [auto].</dd>
 <dt><strong>GMT_HISTORY</strong></dt>
-<dd>If true, passes the history of past common command options via the
-hidden .gmtcommands file [true].</dd>
+<dd>Passes the history of past common command options via the hidden
+.gmtcommands file. The dfferent values for this setting are:
+<strong>true</strong>, <strong>readonly</strong>, <strong>false</strong>, to either read and write to the
+.gmtcommands file, only read, or not use the file at all [true].</dd>
 <dt><strong>GMT_INTERPOLANT</strong></dt>
 <dd>Determines if linear (linear), Akima’s spline (akima), natural cubic
 spline (cubic) or no interpolation (none) should be used for 1-D
@@ -264,10 +277,10 @@ Note that Shewchuk is required for operations involving Voronoi
 constructions.</dd>
 <dt><strong>GMT_VERBOSE</strong></dt>
 <dd>(<strong>* -V</strong>) Determines the level of verbosity used by <strong>GMT</strong>
-programs. Choose among 5 levels; each level adds to the verbosity of
-the lower levels: 0 = silence, 1 = fatal errors, 2 = warnings and
-progress reports, 3 = extensive progress reports, 4 = debugging
-messages [1].</dd>
+programs. Choose among 6 levels; each level adds to the verbosity of
+the lower levels: <strong>q</strong>uiet, <strong>n</strong>normal (errors and warnings),
+<strong>c</strong>ompatibility warnings, (v)erbose progress reports, (l)ong
+verbose progress reports, <strong>d</strong>ebugging messages [c].</dd>
 <dt><strong>IO_COL_SEPARATOR</strong></dt>
 <dd>This setting determines what character will separate ASCII output
 data columns written by <strong>GMT</strong>. Choose from tab, space, comma, and
@@ -275,13 +288,16 @@ none [tab].</dd>
 <dt><strong>IO_GRIDFILE_FORMAT</strong></dt>
 <dd>Default file format for grids, with optional scale, offset and
 invalid value, written as <em>ff</em>/<em>scale</em>/<em>offset</em>/<em>invalid</em>. The
-2-letter format indicator can be one of [<strong>bcnsr</strong>][<strong>bsifd</strong>].
-The first letter indicates native <strong>GMT</strong> binary, old format netCDF,
-COARDS-compliant netCDF, Surfer format or Sun Raster format. The
-second letter stands for byte, short, int, float and double,
-respectively. When /<em>invalid</em> is omitted the appropriate value for
-the given format is used (NaN or largest negative). When
-/<em>scale</em>/<em>offset</em> is omitted, /1.0/0.0 is used. [nf].</dd>
+2-letter format indicator can be one of
+[<strong>abcegnrs</strong>][<strong>bsifd</strong>]. See
+<a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20 of the
+GMT Technical Reference and Cookbook for more information. The
+<em>scale</em> and <em>offset</em> modifiers may be left empty to select default
+values (scale = 1, offset = 0), or you may specify <em>a</em> for
+auto-adjusting the scale and/or offset of packed integer grids
+(=*id/a* is a shorthand for =<em>id/a/a</em>). When <em>invalid</em> is omitted
+the appropriate value for the given format is used (NaN or largest
+negative). [nf].</dd>
 <dt><strong>IO_GRIDFILE_SHORTHAND</strong></dt>
 <dd>If true, all grid file names are examined to see if they use the
 file extension shorthand discussed in Section 4.17 of the <strong>GMT</strong>
@@ -308,6 +324,25 @@ programs. For most programs this will result in output records with
 NaNs as well, but some will interpret these NaN records to indicate
 gaps in a series; programs may then use that information to detect
 segmentation (if applicable).</dd>
+<dt><strong>IO_NC4_CHUNK_SIZE</strong></dt>
+<dd>Sets the default chunk size for the <strong>lat</strong> and <strong>lon</strong> dimension of
+the <strong>z</strong> variable. This produces netCDF version 4 files which can
+only be read with the netCDF 4 library. Very large chunk sizes and
+sizes smaller than 128 should be avoided because they can lead to
+unexpectedly bad performance. Note that a chunk of a single
+precision floating point variable of size 2896x2896 completely fills
+the chunk cache of 32MiB. Specify the chunk size for each dimension
+separeted by a comma, or <strong>a</strong>uto for optimally chosen chunk sizes
+in the range [128,256]. Set IO_NC4_CHUNK_SIZE to <strong>c</strong>lassic
+for classic netCDF. [auto]</dd>
+<dt><strong>IO_NC4_DEFLATION_LEVEL</strong></dt>
+<dd>Sets the compression level for netCDF4 files upon output. This
+produces netCDF version 4 files which can only be read with the
+netCDF 4 library. Values allowed are integers between 0 (no
+compression) to 9 (maximum compression). Enabling compression level
+1 can dramatically improve performance and reduce the size of
+certain data. While higher compression levels further reduce the
+data size, they do so at the cost of extra processing time. [0]</dd>
 <dt><strong>IO_SEGMENT_MARKER</strong></dt>
 <dd>This holds the character we expect to indicate a segment header in
 an incoming ASCII data or text table [&gt;]. If this marker should be
@@ -325,27 +360,26 @@ backslash.</dd>
 <dd>If the angle between the map boundary and the annotation baseline is
 less than this minimum value (in degrees), the annotation is not
 plotted (this may occur for certain oblique projections.) Give a
-value in the range 0-90. [20]</dd>
+value in the range [0,90]. [20]</dd>
 <dt><strong>MAP_ANNOT_MIN_SPACING</strong></dt>
 <dd>If an annotation would be plotted less than this minimum distance
 from its closest neighbor, the annotation is not plotted (this may
 occur for certain oblique projections.) [0p]</dd>
 <dt><strong>MAP_ANNOT_OBLIQUE</strong></dt>
 <dd>This integer is a sum of 6 bit flags (most of which only are
-relevant for oblique projections): If bit 1 is <a class="reference external" href="set.1.html">set
-(1)</a> , annotations will occur wherever a gridline
-crosses the map boundaries, else longitudes will be annotated on the
-lower and upper boundaries only, and latitudes will be annotated on
-the left and right boundaries only. If bit 2 is <a class="reference external" href="set.2.html">set
-(2)</a> , then longitude annotations will be plotted
-horizontally. If bit 3 is <a class="reference external" href="set.4.html">set (4)</a> , then latitude
-annotations will be plotted horizontally. If bit 4 is <a class="reference external" href="set.8.html">set
-(8)</a> , then oblique tickmarks are extended to give a
-projection equal to the specified tick length. If bit 5 is set (16),
-tickmarks will be drawn normal to the border regardless of gridline
-angle. If bit 6 is set (32), then latitude annotations will be
-plotted parallel to the border. To set a combination of these, add
-up the values in parentheses. [1].</dd>
+relevant for oblique projections): If bit 1 is <a class="reference external" href="set.html">set (1)</a>
+, annotations will occur wherever a gridline crosses the map
+boundaries, else longitudes will be annotated on the lower and upper
+boundaries only, and latitudes will be annotated on the left and
+right boundaries only. If bit 2 is <a class="reference external" href="set.2.html">set (2)</a> , then
+longitude annotations will be plotted horizontally. If bit 3 is <a class="reference external" href="set.4.html">set
+(4)</a> , then latitude annotations will be plotted
+horizontally. If bit 4 is <a class="reference external" href="set.8.html">set (8)</a> , then oblique
+tickmarks are extended to give a projection equal to the specified
+tick length. If bit 5 is set (16), tickmarks will be drawn normal to
+the border regardless of gridline angle. If bit 6 is set (32), then
+latitude annotations will be plotted parallel to the border. To set
+a combination of these, add up the values in parentheses. [1].</dd>
 <dt><strong>MAP_ANNOT_OFFSET_PRIMARY</strong></dt>
 <dd>Distance from end of tickmark to start of annotation [5p].</dd>
 <dt><strong>MAP_ANNOT_OFFSET_SECONDARY</strong></dt>
@@ -454,7 +488,7 @@ base of plot title [14p].</dd>
 <dt><strong>MAP_VECTOR_SHAPE</strong></dt>
 <dd>Determines the shape of the head of a vector. Normally (i.e., for
 vector_shape = 0), the head will be triangular, but can be changed
-to an <a class="reference external" href="arrow.1.html">arrow (1)</a> or an open <a class="reference external" href="V.2.html">V (2)</a> .
+to an <a class="reference external" href="arrow.html">arrow (1)</a> or an open <a class="reference external" href="V.2.html">V (2)</a> .
 Intermediate settings give something in between. Negative values (up
 to -2) are allowed as well [0].</dd>
 <dt><strong>PROJ_ELLIPSOID</strong></dt>
@@ -484,21 +518,33 @@ CPM : Comm. des Poids et Mesures, France (1799)
 Delambre: Applies to Belgium (1810)
 Engelis: Goddard Earth Models (1985)
 Everest-1830: India, Burma, Pakistan, Afghanistan, Thailand (1830)
-Everest-1830-Kalianpur: Modified Everest for Kalianpur (1956) (1830)
-Everest-1830-Kertau: Modified Everest for Kertau, Malaysia &amp; Singapore (1830)
-Everest-1830-Pakistan: Modified Everest for Pakistan (1830)
-Everest-1830-Timbalai: Modified Everest for Timbalai, Sabah Sarawak (1830)
-Fischer-1960: Used by NASA for Mercury program (1960)
+Everest-1830-Kalianpur: Modified Everest for Kalianpur (1956)</dd>
+</dl>
+<ol class="arabic simple" start="1830">
+<li>Everest-1830-Kertau: Modified Everest for Kertau, Malaysia &amp;</li>
+</ol>
+<dl class="docutils">
+<dt>Singapore (1830)</dt>
+<dd>Everest-1830-Pakistan: Modified Everest for Pakistan (1830)
+Everest-1830-Timbalai: Modified Everest for Timbalai, Sabah Sarawak</dd>
+</dl>
+<ol class="arabic simple" start="1830">
+<li>Fischer-1960: Used by NASA for Mercury program (1960)
 Fischer-1960-SouthAsia: Same as Modified-Fischer-1960 (1960)
 Fischer-1968: Used by NASA for Mercury program (1968)
-FlatEarth: As Sphere, but implies fast &#8220;Flat Earth&#8221; distance calculations (1984)
-GRS-67: International Geodetic Reference System (1967)
+FlatEarth: As Sphere, but implies fast &#8220;Flat Earth&#8221; distance</li>
+</ol>
+<dl class="docutils">
+<dt>calculations (1984)</dt>
+<dd>GRS-67: International Geodetic Reference System (1967)
 GRS-80: International Geodetic Reference System (1980)
 Hayford-1909: Same as the International 1924 (1909)
 Helmert-1906: Applies to Egypt (1906)
 Hough: Applies to the Marshall Islands (1960)
-Hughes-1980: Hughes Aircraft Company for DMSP SSM/I grid products (1980)
-IAG-75: International Association of Geodesy (1975)
+Hughes-1980: Hughes Aircraft Company for DMSP SSM/I grid products</dd>
+</dl>
+<ol class="arabic simple" start="1980">
+<li>IAG-75: International Association of Geodesy (1975)
 Indonesian: Applies to Indonesia (1974)
 International-1924: Worldwide use (1924)
 International-1967: Worldwide use (1967)
@@ -518,8 +564,11 @@ OSU91A: Ohio State University (1991)
 Plessis: Old ellipsoid used in France (1817)
 SGS-85: Soviet Geodetic System (1985)
 South-American: Applies to South America (1969)
-Sphere: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)
-Struve: Friedrich Georg Wilhelm Struve (1860)
+Sphere: The mean radius in WGS-84 (for spherical/plate tectonics</li>
+</ol>
+<dl class="docutils">
+<dt>applications) (1984)</dt>
+<dd>Struve: Friedrich Georg Wilhelm Struve (1860)
 TOPEX: Used commonly for altimetry (1990)
 Walbeck: First least squares solution by Finnish astronomer (1819)
 War-Office: Developed by G. T. McCaw (1926)
@@ -543,15 +592,10 @@ zero, and using a mean radius. A warning will be given when this
 happens. If a different ellipsoid name than those mentioned here is
 given, <strong>GMT</strong> will attempt to parse the name to extract the
 semi-major axis (<em>a</em> in m) and the flattening. Formats allowed are:</p>
-<dl class="docutils">
-<dt>`` `` `` `` <em>a</em>`` `` `` `` `` `` `` `` implies a zero flattening</dt>
-<dd>`` `` `` `` <em>a</em>,<em>inv_f</em>`` `` `` `` where <em>inv_f</em> is the</dd>
-<dt>inverse flattening</dt>
-<dd>`` `` `` `` <em>a</em>,<strong>b=</strong><em>b</em>`` `` `` `` where <em>b</em> is the</dd>
-<dt>semi-minor axis (in m)</dt>
-<dd>`` `` `` `` <em>a</em>,<strong>f=</strong><em>f</em>`` `` `` `` where <em>f</em> is the</dd>
-</dl>
-<p>flattening</p>
+<p><em>a</em> implies a zero flattening</p>
+<p><em>a</em>,<em>inv_f</em>`` `` `` `` where <em>inv_f</em> is the inverse flattening</p>
+<p><em>a</em>,<strong>b=</strong><em>b</em> where <em>b</em> is the semi-minor axis (in m)</p>
+<p><em>a</em>,<strong>f=</strong><em>f</em> where <em>f</em> is the flattening</p>
 <p class="last">This way a custom ellipsoid (e.g., those used for other planets) may
 be used. Further note that coordinate transformations in
 <strong>mapproject</strong> can also specify specific datums; see the
@@ -574,8 +618,8 @@ scale-factor or leave as default.</dd>
 files and in command line parameters. This allows <strong>GMT</strong> to ensure
 that the <em>PostScript</em> output generates the correct characters on the
 plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
-ISO-8859-x (where x is in the ranges 1-10 or 13-15). See Appendix F
-for details [ISOLatin1+ (or Standard+)].</dd>
+ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
+Appendix F for details [ISOLatin1+ (or Standard+)].</dd>
 <dt><strong>PS_COLOR_MODEL</strong></dt>
 <dd>Determines whether <em>PostScript</em> output should use RGB, HSV, CMYK, or
 GRAY when specifying color [rgb]. Note if HSV is selected it does
@@ -615,46 +659,44 @@ The following formats (and their widths and heights in points) are
 recognized (Additional site-specific formats may be specified in the
 gmt_custom_media.conf file in <strong>$GMT_SHAREDIR</strong>/conf or ~/.gmt;
 see that file for details):</p>
-<dl class="docutils">
-<dt>Media`` `` `` `` width`` `` `` `` height</dt>
-<dd>A0`` `` `` `` 2380`` `` `` `` 3368
-A1`` `` `` `` 1684`` `` `` `` 2380
-A2`` `` `` `` 1190`` `` `` `` 1684
-A3`` `` `` `` 842`` `` `` `` 1190
-A4`` `` `` `` 595`` `` `` `` 842
-A5`` `` `` `` 421`` `` `` `` 595
-A6`` `` `` `` 297`` `` `` `` 421
-A7`` `` `` `` 210`` `` `` `` 297
-A8`` `` `` `` 148`` `` `` `` 210
-A9`` `` `` `` 105`` `` `` `` 148
-A10`` `` `` `` 74`` `` `` `` 105
-B0`` `` `` `` 2836`` `` `` `` 4008
-B1`` `` `` `` 2004`` `` `` `` 2836
-B2`` `` `` `` 1418`` `` `` `` 2004
-B3`` `` `` `` 1002`` `` `` `` 1418
-B4`` `` `` `` 709`` `` `` `` 1002
-B5`` `` `` `` 501`` `` `` `` 709
-archA`` `` `` `` 648`` `` `` `` 864
-archB`` `` `` `` 864`` `` `` `` 1296
-archC`` `` `` `` 1296`` `` `` `` 1728
-archD`` `` `` `` 1728`` `` `` `` 2592
-archE`` `` `` `` 2592`` `` `` `` 3456
-flsa`` `` `` `` 612`` `` `` `` 936
-halfletter`` `` `` `` 396`` `` `` `` 612
-statement`` `` `` `` 396`` `` `` `` 612
-note`` `` `` `` 540`` `` `` `` 720
-letter`` `` `` `` 612`` `` `` `` 792
-legal`` `` `` `` 612`` `` `` `` 1008
-11x17`` `` `` `` 792`` `` `` `` 1224
-tabloid`` `` `` `` 792`` `` `` `` 1224
-ledger`` `` `` `` 1224`` `` `` `` 792</dd>
-</dl>
+<p>Media width height</p>
+<p>A0 2380 3368</p>
+<p>A1 1684 2380</p>
+<p>A2 1190 1684</p>
+<p>A3 842 1190</p>
+<p>A4 595 842</p>
+<p>A5 421 595</p>
+<p>A6 297 421</p>
+<p>A7 210 297</p>
+<p>A8 148 210</p>
+<p>A9 105 148</p>
+<p>A10 74 105</p>
+<p>B0 2836 4008</p>
+<p>B1 2004 2836</p>
+<p>B2 1418 2004</p>
+<p>B3 1002 1418</p>
+<p>B4 709 1002</p>
+<p>B5 501 709</p>
+<p>archA 648 864</p>
+<p>archB 864 1296</p>
+<p>archC 1296 1728</p>
+<p>archD 1728 2592</p>
+<p>archE 2592 3456</p>
+<p>flsa 612 936</p>
+<p>halfletter 396 612</p>
+<p>statement 396 612</p>
+<p>note 540 720</p>
+<p>letter 612 792</p>
+<p>legal 612 1008</p>
+<p>11x17 792 1224</p>
+<p>tabloid 792 1224</p>
+<p>ledger 1224 792</p>
 <p class="last">For a completely custom format (e.g., for large format plotters) you
 may also specify WxH, where W and H are in points unless you append
 a unit to each dimension (<strong>c</strong>, <strong>i</strong>, <strong>m</strong> or <strong>p</strong> [Default]).</p>
 </dd>
 <dt><strong>PS_MITER_LIMIT</strong></dt>
-<dd>Sets the threshold angle in degrees (integer in 0-180 range) used
+<dd>Sets the threshold angle in degrees (integer in range [0,180]) used
 for mitered joins only. When the angle between joining line segments
 is smaller than the threshold the corner will be bevelled instead of
 mitered. The default threshold is 35 degrees. Setting the threshold
@@ -707,35 +749,34 @@ the previous interval. For example, with <strong>TIME_IS_INTERVAL</strong> =
 <dt><strong>TIME_LANGUAGE</strong></dt>
 <dd><p class="first">Language to use when plotting calendar items such as months and
 days. Select from:</p>
-<blockquote>
-<div>BR`` `` `` `` Brazilian Portuguese
-CN1`` `` `` `` Simplified Chinese
-CN2`` `` `` `` Traditional Chinese
-DE`` `` `` `` German
-DK`` `` `` `` Danish
-EH`` `` `` `` Basque
-ES`` `` `` `` Spanish
-FI`` `` `` `` Finnish
-FR`` `` `` `` French
-GR`` `` `` `` Greek
-HI`` `` `` `` Hawaiian
-HU`` `` `` `` Hungarian
-IE`` `` `` `` Irish
-IL`` `` `` `` Hebrew
-IS`` `` `` `` Icelandic
-IT`` `` `` `` Italian
-JP`` `` `` `` Japanese
-NL`` `` `` `` Dutch
-NO`` `` `` `` Norwegian
-PL`` `` `` `` Polish
-PT`` `` `` `` Portuguese
-RU`` `` `` `` Russian
-SE`` `` `` `` Swedish
-SG`` `` `` `` Scottish Gaelic
-TO`` `` `` `` Tongan
-TR`` `` `` `` Turkish
-UK`` `` `` `` British English
-US`` `` `` `` US English</div></blockquote>
+<p>BR Brazilian Portuguese</p>
+<p>CN1 Simplified Chinese</p>
+<p>CN2 Traditional Chinese</p>
+<p>DE German</p>
+<p>DK Danish</p>
+<p>EH Basque</p>
+<p>ES Spanish</p>
+<p>FI Finnish</p>
+<p>FR French</p>
+<p>GR Greek</p>
+<p>HI Hawaiian</p>
+<p>HU Hungarian</p>
+<p>IE Irish</p>
+<p>IL Hebrew</p>
+<p>IS Icelandic</p>
+<p>IT Italian</p>
+<p>JP Japanese</p>
+<p>NL Dutch</p>
+<p>NO Norwegian</p>
+<p>PL Polish</p>
+<p>PT`` `` `` `` Portuguese</p>
+<p>RU Russian</p>
+<p>SE Swedish</p>
+<p>SG Scottish Gaelic</p>
+<p>TO`` `` `` `` Tongan</p>
+<p>TR Turkish</p>
+<p>UK British English</p>
+<p>US US English</p>
 <p class="last">If your language is not supported, please examine the
 <strong>$GMT_SHAREDIR</strong>/time/us.d file and make a similar file. Please
 submit it to the <strong>GMT</strong> Developers for official inclusion. Custom
@@ -748,36 +789,28 @@ change the <strong>PS_CHAR_ENCODING</strong> setting.</p>
 specifying which time epoch the relative time refers to and what the
 units are. Choose from one of the preset systems below (epoch and
 units are indicated):</p>
-<blockquote>
-<div>JD`` `` `` `` -4713-11-25T12:00:00`` `` `` `` d`` `` `` ``</div></blockquote>
-<dl class="docutils">
-<dt>(Julian Date)</dt>
-<dd>MJD`` `` `` `` 1858-11-27T00:00:00`` `` `` `` d`` `` `` ``</dd>
-<dt>(Modified Julian Date)</dt>
-<dd>J2000`` `` `` `` 2000-01-01T12:00:00`` `` `` `` d`` `` `` ``</dd>
-<dt>(Astronomical time)</dt>
-<dd>S1985`` `` `` `` 1985-01-01T00:00:00`` `` `` `` s`` `` `` ``</dd>
-<dt>(Altimetric time)</dt>
-<dd>UNIX`` `` `` `` 1970-01-01T00:00:00`` `` `` `` s`` `` `` ``</dd>
-<dt>(UNIX time)</dt>
-<dd>RD0001`` `` `` `` 0001-01-01T00:00:00`` `` `` `` s
-RATA`` `` `` `` 0000-12-31T00:00:00`` `` `` `` d
-This parameter is not stored in the <strong>gmt.conf</strong> file but is</dd>
-</dl>
-<p class="last">translated to the respective values of <strong>TIME_EPOCH</strong> and
+<p>JD -4713-11-25T12:00:00 d (Julian Date)</p>
+<p>MJD 1858-11-27T00:00:00 d (Modified Julian Date)</p>
+<p>J2000 2000-01-01T12:00:00 d (Astronomical time)</p>
+<p>S1985 1985-01-01T00:00:00 s (Altimetric time)</p>
+<p>UNIX 1970-01-01T00:00:00 s (UNIX time)</p>
+<p>RD0001 0001-01-01T00:00:00 s</p>
+<p>RATA 0000-12-31T00:00:00 d</p>
+<p class="last">This parameter is not stored in the <strong>gmt.conf</strong> file but is
+translated to the respective values of <strong>TIME_EPOCH</strong> and
 <strong>TIME_UNIT</strong>.</p>
 </dd>
 <dt><strong>TIME_EPOCH</strong></dt>
-<dd>Specifies the epoch for relative time [2000-01-01T12:00:00].</dd>
+<dd>Specifies the epoch for relative time [1970-01-01T00:00:00].</dd>
 <dt><strong>TIME_UNIT</strong></dt>
 <dd>Specifies the units of relative time data since epoch (see
 <strong>TIME_EPOCH</strong>). Choose y (year - assumes all years are 365.2425
 days), o (month - assumes all months are of equal length y/12), d
-(day), h (hour), m (minute), or s (second) [d].</dd>
+(day), h (hour), m (minute), or s (second) [s].</dd>
 <dt><strong>TIME_WEEK_START</strong></dt>
 <dd>When weeks are indicated on time axes, this parameter determines the
 first day of the week for Gregorian calendars. (The ISO weekly
-calendar always begins weeks with Monday.) [Sunday].</dd>
+calendar always begins weeks with Monday.) [Monday (or Sunday)].</dd>
 <dt><strong>TIME_Y2K_OFFSET_YEAR</strong></dt>
 <dd>When 2-digit years are used to represent 4-digit years (see various
 <strong>FORMAT_DATE</strong>s), <strong>TIME_Y2K_OFFSET_YEAR</strong> gives the first
@@ -789,9 +822,9 @@ correspond to 1800 through 1828. [1950].</dd>
 </div>
 <div class="section" id="id3">
 <h2><a class="reference external" href="#toc3">See Also</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="gmt.html">*gmt*</a> , <a class="reference external" href="gmtdefaults.html">*gmtdefaults*</a>
-, <a class="reference external" href="gmtcolors.5.html">*gmtcolors*(5)</a> ,
-<a class="reference external" href="gmtget.html">*gmtget*</a> , <a class="reference external" href="gmtset.html">*gmtset*</a></p>
+<p><a class="reference external" href="gmt.html">*gmt*(1)</a> , <a class="reference external" href="gmtdefaults.html">*gmtdefaults*(1)</a> ,
+<a class="reference external" href="gmtcolors.html">*gmtcolors*(5)</a> , <a class="reference external" href="gmtget.html">*gmtget*(1)</a> ,
+<a class="reference external" href="gmtset.html">*gmtset*(1)</a></p>
 </div>
 </div>
 

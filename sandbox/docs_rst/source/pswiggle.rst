@@ -2,7 +2,6 @@
 pswiggle
 ********
 
-
 pswiggle - Plot z = f(x,y) anomalies along tracks
 
 `Synopsis <#toc1>`_
@@ -21,7 +20,7 @@ pswiggle - Plot z = f(x,y) anomalies along tracks
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [ **-c**\ *copies* ] [
+] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
 **-f**\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
@@ -66,9 +65,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-A**\ *azimuth*
     Sets the preferred positive azimuth. Positive wiggles will
     "gravitate" towards that direction.
@@ -96,33 +95,37 @@ space is allowed between the option flag and the associated arguments.
 **-S**\ [**x**\ ]\ *lon0*/*lat0*/*length*\ [/*units*]
     Draws a simple vertical scale centered on *lon0/lat0*. Use **-Sx**
     to specify cartesian coordinates instead. *length* is in z units,
-    append unit name for labeling. **FONT\_ANNOT\_PRIMARY** is used as font.
+    append unit name for labeling. **FONT\_ANNOT\_PRIMARY** is used as
+    font.
 **-T**\ *pen*
     Draw track [Default is no track]. Append pen attributes to use
     [Defaults: width = 0.25p, color = black, style = solid].
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**\ *pen*
     Draw wiggle outline [Default is no outline]. Append pen attributes
     to use [Defaults: width = 0.25p, color = black, style = solid].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 input columns].
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -133,6 +136,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -167,8 +174,7 @@ and plot this data set instead.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*filter1d*\ (1) <filter1d.1.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.1.html>`_ ,
-`*splitxyz*\ (1) <splitxyz.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*filter1d*\ (1) <filter1d.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ ,
+`*splitxyz*\ (1) <splitxyz.html>`_

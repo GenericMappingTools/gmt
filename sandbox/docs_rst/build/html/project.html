@@ -97,32 +97,32 @@ the distance perpendicular to the great circle path. When moving in the
 <a class="reference external" href="increasing.p.html">increasing (*p*)</a> direction, (toward <em>B</em> or in the
 <em>azimuth</em> direction), the positive (<em>q</em>) direction is to your left. If a
 Pole has been specified, then the positive (<em>q</em>) direction is toward the
-pole.
-To specify an oblique projection, use the <strong>-T</strong> option to set the
-Pole. Then the equator of the projection is already determined and the
-<strong>-C</strong> option is used to locate the <em>p</em> = 0 meridian. The Center <em>cx/cy</em>
-will be taken as a point through which the <em>p</em> = 0 meridian passes. If
-you do not care to choose a particular point, use the South pole (<em>ox</em> =
-0, <em>oy</em> = -90).
-Data can be selectively windowed by using the <strong>-L</strong> and <strong>-W</strong>
-options. If <strong>-W</strong> is used, the projection Width is set to use only
-points with <em>w_min</em> &lt; q &lt; <em>w_max</em>. If <strong>-L</strong> is set, then the Length
-is set to use only those points with <em>l_min</em> &lt; p &lt; <em>l_max</em>. If the
-<strong>-E</strong> option has been used to define the projection, then <strong>-Lw</strong> may
-be selected to window the length of the projection to exactly the span
-from <strong>O</strong> to <strong>B</strong>.
-Flat Earth (Cartesian) coordinate transformations can also be made. Set
+pole.</p>
+<p>To specify an oblique projection, use the <strong>-T</strong> option to set the Pole.
+Then the equator of the projection is already determined and the <strong>-C</strong>
+option is used to locate the <em>p</em> = 0 meridian. The Center <em>cx/cy</em> will
+be taken as a point through which the <em>p</em> = 0 meridian passes. If you do
+not care to choose a particular point, use the South pole (<em>ox</em> = 0,
+<em>oy</em> = -90).</p>
+<p>Data can be selectively windowed by using the <strong>-L</strong> and <strong>-W</strong> options.
+If <strong>-W</strong> is used, the projection Width is set to use only points with
+<em>w_min</em> &lt; q &lt; <em>w_max</em>. If <strong>-L</strong> is set, then the Length is set to use
+only those points with <em>l_min</em> &lt; p &lt; <em>l_max</em>. If the <strong>-E</strong> option has
+been used to define the projection, then <strong>-Lw</strong> may be selected to
+window the length of the projection to exactly the span from <strong>O</strong> to
+<strong>B</strong>.</p>
+<p>Flat Earth (Cartesian) coordinate transformations can also be made. Set
 <strong>-N</strong> and remember that <em>azimuth</em> is clockwise from North (the <em>y</em>
 axis), NOT the usual cartesian theta, which is counterclockwise from the
-<em>x</em> axis. <em>azimuth</em> = 90 - theta.
-No assumptions are made regarding the units for <em>x</em>, <em>y</em>, <em>r</em>, <em>s</em>,
-<em>p</em>, <em>q</em>, <em>dist</em>, <em>l_min</em>, <em>l_max</em>, <em>w_min</em>, <em>w_max</em>. If <strong>-Q</strong> is
+<em>x</em> axis. <em>azimuth</em> = 90 - theta.</p>
+<p>No assumptions are made regarding the units for <em>x</em>, <em>y</em>, <em>r</em>, <em>s</em>, <em>p</em>,
+<em>q</em>, <em>dist</em>, <em>l_min</em>, <em>l_max</em>, <em>w_min</em>, <em>w_max</em>. If <strong>-Q</strong> is
 selected, map units are assumed and <em>x</em>, <em>y</em>, <em>r</em>, <em>s</em> must be in
 degrees and <em>p</em>, <em>q</em>, <em>dist</em>, <em>l_min</em>, <em>l_max</em>, <em>w_min</em>, <em>w_max</em>
-will be in km.
-Calculations of specific great-circle and geodesic distances or for
-back-azimuths or azimuths are better done using <strong>mapproject</strong>.
-<strong>project</strong> is CASE SENSITIVE. Use UPPER CASE for all one-letter
+will be in km.</p>
+<p>Calculations of specific great-circle and geodesic distances or for
+back-azimuths or azimuths are better done using <strong>mapproject</strong>.</p>
+<p><strong>project</strong> is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
 xyzpqrs letters in <strong>-flags</strong>.</p>
 </div>
@@ -147,9 +147,9 @@ The <em>cx/cy</em> is not required to be 90 degrees from the pole.</dd>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-A</strong><em>azimuth</em></dt>
 <dd><em>azimuth</em> defines the azimuth of the projection (Definition 1).</dd>
 <dt><strong>-E</strong><em>bx</em>/<em>by</em></dt>
@@ -157,7 +157,7 @@ given then we read from standard input.</dd>
 <dt><strong>-F</strong><em>flags</em></dt>
 <dd>Specify your desired output using any combination of <em>xyzpqrs</em>, in
 any order. Do not space between the letters. Use lower case. The
-output will be ASCII (or binary, see <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>])
+output will be ASCII (or binary, see <strong>-bo</strong>[<em>ncols</em>][<em>type</em>])
 columns of values corresponding to <em>xyzpqrs</em> [Default]. If both
 input and output are using ASCII format then the <em>z</em> data are
 treated as textstring(s). If the <strong>-G</strong> option is selected, the
@@ -190,21 +190,25 @@ random data into a sequential profile.</dd>
 <dd><em>px/py</em> sets the position of the rotation pole of the projection.
 (Definition 3).</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>w_min</em>/<em>w_max</em></dt>
 <dd>Width controls. Project only those points whose <em>q</em> coordinate is
 within <em>w_min</em> &lt; <em>q</em> &lt; <em>w_max</em>.</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is given by <strong>-F</strong> or <strong>-G</strong>].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>] (*)</dt>
-<dd>Determine data gaps and line breaks.</dd>
+</dl>
+<p><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong>[+|-]<em>gap</em>[<strong>u</strong>]
+(*)</p>
+<blockquote>
+<div>Determine data gaps and line breaks.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-s</strong>[<em>cols</em>][<strong>a</strong>|<strong>r</strong>] (*)</dt>
 <dd>Set handling of NaN records.</dd>
@@ -215,6 +219,10 @@ within <em>w_min</em> &lt; <em>q</em> &lt; <em>w_max</em>.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -280,9 +288,9 @@ This gives coordinates for an oblique small circle.</p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="fitcircle.1.html">*fitcircle*(1)</a> , <a class="reference external" href="gmt.1.html">*gmt*(1)</a> ,
-<a class="reference external" href="mapproject.1.html">*mapproject*(1)</a> ,
-<a class="reference external" href="grdproject.1.html">*grdproject*(1)</a></p>
+<p><a class="reference external" href="fitcircle.html">*fitcircle*(1)</a> , <a class="reference external" href="gmt.html">*gmt*(1)</a> ,
+<a class="reference external" href="mapproject.html">*mapproject*(1)</a> ,
+<a class="reference external" href="grdproject.html">*grdproject*(1)</a></p>
 </div>
 </div>
 

@@ -2,7 +2,6 @@
 gmtlogo
 *******
 
-
 gmtlogo - Adding a GMT graphics logo overlay to an illustration
 
 `Synopsis <#toc1>`_
@@ -46,6 +45,5 @@ space is allowed between the option flag and the associated arguments.
 `See Also <#toc6>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmtcolors*\ (5) <gmtcolors.5.html>`_ ,
-`*psimage*\ (1) <psimage.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*psimage*\ (1) <psimage.html>`_

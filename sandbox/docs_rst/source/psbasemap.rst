@@ -2,7 +2,6 @@
 psbasemap
 *********
 
-
 psbasemap - Plot *PostScript* base maps
 
 `Synopsis <#toc1>`_
@@ -52,7 +51,7 @@ space is allowed between the option flag and the associated arguments.
     Select map projection.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
-     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
+    For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -111,16 +110,18 @@ space is allowed between the option flag and the associated arguments.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]] (\*)
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+(\*)
     Shift plot origin.
 **-c**\ *copies* (\*)
     Specify number of plot copies [Default is 1].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns. This applies only
     to the coordinates specified in the **-R** option.
-**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*] (\*)
+**-p**\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+(\*)
     Select perspective view.
 **-t**\ [*transp*\ ] (\*)
     Set PDF transparency level.
@@ -129,6 +130,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Examples <#toc6>`_
 -------------------
@@ -169,7 +174,8 @@ To design an axis system to be used for a depth-sqrt(age) plot with
 depth positive down, ticked and annotated every 500m, and ages annotated
 at 1 my, 4 my, 9 my etc, use
 
-psbasemap -R0/100/0/5000 -Jx1p0.5/-0.001 -B1p:"Crustal age":/500:Depth: > power.ps
+psbasemap -R0/100/0/5000 -Jx1p0.5/-0.001 -B1p:"Crustal age":/500:Depth:
+> power.ps
 
 `Polar (theta,r) plot <#toc11>`_
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,7 +210,8 @@ psbasemap -R90/180/-50/50 **-Jm**\ 0.025\ **i** -B30g30:.Mercator:
 `Miller <#toc15>`_
 ~~~~~~~~~~~~~~~~~~
 
-A global Miller cylindrical map with scale 1:200,000,000 may be plotted as
+A global Miller cylindrical map with scale 1:200,000,000 may be plotted
+as
 
 psbasemap -Rg -Jj180/1:200000000 -B30g30:.Miller: > miller.ps
 
@@ -390,9 +397,11 @@ following sequence of commands:
 
 psbasemap -R-160/-20/-90/90 -Ji-90/0.02i -B30g30/15g15Wesn -K >
 sinus\_i.ps
- psbasemap -R-20/60/-90/90 -Ji20/0.02i -B30g30/15g15wesn -O -K -X2.8i >>
+
+psbasemap -R-20/60/-90/90 -Ji20/0.02i -B30g30/15g15wesn -O -K -X2.8i >>
 sinus\_i.ps
- psbasemap -R60/200/-90/90 -Ji130/0.02i -B30g30/15g15wEsn -O -X1.6i >>
+
+psbasemap -R60/200/-90/90 -Ji130/0.02i -B30g30/15g15wEsn -O -X1.6i >>
 sinus\_i.ps
 
 `Eckert IV [equal-area] <#toc36>`_
@@ -483,6 +492,5 @@ However, it is fairly simple for most applications (see examples).
 `See Also <#toc45>`_
 --------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*gmt.conf*\ (5) <gmt.conf.5.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.5.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_

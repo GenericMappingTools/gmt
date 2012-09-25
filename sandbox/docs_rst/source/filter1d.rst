@@ -2,7 +2,6 @@
 filter1d
 ********
 
-
 filter1d - Do time domain filtering of 1-D data tables
 
 `Synopsis <#toc1>`_
@@ -46,24 +45,37 @@ space is allowed between the option flag and the associated arguments.
     filters. Append the filter code followed by the full filter
     *<width>* in same units as time column. Available convolution
     filters are:
+
     (**b**) Boxcar: All weights are equal.
+
     (**c**) Cosine Arch: Weights follow a cosine arch curve.
+
     (**g**) Gaussian: Weights are given by the Gaussian function.
+
     (**f**) Custom: Instead of *width* give name of a one-column file
     with your own weight coefficients.
+
     Non-convolution filters are:
+
     (**m**) Median: Returns median value.
+
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
     value. Append - or + to the filter width if you rather want to
     return the smallest or largest of the modal values.
+
     (**l**) Lower: Return the minimum of all values.
+
     (**L**) Lower: Return minimum of all positive values only.
+
     (**u**) Upper: Return maximum of all values.
+
     (**U**) Upper: Return maximum or all negative values only.
+
     Upper case type **B**, **C**, **G**, **M**, **P**, **F** will use
     robust filter versions: i.e., replace outliers (2.5 L1 scale off
     median) with median during filtering.
+
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.
 
@@ -71,9 +83,9 @@ space is allowed between the option flag and the associated arguments.
 -----------------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncol*\ ][**t**\ ]) data
-    table file(s) holding a number of data columns. If no tables are
-    given then we read from standard input.
+    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    data table file(s) holding a number of data columns. If no tables
+    are given then we read from standard input.
 **-D**\ *increment*
     *increment* is used when series is NOT equidistantly sampled. Then
     *increment* will be the abscissae resolution, i.e., all abscissae
@@ -107,18 +119,19 @@ space is allowed between the option flag and the associated arguments.
     Make evenly spaced time-steps from *start* to *stop* by *int*
     [Default uses input times].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input.
-**-bo**\ [*ncol*\ ][**t**\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary output. [Default is same as input].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ] (\*)
+**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
+(\*)
     Determine data gaps and line breaks.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-o**\ *cols*\ [,*...*] (\*)
     Select output columns.
@@ -127,6 +140,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -161,5 +178,4 @@ filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312\_filt.dt
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ <gmt.html>`_ , `*sample1d*\ <sample1d.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*sample1d*\ (1) <sample1d.html>`_

@@ -2,7 +2,6 @@
 grdedit
 *******
 
-
 grdedit - Modify header or content of a grid
 
 `Synopsis <#toc1>`_
@@ -12,7 +11,7 @@ grdedit - Modify header or content of a grid
 **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ] [
 **-E** ] [ **-N**\ *table* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S** ] [ **-T** ]
-[ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+[ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
@@ -62,7 +61,7 @@ space is allowed between the option flag and the associated arguments.
     Transpose the grid and exchange the *x* and *y* information.
     Incompatible with the other options.
 **-N**\ *table*
-    Read the ASCII (or binary; see **-bi**\ [*ncol*\ ][**t**\ ]) file
+    Read the ASCII (or binary; see **-bi**\ [*ncols*\ ][*type*\ ]) file
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
@@ -79,20 +78,24 @@ space is allowed between the option flag and the associated arguments.
     by half the x- and y-increments whereas pixel-registered grids will
     have their domain shrunk by the same amount.
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+    Select verbosity level [c].
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 input columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-^** (\*)
     Print a short message about the syntax of the command, then exits.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Grid File Formats <#toc6>`_
 ----------------------------
@@ -101,7 +104,7 @@ By default **GMT** writes out grid as single precision floats in a
 COARDS-complaint netCDF file format. However, **GMT** is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called "packing" of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 **=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
 *id* is a two-letter identifier of the grid type and precision, and
@@ -109,7 +112,7 @@ offset, the user should add the suffix
 to all grid values, and *nan* is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.17
+names. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.
 
 When reading a netCDF file that contains multiple grids, **GMT** will
@@ -121,7 +124,7 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-`**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.18 of the GMT
+`**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the GMT
 Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.
 
@@ -166,6 +169,5 @@ grdedit junk.nc -fg
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.1.html>`_ , `*grd2xyz*\ (1) <grd2xyz.1.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.1.html>`_
-
+`*gmt*\ (1) <gmt.html>`_ , `*grd2xyz*\ (1) <grd2xyz.html>`_ ,
+`*xyz2grd*\ (1) <xyz2grd.html>`_

@@ -1,7 +1,6 @@
-************
+**************
 nearneighbor
-************
-
+**************
 
 nearneighbor - Grid table data using a "Nearest neighbor" algorithm
 
@@ -13,7 +12,7 @@ nearneighbor - Grid table data using a "Nearest neighbor" algorithm
 **-N**\ *sectors*\ [/*min\_sectors*]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ]
 **-S**\ *search\_radius*\ [*unit*\ ] [ **-E**\ *empty* ] [
-**-V**\ [*level*\ ] ] [ **-W** ] [ **-bi**\ [*ncol*\ ][**t**\ ] ] [
+**-V**\ [*level*\ ] ] [ **-W** ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-n**\ [**+b**\ *BC*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
@@ -87,23 +86,24 @@ space is allowed between the option flag and the associated arguments.
 
 *table*
     3 [or 4, see **-W**] column ASCII file(s) [or binary, see
-    **-bi**\ [*ncol*\ ][**t**\ ]] holding (x,y,z[,w]) data values. If no
-    file is specified, **nearneighbor** will read from standard input.
+    **-bi**\ [*ncols*\ ][*type*\ ]] holding (x,y,z[,w]) data values. If
+    no file is specified, **nearneighbor** will read from standard
+    input.
 **-E**\ *empty*
     Set the value assigned to empty nodes [NaN].
 **-V**\ [*level*\ ] (\*)
-    Select verbosity level [1].
+    Select verbosity level [c].
 **-W**
     Input data have a 4th column containing observation point weights.
     These are multiplied with the geometrical weight factor to determine
     the actual weights used in the calculations.
-**-bi**\ [*ncol*\ ][**t**\ ] (\*)
+**-bi**\ [*ncols*\ ][*type*\ ] (\*)
     Select binary input. [Default is 3 (or 4 if **-W** is set) columns].
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
     Specify data types of input and/or output columns.
 **-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
     Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] (\*)
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
     Select input columns.
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
     Append **+b**\ *BC* to set any boundary conditions to be used,
@@ -120,6 +120,10 @@ space is allowed between the option flag and the associated arguments.
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
+**--version** (\*)
+    Print GMT version and exit.
+**--show-sharedir** (\*)
+    Print full path to GMT share directory and exit.
 
 `Units <#toc6>`_
 ----------------
@@ -165,9 +169,8 @@ nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
 `See Also <#toc9>`_
 -------------------
 
-`*blockmean*\ (1) <blockmean.1.html>`_ ,
-`*blockmedian*\ (1) <blockmedian.1.html>`_ ,
-`*blockmode*\ (1) <blockmode.1.html>`_ , `*gmt*\ (1) <gmt.1.html>`_ ,
-`*surface*\ (1) <surface.1.html>`_ ,
-`*triangulate*\ (1) <triangulate.1.html>`_
-
+`*blockmean*\ (1) <blockmean.html>`_ ,
+`*blockmedian*\ (1) <blockmedian.html>`_ ,
+`*blockmode*\ (1) <blockmode.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
+`*surface*\ (1) <surface.html>`_ ,
+`*triangulate*\ (1) <triangulate.html>`_
