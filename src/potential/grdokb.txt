@@ -15,9 +15,11 @@ but allows computing the anomaly of arbitrarily complex shapes.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-OPT(C)IT(density) Sets body density in SI. This option is mutually exclusive with OPT(H).
+OPT(C)IT(density)
+Sets body density in SI. This option is mutually exclusive with OPT(H).
 .TP
-OPT(F)IT(xy_file) Provide locations where the anomaly will be computed. Note this option is mutually 
+OPT(F)IT(xy_file)
+Provide locations where the anomaly will be computed. Note this option is mutually 
 exlusive with OPT(G).
 .TP
 OPT(G)IT(outgrid.nc)

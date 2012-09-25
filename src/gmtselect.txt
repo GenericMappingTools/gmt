@@ -54,17 +54,18 @@ of whether GMT_bi_OPT is used.
 OPT(I)[BD(cflrsz)]
 Reverses the sense of the test for each of the criteria specified:
 .br
-	BD(c)  select records NOT inside any point's circle of influence.\"'
-.br
-	BD(f)  select records NOT inside any of the polygons.
-.br
-	BD(l)  select records NOT within the specified distance of any line.
-.br
-	BD(r)  select records NOT inside the specified rectangular region.
-.br
-	BD(s)  select records NOT considered inside as specified by OPT(N) (and OPT(A), OPT(D)).
-.br
-	BD(z)  select records NOT within the range specified by OPT(Z).
+.sp
+    BD(c)  select records NOT inside any point's circle of influence.\"'
+.sp
+    BD(f)  select records NOT inside any of the polygons.
+.sp
+    BD(l)  select records NOT within the specified distance of any line.
+.sp
+    BD(r)  select records NOT inside the specified rectangular region.
+.sp
+    BD(s)  select records NOT considered inside as specified by OPT(N) (and OPT(A), OPT(D)).
+.sp
+    BD(z)  select records NOT within the range specified by OPT(Z).
 #include "explain_-J.txt"
 .TP
 OPT(L)[BD(p)]IT(dist)[IT(unit)]/IT(linefile)
@@ -80,11 +81,11 @@ fall within the segments endpoints [Default considers points "beyond" the line's
 OPT(N)IT(maskvalues)
 Pass all records whose location is inside specified geographical features.
 Specify if records should be skipped (s) or kept (k) using 1 of 2 formats:
-.br
-	OPT(N)IT(wet/dry).
-.br
-	OPT(N)IT(ocean/land/lake/island/pond).
-.br
+.sp
+    OPT(N)IT(wet/dry).
+.sp
+    OPT(N)IT(ocean/land/lake/island/pond).
+.sp
 [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 #include "explain_-R.txt"
 If no map projection is supplied we implicitly set OPT(Jx)1.
@@ -109,6 +110,7 @@ is absolute time then remember to supply OPT(f)2T.
 #include "explain_distunits.txt"
 #include "explain_precision.txt"
 .br
+.sp
 This note applies to ASCII output only in combination with binary or netCDF input or the OPT(:) option.
 See also the note below.
 .SH NOTE ON PROCESSING ASCII INPUT RECORDS
@@ -122,7 +124,7 @@ If options OPT(C) or OPT(L) are selected then distances are Cartesian and in use
 use OPT(fg) to imply spherical distances in km and geographical (lon, lat) coordinates.
 Alternatively, specify OPT(R) and OPT(J) to measure projected Cartesian distances in map units
 (cm, inch, or points, as determined by BD(PROJ_LENGTH_UNIT)).
-.br
+.sp
 This program has evolved over the years.  Originally, the OPT(R) and OPT(J) were mandatory in order
 to handle geographic data, but now there is full support for spherical calculations.  Thus, OPT(J)
 should only be used if you want the tests to be applied on projected data and not the original
@@ -133,31 +135,23 @@ the test.  Selection is always done point by point, not by segment.
 .SH EXAMPLES
 To extract the subset of data set that is within 300 km of any of the points in pts.d but more than
 100 km away from the lines in lines.d, run
-.br
 .sp
-gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
-.br
+    gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
 .sp
 Here, you must specify OPT(fg) so the program knows you are processing geographical data.
-.br
 .sp
-To keep all points in data.d within the specified region, except the points on land (as determined by the high-resolution
-coastlines), use
-.br
+To keep all points in data.d within the specified region, except the points on land
+(as determined by the high-resolution coastlines), use
 .sp
-gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
-.br
+    gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
 .sp
 To return all points in quakes.d that are inside or on the spherical polygon lonlatpath.d, try
-.br
 .sp
-gmtselect quakes.d -Flonlatpath.d -fg > subset1
-.br
+    gmtselect quakes.d -Flonlatpath.d -fg > subset1
 .sp
 To return all points in stations.d that are within 5 cm of the point in origin.d for a certain projection, try
-.br
 .sp
-gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2
+    gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2
 #include "explain_gshhs.txt"
 .SH "SEE ALSO"
 .IR gmt (1),

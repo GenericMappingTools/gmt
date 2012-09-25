@@ -81,7 +81,6 @@ operators calculate spherical azimuth and back-azimuths in degrees, respectively
 The operators BD(LDIST) and BD(PDIST) also computes spherical distances (if OPT(fg) is set),
 else they return Cartesian distances.
 Note: If the current BD(PROJ_ELLIPSOID) is not spherical then geodesics are used in spherical calculations.
-.br
 .sp
 (2) The operator BD(PLM) calculates the associated Legendre polynomial
 of degree L and order M (0 <= M <= L), and its argument is the sine of the latitude.
@@ -90,34 +89,28 @@ BD(PLMg) is normalized in the way that is most commonly used in geophysics.
 The C-S phase can be added by using -M as argument.
 BD(PLM) will overflow at higher degrees, whereas BD(PLMg) is stable until ultra high degrees (at
 least 3000).
-.br
 .sp
 (3) The operators BD(YLM) and BD(YLMg) calculate normalized spherical harmonics for degree L and
 order M (0 <= M <= L) for all positions in the grid, which is assumed to be in degrees.
 BD(YLM) and BD(YLMg) return two grids, the real (cosine) and imaginary (sine) component
 of the complex spherical harmonic.  Use the BD(POP) operator (and BD(EXCH)) to
 get rid of one of them, or save both by giving two consecutive = file.nc calls.
-.br
+.sp
 The orthonormalized complex harmonics BD(YLM) are most commonly used in physics and seismology.
 The square of BD(YLM) integrates to 1 over a sphere.
 In geophysics, BD(YLMg) is normalized to produce unit power when averaging the cosine and sine terms
 (separately!) over a sphere (i.e., their squares each integrate to 4 pi).
 The Condon-Shortley phase (-1)^M is not included in BD(YLM) or BD(YLMg), but it can be added by using -M
 as argument.
-.br
 .sp
 (4) All the derivatives are based on central finite differences, with natural boundary conditions.
-.br
 .sp
 (5) Files that have the same names as some operators, e.g., BD(ADD), BD(SIGN), BD(=), etc. should be
 identified by prepending the current directory (i.e., ./LOG).
-.br
 .sp
 (6) Piping of files is not allowed.
-.br
 .sp
 (7) The stack depth limit is hard-wired to 100.
-.br
 .sp
 (8) All functions expecting a positive radius (e.g., BD(LOG), BD(KEI), etc.) are passed the
 absolute value of their argument.
@@ -139,50 +132,41 @@ INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1 inside circle
 To take log10 of the average of 2 files, use
 .br
 .sp
-grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
-.br
+    grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 .sp
 Given the file ages.nc, which holds seafloor ages in m.y., use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to estimate normal seafloor depths:
-.br
 .sp
-grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
-.br
+    grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
 .sp
 To find the angle a (in degrees) of the largest principal stress from the stress tensor given by the
 three files s_xx.nc s_yy.nc, and s_xy.nc from the relation tan (2*a) = 2 * s_xy / (s_xx - s_yy), use
-.br
 .sp
-grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
-.br
+    grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
 .sp
 To calculate the fully normalized spherical harmonic of degree 8 and order
 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and the
 imaginary amplitude 1.1:
-.br
 .sp
-grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
-.br
+    grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 .sp
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
-.br
 .sp
-grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
-.br
-grd2xyz z.nc -S > max.xyz
+    grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
+.sp
+    grd2xyz z.nc -S > max.xyz
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.
-.br
+.sp
 Holmes, S. A., and W. E. Featherstone, 2002, A unified approach to the Clenshaw summation and the
 recursive computation of very high degree and order normalised associated Legendre functions.
 IT(Journal of Geodesy), 76, 279-299.
-.br
+.sp
 Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery, 1992, 
 IT(Numerical Recipes), 2nd edition, Cambridge Univ., New York.
-.br
-Spanier, J., and K. B. Oldman, 1987,
-IT(An Atlas of Functions), Hemisphere Publishing Corp.
+.sp
+Spanier, J., and K. B. Oldman, 1987, IT(An Atlas of Functions), Hemisphere Publishing Corp.
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmtmath (1),

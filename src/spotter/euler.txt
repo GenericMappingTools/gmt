@@ -4,7 +4,7 @@ Give file with rotation parameters.  This file must contain
 one record for each rotation; each record must be of the following format:
 .br
 .sp
-	IT(lon lat tstart [tstop] angle) [ IT(khat a b c d e f g df) ]
+    IT(lon lat tstart [tstop] angle) [ IT(khat a b c d e f g df) ]
 .br
 .sp
 where IT(tstart) and IT(tstop) are in Myr and IT(lon lat angle) are in degrees.

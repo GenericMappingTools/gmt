@@ -16,7 +16,7 @@ IT(ingrdfile)
 The grid file to be read.  Append format =IT(id) code if not a standard COARDS-compliant netCDF grid file.
 If =IT(id) is set (see below), you may optionally append IT(scale) and IT(offset).
 These options will scale the data and then offset them with the specified amounts after reading.
-.br
+.sp
 If IT(scale) and IT(offset)
 are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available).
@@ -31,7 +31,7 @@ These options are particularly
 practical when storing the data as integers, first removing an offset and then scaling down the values.
 Since the scale and offset are applied in reverse order when reading, this does not affect the data
 values (except for round-offs).
-.br
+.sp
 If IT(scale) and IT(offset)
 are supplied you may also append a value that represents 'Not-a-Number' (for floating-point grids this
 is unnecessary since the IEEE NaN is used; however integers need a value which means no data available).
@@ -44,7 +44,7 @@ by GDAL itself (e.g., netCDF, GTiFF, etc.), and the data type is one of
 IT(u8)|IT(u16)|IT(i16)|IT(u32)|IT(i32)|IT(float32), where 'i' and 'u' denote
 signed and unsigned integers respectively.  The default type is IT(float32).  Note
 also that both driver names and data types are case insensitive.
-.br
+.sp
 Consider setting BD(IO_NC4_DEFLATION_LEVEL) to reduce file size and to further
 increase read/write performace.  Especially when working with subsets of global
 grids, masks, and grids with repeating grid values, the improvement is usually
@@ -64,7 +64,7 @@ meta-data structure. This format is conform the COARDS conventions. BD(GMT) vers
 netCDF files that did not conform to these conventions. Although these files are still supported, their use is
 deprecated. To write other than floating point COARDS-compliant netCDF files, append the =IT(id) suffix
 to the filename IT(outgrdfile).
-.br
+.sp
 When reading files, BD(grdreformat) and other BD(GMT) programs will try to automatically
 recognize the type of the input grid file.  If this fails you may append the =IT(id)
 suffix to the filename IT(ingrdfile).
@@ -103,7 +103,7 @@ can be saved by storing the data as bytes or shorts in stead of integers. Use th
 parameters to make this work without loss of data range or significance. For more details, see Appendix B.
 .PP
 BD(Multi-variable grid files)
-.br
+.sp
 By default, BD(GMT) programs will read the first 2-dimensional grid contained in a COARDS-compliant netCDF file.
 Alternatively, use IT(ingrdfile)BD(?)IT(varname) (ahead of any optional suffix BD(=)IT(id))
 to specify the requested variable IT(varname).
@@ -111,17 +111,17 @@ Since BD(?) has special meaning as a wildcard, escape this meaning by placing th
 between quotes.
 .PP
 BD(Multi-dimensional grids)
-.br
+.sp
 To extract one IT(layer) or IT(level) from a 3-dimensional grid stored in a COARDS-compliant netCDF file,
 append both the name of the variable and the index associated with the layer (starting at zero) in the form:
 IT(ingrdfile)BD(?)IT(varname)BD([)IT(layer)BD(]).
 Alternatively, specify the value associated with that layer using parentheses in stead of brackets:
 IT(ingridfile)BD(?)IT(varname)\fB(\fP\fIlevel\fP\fB)\fP.
-.br
+.sp
 In a similar way layers can be extracted from 4- or even 5-dimensional grids. For example, if a grid has the
 dimensions (parameter, time, depth, latitude, longitude), a map can be selected by using:
 IT(ingridfile)BD(?)IT(varname)\fB(\fP\fIparameter\fP,IT(time),IT(depth)\fB)\fP.
-.br
+.sp
 Since question marks, brackets and parentheses have special meanings on the command line, escape these meanings
 by placing the full filename and suffix between quotes.
 .SH NATIVE BINARY FILES
@@ -140,39 +140,28 @@ To extract the second layer from a 3-dimensional grid named temp from a COARDS-c
 climate.nc:
 .br
 .sp
-grdreformat climate.nc?temp[1] temp.nc -V
-.br
+    grdreformat climate.nc?temp[1] temp.nc -V
 .sp
 To create a 4-byte native floating point grid from the COARDS-compliant netCDF file data.nc:
-.br
 .sp
-grdreformat data.nc ras_data.b4=bf -V
-.br
+    grdreformat data.nc ras_data.b4=bf -V
 .sp
-To make a 2-byte short integer file, scale it by 10, subtract 32000, setting
-NaNs to -9999, do
-.br
+To make a 2-byte short integer file, scale it by 10, subtract 32000, setting NaNs to -9999, do
 .sp
-grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
-.br
+    grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
 .sp
 To create a Sun standard 8-bit rasterfile for a subset of the data file image.nc,
 assuming the range in image.nc is 0-1 and we need 0-255, run
-.br
 .sp
-grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
-.br
+    grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
 .sp
-To convert etopo2.nc to etopo2.i2 that can be used by BD(grdraster), try
-.br
+    To convert etopo2.nc to etopo2.i2 that can be used by BD(grdraster), try
 .sp
-grdreformat etopo2.nc etopo2.i2=bs -N -V
-.br
+    grdreformat etopo2.nc etopo2.i2=bs -N -V
 .sp
 To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
-.br
 .sp
-grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+    grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 .SH "SEE ALSO"
 .IR gmt.conf (5),
 .IR gmt (1),

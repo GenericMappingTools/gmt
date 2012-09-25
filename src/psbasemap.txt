@@ -242,9 +242,9 @@ To make an interrupted sinusoidal world map with breaks at 160W, 20W, and 60E, w
 .br
 .sp
 psbasemap -R-160/-20/-90/90 -Ji-90/0.02i -B30g30/15g15Wesn -K > sinus_i.ps
-.br
+.sp
 psbasemap -R-20/60/-90/90 -Ji20/0.02i -B30g30/15g15wesn -O -K -X2.8i >> sinus_i.ps
-.br
+.sp
 psbasemap -R60/200/-90/90 -Ji130/0.02i -B30g30/15g15wEsn -O -X1.6i >> sinus_i.ps
 .br
 .SS Eckert IV [equal-area]

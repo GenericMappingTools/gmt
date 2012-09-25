@@ -74,25 +74,21 @@ Scale output values by IT(scale) before writing to file. [1].
 To create a grid file from the four grid files piece_?.nc, make the blendfile like this
 .br
 .sp
-piece_1.nc	-R<subregion_1> 1
-.br
-piece_2.nc	-R<subregion_2> 1
-.br
-piece_3.nc	-R<subregion_3> 1
-.br
-piece_4.nc	-R<subregion_4> 1
-.br
+    piece_1.nc -R<subregion_1> 1
+.sp
+    piece_2.nc -R<subregion_2> 1
+.sp
+    piece_3.nc -R<subregion_3> 1
+.sp
+    piece_4.nc -R<subregion_4> 1
 .sp
 Then run
-.br
 .sp
-grdblend blend.job -Gblend.nc -R<full_region> -I<dx/dy> -V
-.br
+    grdblend blend.job -Gblend.nc -R<full_region> -I<dx/dy> -V
 .sp
 To blend all the grids called MB_*.nc given them all equal weight, try
-.br
 .sp
-grdblend MB_*.nc -Gblend.nc -R<full_region> -I<dx/dy> -V
+    grdblend MB_*.nc -Gblend.nc -R<full_region> -I<dx/dy> -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grd2xyz (1),

@@ -105,16 +105,17 @@ derivative instead.  For 3-D interpolation, specify the three components of the 
 be normalized before use).
 .TP
 OPT(R)IT(xmin)/IT(xmax)[/IT(ymin)/IT(ymax)[/IT(zmin)IT(zmax)]]
-Specify the domain for an equidistant lattice where output predictions are required.  Requires OPT(I) and optionally OPT(r).
-.br
+Specify the domain for an equidistant lattice where output predictions are required. 
+Requires OPT(I) and optionally OPT(r).
+.sp
 IT(1-D:)  Give IT(xmin/xmax), the minimum and maximum IT(x) coordinates.
-.br
+.sp
 IT(2-D:)  Give IT(xmin/xmax/ymin/ymax), the minimum and maximum IT(x) and IT(y) coordinates.
 These may be Cartesian or geographical.  If geographical, then
 IT(west), IT(east), IT(south), and IT(north) specify the Region of interest, and you may specify them
-in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  The two shorthands OPT(Rg) and OPT(Rd) stand for global domain
-(0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude).
-.br
+in decimal degrees or in [+-]dd:mm[:ss.xxx][W|E|S|N] format.  The two shorthands OPT(Rg) and OPT(Rd)
+stand for global domain (0/360 and -180/+180 in longitude respectively, with -90/+90 in latitude).
+.sp
 IT(3-D:)  Give IT(xmin/xmax/ymin/ymax/zmin/zmax), the minimum and maximum IT(x), IT(y) and IT(z) coordinates.
 See the 2-D section if your horizontal coordinates are geographical; note the shorthands OPT(Rg) and OPT(Rd) cannot
 be used if a 3-D domain is specified.
@@ -130,13 +131,14 @@ The next is a 2-D or 3-D spline:
 The last two are spherical surface splines and both imply OPT(D)4 OPT(fg):
 (BD(p)) Minimum curvature spline [IT(Parker), 1994],
 (BD(q)) Continuous curvature spline in tension [IT(Wessel and Becker), 2008]; append IT(tension).
-The G(\fBx'\fP; \fBx'\fP) for the last method is slower to compute; by specifying OPT(SQ) you can speed up calculations
-by first pre-calculating G(\fBx'\fP; \fBx'\fP) for a dense set of BD(x) values (e.g., 100,001 nodes between -1 to +1)
-and store them in look-up tables.  Optionally append /IT(N) (an odd integer) to specify how many points in the spline to set [100001]
+The G(\fBx'\fP; \fBx'\fP) for the last method is slower to compute; by specifying OPT(SQ) you can
+speed up calculations by first pre-calculating G(\fBx'\fP; \fBx'\fP) for a dense set of BD(x) values
+(e.g., 100,001 nodes between -1 to +1) and store them in look-up tables.  Optionally append /IT(N)
+(an odd integer) to specify how many points in the spline to set [100001]
 .TP
 OPT(T)IT(maskgrid)
-For 2-D interpolation only.  Only evaluate the solution at the nodes in the IT(maskgrid) that are not equal to NaN. This option eliminates the need to
-specify options OPT(R), OPT(I), and OPT(r).
+For 2-D interpolation only.  Only evaluate the solution at the nodes in the IT(maskgrid) that are not
+equal to NaN. This option eliminates the need to specify options OPT(R), OPT(I), and OPT(r).
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 [Default is 2-4 input columns (BD(x),IT(w)); the number depends on the chosen dimension].
@@ -152,55 +154,48 @@ every 0.1 step from 0 to 10, and using a minimum cubic spline, try
 .br
 .sp
 gmtmath -T0/10/1 0 1 NRAND = 1D.txt
-.br
+.sp
 psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
-.br
+.sp
 greenspline 1D.txt -R0/10 -I0.1 -Sc -V | psxy -R -J -O -Wthin >> 1D.ps
-.br
 .sp
 To apply a spline in tension instead, using a tension of 0.7, try
-.br
 .sp
 psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
-.br
+.sp
 greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V | psxy -R -J -O -Wthin >> 1Dt.ps
 .SH 2-D EXAMPLES
 To make a uniform grid using the minimum curvature spline for the same Cartesian data set from Davis (1986) that is
 used in the GMT Technical Reference and Cookbook example 16, try
 .sp
 greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
-.br
+.sp
 psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table_5.11 -K > 2D.ps
-.br
+.sp
 grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
-.br
 .sp
 To use Cartesian splines in tension but only evaluate the solution where the input mask grid is not NaN, try
-.br
 .sp
 greenspline table_5.11 -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
-.br
 .sp
 To use Cartesian generalized splines in tension and return the magnitude of the surface slope in
 the NW direction, try
-.br
 .sp
 greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
-.br
 .sp
 Finally, to use Cartesian minimum curvature splines in recovering a surface where the input data is a single surface
 value (pt.d) and the remaining constraints specify only the surface slope and direction (slopes.d), use
-.br
 .sp
 greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
 .SH 3-D EXAMPLES
-To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that contains IT(x),IT(y),IT(z) locations and
-a measure of uranium oxide concentrations (in percent), try
+To create a uniform 3-D Cartesian grid table based on the data in table_5.23 in Davis (1986) that
+contains IT(x),IT(y),IT(z) locations and a measure of uranium oxide concentrations (in percent), try
 .br
 .sp
 greenspline table_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
 .SH 2-D SPHERICAL SURFACE EXAMPLES
-To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file mag_obs_1990.d, try\"'
+To recreate Parker's [1994] example on a global 1x1 degree grid, assuming the data are in file
+mag_obs_1990.d, try\"'
 .sp
 greenspline -V -Rg -fg -Sp -D3 -I1 -GP1994.nc mag_obs_1990.d
 .sp
@@ -212,7 +207,7 @@ greenspline -V -Rg -fg -SQ0.85 -D3 -I1 -GWB2008.nc mag_obs_1990.d
 applied at the edges of the specified domain.  For most applications this is fine as the region typically
 is arbitrarily set to reflect the extent of your data.  However, if your application requires
 particular boundary conditions then you may consider using BD(surface) instead.
-.br
+.sp
 (2) In all cases, the solution is obtained by inverting a IT(n) x IT(n) double precision matrix for the Green
 function coefficients, where IT(n)
 is the number of data constraints.  Hence, your computer's memory may place restrictions on how large data\"'
@@ -220,7 +215,7 @@ sets you can process with BD(greenspline).  Pre-processing your data with BD(blo
 or BD(blockmode) is recommended to avoid aliasing and may also control the size of IT(n). For information,
 if IT(n) = 1024 then only 8 Mb memory is needed, but for IT(n) = 10240 we need 800 Mb. Note that
 BD(greenspline) is fully 64-bit compliant if compiled as such.
-.br
+.sp
 (3) The inversion for coefficients can become numerically unstable when data neighbors are very close
 compared to the overall span of the data.  You can remedy this by pre-processing the data, e.g., by
 averaging closely spaced neighbors.  Alternatively, you can improve stability by using the SVD solution and
@@ -234,15 +229,15 @@ choosing your final result.  Note: the regularized spline in tension is only sta
 you must experiment to find the valid range and a useful setting.  For more information on tension see the references below.
 .SH "REFERENCES"
 Davis, J. C., 1986, IT(Statistics and Data Analysis in Geology), 2nd Edition, 646 pp., Wiley, New York, 
-.br
+.sp
 Mitasova, H., and L. Mitas, 1993, Interpolation by regularized spline with tension: I. Theory and implementation, IT(Math. Geol.), BD(25), 641\-655.
-.br
+.sp
 Parker, R. L., 1994, IT(Geophysical Inverse Theory), 386 pp., Princeton Univ. Press, Princeton, N.J.
-.br
+.sp
 Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and Seasat altimeter data, IT(Geophys. Res. Lett.), BD(14), 139\-142.
-.br
+.sp
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Green's function approach, \fIMath. Geol.\fP, \fB30\fP, 77\-93.
-.br
+.sp
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension,\"'
 IT(Geophys. J. Int), BD(174), 21\-28.
 .br

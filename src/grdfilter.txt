@@ -29,52 +29,54 @@ Distance IT(flag) tells how grid (x,y) relates to filter IT(width) as follows:
 IT(flag) = p:  grid (px,py) with IT(width) an odd number of pixels; Cartesian distances.
 .sp
 IT(flag) = 0:  grid (x,y) same units as IT(width), Cartesian distances.
-.br
+.sp
 IT(flag) = 1:  grid (x,y) in degrees, IT(width) in kilometers, Cartesian distances.
-.br
+.sp
 IT(flag) = 2:  grid (x,y) in degrees, IT(width) in km, dx scaled by cos(middle y), Cartesian distances.
 .sp
 The above options are fastest because they allow weight matrix to be computed only once.
 The next three options are slower because they recompute weights for each latitude.
 .sp
 IT(flag) = 3:  grid (x,y) in degrees, IT(width) in km, dx scaled by cosine(y), Cartesian distance calculation.
-.br
+.sp
 IT(flag) = 4:  grid (x,y) in degrees, IT(width) in km, Spherical distance calculation.
-.br
+.sp
 IT(flag) = 5:  grid (x,y) in Mercator OPT(Jm)1 img units, IT(width) in km, Spherical distance calculation.
 .TP
 OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)]
 Sets the filter type.  Choose among convolution and non-convolution filters.  Use any
 IT(filtertype) (listed below) followed by the full diameter IT(width).  This gives
 an isotropic filter; append /IT(width2) for a rectangular filter (requires OPT(Dp) or OPT(D0)).
-.br
+.sp
 Convolution filters are:
 .br
+.sp
 (BD(b)) Boxcar: All weights are equal.
-.br
+.sp
 (BD(c)) Cosine Arch: Weights follow a cosine arch curve.
-.br
+.sp
 (BD(g)) Gaussian: Weights are given by the Gaussian function, where IT(width) is 6 times the
 conventional Gaussian sigma.
-.br
+.sp
 Non-convolution filters are:
 .br
+.sp
 (BD(m)) Median: Returns median value. To select another quantile append
 BD(+q)IT(quantile) in the 0-1 range [Default is 0.5, i.e., median].
-.br
+.sp
 (BD(p)) Maximum likelihood probability (a mode estimator): Return modal value.
 If more than one mode is found we return their average value.  Append BD(-) or BD(+) to
 the filter width if you rather want to return the smallest or largest of the modal
 values.
-.br
+.sp
 (BD(l)) Lower: Return the minimum of all values.
-.br
+.sp
 (BD(L)) Lower: Return minimum of all positive values only.
-.br
+.sp
 (BD(u)) Upper: Return maximum of all values.
-.br
+.sp
 (BD(U)) Upper: Return maximum or all negative values only.
-.br
+.sp
 In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
 the filter will return 0.0.
 .TP
@@ -106,18 +108,19 @@ Toggle the node registration for the output grid so as to become the opposite of
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
-Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N, and you want to find
-the medians of values within a 300km radius (600km full width) of the output points, which you choose to be from 150E to 250E
-and 10N to 40N, and you want the output values every 0.5 degree.  Using spherical distance calculations, you need:
-.sp
-grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
+Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry from 140E to 260E and 0N to 50N,
+and you want to find the medians of values within a 300km radius (600km full width) of the output points,
+which you choose to be from 150E to 250E and 10N to 40N, and you want the output values every 0.5 degree.
+Using spherical distance calculations, you need:
 .br
 .sp
-If we instead wanted a high-pass result then one can perform the corresponding low-pass filter using a coarse grid interval
-as grdfilter will resample the result to the same resolution as the input grid so we can compute the residuals, e.g.,
-.br
+    grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
 .sp
-grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm-600 -D4 -R150/250/10/40 -I0.5 -V
+If we instead wanted a high-pass result then one can perform the corresponding low-pass filter using
+a coarse grid interval as grdfilter will resample the result to the same resolution as the input grid
+so we can compute the residuals, e.g.,
+.sp
+    grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm-600 -D4 -R150/250/10/40 -I0.5 -V
 .br
 .sp
 Here, the residual_pacific.nc grid will have the same 5 minute resolution as the original.

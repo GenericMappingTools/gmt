@@ -92,24 +92,20 @@ To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run
 .br
 .sp
-BD(backtracker) seamounts.d OPT(Db) OPT(E)DC85.d > newpos.d
-.br
+    BD(backtracker) seamounts.d OPT(Db) OPT(E)DC85.d > newpos.d
 .sp
 To project flowlines forward from the (x,y,t) points stored in several 3-column,
 binary, double precision files, run
+.sp
+    BD(backtracker) points.* OPT(Df) OPT(E)DC85.d OPT(Lf)25 OPT(bo) OPT(bi)IT(3) > lines.b
 .br
 .sp
-BD(backtracker) points.* OPT(Df) OPT(E)DC85.d OPT(Lf)25 OPT(bo) OPT(bi)IT(3) > lines.b
+    This file can then be plotted with BD(psxy).
 .br
-.sp
-This file can then be plotted with BD(psxy).
-.br
-.sp
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1 Ma, given a history of
 hotspot motion file (HIdrift.txt) and a set of total reconstruction rotations for the plate (PAC_APM.d), try
-.br
 .sp
-echo 204 19 80 | BD(backtracker) OPT(Df) OPT(E)PAC_APM.d OPT(Lb)1 > path.d
+    echo 204 19 80 | BD(backtracker) OPT(Df) OPT(E)PAC_APM.d OPT(Lb)1 > path.d
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR project (1),
@@ -120,4 +116,3 @@ echo 204 19 80 | BD(backtracker) OPT(Df) OPT(E)PAC_APM.d OPT(Lb)1 > path.d
 .IR originator (1)
 .SH REFERENCES
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
-.br

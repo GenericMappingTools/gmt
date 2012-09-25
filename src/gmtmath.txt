@@ -85,7 +85,7 @@ contains the desired t-coordinates which may be irregular.
 #include "gmtmath_man.i"
 .SH SYMBOLS
 The following symbols have special meaning:
-.br
+.sp
 .TS
 l l .
 BD(PI)	3.1415926...
@@ -107,25 +107,19 @@ BD(PLMg) is normalized in the way that is most commonly used in geophysics.
 The C-S phase can be added by using -M as argument.
 BD(PLM) will overflow at higher degrees, whereas BD(PLMg) is stable until ultra high degrees (at
 least 3000).
-.br
 .sp
 (2) Files that have the same names as some operators, e.g., BD(ADD), BD(SIGN), BD(=), etc. should be
-identified by prepending the current directory (i.e., ./LOG).
-.br
+identified by prepending the current directory (i.e., ./).
 .sp
 (3) The stack depth limit is hard-wired to 100.
-.br
 .sp
 (4) All functions expecting a positive radius (e.g., BD(LOG), BD(KEI), etc.) are passed the
 absolute value of their argument.
-.br
 .sp
 (5) The BD(DDT) and BD(D2DT2) functions only work on regularly spaced data.
-.br
 .sp
 (6) All derivatives are based on central finite differences, with natural
 boundary conditions.
-.br
 .sp
 (7) BD(ROOTS) must be the last operator on the stack, only followed by BD(=).
 .SH MACROS
@@ -144,48 +138,35 @@ To take the square root of the content of the second data column being piped thr
 by process1 and pipe it through a 3rd process, use
 .br
 .sp
-process1 | gmtmath STDIN SQRT = | process3
-.br
+    process1 | gmtmath STDIN SQRT = | process3
 .sp
 To take log10 of the average of 2 data files, use
-.br
 .sp
-gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
-.br
+    gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
 .sp
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor depth in m, use the relation
 depth(in m) = 2500 + 350 * sqrt (age) to print the depth anomalies:
-.br
 .sp
-gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
-.br
+    gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
 .sp
 To take the average of columns 1 and 4-6 in the three data sets sizes.1, sizes.2, and sizes.3, use
-.br
 .sp
-gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
-.br
+    gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
 .sp
 To take the 1-column data set ages.d and calculate the modal value and assign it to a variable, try
-.br
 .sp
-set mode_age = `gmtmath -S -T ages.d MODE =`
-.br
+    set mode_age = `gmtmath -S -T ages.d MODE =`
 .sp
 To evaluate the dilog(x) function for coordinates given in the file t.d:
-.br
 .sp
-gmtmath -Tt.d T DILOG = dilog.d
-.br
+    gmtmath -Tt.d T DILOG = dilog.d
 .sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
 files) and calculate arbitrary expressions, use the OPT(Q) option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) + cos (60))
 and store the result in the shell variable z:
-.br
 .sp
-set z = `gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
-.br
+    set z = `gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
 .sp
 To use BD(gmtmath) as a general least squares equation solver, imagine that the current table is the
 augmented matrix [ A | b ] and you want the least squares solution x to the matrix equation A * x = b.
@@ -194,30 +175,27 @@ option will facilitate this.  Suppose you have a 2-column file ty.d with IT(t) a
 like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside step function for a given t0 = 1.55.
 Then, you need a 4-column augmented table loaded with t in column 0 and your observed y(t) in column 3.
 The calculation becomes
-.br
 .sp
-gmtmath -N4/1 -Aty.d -C0 1 ADD \-C2 1.55 STEPT ADD \-Ca LSQFIT \= solution.d
-.br
+    gmtmath -N4/1 -Aty.d -C0 1 ADD \-C2 1.55 STEPT ADD \-Ca LSQFIT \= solution.d
 .sp
 Note we use the OPT(C) option to select which columns we are working on, then make active all the
 columns we need (here all of them, with OPT(Ca)) before calling BD(LSQFIT).  The second and fourth
 columns (col numbers 1 and 3) are preloaded with t and y(t), respectively, the other columns are zero.  If you already have
 a pre-calculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
-.br
 .sp
-BD(gmtmath) OPT(T) lsqsys.d BD(LSQFIT \=) solution.d
+    BD(gmtmath) OPT(T) lsqsys.d BD(LSQFIT \=) solution.d
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.
-.br
+.sp
 Holmes, S. A., and W. E. Featherstone, 2002,  A unified approach to the Clenshaw summation and the
 recursive computation of very high degree and order normalized associated Legendre functions.
 IT(Journal of Geodesy), 76, 279-299.
-.br
+.sp
 Press, W. H.,  S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery, 1992, 
 IT(Numerical Recipes), 2nd edition, Cambridge Univ., New York.
-.br
+.sp
 Spanier, J., and K. B. Oldman, 1987,
 IT(An Atlas of Functions), Hemisphere Publishing Corp.
 .SH "SEE ALSO"

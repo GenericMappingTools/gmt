@@ -14,33 +14,32 @@ BD(grdcontour) IT(grid) OPT(C)IT(cont_int)|IT(cpt) GMT_J_OPT
 [ GMT_bo_OPT ] [ GMT_c_OPT ] [ GMT_ho_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
 .SH DESCRIPTION
 BD(grdcontour) reads a 2-D grid file and produces a contour map by tracing
-each contour through the grid.  IT(PostScript) code is generated and sent to standard output.  Various options
-that affect the plotting are available.  Alternatively, the x/y/z positions of the contour lines may be saved to
-one or more output files (or stdout) and no plot is produced.
+each contour through the grid.  IT(PostScript) code is generated and sent to standard output.
+Various options that affect the plotting are available.  Alternatively, the x/y/z positions of
+the contour lines may be saved to one or more output files (or stdout) and no plot is produced.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
 IT(grid)
-2-D gridded data set to be contoured.
-(See GRID FILE FORMATS below).
+2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
 .TP
 OPT(C)IT(cont_int)
 The contours to be drawn may be specified in one of three possible ways:
-.br
+.sp
 (1) If IT(cont_int) has the suffix ".cpt" and can be opened as a file, it is assumed
 to be a color palette table.  The color boundaries are then used as contour levels.
 If the cpt-file has annotation flags in the last column then those contours will be
 annotated.  By default all contours are labeled; use OPT(A\-) to disable all annotations.
-.br
+.sp
 (2) If IT(cont_int) is a file but not a cpt-file, it is expected to contain contour levels
 in column 1 and a C(ontour) OR A(nnotate) in col 2. The levels marked C (or c) are contoured,
 the levels marked A (or a) are contoured and annotated.  Optionally, a third column may be
 present and contain the fixed annotation angle for this contour level.
-.br
+.sp
 (3) If no file is found, then IT(cont_int) is
 interpreted as a constant contour interval.  If OPT(A) is set and OPT(C) is not, then
 the contour interval is set equal to the specified annotation interval.
-.br
+.sp
 If a file is given and OPT(T) is set, 
 then only contours marked with upper case C or A will have tickmarks.  In all cases the contour
 values have the same units as the grid.
@@ -52,7 +51,7 @@ IT(annot_int) is annotation interval in data units; it is ignored if contour lev
 [Default is no annotations].   Append BD(-) to disable all annotations implied by OPT(C).
 The optional IT(labelinfo) controls the specifics of the label formatting and consists of a concatenated string
 made up of any of the following control arguments:
-.br
+.sp
 #define CONTOUR
 #define GRID
 #include "explain_labelinfo.txt"
@@ -126,25 +125,21 @@ To contour the file hawaii_grav.nc every 25 mGal on a Mercator map at 0.5 inch/d
 every 50 mGal (using fontsize = 10p), using 1 degree tickmarks, and draw 30 minute gridlines:
 .br
 .sp
-grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii_grav.ps
-.br
+    grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii_grav.ps
 .sp
 To contour the file image.nc using the levels in the file cont.d on a linear projection at 0.1 cm/x-unit
 and 50 cm/y-unit, using 20 (x) and 0.1 (y) tickmarks, smooth the contours a bit, use "RMS Misfit" as
 plot-title, use a thick red pen for annotated contours, and a thin, dashed, blue pen for the rest, and send the output to the default printer:
-.br
 .sp
-grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS Misfit":
--Wathick,red -Wcthinnest,blue,- | lp
+    grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS Misfit":-Wathick,red -Wcthinnest,blue,- | lp
 .sp
 The labeling of local highs and lows may plot outside the innermost contour since only the mean value
 of the contour coordinates is used to position the label.
-.br
+.sp
 To save the smoothed 100-m contour lines in topo.nc and separate them into two multisegment files:
 contours_C.txt for closed and contours_O.txt for open contours, try 
-.br
 .sp
-grdcontour topo.nc -C100 -S4 -Dcontours_%c.txt
+    grdcontour topo.nc -C100 -S4 -Dcontours_%c.txt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

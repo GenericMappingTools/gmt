@@ -120,26 +120,20 @@ a Mercator grid for a given scale of LEN1 cm per degree, run
 .br
 .sp
 mapproject lonlatfile -R20/50/12/25 SCALE1 > xyfile
-.br
 .sp
 To transform several 2-column, binary, double precision files with (latitude,longitude) into (x,y) positions in inch on
 a Transverse Mercator grid (central longitude 75W) for scale = 1:500000 and suppress those points
 that would fall outside the map area, run
-.br
 .sp
 mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
-.br
 .sp
 To convert the geodetic coordinates (lon, lat, height) in the file old.dat from the NAD27 CONUS datum
 (Datum ID 131 which uses the Clarke-1866 ellipsoid) to WGS 84, run
-.br
 .sp
 mapproject old.dat -Th131 > new.dat
-.br
 .sp
 To compute the closest distance (in km) between each point in the input file quakes.dat and the
 line segments given in the multisegment ASCII file coastline.xy, run
-.br
 .sp
 mapproject quakes.dat -Lcoastline.xy/k > quake_dist.dat
 .SH RESTRICTIONS
@@ -150,7 +144,7 @@ extreme map coordinates through BD(mapproject) using the appropriate scale and s
 what  (x,y) values they are mapped onto.  Use these values when setting up for
 digitizing in order to have the inverse transformation work correctly, or alternatively,
 use BD(awk) to scale and shift the (x,y) values before transforming.
-.br
+.sp
 For some projection, a spherical solution may be used despite the user having
 selected an ellipsoid.  This occurs when the users OPT(R) setting implies a
 region that exceeds the domain in which the ellipsoidal series expansions are
@@ -193,8 +187,7 @@ the setting in order to match results produced with other settings.
 .IR project (1)
 .SH REFERENCES
 Bomford, G., 1952, Geodesy, Oxford U. Press.
-.br
+.sp
 Snyder, J. P., 1987, Map Projections \- A Working Manual, U.S. Geological Survey Prof. Paper 1395.
-.br
+.sp
 Vanicek, P. and Krakiwsky, E, 1982, Geodesy \- The Concepts, North-Holland Publ., ISBN: 0 444 86149 1.
-.br
