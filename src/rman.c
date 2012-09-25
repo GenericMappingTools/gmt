@@ -196,6 +196,7 @@ int falluc = 0;
 int itabcnt = 0;
 int fQuiet = 0;
 int fTclTk = 0;
+int doTOC = 1;			/* To write (1) or not write (0) a Table Of Contents */
 
 /* patterns observed in section heads that don't conform to first-letter-uppercase-rest-lowercase pattern (stay all uc, or go all lc, or have subsequent uc) */
 int lcexceptionslen = -1;	/* computed by system */
@@ -907,19 +908,15 @@ void TkMan(enum command cmd)
 																																																																						 /*no dash */
 																																																																						 ||ncnt
 																																																																						 /*GNU long option */
-																																																																						)
-													 && plain[1] != ' '))
+																																																																						) && plain[1] != ' '))
 				clo[clocnt++] = CurLine;
 			/*
 				 would like to require second letter to be a capital letter to cut down on number of matches,
 				 but command names usually start with lowercase letter
 				 maybe use a uppercase requirement as secondary strategy, but probably not
 				 */
-			if ((ncnt || lastsect) && linelen > 0 && scnt > 0
-					&& scnt <=
-					7
+			if ((ncnt || lastsect) && linelen > 0 && scnt > 0 && scnt <= 7 )
 					/*used to be <=5 until groff spontaneously started putting in 7 */
-				 )
 				para[paracnt++] = CurLine;
 			lastsect = 0;
 
@@ -1823,7 +1820,8 @@ void HTML(enum command cmd)
 			printf(manTitle, manName, manSect);
 			printf("</title>\n");
 			printf("</head>\n<body bgcolor='white'>\n");
-			printf("<a href='#toc'>%s</a><p>\n", TABLEOFCONTENTS);
+			if (doTOC)
+				printf("<a href='#toc'>%s</a><p>\n", TABLEOFCONTENTS);
 			I = 0;
 			break;
 		case ENDDOC:
@@ -1838,10 +1836,10 @@ void HTML(enum command cmd)
 
 			if (!tocc) {
 				/*printf("\n<h1>ERROR: Empty man page</h1>\n"); */
-			} else {
+			}
+			else if (doTOC) {	/* That is, if write TOC */
 				printf("\n<hr><p>\n");
-				printf("<a name='toc'><b>%s</b></a><p>\n",
-							 TABLEOFCONTENTS);
+				printf("<a name='toc'><b>%s</b></a><p>\n", TABLEOFCONTENTS);
 				printf("<ul>\n");
 				for (i = 0, lasttoc = BEGINSECTION; i < tocc;
 						 lasttoc = toc[i].type, i++) {
@@ -6373,17 +6371,16 @@ int main(int argc, char *argv[])
 		char *longnames;
 		char *desc;
 	} option[] = {
-		{'f', 1, "filter",
-			" <ASCII|roff|TkMan|Tk|Sections|HTML|XML|MIME|LaTeX|LaTeX2e|RTF|pod>"},
+		{'f', 1, "filter", " <ASCII|roff|TkMan|Tk|Sections|HTML|XML|MIME|LaTeX|LaTeX2e|RTF|pod>"},
 		{'S', 0, "source", "(ource of man page passed in)"},	/* autodetected */
 		{'F', 0, "formatted:format", "(ormatted man page passed in)"},	/* autodetected */
-		{'r', 1, "reference:manref:ref",
-			" <man reference printf string>"},
+		{'r', 1, "reference:manref:ref", " <man reference printf string>"},
 		{'l', 1, "title", " <title printf string>"},
 		{'V', 1, "volumes:vol", "(olume) <colon-separated list>"},
 		{'U', 0, "url:urls", "(RLs as hyperlinks)"},
 		/* following options apply to formatted pages only */
 		{'b', 0, "subsections:sub", " (show subsections)"},
+		{'c', 0, "notoc", " (no TOC)"},
 		{'k', 0, "keep:head:foot:header:footer", "(eep head/foot)"},
 		{'n', 1, "name", "(ame of man page) <string>"},
 		{'s', 1, "section:sect", "(ection) <string>"},
@@ -6392,10 +6389,8 @@ int main(int argc, char *argv[])
 		{'N', 0, "normalize:normal", "(ormalize spacing, changebars)"},
 		{'y', 0, "zap:nohyphens", " (zap hyphens toggle)"},
 		{'K', 0, "nobreak", " (declare that page has no breaks)"},	/* autodetected */
-		{'d', 1, "diff",
-			"(iff) <file> (diff of old page source to incorporate)"},
-		{'M', 1, "message",
-			"(essage) <text> (included verbatim at end of Name section)"},
+		{'d', 1, "diff", "(iff) <file> (diff of old page source to incorporate)"},
+		{'M', 1, "message", "(essage) <text> (included verbatim at end of Name section)"},
 		/*{ 'l', 0, "number lines", "... can number lines in a pipe" */
 		/*{ 'T', 0, "tables", "(able agressive parsing ON)" }, */
 		/*              { 'c', 0, "changeleft:changebar", "(hangebarstoleft toggle)" }, -- default is perfect */
@@ -6460,8 +6455,7 @@ int main(int argc, char *argv[])
 				}
 			}
 			if (option[j].letter == '\0')
-				fprintf(stderr, "%s: unknown option %s\n",
-								argv[0], argv[i]);
+				fprintf(stderr, "%s: unknown option %s\n", argv[0], argv[i]);
 		}
 	}
 
@@ -6477,6 +6471,9 @@ int main(int argc, char *argv[])
 	while ((c = getopt(argc, argvch, strgetopt)) != -1) {
 
 		switch (c) {
+			case 'c':
+				doTOC = 0;	/* Do NOT write a Table Of Contents */
+				break;
 			case 'k':
 				fHeadfoot = 1;
 				break;
@@ -6501,8 +6498,7 @@ int main(int argc, char *argv[])
 				break;
 			case 'r':
 				manRef = optarg;
-				if (strlen(manRef) == 0 || strcmp(manRef, "-") == 0
-						|| strcmp(manRef, "off") == 0)
+				if (strlen(manRef) == 0 || strcmp(manRef, "-") == 0 || strcmp(manRef, "off") == 0)
 					fmanRef = 0;
 				break;
 			case 't':
@@ -6524,8 +6520,7 @@ int main(int argc, char *argv[])
 
 			case 'f':	/* set format */
 				if (setFilterDefaults(optarg)) {
-					fprintf(stderr, "%s: unknown format: %s\n",
-									argv0, optarg);
+					fprintf(stderr, "%s: unknown format: %s\n", argv0, optarg);
 					exit(1);
 				}
 				break;
@@ -6539,8 +6534,7 @@ int main(int argc, char *argv[])
 			case 'd':
 				difffd = fopen(optarg, "r");
 				if (difffd == NULL) {
-					fprintf(stderr, "%s: can't open %s\n", argv0,
-									optarg);
+					fprintf(stderr, "%s: can't open %s\n", argv0, optarg);
 					exit(1);
 				}
 				/* read in a line at a time
@@ -6600,14 +6594,11 @@ int main(int argc, char *argv[])
 				exit(0);
 
 			case 'v':	/*case '?': */
-				printf("PolyglotMan v" POLYGLOTMANVERSION
-							 " of $Date::           $\n");
+				printf("PolyglotMan v" POLYGLOTMANVERSION " of $Date::           $\n");
 				exit(0);
 
 			default:
-				fprintf(stderr,
-								"%s: unidentified option -%c (-h for help)\n",
-								argvch[0], c);
+				fprintf(stderr, "%s: unidentified option -%c (-h for help)\n", argvch[0], c);
 				exit(2);
 		}
 	}
@@ -6634,8 +6625,7 @@ int main(int argc, char *argv[])
 		strcpy(plain, argvch[optind]);
 
 		if (freopen(argvch[optind], "r", stdin) == NULL) {
-			fprintf(stderr, "%s: can't open %s\n", argvch[0],
-							argvch[optind]);
+			fprintf(stderr, "%s: can't open %s\n", argvch[0], argvch[optind]);
 			exit(1);
 		}
 	}
