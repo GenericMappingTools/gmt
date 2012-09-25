@@ -3849,7 +3849,7 @@ void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	GMT_memset (F->Bit_test, MGD77_MAX_COLS, struct MGD77_PAIR);
 }
 
-void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *F, int option)
+void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *F, unsigned int option)
 {
 	/* Scan the -Fstring and select which columns to use and which order
 	 * they should appear on output.  columns given in upper case must
@@ -3863,6 +3863,8 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 	 *	UPPER CASE test MUST be passed.
 	 * Third [set] are list of columns whose bitflag must be either be 1 (+) or 0 (-).
 	 * The presence of the : also turns the automatic use of ALL flags off.
+	 * option is a bitflag integer that controls how to handle constraints and exact matches.
+	 * If option == 0 then we wont bitch about repeated columns.
 	 */
 
 	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
@@ -3964,7 +3966,7 @@ void MGD77_Select_Columns (struct GMT_CTRL *C, char *arg, struct MGD77_CONTROL *
 				GMT_report (C, GMT_MSG_NORMAL, "Warning: Column \"%s\" given more than once.\n", word);
 			}
 			if (F->desired_column[i]) {	/* Allocated before */
-				GMT_report (C, GMT_MSG_NORMAL, "Warning: Column \"%s\" given more than once.\n", word);
+				if (option) GMT_report (C, GMT_MSG_NORMAL, "Warning: Column \"%s\" given more than once.\n", word);
 				free ((void *)F->desired_column[i]);
 			}
 			F->desired_column[i] = strdup (word);
