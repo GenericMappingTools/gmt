@@ -691,10 +691,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int i, c, id, k, t_pos = MGD77_NOT_SET;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
-	int select_option, time_column, lon_column, lat_column;
+	int time_column, lon_column, lat_column;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	
-	unsigned int n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
+	unsigned int select_option, n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
 	unsigned int kk, ku, n_sub, n_out_columns, n_cols_to_process, n_aux, pos, use;
 	
 	uint64_t rec, prevrec;
@@ -809,8 +809,8 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	
 	select_option = MGD77_RESET_CONSTRAINT | MGD77_RESET_EXACT;	/* Make sure these start at zero */
-	if (Ctrl->E.active) select_option |= MGD77_SET_ALLEXACT;			/* Sets all columns listed as "must be present" */
-	MGD77_Select_Columns (GMT, Ctrl->F.flags, &M, (int)select_option);		/* This is the list of columns the user ultimately wants output */
+	if (Ctrl->E.active) select_option |= MGD77_SET_ALLEXACT;	/* Sets all columns listed as "must be present" */
+	MGD77_Select_Columns (GMT, Ctrl->F.flags, &M, select_option);	/* This is the list of columns the user ultimately wants output */
 	n_out_columns = M.n_out_columns;				/* This is the total number of columns in the final output */
 	if (MGD77_Get_Column (GMT, "depth", &M) == MGD77_NOT_SET) negative_depth = false;	/* Just so we don't accidently access dvalue[z_col] further down in the loop */
 	if (MGD77_Get_Column (GMT, "msd", &M) == MGD77_NOT_SET) negative_msd = false;	/* Just so we don't accidently access dvalue[m_col] further down in the loop */
