@@ -750,6 +750,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_ANY);	/* Reset to all formats OK, then ... */
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_M77);	/* disallow ASCII MGD77 files */
+	MGD77_Ignore_Format (GMT, MGD77_FORMAT_M7T);	/* disallow ASCII MGD77T files */
 	MGD77_Ignore_Format (GMT, MGD77_FORMAT_TBL);	/* and ASCII tables */
 	
 	In.format = MGD77_FORMAT_CDF;	/* Only file type allowed as input */
@@ -773,7 +774,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		column = MGD77_Get_Column (GMT, Ctrl->I.c_abbrev, &In);
 		set    = MGD77_Get_Set (GMT, Ctrl->I.c_abbrev);
 		
-		if (!Ctrl->A.mode == MODE_e && column != MGD77_NOT_SET) {	/* A column with same abbreviation is already present in the file */
+		if (Ctrl->A.mode != MODE_e && column != MGD77_NOT_SET) {	/* A column with same abbreviation is already present in the file */
 			if (set == MGD77_M77_SET && !Ctrl->F.active) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Column %s is part of the standard MGD77 set and cannot be removed unless you use -F!\n", Ctrl->I.c_abbrev);
 				GMT_exit (EXIT_FAILURE);
@@ -789,6 +790,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (Ctrl->D.active) {	/* Must create a new file with everything except the fields to be deleted */
 			int id, c;
+			bool reset_column = false;
 			char oldfile[GMT_BUFSIZ];
 			
 			if (column != MGD77_NOT_SET) {	/* Get info about this existing column to see if it is compatible with new data */
@@ -825,6 +827,10 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				strcat (history, " ");
 				strcat (history, p);
 				n_delete++;
+				GMT_report (GMT, GMT_MSG_NORMAL, "Removed column %s in %s\n", p, list[argno]);
+				if (k == column && c == set) {	/* Just removed the old column by the same name, must unset column */
+					reset_column = true;
+				}
 			}
 			
 			/* Rename the old file for now */
@@ -867,7 +873,10 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 				GMT_exit (EXIT_FAILURE);
 			}
-			n_changed++;
+			if (reset_column)
+				column = MGD77_NOT_SET;
+			else
+				n_changed++;
 		}
 
 		if (c_kind == ADD_IGRF) {	/* Append IGRF column */
@@ -1515,7 +1524,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (column != MGD77_NOT_SET) {	/* Is it possible just to replace the existing column? */
 			error = 0;
-			if (LEN) {
+			if (LEN) {	/* Text data */
 				if (OLDLEN != LEN) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Revised text column %s differs in width (%d) from the old values (%d).\n", Ctrl->I.c_abbrev, (int)LEN, (int)OLDLEN);
 					error = true;
@@ -1529,7 +1538,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 					error = true;
 				}
 			}
-			else {
+			else {	/* floating-point data */
 				if (constant && n_dims == 1) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Revised data column %s is constant whereas old values were in an array\n", Ctrl->I.c_abbrev);
 					error = true;
@@ -1540,7 +1549,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 			}
 			if (error) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "You must use -D to delete the old information before adding the new information\n");
+				GMT_report (GMT, GMT_MSG_NORMAL, "You must first use -D to delete the old information before adding the new information\n");
 			
 				MGD77_Free_Dataset (GMT, &D);
 				MGD77_Close_File (GMT, &In);
@@ -1559,7 +1568,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		start[0] = start[1] = 0;
 		count[0] = D->H.n_records;	count[1] = LEN;
 		
-		if (column == MGD77_NOT_SET) {	/*Adding a new column */
+		if (column == MGD77_NOT_SET) {	/* Adding a new column */
 			if (constant) {	/* Simply store one value */
 				if (LEN)	/* Text variable */
 					MGD77_nc_status (GMT, nc_def_var (In.nc_id, Ctrl->I.c_abbrev, c_nc_type, 1, &dims[1], &cdf_var_id));	/* Define a single text variable */
@@ -1630,6 +1639,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		MGD77_Close_File (GMT, &In);
 		MGD77_Free_Dataset (GMT, &D);
 		n_changed++;
+		GMT_report (GMT, GMT_MSG_NORMAL, "Data column %s added to %s\n", Ctrl->I.c_abbrev, list[argno]);
 	}
 
 	if (colvalue) GMT_free (GMT, colvalue);
