@@ -309,6 +309,10 @@ int GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ctrl, s
 				Ctrl->G.active = true;
 				n_errors += GMT_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
 				break;
+#ifdef GMT_COMPAT
+			case 'M': case 'm':	/* Old-options no longer required - quietly skipped under compat */
+				break;
+#endif
 			case 'L':	/* Limits on range */
 				Ctrl->L.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->L.low, &Ctrl->L.high);
