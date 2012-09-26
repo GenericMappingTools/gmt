@@ -83,7 +83,7 @@ whereas subsequent records have the data for each COE encountered.  The fields
 written out are x, y, time along track #1 and #2, distance along track #1 and #2,
 heading along track #1 and #2, velocity along track #1 and #2, and then pairs
 of columns for each selected observable. These are either
-pairs of (COE, average value) for each data type (or track-values #1 and #2; see OPT(2)).
+pairs of (COE, average value) for each data type (or track-values #1 and #2; see OPT(Z)).
 It is recommended that the Akima spline is used
 instead of the natural cubic spline, since it is less sensitive to outliers
 that tend to introduce wild oscillations in the interpolation.
