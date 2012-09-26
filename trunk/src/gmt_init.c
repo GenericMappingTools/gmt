@@ -7185,7 +7185,11 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			col_off++;
 		}
+#ifdef GMT_COMPAT
 		else if (!p->v.parsed_v4)	/* Got arrow size (length) */
+#else
+		else
+#endif
 			p->size_x = p->given_size_x = GMT_to_inch (C, arg);
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
