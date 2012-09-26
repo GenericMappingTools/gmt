@@ -297,7 +297,8 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 				else {				/* Got -G[[+|-]units] only */
 					Ctrl->G.mode = 2;
 					Ctrl->G.sph = (opt->arg[0] == '-') ? 0 : ((opt->arg[0] == '+') ? 2 : 1);
-					Ctrl->G.unit = (opt->arg[0] == '-' || opt->arg[0] == '+') ? opt->arg[1] : opt->arg[0];
+					k = (Ctrl->G.sph == 1) ? 0 : 1;	/* Position of unit, if given */
+					if (opt->arg[k]) Ctrl->G.unit = opt->arg[k];
 				}
 				if (Ctrl->G.unit == 'c') Ctrl->G.unit = 'X';	/* Internally, this is Cartesian data and distances */
 				break;
