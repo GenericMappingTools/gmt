@@ -109,7 +109,9 @@ EXTERN_MSC void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0
 EXTERN_MSC void GMT_contlabel_plot (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
 EXTERN_MSC void GMT_plane_perspective (struct GMT_CTRL *C, int plane, double level);
 EXTERN_MSC void GMT_plotcanvas (struct GMT_CTRL *C);
-EXTERN_MSC int GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
+EXTERN_MSC void GMT_write_label_record (struct GMT_CTRL *C, double x, double y, double angle, char *label, bool save_angle);
+EXTERN_MSC int GMT_contlabel_save_begin (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
+EXTERN_MSC int GMT_contlabel_save_end (struct GMT_CTRL *C, struct GMT_CONTOUR *G);
 EXTERN_MSC unsigned int GMT_setfont (struct GMT_CTRL *C, struct GMT_FONT *F);
 EXTERN_MSC void GMT_plotend (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options);

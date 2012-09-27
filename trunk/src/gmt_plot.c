@@ -3175,13 +3175,35 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 
 /* Plotting functions related to contours */
 
-int GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
+void GMT_write_label_record (struct GMT_CTRL *C, double x, double y, double angle, char *label, bool save_angle)
+{
+	char word[GMT_TEXT_LEN64], record[GMT_BUFSIZ];
+	double geo[2];
+	record[0] = 0;	/* Start with blank record */
+	GMT_xy_to_geo (C, &geo[GMT_X], &geo[GMT_Y], x, y);
+	GMT_ascii_format_col (C, word, geo[GMT_X], GMT_X);
+	strcat (record, word);
+	strcat (record, C->current.setting.io_col_separator);
+	GMT_ascii_format_col (C, word, geo[GMT_Y], GMT_Y);
+	strcat (record, word);
+	strcat (record, C->current.setting.io_col_separator);
+	if (save_angle) {	/* Also output the label angle */
+		GMT_ascii_format_col (C, word, angle, GMT_Z);
+		strcat (record, word);
+		strcat (record, C->current.setting.io_col_separator);
+}
+	strcat (record, label);
+	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to label output file */
+}
+
+int GMT_contlabel_save_begin (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 {
 	int error, kind, object_ID;
 	uint64_t k, seg;
-	char word[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *name = strdup (G->label_file);
+	bool write_angle = (G->save_labels == 2);
+	char record[GMT_BUFSIZ], *name = strdup (G->label_file);
 	char *xname[2] = {"x", "lon"}, *yname[2] = {"y", "lat"};
-	double geo[2], angle;
+	double angle = 0.0;
 	struct GMT_CONTOUR_LINE *L = NULL;
 
 	/* Save the lon, lat, angle, text for each annotation to specified file*/
@@ -3200,32 +3222,24 @@ int GMT_contlabel_save (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
 	if (G->save_labels == 2)
 		sprintf (record, "# %s%s%s%sangle%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind],
 			C->current.setting.io_col_separator, C->current.setting.io_col_separator);
-	else 
+	else
 		sprintf (record, "# %s%s%s%slabel", xname[kind], C->current.setting.io_col_separator, yname[kind], C->current.setting.io_col_separator);
 	GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
 	for (seg = 0; seg < G->n_segments; seg++) {
 		L = G->segment[seg];	/* Pointer to current segment */
 		if (!L->annot || L->n_labels == 0) continue;
 		for (k = 0; k < L->n_labels; k++) {
-			record[0] = 0;	/* Start with blank record */
-			GMT_xy_to_geo (C, &geo[GMT_X], &geo[GMT_Y], L->L[k].x, L->L[k].y);
-			GMT_ascii_format_col (C, word, geo[GMT_X], GMT_X);
-			strcat (record, word);
-			strcat (record, C->current.setting.io_col_separator);
-			GMT_ascii_format_col (C, word, geo[GMT_Y], GMT_Y);
-			strcat (record, word);
-			strcat (record, C->current.setting.io_col_separator);
-			if (G->save_labels == 2) {
-				angle = fmod (2.0 * (L->L[k].angle + 360.0), 360.0) / 2.0;	/* Get text line in 0-180 range */
-				GMT_ascii_format_col (C, word, angle, GMT_Z);
-				strcat (record, word);
-				strcat (record, C->current.setting.io_col_separator);
-			}
-			strcat (record, L->L[k].label);
-			GMT_Put_Record (C->parent, GMT_WRITE_TEXT, record);	/* Write this to output */
+			if (write_angle) angle = fmod (2.0 * (L->L[k].angle + 360.0), 360.0) / 2.0;		/* Get text line in 0-180 range */
+			GMT_write_label_record (C, L->L[k].x, L->L[k].y, angle, L->L[k].label, write_angle);	/* Dump to ascii table */
 		}
 	}
-	if (GMT_End_IO (C->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	return (GMT_NOERROR);
+	/* To finish and close the file, call GMT_contlabel_save_end */
+}
+
+int GMT_contlabel_save_end (struct GMT_CTRL *C, struct GMT_CONTOUR *G)
+{
+	if (GMT_End_IO (C->parent, GMT_OUT, 0) != GMT_OK) {	/* Disables further contour label output */
 		return (C->parent->error);
 	}
 	return (GMT_NOERROR);
