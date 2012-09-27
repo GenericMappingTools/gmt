@@ -1030,7 +1030,8 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {
 		if (S.G.save_labels) {	/* Want to save the Line label locations (lon, lat, angle, label) */
-			if ((error = GMT_contlabel_save (GMT, &S.G))) Return (error);
+			if ((error = GMT_contlabel_save_begin (GMT, &S.G))) Return (error);
+			if ((error = GMT_contlabel_save_end (GMT, &S.G))) Return (error);
 		}
 		GMT_contlabel_plot (GMT, &S.G);
 		GMT_contlabel_free (GMT, &S.G);

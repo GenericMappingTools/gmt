@@ -99,6 +99,7 @@ struct GMT_CONTOUR {
 	unsigned int angle_type;	/* 0 = contour-parallel, 1 = contour-normal, 2 = fixed angle */
 	unsigned int label_type;	/* 0 = what is passed, 1 = fixed label above , 2 = multiseg header, 3 = distances */
 	unsigned int n_segments;		/* The number of segments */
+	unsigned int save_labels;	/* 1 if we wish to save label locations to a text file, 2 if we wish to include label angles [1 = no angles] */
 	int number_placement;	/* How the n_cont labels are distributed [-1/0/+1]*/
 	int hill_label;		/* -1/+1 = make label readable when looking down/up gradient, 0 = no special treatment  */
 	bool annot;			/* true if we want labels */
@@ -110,7 +111,6 @@ struct GMT_CONTOUR {
 	bool transparent;		/* true for transparent textbox, false for opaque */
 	bool curved_text;		/* true for text to follow curved lines */
 	bool no_gap;		/* Clip contour or not depends on label placement */
-	bool save_labels;		/* true if we wish to save label locations to a text file */
 	bool data_col;		/* true if there is data in the zz arrays passed, false if they are NULL */
 	bool debug;			/* true of we want to draw helper lines/points */
 	bool delay;			/* true of we want to delay the actual annotation plotting until later */

@@ -428,19 +428,21 @@ int GMT_grdcontour_parse (struct GMTAPI_CTRL *C, struct GRDCONTOUR_CTRL *Ctrl, s
 
 /* Three sub functions used by GMT_grdcontour */
 
-void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[])
+void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAVE *save, size_t n, struct GMT_GRID *G, double tick_gap, double tick_length, bool tick_low, bool tick_high, bool tick_label, char *lbl[], unsigned int mode)
 {	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
 	   We need to do several types of testing here:
 	   1) First we exclude closed contours around a single node as too small.
 	   2) Next, we mark closed contours with other contours inside them as not "innermost"
 	   3) We then determine if the remaining closed polygons contain highs or lows.
+	
+	   Note on mode bitflags: mode = 1 (plot only), 2 (save labels only), 3 (both), add 4 for writing angles to labelfile
 	*/
 	int np, j, k, inside, col, row, stop, n_ticks, way, form;
 	uint64_t ij;
 	size_t pol, pol2;
 	bool done, match, found;
-	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end;
+	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end, x_lbl, y_lbl;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
 	double da, db, dc, dd;
@@ -568,28 +570,30 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		way = GMT_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
 		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
 
-		x_back = xp[np-1];	/* Last point along contour */
-		y_back = yp[np-1];
-		dist = 0.0;
-		j = 0;
-		add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
-		inc = s[np-1] / n_ticks;
-		while (j < np-1) {
-			x_front = xp[j+1];
-			y_front = yp[j+1];
-			if (s[j] >= dist) {	/* Time for tick */
-				dx = x_front - x_back;
-				dy = y_front - y_back;
-				a = atan2 (dy, dx) + add;
-				sincos (a, &sa, &ca);
-				x_end = xp[j] + tick_length * ca;
-				y_end = yp[j] + tick_length * sa;
-				PSL_plotsegment (PSL, xp[j], yp[j], x_end, y_end);
-				dist += inc;
+		if (mode & 1) {	/* Tick the innermost contour */
+			x_back = xp[np-1];	/* Last point along contour */
+			y_back = yp[np-1];
+			dist = 0.0;
+			j = 0;
+			add = M_PI_2 * ((save[pol].high) ? -way : +way);	/* So that tick points in the right direction */
+			inc = s[np-1] / n_ticks;
+			while (j < np-1) {
+				x_front = xp[j+1];
+				y_front = yp[j+1];
+				if (s[j] >= dist) {	/* Time for tick */
+					dx = x_front - x_back;
+					dy = y_front - y_back;
+					a = atan2 (dy, dx) + add;
+					sincos (a, &sa, &ca);
+					x_end = xp[j] + tick_length * ca;
+					y_end = yp[j] + tick_length * sa;
+					PSL_plotsegment (PSL, xp[j], yp[j], x_end, y_end);
+					dist += inc;
+				}
+				x_back = x_front;
+				y_back = y_front;
+				j++;
 			}
-			x_back = x_front;
-			y_back = y_front;
-			j++;
 		}
 		GMT_free (GMT, s);	GMT_free (GMT, xp);	GMT_free (GMT, yp);
 	}
@@ -609,13 +613,21 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 				k = pol2;	/* Found its counterpart */
 			}
 			if (k == -1) continue;
-			GMT_setpen (GMT, &save[pol].pen);
-			PSL_plottext (PSL, 0.5 * (save[pol].xlabel+save[k].xlabel), 0.5 * (save[pol].ylabel+save[k].ylabel), GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+			x_lbl = 0.5 * (save[pol].xlabel + save[k].xlabel);
+			y_lbl = 0.5 * (save[pol].ylabel + save[k].ylabel);
+			if (mode & 1) {
+				GMT_setpen (GMT, &save[pol].pen);
+				PSL_plottext (PSL, x_lbl, y_lbl, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+			}
 			save[k].do_it = false;
+			if (mode & 2) GMT_write_label_record (GMT, x_lbl, y_lbl, 0.0, lbl[save[pol].high], mode & 4);
 		}
 		else {
-			GMT_setpen (GMT, &save[pol].pen);
-			PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+			if (mode & 1) {
+				GMT_setpen (GMT, &save[pol].pen);
+				PSL_plottext (PSL, save[pol].xlabel, save[pol].ylabel, GMT->current.setting.font_annot[0].size, lbl[save[pol].high], 0.0, 6, form);
+			}
+			if (mode & 2) GMT_write_label_record (GMT, save[pol].xlabel, save[pol].ylabel, 0.0, lbl[save[pol].high], mode & 4);
 		}
 	}
 }
@@ -731,7 +743,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	enum grdcontour_contour_type closed;
 	
-	unsigned int id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl;
+	unsigned int id, n_contours, n_edges, tbl_scl = 1, io_mode = 0, uc, tbl, label_mode = 0;
 	unsigned int cont_counts[2] = {0, 0}, i, n, nn, *edge = NULL, n_tables = 1, fmt[3] = {0, 0, 0};
 	
 	uint64_t ij, *n_seg = NULL;
@@ -1136,24 +1148,27 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, n_seg);
 	}
 
-	if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) */
-		if ((error = GMT_contlabel_save (GMT, &Ctrl->contour))) Return (error);
+	if (make_plot) label_mode |= 1;		/* Would want to plot ticks and labels if -T is set */
+	if (Ctrl->contour.save_labels) {	/* Want to save the contour label locations (lon, lat, angle, label) if -T is set */
+		label_mode |= 2;
+		if (Ctrl->contour.save_labels == 2) label_mode |= 4;
+		if ((error = GMT_contlabel_save_begin (GMT, &Ctrl->contour))) Return (error);
+	}
+
+	if (make_plot && (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style)) PSL_setdash (PSL, NULL, 0.0);
+	
+	if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours and plot/save L|H labels */
+		save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
+
+		grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt, label_mode);
+		for (i = 0; i < n_save; i++) {
+			GMT_free (GMT, save[i].x);
+			GMT_free (GMT, save[i].y);
+		}
+		GMT_free (GMT, save);
 	}
 
 	if (make_plot) {
-		if (Ctrl->W.pen[0].style || Ctrl->W.pen[1].style) PSL_setdash (PSL, NULL, 0.0);
-
-		if (Ctrl->T.active && n_save) {	/* Finally sort and plot ticked innermost contours */
-			save = GMT_malloc (GMT, save, 0, &n_save, struct SAVE);
-
-			grd_sort_and_plot_ticks (GMT, PSL, save, n_save, G_orig, Ctrl->T.spacing, Ctrl->T.length, Ctrl->T.low, Ctrl->T.high, Ctrl->T.label, Ctrl->T.txt);
-			for (i = 0; i < n_save; i++) {
-				GMT_free (GMT, save[i].x);
-				GMT_free (GMT, save[i].y);
-			}
-			GMT_free (GMT, save);
-		}
-
 		if (Ctrl->contour.hill_label) adjust_hill_label (GMT, &Ctrl->contour, G);	/* Must possibly adjust label angles so that label is readable when following contours */
 
 		GMT_contlabel_plot (GMT, &Ctrl->contour);
@@ -1167,6 +1182,10 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_plotend (GMT);
 	}
 
+	if (Ctrl->contour.save_labels) {	/* Close file with the contour label locations (lon, lat, angle, label) */
+		if ((error = GMT_contlabel_save_end (GMT, &Ctrl->contour))) Return (error);
+	}
+	
 	if (make_plot || Ctrl->contour.save_labels) GMT_contlabel_free (GMT, &Ctrl->contour);
 
 	GMT_free_grid (GMT, &G_orig, true);
