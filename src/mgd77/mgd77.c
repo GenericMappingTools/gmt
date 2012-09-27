@@ -4279,23 +4279,32 @@ bool MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD7
 void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way)
 {	/* Return scale needed to convert a unit distance in the given unit to meter.
 	 * If way is -1 we return the inverse (convert meters to given unit) */
-
-	switch (dist[strlen(dist)-1]) {
-		case 'f':	/* feet */
-			*scale = METERS_IN_A_FOOT;
-			break;
-		case 'k':	/* km */
-			*scale = 1000.0;
-			break;
-		case 'M':	/* miles */
-			*scale = MGD77_METERS_PER_M;
-			break;
-		case 'n':	/* nautical miles */
-			*scale = MGD77_METERS_PER_NM;
-			break;
-		default:	/* Meter */
-			*scale = 1.0;
-			break;
+	char c = dist[strlen(dist)-1];	/* Last char in argument, which may have a unit */
+	if (!isalpha (c)) {	/* No trailing letter, means meter */
+		*scale = 1.0;
+	}
+	else {	/* Check what unit was appended */
+		switch (dist[strlen(dist)-1]) {
+			case 'e':	/* meter */
+				*scale = 1.0;
+				break;
+			case 'f':	/* feet */
+				*scale = METERS_IN_A_FOOT;
+				break;
+			case 'k':	/* km */
+				*scale = 1000.0;
+				break;
+			case 'M':	/* miles */
+				*scale = MGD77_METERS_PER_M;
+				break;
+			case 'n':	/* nautical miles */
+				*scale = MGD77_METERS_PER_NM;
+				break;
+			default:	/* Meter assumed */
+				GMT_message (C, "Not a valid unit: %c [meter assumed]\n", c);
+				*scale = 1.0;
+				break;
+		}
 	}
 	if (way == -1) *scale = 1.0 / *scale;
 }
