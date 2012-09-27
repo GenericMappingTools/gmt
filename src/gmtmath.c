@@ -2851,7 +2851,7 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 
 #include "gmtmath.h"
 
-#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) if (stack[i]->alloc_mode == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]->D); else if (stack[i]->alloc_mode == 1) GMT_free_dataset (GMT, &stack[i]->D); }
+#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) { if (stack[i]->alloc_mode == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]->D); else if (stack[i]->alloc_mode == 1) GMT_free_dataset (GMT, &stack[i]->D); GMT_free (GMT, stack[i]); } }
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
