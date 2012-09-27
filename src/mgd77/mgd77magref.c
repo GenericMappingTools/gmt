@@ -157,7 +157,7 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 
 	unsigned int n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	int j;
-	char p[GMT_BUFSIZ];
+	char p[GMT_BUFSIZ], tfixed[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -180,7 +180,7 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 							break;
 						case 't':
 							Ctrl->A.fixed_time = true;
-							Ctrl->A.time = atof (&p[1]);
+							strcpy (tfixed, &p[1]);
 							GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
 							break;
 						case 'y':
@@ -193,6 +193,12 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 						default:
 							break;
 					}
+				}
+				if (Ctrl->A.fixed_time) {
+					if (Ctrl->A.years)
+						Ctrl->A.time = atof (tfixed);
+					else
+						GMT_scanf_arg (GMT, tfixed, GMT_IS_ABSTIME, &Ctrl->A.time);
 				}
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
@@ -497,6 +503,10 @@ int GMT_mgd77magref (struct GMTAPI_CTRL *API, int mode, void *args)
 		Ctrl->CM4->CM4_DATA.n_altitudes = 1;
 	}
 	if (Ctrl->A.fixed_time) {	/* A single time should apply to all records; set array to point to this single time */
+		if (!Ctrl->A.years) {
+			if (M.adjust_time) Ctrl->A.time = MGD77_time2utime (GMT, &M, Ctrl->A.time);	/* Convert to Unix time if need be */
+			Ctrl->A.time = MGD77_time_to_fyear (GMT, &M, Ctrl->A.time);			/* Get decimal year */
+		}
 		time_array = &Ctrl->A.time;
 		Ctrl->CM4->CM4_DATA.n_times = 1;
 	}
