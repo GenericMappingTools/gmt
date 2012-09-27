@@ -390,8 +390,10 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->A.code[ADJ_GR] |= code;
 						break;
 					case 'm':	/* mag adjustment */
-						if (opt->arg[k+1] == 'c')
-							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]);
+						if (opt->arg[k+1] == 'c') {
+							MGD77_Set_Unit (GMT, &opt->arg[k+2], &dist_scale, 1);
+							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]) * dist_scale;
+						}
 						else {
 							code = atoi (&opt->arg[k+1]);
 							if (code < 1 || code > 31) {
