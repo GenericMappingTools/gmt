@@ -1686,7 +1686,7 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 		len = strlen (p);	/* Length of the string p */
 		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, p or g.  If -fp[unit] we might have gotten the unit instead */
 		if (strchr (GMT_LEN_UNITS2, ic)) {	/* Might have been given a unit via -fp<unit>, but could also be case f */
-			if (len > 2 && p[len-2] == 'p') {	/* It was the -fp<unit> case */
+			if (len > 1 && p[len-2] == 'p') {	/* It was the -fp<unit> case */
 				if ((unit = GMT_get_unit_number (C, ic)) == GMT_IS_NOUNIT) {
 					GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s] - bad projected unit\n", arg);
 					return 1;
