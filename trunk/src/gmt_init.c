@@ -1233,7 +1233,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 	proj_class = C->current.proj.projection / 100;	/* 1-4 for valid projections */
 	switch (proj_class) {
 		case 1:	/* Cylindrical: pick small equatoral patch centered on central meridian */
-			if (C->current.proj.projection == GMT_UTM && !GMT_UTMzone_to_wesn (C, C->current.proj.utm_zonex, C->current.proj.utm_zoney, C->current.proj.utm_hemisphere, wesn))
+			if (C->current.proj.projection == GMT_UTM && GMT_UTMzone_to_wesn (C, C->current.proj.utm_zonex, C->current.proj.utm_zoney, C->current.proj.utm_hemisphere, wesn))
 			{
 				GMT_report (C, GMT_MSG_NORMAL, "Warning: UTM projection insufficiently specified to auto-determine geographic region\n");
 				return (GMT_MAP_NO_PROJECTION);
@@ -1285,7 +1285,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	unsigned int i, icol, pos, error = 0;
 	int got, col_type[2], expect_to_read;
-	bool inv_project = false;
+	bool inv_project = false, scale_coord = false;
 	char text[GMT_BUFSIZ], string[GMT_BUFSIZ];
 	double p[6];
 
@@ -1326,7 +1326,10 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Specified min/max in projected distance units */
 		strcpy (string, &item[1]);
-		inv_project = true;
+		if (GMT_IS_LINEAR (C))	/* Just scale up the values */
+			scale_coord = true;
+		else 
+			inv_project = true;
 	}
 	else	/* Plain old -Rw/e/s/n */
 		strcpy (string, item);
@@ -1380,6 +1383,13 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		error += gmt_rectR_to_geoR (C, item[0], p, wesn);
 		GMT_memcpy (p, wesn, 4, double);
 		C->common.R.oblique = true;
+	}
+	else if (scale_coord) {	/* Just scale x/y coordinates to meters according to given unit */
+		double fwd_scale, inv_scale, inch_to_unit, unit_to_inch;
+		int k_unit;
+		k_unit = GMT_get_unit_number (C, item[0]);
+		GMT_init_scales (C, k_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, NULL);
+		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
 	
 	if (GMT_is_geographic (C, GMT_IN) && p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
@@ -7656,37 +7666,41 @@ void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, 
 	/* inv_scale is used to convert meters to user distance units */
 	/* inch_to_unit is used to convert internal inches to users units (c, i, p) */
 	/* unit_to_inch is used to convert users units (c, i, p) to internal inches */
-	/* unit_name is the name of the users measure unit (cm/inch/m/point) */
+	/* unit_name (unless NULL) is set to the name of the user's map measure unit (cm/inch/point) */
 
-	double scales[8];
+	double scales[GMT_N_UNITS];
 
-	/* These scales are used if 1 to 1 scaling is chosen */
+	if (unit >= GMT_N_UNITS) {
+		GMT_report (C, GMT_MSG_NORMAL, "GMT ERROR: Unit id must be 0-%d\n", GMT_N_UNITS-1);
+		GMT_exit (EXIT_FAILURE);
+	}
+	/* These scales are used if 1:1 scaling is chosen */
 
-	scales[0] = 1.0;		/* m in m */
-	scales[1] = 1000.0;		/* m in km */
-	scales[2] = METERS_IN_A_MILE;		/* m in miles */
-	scales[3] = METERS_IN_A_NAUTICAL_MILE;	/* m in nautical miles */
-	scales[4] = 0.0254;		/* m in inch */
-	scales[5] = 0.01;		/* m in cm */
-	scales[6] = 0.0254 / 72.0;	/* m in points */
-	scales[7] = METERS_IN_A_FOOT;	/* m in feet */
+	scales[GMT_IS_METER]		= 1.0;				/* m in m */
+	scales[GMT_IS_KM]		= METERS_IN_A_KM;		/* m in km */
+	scales[GMT_IS_MILE]		= METERS_IN_A_MILE;		/* m in miles */
+	scales[GMT_IS_NAUTICAL_MILE]	= METERS_IN_A_NAUTICAL_MILE;	/* m in nautical miles */
+	scales[GMT_IS_INCH]		= 0.0254;			/* m in inch */
+	scales[GMT_IS_CM]		= 0.01;				/* m in cm */
+	scales[GMT_IS_PT]		= 0.0254 / 72.0;		/* m in points */
+	scales[GMT_IS_FOOT]		= METERS_IN_A_FOOT;		/* m in feet */
 
 	/* These scales are used when 1:1 is not set to ensure that the
 	 * output (or input with -I) is given (taken) in the units set
-	 * by MEASURE_UNIT */
+	 * by PROJ_LENGTH_UNIT */
 
 	switch (C->current.setting.proj_length_unit) {
 		case GMT_CM:
 			*inch_to_unit = 2.54;
-			strcpy (unit_name, "cm");
+			if (unit_name) strcpy (unit_name, "cm");
 			break;
 		case GMT_INCH:
 			*inch_to_unit = 1.0;
-			strcpy (unit_name, "inch");
+			if (unit_name) strcpy (unit_name, "inch");
 			break;
 		case GMT_PT:
 			*inch_to_unit = 72.0;
-			strcpy (unit_name, "point");
+			if (unit_name) strcpy (unit_name, "point");
 			break;
 	}
 	*unit_to_inch = 1.0 / (*inch_to_unit);
@@ -7694,46 +7708,61 @@ void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, 
 	*inv_scale = scales[unit];
 }
 
-unsigned int GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, char *unit_name) {
-	unsigned int mode;
+enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *C, char unit) {
+	/* Converts character unit (e.g., 'k') to unit number (e.g., GMT_IS_KM) */
+	enum GMT_enum_units mode;
 
 	switch (unit) {
 		case '\0':
 		case 'e':
-			mode = 0;
-			strcpy (unit_name, "m");
+			mode = GMT_IS_METER;
 			break;
 		case 'k':
-			mode = 1;
-			strcpy (unit_name, "km");
+			mode = GMT_IS_KM;
 			break;
 		case 'M':
-			mode = 2;
-			strcpy (unit_name, "miles");
+			mode = GMT_IS_MILE;
 			break;
 		case 'n':
-			mode = 3;
-			strcpy (unit_name, "nautical miles");
+			mode = GMT_IS_NAUTICAL_MILE;
 			break;
 		case 'i':
-			mode = 4;
-			strcpy (unit_name, "inch");
+			mode = GMT_IS_INCH;
 			break;
 		case 'c':
-			mode = 5;
-			strcpy (unit_name, "cm");
+			mode = GMT_IS_CM;
 			break;
 		case 'p':
-			mode = 6;
-			strcpy (unit_name, "point");
+			mode = GMT_IS_PT;
 			break;
 		case 'f':
-			mode = 7;
-			strcpy (unit_name, "feet");
+			mode = GMT_IS_FOOT;
 			break;
 		default:
-			GMT_report (C, GMT_MSG_NORMAL, "GMT ERROR Option -%c: Only append one of %s|%s\n", option, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY);
-			GMT_exit (EXIT_FAILURE);
+			mode = GMT_IS_NOUNIT;
+	}
+
+	return (mode);
+}
+
+unsigned int GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, char *unit_name) {
+	int smode;
+	unsigned int mode;
+
+	if ((smode = GMT_get_unit_number (C, unit)) == GMT_IS_NOUNIT) {
+		GMT_report (C, GMT_MSG_NORMAL, "GMT ERROR Option -%c: Only append one of %s|%s\n", option, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY);
+		GMT_exit (EXIT_FAILURE);
+	}
+	mode = (unsigned int)smode;
+	switch (mode) {
+		case GMT_IS_METER:		strcpy (unit_name, "m");		break;
+		case GMT_IS_KM:			strcpy (unit_name, "km");		break;
+		case GMT_IS_MILE:		strcpy (unit_name, "miles");		break;
+		case GMT_IS_NAUTICAL_MILE:	strcpy (unit_name, "nautical miles");	break;
+		case GMT_IS_INCH:		strcpy (unit_name, "inch");		break;
+		case GMT_IS_CM:			strcpy (unit_name, "cm");		break;
+		case GMT_IS_PT:			strcpy (unit_name, "point");		break;
+		case GMT_IS_FOOT:		strcpy (unit_name, "feet");		break;
 	}
 
 	return (mode);
