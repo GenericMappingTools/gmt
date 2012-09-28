@@ -951,6 +951,9 @@ input file has geographic coordinates (latitude, longitude) with absolute calend
 coordinates in the columns 3 and 4, we would specify \textbf{fi}0\textbf{y},1\textbf{x},3-4\textbf{T}.  All other columns
 are assumed to have the default, floating point format and need not be set individually.
 The shorthand \Opt{f}[\textbf{i}$|$\textbf{o}]\textbf{g} means \Opt{f}[\textbf{i}$|$\textbf{o}]0x,1y (i.e., geographic coordinates).
+A special use of \Opt{f} is to select \Opt{fp}[{\it unit}], which \emph{requires} \Opt{J} and lets you
+use \emph{projected} map coordinates (e.g., UTM meters) as data input.  Such coordinates are automatically inverted to longitude, latitude
+during the data import.  Optionally, append a length {\it unit} (see Table~\ref{tbl:distunits}) [meter].
 For more information, see Sections~\ref{sec:input data} and~\ref{sec:output data}.
 
 \subsection{Data gap detection: The \Opt{g} option}
@@ -1313,7 +1316,7 @@ of the same form as the arguments to the \Opt{R} option (see Section~\ref{sec:R}
 flexibility for calendar data.  Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
 [\PM]\emph{ddd}[:\emph{mm}[:\emph{ss}[\emph{.xxx}]]][\textbf{W}$|$\textbf{E}$|$\textbf{S}$|$\textbf{N}]
-format (e.g., 123:27:15W).
+format (e.g., 123:27:15W).  With \Opt{fp} you may even supply projected data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the processing of input
 date components is guided by the template \textbf{FORMAT\_DATE\_IN} in your
