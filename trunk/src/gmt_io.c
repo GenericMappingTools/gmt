@@ -258,6 +258,15 @@ void gmt_adjust_periodic (struct GMT_CTRL *C) {
 	/* Now it will be outside the region on the same side it started out at */
 }
 
+void gmt_adjust_projected (struct GMT_CTRL *C) {
+	/* Case of incoming projected map coordinates that we wish to rever to lon/lat */
+	if (C->current.proj.inv_coord_unit != GMT_IS_METER) {	/* Must first scale to meters */
+		C->current.io.curr_rec[GMT_X] *= C->current.proj.m_per_unit[C->current.proj.inv_coord_unit];
+		C->current.io.curr_rec[GMT_Y] *= C->current.proj.m_per_unit[C->current.proj.inv_coord_unit];
+	}
+	(*C->current.proj.inv) (C, &C->current.io.curr_rec[GMT_X], &C->current.io.curr_rec[GMT_Y], C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);
+}
+
 void GMT_set_segmentheader (struct GMT_CTRL *C, int direction, bool true_false)
 {	/* Enable/Disable multi-segment headers for either input or output */
 		
@@ -305,6 +314,8 @@ int gmt_process_binary_input (struct GMT_CTRL *C, unsigned int n_read) {
 	}
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2) double_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 */
+	if (C->current.proj.inv_coordinates) gmt_adjust_projected (C);	/* Must apply inverse projection to get lon, lat */
+	
 	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
 }
@@ -1376,6 +1387,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) double_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 as per current rule*/
+	if (C->current.proj.inv_coordinates) gmt_adjust_projected (C);	/* Must apply inverse projection to get lon, lat */
 
 	if (gmt_gap_detected (C)) {*status = gmt_set_gap (C); return (C->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
@@ -6456,6 +6468,7 @@ int GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, unsigned int ncols)
 	}
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && k >= 2) double_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);			/* Must account for periodicity in 360 */
+	if (C->current.proj.inv_coordinates) gmt_adjust_projected (C);	/* Must apply inverse projection to get lon, lat */
 	return (0);
 }
 

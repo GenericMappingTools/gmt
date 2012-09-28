@@ -1643,7 +1643,9 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 
 	char copy[GMT_BUFSIZ], p[GMT_BUFSIZ], *c = NULL;
 	unsigned int k = 1, ic, pos = 0, code, *col = NULL;
+	size_t len;
 	int i, start = -1, stop = -1;
+	enum GMT_enum_units unit = GMT_IS_METER;
 	bool both_i_and_o = false;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
@@ -1681,7 +1683,17 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 		else				/* Just assume it goes column by column */
 			start++, stop++;
 
-		ic = (int) p[strlen(p)-1];	/* Last char in p is the potential code T, t, or g */
+		len = strlen (p);	/* Length of the string p */
+		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, p or g.  If -fp[unit] we might have gotten the unit instead */
+		if (strchr (GMT_LEN_UNITS2, ic)) {	/* Might have been given a unit via -fp<unit>, but could also be case f */
+			if (len > 2 && p[len-2] == 'p') {	/* It was the -fp<unit> case */
+				if ((unit = GMT_get_unit_number (C, ic)) == GMT_IS_NOUNIT) {
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s] - bad projected unit\n", arg);
+					return 1;
+				}
+				ic = 'p';
+			}
+		}
 		switch (ic) {
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
@@ -1697,6 +1709,11 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 				break;
 			case 'f':	/* Plain floating point coordinates */
 				code = GMT_IS_FLOAT;
+				break;
+			case 'p':	/* Projected floating point map coordinates (e.g., UTM meters) */
+				code = GMT_IS_FLOAT;
+				C->current.proj.inv_coordinates = true;
+				C->current.proj.inv_coord_unit = unit;
 				break;
 			default:	/* No suffix, consider it an error */
 				GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s]\n", arg);
@@ -7660,30 +7677,33 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	return (decode_error);
 }
 
+void gmt_init_unit_conversion (struct GMT_CTRL *C) {
+	/* Loads the m_per_unit array with the scaling factors that converts various units to meters */
+	/* See gmt_project.h for enums that can be used as array indices) */
+
+	C->current.proj.m_per_unit[GMT_IS_METER]		= 1.0;				/* m in m */
+	C->current.proj.m_per_unit[GMT_IS_KM]			= METERS_IN_A_KM;		/* m in km */
+	C->current.proj.m_per_unit[GMT_IS_MILE]			= METERS_IN_A_MILE;		/* m in miles */
+	C->current.proj.m_per_unit[GMT_IS_NAUTICAL_MILE]	= METERS_IN_A_NAUTICAL_MILE;	/* m in nautical mile */
+	C->current.proj.m_per_unit[GMT_IS_INCH]			= 0.0254;			/* m in inch */
+	C->current.proj.m_per_unit[GMT_IS_CM]			= 0.01;				/* m in cm */
+	C->current.proj.m_per_unit[GMT_IS_PT]			= 0.0254 / 72.0;		/* m in point */
+	C->current.proj.m_per_unit[GMT_IS_FOOT]			= METERS_IN_A_FOOT;		/* m in foot */
+	C->current.proj.m_per_unit[GMT_IS_SURVEY_FOOT]		= METERS_IN_A_SURVEY_FOOT;	/* m in US Survey foot */
+}
+
 void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name) {
-	/* unit is 0-7 and stands for m, km, miles, nautical miles, inch, cm, point or feet */
+	/* unit is 0-8 (see gmt_project.h for enums) and stands for m, km, mile, nautical mile, inch, cm, point, foot, or (US) survey foot */
 	/* fwd_scale is used to convert user distance units to meter */
 	/* inv_scale is used to convert meters to user distance units */
 	/* inch_to_unit is used to convert internal inches to users units (c, i, p) */
 	/* unit_to_inch is used to convert users units (c, i, p) to internal inches */
 	/* unit_name (unless NULL) is set to the name of the user's map measure unit (cm/inch/point) */
 
-	double scales[GMT_N_UNITS];
-
 	if (unit >= GMT_N_UNITS) {
 		GMT_report (C, GMT_MSG_NORMAL, "GMT ERROR: Unit id must be 0-%d\n", GMT_N_UNITS-1);
 		GMT_exit (EXIT_FAILURE);
 	}
-	/* These scales are used if 1:1 scaling is chosen */
-
-	scales[GMT_IS_METER]		= 1.0;				/* m in m */
-	scales[GMT_IS_KM]		= METERS_IN_A_KM;		/* m in km */
-	scales[GMT_IS_MILE]		= METERS_IN_A_MILE;		/* m in miles */
-	scales[GMT_IS_NAUTICAL_MILE]	= METERS_IN_A_NAUTICAL_MILE;	/* m in nautical miles */
-	scales[GMT_IS_INCH]		= 0.0254;			/* m in inch */
-	scales[GMT_IS_CM]		= 0.01;				/* m in cm */
-	scales[GMT_IS_PT]		= 0.0254 / 72.0;		/* m in points */
-	scales[GMT_IS_FOOT]		= METERS_IN_A_FOOT;		/* m in feet */
 
 	/* These scales are used when 1:1 is not set to ensure that the
 	 * output (or input with -I) is given (taken) in the units set
@@ -7704,8 +7724,8 @@ void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, 
 			break;
 	}
 	*unit_to_inch = 1.0 / (*inch_to_unit);
-	*fwd_scale = 1.0 / scales[unit];
-	*inv_scale = scales[unit];
+	*fwd_scale = 1.0 / C->current.proj.m_per_unit[unit];
+	*inv_scale = C->current.proj.m_per_unit[unit];
 }
 
 enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *C, char unit) {
@@ -7738,6 +7758,9 @@ enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *C, char unit) {
 		case 'f':
 			mode = GMT_IS_FOOT;
 			break;
+		case 'u':
+			mode = GMT_IS_SURVEY_FOOT;
+			break;
 		default:
 			mode = GMT_IS_NOUNIT;
 	}
@@ -7757,12 +7780,13 @@ unsigned int GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, c
 	switch (mode) {
 		case GMT_IS_METER:		strcpy (unit_name, "m");		break;
 		case GMT_IS_KM:			strcpy (unit_name, "km");		break;
-		case GMT_IS_MILE:		strcpy (unit_name, "miles");		break;
-		case GMT_IS_NAUTICAL_MILE:	strcpy (unit_name, "nautical miles");	break;
+		case GMT_IS_MILE:		strcpy (unit_name, "mile");		break;
+		case GMT_IS_NAUTICAL_MILE:	strcpy (unit_name, "nautical mile");	break;
 		case GMT_IS_INCH:		strcpy (unit_name, "inch");		break;
 		case GMT_IS_CM:			strcpy (unit_name, "cm");		break;
 		case GMT_IS_PT:			strcpy (unit_name, "point");		break;
-		case GMT_IS_FOOT:		strcpy (unit_name, "feet");		break;
+		case GMT_IS_FOOT:		strcpy (unit_name, "foot");		break;
+		case GMT_IS_SURVEY_FOOT:	strcpy (unit_name, "survey foot");	break;
 	}
 
 	return (mode);
@@ -8428,6 +8452,8 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	}
 
 	GMT_io_init (C);		/* Init the table i/o structure before parsing GMT defaults */
+
+	gmt_init_unit_conversion (C);	/* Set conversion factors from various units to meters */
 
 	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);	/* Initialize hash table for GMT defaults */
 

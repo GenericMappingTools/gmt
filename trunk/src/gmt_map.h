@@ -26,7 +26,8 @@
 #ifndef _GMT_MAP_H
 #define _GMT_MAP_H
 
-#define METERS_IN_A_FOOT		0.3048		/* 2.54 * 12 / 100 */
+#define METERS_IN_A_FOOT		0.3048			/* 2.54 * 12 / 100 */
+#define METERS_IN_A_SURVEY_FOOT		(1200.0/3937.0)		/* ~0.3048006096 m */
 #define METERS_IN_A_KM			1000.0
 #define METERS_IN_A_MILE		1609.433	/* meters in statute mile */
 #define METERS_IN_A_NAUTICAL_MILE	1852.0
