@@ -120,6 +120,18 @@ enum GMT_enum_misc {GMT_MOLLWEIDE = 400,
 	GMT_ECKERT6,
 	GMT_WINKEL};
 
+/* The various GMT measurement units */
+enum GMT_enum_units {GMT_IS_METER = 0,
+	GMT_IS_KM,
+	GMT_IS_MILE,
+	GMT_IS_NAUTICAL_MILE,
+	GMT_IS_INCH,
+	GMT_IS_CM,
+	GMT_IS_PT,
+	GMT_IS_FOOT,
+	GMT_N_UNITS,
+	GMT_IS_NOUNIT = -1};
+
 /* GMT_IS_RECT_GRATICULE means parallels and meridians are orthogonal, but does not imply linear spacing */
 #define GMT_IS_RECT_GRATICULE(C) (C->current.proj.projection <= GMT_MILLER)
 

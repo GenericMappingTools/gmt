@@ -359,6 +359,14 @@ that you are using geographical coordinates in one of the following ways:
 \textbf{G}. Example: \Opt{R}\emph{0}/\emph{360G}/\emph{-90}/\emph{90N}.
 \end{itemize}
 Alternatively, you may indicate geographical coordinates by supplying \Opt{fg}; see Section \ref{sec:fg_option}.
+
+\item [Projected coordinates:]  These are Cartesian projected coordinates compatible with the chosen
+projection and are given with a leading length emph{unit}, (e.g., k-200/200/-300/300 for a 400 by 600 km
+rectangular area centered on the projection center (0, 0).  These coordinates are internally converted
+to the corresponding geographic (longitude, latitude) coordinates for the lower left and upper right corners.
+This form is convenient when you want to specify a region directly in the projected units (e.g., UTM meters).
+For allowable units, see Table~\ref{tbl:distunits}.
+
 \item [Calendar time coordinates:]  These are absolute time coordinates referring to a Gregorian or ISO calendar.
 The general format is [\emph{date}]\textbf{T}[\emph{clock}], where \emph{date} must be in the
 \emph{yyyy}[\emph{-mm}[\emph{-dd}]] (year, month, day-of-month)

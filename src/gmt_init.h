@@ -47,6 +47,7 @@ EXTERN_MSC char * GMT_putrgb (struct GMT_CTRL *C, double *rgb);
 EXTERN_MSC char * GMT_putcmyk (struct GMT_CTRL *C, double *cmyk);
 EXTERN_MSC char * GMT_puthsv (struct GMT_CTRL *C, double *hsv);
 EXTERN_MSC double GMT_convert_units (struct GMT_CTRL *C, char *value, unsigned int from_default, unsigned int target_unit);
+EXTERN_MSC enum GMT_enum_units GMT_get_unit_number (struct GMT_CTRL *C, char unit);
 EXTERN_MSC unsigned int GMT_check_scalingopt (struct GMT_CTRL *C, char option, char unit, char *unit_name);
 EXTERN_MSC int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char *item);
 EXTERN_MSC int GMT_default_error (struct GMT_CTRL *C, char option);
