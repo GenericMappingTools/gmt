@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-09-28	pwessel
+	* gmt_init.c:		Allow for new length unit 'u' for US survey foot.
+				Allow -R<unit>... and linear projection to imply a simple
+				unit conversion for the given coordinates (e.g., km to meter).
+				Introduced -fp[<unit>] which allows data input to be in projected
+				values, e.g., UTM coordinates while -J is given.
 2012-09-26	pwessel
 	* grdcontour.c:		The contour label modifier +t|T[<file>] to save label locations to file
 				now also include any labels implied by -T.
