@@ -92,11 +92,11 @@ enum GMT_swap_direction {
 	k_swap_out};
 
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
-#define GMT_LEN_UNITS2	"efkMn"		/* Distances in meter, feet, km, Miles, nautical miles */
-#define GMT_LEN_UNITS	"dmsefkMn"	/* Distances in arc-{degree,minute,second} or meter, feet, km, Miles, nautical miles */
+#define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
+#define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
-#define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n"	/* Same, used to display as options */
-#define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n"		/* Same, used to display as options */
+#define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
+#define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
 #define GMT_DEG2SEC_F	3600.0
 #define GMT_DEG2SEC_I	3600
 #define GMT_SEC2DEG	(1.0 / GMT_DEG2SEC_F)

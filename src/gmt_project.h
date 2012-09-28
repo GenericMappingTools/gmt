@@ -129,6 +129,7 @@ enum GMT_enum_units {GMT_IS_METER = 0,
 	GMT_IS_CM,
 	GMT_IS_PT,
 	GMT_IS_FOOT,
+	GMT_IS_SURVEY_FOOT,
 	GMT_N_UNITS,
 	GMT_IS_NOUNIT = -1};
 
@@ -249,9 +250,12 @@ struct GMT_PROJ {
 	bool three_D;		/* Parameters for 3-D projections */
 	bool JZ_set;		/* true if -Jz|Z was set */
 	bool GMT_convert_latitudes;	/* true if using spherical code with authalic/conformal latitudes */
+	bool inv_coordinates;	/* true if -fp[unit] was given and we must first recover lon,lat during reading */
 	unsigned int n_antipoles;	/* Number of antipole coordinates so far [used for -JE only] */
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
+	enum GMT_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
+	double m_per_unit[GMT_N_UNITS];	/* Meters in various units.  Use to scale units to meters */
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */
 	double rect[4], zmin, zmax;	/* Extreme projected values */
 	double rect_m[4];		/* Extreme projected original meter values */
