@@ -35,9 +35,9 @@ Specify the name of the output grid file.
 #include "explain_-J.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)[BD(c|i|p|e|f|k|M|n)]
+OPT(A)[BD(c|i|p|e|f|k|M|n|u)]
 Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters [BD(e)].  To specify other units,
-append BD(f) (feet), BD(k) (km), BD(M) (statute mile), BD(n) (nautical mile), BD(i) (inch), BD(c) (cm), or BD(p) (points).
+append BD(f) (foot), BD(k) (km), BD(M) (statute mile), BD(n) (nautical mile), BD(u) (US survey foot), BD(i) (inch), BD(c) (cm), or BD(p) (point).
 Without OPT(A), the output (or input, see OPT(I)) are in the units specified by BD(PROJ_LENGTH_UNIT) (but see OPT(M)).
 .TP
 OPT(C)[IT(dx/dy)]
@@ -46,7 +46,7 @@ Optionally, add offsets in the projected units to be added (or subtracted when O
 the projected coordinates, such as false eastings and northings for particular projection zones [0/0].
 .TP
 OPT(D)GMT_inc_OPT
-Set the grid spacing for the new grid.  Append BD(m) for arc minutes, BD(s) for arc seconds.
+Set the grid spacing for the new grid.  Append BD(m) for arc minute, BD(s) for arc second.
 If neither OPT(D) nor OPT(E) are set then we select the same number of output nodes as there
 are input nodes.
 .TP

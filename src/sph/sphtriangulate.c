@@ -354,6 +354,9 @@ char *unit_name (char unit, int arc) {
 		case 'f':	/* Feet */
 			name = (arc) ? "feet" : "feet^2";
 			break;
+		case 'u':	/* US Survey Feet */
+			name = (arc) ? "sfeet" : "sfeet^2";
+			break;
 		default:
 			name = (arc) ? "m" : "m^2";
 			break;

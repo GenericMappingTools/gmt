@@ -1694,20 +1694,21 @@ bool gmt_is_penwidth (struct GMT_CTRL *C, char *word)
 #endif
 
 #define GMT_INC_IS_FEET		1
-#define GMT_INC_IS_M		2
-#define GMT_INC_IS_KM		4
-#define GMT_INC_IS_MILES	8
-#define GMT_INC_IS_NMILES	16
-#define GMT_INC_IS_NNODES	32
-#define GMT_INC_IS_EXACT	64
-#define GMT_INC_UNITS		31
+#define GMT_INC_IS_SURVEY_FEET	2
+#define GMT_INC_IS_M		4
+#define GMT_INC_IS_KM		8
+#define GMT_INC_IS_MILES	16
+#define GMT_INC_IS_NMILES	32
+#define GMT_INC_IS_NNODES	64
+#define GMT_INC_IS_EXACT	128
+#define GMT_INC_UNITS		63
 
 bool GMT_getinc (struct GMT_CTRL *C, char *line, double inc[])
 {	/* Special case of getincn use where n is two. */
 
 	int n;
 
-	/* Syntax: -I<xinc>[m|s|e|f|k|k|M|n|+|=][/<yinc>][m|s|e|f|k|k|M|n|+|=]
+	/* Syntax: -I<xinc>[m|s|e|f|k|M|n|u|+|=][/<yinc>][m|s|e|f|k|M|n|u|+|=]
 	 * Units: d = arc degrees
 	 * 	  m = arc minutes
 	 *	  s = arc seconds [was c]
@@ -1716,6 +1717,7 @@ bool GMT_getinc (struct GMT_CTRL *C, char *line, double inc[])
 	 *	  M = Miles [Convert to degrees]
 	 *	  k = km [Convert to degrees]
 	 *	  n = nautical miles [Convert to degrees]
+	 *	  u = survey feet [Convert to degrees]
 	 * Flags: = = Adjust -R to fit exact -I [Default modifies -I to fit -R]
 	 *	  + = incs are actually nx/ny - convert to get xinc/yinc
 	 */
@@ -1801,6 +1803,10 @@ int GMT_getincn (struct GMT_CTRL *C, char *line, double inc[], unsigned int n)
 				p[last] = 0;
 				if (i < 2) C->current.io.inc_code[i] |= GMT_INC_IS_NMILES;
 				break;
+			case 'u':	/* Gave survey feet along mid latitude */
+				p[last] = 0;
+				if (i < 2) C->current.io.inc_code[i] |= GMT_INC_IS_SURVEY_FEET;
+				break;
 			default:	/* No special flags or units */
 				scale = 1.0;
 				break;
@@ -1820,15 +1826,15 @@ int GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *unit)
 {
 	/* Accepts a distance length with optional unit character.  The
 	 * recognized units are:
-	 * e (meter), f (feet), M (miles), n (nautical miles), k (km)
-	 * and d (arc degree), m (arc minutes), s (arc seconds).
+	 * e (meter), f (foot), M (mile), n (nautical mile), k (km), u(survey foot)
+	 * and d (arc degree), m (arc minute), s (arc second).
 	 * If no unit is found it means Cartesian data, unless -fg is set,
 	 * in which we default to meters.
 	 * Passes back the radius, the unit, and returns distance_flag:
 	 * flag = 0: Units are user Cartesian. Use Cartesian distances
-	 * flag = 1: Unit is d|e|f|k|m|M|n|s. Use Flat-Earth distances.
-	 * flag = 2: Unit is d|e|f|k|m|M|n|s. Use great-circle distances.
-	 * flag = 3: Unit is d|e|f|k|m|M|n|s. Use geodesic distances.
+	 * flag = 1: Unit is d|e|f|k|m|M|n|s|u. Use Flat-Earth distances.
+	 * flag = 2: Unit is d|e|f|k|m|M|n|s|u. Use great-circle distances.
+	 * flag = 3: Unit is d|e|f|k|m|M|n|s|u. Use geodesic distances.
 	 * One of 2 modifiers may be prepended to the distance to control how
 	 * spherical distances are computed:
 	 *   - means less accurate; use Flat Earth approximation (fast).
@@ -1841,7 +1847,7 @@ int GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *unit)
 	int last, d_flag = 1, start = 1, way;
 	char copy[GMT_TEXT_LEN64];
 
-	/* Syntax:  -S[-|+]<radius>[d|e|f|k|m|M|n|s]  */
+	/* Syntax:  -S[-|+]<radius>[d|e|f|k|m|M|n|s|u]  */
 
 	if (!line) { GMT_report (C, GMT_MSG_NORMAL, "No argument given to GMT_get_distance\n"); return (-1); }
 
@@ -1919,17 +1925,20 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	}
 	else if (C->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {	/* Got funny units */
 		switch (C->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {
-			case GMT_INC_IS_FEET:	/* feet */
+			case GMT_INC_IS_FEET:	/* foot */
 				s = METERS_IN_A_FOOT;
 				break;
 			case GMT_INC_IS_KM:	/* km */
 				s = METERS_IN_A_KM;
 				break;
-			case GMT_INC_IS_MILES:	/* miles */
+			case GMT_INC_IS_MILES:	/* Statute mile */
 				s = METERS_IN_A_MILE;
 				break;
-			case GMT_INC_IS_NMILES:	/* nmiles */
+			case GMT_INC_IS_NMILES:	/* Nautical mile */
 				s = METERS_IN_A_NAUTICAL_MILE;
+				break;
+			case GMT_INC_IS_SURVEY_FEET:	/* US survey foot */
+				s = METERS_IN_A_SURVEY_FOOT;
 				break;
 			case GMT_INC_IS_M:	/* Meter */
 			default:
@@ -1983,6 +1992,9 @@ void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
 				break;
 			case GMT_INC_IS_NMILES:	/* nmiles */
 				s = METERS_IN_A_NAUTICAL_MILE;
+				break;
+			case GMT_INC_IS_SURVEY_FEET:	/* US survey feet */
+				s = METERS_IN_A_SURVEY_FOOT;
 				break;
 			case GMT_INC_IS_M:	/* Meter */
 			default:

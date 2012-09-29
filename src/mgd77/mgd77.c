@@ -4300,6 +4300,9 @@ void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way)
 			case 'n':	/* nautical miles */
 				*scale = MGD77_METERS_PER_NM;
 				break;
+			case 'u':	/* survey feet */
+				*scale = METERS_IN_A_SURVEY_FOOT;
+				break;
 			default:	/* Meter assumed */
 				GMT_message (C, "Not a valid unit: %c [meter assumed]\n", c);
 				*scale = 1.0;

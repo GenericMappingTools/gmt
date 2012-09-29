@@ -131,6 +131,7 @@ int GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   k Metric units II (km, km/hr).\n");
 	GMT_message (GMT, "\t   M British/US units II (miles, miles/hr).\n");
 	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots).\n");
+	GMT_message (GMT, "\t   u Old US I (survey feet, survey feet/s).\n");
 	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   [Default region is 0/360/-90/90].\n");
@@ -205,8 +206,8 @@ int GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, s
 					case 'd':	/* Distance unit selection */
 						k = 1;
 					case 's':	/* Speed unit selection */
-						if (!strchr ("cefkMn", (int)opt->arg[1])) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -N%c: Unit must be c, e, f, k, M, or n\n", opt->arg[0]);
+						if (!strchr ("cefkMnu", (int)opt->arg[1])) {
+							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -N%c: Unit must be c, e, f, k, M, n, or u\n", opt->arg[0]);
 							n_errors++;
 						}
 						break;

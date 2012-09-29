@@ -497,7 +497,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 			vel_scale /= dist_scale;			/* Must counteract any distance scaling to get meters. dt is in sec so we get m/s */
 			break;
 		case 'f':
-			vel_scale /= (METERS_IN_A_FOOT * dist_scale);		/* Must counteract any distance scaling to get feet. dt is in sec so we get ft/s */
+			vel_scale /= (METERS_IN_A_FOOT * dist_scale);	/* Must counteract any distance scaling to get feet. dt is in sec so we get ft/s */
 			break;
 		case 'k':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get km. dt is in sec so 3600 gives km/hr */
@@ -507,6 +507,9 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 			break;
 		case 'n':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives miles/hr */
+			break;
+		case 'u':
+			vel_scale /= (METERS_IN_A_SURVEY_FOOT * dist_scale);	/* Must counteract any distance scaling to get survey feet. dt is in sec so we get ft/s */
 			break;
 		default:	/*Cartesian */
 			break;

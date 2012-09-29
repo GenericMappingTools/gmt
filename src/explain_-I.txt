@@ -3,8 +3,8 @@ GMT_I_OPT
 IT(x_inc) [and optionally IT(y_inc)] is the grid spacing. Optionally, append a suffix
 modifier.  BD(Geographical (degrees) coordinates): Append BD(m) to
 indicate arc minutes or BD(s) to indicate arc seconds.  If one of the units BD(e), BD(f), BD(k), BD(M),
-or BD(n) is appended instead, the increment is assumed to be given in meter, feet, km, Miles, or
-nautical miles, respectively, and will be converted to the equivalent degrees longitude at
+BD(n) or BD(u) is appended instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to the equivalent degrees longitude at
 the middle latitude of the region (the conversion depends on BD(PROJ_ELLIPSOID)).  If /IT(y_inc) is given but set to 0 it will be reset equal to
 IT(x_inc); otherwise it will be converted to degrees latitude.  
 BD(All coordinates): If BD(=) is appended then

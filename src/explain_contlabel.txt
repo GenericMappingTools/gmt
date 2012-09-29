@@ -17,8 +17,8 @@ BD(d)IT(dist)[BD(c)|BD(i)|BD(p)] or BD(D)IT(dist)[BD(d)|BD(e)|BD(f)|BD(k)|BD(m)|
 #endif
 For lower case BD(d), give distances between labels on the plot in your preferred measurement unit
 BD(c) (cm), BD(i) (inch), or BD(p) (points), while for upper case BD(D), specify
-distances in map units and append the unit; choose among BD(e) (m), BD(f) (feet), BD(k) (km), BD(M) (mile), or BD(n)
-(nautical mile), and BD(d) (arc degree),  BD(m) (arc minute), or BD(s) (arc second).  [Default is G_OPT_SI or G_OPT_US].  As an option,
+distances in map units and append the unit; choose among BD(e) (m), BD(f) (foot), BD(k) (km), BD(M) (mile), BD(n)
+(nautical mile) or BD(u) (US survey foot), and BD(d) (arc degree),  BD(m) (arc minute), or BD(s) (arc second).  [Default is G_OPT_SI or G_OPT_US].  As an option,
 you can append /IT(fraction) which is used to place the very first label for each contour when the
 cumulative along-contour distance equals IT(fraction * dist) [0.25].
 .TP
