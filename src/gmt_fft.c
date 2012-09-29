@@ -32,7 +32,7 @@
  *    Library (perflib) have been removed too because they are not mainteined
  *    anymore.
  *
- *  FFTW3   : FFTW3 library (supplied externally)
+ *  FFTW    : FFTW library (supplied externally)
  *  vDSP    : OSX Accelerate Framework (OSX only)
  *  Kiss FFT: Free FFT, based on the principle "Keep It Simple, Stupid"
  *  Configure the implementation with gmtset GMT_FFT.
@@ -42,11 +42,11 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-static char *GMT_fft_algo[k_n_fft_algorithms] = {
+static char *GMT_fft_algo[] = {
 	"Auto-Select",
 	"Accelerate Framework",
-	"FFTW 3",
-	"Kiss FFT",
+	"FFTW",
+	"Kiss FFT"
 };
 
 static inline unsigned int propose_radix2 (unsigned n) {
@@ -70,48 +70,75 @@ static inline unsigned int radix2 (unsigned n) {
 
 #include <fftw3.h>
 
-int GMT_fft_1d_fftwf (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
-{
-	int sign = direction == k_fft_fwd ? FFTW_FORWARD : FFTW_BACKWARD;
-	fftwf_complex *cin, *cout;
-	fftwf_plan plan;
-	cin = (fftwf_complex*)data; /* need fftwf_complex because GMT_GRID is complex float */
-	cout = cin;                 /* in-place transform */
+#define FFTWF_WISDOM_FILENAME "fftwf_wisdom"
 
-	/*
-	 * The first argument, n, is the size of the transform you are trying to
-	 * compute. The size n can be any positive integer, but sizes that are
-	 * products of small factors are transformed most efficiently.
-	 *
-	 * The next two arguments are pointers to the input and output arrays of the
-	 * transform. These pointers can be equal, indicating an in-place transform.
-	 *
-	 * The fourth argument, sign, can be either FFTW_FORWARD (-1) or
-	 * FFTW_BACKWARD (+1), and indicates the direction of the transform you are
-	 * interested in; technically, it is the sign of the exponent in the
-	 * transform.
-	 *
-	 * The flags argument is usually either FFTW_MEASURE or FFTW_ESTIMATE.
-	 * FFTW_MEASURE instructs FFTW to run and measure the execution time of
-	 * several FFTs in order to find the best way to compute the transform of
-	 * size n. This process takes some time (usually a few seconds), depending
-	 * on your machine and on the size of the transform. */
-	plan = fftwf_plan_dft_1d(n, cin, cout, sign, FFTW_ESTIMATE);
-
-	fftwf_execute(plan); /* do transform */
-	fftwf_destroy_plan(plan); /* deallocate plan */
-
-	return GMT_NOERROR;
+char *gmt_fftwf_wisdom_filename (struct GMT_CTRL *C) {
+	static char wisdom_file[PATH_MAX+256] = "\0";
+	char hostname[257];
+	if (*wisdom_file == '\0') { /* wisdom_file has not been set yet */
+		if (C->session.USERDIR == NULL || access (C->session.USERDIR, R_OK|W_OK|X_OK))
+			/* USERDIR does not exist, or not writable */
+			return NULL;
+		else {
+			/* create wisdom file in USERDIR */
+			strcpy (wisdom_file, C->session.USERDIR);
+			strcat (wisdom_file, "/" FFTWF_WISDOM_FILENAME "_");
+			/* cat hostname */
+			memset (hostname, '\0', 257); /* in case gethostname does not null-terminate string */
+			gethostname (hostname, 256);
+			strcat (wisdom_file, hostname);
+		}
+	}
+	return wisdom_file;
 }
 
-int GMT_fft_2d_fftwf (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
-{
-	int sign = direction == k_fft_fwd ? FFTW_FORWARD : FFTW_BACKWARD;
-	fftwf_complex *cin, *cout;
-	fftwf_plan plan;
-	cin = (fftwf_complex*)data; /* need fftwf_complex because GMT_GRID is complex float */
-	cout = cin;                 /* in-place transform */
+/* Wrapper around fftwf_import_wisdom_from_filename */
+void gmt_fftwf_import_wisdom_from_filename (struct GMT_CTRL *C) {
+	static bool already_imported = false;
+	char *filenames[3], **filename = filenames;
+	int status;
 
+	if (already_imported) /* nothing to do */
+		return;
+
+	fftwf_import_system_wisdom (); /* read wisdom from implementation-defined standard file */
+
+	/* Initialize filenames */
+	filenames[0] = FFTWF_WISDOM_FILENAME; /* 1st try importing wisdom from file in current dir */
+	filenames[1] = gmt_fftwf_wisdom_filename(C); /* 2nd try wisdom file in USERDIR */
+	filenames[2] = NULL; /* end of array */
+
+	while (*filename != NULL) {
+		if (!access (*filename, R_OK)) {
+			status = fftwf_import_wisdom_from_filename (*filename);
+			if (status)
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Imported FFTW Wisdom from file: %s\n", *filename);
+			else
+				GMT_report (C, GMT_MSG_NORMAL, "Importing FFTW Wisdom from file failed: %s\n", *filename);
+		}
+		++filename; /* advance to next file in array */
+	}
+
+	already_imported = true;
+}
+
+/* Wrapper around fftwf_export_wisdom_to_filename */
+void gmt_fftwf_export_wisdom_to_filename (struct GMT_CTRL *C) {
+	char *filename = gmt_fftwf_wisdom_filename(C);
+	int status;
+
+	if (filename == NULL)
+		/* USERDIR does not exist, write wisdom to file in current directory */
+		filename = FFTWF_WISDOM_FILENAME;
+
+	status = fftwf_export_wisdom_to_filename (filename);
+	if (status)
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Exported FFTW Wisdom to file: %s\n", filename);
+	else
+		GMT_report (C, GMT_MSG_NORMAL, "Exporting FFTW Wisdom to file failed: %s\n", filename);
+}
+
+fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftwf_complex *data, int direction) {
 	/* The first two arguments, n0 and n1, are the size of the two-dimensional
 	 * transform you are trying to compute. The size n can be any positive
 	 * integer, but sizes that are products of small factors are transformed
@@ -129,10 +156,80 @@ int GMT_fft_2d_fftwf (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned
 	 * FFTW_MEASURE instructs FFTW to run and measure the execution time of
 	 * several FFTs in order to find the best way to compute the transform of
 	 * size n. This process takes some time (usually a few seconds), depending
-	 * on your machine and on the size of the transform. */
-	plan = fftwf_plan_dft_2d(ny, nx, cin, cout, sign, FFTW_ESTIMATE);
+	 * on your machine and on the size of the transform.
+	 *
+	 * Important: the planner overwrites the input array during planning unless
+	 * a saved plan (see Wisdom) is available for that problem, so you should
+	 * initialize your input data after creating the plan. The only exceptions
+	 * to this are the FFTW_ESTIMATE and FFTW_WISDOM_ONLY flags. */
 
-	fftwf_execute(plan); /* do transform */
+	int sign;
+	fftwf_complex *cin, *cout;
+	fftwf_plan plan = NULL;
+
+	sign = direction == k_fft_fwd ? FFTW_FORWARD : FFTW_BACKWARD;
+	cin  = data;
+	cout = cin; /* in-place transform */
+
+	if (C->current.setting.fftw_plan != k_fftw_estimate) {
+		gmt_fftwf_import_wisdom_from_filename (C);
+		if (ny == 0) /* 1d DFT */
+			plan = fftwf_plan_dft_1d(nx, cin, cout, sign, FFTW_WISDOM_ONLY | C->current.setting.fftw_plan);
+		else /* 2d DFT */
+			plan = fftwf_plan_dft_2d(ny, nx, cin, cout, sign, FFTW_WISDOM_ONLY | C->current.setting.fftw_plan);
+		if (plan == NULL) {
+			/* No Wisdom available
+			 * Need extra memory to prevent overwriting data while planning */
+			fftwf_complex *in_place_tmp = fftwf_malloc (2 * (ny == 0 ? 1 : ny) * nx * sizeof(float));
+			GMT_report (C, GMT_MSG_NORMAL, "Generating new FFTW Wisdom, be patient...\n");
+			if (ny == 0) /* 1d DFT */
+				plan = fftwf_plan_dft_1d(nx, in_place_tmp, in_place_tmp, sign, C->current.setting.fftw_plan);
+			else /* 2d DFT */
+				plan = fftwf_plan_dft_2d(ny, nx, in_place_tmp, in_place_tmp, sign, C->current.setting.fftw_plan);
+			fftwf_destroy_plan(plan); /* deallocate plan */
+			plan = NULL;
+			fftwf_free (in_place_tmp);
+			/* Save new Wisdom */
+			gmt_fftwf_export_wisdom_to_filename (C);
+		}
+		else
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Using preexisting FFTW Wisdom.\n");
+	}
+	else
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Picking a (probably sub-optimal) FFTW plan quickly.\n");
+
+	if (plan == NULL) { /* If either FFTW_ESTIMATE or new Wisdom generated */
+		if (ny == 0) /* 1d DFT */
+			plan = fftwf_plan_dft_1d(nx, cin, cout, sign, C->current.setting.fftw_plan);
+		else /* 2d DFT */
+			plan = fftwf_plan_dft_2d(ny, nx, cin, cout, sign, C->current.setting.fftw_plan);
+	}
+
+	if (plan == NULL) { /* There was a problem creating a plan */
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Could not create FFTW plan.\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+
+	return plan;
+}
+
+int GMT_fft_1d_fftwf (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode) {
+	fftwf_plan plan = NULL;
+
+	/* Generate FFTW plan for complex 1d DFT */
+	plan = gmt_fftwf_plan_dft(C, 0, n, (fftwf_complex*)data, direction);
+	fftwf_execute(plan);      /* do transform */
+	fftwf_destroy_plan(plan); /* deallocate plan */
+
+	return GMT_NOERROR;
+}
+
+int GMT_fft_2d_fftwf (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
+	fftwf_plan plan = NULL;
+
+	/* Generate FFTW plan for complex 2d DFT */
+	plan = gmt_fftwf_plan_dft(C, ny, nx, (fftwf_complex*)data, direction);
+	fftwf_execute(plan);      /* do transform */
 	fftwf_destroy_plan(plan); /* deallocate plan */
 
 	return GMT_NOERROR;
@@ -271,8 +368,8 @@ int GMT_fft_1d_selection (struct GMT_CTRL *C, unsigned int n) {
 	/* Here we want automatic selection from available candidates */
 	if (C->session.fft1d[k_fft_accelerate] && radix2 (n))
 		return k_fft_accelerate; /* Use if Radix-2 under OS/X */
-	if (C->session.fft1d[k_fft_fftw3])
-		return k_fft_fftw3;
+	if (C->session.fft1d[k_fft_fftw])
+		return k_fft_fftw;
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
@@ -287,8 +384,8 @@ int GMT_fft_2d_selection (struct GMT_CTRL *C, unsigned int nx, unsigned int ny) 
 	/* Here we want automatic selection from available candidates */
 	if (C->session.fft2d[k_fft_accelerate] && radix2 (nx) && radix2 (ny))
 		return k_fft_accelerate; /* Use if Radix-2 under OS/X */
-	if (C->session.fft2d[k_fft_fftw3])
-		return k_fft_fftw3;
+	if (C->session.fft2d[k_fft_fftw])
+		return k_fft_fftw;
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
@@ -331,7 +428,7 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
 			fftwf_plan_with_nthreads(n_cpu);
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Initialize FFTW3 with %d threads.\n", n_cpu);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Initialize FFTW with %d threads.\n", n_cpu);
 		}
 	}
 #endif /* HAVE_FFTW3_THREADS */
@@ -347,8 +444,8 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 #endif
 #ifdef HAVE_FFTW3F
 	/* single precision FFTW3 */
-	C->session.fft1d[k_fft_fftw3] = &GMT_fft_1d_fftwf;
-	C->session.fft2d[k_fft_fftw3] = &GMT_fft_2d_fftwf;
+	C->session.fft1d[k_fft_fftw] = &GMT_fft_1d_fftwf;
+	C->session.fft2d[k_fft_fftw] = &GMT_fft_2d_fftwf;
 #endif /* HAVE_FFTW3F */
 	/* Kiss FFT is the integrated fallback */
 	C->session.fft1d[k_fft_kiss] = &GMT_fft_1d_kiss;
@@ -358,6 +455,6 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 void GMT_fft_cleanup (void) {
 	/* Called by GMT_end */
 #if defined HAVE_FFTW3F_THREADS && !defined WIN32
-	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW3 */
+	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
 #endif
 }

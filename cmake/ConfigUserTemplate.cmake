@@ -52,6 +52,9 @@
 # Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
 
+# Set location of single precision FFTW (can be root directory or path to header file) [auto]:
+#set (FFTW3_ROOT "fftw_install_prefix")
+
 ##
 ## Section 2: GMT features
 ##
