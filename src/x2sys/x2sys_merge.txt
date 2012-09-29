@@ -27,7 +27,6 @@ To update the main COE_data.txt with the new COEs estimations saved in the small
 .br
 .sp
 BD(x2sys_merge) OPT(A)COE_data.txt OPT(M)COE_fresh.txt > COE_updated.txt
-.br
 .sp
 .SH "SEE ALSO"
 .IR x2sys_binlist (1),

@@ -37,13 +37,13 @@ Specify full path if the file is not in the current directory.
 .TP
 OPT(Cc)|BD(f)|BD(g)|BD(e)
 Select procedure for along-track distance calculation when needed by other programs:
-.br
+.sp
 BD(c) Cartesian distances [Default, unless OPT(G) is set].
-.br
+.sp
 BD(f) Flat Earth distances.
-.br
+.sp
 BD(g) Great circle distances [Default if OPT(G) is set].
-.br
+.sp
 BD(e) Geodesic distances on current BD(GMT) ellipsoid.
 .TP
 OPT(E)IT(suffix)
@@ -92,18 +92,18 @@ Five directives are recognized:
 .br
 .sp
 BD(ASCII) states that the data files are in ASCII format.
-.br
+.sp
 BD(BINARY) states that the data files are native binary files.
-.br
+.sp
 BD(NETCDF) states that the data files are COARDS-compliant 1-D netCDF files.
-.br
+.sp
 BD(SKIP) takes an integer argument which is either the number of lines to
 skip (when reading ASCII files) or the number of bytes to skip (when reading
 native binary files). Not used with netCDF files.
-.br
+.sp
 BD(GEO) indicates that these files are geographic data sets, with periodicities in
 the IT(x)-coordinate (longitudes).  Alternatively, use OPT(G).
-.br
+.sp
 BD(MULTISEG) means each track consists of multiple segments separated
 by a BD(GMT) segment header (alternatively, use OPT(m) when defining
 the system TAG). Not used with netCDF files.
@@ -121,7 +121,7 @@ IT(name) is the name of the column variable.  It is expected that you will use
 the special names IT(lon) (or IT(x) if Cartesian) and IT(lat) (or IT(y))
 for the two required coordinate columns, and IT(time) when optional time data
 are present.
-.br
+.sp
 IT(type) is always BD(a) for ASCII representations of numbers, whereas for
 binary files you may choose among
 BD(c) for signed 1-byte character (-127,+128), BD(u) for unsigned
@@ -130,15 +130,15 @@ BD(i) for  signed 4-byte integers (-2,147,483,648,+2,147,483,647),
 BD(f) for 4-byte floating points and BD(d) for 8-byte double
 precision floating points.  For netCDF, simply use BD(d) as netCDF
 will automatically handle type-conversions during reading.
-.br
+.sp
 IT(NaN) is Y if certain values (e.g, -9999) are to be replaced by NAN, and N otherwise.
-.br
+.sp
 IT(NaN-proxy) is that special value (e.g., -9999).
-.br
+.sp
 IT(scale) is used to multiply the data after reading.
-.br
+.sp
 IT(offset) is used to add to the scaled data.
-.br
+.sp
 IT(oformat) is a C-style format string used to print values from this column.
 .br
 .sp
@@ -159,25 +159,25 @@ this the "line" format.  First, we create the line.def file:
 .br
 .sp
 BD()# Define file for the line format
-.br
+.sp
 BD()#ASCII		# File is ASCII
-.br
+.sp
 BD()#SKIP 2		# Skip 2 header records
-.br
+.sp
 BD()#GEO		# Data are geographic
-.br
+.sp
 BD()#name	type 	NaN	NaN-proxy	scale offset oformat
-.br
+.sp
 lat	a	N	0	1	0	%9.5f
-.br
+.sp
 lon	a	N	0	1	0	%10.5f
-.br
+.sp
 time	a	N	0	1	0	%7.1f
-.br
+.sp
 obs1	a	N	0	1	0	%7.2f
-.br
+.sp
 obs2	a	N	0	1	0	%7.2f
-.br
+.sp
 obs3	a	N	0	1	0	%7.2f
 .br
 .sp
@@ -259,25 +259,25 @@ All that is needed is a different line.def file:
 .br
 .sp
 BD()# Define file for the binary line format
-.br
+.sp
 BD()#BINARY	# File is now binary
-.br
+.sp
 BD()#SKIP 128	# Skip 128 bytes
-.br
+.sp
 BD()#GEO		# Data are geographic
-.br
+.sp
 BD()#name	type	 NaN?	NaN-proxy	scale offset oformat
-.br
+.sp
 lon	d	N	0	1	0	%10.5f
-.br
+.sp
 lat	d	N	0	1	0	%9.5f
-.br
+.sp
 time	d	N	0	1	0	%7.1f
-.br
+.sp
 obs1	h	Y	-32768	0.1	0	%6.1f
-.br
+.sp
 obs2	h	Y	-32768	0.1	0	%6.1f
-.br
+.sp
 obs3	h	N	0	0.1	0	%6.1f
 .br
 .sp
@@ -291,23 +291,23 @@ All that is needed is a different line.def file:
 .br
 .sp
 BD()# Define file for the netCDF COARDS line format
-.br
+.sp
 BD()#NETCDF	# File is now netCDF
-.br
+.sp
 BD()#GEO		# Data are geographic
-.br
+.sp
 BD()#name	type	 NaN?	NaN-proxy	scale offset oformat
-.br
+.sp
 lon	d	N	0	1	0	%10.5f
-.br
+.sp
 lat	d	N	0	1	0	%9.5f
-.br
+.sp
 time	d	N	0	1	0	%7.1f
-.br
+.sp
 obs1	d	N	0	1	0	%6.1f
-.br
+.sp
 obs2	d	N	0	1	0	%6.1f
-.br
+.sp
 obs3	d	N	0	1	0	%6.1f
 .br
 .sp

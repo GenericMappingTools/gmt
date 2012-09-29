@@ -98,12 +98,12 @@ BD(weight) needs to have 1 added (hence correction is given as -1), and BD(fuel)
 reduced by a linear distance term:
 .br
 .sp
-ABC z	7.1	1e-4*((time-T))
-.br
-ABC obs	0.5*exp(-1e-3(lat))^1.5
-.br
+ABC z 7.1 1e-4*((time-T))
+.sp
+ABC obs 0.5*exp(-1e-3(lat))^1.5
+.sp
 ABC weight	-1
-.br
+.sp
 ABC fuel 0.02*((dist))
 .SH "SEE ALSO"
 .IR blockmean (1),
