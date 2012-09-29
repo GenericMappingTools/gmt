@@ -30,19 +30,19 @@
 #define GMT_SYNOPSIS_H
 
 #define GMT_B_OPT	"-B<args>"
-#define GMT_I_OPT	"-I<xinc>[u][=|+][/<yinc>[u][=|+]]"
-#define GMT_inc_OPT	"<xinc>[u][=|+][/<yinc>[u][=|+]]"
+#define GMT_I_OPT	"-I<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
+#define GMT_inc_OPT	"<xinc>[<unit>][=|+][/<yinc>[<unit>][=|+]]"
 #define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_J_OPT	"-J<args>"
 #define GMT_Jx_OPT	"-Jx|X<args>"
 #define GMT_Jz_OPT	"-Jz|Z<args>"
 #define GMT_Rgeo_OPT	"-R<west>/<east>/<south>/<north>[r]"
 #define GMT_Rgeoz_OPT	"-R<west>/<east>/<south>/<north>[/<zmin>/<zmax>][r]"
-#define GMT_Rx_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[r]"
+#define GMT_Rx_OPT	"-R[<unit>]<xmin>/<xmax>/<ymin>/<ymax>[r]"
 #define GMT_U_OPT	"-U[<just>/<dx>/<dy>/][c|<label>]"
 #define GMT_V_OPT	"-V[<level>]"
-#define GMT_X_OPT	"-X[a|c|r]<xshift>[u]"
-#define GMT_Y_OPT	"-Y[a|c|r]<yshift>[u]"
+#define GMT_X_OPT	"-X[a|c|r]<xshift>[<unit>]"
+#define GMT_Y_OPT	"-Y[a|c|r]<yshift>[<unit>]"
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
@@ -54,7 +54,7 @@
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_fi_OPT	"-f<info>"
 #define GMT_fo_OPT	"-f<info>"
-#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z[-|+]<gap>[unit]"
+#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z[-|+]<gap>[<unit>]"
 #define GMT_h_OPT	"-h[i|o][<n>]"
 #define GMT_ho_OPT	"-ho[<n>]"
 #define GMT_i_OPT	"-i<cols>[l][s<scale>][o<offset>][,...]"
@@ -68,13 +68,13 @@
 
 /* For options needing a length or radius */
 
-#define GMT_DIST_OPT	"[-|+]<dist>[unit]"
-#define GMT_RADIUS_OPT	"[-|+]<radius>[unit]"
+#define GMT_DIST_OPT	"[-|+]<dist>[<unit>]"
+#define GMT_RADIUS_OPT	"[-|+]<radius>[<unit>]"
 
 /* Options for map rose and scale, used in pscoast and psbasemap */
 
 #define GMT_TROSE	"-T[f|m][x]<lon0>/<lat0>/<diameter>[/<info>][:w,e,s,n:][+<gint>[/<mint>]]"
-#define GMT_SCALE	"-L[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[m|n|k][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]"
+#define GMT_SCALE	"-L[f][x]<lon0>/<lat0>[/<slon>]/<slat>/<length>[e|f|M|n|k|u][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]"
 
 /* Argument to *contour programs */
 

@@ -2447,46 +2447,35 @@ void GMT_plot_line (struct GMT_CTRL *C, double *x, double *y, unsigned int *pen,
 
 void GMT_draw_map_scale (struct GMT_CTRL *C, struct GMT_MAP_SCALE *ms)
 {
-	unsigned int i, j, jj, unit, form;
+	unsigned int i, j, jj, form;
 	unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
 	unsigned int n_a_ticks[10] = {1, 2, 3, 2, 1, 3, 1, 2, 1, 1};
+	enum GMT_enum_units unit;
 	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
 	char txt[GMT_TEXT_LEN256], *this_label = NULL;
-	char *label[5] = {"km", "miles", "nautical miles", "m", "feet"}, *units[5] = {"km", "mi", "nm", "m", "ft"};
+	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
+	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *P = C->PSL;
 	
 	if (!ms->plot) return;
 
 	if (!GMT_is_geographic (C, GMT_IN)) return;	/* Only for geographic projections */
 
-	switch (ms->measure) {	/* Convert bar_length to km */
+	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default */
 #ifdef GMT_COMPAT
-		case 'm':
-			GMT_report (C, GMT_MSG_COMPAT, "Warning: Distance unit m is deprecated; use M for statute miles\n");
-#endif
-		case 'M':	/* Statute miles instead */
-			unit = 1;
-			bar_length = 0.001 * METERS_IN_A_MILE * ms->length;
-			break;
-		case 'n':	/* Nautical miles instead */
-			unit = 2;
-			bar_length = 0.001 * METERS_IN_A_NAUTICAL_MILE * ms->length;
-			break;
-		case 'e':	/* meters instead */
-			unit = 3;
-			bar_length = 0.001 * ms->length;
-			break;
-		case 'f':	/* feet instead */
-			unit = 4;
-			bar_length = 0.001 * METERS_IN_A_FOOT * ms->length;
-			break;
-		default:	/* Default (or k) is km */
-			unit = 0;
-			bar_length = ms->length;
-			break;
+	if (measure == 'm') {
+		GMT_report (C, GMT_MSG_COMPAT, "Warning: Distance unit m is deprecated; use M for statute miles\n");
+		measure = 'M';
 	}
-
+#endif
+	if ((unit = GMT_get_unit_number (C, measure)) == GMT_IS_NOUNIT) {
+		GMT_report (C, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
+		GMT_exit (EXIT_FAILURE);
+	}
+	
+	bar_length = 0.001 * C->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
+	
 	if (ms->gave_xy)	/* Also get lon/lat coordinates */
 		GMT_xy_to_geo (C, &ms->lon, &ms->lat, ms->x0, ms->y0);
 	else {	/* Must convert lon/lat to location on map */

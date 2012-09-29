@@ -160,8 +160,8 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   For custom labels or intervals, let <tickinfo> be c<intfile>,; see man page for details.\n");
 			GMT_message (C, "\t   The optional <unit> modifies the <stride> value accordingly.  For maps, you may use\n");
 			GMT_message (C, "\t     d: arc degree [Default].\n");
-			GMT_message (C, "\t     m: arc minutes.\n");
-			GMT_message (C, "\t     s: arc seconds.\n");
+			GMT_message (C, "\t     m: arc minute.\n");
+			GMT_message (C, "\t     s: arc second.\n");
 			GMT_message (C, "\t   For time axes, several units are recognized:\n");
 			GMT_message (C, "\t     Y: year - plot using all 4 digits.\n");
 			GMT_message (C, "\t     y: year - plot only last 2 digits.\n");
@@ -437,9 +437,10 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 			GMT_message (C, "\t-R Specify the min/max coordinates of data region in user units.\n");
 			GMT_message (C, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
+			GMT_message (C, "\t   Use -R<unit>... for regions given in projected coordinates.\n");
 			GMT_message (C, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
-			GMT_message (C, "\t   Append r if -R specifies the longitudes/latitudes of the lower left\n");
-			GMT_message (C, "\t   and upper right corners of a rectangular area.\n");
+			GMT_message (C, "\t   Append r if -R specifies the coordinates of the lower left and\n");
+			GMT_message (C, "\t   upper right corners of a rectangular area.\n");
 			GMT_message (C, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
 			GMT_message (C, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
 			break;
@@ -469,7 +470,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t     n - Normal verbosity: only error messages.\n");
 			GMT_message (C, "\t     c - Also produce compatibility warnings [Default when no -V is used].\n");
 			GMT_message (C, "\t     v - Verbose progress messages [Default when -V is used].\n");
-			GMT_message (C, "\t     l - Long verbose erbose progress messages.\n");
+			GMT_message (C, "\t     l - Long verbose progress messages.\n");
 			GMT_message (C, "\t     d - Debugging messages.\n");
 			break;
 
@@ -532,6 +533,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH),\n");
 			GMT_message (C, "\t   f (floating point), x (longitude), y (latitude) to each item.\n");
 			GMT_message (C, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic coordinates).\n");
+			GMT_message (C, "\t   -fp[<unit>] means input is projected coordinates.\n");
 			break;
 
 		case 'g':	/* -g option to tell GMT to identify data gaps based on point separation */
@@ -540,7 +542,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   Append x|X or y|Y to flag data gaps in x or y coordinates,\n");
 			GMT_message (C, "\t   respectively, and d|D for distance gaps.\n");
 			GMT_message (C, "\t   Upper case means we first project the points.  Append <gap>[unit].\n");
-			GMT_message (C, "\t   Geographic data: choose from %s [Default is meter (e)].\n", GMT_LEN_UNITS2_DISPLAY);
+			GMT_message (C, "\t   Geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
 			GMT_message (C, "\t   For gaps based on mapped coordinates, choose from %s [%s].\n", GMT_DIM_UNITS_DISPLAY, C->session.unit_name[C->current.setting.proj_length_unit]);
 			GMT_message (C, "\t   Note: For x|y with time data the unit is controlled by TIME_UNIT.\n");
 			GMT_message (C, "\t   Repeat option to specify multiple criteria, and prepend +\n");
@@ -735,7 +737,7 @@ void GMT_inc_syntax (struct GMT_CTRL *C, char option, bool error)
 	GMT_message (C, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
 	GMT_message (C, "\t   Full syntax is <xinc>[%s|+][=][/<yinc>[%s|+][=]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	GMT_message (C, "\t   For geographic regions in degrees you can optionally append units\n");
-	GMT_message (C, "\t   among (f)eet, (m)inute, (s)econd, m(e)ter, (k)ilometer, (M)iles, (n)autical miles.\n");
+	GMT_message (C, "\t   among (f)oot, (m)inute, (s)econd, m(e)ter, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
 	GMT_message (C, "\t   Append = to adjust the region to fit increments [Adjust increment to fit domain].\n");
 	GMT_message (C, "\t   Alternatively, specify number of nodes by appending +. Then, the\n");
 	GMT_message (C, "\t   increments are calculated from the given domain and node-registration settings\n");
@@ -830,8 +832,8 @@ void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string)
 {
 	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (C, "\t-%c %s\n", option, string);
-	GMT_message (C, "\t   Append e (meter), f (feet), k (km), M (mile), n (nautical mile),\n");
-	GMT_message (C, "\t   d (arc degree), m (arc minute), or s (arc second) [e].\n");
+	GMT_message (C, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot)\n");
+	GMT_message (C, "\t   d (arc degree), m (arc minute), or s (arc second) [%c].\n", GMT_MAP_DIST_UNIT);
 	GMT_message (C, "\t   Prepend - for (fast) flat Earth or + for (slow) geodesic calculations.\n");
 	GMT_message (C, "\t   [Default is spherical great-circle calculations].\n");
 }
@@ -1662,7 +1664,7 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 	GMT_memset (copy, GMT_BUFSIZ, char);	/* Clean the copy */
 	strncpy (copy, &arg[k], GMT_BUFSIZ);	/* arg should NOT have a leading i|o part */
 
-	if (copy[0] == 'g') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y */
+	if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
 		if (both_i_and_o) {
 			C->current.io.col_type[GMT_IN][GMT_X] = C->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 			C->current.io.col_type[GMT_IN][GMT_Y] = C->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
@@ -1671,8 +1673,17 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 			col[GMT_X] = GMT_IS_LON;
 			col[GMT_Y] = GMT_IS_LAT;
 		}
-		//return (GMT_NOERROR);
 		pos = 1;
+	}
+	if (copy[0] == 'p') {	/* Got -f[i|o]p[<unit>] for projected floating point map coordinates (e.g., UTM meters) */
+		if (copy[1] && strchr (GMT_LEN_UNITS2, copy[1])) {	/* Given a unit via -fp<unit>*/
+			if ((unit = GMT_get_unit_number (C, copy[1])) == GMT_IS_NOUNIT) {
+				GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s] - bad projected unit\n", arg);
+				return 1;
+			}
+		}
+		C->current.proj.inv_coordinates = true;
+		C->current.proj.inv_coord_unit = unit;
 	}
 
 	while ((GMT_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
@@ -1684,16 +1695,7 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 			start++, stop++;
 
 		len = strlen (p);	/* Length of the string p */
-		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, p or g.  If -fp[unit] we might have gotten the unit instead */
-		if (strchr (GMT_LEN_UNITS2, ic)) {	/* Might have been given a unit via -fp<unit>, but could also be case f */
-			if (len > 1 && p[len-2] == 'p') {	/* It was the -fp<unit> case */
-				if ((unit = GMT_get_unit_number (C, ic)) == GMT_IS_NOUNIT) {
-					GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s] - bad projected unit\n", arg);
-					return 1;
-				}
-				ic = 'p';
-			}
-		}
+		ic = (int) p[len-1];	/* Last char in p is the potential code T, t, x, y, or f. */
 		switch (ic) {
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
@@ -1709,11 +1711,6 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 				break;
 			case 'f':	/* Plain floating point coordinates */
 				code = GMT_IS_FLOAT;
-				break;
-			case 'p':	/* Projected floating point map coordinates (e.g., UTM meters) */
-				code = GMT_IS_FLOAT;
-				C->current.proj.inv_coordinates = true;
-				C->current.proj.inv_coord_unit = unit;
 				break;
 			default:	/* No suffix, consider it an error */
 				GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s]\n", arg);
@@ -2194,6 +2191,9 @@ int gmt_parse_g_option (struct GMT_CTRL *C, char *txt)
 				break;
 			case 'n':	/* Nautical miles */
 				C->common.g.gap[i] *= METERS_IN_A_NAUTICAL_MILE;
+				break;
+			case 'u':	/* Survey feet  */
+				C->common.g.gap[i] *= METERS_IN_A_SURVEY_FOOT;
 				break;
 			default:	/* E.g., meters or junk */
 				break;

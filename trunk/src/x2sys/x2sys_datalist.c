@@ -341,6 +341,10 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives miles/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(kts)");
 			break;
+		case 'u':
+			vel_scale /= (METERS_IN_A_SURVEY_FOOT * dist_scale);	/* Must counteract any distance scaling to get survey feet. dt is in sec so we get ft/s */
+			strcpy (auxlist[MGD77_AUX_SP].header, "v(sft/s)");
+			break;
 	}
 	switch (s->unit[X2SYS_DIST_SELECTION][0]) {
 		case 'c':
@@ -364,6 +368,9 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 			break;
 		case 'n':
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(nm)");
+			break;
+		case 'u':
+			strcpy (auxlist[MGD77_AUX_DS].header, "d(sfeet)");
 			break;
 	}
 

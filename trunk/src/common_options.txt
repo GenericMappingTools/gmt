@@ -53,7 +53,7 @@
 #define GMT_P_OPT	OPT(P)
 #define GMT_Rgeo_OPT	OPT(R)IT(west)/IT(east)/IT(south)/IT(north)[BD(r)]
 #define GMT_Rgeoz_OPT	OPT(R)IT(west)/IT(east)/IT(south)/IT(north)[/IT(zmin)/IT(zmax)][BD(r)]
-#define GMT_Rx_OPT	OPT(R)IT(xmin)/IT(xmax)/IT(ymin)/IT(ymax)[BD(r)]
+#define GMT_Rx_OPT	OPT(R)[IT(unit)]IT(xmin)/IT(xmax)/IT(ymin)/IT(ymax)[BD(r)]
 #define GMT_U_OPT	OPT(U)[IT(just)/IT(dx)/IT(dy)/][BD(c)|IT(label)]
 #define GMT_V_OPT	OPT(V)[IT(level)]
 #define GMT_X_OPT	OPT(X)[BD(a)|BD(c)|BD(f)|BD(r)][IT(x-shift)[BD(u)]]
@@ -81,7 +81,7 @@
 
 /* Options for map rose and scale, used in pscoast and psbasemap */
 #define GMT_TROSE	OPT(T)[BD(f)|BD(m)][BD(x)]IT(lon0)/IT(lat0)/IT(size)[/IT(info)][BD(:)IT(w),IT(e),IT(s),IT(n)BD(:)][BD(+)IT(gint)[/IT(mint)]]
-#define GMT_SCALE	OPT(L)[BD(f)][BD(x)]IT(lon0)/IT(lat0)[/IT(slon)]/IT(slat)/IT(length)[BD(e)|BD(f)|BD(k)|BD(M)|BD(n)][BD(+l)IT(label)][BD(+j)IT(just)][BD(+p)IT(pen)][BD(+f)IT(fill)][BD(+u)] ]
+#define GMT_SCALE	OPT(L)[BD(f)][BD(x)]IT(lon0)/IT(lat0)[/IT(slon)]/IT(slat)/IT(length)[BD(e)|BD(f)|BD(k)|BD(M)|BD(n)|BD(u)][BD(+l)IT(label)][BD(+j)IT(just)][BD(+p)IT(pen)][BD(+f)IT(fill)][BD(+u)] ]
 
 /* Option for limiting features from GSHHS */
 #define GMT_A_OPT	OPT(A)IT(min_area)[/IT(min_level)/IT(max_level)][BD(+r)|BD(l)][BD(p)IT(percent)]
@@ -100,8 +100,8 @@
 
 /* Argument for distance units */
 
-#define GMT_DIST_UNIT	BD(d)|BD(m)|BD(s)|BD(e)|BD(f)|BD(k)|BD(M)|BD(n)
-#define GMT_DIST_UNIT2	BD(e)|BD(f)|BD(k)|BD(M)|BD(n)
+#define GMT_DIST_UNIT	BD(d)|BD(m)|BD(s)|BD(e)|BD(f)|BD(k)|BD(M)|BD(n)|BD(u)
+#define GMT_DIST_UNIT2	BD(e)|BD(f)|BD(k)|BD(M)|BD(n)|BD(u)
 
 #endif /* GMT_SYNOPSIS_TXT */
 
