@@ -148,20 +148,6 @@ enum FFT_modes {
 	k_fft_complex = 1  /* complex-input Fourier transform */
 };
 
-#ifdef HAVE_FFTW3F
-
-#include <fftw3.h>
-
-/* FFTW planner flags supported by the planner routines in FFTW */
-enum FFTW_planner_flags {
-	k_fftw_estimate   = FFTW_ESTIMATE,  /* pick a (probably sub-optimal) plan quickly */
-	k_fftw_measure    = FFTW_MEASURE,   /* find optimal plan by computing several FFTs and measuring their execution time */
-	k_fftw_patient    = FFTW_PATIENT,   /* like FFTW_MEASURE, but considers a wider range of algorithms */
-	k_fftw_exhaustive = FFTW_EXHAUSTIVE /* like FFTW_PATIENT, but considers an even wider range of algorithms */
-};
-
-#endif /* HAVE_FFTW3F */
-
 /* Various algorithms for triangulations */
 enum GMT_enum_tri {
 	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */

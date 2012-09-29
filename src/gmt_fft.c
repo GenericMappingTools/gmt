@@ -158,6 +158,14 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 	 * size n. This process takes some time (usually a few seconds), depending
 	 * on your machine and on the size of the transform.
 	 *
+	 * FFTW planner flags supported by the planner routines in FFTW
+	 * FFTW_ESTIMATE:   pick a (probably sub-optimal) plan quickly
+	 * FFTW_MEASURE:    find optimal plan by computing several FFTs and measuring
+	 *                  their execution time
+	 * FFTW_PATIENT:    like FFTW_MEASURE, but considers a wider range of algorithms
+	 * FFTW_EXHAUSTIVE: like FFTW_PATIENT, but considers an even wider range of
+	 *                  algorithms
+	 *
 	 * Important: the planner overwrites the input array during planning unless
 	 * a saved plan (see Wisdom) is available for that problem, so you should
 	 * initialize your input data after creating the plan. The only exceptions
@@ -171,7 +179,7 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 	cin  = data;
 	cout = cin; /* in-place transform */
 
-	if (C->current.setting.fftw_plan != k_fftw_estimate) {
+	if (C->current.setting.fftw_plan != FFTW_ESTIMATE) {
 		gmt_fftwf_import_wisdom_from_filename (C);
 		if (ny == 0) /* 1d DFT */
 			plan = fftwf_plan_dft_1d(nx, cin, cout, sign, FFTW_WISDOM_ONLY | C->current.setting.fftw_plan);
