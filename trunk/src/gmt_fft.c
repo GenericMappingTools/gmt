@@ -202,7 +202,7 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 		}
 		else
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Using preexisting FFTW Wisdom.\n");
-	}
+	} /* C->current.setting.fftw_plan != FFTW_ESTIMATE */
 	else
 		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Picking a (probably sub-optimal) FFTW plan quickly.\n");
 
@@ -439,6 +439,8 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Initialize FFTW with %d threads.\n", n_cpu);
 		}
 	}
+
+	C->current.setting.fftw_plan = FFTW_ESTIMATE; /* default planner flag */
 #endif /* HAVE_FFTW3_THREADS */
 
 	/* Start with nothing */
