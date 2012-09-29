@@ -313,8 +313,8 @@ int gmt_process_binary_input (struct GMT_CTRL *C, unsigned int n_read) {
 		if (C->current.io.curr_rec[GMT_X] == C->current.io.prev_rec[GMT_X] && C->current.io.curr_rec[GMT_Y] == C->current.io.prev_rec[GMT_Y]) return (2);	/* Yes, duplicate */
 	}
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2) double_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 */
 	if (C->current.proj.inv_coordinates) gmt_adjust_projected (C);	/* Must apply inverse projection to get lon, lat */
+	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 */
 	
 	if (set_nan_flag) C->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
@@ -1386,8 +1386,8 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 	if (GMT_REC_IS_ERROR (C)) GMT_report (C, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n", col_no, *n, C->current.io.rec_no);
 
 	if (C->current.setting.io_lonlat_toggle[GMT_IN] && col_no >= 2) double_swap (C->current.io.curr_rec[GMT_X], C->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
-	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 as per current rule*/
 	if (C->current.proj.inv_coordinates) gmt_adjust_projected (C);	/* Must apply inverse projection to get lon, lat */
+	if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) gmt_adjust_periodic (C);	/* Must account for periodicity in 360 as per current rule*/
 
 	if (gmt_gap_detected (C)) {*status = gmt_set_gap (C); return (C->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
