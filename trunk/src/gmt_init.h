@@ -26,6 +26,11 @@
 #ifndef GMT_INIT_H
 #define GMT_INIT_H
 
+#ifdef HAVE_FFTW3F
+/* FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
+#	include <fftw3.h>
+#endif
+
 /* Macro to do conversion to inches with PROJ_LENGTH_UNIT as default */
 
 #define GMT_to_inch(C,value) GMT_convert_units (C, value, C->current.setting.proj_length_unit, GMT_INCH)
