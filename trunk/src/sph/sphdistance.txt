@@ -67,13 +67,11 @@ then calculate distances from the data to a global 1x1 degree grid, use
 .br
 .sp
 BD(sphdistance) testdata.txt OPT(Rg) OPT(I)1 OPT(G)globedist.nc
-.br
 .sp
 To generate the same grid in two steps using BD(sphtriangulate) separately, try
-.br
 .sp
 BD(sphtriangulate) testdata.txt OPT(Qv) > voronoi.d
-.br
+.sp
 BD(sphdistance) OPT(Q)voronoi.d OPT(Rg) OPT(I)1 OPT(G)globedist.nc
 .SH "SEE ALSO"
 .IR GMT (1),

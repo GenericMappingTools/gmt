@@ -63,8 +63,7 @@ Specifies sample interval as IT(s_int) if incorrect in the SEGY file
 To create a grid file from an even spaced SEGY file test.segy, try
 .br
 .sp
-segy2grd test.segy OPT(I)0.1/0.1
-OPT(G)test.nc OPT(R)198/208/18/25 OPT(V)
+segy2grd test.segy OPT(I)0.1/0.1 OPT(G)test.nc OPT(R)198/208/18/25 OPT(V)
 .br
 .sp
 Note that this will read in 18-25s (or km) on each trace, but the first trace will be assumed to be at

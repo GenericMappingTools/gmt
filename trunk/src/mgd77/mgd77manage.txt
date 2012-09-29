@@ -95,12 +95,12 @@ Alternatively, give upper case BD(T) instead and we will interpolate the column 
 OPT(C)BD(f)|BD(g)|BD(e)
 Append a one-letter code to select the procedure for along-track distance
 calculation when using OPT(Ad)|BD(D) (see OPT(N) for selecting distance units):
-.br
-	BD(f) Flat Earth distances.
-.br
-	BD(g) Great circle distances [Default].
-.br
-	BD(e) Geodesic distances on current GMT ellipsoid.
+.sp
+    BD(f) Flat Earth distances.
+.sp
+    BD(g) Great circle distances [Default].
+.sp
+    BD(e) Geodesic distances on current GMT ellipsoid.
 .TP
 OPT(D)IT(abbrev1),IT(abbrev2),...)
 Give a comma-separated list of column abbreviations that you want to delete from the MGD77+ files.
@@ -169,7 +169,7 @@ mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference field"/"nTesla"/f/1/0/"IGR
 .SH DISCUSSION
 .sp
 BD(1. Preamble)
-.br
+.sp
 The mgd77 supplement is an attempt to (1) improve on the limited functionality of the
 existing mgg supplement, (2) incorporate some of the ideas from Scripps' gmt+ supplement\"'
 by allowing extra data columns, and
@@ -179,7 +179,7 @@ underlying ideas and steps you need to take to maintain your files.
 .br
 .sp
 BD(2. Introduction)
-.br
+.sp
 Our starting point is the MGD77 ASCII data files distributed from NGDC on CD-ROMS, DVD-ROMS,
 and via FTP.  Using Geodas to install the files locally we choose the "Carter corrected depth"
 option which will fill in the depth column using the two-way traveltimes and the Carter tables
@@ -190,13 +190,13 @@ this variable defaults to BD($GMT_SHAREDIR)/mgd77.
 .br
 .sp
 BD(3. Conversion)
-.br
+.sp
 Convert the ASCII MGD77 files to the new netCDF MGD77+ format using BD(mgd77convert).
 Typically, you will make a list of all the cruises to be converted (with or without
 extension), and you then run
 .br
 .sp
-	mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
+    mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
 .br
 .sp
 The verbose settings will ensure that all problems found during conversion will be reported.
@@ -207,7 +207,7 @@ to files of a certain extension you should use the OPT(I) option.
 .br
 .sp
 BD(4. Adding new columns)
-.br
+.sp
 BD(mgd77manage) will allow you to add additional data columns to your *.nc files.  These
 can be anything, including text strings, but most likely are numerical values sampled along
 the track from a supplied grid or an existing column that have been filtered or manipulated
@@ -219,7 +219,7 @@ geophysical observations) and your custom columns.
 .br
 .sp
 BD(5. Error sources)
-.br
+.sp
 Before we discuss how to correct errors we will first list the different classes of errors
 associated with MGD77 data: (1) Header record errors occur when some of the information fields
 in the header do not comply with the MGD77 specification or required information is missing.
@@ -246,7 +246,7 @@ maintained in a separate list of corrections.
 .br
 .sp
 BD(6. Finding errors)
-.br
+.sp
 The BD(mgd77sniffer) is a tool that does a thorough along-track sanity check of the
 original MGD77 ASCII files and produces a corresponding *.e77 error log.  All
 problems found are encoded in the error log, and recommended fixed correction terms
@@ -261,7 +261,7 @@ other problems as all E77 settings or flags will be recreated based on the lates
 .br
 .sp
 BD(7. Error corrections)
-.br
+.sp
 The extraction program BD(mgd77list) allows for corrections to be applied on-the-fly
 when data are requested.  First, data with BAD bitflags are suppressed.  Second, data with
 fixed systematic correction terms are corrected accordingly.  Third, data with ephemeral

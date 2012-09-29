@@ -260,8 +260,11 @@ Create/edit .gmt_io file to include the following rows:
 .TS
 l l l l l .
 \('## GMT I/O shorthand file\"'
+.sp
 \('## suffix	format_id	scale	offset	NaN\"'
+.sp
 grd	0	-	-	-
+.sp
 i2	2	-	-	32767
 .TE
 .sp
@@ -281,35 +284,35 @@ E77 header information.
 .br
 .sp
 BD(Sample)
-.br
+.sp
 \('## Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066\"'
-.br
+.sp
 \('## Examined: Wed Oct  3 16:30:13 2007 by mtchandl\"'
-.br
+.sp
 \('## Arguments:  -De -Gdepth,/data/GRIDS/etopo5_hdr.i2\"'
-.br
+.sp
 N Errata table verification status
-.br
+.sp
 \('## mgd77manage applies corrections if the errata table is verified (toggle 'N' above to 'Y' after review)\"'
-.br
+.sp
 \('## For instructions on E77 format and usage, see http://gmt.soest.hawaii.edu/mgd77/errata.php\"'
-.br
+.sp
 \('## Verified by:\"'
-.br
+.sp
 \('## Comments:\"'
-.br
+.sp
 \('## Errata: Header\"'
-.br
+.sp
 Y-E-08010039-H13-02: Invalid Magnetics Sampling Rate: (99) [  ]
-.br
+.sp
 Y-W-08010039-H13-10: Survey year (1975) outside magnetic reference field IGRF 1965 time range (1965-1970)
-.br
+.sp
 Y-I-08010039-depth-00: RLS m: 1.00053 b: 0 rms: 127.851 r: 0.973422 significant: 1 decimation: 0
-.br
+.sp
 Y-W-08010039-twt-09: More recent bathymetry correction table available
-.br
+.sp
 Y-W-08010039-mtf1-10: Integer precision
-.br
+.sp
 Y-W-08010039-mag-10: Integer precision
 .br
 .sp
@@ -327,9 +330,9 @@ BD(Format)
 .br
 .sp
 BD(Sample)
-.br
+.sp
 \('## Errata: Data\"'
-.br
+.sp
 Y	08010039	1975-05-10T22:16:05.88	74	C-0-0	 NAV: excessive speed
 .br
 .sp
@@ -343,45 +346,45 @@ Error classes: NAV-VAL-GRAD
 .br
 .sp
 BD(Error Class Descriptions)
-.br
+.sp
 NAV (navigation):
-.br
+.sp
 0 - fine
-.br
+.sp
 A - time out of range
-.br
+.sp
 B - time decreasing
-.br
+.sp
 C - excessive speed
-.br
+.sp
 D - above sea level
-.br
+.sp
 E - lat undefined
-.br
+.sp
 F - lon undefined
 .br
 .sp
 VAL (value):
-.br
+.sp
 0 - fine
-.br
+.sp
 K - twt invalid
-.br
+.sp
 L - depth invalid
-.br
+.sp
 O - mtf1 invalid
-.br
+.sp
 etc.
 .br
 .sp
 GRAD (gradient):
-.br
+.sp
 0 - fine
-.br
+.sp
 K - d[twt] excessive
-.br
+.sp
 L - d[depth] excessive
-.br
+.sp
 O - d[mtf1] excessive
 .br
 etc.
@@ -391,31 +394,31 @@ The NAV error class has unique cases while VAL and GRAD classes are
 described by alphabetic characters for each of the 24 numeric fields in MGD77 format order.
 .sp
   MGD77 bit-pattern w/ E77 alpha characters
-.br
+.sp
 |-------------------------------------------------|----------|
-.br
+.sp
 | X W V U T S R Q P O N M L K J I H G F E D C B A | E77 Code |
-.br
+.sp
 | - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
-.br
+.sp
 | n f e g m d m m m m b b d t p l l m h d m y t d | F  I     |
-.br
+.sp
 | q a o o s i s a t t t c e w t o a i o a o e z r | i  D     |
-.br
+.sp
 | c a t b d u e g f f c c p t c n t n u y n a   t | e        |
-.br
+.sp
 |       s   r n   2 1     t           r   t r     | l        |
-.br
+.sp
 |             s           h               h       | d        |
-.br
+.sp
 | - - - - - - - - - - - - - - - - - - - - - - - - | - - - - -|
-.br
+.sp
 | 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 | Bit place|
-.br
+.sp
 | - G C G C C - G G G - - G G - - - T T T T T - - | Bit type |
-.br
+.sp
 |-------------------------------------------------|----------|
-.br
+.sp
   Bit types: (G)eophysical, (C)orrection, (T)ime 
 .br
 .sp
@@ -424,16 +427,12 @@ To scan for excessive values or gradients, try
 .br
 .sp
 mgd77sniffer 08010001
-.br
 .sp
 To dump cruise gradients, try
-.br
 .sp
 mgd77sniffer 08010001 -Ds
-.br
 .sp
 To compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try
-.br
 .sp
 mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 .br

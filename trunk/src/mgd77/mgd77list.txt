@@ -226,28 +226,28 @@ TU(BD(depth), IT(v)) is the 2-way travel time estimated from the
 2-way travel time obtained by inverting the (presumably) corrected BD(depth)
 using the Carter correction formula.
 Select from
-.br
+.sp
 OPT(Ac1)[,IT(v)]
 returns difference between U(BD(twt), IT(v)) and BD(depth) [Default].
-.br
+.sp
 OPT(Ac2)[,IT(v)]
 returns difference between U(BD(twt), IT(v)) and Carter (BD(twt)).
-.br
+.sp
 OPT(Ac4)[,IT(v)]
 returns difference between (assumed uncorrected) BD(depth) and Carter (TU(BD(depth))).
-.br
+.sp
 OPT(Ac8)[,IT(v)]
 returns difference between U(TC(BD(depth)), IT(v)) and BD(depth).
 .TP
 OPT(Ad)
 Determines how the BD(depth) column output is obtained:
-.br
+.sp
 OPT(Ad1)
 returns BD(depth) as stored in the data set [Default].
-.br
+.sp
 OPT(Ad2)[,IT(v)]
 returns calculated uncorrected depth U(BD(twt), IT(v)).
-.br
+.sp
 OPT(Ad4)
 returns calculated corrected depth C(BD(twt)).
 .TP
@@ -257,14 +257,14 @@ Gravity reference Field (IGF), or "normal gravity") is required
 it is selected based on the MGD77 header parameter "Theoretical Gravity Formula Code";
 if this code is not present or is invalid we default to 4.  Alternatively, append the preferred IT(field)
 (1\-4) to select 1 (Heiskanen 1924), 2 (IGF 1930), 3 (IGF 1967) or 4 (IGF 1980).  Select from
-.br
+.sp
 OPT(Af1)[,IT(field)]
 returns BD(faa) as stored in the data set [Default]. Optionally, sets the IGF IT(field)
 to use if you also have requested BD(ngrav) as an output column in OPT(F).
-.br
+.sp
 OPT(Af2)[,IT(field)]
 returns the difference between BD(gobs) and BD(ngrav) (with optional IT(field) directive).
-.br
+.sp
 OPT(Af3)[,IT(field)]
 returns the combination of BD(gobs) + BD(eot) - BD(ngrav) (with optional IT(field) directive).
 .TP
@@ -272,15 +272,15 @@ OPT(Am)
 Determines how the BD(mag) column output is obtained.  There may be one or two
 total field measurements in the file (BD(mtf1) and BD(mtf2)), and the column BD(msens)
 may state which one is the leading sensor (1 or 2; it may also be undefined).  Select from
-.br
+.sp
 OPT(Am1)
 returns BD(mag) as stored in the data set [Default].
-.br
+.sp
 OPT(Am2)
 returns the difference between BD(mgfx) and BD(igrf), where
 BD(x) is the leading sensor (BD(1) or BD(2)) indicated by the BD(msens) data field
 (defaults to BD(1) if unspecified).
-.br
+.sp
 OPT(Am4)
 returns the difference between BD(mgfx) and BD(igrf), where
 BD(x) is the sensor (BD(2) or BD(1)) IT(not) indicated by the BD(msens) data field
@@ -289,12 +289,12 @@ BD(x) is the sensor (BD(2) or BD(1)) IT(not) indicated by the BD(msens) data fie
 OPT(C)BD(f)|BD(g)|BD(e)
 Append a one-letter code to select the procedure for along-track distance
 calculation (see OPT(N) for selecting units):
-.br
-	BD(f) Flat Earth distances.
-.br
-	BD(g) Great circle distances [Default].
-.br
-	BD(e) Geodesic distances on current GMT ellipsoid.
+.sp
+    BD(f) Flat Earth distances.
+.sp
+    BD(g) Great circle distances [Default].
+.sp
+    BD(e) Geodesic distances on current GMT ellipsoid.
 .TP
 OPT(Da)IT(startdate)
 Do not list data collected before IT(startdate) (yyyy-mm-ddBD(T)[hh:mm:ss])  [Default is start of cruise].
@@ -382,8 +382,8 @@ starting at June 3 1971 20:45 and ending at distance = 5000 km, use the followin
 mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
 .br
 .sp
-To make input for BD(blockmean) and BD(surface) using free-air anomalies from all the cruises listed in the file cruises.lis,
-but only the data that are inside the specified area, and make the output binary:
+To make input for BD(blockmean) and BD(surface) using free-air anomalies from all the cruises listed
+in the file cruises.lis, but only the data that are inside the specified area, and make the output binary:
 .br
 .sp
 mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
