@@ -135,7 +135,7 @@ enum GMT_swap_direction {
 enum FFT_implementations {
 	k_fft_auto = 0,    /* Automatically select best FFT algorithm */
 	k_fft_accelerate,  /* Select Accelerate Framework vDSP FFT [OS X only] */
-	k_fft_fftw3,       /* Select FFTW-3 */
+	k_fft_fftw,        /* Select FFTW */
 	k_fft_kiss,        /* Select Kiss FFT (always available) */
 	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
 };
@@ -147,6 +147,20 @@ enum FFT_modes {
 	k_fft_real    = 0, /* real-input FT (currently unsupported) */
 	k_fft_complex = 1  /* complex-input Fourier transform */
 };
+
+#ifdef HAVE_FFTW3F
+
+#include <fftw3.h>
+
+/* FFTW planner flags supported by the planner routines in FFTW */
+enum FFTW_planner_flags {
+	k_fftw_estimate   = FFTW_ESTIMATE,  /* pick a (probably sub-optimal) plan quickly */
+	k_fftw_measure    = FFTW_MEASURE,   /* find optimal plan by computing several FFTs and measuring their execution time */
+	k_fftw_patient    = FFTW_PATIENT,   /* like FFTW_MEASURE, but considers a wider range of algorithms */
+	k_fftw_exhaustive = FFTW_EXHAUSTIVE /* like FFTW_PATIENT, but considers an even wider range of algorithms */
+};
+
+#endif /* HAVE_FFTW3F */
 
 /* Various algorithms for triangulations */
 enum GMT_enum_tri {

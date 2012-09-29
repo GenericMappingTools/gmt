@@ -10,16 +10,12 @@
 # This module defines the following CMake variables:
 #
 #    FFTW3_FOUND - True if libfftw3 is found
-#    FFTW3_LIBRARY - A variable pointing to the FFTW3 double precision library
 #    FFTW3F_LIBRARY - A variable pointing to the FFTW3 single precision library
-#    FFTW3_THREADS_LIBRARY - Threaded double precision library
 #    FFTW3F_THREADS_LIBRARY - Threaded single precision library
 #    FFTW3_INCLUDE_DIR - Where to find the headers
 
 if (DEFINED FFTW3_ROOT AND NOT FFTW3_ROOT)
-  set (FFTW3_LIBRARY "" CACHE INTERNAL "")
   set (FFTW3F_LIBRARY "" CACHE INTERNAL "")
-  set (FFTW3_THREADS_LIBRARY "" CACHE INTERNAL "")
   set (FFTW3F_THREADS_LIBRARY "" CACHE INTERNAL "")
   set (FFTW3_INCLUDE_DIR "" CACHE INTERNAL "")
   return()
@@ -31,17 +27,16 @@ find_path (FFTW3_INCLUDE_DIR fftw3.h
   ${FFTW3_ROOT}
   $ENV{FFTW3_DIR}
   $ENV{FFTW3_ROOT}
-  PATH_SUFFIXES
-  include
+  PATH_SUFFIXES include
   PATHS
   /sw # Fink
   /opt/local # DarwinPorts
   /opt/csw # Blastwave
   /opt)
 
-# double precision
-find_library (FFTW3_LIBRARY
-  NAMES fftw3
+# single precision
+find_library (FFTW3F_LIBRARY
+  NAMES fftw3f
   HINTS
   ${FFTW3_DIR}
   ${FFTW3_ROOT}
@@ -54,17 +49,7 @@ find_library (FFTW3_LIBRARY
   /opt/csw
   /opt)
 
-get_filename_component (_fftw3_libpath ${FFTW3_LIBRARY} PATH)
-
-# single precision
-find_library (FFTW3F_LIBRARY
-  NAMES fftw3f
-  HINTS ${_fftw3_libpath})
-
-# threaded double precision
-find_library (FFTW3_THREADS_LIBRARY
-  NAMES fftw3_threads
-  HINTS ${_fftw3_libpath})
+get_filename_component (_fftw3_libpath ${FFTW3F_LIBRARY} PATH)
 
 # threaded single precision
 find_library (FFTW3F_THREADS_LIBRARY
@@ -72,8 +57,7 @@ find_library (FFTW3F_THREADS_LIBRARY
   HINTS ${_fftw3_libpath})
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (FFTW3 DEFAULT_MSG FFTW3_LIBRARY FFTW3F_LIBRARY FFTW3_INCLUDE_DIR)
+find_package_handle_standard_args (FFTW3 DEFAULT_MSG FFTW3F_LIBRARY FFTW3_INCLUDE_DIR)
 
-set (FFTW3_LIBRARIES ${FFTW3_LIBRARY} ${FFTW3_THREADS_LIBRARY})
 set (FFTW3F_LIBRARIES ${FFTW3F_LIBRARY} ${FFTW3F_THREADS_LIBRARY})
 set (FFTW3_INCLUDE_DIRS ${FFTW3_INCLUDE_DIR})

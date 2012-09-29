@@ -3674,8 +3674,24 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_GMT_FFT:
 			if (!strncmp (lower_value, "auto", 4))
 				C->current.setting.fft = k_fft_auto;
-			else if (!strncmp (lower_value, "fftw", 4)) /* complete name: fftw3 */
-				C->current.setting.fft = k_fft_fftw3;
+			else if (!strncmp (lower_value, "fftw", 4)) /* complete name: fftw */
+			{
+				char *c;
+				C->current.setting.fft = k_fft_fftw;
+#ifdef HAVE_FFTW3F
+				C->current.setting.fftw_plan = k_fftw_estimate; /* default planner flag */
+				if ((c = strchr (lower_value, ',')) != NULL) /* Parse FFTW planner flags */
+				{
+					c += strspn(c, ", \t"); /* advance past ',' and whitespace */
+					if (!strncmp (c, "m", 1)) /* complete: measure */
+						C->current.setting.fftw_plan = k_fftw_measure;
+					else if (!strncmp (c, "p", 1)) /* complete: patient */
+						C->current.setting.fftw_plan = k_fftw_patient;
+					else if (!strncmp (c, "ex", 2)) /* complete: exhaustive */
+						C->current.setting.fftw_plan = k_fftw_exhaustive;
+				}
+#endif /* HAVE_FFTW3F */
+			}
 			else if (!strncmp (lower_value, "ac", 2))   /* complete name: accelerate */
 				C->current.setting.fft = k_fft_accelerate;
 			else if (!strncmp (lower_value, "kiss", 4)) /* complete name: kissfft */
@@ -4512,16 +4528,37 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		/* GMT GROUP */
 
 		case GMTCASE_GMT_FFT:
-			if (C->current.setting.fft == k_fft_auto)
-				strcpy (value, "auto");
-			else if (C->current.setting.fft == k_fft_kiss)
-				strcpy (value, "kissfft");
-			else if (C->current.setting.fft == k_fft_fftw3)
-				strcpy (value, "fftw3");
-			else if (C->current.setting.fft == k_fft_accelerate)
-				strcpy (value, "accelerate");
-			else
-				strcpy (value, "undefined");
+			switch (C->current.setting.fft) {
+				case k_fft_auto:
+					strcpy (value, "auto");
+					break;
+				case k_fft_kiss:
+					strcpy (value, "kissfft");
+					break;
+				case k_fft_fftw:
+					strcpy (value, "fftw");
+#ifdef HAVE_FFTW3F
+					switch (C->current.setting.fftw_plan) {
+						case k_fftw_measure:
+							strcat (value, ",measure");
+							break;
+						case k_fftw_patient:
+							strcat (value, ",patient");
+							break;
+						case k_fftw_exhaustive:
+							strcat (value, ",exhaustive");
+							break;
+						default:
+							strcat (value, ",estimate");
+					}
+#endif /* HAVE_FFTW3F */
+					break;
+				case k_fft_accelerate:
+					strcpy (value, "accelerate");
+					break;
+				default:
+					strcpy (value, "undefined");
+			}
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_HISTORY: GMT_COMPAT_WARN;

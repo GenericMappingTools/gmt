@@ -82,7 +82,10 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
-	unsigned int fft;         /* 0 for auto, or 1-5 for specific FFT algorithm */
+	unsigned int fft;         /* Any of FFT_implementations: k_fft_auto, k_fft_accelerate, k_fft_fftw3, k_fft_kiss */
+#ifdef HAVE_FFTW3F
+	unsigned int fftw_plan;   /* Any of FFTW_planner_flags: k_fftw_estimate, k_fftw_measure, k_fftw_patient, k_fftw_exhaustive */
+#endif
 	unsigned int history;     /* mode to pass information via history file .gmtcommands (k_history_off, k_history_read, k_history_write) */
 	/* IO group */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */

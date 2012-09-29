@@ -196,12 +196,24 @@ Controls how secondary month-, week-, and weekday-names are formatted.  Choose a
 BD(character).  If the leading BD(f), BD(a), or BD(c) are replaced with BD(F), BD(A), and BD(C) the entire annotation will be in upper case  [full].
 .TP
 .B GMT_FFT
-Determines which Fast Fourier Transform should be used among those that have
+Determines which Fast Fourier Transform (FFT) should be used among those that have
 been configured during installation. Choose from BD(auto) (pick the most suitable
-for the task among available algorithms), BD(fftw3) (The Fastest Fourier Transform
-in the West), BD(accelerate) (Use the Accelerate Framework under OS X; Note, that
-the number of samples to be processed must be a base 2 exponent.), BD(kiss) (Kiss
-FFT) [auto].
+for the task among available algorithms), BD(fftw)[,IT(planner_flag)] (The Fastest
+Fourier Transform in the West), BD(accelerate) (Use the Accelerate Framework under
+OS X; Note, that the number of samples to be processed must be a base 2 exponent),
+BD(kiss) (Kiss FFT) [auto].
+.br
+FFTW can "learn" how to optimally compute Fourier transforms on the current
+hardware and OS by computing several FFTs and measuring their execution time.
+This so gained "Wisdom" will be stored in and reloaded from a file
+fftw_wisdom_<hostname> in DIR_USER or if DIR_USER is not writable in the current
+directory.
+To use this feature append IT(planner_flag) which can be one of IT(measure),
+IT(patient), and IT(exhaustive), see FFTW reference for details. The default FFTW
+planner flag is IT(estimate), i.e., pick a (probably sub-optimal) plan quickly.
+Note: if you need a single transform of a given size only, the one-time cost of
+the smart planner becomes significant. Stick to the default planner, IT(estimate),
+based on heuristics then.
 .TP
 .B GMT_HISTORY
 Passes the history of past common command options via the hidden \.gmtcommands file.
