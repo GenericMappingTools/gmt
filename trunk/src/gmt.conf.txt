@@ -24,10 +24,10 @@ are labeled (static).
 The full explanation for how to specify pens, pattern fills, colors, and fonts can be found in the BD(gmt) man page.
 .TP
 .B COLOR_BACKGROUND
-Color used for the background of images (i.e., when z < lowest colortable entry)  [black].
+Color used for the background of images (i.e., when z < lowest color table entry)  [black].
 .TP
 .B COLOR_FOREGROUND
-Color used for the foreground of images (i.e., when z > highest colortable entry)  [white].
+Color used for the foreground of images (i.e., when z > highest color table entry)  [white].
 .TP
 .B COLOR_HSV_MAX_SATURATION
 Maximum saturation (0\-1) assigned for most positive intensity value [0.1].
@@ -68,7 +68,7 @@ Sets the default for all fonts, except FONT_LOGO. This setting is not included i
 .TP
 .B FONT_ANNOT_PRIMARY
 Font used for primary annotations, etc. [12p,Helvetica,black].
-When BD(+) is prepended, scale fonts, offsets and ticklengths relative to BD(FONT_ANNOT_PRIMARY).
+When BD(+) is prepended, scale fonts, offsets and tick-lengths relative to BD(FONT_ANNOT_PRIMARY).
 .TP
 .B FONT_ANNOT_SECONDARY
 Font to use for time axis secondary annotations [14p,Helvetica,black].
@@ -205,19 +205,19 @@ BD(kiss) (Kiss FFT) [auto].
 .br
 FFTW can "learn" how to optimally compute Fourier transforms on the current
 hardware and OS by computing several FFTs and measuring their execution time.
-This so gained "Wisdom" will be stored in and reloaded from a file
-fftw_wisdom_<hostname> in DIR_USER or if DIR_USER is not writable in the current
+This so gained "Wisdom" will be stored in and reloaded from the file
+fftw_wisdom_<hostname> in DIR_USER or, if DIR_USER is not writable, in the current
 directory.
-To use this feature append IT(planner_flag) which can be one of IT(measure),
-IT(patient), and IT(exhaustive), see FFTW reference for details. The default FFTW
+To use this feature append IT(planner_flag), which can be one of IT(measure),
+IT(patient), and IT(exhaustive); see FFTW reference for details. The default FFTW
 planner flag is IT(estimate), i.e., pick a (probably sub-optimal) plan quickly.
 Note: if you need a single transform of a given size only, the one-time cost of
-the smart planner becomes significant. Stick to the default planner, IT(estimate),
-based on heuristics then.
+the smart planner becomes significant. In that case, stick to the default planner, IT(estimate),
+based on heuristics.
 .TP
 .B GMT_HISTORY
 Passes the history of past common command options via the hidden \.gmtcommands file.
-The dfferent values for this setting are: BD(true), BD(readonly), BD(false), to either read and write to the \.gmtcommands file,
+The different values for this setting are: BD(true), BD(readonly), BD(false), to either read and write to the \.gmtcommands file,
 only read, or not use the file at all  [true].
 .TP
 .B GMT_INTERPOLANT
@@ -279,7 +279,7 @@ Very large chunk sizes and sizes smaller than 128 should be avoided because they
 lead to unexpectedly bad performance.
 Note that a chunk of a single precision floating point variable of size 2896x2896
 completely fills the chunk cache of 32MiB.
-Specify the chunk size for each dimension separeted by a comma, or BD(a)uto for
+Specify the chunk size for each dimension separated by a comma, or BD(a)uto for
 optimally chosen chunk sizes in the range [128,256].
 Set IO_NC4_CHUNK_SIZE to BD(c)lassic for classic netCDF. [auto]
 .TP
@@ -297,7 +297,8 @@ marker should be different for output then append another character for the outp
 characters must be separated by a comma.  Two marker characters have special meaning: B means "blank line" and
 will treat blank lines as initiating a new segment, whereas N means "NaN record" and will treat records with
 all NaNs as initiating a new segment.  If you choose B or N for the output marker then the normal GMT segment
-header is replaced by a blank or NaN record, respectively, and no segment header information is written. To use B or N as regular segment markers you must escape them with a leading backslash.
+header is replaced by a blank or NaN record, respectively, and no segment header information is written.
+To use B or N as regular segment markers you must escape them with a leading backslash.
 .TP
 .B MAP_ANNOT_MIN_ANGLE
 If the angle between the map boundary and the annotation baseline is less than this minimum value (in degrees), the
@@ -314,13 +315,13 @@ If bit 1 is set (1), annotations will occur wherever a gridline crosses the
 map boundaries, else longitudes will be annotated on the lower and upper boundaries only, and latitudes will be
 annotated on the left and right boundaries only.  If bit 2 is set (2), then longitude annotations will
 be plotted horizontally.  If bit 3 is set (4), then latitude annotations will be plotted horizontally.
-If bit 4 is set (8), then oblique tickmarks are extended to give a projection equal to the specified tick length.
-If bit 5 is set (16), tickmarks will be drawn normal to the border regardless of gridline angle.
+If bit 4 is set (8), then oblique tick-marks are extended to give a projection equal to the specified tick length.
+If bit 5 is set (16), tick-marks will be drawn normal to the border regardless of gridline angle.
 If bit 6 is set (32), then latitude annotations will be plotted parallel to the border.
 To set a combination of these, add up the values in parentheses. [1].
 .TP
 .B MAP_ANNOT_OFFSET_PRIMARY
-Distance from end of tickmark to start of annotation [5p].
+Distance from end of tick-mark to start of annotation [5p].
 .TP
 .B MAP_ANNOT_OFFSET_SECONDARY
 Distance from base of primary annotation to the top of the secondary annotation [5p] (Only
@@ -351,7 +352,7 @@ Pen attributes used to draw plain map frame [thicker,black].
 .B MAP_FRAME_TYPE
 Choose between BD(inside), BD(plain) and BD(fancy) (thick boundary, alternating black/white frame; append BD(+) for rounded corners)  [fancy].
 For some map projections (e.g., Oblique Mercator), plain is the only option even if fancy is set as default.
-In general, fancy only applies to situations where the projected x and y directions parallel the lon and lat
+In general, fancy only applies to situations where the projected x and y directions parallel the longitude and latitude
 directions (e.g., rectangular projections, polar projections).  For situations where all boundary ticks and annotations
 must be inside the maps (e.g., for preparing geotiffs), chose BD(inside).
 .TP
@@ -407,18 +408,18 @@ the default 85/90 will draw a r = 5 radius circle at the center of the map with 
 Sets the height (> 0) on the map of the map scale bars drawn by various programs [5p].
 .TP
 .B MAP_TICK_LENGTH_PRIMARY
-The length of a primary major/minor tickmarks  [5p/2.5p].
+The length of a primary major/minor tick-marks  [5p/2.5p].
 If only the first value is set, the second is assumed to be 50% of the first.
 .TP
 .B MAP_TICK_LENGTH_SECONDARY
-The length of a secondary major/minor tickmarks  [15p/3.75p].
+The length of a secondary major/minor tick-marks  [15p/3.75p].
 If only the first value is set, the second is assumed to be 25% of the first.
 .TP
 .B MAP_TICK_PEN_PRIMARY
-Pen attributes to be used for primary tickmarks in dpi units or points (append p) [thinner,black].
+Pen attributes to be used for primary tick-marks in dpi units or points (append p) [thinner,black].
 .TP
 .B MAP_TICK_PEN_SECONDARY
-Pen attributes to be used for secondary tickmarks in dpi units or points (append p) [thinner,black].
+Pen attributes to be used for secondary tick-marks in dpi units or points (append p) [thinner,black].
 .TP
 .B MAP_TITLE_OFFSET
 Distance from top of axis annotations (or axis label, if present) to base of plot title [14p].
@@ -492,8 +493,8 @@ Lempel-Ziv-Welch compression (lzw), or not at all (none) [lzw].
 .B PS_LINE_CAP
 Determines how the ends of a line segment will be drawn.  Choose among a IT(butt) cap (default)
 where there is no projection beyond the end of the path, a IT(round) cap where a
-semicircular arc with diameter equal to the linewidth is drawn around the end points,
-and IT(square) cap where a half square of size equal to the linewidth extends beyond
+semicircular arc with diameter equal to the line-width is drawn around the end points,
+and IT(square) cap where a half square of size equal to the line-width extends beyond
 the end of the path [butt].
 .TP
 .B PS_LINE_JOIN
