@@ -240,7 +240,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
 	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_dw, &rtay_dk);
-	if (Ctrl->CM4_DATA.pred[3]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
+	if (Ctrl->CM4_DATA.pred[3]) { 	/* In other cases the next coefficients are not used, so no waste time/memory with them */
 		gcto_mg = calloc((size_t)(2 * lrto * lsto * lcto), sizeof(double));
 		for (l = 0; l < 2; ++l)
 			for (k = 0; k < lrto; ++k)
@@ -257,7 +257,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	i_unused = fscanf (fp, "%d %d %d", &lcto, &lsto, &lrto);
 	i_unused = fscanf (fp, "%d %d %d %d %d %d %d", &lum1, &lum2, &lum3, &lum4, &lum5, &lum6, &lum7);
 	i_unused = fscanf (fp, "%lf %lf %lf %lf %lf %lf %lf %lf", &cnmp, &enmp, &omgs, &omgd, &re, &rp, &rm, &rtay_or);
-	if (Ctrl->CM4_DATA.pred[3] && !Ctrl->CM4_DATA.pred[4]) { 	/* In other cases the next coefficients are not used, so no waist time/memory with them */
+	if (Ctrl->CM4_DATA.pred[3] && !Ctrl->CM4_DATA.pred[4]) { 	/* In other cases the next coefficients are not used, so no waste time/memory with them */
 		gcto_or = calloc((size_t)(lrto * lsto * lcto), sizeof(double));
 		for (k = 0; k < lrto; ++k)
 			for (j = 0; j < lsto; ++j) {
@@ -1284,19 +1284,19 @@ void jtbcont(int pmin, int pmax, int nmax, int mmax, double rold, double rnew, i
 		ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
 		ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
 	    for (m = 1; m <= MIN(n,mmax); ++m) {
-		++iz;
+			++iz;
 			ii = iz + nz;		z[ii] = fcur * z[ii];
 			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
 			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
-		++iz;
+			++iz;
 			ii = iz + nz;		z[ii] = fcur * z[ii];
 			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
 			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
-		++iz;
+			++iz;
 			ii = iz + nz;		z[ii] = fcur * z[ii];
 			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
 			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
-		++iz;
+			++iz;
 			ii = iz + nz;		z[ii] = fcur * z[ii];
 			ii = iz + (nz << 1);	z[ii] = fcur * z[ii];
 			ii = iz + nz * 3;	z[ii] = fpsi * z[ii];
@@ -1411,7 +1411,7 @@ void blsgen(int nc, int nd, int ni, double *b, double *c, double *dldc) {
     --b;
 
     for (j = 1; j <= ni; ++j)
-	b[j] += r8sdot(1, 1, nc, &dldc[j * nd + 1], &c[0]);
+		b[j] += r8sdot(1, 1, nc, &dldc[j * nd + 1], &c[0]);
 }
 
 void getgmf(int nder, int ns, double *ep, double *tm, double *b, double *c, double *g, int *h, int *o, double *p) {
@@ -3042,8 +3042,8 @@ int i8ssum(int abeg, int alen, int *a) {
 
     ret_val = 0;
     aadr = abeg;
-    for (i = 0; i < alen; ++i)
-	ret_val += a[aadr++];
+	for (i = 0; i < alen; ++i)
+		ret_val += a[aadr++];
 
     return ret_val;
 }
@@ -3056,8 +3056,8 @@ void i8vset(int abeg, int alen, int s, int *a) {
 
     /* Function Body */
     aadr = abeg;
-    for (i = 0; i < alen; ++i)
-	a[aadr++] = s;
+	for (i = 0; i < alen; ++i)
+		a[aadr++] = s;
 }
 
 void i8vadd(int abeg, int bbeg, int cbeg, int vlen, int *a, int *b, int *c) {
@@ -3072,8 +3072,8 @@ void i8vadd(int abeg, int bbeg, int cbeg, int vlen, int *a, int *b, int *c) {
     aadr = abeg;
     badr = bbeg;
     cadr = cbeg;
-    for (i = 0; i < vlen; ++i)
-	c[cadr++] = b[badr++] + a[aadr++];
+	for (i = 0; i < vlen; ++i)
+		c[cadr++] = b[badr++] + a[aadr++];
 }
 
 void i8vadds(int abeg, int bbeg, int vlen, int s, int *a, int *b) {
@@ -3086,8 +3086,8 @@ void i8vadds(int abeg, int bbeg, int vlen, int s, int *a, int *b) {
     /* Function Body */
     aadr = abeg;
     badr = bbeg;
-    for (i = 0; i < vlen; ++i)
-	b[badr++] = a[aadr++] + s;
+	for (i = 0; i < vlen; ++i)
+		b[badr++] = a[aadr++] + s;
 }
 
 void i8vcum(int abas, int abeg, int alen, int *a) {
@@ -3199,7 +3199,7 @@ void r8vsub(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
     badr = bbeg;
     cadr = cbeg;
     for (i = 0; i < vlen; ++i)
-	c[cadr++] = b[badr++] - a[aadr++];
+		c[cadr++] = b[badr++] - a[aadr++];
 }
 
 void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double *c) {
@@ -3214,7 +3214,7 @@ void r8vmul(int abeg, int bbeg, int cbeg, int vlen, double *a, double *b, double
     badr = bbeg;
     cadr = cbeg;
     for (i = 0; i < vlen; ++i)
-	c[cadr++] = b[badr++] * a[aadr++];
+		c[cadr++] = b[badr++] * a[aadr++];
 }
 
 void r8vscale(int abeg, int alen, double s, double *a) {
@@ -3225,8 +3225,8 @@ void r8vscale(int abeg, int alen, double s, double *a) {
 
     aadr = abeg;
     for (i = 0; i < alen; ++i) {
-	a[aadr] = s * a[aadr];
-	++aadr;
+		a[aadr] = s * a[aadr];
+		++aadr;
     }
 }
 
@@ -3239,7 +3239,7 @@ void r8vscats(int qbeg, int qlen, double s, int *q, double *a) {
 
     qadr = qbeg;
     for (i = 0; i < qlen; ++i)
-	a[q[qadr++]] = s;
+		a[q[qadr++]] = s;
 
 }
 
@@ -3253,7 +3253,7 @@ void r8vlinkt(int abeg, int bbeg, int vlen, double s, double *a, double *b) {
     aadr = abeg;
     badr = bbeg;
     for (i = 0; i < vlen; ++i)
-	b[badr++] += s * a[aadr++];
+		b[badr++] += s * a[aadr++];
 }
 
 void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, double *b, double *c) {
@@ -3264,11 +3264,11 @@ void r8vlinkq(int abeg, int bbeg, int cbeg, int vlen, double s, double *a, doubl
     --b;
     --a;
 
-    aadr = abeg;
-    badr = bbeg;
-    cadr = cbeg;
-    for (i = 0; i < vlen; ++i)
-	c[cadr++] += s * a[aadr++] * b[badr++];
+	aadr = abeg;
+	badr = bbeg;
+	cadr = cbeg;
+	for (i = 0; i < vlen; ++i)
+		c[cadr++] += s * a[aadr++] * b[badr++];
 }
 
 void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b) {
@@ -3279,9 +3279,9 @@ void r8vgathp(int abeg, int ainc, int bbeg, int blen, double *a, double *b) {
 
     aadr = abeg;
     badr = bbeg;
-    for (i = 0; i < blen; ++i) {
-	b[badr++] = a[aadr];
-	aadr += ainc;
+	for (i = 0; i < blen; ++i) {
+		b[badr++] = a[aadr];
+		aadr += ainc;
     }
 }
 
