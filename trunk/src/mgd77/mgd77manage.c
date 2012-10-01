@@ -847,7 +847,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
 			history[k++] = '\n';	history[k] = '\0';				/* Add LF at end of line */
 			k += strlen (D->H.history);
-			D->H.history = GMT_memory (GMT, D->H.history, k, char);
+			D->H.history = GMT_memory (GMT, D->H.history, k+1, char);
 			strcat (D->H.history, history);		/* MGD77_Write_FILE_cdf will use this to create the history attribute, thus preserving earlier history */
 
 			if (MGD77_Write_File (GMT, In.path, &In, D)) {	/* Create the new, slimmer file */
