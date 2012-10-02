@@ -38,7 +38,7 @@ Instead of computing distances, return the ID numbers of the Voronoi polygons th
 .TP
 OPT(L)IT(unit)
 Specify the unit used for distance calculations.  Choose among BD(d) (spherical degree), BD(e) (m),
-BD(f) (feet), BD(k) (km), BD(M) (mile), or BD(n) (nautical mile).  A spherical approximation is used unless
+BD(f) (feet), BD(k) (km), BD(M) (mile), BD(n) (nautical mile) or BD(u) survey foot.  A spherical approximation is used unless
 BD(PROJ_ELLIPSOID) is set to an actual ellipsoid.
 OPT(N)
 Read the information pertaining to each Voronoi polygon (the unique node lon, lat and polygon area) from

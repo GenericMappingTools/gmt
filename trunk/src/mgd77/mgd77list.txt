@@ -329,8 +329,8 @@ Issue a segment header record with cruise ID for each cruise.
 .TP
 OPT(Nd)|BD(s)IT(unit)
 Append BD(d) for distance or BD(s) for speed, then give the desired IT(unit) as
-BD(e) (meter or m/s), BD(k) (km or km/hr), BD(m) (miles or miles/hr), or
-BD(n) (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s)].
+BD(e) (meter or m/s), BD(f) (feet or feet/s), BD(k) (km or km/hr), BD(m) (miles or miles/hr),
+BD(n) (nautical miles or knots), or BD(u) (survey feet or sfeet/s).  [Default is OPT(Ndk) OPT(Nse) (km and m/s)].
 .TP
 OPT(Qa)IT(min)/IT(max)
 Specify an accepted range (IT(min)/IT(max)) of azimuths.  Records whose track azimuth falls
@@ -343,11 +343,11 @@ of velocities.  Records whose track speed falls outside this range are ignored [
 .TP
 OPT(Sa)IT(startdist)[unit]
 Do not list data that are less than IT(startdist) meter along track from port of departure.
-Append BD(k) for km, BD(m) for miles, or BD(n) for nautical miles [Default is 0 meters].
+Append BD(e) for meter, BD(f) for feet, BD(k) for km, BD(m) for miles, BD(n) for nautical miles, or BD(u) for survey feet [Default is 0e (meters)].
 .TP
 OPT(Sb)IT(stopdist)[unit]
 Do not list data that are IT(stopdist) or more meters along track from port of departure.
-Append BD(k) for km, BD(m) for miles, or BD(n) for nautical miles [Default is end of track].
+Append BD(e) for meter, BD(f) for feet, BD(k) for km, BD(m) for miles, BD(n) for nautical miles, or BD(u) for survey feet [Default is end of track].
 .TP
 OPT(T)[BD(m)|BD(e)]
 Turns OFF the otherwise automatic adjustment of values based on correction terms that are

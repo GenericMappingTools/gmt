@@ -399,7 +399,7 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Cannot be used with the binary output option.\n");
 	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
 	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
-	GMT_message (GMT, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, (M)ile, or (n)autical mile [e].\n");
+	GMT_message (GMT, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].\n");
 	GMT_message (GMT, "\t   PROJ_ELLIPSOID determines if geodesic or great-circle distances are used.\n");
 	GMT_message (GMT, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
 	GMT_message (GMT, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");
@@ -445,8 +445,8 @@ int GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_CTRL 
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				if (!(opt->arg && strchr ("defkMn", opt->arg[0]))) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", "d|e|f|k|M|n");
+				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else

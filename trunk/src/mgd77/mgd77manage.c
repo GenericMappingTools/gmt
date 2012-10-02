@@ -118,6 +118,7 @@ void *New_mgd77manage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	C->A.parameters[IMG_SCALE] = 1.0;	/* IMG data scaling */
 	C->C.mode = 2;
 	C->E.value = '9';
+	C->N.code[0] = 'k';			/* km is default distance unit */
  	return (C);
 }
 
@@ -134,7 +135,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n");
 	GMT_message (GMT, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
-	GMT_message (GMT, "\t[-Ne|k|m|n[+|-]] [-V] [%s] [%s]\n\n", GMT_bi_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[-N%s[+|-]] [-V] [%s] [%s]\n\n", GMT_LEN_UNITS2_DISPLAY, GMT_bi_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -211,7 +212,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t      -I is ignored by -Ae.\n");
 	GMT_message (GMT, "\t   Note for text: Interpolation is not allowed, and \"not-a-string\" is created from -E.\n");
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
-	GMT_message (GMT, "\t   (e) meter, (k) km, (M) miles, or (n) nautical miles [Default is -Nk].\n");
+	GMT_message (GMT, "\t   m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [Default is -Nk].\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
 	GMT_explain_options (GMT, "VC0n" GMT_OPT("Q"));
 	
@@ -473,8 +474,8 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 					Ctrl->N.code[0] = 'M';
 				}
 #endif
-				if (!strchr ("ekMn", (int)Ctrl->N.code[0])) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error -N: Unit must be e, k, M, or n\n");
+				if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.code[0])) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error -N: Unit must be from %s\n", GMT_LEN_UNITS2_DISPLAY);
 					n_errors++;
 				}
 				break;
