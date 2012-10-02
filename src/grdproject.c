@@ -97,8 +97,8 @@ int GMT_grdproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-G Set name of output grid\n");
 	GMT_explain_options (GMT, "J");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Force projected values to be in actual meters [Default uses the given map scale].\n");
-	GMT_message (GMT, "\t   Specify another unit by appending (f)eet, (k)m, (M)ile, (n)autical mile,\n");
+	GMT_message (GMT, "\t-A Force projected values to be in actual distance units [Default uses the given map scale].\n");
+	GMT_message (GMT, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
 	GMT_message (GMT, "\t   or i (inch), c (cm), or p (points) [e].\n");
 	GMT_message (GMT, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
 	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");

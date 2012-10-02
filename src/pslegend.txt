@@ -66,11 +66,11 @@ Use BD(-) to default to the size and type of BD(FONT_LABEL).
 BD(M) IT(slon)|BD(-) IT(slat length) BD(f)|BD(p) [ OPT(R)IT(w/e/s/n) OPT(J)IT(param) ]
 Place a map scale in the legend.  Specify IT(slon slat), the point on the map where the scale applies (IT(slon)
 is only meaningful for certain oblique projections.  If not needed, you must specify BD(-) instead),
-IT(length), the length of the scale in km (for other units append BD(e) (meter), BD(f) (foot), BD(M) (mile), BD(n) (nautical miles), or BD(u) (survey foot)), and
+IT(length), the length of the scale in km (for other units append BD(e) (meter), BD(f) (foot), BD(M) (mile), BD(n) (nautical mile), or BD(u) (survey foot)), and
 BD(f) or BD(p) for fancy or plain scale.  If the OPT(R) OPT(J) supplied to BD(pslegend) is different than the
 projection needed for the scale (or not given at all, i.e., with OPT(Dx)), supply the optional OPT(R) OPT(J) settings as well.  
 Append BD(+l) to the IT(length) to
-select the default label which equals the distance unit (km, miles, nautical miles) and is justified on top of the scale [t].
+select the default label which equals the distance unit (meter, feet, km, miles, nautical miles, survey feet) and is justified on top of the scale [t].
 Change this by giving your own label (append BD(+l)IT(label)).  Change label justification with BD(+j)IT(justification)
 (choose among l(eft), r(ight), t(op), and b(ottom)).  Apply BD(+u) to append the unit to all distance annotations along the scale. 
 If you want to place a rectangle behind the scale, specify suitable BD(+p)IT(pen) and/or BD(+f)IT(fill) parameters.

@@ -158,8 +158,8 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Specify <datum> using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>,\n");
 	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
 	GMT_message (GMT, "\t   If <datum> = - or not given we assume WGS-84.\n");
-	GMT_message (GMT, "\t-F Force projected values to be in actual meters [Default uses the given plot scale].\n");
-	GMT_message (GMT, "\t   Specify unit by appending f (foot) k (km), M (miles), n (nautical miles), u (survey foot), i (inch), c (cm), or p (points) [e].\n");
+	GMT_message (GMT, "\t-F Force projected values to be in actual distances [Default uses the given plot scale].\n");
+	GMT_message (GMT, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot), i (inch), c (cm), or p (points) [e].\n");
 	GMT_message (GMT, "\t-G Calculate distances to <lon0>/<lat0> OR cumulative distances along track (if point not given).\n");
 	GMT_message (GMT, "\t   Use -G[<unit>]+ to obtain <lon0> <lat0> from two extra input columns.\n");
 	GMT_message (GMT, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track.\n");
@@ -167,7 +167,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_message (GMT, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
 	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
-	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
+	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_message (GMT, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
 	GMT_message (GMT, "\t   Append + to get line segment id and fractional point number instead of lon/lat.\n");

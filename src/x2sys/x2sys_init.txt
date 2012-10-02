@@ -67,8 +67,8 @@ spacings refer to the binning used in the track bin-index data base.
 OPT(Nd)|BD(s)IT(unit)
 Sets the units used for distance and speed when requested by other programs.
 Append BD(d) for distance or BD(s) for speed, then give the desired IT(unit) as
-BD(c) (Cartesian userdist or userdist/usertime), BD(e) (meter or m/s), BD(k) (km or km/hr), BD(m) (miles or miles/hr), or
-BD(n) (nautical miles or knots).  [Default is OPT(Ndk) OPT(Nse) (km and m/s) if OPT(G) is set
+BD(c) (Cartesian userdist or userdist/usertime), BD(e) (meters or m/s), BD(f) (feet or feet/s), BD(k) (km or kms/hr), BD(m) (miles or miles/hr),
+BD(n) (nautical miles or knots) or BD(u) (survey feet or survey feet/s).  [Default is OPT(Ndk) OPT(Nse) (km and m/s) if OPT(G) is set
 and OPT(Ndc) and OPT(Nsc) otherwise (Cartesian units)].
 #include "explain_-Rgeo.txt"
 For Cartesian data just give IT(xin/xmax/ymin/ymax).  This sets the complete domain
