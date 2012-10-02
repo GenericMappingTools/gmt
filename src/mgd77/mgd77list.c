@@ -56,7 +56,7 @@
 
 struct MGD77LIST_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
-	struct A {	/* -A */
+	struct MGD77LIST_A {	/* -A */
 		bool active;
 		int code[4];
 		bool force;
@@ -66,47 +66,47 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double sound_speed;
 		double sensor_offset;
 	} A;
-	struct C {	/* -C */
+	struct MGD77LIST_C {	/* -C */
 		bool active;
 		unsigned int mode;
 	} C;
-	struct D {	/* -D */
+	struct MGD77LIST_D {	/* -D */
 		bool active;
 		bool mode;	/* true to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
-	struct E {	/* -E */
+	struct MGD77LIST_E {	/* -E */
 		bool active;
 	} E;
-	struct F {	/* -F */
+	struct MGD77LIST_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct G {	/* -G */
+	struct MGD77LIST_G {	/* -G */
 		bool active;
 		uint64_t start;	/* Start rec */
 		uint64_t stop;	/* Stop rec */
 	} G;
-	struct I {	/* -I */
+	struct MGD77LIST_I {	/* -I */
 		bool active;
 		unsigned int n;
 		char code[3];
 	} I;
-	struct L {	/* -L */
+	struct MGD77LIST_L {	/* -L */
 		bool active;
 		char *file;
 	} L;
-	struct N {	/* -N */
+	struct MGD77LIST_N {	/* -N */
 		bool active[2];
 		char unit[2][2];
 	} N;
-	struct Q {	/* -Q */
+	struct MGD77LIST_Q {	/* -Q */
 		bool active[2];
 		double min[2];
 		double max[2];
 	} Q;
-	struct S {	/* -S */
+	struct MGD77LIST_S {	/* -S */
 		bool active;
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
@@ -115,11 +115,11 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		bool active;
 		int mode;	/* May be -1 */
 	} T;
-	struct W {	/* -W */
+	struct MGD77LIST_W {	/* -W */
 		bool active;
 		double value;
 	} W;
-	struct Z {	/* -Z[-|+] */
+	struct MGD77LIST_Z {	/* -Z[-|+] */
 		bool active;
 		bool mode;
 	} Z;
@@ -397,8 +397,8 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 							MGD77_Set_Unit (GMT, &opt->arg[k+2], &dist_scale, 1);
 							Ctrl->A.cable_adjust = true;
 							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]) * dist_scale;
-							if (Ctrl->A.sensor_offset == 0.0) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Amc: Cable length offset must be nonzero.\n");
+							if (Ctrl->A.sensor_offset < 0.0) {
+								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Amc: Cable length offset must be positive or zero.\n");
 								n_errors++;
 							}
 						}
@@ -1335,7 +1335,9 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				double d;
 				uint64_t n;
 				n = rec;
-				if (cumdist[rec] < Ctrl->A.sensor_offset)		/* First points (distance < sensor_offset) are lost */
+				if (Ctrl->A.sensor_offset == 0)             /* Accept also this case to easy life with script writing */
+					dvalue[m1_col][rec] = mtf_bak[rec];     /* Means, copy mtf1 into mtf2 */
+				else if (cumdist[rec] < Ctrl->A.sensor_offset)		/* First points (distance < sensor_offset) are lost */
 					dvalue[m1_col][rec] = GMT->session.d_NaN;
 				else {
 					while ((d = cumdist[rec] - cumdist[n]) < Ctrl->A.sensor_offset) n--;
