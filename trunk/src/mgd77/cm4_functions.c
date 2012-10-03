@@ -393,8 +393,9 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 
 	/* LOOP over number of input points (many computations below are useless repeated - room for improvment */
 	for (n = 0; n < Ctrl->CM4_DATA.n_pts; ++n) {
-		r8vset(1, 21, 0., &bmdl[0]);
-		if (Ctrl->CM4_L.curr) r8vset(1, 12, 0., &jmdl[0]);
+		memset(bmdl, 0, 21 * sizeof(double));
+		if (Ctrl->CM4_L.curr)
+			memset(jmdl, 0, 12 * sizeof(double));
 		clat = (90 - p_lat[n]) * D2R;
 		elon = p_lon[n] * D2R;
 
@@ -997,7 +998,7 @@ void tsearad(int full, int ks, int kr, int ns, int ng, double f, double *t, doub
     --t;
 
     /* Function Body */
-    r8vset(1, ng, 0., &e[0]);
+    memset(e, 0, ng * sizeof(double));
     j = 1;
     s = 1.;
     r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
@@ -1038,7 +1039,7 @@ void tseardr(int full, int ks, int kr, int ns, int ng, double f, double *t, doub
     --t;
 
     /* Function Body */
-    r8vset(1, ng, 0., &e[0]);
+    memset(e, 0, ng * sizeof(double));
     z = 1.;
     for (k = 1; k <= kr; ++k) {
 	j = 1;
@@ -1065,7 +1066,7 @@ void mseason(int ks, int ns, int ng, double d, double *t, double *e, double *g) 
     g -= (1 + ng * (1 + ns));
 
     /* Function Body */
-    r8vset(1, ng, 0., &e[0]);
+    memset(e, 0, ng * sizeof(double));
     j = 1;
     s = 1.;
     r8vlinkt(1, 1, ng, s, &g[(j + ns) * ng + 1], &e[0]);
@@ -1088,7 +1089,7 @@ void iseason(int ks, int ns, int ng, double f, double *t, double *e, double *g) 
 	int i, j;
 	double s;
 
-	r8vset(1, ng, 0., &e[0]);
+	memset(e, 0, ng * sizeof(double));
 	j = 0;
 	r8vlinkt(1, 1, ng, f, &g[j * ng], &e[0]);
 	for (i = 1; i <= ks; ++i) {
@@ -1458,7 +1459,7 @@ void getgmf(int nder, int ns, double *ep, double *tm, double *b, double *c, doub
 	    la = MIN(nk,y+1);
 	    r8slt(1, nk, *tm, &p[ik], &y);
 	    lb = MIN(nk,y+1);
-	    r8vset(1, nw, 0., &b[1]);
+		memset(&b[1], 0, nw * sizeof(double));
 	    dbspln_(&la, ep, &m, &null, &k, &p[ik], &b[la - 1], &b[nw + 1]);
 	    dbspln_(&lb, tm, &m, &null, &k, &p[ik], &b[no + lb - 1], &b[nw + 1]);
 	    r8vsub(1, no+1, 1, no, &b[1], &b[1], &b[1]);
@@ -1557,7 +1558,7 @@ void dbspln_(int *l, double *t, int *n, int * d__, int *k, double *x, double *b,
     posw = *d__ + *n;
     for (i__ = 1; i__ <= *n; ++i__) {
 	lenb = MIN(q, posw - *d__);
-	r8vset(1, posw, 0., &w[1]);
+	memset(&w[1], 0, posw * sizeof(double));
 	r8vgathp(1, 1, *d__ + 1, lenb, &b[1], &w[1]);
 	for (j = 1; j <= *d__; ++j) {
 	    ik = posx;
@@ -1591,7 +1592,7 @@ void getgxf(int pmin, int pmax, int nmax, int mmax, int *ng, double *e, double *
     double cosp, sinp;
 
     /* Function Body */
-    r8vset(1, *ng, 0., &g[0]);
+    memset(g, 0, *ng * sizeof(double));
     ie = 0;
     for (p = pmin; p <= pmax; ++p) {
 	ig = 0;
@@ -1635,7 +1636,7 @@ void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe
 	    if (*cerr >= 50) return;
 	    if (rgen > 0) {
 		rgen = 0;
-		r8vset(1, grad * 36 + 28, 0., &b[0]);
+		memset(b, 0, (grad * 36 + 28) * sizeof(double));
 		fdldc(grad, *nc, &dsdc[0], &dldc[0]);
 		blgen(grad, *nc, &b[0], &c[0], &dldc[0]);
 		bngen_(&b[0]);
@@ -1651,7 +1652,7 @@ void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe
 
 	ia = 0;
 	if (*na > 0) {
-	    r8vset(1, *na * 6, 0., &dlda[0]);
+	    memset(dlda, 0, (*na * 6) * sizeof(double));
 	    if (dtyp == 1)
 		tbi_(&atyp[0], na, &ia, &a[0], &b[0], &dlda[0]);
 	    else if (dtyp == 2) {
@@ -1835,7 +1836,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	if (pgen > 0)
 	    trigmp(*mmax, *phi, &t[1]);
 
-	r8vset(1, (*grad * 18 + 6) * *nc, 0., &dldc[1]);
+	memset(&dldc[1], 0, ((*grad * 18 + 6) * *nc) * sizeof(double));
 	ic = 0;
 	id = 1;
 	ip = *ii;
@@ -2915,13 +2916,13 @@ void tvn_(int *grad, int *k, int *nc, int *na, int *ia, double *a, double *b, do
 void fdldsl_(int *k, int *na, int *ia, double *b, double *dlda) {
     int i, j;
 
-    i = *ia;
-    for (j = 0; j < 6; ++j) {
-	dlda[i] = 0.;
-	dlda[i + 1] = 0.;
-	dlda[i + 2] = 0.;
-	i += *na;
-    }
+	i = *ia;
+	for (j = 0; j < 6; ++j) {
+		dlda[i] = 0.;
+		dlda[i + 1] = 0.;
+		dlda[i + 2] = 0.;
+		i += *na;
+	}
     if (*k > 1) {
 	i = *ia;
 	dlda[i] = b[0];
@@ -2957,21 +2958,21 @@ void tbi_(int *k, int *na, int *ia, double *a, double *b, double *dlda) {
 void fdldbi_(int *k, int *na, int *ia, double *dlda) {
     int i, j;
 
-    i = *ia;
-    for (j = 0; j < 6; ++j) {
-	dlda[i] = 0.;
-	dlda[i + 1] = 0.;
-	dlda[i + 2] = 0.;
-	i += *na;
-    }
-    if (*k > 1) {
 	i = *ia;
-	dlda[i] = 1.;
-	i += *na;
-	dlda[i + 1] = 1.;
-	i += *na;
-	dlda[i + 2] = 1.;
+	for (j = 0; j < 6; ++j) {
+		dlda[i] = 0.;
+		dlda[i + 1] = 0.;
+		dlda[i + 2] = 0.;
+		i += *na;
     }
+	if (*k > 1) {
+		i = *ia;
+		dlda[i] = 1.;
+		i += *na;
+		dlda[i + 1] = 1.;
+		i += *na;
+		dlda[i + 2] = 1.;
+	}
 }
 
 void ltrans(int n, int m, double *q, double *r, double *s) {
@@ -3099,12 +3100,12 @@ void i8vcum(int abas, int abeg, int alen, int *a) {
     aprv = a[abeg];
     a[abeg] = abas;
     aadr = abeg + 1;
-    for (i = 0; i < alen - 1; ++i) {
-	acur = a[aadr];
-	a[aadr] = a[aadr - 1] + aprv;
-	aprv = acur;
+	for (i = 0; i < alen - 1; ++i) {
+		acur = a[aadr];
+		a[aadr] = a[aadr - 1] + aprv;
+		aprv = acur;
 	++aadr;
-    }
+	}
 }
 
 void i8vdel(int abas, int abeg, int alen, int *a) {
@@ -3130,8 +3131,8 @@ void r8vset(int abeg, int alen, double s, double *a) {
     --a;
 
     aadr = abeg;
-    for (i = 0; i < alen; ++i)
-	a[aadr++] = s;
+	for (i = 0; i < alen; ++i)
+		a[aadr++] = s;
 }
 
 double r8sdot(int abeg, int bbeg, int vlen, double *a, double *b) {
@@ -3225,7 +3226,7 @@ void r8vscale(int abeg, int alen, double s, double *a) {
 
     aadr = abeg;
     for (i = 0; i < alen; ++i) {
-		a[aadr] = s * a[aadr];
+		a[aadr] *= s;
 		++aadr;
     }
 }
@@ -3321,5 +3322,5 @@ double pow_di(double ap, int bp) {
 }
 
 int i_dnnt(double x) {
-	return (int)(x >= 0. ? floor(x + .5) : -floor(.5 - x));
+	return (int)(x >= 0. ? floor(x + 0.5) : -floor(0.5 - x));
 }
