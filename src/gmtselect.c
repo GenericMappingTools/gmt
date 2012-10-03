@@ -628,7 +628,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT->common.b.ncol[GMT_OUT] = UINT_MAX;	/* Flag to have it reset to GMT->common.b.ncol[GMT_IN] when writing */
 	r_mode = (just_copy_record) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
-	need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
+	GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -C|L|F files might have turned it on [should be determined below] */
 	
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
@@ -642,6 +642,7 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 				break;
 			else if (GMT_REC_IS_SEG_HEADER (GMT)) {
 				output_header = true;
+				need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 				continue;
 			}
 		}
