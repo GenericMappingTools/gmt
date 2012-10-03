@@ -124,7 +124,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *C, int level)
 	/* This displays the psvelo synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psvelo [<table>] %s %s [-A<awidth>/<alength>/<hwidth>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_message (GMT, "usage: psvelo [<table>] %s %s [-A<vecpar>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
 	GMT_message (GMT, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
@@ -191,7 +191,7 @@ int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GM
 				got_A = true;
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
-					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
+					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
 					Ctrl->A.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
 					Ctrl->A.S.v.h_width = (float)GMT_to_inch (GMT, txt_c);
