@@ -57,8 +57,6 @@ is the one of the 64 bits version, or gswin64c
 OPT(L)IT(listfile)
 The IT(listfile) is an ASCII file with the names of the IT(PostScript) files to be converted.
 .TP
-OPT(M)
-.TP
 OPT(N)
 This option is obsolete.
 Use OPT(S) to print the GhostScript command, if applicable.
