@@ -1417,7 +1417,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 	}
 	/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
-	if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no < C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
+	if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 		strcpy (C->current.io.current_record, line);
 		C->current.io.status = GMT_IO_TBL_HEADER;
 		*status = 0;
