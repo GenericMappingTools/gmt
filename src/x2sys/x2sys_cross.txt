@@ -31,11 +31,11 @@ Append a filename to save these run-times to file.
 .TP
 OPT(Il)|BD(a)|BD(c)
 Sets the interpolation mode for estimating values at the crossover. Choose among:
-.br
+.sp
 BD(l) Linear interpolation [Default].
-.br
+.sp
 BD(a) Akima spline interpolation.
-.br
+.sp
 BD(c) Cubic spline interpolation.
 .br
 #include "explain_-J.txt"
@@ -50,14 +50,14 @@ the COEs to those that fall inside the specified domain.
 OPT(Sl)|BD(u)|BD(h)IT(speed)
 Defines window of track speeds.  If speeds are outside this window we do not
 calculate a COE. Specify
-.br
-	OPT(Sl) sets lower speed [Default is 0].
-.br
-	OPT(Su) sets upper speed [Default is Infinity].
-.br
-	OPT(Sh) does not limit the speed but sets a lower speed below which headings
+.sp
+    OPT(Sl) sets lower speed [Default is 0].
+.sp
+    OPT(Su) sets upper speed [Default is Infinity].
+.sp
+    OPT(Sh) does not limit the speed but sets a lower speed below which headings
 will not be computed (i.e., set to NaN) [Default calculates headings regardless of speed].
-.br
+.sp
 #include "explain_-V.txt"
 .TP
 OPT(W)IT(size)
@@ -110,7 +110,7 @@ files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 BD(x2sys_cross) A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 > crossovers.d
 .SH REFERENCES
 Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package. IT(Computers and Geosciences), BD(36), 348-354.
-.br
+.sp
 Wessel, P. (1989), XOVER: A cross-over error detector for track data, IT(Computers and Geosciences), BD(15)(3), 333-346.
 .SH "SEE ALSO"
 .IR GMT (1),

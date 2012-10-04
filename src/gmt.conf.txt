@@ -202,7 +202,7 @@ for the task among available algorithms), BD(fftw)[,IT(planner_flag)] (The Faste
 Fourier Transform in the West), BD(accelerate) (Use the Accelerate Framework under
 OS X; Note, that the number of samples to be processed must be a base 2 exponent),
 BD(kiss) (Kiss FFT) [auto].
-.br
+.sp
 FFTW can "learn" how to optimally compute Fourier transforms on the current
 hardware and OS by computing several FFTs and measuring their execution time.
 This so gained "Wisdom" will be stored in and reloaded from the file
