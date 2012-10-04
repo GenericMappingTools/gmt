@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_list \- Extract subset from crossover data base
 .SH SYNOPSIS
-BD(x2sys_list) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A)IT(asymm_max) ] 
+BD(x2sys_list) OPT(C)IT(column) OPT(T)IT(TAG) [ IT(coedbase.txt) ] [ OPT(A)IT(asymm_max) ] [ OPT(E) ] 
 [ OPT(F)IT(acdhiInNtTvxyz) ] [ OPT(I)[IT(list)] ] [ OPT(L)[IT(corrtable)] ] [ OPT(N)IT(nx_min) ] 
 [ OPT(Qe)|BD(i) ] [ GMT_Rgeo_OPT ] [ OPT(S)IT(track) ] [ GMT_V_OPT ] [ OPT(W)[IT(list)] ] [ GMT_bo_OPT ]
 .SH DESCRIPTION
@@ -28,6 +28,9 @@ Specifies maximum asymmetry in the distribution of crossovers relative to the mi
 not time is available).  Asymmetry is computed as (n_right - n_left)/(n_right + n_left), referring the the number
 of crossovers that falls in the left or right half of the range.  Symmetric distributions will have values close
 to zero.  If specified, we exclude tracks whose asymmetry exceeds the specify cutoff in absolute value [1, i.e., include all].
+.TP
+OPT(E)
+Enhance ASCII output by writing GMT segment headers with name of the two tracks and their total number of cross-overs [no segment headers].
 .TP
 OPT(F)IT(acdhiInNtTvxyz)
 Specify your desired output using any combination of IT(acdhiInNtTvwxyz), in any order.  Do not use space between
@@ -82,10 +85,6 @@ Name of ASCII file with a list of track names and their relative weights (one tr
 used to calculate the composite crossover weight (output code BD(w) above).
 [Default sets weights to 1].
 #include "explain_-bo.txt"
-.TP
-OPT(m)
-Multiple segment output format.  Segments with crossovers for a single track pair are separated by a
-record whose first character is IT(flag) and contains the two track names. [Default is '>'].
 #include "explain_help.txt"
 .SH EXAMPLES
 To find all the magnetic crossovers associated with the tag MGD77 from the file COE_data.txt, restricted to occupy

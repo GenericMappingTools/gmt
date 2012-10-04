@@ -100,14 +100,14 @@ To compute all internal crossovers in the gmt-formatted file c2104.gmt, and
 using the tag GMT, try
 .br
 .sp
-BD(x2sys_cross) c2104.gmt OPT(T)GMT > c2104.d
+x2sys_cross c2104.gmt -TGMT > c2104.d
 .br
 .sp
 To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 .br
 .sp
-BD(x2sys_cross) A13232.mgd77 A99938.mgd77 OPT(Qe) OPT(T)MGD77 > crossovers.d
+x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.d
 .SH REFERENCES
 Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys package. IT(Computers and Geosciences), BD(36), 348-354.
 .sp

@@ -59,13 +59,13 @@ To report statistics of all the external magnetic crossovers associated with the
 restricted to occupy a certain region in the south Pacific, try
 .br
 .sp
-BD(x2sys_report) COE_data.txt OPT(V) OPT(T)MGD77 OPT(R)180/240/-60/-30 OPT(C)mag > mag_report.txt
+x2sys_report COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag > mag_report.txt
 .br
 .sp
 To report on the faa crossovers globally that involves track 12345678, try
 .br
 .sp
-BD(x2sys_report) COE_data.txt OPT(V) OPT(T)MGD77 OPT(C)faa OPT(S)12345678  > faa_report.txt
+x2sys_report COE_data.txt -V -TMGD77 -Cfaa -S2345678 > faa_report.txt
 .SH REFERENCES
 Mittal, P. K. (1984), Algorithm for error adjustment of potential field data along a survey network, IT(Geophysics), BD(49)(4), 467-469.
 .SH "SEE ALSO"

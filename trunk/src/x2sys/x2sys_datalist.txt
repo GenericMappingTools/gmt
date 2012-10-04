@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_datalist \- Extract content of track data files
 .SH SYNOPSIS
-BD(x2sys_datalist) IT(track(s)) OPT(T)IT(TAG) [ OPT(A) ] [ OPT(F)IT(name1),IT(name2),...) ] 
+BD(x2sys_datalist) IT(track(s)) OPT(T)IT(TAG) [ OPT(A) ] [ OPT(E) ] [ OPT(F)IT(name1),IT(name2),...) ] 
 [ OPT(L)[IT(corrtable)] ] [ GMT_Rgeo_OPT ]  [ OPT(S) ] [ GMT_V_OPT ] [ GMT_bo_OPT ] [ GMT_h_OPT ]
 .SH DESCRIPTION
 BD(x2sys_datalist) reads one or more files and produces a single ASCII [or binary] table. 
@@ -22,6 +22,9 @@ Eliminate COEs by distributing the COE between the two tracks in proportion to t
 These (dist, adjustment) spline knots files for each track and data column
 are called IT(track.column).adj and are expected to be in the BD($X2SYS_HOME)/IT(TAG) directory.
 The adjustments are only applied if the corresponding adjust file can be found [No residual adjustments]
+.TP
+OPT(E)
+Enhance ASCII output by writing GMT segment headers between data from each track [no segment headers].
 .TP
 OPT(F)IT(name1),IT(name2),...)
 Give a comma-separated sub-set list of column names defined in the definition
@@ -45,16 +48,12 @@ Suppress output records where all the data columns are NaN [Default will output 
 #include "explain_-V.txt"
 #include "explain_-bo.txt"
 #include "explain_-h.txt"
-.TP
-OPT(m)
-Output a segment header between data from each track.  Note this option does not
-imply anything about the input file; that information is conveyed via the system tag (OPT(T)).
 #include "explain_help.txt"
 .SH EXAMPLES
 To extract all data from the old-style MGG supplement file c2104.gmt, recognized by the tag GMT:
 .br
 .sp
-BD(x2sys_datalist) c2104.gmt OPT(T)GMT > myfile
+x2sys_datalist c2104.gmt -TGMT > myfile
 .br
 .sp
 To make lon,lat, and depth input for BD(blockmean) and BD(surface) using all the files
@@ -62,7 +61,7 @@ listed in the file tracks.lis and define by the tag TRK, but only the data that 
 area, and make output binary, run
 .br
 .sp
-BD(x2sys_datalist) =tracks.lis OPT(T)TRK OPT(F)lon,lat,depth OPT(R)-40/-30/25/35 OPT(bo) > alltopo_bin.xyz
+x2sys_datalist =tracks.lis -TTRK -Fon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
 .SH CORRECTIONS
 The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
 This table is usually produced by BD(x2sys_solve).
