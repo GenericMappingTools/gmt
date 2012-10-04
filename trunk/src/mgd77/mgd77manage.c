@@ -41,10 +41,6 @@
 #define ADD_CARTER	3
 #define ADD_GRAV	4
 #define ADD_RMAG	5
-#ifdef USE_CM4
-#define ADD_CM4		6
-#define ADD_RMAG4	7
-#endif
 
 #define N_E77_MODES	5
 #define E77_HEADER_MODE	0
@@ -148,14 +144,8 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t      with the same number of records as the MGD77 file.  Only one cruise can be set.\n");
 	GMT_message (GMT, "\t      If filename is - we read from stdin.\n");
 	GMT_message (GMT, "\t   c: Create a new column to be calculated from existing columns.  Add code:\n");
-#ifdef USE_CM4
-	GMT_message (GMT, "\t        4 = CM4 field, m = IGRF total field, c = Carter correction, g = IGF (\"normal gravity\")\n");
-	GMT_message (GMT, "\t        R = recomputed magnetic anomaly rmag = mtfx - CM4 total field.\n");
-	GMT_message (GMT, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field.\n");
-#else
 	GMT_message (GMT, "\t        m = IGRF total field, c = Carter correction, g = IGF (\"normal gravity\").\n");
 	GMT_message (GMT, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field.\n");
-#endif
 	GMT_message (GMT, "\t        Append x for which mtfx field to use (1 or 2) [1].\n");
 	GMT_message (GMT, "\t        For g, optionally append 1-4 to select the gravity formula to use:\n");
 	GMT_message (GMT, "\t        1 = Heiskanen 1924, 2 = International 1930, 3 = IGF1967, 4 = IGF1980.\n");
@@ -597,11 +587,6 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->A.file[0] == 'm' && Ctrl->A.file[1] == '\0') {
 			c_kind = ADD_IGRF;
 		}
-#ifdef USE_CM4
-		else if (Ctrl->A.file[0] == '4' && Ctrl->A.file[1] == '\0') {
-			c_kind = ADD_CM4;
-		}
-#endif
 		else if (Ctrl->A.file[0] == 'c' && Ctrl->A.file[1] == '\0') {
 			c_kind = ADD_CARTER;
 			MGD77_carter_init (GMT, &Carter);	/* Initialize Carter machinery */
@@ -614,18 +599,8 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			c_kind = ADD_RMAG;
 			MTF_col = mfield;
 		}
-#ifdef USE_CM4
-		else if (Ctrl->A.file[0] == 'R' && (Ctrl->A.file[1] == '\0' || ((mfield = (Ctrl->A.file[1] - '0')) >= 1 && mfield <= 2)) ) {
-			c_kind = ADD_RMAG4;
-			MTF_col = mfield;
-		}
-#endif
 		else {
-#ifdef USE_CM4
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Ac expects 4, m, c, or g[1-4]\n");
-#else
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Ac expects m, c, or g[1-4]\n");
-#endif
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -900,56 +875,6 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated IGRF at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
 		}
-#ifdef USE_CM4	
-		else if (c_kind == ADD_CM4) {	/* Append CM4 column */
-			int ix, iy, it;
-			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL;
-			struct MGD77_CM4 CM4;
-			
-			if ((ix = skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-
-			xvar = D->values[ix];
-			yvar = D->values[iy];
-			tvar = D->values[it];
-			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
-			MGD77_CM4_init (&In, &CM4);
-			
-			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
-				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
-				colvalue[rec] = MGD77_Calc_CM4 (GMT, date, xvar[rec], yvar[rec], false, &CM4);
-				n_sampled++;
-			}
-			MGD77_CM4_end (GMT, &CM4);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated CM4 at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
-		}
-		else if (c_kind == ADD_RMAG4) {	/* Append recomputed residual mag column */
-			int ix, iy, it, im;
-			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, *mvar = NULL, IGRF[7];
-			char field[5];
-			
-			if ((ix = skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			if ((it = skip_if_missing (GMT, "time", list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-			sprintf (field, "mtf%d", MTF_col);
-			if ((im = skip_if_missing (GMT, field, list[argno], &In, &D)) == MGD77_NOT_SET) continue;
-
-			xvar = D->values[ix];
-			yvar = D->values[iy];
-			tvar = D->values[it];
-			mvar = D->values[im];
-			colvalue = GMT_memory (GMT, NULL, D->H.n_records, double);
-			
-			for (rec = n_sampled = 0; rec < D->H.n_records; rec++) {
-				date = MGD77_time_to_fyear (GMT, &In, tvar[rec]);	/* Get date as decimal year */
-/* Change this--> */		check = MGD77_igrf10syn (GMT, 0, date, 1, 0.0, xvar[rec], yvar[rec], IGRF);
-				colvalue[rec] = (check) ? GMT->session.d_NaN : mvar[rec] - IGRF[MGD77_IGRF_F];
-				n_sampled++;
-			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Estimated recomputed magnetic anomaly at %d locations out of %d for cruise %s\n", n_sampled, D->H.n_records, list[argno]);
-		}
-#endif
 		else if (c_kind == ADD_GRAV) {	/* Append IGF column */
 			int ix, iy, use;
 			double *xvar = NULL, *yvar = NULL;

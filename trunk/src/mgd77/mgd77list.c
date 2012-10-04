@@ -205,9 +205,6 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     msd:     Magnetic sensor depth/altitude (m).\n");
 	GMT_message (GMT, "\t     diur:    Magnetic diurnal correction (gamma, nTesla).\n");
 	GMT_message (GMT, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
-#ifdef USE_CM4
-	GMT_message (GMT, "\t     cm4:     Comprehensive Model CM4 Geomagnetic Reference Field (gamma, nTesla).\n");
-#endif
 	GMT_message (GMT, "\t     eot:     Eotvos correction (mGal).\n");
 	GMT_message (GMT, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
 	GMT_message (GMT, "\t     sln:     Seismic line number string [TEXTSTRING].\n");
@@ -267,10 +264,6 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t       m1 return mag as stored in file [Default].\n");
 	GMT_message (GMT, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
 	GMT_message (GMT, "\t       m4 return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
-#ifdef USE_CM4
-	GMT_message (GMT, "\t       m8 return difference mtfx - cm4, where x = msens (or 1 if undefined).\n");
-	GMT_message (GMT, "\t       m16 return difference mtfx - cm4, where x != msens (or 2 if undefined).\n");
-#endif
 	GMT_message (GMT, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_message (GMT, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
 	GMT_message (GMT, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
@@ -748,13 +741,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 		{ "carter",  MGD77_AUX_CT, false, false, "Carter"},
 		{ "ngrav",   MGD77_AUX_GR, false, false, "IGF"},
 		{ "ngdcid",  MGD77_AUX_ID, true,  false, "NGDC-ID"}
-#ifdef USE_CM4
-	      , { "cm4",  MGD77_AUX_CM, false, false, "CM4"}
-#endif
 	};
-#ifdef USE_CM4
-	struct MGD77_CM4 CM4;
-#endif
 	struct MGD77LIST_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -844,9 +831,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested || auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested);
-#ifdef USE_CM4
-	if (auxlist[MGD77_AUX_CM].requested) need_lonlat = need_time = true;
-#endif
 
 	n_sub = 0;	/* This value will hold the number of columns that we will NOT printout (they are only needed to calculate auxillary values) */
 	if (need_distances || need_lonlat) {	/* Must make sure we get lon,lat if they are not already requested */
@@ -940,10 +924,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	Ctrl->S.start *= dist_scale;	Ctrl->S.stop *= dist_scale;	/* Convert the meters to the same units used for cumulative distances */
 	if (Ctrl->A.cable_adjust) Ctrl->A.sensor_offset *= dist_scale;
 	
-
-#ifdef USE_CM4
-	if (auxlist[MGD77_AUX_CM].requested) MGD77_CM4_init (GMT, &M, &CM4);	/* Initialize CM4 structure */
-#endif
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
 		char path[GMT_BUFSIZ];
@@ -1211,13 +1191,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				date = MGD77_cal_to_fyear (GMT, &cal);	/* Get date as decimal year */
 				aux_dvalue[MGD77_AUX_MG] = (MGD77_igrf10syn (GMT, 0, date, 1, 0.0, dvalue[x_col][rec], dvalue[y_col][rec], IGRF)) ? GMT->session.d_NaN : IGRF[MGD77_IGRF_F];
 			}
-#ifdef USE_CM4
-			if (auxlist[MGD77_AUX_CM].requested) {	/* Evaluate CM4 */
-				double date;
-				date = MGD77_cal_to_fyear (GMT, &cal);	/* Get date as decimal year */
-/* Change this --> */		aux_dvalue[MGD77_AUX_MG] = (MGD77_igrf10syn (GMT, 0, date, 1, 0.0, dvalue[x_col][rec], dvalue[y_col][rec], IGRF)) ? GMT->session.d_NaN : IGRF[MGD77_IGRF_F];
-			}
-#endif
 
 			if (auxlist[MGD77_AUX_GR].requested)	/* Evaluate Theoretical Gravity Model */
 				aux_dvalue[MGD77_AUX_GR] = MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
@@ -1308,26 +1281,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					k = (i == 2) ? m1_col : m2_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}
-#ifdef USE_CM4
-				if (Ctrl->A.code[ADJ_MG] & 8 && GMT_is_dnan (m)) {	/* Try mtf 1st - cm4 */
-					if (need_date) {	/* Did not get computed already */
-						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
-						need_date = false;
-					}
-					i = lrint (dvalue[ms_col][rec]);
-					k = (i == 2) ? m2_col : m1_col;
-					m = MGD77_Recalc_Mag_Anomaly_CM4 (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false, &CM4);
-				}
-				if (Ctrl->A.code[ADJ_MG] & 16 && GMT_is_dnan (m)) {	/* Try mtf 2nd - cm4 */
-					if (need_date) {	/* Did not get computed already */
-						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
-						need_date = false;
-					}
-					i = lrint (dvalue[ms_col][rec]);
-					k = (i == 2) ? m1_col : m2_col;
-					m = MGD77_Recalc_Mag_Anomaly_CM4 (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false, &CM4);
-				}
-#endif
 				if (Ctrl->A.force || !GMT_is_dnan(dvalue[m_col][rec])) dvalue[m_col][rec] = m;
 			}
 
@@ -1434,9 +1387,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);
-#ifdef USE_CM4
-	if (auxlist[MGD77_AUX_CM].requested) MGD77_CM4_end (GMT, &CM4);	/* Free up CM4 structure */
-#endif
 	MGD77_end (GMT, &M);
 
 	Return (GMT_OK);
