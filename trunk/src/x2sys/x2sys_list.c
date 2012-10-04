@@ -33,47 +33,47 @@
 #define LETTERS "acdhiInNtTvwxyz"
 
 struct X2SYS_LIST_CTRL {
-	struct In {
+	struct X2SYS_LIST_In {
 		bool active;
 		char *file;
 	} In;
-	struct A {	/* -A */
+	struct X2SYS_LIST_A {	/* -A */
 		bool active;
 		double value;
 	} A;
-	struct C {	/* -C */
+	struct X2SYS_LIST_C {	/* -C */
 		bool active;
 		char *col;
 	} C;
-	struct F {	/* -F */
+	struct X2SYS_LIST_F {	/* -F */
 		bool active;
 		char *flags;
 	} F;
-	struct I {	/* -I */
+	struct X2SYS_LIST_I {	/* -I */
 		bool active;
 		char *file;
 	} I;
-	struct L {	/* -L */
+	struct X2SYS_LIST_L {	/* -L */
 		bool active;
 		char *file;
 	} L;
-	struct N {	/* -N */
+	struct X2SYS_LIST_N {	/* -N */
 		bool active;
 		unsigned int min;
 	} N;
-	struct Q {	/* -Q */
+	struct X2SYS_LIST_Q {	/* -Q */
 		bool active;
 		int mode;
 	} Q;
-	struct S {	/* -S */
+	struct X2SYS_LIST_S {	/* -S */
 		bool active;
 		char *file;
 	} S;
-	struct T {	/* -T */
+	struct X2SYS_LIST_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct W {	/* -W */
+	struct X2SYS_LIST_W {	/* -W */
 		bool active;
 		char *file;
 	} W;
@@ -229,7 +229,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "Syntax error option -A: Asymmetry must be in the range 0-1\n");
 	n_errors += GMT_check_condition (GMT, GMT->current.io.multi_segments[GMT_OUT] && GMT->common.b.active[GMT_OUT], "Syntax error: Must use -F to specify output items.\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Cannot use -M with binary output\n");
-	for (i = 0; i < strlen (Ctrl->F.flags); i++) {
+	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
