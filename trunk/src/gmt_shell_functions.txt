@@ -102,7 +102,6 @@ creating animations and lexically sorted filenames are required.
 .B gmt_set_framenext
 Accepts the current frame integer counter and returns the next integer counter.
 .SH NOTES
-.br
 1. These functions only work in the bourne shell (BD(sh)) and their derivatives (like BD(ash),
 BD(bash), BD(ksh) and BD(zsh)).
 These functions do not work in the C shell (BD(csh)) or their derivatives (like BD(tcsh)), and

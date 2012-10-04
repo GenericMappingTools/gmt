@@ -428,13 +428,13 @@ British Geological Survey, translated to C via f2c by Joaquim Luis, U Algarve, a
 GMT-style by Paul Wessel.
 .SH IGF
 The equations used are reproduced here using coefficients extracted directly from the source code (let us know if you find errors):
-.br
+.sp
 (1) g = MGD77_IGF24_G0 * [1 + MGD77_IGF24_G1 * sin^2(lat) - MGD77_IGF24_G2 * sin^2(2*lat) + MGD77_IGF24_G3 * cos^2(lat) * cos^2(lon-18)]
-.br
+.sp
 (2) g = MGD77_IGF30_G0 * [1 + MGD77_IGF30_G1 * sin^2(lat) - MGD77_IGF30_G2 * sin^2(2*lat)]
-.br
+.sp
 (3) g = MGD77_IGF67_G0 * [1 + MGD77_IGF67_G1 * sin^2(lat) - MGD77_IGF67_G2 * sin^2(2*lat)]
-.br
+.sp
 (4) g = MGD77_IGF80_G0 * [(1 + MGD77_IGF80_G1 * sin^2(lat)) / sqrt (1 - MGD77_IGF80_G2 * sin^2(lat))]
 .SH CORRECTIONS
 The correction table is an ASCII file with coefficients and parameters needed to carry out corrections.
@@ -466,13 +466,13 @@ trend removed, the magnetic anomaly (BD(mag)) should be corrected by a strange d
 BD(gob)s needs to have 10 mGal added (hence given as -10):
 .br
 .sp
-99999999 depth	1.0*((carter))
-.br
-99999999 faa	14.1	1e-5*((time-T))
-.br
-99999999 mag	0.5*cos(0.5*(azim-19))^2	1.0*exp(-1e-3(lat))^1.5
-.br
-99999999 gobs	-10
+99999999 depth  1.0*((carter))
+.sp
+99999999 faa  14.1  1e-5*((time-T))
+.sp
+99999999 mag  0.5*cos(0.5*(azim-19))^2  1.0*exp(-1e-3(lat))^1.5
+.sp
+99999999 gobs  -10
 .SH "SEE ALSO"
 .IR mgd77convert (1),
 .IR mgd77info (1),
@@ -481,5 +481,5 @@ BD(gob)s needs to have 10 mGal added (hence given as -10):
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
-.br
+.sp
 IGRF, see \fIhttp://www.ngdc.noaa.gov/IAGA/vmod/igrf.html\fP
