@@ -34,6 +34,9 @@ struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
 		bool active;
 	} A;
+	struct E {	/* -E */
+		bool active;
+	} E;
 	struct F {	/* -F */
 		bool active;
 		char *flags;
@@ -82,7 +85,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_datalist <files> -T<TAG> [-A] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n");
+	GMT_message (GMT, "usage: x2sys_datalist <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n");
 	GMT_message (GMT, "\t[%s] [-S] [%s] [%s] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -92,6 +95,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Use any adjustment splines per track to redistribute COEs between tracks\n");
 	GMT_message (GMT, "\t   according to their relative weight [no adjustments].\n");
+	GMT_message (GMT, "\t-E Add segment headers with track names between separate file output [no added segment headers].\n");
 	GMT_message (GMT, "\t-F Comma-separated list of column names to output [Default are all fields].\n");
 	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
@@ -129,6 +133,9 @@ int GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_CTRL 
 			
 			case 'A':
 				Ctrl->A.active = true;
+				break;
+			case 'E':
+				Ctrl->E.active = true;
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -411,7 +418,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 			for (k = 0; k < s->n_out_columns; k++) adj_col[k] = x2sys_load_adjustments (GMT, X2SYS_HOME, Ctrl->T.TAG, trk_name[trk_no], s->info[s->out_order[k]].name, &A[k]);
 		}
 
-		if (GMT->current.io.multi_segments[GMT_OUT]) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], s->n_fields);
+		if (Ctrl->E.active) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], s->n_fields);
 
 		cumulative_dist = 0.0;
 		for (j = 0; j < p.n_rows; j++) {	/* Process all records in this file */

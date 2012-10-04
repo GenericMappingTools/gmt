@@ -188,7 +188,7 @@ data distribution at a 1 x 1 degree resolution, with distances in km calculated
 along geodesics and with speeds given in knots, we may run
 .br
 .sp
-BD(x2sys_init) LINE OPT(V) OPT(G) OPT(D)line OPT(Rg) OPT(Ce) OPT(Ndk) OPT(NsN) OPT(I)1/1 OPT(E)trk
+x2sys_init LINE -V -G -Dline -Rg -Ce -Ndk -NsN -I1/1 -Etrk
 .br
 .sp
 where we have selected LINE to be our x2sys tag.  When x2sys tools try to read your
@@ -215,14 +215,14 @@ observations everywhere).  For instance, if your tracks are listed in
 the file tracks.lis we may run this command:
 .br
 .sp
-BD(x2sys_binlist) OPT(V) OPT(T)LINE :tracks.lis > tracks.tbf
+x2sys_binlist -V -TLINE :tracks.lis > tracks.tbf
 .TP
 .B Update index data base:
 Next, the track bin-index files are fed to BD(x2sys_put)
 which will insert the information into the TAG databases:
 .br
 .sp
-BD(x2sys_put) OPT(V) OPT(T)LINE tracks.tbf
+x2sys_put -V -TLINE tracks.tbf
 .TP
 .B Search for data:
 You may now use BD(x2sys_get) to find all the tracks within a certain
@@ -231,7 +231,7 @@ a particular combination of observables.  E.g., to find all the tracks
 which has both obs1 and obs3 inside the specified region, run
 .br
 .sp
-BD(x2sys_get) OPT(V) OPT(T)LINE OPT(R)20/40/-40/-20 OPT(F)obs1,obs3 > tracks.tbf
+x2sys_get -V -TLINE -R20/40/-40/-20 -Fobs1,obs3 > tracks.tbf
 .TP
 .B MGD77[+] or GMT:
 Definition files already exist for MGD77 files (both standard ASCII and
@@ -242,7 +242,7 @@ definition files for plain x,y[,z] and lon,lat[,z] tracks.
 To initiate new track databases to be used with MGD77 data from NGDC, try
 .br
 .sp
-BD(x2sys_init) MGD77 OPT(V) OPT(D)mgd77 OPT(E)mgd77 OPT(Rd) OPT(Gd) OPT(Nsn) OPT(I)1/1 OPT(Wt)900  OPT(Wd)5
+x2sys_init MGD77 -V -Dmgd77 -Emgd77 -Rd -Gd -Nsn -I1/1 -Wt900 -Wd5
 .br
 .sp
 where we have chosen a 15 minute (900 sec) or 5 km threshold to indicate a data gap

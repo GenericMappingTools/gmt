@@ -45,6 +45,9 @@ struct X2SYS_LIST_CTRL {
 		bool active;
 		char *col;
 	} C;
+	struct X2SYS_LIST_E {	/* -E */
+		bool active;
+	} E;
 	struct X2SYS_LIST_F {	/* -F */
 		bool active;
 		char *flags;
@@ -67,6 +70,7 @@ struct X2SYS_LIST_CTRL {
 	} Q;
 	struct X2SYS_LIST_S {	/* -S */
 		bool active;
+		bool both;
 		char *file;
 	} S;
 	struct X2SYS_LIST_T {	/* -T */
@@ -106,8 +110,8 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-F<flags>] [-I<ignorelist>] [-L[<corrtable.txt>]]\n");
-	GMT_message (GMT, "\t [-N<nx_min>] [-Qe|i] [-S<track>] [%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>] [-L[<corrtable.txt>]]\n");
+	GMT_message (GMT, "\t [-N<nx_min>] [-Qe|i] [-S[+]<track>] [%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -118,6 +122,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
 	GMT_message (GMT, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");
 	GMT_message (GMT, "\t   asymmetry = (n_right - n_left)/(nright + n_left) [1, i.e., use all tracks].\n");
+	GMT_message (GMT, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
 	GMT_message (GMT, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
 	GMT_message (GMT, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
 	GMT_message (GMT, "\t   c Crossover error in chosen observable (see -C).\n");
@@ -143,10 +148,11 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
 	GMT_message (GMT, "\t-S Return only crossovers involving this track [Use all tracks].\n");
+	GMT_message (GMT, "\t   Prepend a '+' to make it print info relative to both tracks [Default is selected track].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
 	GMT_message (GMT, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
-	GMT_explain_options (GMT, "Dm");
+	GMT_explain_options (GMT, "D");
 	
 	return (EXIT_FAILURE);
 }
@@ -183,6 +189,9 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
+			case 'E':
+				Ctrl->E.active = true;
+				break;
 			case 'F':
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
@@ -207,7 +216,16 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 				break;
 			case 'S':
 				Ctrl->S.active = true;
-				Ctrl->S.file = strdup (opt->arg);
+				if (opt->arg[0] == '+' && opt->arg[1]) {
+					Ctrl->S.both = true;
+					Ctrl->S.file = strdup (&opt->arg[1]);
+				}
+				else if (opt->arg[0])
+					Ctrl->S.file = strdup (opt->arg);
+				else {
+					GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -S: Must supply a track name.\n");
+					n_errors++;
+				}
 				break;
 			case 'T':
 				Ctrl->T.active = true;
@@ -227,8 +245,8 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == 3, "Syntax error: Only one of -Qe -Qi can be specified!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && (Ctrl->A.value <= 0.0 || Ctrl->A.value > 1.0), "Syntax error option -A: Asymmetry must be in the range 0-1\n");
-	n_errors += GMT_check_condition (GMT, GMT->current.io.multi_segments[GMT_OUT] && GMT->common.b.active[GMT_OUT], "Syntax error: Must use -F to specify output items.\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Cannot use -M with binary output\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.active && GMT->common.b.active[GMT_OUT], "Syntax error: Cannot use -E with binary output.\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Must use -F to specify output items.\n");
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
@@ -354,7 +372,8 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Initialize column output types */
 	
 	one = 0;	two = 1;	/* Normal track order */
-	both = !Ctrl->S.active;			/* Two columns for many output choices */
+	both = Ctrl->S.both;		/* Usually false unless -S+<track> is set */
+	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
 	n_out = 1 + both;		/* Number of column output for some cols if single is not specified */
 
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT;
@@ -424,7 +443,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 		x2sys_get_corrtable (GMT, s, Ctrl->L.file, n_tracks, trk_name, Ctrl->C.col, NULL, NULL, &CORR);
 	}
 	
-	if (Ctrl->A.active) {
+	if (Ctrl->A.active) {	/* Requested asymmetry estimates */
 		int *x_side[2] = {NULL, NULL}, half;
 		double mid[2];
 		for (j = 0; j < 2; j++) x_side[j] = GMT_memory (GMT, NULL, n_tracks, int);
@@ -518,7 +537,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->A.active && (fabs (trk_symm[P[p].id[0]]) > Ctrl->A.value || fabs (trk_symm[P[p].id[1]]) > Ctrl->A.value)) continue;	/* COEs not distributed symmatrically */
 		np_use++;
 		nx_use += P[p].nx;
-		if (GMT->current.io.multi_segments[GMT_OUT])
+		if (Ctrl->E.active)	/* Write segment header with information */
 			fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %d\n",
 					GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);

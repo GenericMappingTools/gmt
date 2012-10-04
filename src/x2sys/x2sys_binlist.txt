@@ -42,14 +42,14 @@ To create a bin index file from the MGD77 file 01030061.mgd77 using the settings
 with the tag MGD77, do
 .br
 .sp
-BD(x2sys_binlist) 01030061.mgd77 OPT(T)MGD77 > 01030061.tbf
+x2sys_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
 .br
 .sp
 To create a track bin index file of all MGD77+ files residing in the current directory
 using the settings associated with the tag MGD77+ and calculate track distances, run
 .br
 .sp
-BD(x2sys_binlist) *.nc OPT(T)MGD77+ OPT(D) > all.tbf
+x2sys_binlist *.nc -TMGD77+ -D > all.tbf
 .SH "SEE ALSO"
 .IR x2sys_cross (1),
 .IR x2sys_datalist (1),
