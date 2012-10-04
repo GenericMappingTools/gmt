@@ -574,7 +574,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 						}
 						else {
 							if (!first) fprintf (GMT->session.std[GMT_OUT], "%s", GMT->current.setting.io_col_separator);
-							fprintf (GMT->session.std[GMT_OUT], "%s", P[p].trk[0]);
+							fprintf (GMT->session.std[GMT_OUT], "%s", P[p].trk[two]);
 						}
 						break;
 					case 'N':	/* ID numbers of tracks */
