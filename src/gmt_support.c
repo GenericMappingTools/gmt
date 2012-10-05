@@ -1035,7 +1035,7 @@ int GMT_colorname2index (struct GMT_CTRL *C, char *name)
 
 bool GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 {
-	int n, i, count, irgb[3];
+	int n, i, count, irgb[3], c = 0;
 	double hsv[4], cmyk[5];
 	char buffer[GMT_TEXT_LEN64], *t = NULL;
 
@@ -1078,7 +1078,8 @@ bool GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
-	if (!isdigit((unsigned char) buffer[strlen(buffer)-1])) return (true);
+	c = buffer[strlen(buffer)-1];
+	if (!(isdigit (c) || c == '.')) return (true);
 
 	count = (int)gmt_char_count (buffer, '/');
 
@@ -1103,7 +1104,7 @@ bool GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 		}
 	}
 
-	if (gmt_char_count (buffer, '-') == 2) {		/* h-s-v */
+	if (gmt_char_count (buffer, '-') == 2) {		/* h-s-v despite pretending to be r/g/b */
 		n = sscanf (buffer, "%lf-%lf-%lf", &hsv[0], &hsv[1], &hsv[2]);
 		if (n != 3 || gmt_check_hsv (C, hsv)) return (true);
 		gmt_hsv_to_rgb (C, rgb, hsv);
@@ -1123,7 +1124,7 @@ bool GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 
 bool gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 {
-	int n, i, count, irgb[3];
+	int n, i, count, irgb[3], c = 0;
 	double rgb[4], cmyk[5];
 	char buffer[GMT_TEXT_LEN64], *t = NULL;
 
@@ -1167,7 +1168,8 @@ bool gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
-	if (!isdigit ((unsigned char) buffer[strlen(buffer)-1])) return (true);
+	c = buffer[strlen(buffer)-1];
+	if (!(isdigit (c) || c == '.')) return (true);
 
 	count = (int)gmt_char_count (buffer, '/');
 
