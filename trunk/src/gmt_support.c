@@ -1471,12 +1471,6 @@ int gmt_getpenwidth (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 	if ((line[0] == '.' && (line[1] >= '0' && line[1] <= '9')) || (line[0] >= '0' && line[0] <= '9')) {
 		/* Pen thickness with optional unit at end */
 		P->width = GMT_convert_units (C, line, GMT_PT, GMT_PT);
-#ifdef GMT_COMPAT
-		{	/* If no unit was given we will assume old-style 1/300 inch units */
-			size_t len = strlen (line) - 1;
-			if (line[len] == '.' || isdigit (line[len])) P->width = (P->width / 300.0) * C->session.u2u[GMT_INCH][GMT_PT];
-		}
-#endif
 	}
 	else {	/* Pen name was given - these refer to fixed widths in points */
 		if ((n = gmt_name2pen (line)) < 0) {
