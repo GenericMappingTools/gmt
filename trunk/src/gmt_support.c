@@ -3235,7 +3235,7 @@ int GMT_intpol (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m
 	if (mode > 3) mode = 0;
 	if (mode != 3 && n < 4) mode = 0;
 	if (n < 2) {
-		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Error: need at least 2 x-values\n");
+		GMT_report (C, GMT_MSG_NORMAL, "Error: need at least 2 x-values\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -3259,7 +3259,7 @@ int GMT_intpol (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m
 		}
 
 		if (err_flag) {
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Error: x-values are not monotonically increasing/decreasing (at record %d)!\n", err_flag);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: x-values are not monotonically increasing/decreasing (at record %d)!\n", err_flag);
 			return (err_flag);
 		}
 
