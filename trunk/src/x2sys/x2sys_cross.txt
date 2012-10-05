@@ -27,7 +27,10 @@ Only process the pair-combinations found in the file IT(combi.lis)
 .TP
 OPT(C)[IT(runtimes)]
 Compute and append the processing run-time for each pair to the progress message.
-Append a filename to save these run-times to file.
+Append a filename to save these run-times to file. The idea here is to use the
+knowledge of run-times to split the main process in a number of sub-processes that
+can each be launched in a different processor of your multi-core machine. See the
+MATLAB function IT(split_file4coes.m) that lives in the x2sys supplement source code.
 .TP
 OPT(Il)|BD(a)|BD(c)
 Sets the interpolation mode for estimating values at the crossover. Choose among:
