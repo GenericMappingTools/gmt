@@ -837,9 +837,9 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\n", nx);
 			else {
 				toc = clock();
-				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f secs\n", nx, (double)(toc - tic)/1000);
+				GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 "\t%.3f sec\n", nx, (double)(toc - tic)/1000);
 				if (fpC)	/* Save also the run time in file */
-					fprintf (fpC, "%s - %s\t%.3f\n", trk_name[A], trk_name[B], (double)(toc - tic)/1000);
+					fprintf (fpC, "%s\t%s\t%d\t%.3f\n", trk_name[A], trk_name[B], (int)nx, (double)(toc - tic)/1000);
 			}
 		}
 
@@ -851,8 +851,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, ylist_A);
 	}
 
-	if (fpC)
-		fclose (fpC);
+	if (fpC) fclose (fpC);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
