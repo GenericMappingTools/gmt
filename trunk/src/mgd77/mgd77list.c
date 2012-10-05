@@ -706,6 +706,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	bool error = false, string_output = false, need_depth = false, PDR_wrap;
 	bool need_lonlat = false, first_cruise = true, need_twt = false, this_limit_on_time;
 	bool need_date, need_sound = false, lonlat_not_NaN, first_warning = true, has_prev_twt = false;
+	bool first_time_on_sensor_offset = true;
 	
 	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
@@ -713,8 +714,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, *out = NULL;
 	double dist_scale, vel_scale, ds, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
 	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, *dvalue[MGD77_MAX_COLS];
-	double *cumdist = NULL;
-	float  *mtf_bak = NULL;
+	double *cumdist = NULL, *cumdist_off = NULL, *mtf_bak = NULL, *mtf_int = NULL;
 	
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;
@@ -1096,15 +1096,17 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			/* For the cable correction we need to know ALL cumulative distances. So compute them now. */
 				uint64_t rec_;
 				cumdist = GMT_memory(GMT, NULL, D->H.n_records, double);
-				mtf_bak = GMT_memory(GMT, NULL, D->H.n_records, float);		/* We need a copy */
+				mtf_bak = GMT_memory(GMT, NULL, D->H.n_records, double);         /* We need a copy */
+				mtf_int = GMT_memory(GMT, NULL, D->H.n_records, double);         /* And another to store reinterped mtf1 */
+				cumdist_off = GMT_memory(GMT, NULL, D->H.n_records, double);     /* To put positions where mag was really measured */
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][0]) || GMT_is_dnan (dvalue[y_col][0]));
 				prevrec = 0;
-				mtf_bak[0] = (float)dvalue[m1_col][0];
+				mtf_bak[0] = dvalue[m1_col][0];
 				for (rec_ = 1; rec_ < D->H.n_records; rec_++) {	/* Very bad luck if first rec has NaNs in coords */
 					ds = dist_scale * GMT_distance (GMT, dvalue[x_col][rec_], dvalue[y_col][rec_], dvalue[x_col][prevrec], dvalue[y_col][prevrec]);
 					cumulative_dist += ds;
 					cumdist[rec_] = cumulative_dist;
-					mtf_bak[rec_] = (float)dvalue[m1_col][rec_];	/* Make a copy */
+					mtf_bak[rec_] = dvalue[m1_col][rec_];	/* Make a copy */
 					if (lonlat_not_NaN) prevrec = rec_;
 				}
 				prevrec = UINTMAX_MAX;	/* Reset for eventual reuse in (need_distances) */
@@ -1285,19 +1287,22 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 
 			if (m1_col != MGD77_NOT_SET && Ctrl->A.cable_adjust) {	/* Request to adjust for magnetometer offset */
-				double d;
-				uint64_t n;
-				n = rec;
 				if (Ctrl->A.sensor_offset == 0)             /* Accept also this case to easy life with script writing */
-					dvalue[m1_col][rec] = mtf_bak[rec];     /* Means, copy mtf1 into mtf2 */
-				else if (cumdist[rec] < Ctrl->A.sensor_offset)		/* First points (distance < sensor_offset) are lost */
+					dvalue[m1_col][rec] = mtf_bak[rec];         /* Means, copy mtf1 into mtf2 */
+				else if (cumdist[rec] < Ctrl->A.sensor_offset)  /* First points (distance < sensor_offset) are lost */
 					dvalue[m1_col][rec] = GMT->session.d_NaN;
 				else {
-					while ((d = cumdist[rec] - cumdist[n]) < Ctrl->A.sensor_offset) n--;
-					if (d < Ctrl->A.sensor_offset * 1.5)		/* If no data gap */ 
-						dvalue[m1_col][rec] = mtf_bak[n];
-					else					/* We have a gap wider than 1.5 the sensor offset */
-						dvalue[m1_col][rec] = GMT->session.d_NaN;
+					if (first_time_on_sensor_offset) {  /* At first time here we interpolate ALL mtf1 at offset pos */
+						int k_off;
+						for (k_off = 0; k_off < D->H.n_records; k_off++)
+							cumdist_off[k_off] = cumdist[k_off] - Ctrl->A.sensor_offset;
+
+						GMT_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, 0);
+						dvalue[m1_col][rec] = mtf_int[rec];
+						first_time_on_sensor_offset = false;
+					}
+					else                               /* All other times, just pull out current val of interped mtf1 */
+						dvalue[m1_col][rec] = mtf_int[rec];
 				}
 			}
 
@@ -1372,8 +1377,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 
 		if (cumdist) {
-			GMT_free(GMT, cumdist);		cumdist = NULL;	/* Free and reset for eventual reuse */		
-			GMT_free(GMT, mtf_bak);		mtf_bak = NULL;	/* Free and reset for eventual reuse */		
+			GMT_free(GMT, cumdist_off);	cumdist_off = NULL;	/* Free and reset for eventual reuse */
+			GMT_free(GMT, cumdist);		cumdist = NULL;	/* Free and reset for eventual reuse */
+			GMT_free(GMT, mtf_bak);		mtf_bak = NULL;	/* Free and reset for eventual reuse */
+			GMT_free(GMT, mtf_int);		mtf_int = NULL;	/* Free and reset for eventual reuse */
 		}
 		MGD77_Free_Dataset (GMT, &D);
 		n_cruises++;
