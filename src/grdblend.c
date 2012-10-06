@@ -658,7 +658,7 @@ int GMT_grdblend (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, S.header.registration), Ctrl->G.file);
-		Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);	/* Memory for the entire padded grid */
+		Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);	/* Memory for the entire padded grid */
 	}
 	else {
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */

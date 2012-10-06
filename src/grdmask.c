@@ -260,7 +260,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
 
-	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
+	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[0];	/* Starting value if running IDs */
 

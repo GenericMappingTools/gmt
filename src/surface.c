@@ -587,7 +587,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GRD_HEADER *h = C->Grid->header;
 
-	C->data = GMT_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
+	C->data = GMT_grdmemory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
@@ -638,7 +638,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		C->z_mean += in[GMT_Z];
 		if (k == C->n_alloc) {
 			C->n_alloc <<= 1;
-			C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
+			C->data = GMT_grdmemory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
 	} while (true);
 	
@@ -661,7 +661,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
 		GMT_report (GMT, GMT_MSG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
 	}
-	C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
+	C->data = GMT_grdmemory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
 	if (C->set_low == 1)
 		C->low_limit = C->data[kmin].z;
@@ -690,7 +690,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 	if (C->set_low > 0) {
 		if (C->set_low < 3) {
 			if ((C->Low = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
-			C->Low->data = GMT_memory (GMT, NULL, C->mxmy, float);
+			C->Low->data = GMT_grdmemory (GMT, NULL, C->mxmy, float);
 			for (ij = 0; ij < C->mxmy; ij++) C->Low->data[ij] = (float)C->low_limit;
 		}
 		else {
@@ -717,7 +717,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 	if (C->set_high > 0) {
 		if (C->set_high < 3) {
 			if ((C->High = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
-			C->High->data = GMT_memory (GMT, NULL, C->mxmy, float);
+			C->High->data = GMT_grdmemory (GMT, NULL, C->mxmy, float);
 			for (ij = 0; ij < C->mxmy; ij++) C->High->data[ij] = (float)C->high_limit;
 		}
 		else {
@@ -1264,7 +1264,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
 		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
-		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
+		C->data = GMT_grdmemory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
 	}
@@ -1539,7 +1539,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	/* Now add the interpolated breakline to the C structure */
 
 	k = C->npoints;
-	C->data = GMT_memory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
+	C->data = GMT_grdmemory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
 	C->z_mean *= k;		/* It was already computed, reset it to sum */
 	if (C->set_low == 1)
 		zmin = C->low_limit;
@@ -1566,7 +1566,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	}
 
 	if (k != (C->npoints + n_tot))		/* We had some NaNs */
-		C->data = GMT_memory (GMT, C->data, k, struct SURFACE_DATA);
+		C->data = GMT_grdmemory (GMT, C->data, k, struct SURFACE_DATA);
 
 	C->npoints = k;
 	C->z_mean /= k;
@@ -1904,7 +1904,7 @@ int GMT_surface (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
-		C.Grid->data = GMT_memory (GMT, NULL, C.mxmy, float);
+		C.Grid->data = GMT_grdmemory (GMT, NULL, C.mxmy, float);
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
@@ -1930,7 +1930,7 @@ int GMT_surface (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	C.briggs = GMT_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.iu = GMT_memory (GMT, NULL, C.mxmy, char);
-	C.Grid->data = GMT_memory (GMT, NULL, C.mxmy, float);
+	C.Grid->data = GMT_grdmemory (GMT, NULL, C.mxmy, float);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 

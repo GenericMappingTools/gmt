@@ -1299,7 +1299,7 @@ int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
 	fi  = TWO_PI / Ctrl->F.ncoef_row;
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
-	Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
+	Gout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
@@ -1313,7 +1313,7 @@ int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
 		Gfilt->header->wesn[YLO] = 1;		Gfilt->header->wesn[YHI] = (double)Ctrl->F.ncoef_row;
 		Gfilt->header->z_scale_factor = 1;
 		Gfilt->header->z_add_offset = 0;
-		Gfilt->data = GMT_memory (GMT, NULL, n_coef, float);
+		Gfilt->data = GMT_grdmemory (GMT, NULL, n_coef, float);
 	}
 
 	for (l = 0; l < n_jlat; l++) {		/* Main loop over the moving windows */

@@ -1600,7 +1600,7 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (C, Grid->header, C->current.io.pad);			/* Assign default pad */
 	GMT_set_grddim (C, Grid->header);					/* Set all dimensions before returning */
-	Grid->data = GMT_memory (C, NULL, Grid->header->size, float);
+	Grid->data = GMT_grdmemory (C, NULL, Grid->header->size, float);
 
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
 	first_i = lrint (floor (Grid->header->wesn[XLO] * Grid->header->r_inc[GMT_X]));				/* first tile partly or fully inside region */
@@ -1679,7 +1679,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	/* Here the pads differ (or G has no pad at all) */
 	size = gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
 	if (size > G->header->size) {	/* Must allocate more space */
-		G->data = GMT_memory (C, G->data, size, float);
+		G->data = GMT_grdmemory (C, G->data, size, float);
 		G->header->size = size;
 	}
 	/* Because G may have a pad that is nonzero (but different from pad) we need a different header structure in the macros below */
@@ -1748,7 +1748,7 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, boo
 	Gnew = GMT_create_grid (C);
 	GMT_memcpy (Gnew->header, G->header, 1, struct GRD_HEADER);
 	if (alloc_data) {	/* ALso allocate and duplicate data array */
-		Gnew->data = GMT_memory (C, NULL, G->header->size, float);
+		Gnew->data = GMT_grdmemory (C, NULL, G->header->size, float);
 		GMT_memcpy (Gnew->data, G->data, G->header->size, float);
 	}
 	return (Gnew);

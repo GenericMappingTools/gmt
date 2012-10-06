@@ -231,7 +231,7 @@ struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Templ
 	struct GMT_GRID *New = NULL;
 	if ((New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return (NULL);
 	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
-	New->data = GMT_memory (GMT, NULL, Template->header->size, float);
+	New->data = GMT_grdmemory (GMT, NULL, Template->header->size, float);
 	return (New);
 }
 

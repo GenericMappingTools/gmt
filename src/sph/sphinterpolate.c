@@ -317,7 +317,7 @@ int GMT_sphinterpolate (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Convert the doubles to float and unto the Fortran transpose order */
 	
 	sf = (w_max - w_min);
-	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
+	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
 		ij_f = (uint64_t)col * (uint64_t)Grid->header->ny + (uint64_t)row;	/* Fortran index */
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */

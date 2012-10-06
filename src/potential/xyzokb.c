@@ -479,7 +479,7 @@ int GMT_xyzokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, false), Ctrl->G.file);
 	
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
-		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
+		Gout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
 
 		/* Build observation point vectors */
 		x = GMT_memory (GMT, NULL, Gout->header->nx, double);

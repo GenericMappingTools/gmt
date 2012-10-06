@@ -460,7 +460,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 		n_left = Grid->header->nm;
 
-		Grid->data = GMT_memory (GMT, NULL, Grid->header->nm, float);
+		Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->nm, float);
 		/* ESRI grids are scanline oriented (top to bottom), as are the GMT grids */
 		row = col = 0;
 		fscanf (fp, "%s", line);	GMT_str_tolower (line);
@@ -515,7 +515,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
-	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
+	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
 
 	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 
