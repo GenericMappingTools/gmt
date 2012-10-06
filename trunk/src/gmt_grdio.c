@@ -1757,7 +1757,7 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, boo
 void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return;	/* Nothing to deallocate */
-	if (G->data && free_grid) GMT_free (C, G->data);
+	if (G->data && free_grid) GMT_grdfree (C, G->data);
 	if (G->header) GMT_free (C, G->header);
 }
 

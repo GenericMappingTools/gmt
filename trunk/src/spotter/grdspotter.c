@@ -651,7 +651,7 @@ int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 		/* Store IDs in a int array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, int);
 		for (ij = 0; ij < L->header->size; ij++) ID[ij] = lrint ((double)L->data[ij]);
-		GMT_free (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
+		GMT_grdfree (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);
 		if (Ctrl->Q.mode == 1) {	/* Only doing one CVA with no extra restrictions */

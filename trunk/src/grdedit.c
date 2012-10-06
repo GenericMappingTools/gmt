@@ -360,7 +360,7 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 			ij_tr = GMT_IJP (h_tr, col, row);
 			a_tr[ij_tr] = G->data[ij];
 		}
-		GMT_free (GMT, G->data);
+		GMT_grdfree (GMT, G->data);
 		G->data = a_tr;
 		GMT_memcpy (G->header, h_tr, 1, struct GRD_HEADER);	/* Update to the new header */
 		GMT_free (GMT, h_tr);

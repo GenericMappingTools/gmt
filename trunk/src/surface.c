@@ -772,7 +772,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 			if (C->set_high && !GMT_is_fnan (C->High->data[k]) && v2[k] > C->High->data[k]) v2[k] = C->High->data[k];
 		}
 	}
-	GMT_free (GMT, C->Grid->data);
+	GMT_grdfree (GMT, C->Grid->data);
 	C->Grid->data = v2;
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK) {
 		return (GMT->parent->error);

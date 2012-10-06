@@ -242,7 +242,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			wesn_new[YLO] = G->header->wesn[YLO] + (G->header->ny - 1 - col1) * G->header->inc[GMT_Y];
 			wesn_new[YHI] = G->header->wesn[YHI] - col0 * G->header->inc[GMT_Y];
 		}
-		GMT_free (GMT, G->data);	/* Free the grid array only as we need the header below */
+		GMT_grdfree (GMT, G->data);	/* Free the grid array only as we need the header below */
 	}
 	else {	/* Just the usual subset selection via -R */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
