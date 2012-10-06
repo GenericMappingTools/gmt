@@ -476,13 +476,13 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "a \'fast\' grid for filtering and then resample onto your desired grid with grdsample.\n");
 		}
 
-		Gout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
+		Gout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
 
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
-			Sout->data = GMT_memory (GMT, NULL, Gout->header->size, float);
+			Sout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
 		}
 #endif
 		i_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);

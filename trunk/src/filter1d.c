@@ -729,7 +729,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
 	F->n_this_col = GMT_memory (GMT, NULL, F->n_cols, unsigned int);
-	F->data = GMT_memory (GMT, NULL, F->n_cols, double *);
+	F->data = GMT_grdmemory (GMT, NULL, F->n_cols, double *);
 
 	if (F->check_asym) F->n_left = GMT_memory (GMT, NULL, F->n_cols, unsigned int);
 	if (F->check_asym) F->n_right = GMT_memory (GMT, NULL, F->n_cols, unsigned int);

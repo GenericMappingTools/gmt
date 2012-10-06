@@ -530,11 +530,11 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	if ((T = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing fitted surface  */
 	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
 	GMT_grd_init (GMT, T->header, options, true);
-	T->data = GMT_memory (GMT, NULL, G->header->size, float);
+	T->data = GMT_grdmemory (GMT, NULL, G->header->size, float);
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		if ((R = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
 		GMT_memcpy (R->header, G->header, 1, struct GRD_HEADER);
-		R->data = GMT_memory (GMT, NULL, G->header->size, float);
+		R->data = GMT_grdmemory (GMT, NULL, G->header->size, float);
 	}
 	xval = GMT_memory (GMT, NULL, G->header->nx, double);
 	yval = GMT_memory (GMT, NULL, G->header->ny, double);
@@ -563,7 +563,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 			}
 		}
 		if (set_ones) {
-			W->data = GMT_memory (GMT, NULL, G->header->size, float);
+			W->data = GMT_grdmemory (GMT, NULL, G->header->size, float);
 			GMT_setnval (W->data, G->header->size, 1.0);
 		}
 	}

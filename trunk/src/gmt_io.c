@@ -6250,7 +6250,7 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, unsigned int n_column
 	struct GMT_VECTOR *V = NULL;
 	
 	V = GMT_memory (C, NULL, 1, struct GMT_VECTOR);
-	V->data = GMT_memory (C, NULL, n_columns, union GMT_UNIVECTOR);
+	V->data = GMT_grdmemory (C, NULL, n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (C, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
 	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
@@ -6329,7 +6329,7 @@ struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR 
 	
 	V = GMT_memory (C, NULL, 1, struct GMT_VECTOR);
 	GMT_memcpy (V, V_in, 1, struct GMT_MATRIX);
-	V->data = GMT_memory (C, NULL, V_in->n_columns, union GMT_UNIVECTOR);
+	V->data = GMT_grdmemory (C, NULL, V_in->n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (C, NULL, V_in->n_columns, enum GMT_enum_type);
 	if (duplicate_data) {
 		unsigned int col;

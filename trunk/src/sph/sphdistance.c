@@ -411,7 +411,7 @@ int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start processing distance grid\n");
 
 	nx1 = (Grid->header->registration) ? Grid->header->nx : Grid->header->nx - 1;
-	Grid->data = GMT_memory (GMT, NULL, Grid->header->size, float);
+	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
 	grid_lon = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	grid_lat = GMT_memory (GMT, NULL, Grid->header->ny, double);
 	for (col = 0; col < Grid->header->nx; col++) grid_lon[col] = GMT_grd_col_to_x (GMT, col, Grid->header);

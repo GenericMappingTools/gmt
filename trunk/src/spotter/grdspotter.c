@@ -564,7 +564,7 @@ int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
-	G->data = GMT_memory (GMT, NULL, G->header->size, float);
+	G->data = GMT_grdmemory (GMT, NULL, G->header->size, float);
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
 
@@ -869,7 +869,7 @@ int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, DI, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->D.file);
-			DI->data = GMT_memory (GMT, NULL, PA->header->size, float);
+			DI->data = GMT_grdmemory (GMT, NULL, PA->header->size, float);
 		}
 		if (Ctrl->PA.active) {
 			if ((PA = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
@@ -877,7 +877,7 @@ int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 			GMT_err_fail (GMT, GMT_init_newgrid (GMT, PA, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->PA.file);
-			PA->data = GMT_memory (GMT, NULL, PA->header->size, float);
+			PA->data = GMT_grdmemory (GMT, NULL, PA->header->size, float);
 		}
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Compute DI and/or PA grids\n");
 
