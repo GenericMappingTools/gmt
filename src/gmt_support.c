@@ -3308,22 +3308,31 @@ int GMT_intpol (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m
 	return (GMT_NOERROR);
 }
 
-void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t size, const char *where)
+void die_if_memfail (struct GMT_CTRL *C, size_t nelem, size_t size, const char *where)
+{	/* Handle reporting and aborting if memory allocation fails */
+	double mem = (double)(nelem * size);
+	unsigned int k = 0;
+	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
+	while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
+	GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
+#ifdef DEBUG
+	GMT_report_func (C, GMT_MSG_NORMAL, where, "GMT_memory [realloc] called\n");
+#endif
+	GMT_exit (EXIT_FAILURE);
+}
+
+void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t size, bool align, const char *where)
 {
 	/* Multi-functional memory allocation subroutine.
 	   If prev_addr is NULL, allocate new memory of nelem elements of size bytes.
 		Ignore when nelem == 0.
 	   If prev_addr exists, reallocate the memory to a larger or smaller chunk of nelem elements of size bytes.
 		When nelem = 0, free the memory.
+	   If align is true we seek to get aligned memory.
 	*/
 
 	void *tmp = NULL;
-	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
-	double mem;
-	unsigned int k;
-#if defined(WIN32) && defined(USE_MEM_ALIGNED)
-	size_t alignment = 16;
-#endif
+	size_t alignment = 32U;
 
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
 		GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
@@ -3337,42 +3346,39 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 			GMT_free (C, prev_addr);
 			return (NULL);
 		}
-#if defined(WIN32) && defined(USE_MEM_ALIGNED)
-		if ((tmp = _aligned_realloc ( prev_addr, nelem * size, alignment)) == NULL)
+		if (align) {
+#ifdef HAVE_FFTW3F
+			tmp = fftwf_malloc (nelem * size);
+#elif defined(WIN32) && defined(USE_MEM_ALIGNED)
+			alignment = 16;
+			tmp = _aligned_realloc ( prev_addr, nelem * size, alignment);
 #else
-		if ((tmp = realloc ( prev_addr, nelem * size)) == NULL)
+			posix_memalign (&prev_addr, alignment, nelem * size);
 #endif
-		{
-			mem = (double)(nelem * size);
-			k = 0;
-			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not reallocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
-#ifdef DEBUG
-			GMT_report_func (C, GMT_MSG_NORMAL, where, "GMT_memory [realloc] called\n");
-#endif
-			GMT_exit (EXIT_FAILURE);
 		}
+		else
+			tmp = realloc ( prev_addr, nelem * size);
+		if (tmp == NULL)
+			die_if_memfail (C, nelem, size, where);
 	}
 	else {
 		if (nelem == 0) return (NULL); /* Take care of n == 0 */
-#if defined(WIN32) && defined(USE_MEM_ALIGNED)
-		tmp = _aligned_malloc (nelem * size, alignment);
-		if (tmp != NULL)
-			tmp = memset (tmp, 0, nelem * size);
-		else
+		if (align) {
+#ifdef HAVE_FFTW3F
+			tmp = fftwf_malloc (nelem * size);
+#elif defined(WIN32) && defined(USE_MEM_ALIGNED)
+			alignment = 16;
+			tmp = _aligned_malloc (nelem * size, alignment);
 #else
-		if ((tmp = calloc (nelem, size)) == NULL)
+			posix_memalign (&tmp, alignment, nelem * size);
 #endif
-		{
-			mem = (double)(nelem * size);
-			k = 0;
-			while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
-			GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Could not allocate memory [%.2f %s, %" PRIuS " items of %" PRIuS " bytes]\n", mem, m_unit[k], nelem, size);
-#ifdef DEBUG
-			GMT_report_func (C, GMT_MSG_NORMAL, where, "GMT_memory [calloc] called\n");
-#endif
-			GMT_exit (EXIT_FAILURE);
+			if (tmp != NULL)
+				tmp = memset (tmp, 0, nelem * size);
 		}
+		else
+			tmp = calloc (nelem, size);
+		if (tmp == NULL)
+			die_if_memfail (C, nelem, size, where);
 	}
 #ifdef MEMDEBUG
 	if (g_mem_keeper.active)
@@ -3381,7 +3387,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 	return (tmp);
 }
 
-void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *where)
+void GMT_free_func (struct GMT_CTRL *C, void *addr, bool align, const char *where)
 {
 #ifndef DEBUG
 	if (addr == NULL) {
@@ -3395,11 +3401,17 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *where)
 	if (g_mem_keeper.active)
 		gmt_memtrack_sub (C, &g_mem_keeper, where, addr);
 #endif
-#if defined(WIN32) && defined(USE_MEM_ALIGNED)
-	_aligned_free (addr);
+	if (align) {	/* Must free aligned memory */
+#ifdef HAVE_FFTW3F
+		fftwf_free (addr);
+#elif defined(WIN32) && defined(USE_MEM_ALIGNED)
+		_aligned_free (addr);
 #else
-	free (addr);
+		free (addr);
 #endif
+	}
+	else
+		free (addr);
 }
 
 void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc, size_t element_size, const char *where)
@@ -3440,7 +3452,7 @@ void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc
 
 	/* Here n_alloc is set one way or another.  Do the actual [re]allocation */
 
-	ptr = GMT_memory_func (C, ptr, *n_alloc, element_size, where);
+	ptr = GMT_memory_func (C, ptr, *n_alloc, element_size, false, where);
 
 	return (ptr);
 }
