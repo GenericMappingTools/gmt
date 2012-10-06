@@ -3310,7 +3310,7 @@ int GMT_intpol (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m
 
 void die_if_memfail (struct GMT_CTRL *C, size_t nelem, size_t size, const char *where)
 {	/* Handle reporting and aborting if memory allocation fails */
-	double mem = (double)(nelem * size);
+	double mem = ((double)nelem) * ((double)size);
 	unsigned int k = 0;
 	static char *m_unit[4] = {"bytes", "kb", "Mb", "Gb"};
 	while (mem >= 1024.0 && k < 3) mem /= 1024.0, k++;
