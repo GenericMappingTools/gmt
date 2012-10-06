@@ -344,8 +344,8 @@ EXTERN_MSC struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, 
 EXTERN_MSC void GMT_smart_justify (struct GMT_CTRL *C, int just, double angle, double dx, double dy, double *x_shift, double *y_shift, unsigned int mode);
 EXTERN_MSC void GMT_set_meminc (struct GMT_CTRL *C, size_t increment);
 EXTERN_MSC void GMT_reset_meminc (struct GMT_CTRL *C);
-EXTERN_MSC void * GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t size, const char *where);
-EXTERN_MSC void GMT_free_func (struct GMT_CTRL *C, void *addr, const char *where);
+EXTERN_MSC void * GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t size, bool align, const char *where);
+EXTERN_MSC void GMT_free_func (struct GMT_CTRL *C, void *addr, bool align, const char *where);
 EXTERN_MSC struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, unsigned int smode);
 EXTERN_MSC struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate);
 EXTERN_MSC bool GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S);

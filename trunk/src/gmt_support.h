@@ -45,16 +45,20 @@ struct MATH_MACRO {
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG
-#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__SOURCE_LINE)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),false,__SOURCE_LINE)
+#define GMT_grdmemory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__SOURCE_LINE)
 #else
-#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),__func__)
+#define GMT_memory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),false,__func__)
+#define GMT_grdmemory(C,ptr,n,type) GMT_memory_func(C,ptr,n,sizeof(type),true,__func__)
 #endif
 
 /* Convenience macro for GMT_free_func */
 #ifdef DEBUG
-#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__SOURCE_LINE),(ptr)=NULL)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,false,__SOURCE_LINE),(ptr)=NULL)
+#define GMT_grdfree(C,ptr) (GMT_free_func(C,ptr,true,__SOURCE_LINE),(ptr)=NULL)
 #else
-#define GMT_free(C,ptr) (GMT_free_func(C,ptr,__func__),(ptr)=NULL)
+#define GMT_free(C,ptr) (GMT_free_func(C,ptr,false,__func__),(ptr)=NULL)
+#define GMT_grdfree(C,ptr) (GMT_free_func(C,ptr,true,__func__),(ptr)=NULL)
 #endif
 
 #ifdef MEMDEBUG
