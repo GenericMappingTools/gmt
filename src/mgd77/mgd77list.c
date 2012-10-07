@@ -1293,7 +1293,29 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					dvalue[m1_col][rec] = GMT->session.d_NaN;
 				else {
 					if (first_time_on_sensor_offset) {  /* At first time here we interpolate ALL mtf1 at offset pos */
-						int k_off;
+						int k_off, last_k = 0, n_repeated = 0;
+						double off_rescue = 0.0001;
+
+						for (k_off = 1; k_off < D->H.n_records; k_off++) {
+							/* Often cruises have repeated points that will prevent GMT_intpol usage because dx = 0
+							   We will workaround it by adding a epsilon (.1 meter) to the repeated pt. However,
+							   often the situation is further complicated because repeat points can come in large
+							   packs. For those cases we add an increasingly small offset. But when the number of
+							   repetitions are large, even this strategy fails and we get error from GMT_intpol */
+							if ((cumdist[k_off] - cumdist[k_off-1]) == 0.0) {
+								if ((k_off - last_k) == 1) {
+									off_rescue -= 0.000001;	/* Slightly and incrementally reduce the move away offset */
+								}
+								else {
+									off_rescue = 0.0001;	/* Reset it to the one-repetition-only value */
+								}
+								cumdist[k_off-1] -= off_rescue;
+								last_k = k_off;
+							}
+							else
+								off_rescue = 0.0001;     /* Reset it to the one-repetition-only value */
+						}
+
 						for (k_off = 0; k_off < D->H.n_records; k_off++)
 							cumdist_off[k_off] = cumdist[k_off] - Ctrl->A.sensor_offset;
 
