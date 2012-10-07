@@ -1096,9 +1096,9 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			/* For the cable correction we need to know ALL cumulative distances. So compute them now. */
 				uint64_t rec_;
 				cumdist = GMT_memory(GMT, NULL, D->H.n_records, double);
-				mtf_bak = GMT_memory(GMT, NULL, D->H.n_records, double);         /* We need a copy */
-				mtf_int = GMT_memory(GMT, NULL, D->H.n_records, double);         /* And another to store reinterped mtf1 */
-				cumdist_off = GMT_memory(GMT, NULL, D->H.n_records, double);     /* To put positions where mag was really measured */
+				mtf_bak = GMT_memory(GMT, NULL, D->H.n_records, double);       /* We need a copy */
+				mtf_int = GMT_memory(GMT, NULL, D->H.n_records, double);       /* And another to store reinterped mtf1 */
+				cumdist_off = GMT_memory(GMT, NULL, D->H.n_records, double);   /* To put positions where mag was really measured */
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][0]) || GMT_is_dnan (dvalue[y_col][0]));
 				prevrec = 0;
 				mtf_bak[0] = dvalue[m1_col][0];
@@ -1197,6 +1197,9 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (auxlist[MGD77_AUX_GR].requested)	/* Evaluate Theoretical Gravity Model */
 				aux_dvalue[MGD77_AUX_GR] = MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
 
+			/* --------------------------------------------------------------------------------------------------- */
+			/*                 See if we have a request to adjust the carter value                                 */
+			/* --------------------------------------------------------------------------------------------------- */
 			if (auxlist[MGD77_AUX_CT].requested) {	/* Carter is one of the output columns */
 				if (Ctrl->A.code[ADJ_CT]) {	/* We have requested some adjustment to the carter value */
 					aux_dvalue[MGD77_AUX_CT] = GMT->session.d_NaN;
@@ -1224,7 +1227,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (negative_depth) aux_dvalue[MGD77_AUX_CT] = -aux_dvalue[MGD77_AUX_CT];
 			}
 
-			if (z_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_DP]) {	/* We have requested some adjustment to the depth value */
+			/* --------------------------------------------------------------------------------------------------- */
+			/*                 See if we have a request to adjust the depth value                                  */
+			/* --------------------------------------------------------------------------------------------------- */
+			if (z_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_DP]) {
 				z = GMT->session.d_NaN;
 				if (Ctrl->A.code[ADJ_DP] & 1)	/* Try obs. depth */
 					z = dvalue[z_col][rec];
@@ -1250,7 +1256,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (Ctrl->A.force || !GMT_is_dnan(dvalue[z_col][rec])) dvalue[z_col][rec] = z;
 			}
 			
-			if (f_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_GR]) {	/* We have requested some adjustment to the faa value */
+			/* --------------------------------------------------------------------------------------------------- */
+			/*                 See if we have a request to adjust the faa value                                    */
+			/* --------------------------------------------------------------------------------------------------- */
+			if (f_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_GR]) {
 				g = GMT->session.d_NaN;
 				if (Ctrl->A.code[ADJ_GR] == 1)	/* Try faa */
 					g = dvalue[f_col][rec];
@@ -1261,7 +1270,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (Ctrl->A.force || !GMT_is_dnan(dvalue[f_col][rec])) dvalue[f_col][rec] = g;
 			}
 			
-			if (m_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_MG]) {	/* We have requested some adjustment to the mag value */
+			/* --------------------------------------------------------------------------------------------------- */
+			/*                 See if we have a request to adjust the mag value                                  */
+			/* --------------------------------------------------------------------------------------------------- */
+			if (m_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_MG]) {
 				m = GMT->session.d_NaN;
 				if (Ctrl->A.code[ADJ_MG] & 1)	/* Try mag */
 					m = dvalue[m_col][rec];
@@ -1286,15 +1298,20 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (Ctrl->A.force || !GMT_is_dnan(dvalue[m_col][rec])) dvalue[m_col][rec] = m;
 			}
 
-			if (m1_col != MGD77_NOT_SET && Ctrl->A.cable_adjust) {	/* Request to adjust for magnetometer offset */
+			/* --------------------------------------------------------------------------------------------------- */
+			/*                See if we have a request to adjust for magnetometer offset                           */
+			/* --------------------------------------------------------------------------------------------------- */
+			if (m1_col != MGD77_NOT_SET && Ctrl->A.cable_adjust) {
 				if (Ctrl->A.sensor_offset == 0)             /* Accept also this case to easy life with script writing */
 					dvalue[m1_col][rec] = mtf_bak[rec];         /* Means, copy mtf1 into mtf2 */
 				else if (cumdist[rec] < Ctrl->A.sensor_offset)  /* First points (distance < sensor_offset) are lost */
 					dvalue[m1_col][rec] = GMT->session.d_NaN;
 				else {
 					if (first_time_on_sensor_offset) {  /* At first time here we interpolate ALL mtf1 at offset pos */
-						int k_off, last_k = 0, n_repeated = 0;
+						int k_off, last_k = 0, n_repeated = 0, n, *ind;
+						bool clean = true;
 						double off_rescue = 0.0001;
+						double *cumdist_off_cl, *cumdist_cl, *mtf_int_cl, *mtf_cl;
 
 						for (k_off = 1; k_off < D->H.n_records; k_off++) {
 							/* Often cruises have repeated points that will prevent GMT_intpol usage because dx = 0
@@ -1316,11 +1333,45 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 								off_rescue = 0.0001;     /* Reset it to the one-repetition-only value */
 						}
 
-						for (k_off = 0; k_off < D->H.n_records; k_off++)
+						for (k_off = 0; k_off < D->H.n_records; k_off++) {
 							cumdist_off[k_off] = cumdist[k_off] - Ctrl->A.sensor_offset;
+							if (clean && GMT_is_dnan (mtf_bak[k_off])) clean = false;
+						}
 
-						GMT_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, 0);
+						/* --------------- Atack the NaNs problem -----------------*/
+						if (clean)		/* Nice, no NaNs at sight */
+							GMT_intpol(GMT, cumdist, mtf_bak, D->H.n_records, D->H.n_records, cumdist_off, mtf_int, 1);
+						else {
+							/* Need to allocate these auxiliary vectors */
+							ind = GMT_memory(GMT, NULL, D->H.n_records, int);
+							cumdist_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
+							cumdist_off_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
+							mtf_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
+							mtf_int_cl = GMT_memory(GMT, NULL, D->H.n_records, double);
+
+							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
+								ind[k_off] = !GMT_is_dnan (mtf_bak[k_off]);  /* Find indices of valid values */
+								if (ind[k_off]) {
+									cumdist_cl[n] = cumdist[k_off];          /* Copy valid values into a contiguous vec */
+									cumdist_off_cl[n] = cumdist_off[k_off];
+									mtf_cl[n] = mtf_bak[k_off];
+									n++;
+								}
+							}
+							GMT_intpol(GMT, cumdist_cl, mtf_cl, n, n, cumdist_off_cl, mtf_int_cl, 1);
+							for (k_off = n = 0; k_off < D->H.n_records; k_off++) {
+								if (ind[k_off])
+									mtf_int[k_off] = mtf_int_cl[n++];
+								else
+									mtf_int[k_off] = GMT->session.d_NaN;
+							}
+						}
+
 						dvalue[m1_col][rec] = mtf_int[rec];
+						/* We can free these right now because they won't be used anymore for this file */
+						GMT_free(GMT, ind);
+						GMT_free(GMT, cumdist_cl);         GMT_free(GMT, cumdist_off_cl);
+						GMT_free(GMT, mtf_cl);             GMT_free(GMT, mtf_int_cl);
 						first_time_on_sensor_offset = false;
 					}
 					else                               /* All other times, just pull out current val of interped mtf1 */
