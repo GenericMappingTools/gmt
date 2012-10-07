@@ -583,7 +583,7 @@ unsigned int GMT_get_prime_factors (struct GMT_CTRL *C, uint64_t n, unsigned int
 
 	/* Initialize m and max_factor  */
 
-	m = GMT_abs (n);
+	m = (unsigned int)GMT_abs (n);
 	if (m < 2) return (0);
 	max_factor = lrint (floor(sqrt((double)m)));
 
@@ -937,7 +937,7 @@ bool GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 		n = sscanf (&line[1], "%d/%s", &fill->dpi, fill->pattern);
 		if (n != 2) error = 1;
 		/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
-		len = strlen (fill->pattern);
+		len = (int)strlen (fill->pattern);
 		for (i = 0, pos = -1; fill->pattern[i] && pos == -1; i++) if (fill->pattern[i] == ':' && i < len && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;
 		if (pos > -1) fill->pattern[pos] = '\0';
 		fill->pattern_no = atoi (fill->pattern);
@@ -946,7 +946,7 @@ bool GMT_getfill (struct GMT_CTRL *C, char *line, struct GMT_FILL *fill)
 
 		/* See if fore- and background colors are given */
 
-		len = strlen (line);
+		len = (int)strlen (line);
 		for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
 		pos++;
 
@@ -1276,7 +1276,7 @@ bool gmt_is_color (struct GMT_CTRL *C, char *word)
 	 * color syntax is <gray>|<r/g/b>|<h-s-v>|<c/m/y/k>|<colorname>.
 	 * NOTE: we are not checking if the values are kosher; just the pattern  */
 
-	n = strlen (word);
+	n = (int)strlen (word);
 	if (n == 0) return (false);
 
 	if (word[0] == '#') return (true);		/* Probably #rrggbb */
@@ -1510,7 +1510,7 @@ int gmt_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 	char tmp[GMT_TEXT_LEN256], string[GMT_BUFSIZ], ptr[GMT_BUFSIZ];
 
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do */
-	n = strlen (line) - 1;
+	n = (int)strlen (line) - 1;
 	if (strchr (GMT_DIM_UNITS, line[n]))	/* Separate unit given to style string */
 		unit = GMT_unit_lookup (C, line[n], C->current.setting.proj_length_unit);
 
@@ -1571,7 +1571,7 @@ bool gmt_is_penstyle (char *word)
 	/* Returns true if we are sure the word is a style string - else false.
 	 * style syntax is a|o|<pattern>:<phase>|<string made up of -|. only>[<unit>] */
 
-	n = strlen (word);
+	n = (int)strlen (word);
 	if (n == 0) return (false);
 
 	n--;
@@ -1758,7 +1758,7 @@ int GMT_getincn (struct GMT_CTRL *C, char *line, double inc[], unsigned int n)
 	i = pos = C->current.io.inc_code[GMT_X] = C->current.io.inc_code[GMT_Y] = 0;
 
 	while (i < n && (GMT_strtok (line, "/", &pos, p))) {
-		last = strlen (p) - 1;
+		last = (unsigned int)strlen (p) - 1;
 		if (p[last] == '=') {	/* Let -I override -R */
 			p[last] = 0;
 			if (i < 2) C->current.io.inc_code[i] |= GMT_INC_IS_EXACT;
@@ -1871,7 +1871,7 @@ int GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *unit)
 
 	/* Extract the distance unit, if any */
 
-	last = strlen (line) - 1;
+	last = (int)strlen (line) - 1;
 	if (strchr (GMT_LEN_UNITS GMT_OPT("c"), (int)copy[last])) {	/* Got a valid distance unit */
 		*unit = copy[last];
 #ifdef GMT_COMPAT
@@ -3248,20 +3248,20 @@ int GMT_intpol (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m
 		if (GMT_is_dnan (y[0])) clean = false;
 		if (dx > 0.0) {
 			for (i = 2; i < n && err_flag == 0; i++) {
-				if ((x[i] - x[i-1]) <= 0.0) err_flag = i;
+				if ((x[i] - x[i-1]) <= 0.0) err_flag = (int)i;
 				if (clean && GMT_is_dnan (y[i])) clean = false;
 			}
 		}
 		else {
 			down = true;
 			for (i = 2; i < n && err_flag == 0; i++) {
-				if ((x[i] - x[i-1]) >= 0.0) err_flag = i;
+				if ((x[i] - x[i-1]) >= 0.0) err_flag = (int)i;
 				if (clean && GMT_is_dnan (y[i])) clean = false;
 			}
 		}
 
 		if (err_flag) {
-			GMT_report (C, GMT_MSG_NORMAL, "Error: x-values are not monotonically increasing/decreasing (at record %d)!\n", err_flag);
+			GMT_report (C, GMT_MSG_NORMAL, "Error: x-values are not monotonically increasing/decreasing (at zero-based record %d)!\n", err_flag);
 			return (err_flag);
 		}
 
@@ -3340,9 +3340,11 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 #endif
 		GMT_exit (EXIT_FAILURE);
 	}
+
 #if defined(WIN32) && !defined(USE_MEM_ALIGNED)
 	align = false;	/* Turn off alignment for Windows if not specifically selected via USE_MEM_ALIGNED */
 #endif
+
 	if (prev_addr) {
 		if (nelem == 0) { /* Take care of n == 0 */
 			GMT_free (C, prev_addr);
@@ -3351,7 +3353,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 		if (align) {
 #ifdef HAVE_FFTW3F
 			tmp = fftwf_malloc (nelem * size);
-#elif defined(WIN32) && defined(USE_MEM_ALIGNED)
+#elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_realloc ( prev_addr, nelem * size, 16U);
 #else
 			posix_memalign (&prev_addr, 16U, nelem * size);
@@ -3367,7 +3369,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 		if (align) {
 #ifdef HAVE_FFTW3F
 			tmp = fftwf_malloc (nelem * size);
-#elif defined(WIN32) && defined(USE_MEM_ALIGNED)
+#elif defined(WIN32) || defined(USE_MEM_ALIGNED)
 			tmp = _aligned_malloc (nelem * size, 16U);
 #else
 			posix_memalign (&tmp, 16U, nelem * size);
@@ -3380,6 +3382,7 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 		if (tmp == NULL)
 			die_if_memfail (C, nelem, size, where);
 	}
+
 #ifdef MEMDEBUG
 	if (g_mem_keeper.active)
 		gmt_memtrack_add (C, &g_mem_keeper, where, tmp, prev_addr, nelem * size);
@@ -3397,13 +3400,16 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, bool align, const char *wher
 		return; /* Do not free a NULL pointer, although allowed */
 	}
 #endif
+
 #ifdef MEMDEBUG
 	if (g_mem_keeper.active)
 		gmt_memtrack_sub (C, &g_mem_keeper, where, addr);
 #endif
+
 #if defined(WIN32) && !defined(USE_MEM_ALIGNED)
 	align = false;	/* Turn off alignment for Windows if not specifically selected via USE_MEM_ALIGNED */
 #endif
+
 	if (align) {	/* Must free aligned memory */
 #ifdef HAVE_FFTW3F
 		fftwf_free (addr);
@@ -3460,6 +3466,15 @@ void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc
 
 	return (ptr);
 }
+
+#ifdef FISH_STRDUP_LEAKS
+char *GMT_strdup(struct GMT_CTRL *C, const char *s) {
+
+	char *p = GMT_memory(C, NULL, strlen(s) + 1, unsigned char);
+	if (p) { strcpy(p, s); }
+	return p;
+}
+#endif
 
 void GMT_set_meminc (struct GMT_CTRL *C, size_t increment)
 {	/* Temporarily set the GMT_min_memic to this value; restore with GMT_reset_meminc */
@@ -3732,7 +3747,7 @@ int GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GMT_CON
 			k = sscanf (&txt[j], "%[^/]/%lf", txt_a, &L->label_dist_frac);
 			if (k == 1) L->label_dist_frac = 0.25;
 			if (L->dist_kind == 1) {	/* Distance units other than xy specified */
-				k = strlen (txt_a) - 1;
+				k = (int)strlen (txt_a) - 1;
 				c = (isdigit ((int)txt_a[k]) || txt_a[k] == '.') ? 0 : txt_a[k];
 				L->label_dist_spacing = atof (&txt_a[1]);
 				GMT_init_distaz (C, c, 1 + GMT_sph_mode (C), GMT_CONT_DIST);
@@ -3763,7 +3778,7 @@ int gmt_code_to_lonlat (struct GMT_CTRL *C, char *code, double *lon, double *lat
 	int i, n, error = 0;
 	bool z_OK = false;
 
-	n = strlen (code);
+	n = (int)strlen (code);
 	if (n != 2) return (1);
 
 	for (i = 0; i < 2; i++) {
@@ -3953,7 +3968,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double xyz[2]
 		G->f_n = 0;
 		while (GMT_fgets (C, buffer, GMT_BUFSIZ, fp)) {
 			if (buffer[0] == '#' || buffer[0] == '>' || buffer[0] == '\n') continue;
-			len = strlen (buffer);
+			len = (int)strlen (buffer);
 			for (kk = len - 1; kk >= 0 && strchr (" \t,\r\n", (int)buffer[kk]); kk--);
 			buffer[++kk] = '\n';	buffer[++kk] = '\0';	/* Now have clean C string with \n\0 at end */
 			sscanf (buffer, "%s %s %[^\n]", txt_a, txt_b, txt_c);	/* Get first 2-3 fields */
@@ -4261,8 +4276,8 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 	/* Check if this edge was already used */
 
 	ij0 = GMT_IJ0 (G->header, row + d_row[side], col + d_col[side]);	/* Index to use with the edge array */
-	edge_word = ij0 / 32 + d_side[side] * offset;
-	edge_bit = ij0 % 32;
+	edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
+	edge_bit = (unsigned int)(ij0 % 32);
 	if (test && (edge[edge_word] & bit[edge_bit])) return (0);
 
 	ij_in = GMT_IJP (G->header, row, col);	/* Index to use with the padded G->data array */
@@ -4362,8 +4377,8 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 		/* Mark the new edge as used */
 
 		ij0 = GMT_IJ0 (G->header, row + d_row[side], col + d_col[side]);	/* Non-padded index used for edge array */
-		edge_word = ij0 / 32 + d_side[side] * offset;
-		edge_bit = ij0 % 32;
+		edge_word = (unsigned int)(ij0 / 32 + d_side[side] * offset);
+		edge_bit  = (unsigned int)(ij0 % 32);
 		edge[edge_word] |= bit[edge_bit];
 
 		if ((side == 0 && row == G->header->ny - 1) || (side == 1 && col == G->header->nx - 2) ||
@@ -4907,10 +4922,11 @@ void gmt_place_label (struct GMT_CTRL *C, struct GMT_LABEL *L, char *txt, struct
 {	/* Allocates needed space and copies in the label */
 	int n, m = 0;
 
-	if (use_unit && G->unit && G->unit[0]) m = strlen (G->unit) + (G->unit[0] != '-');	/* Must allow extra space for a unit string */
-	n = strlen (txt) + 1 + m;
+	if (use_unit && G->unit && G->unit[0])
+		m = (int)strlen (G->unit) + (G->unit[0] != '-');	/* Must allow extra space for a unit string */
+	n = (int)strlen (txt) + 1 + m;
 	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
-		n += strlen (G->prefix) + 1;
+		n += (int)strlen (G->prefix) + 1;
 		L->label = GMT_memory (C, NULL, n, char);
 		if (G->prefix[0] == '-')	/* No space between annotation and prefix */
 			sprintf (L->label, "%s%s", &G->prefix[1], txt);
@@ -5123,7 +5139,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *C, double **xxx, double **yyy, uint6
 			GMT_init_track (C, yy, nn, &(G->ylist));
 			for (line_no = 0; line_no < G->xp->n_segments; line_no++) {	/* For each of the crossing lines */
 				GMT_init_track (C, G->xp->segment[line_no]->coord[GMT_Y], G->xp->segment[line_no]->n_rows, &(G->ylist_XP));
-				G->nx = GMT_crossover (C, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, &G->XC);
+				G->nx = (unsigned int)GMT_crossover (C, G->xp->segment[line_no]->coord[GMT_X], G->xp->segment[line_no]->coord[GMT_Y], NULL, G->ylist_XP, G->xp->segment[line_no]->n_rows, xx, yy, NULL, G->ylist, nn, false, &G->XC);
 				GMT_free (C, G->ylist_XP);
 				if (G->nx == 0) continue;
 
@@ -7223,7 +7239,7 @@ int GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 	}
 	else	/* Wrong number of slashes */
 		error++;
-	i = strlen (txt_len) - 1;
+	i = (int)strlen (txt_len) - 1;
 	if (isalpha ((int)txt_len[i])) {	/* Letter at end of distance value */
 		if (strchr (GMT_LEN_UNITS2, (int)txt_len[i])) {	/* Gave a valid distance unit */
 			ms->measure = txt_len[i];
@@ -7359,7 +7375,8 @@ int GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 	/* Determine if we have the optional label components specified */
 
 	for (i = j, slash = 0; text[i] && slash < 2; i++) if (text[i] == '/') slash++;	/* Move i until the 2nd slash is reached */
-	for (k = strlen(text) - 1, colon = 0; text[k] && k > i && colon < 2; k--) if (text[k] == ':') colon++;	/* Move k to starting colon of :label: */
+	for (k = (unsigned int)strlen(text) - 1, colon = 0; text[k] && k > i && colon < 2; k--)
+		if (text[k] == ':') colon++;	/* Move k to starting colon of :label: */
 	if (colon == 2 && k > i)
 		colon = k + 2;	/* Beginning of label */
 	else
@@ -7524,7 +7541,7 @@ unsigned int GMT_getmodopt (struct GMT_CTRL *C, const char *string, const char *
 	unsigned int i, j, string_len;
 	bool done = false;
 
-	string_len = strlen (string);
+	string_len = (unsigned int)strlen (string);
 	token[0] = 0;	/* Initialize token to NULL in case we are at end */
 
 	while (!done) {
@@ -7582,7 +7599,7 @@ int GMT_just_decode (struct GMT_CTRL *C, char *key, unsigned int def)
 
 	i = def % 4;
 	j = def / 4;
-	for (k = 0; k < strlen (key); k++) {
+	for (k = 0; k < (unsigned int)strlen (key); k++) {
 		switch (key[k]) {
 			case 'b':	/* Bottom baseline */
 			case 'B':
