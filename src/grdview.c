@@ -974,7 +974,7 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_free (GMT, x_drape);
 			GMT_free (GMT, y_drape);
 			if (Ctrl->I.active) {	/* Reset intensity grid so that we have no boundary row/cols */
-				GMT_grdfree (GMT, Intens->data);
+				GMT_free_aligned (GMT, Intens->data);
 				Intens->data = int_drape;
 			}
 		}

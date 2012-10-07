@@ -362,7 +362,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 				g_table[n] = I->ColorMap[n*4 + 1];
 				b_table[n] = I->ColorMap[n*4 + 2];
 			}
-			I->data = GMT_grdmemory (GMT, I->data, 3 * I->header->nm, unsigned char);	/* Expand to reuse */
+			I->data = GMT_memory_aligned (GMT, I->data, 3 * I->header->nm, unsigned char);	/* Expand to reuse */
 			n = 3 * I->header->nm - 1;
 			for (j = I->header->nm - 1; j >= 0; j--) {
 				I->data[n--] = b_table[I->data[j]];

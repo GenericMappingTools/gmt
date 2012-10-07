@@ -469,7 +469,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_rot, GMT->common.R.wesn, G->header->inc, G->header->registration), Ctrl->G.file);
 	
-	G_rot->data = GMT_grdmemory (GMT, NULL, G_rot->header->size, float);
+	G_rot->data = GMT_memory_aligned (GMT, NULL, G_rot->header->size, float);
 	grd_x = GMT_memory (GMT, NULL, G_rot->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_rot->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_rot->header->ny, double);

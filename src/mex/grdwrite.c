@@ -70,7 +70,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	sprintf (G->header->remark, "File written from %s with grdwrite", MEX_PROG);
 
 	/*  5. Allocate memory for the grid */
-	G->data = GMT_grdmemory (API->GMT, NULL, G->header->size, float);
+	G->data = GMT_memory_aligned (API->GMT, NULL, G->header->size, float);
 
 	/* 6. Transpose from Matlab orientation to grd orientation */
 	GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = z[MEX_IJ(G,row,col)];

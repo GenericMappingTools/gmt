@@ -378,7 +378,7 @@ int GMT_grdokb (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);
-		Gout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
+		Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
 	}
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");

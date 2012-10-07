@@ -645,7 +645,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
 			if (Ctrl->A.active)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
-			Img_proj->data = GMT_grdmemory (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
+			Img_proj->data = GMT_memory_aligned (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
 			GMT_img_project (GMT, I, Img_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
 				Return (API->error);
@@ -658,7 +658,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (grid_registration == GMT_GRIDLINE_REG)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
 			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
-			Grid_proj[k]->data = GMT_grdmemory (GMT, NULL, Grid_proj[k]->header->size, float);
+			Grid_proj[k]->data = GMT_memory_aligned (GMT, NULL, Grid_proj[k]->header->size, float);
 			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k]) != GMT_OK) {
 				Return (API->error);
@@ -677,7 +677,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 				ny_proj = Intens_orig->header->ny;
 			}
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
-			Intens_proj->data = GMT_grdmemory (GMT, NULL, Intens_proj->header->size, float);
+			Intens_proj->data = GMT_memory_aligned (GMT, NULL, Intens_proj->header->size, float);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);

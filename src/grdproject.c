@@ -382,7 +382,7 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Geo->header);
-		Geo->data = GMT_grdmemory (GMT, NULL, Geo->header->size, float);
+		Geo->data = GMT_memory_aligned (GMT, NULL, Geo->header->size, float);
 		GMT_grd_init (GMT, Geo->header, options, true);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -467,7 +467,7 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
-		Rect->data = GMT_grdmemory (GMT, NULL, Rect->header->size, float);
+		Rect->data = GMT_memory_aligned (GMT, NULL, Rect->header->size, float);
 		GMT_grd_project (GMT, Geo, Rect, false);
 		GMT_grd_init (GMT, Rect->header, options, true);
 

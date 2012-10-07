@@ -361,7 +361,7 @@ int GMT_hotspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
-	G->data = GMT_grdmemory (GMT, NULL, G->header->size, float);
+	G->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 

@@ -256,7 +256,7 @@ int GMT_grdsample (struct GMTAPI_CTRL *API, int mode, void *args) {
 
 	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Gout->header, 1), Ctrl->G.file);
 
-	Gout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
+	Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
 
 	GMT_grd_init (GMT, Gin->header, options, true);
 
