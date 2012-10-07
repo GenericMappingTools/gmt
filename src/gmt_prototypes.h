@@ -26,6 +26,11 @@
 #ifndef _GMT_PROTOTYPES_H
 #define _GMT_PROTOTYPES_H
 
+/* Temporary redef of strdup to allow check of memory leaks due to usage of strdup */
+#ifdef FISH_STRDUP_LEAKS
+EXTERN_MSC char *GMT_strdup (struct GMT_CTRL *C, const char *s);
+#endif
+
 /* gmt_bcr.c: */
 EXTERN_MSC double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy);		/* Compute z(x,y) from bcr structure and grid */
 EXTERN_MSC int GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z);		/* Compute z(x,y) from bcr structure and image */
