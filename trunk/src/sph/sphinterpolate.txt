@@ -65,7 +65,7 @@ Before interpolation, scale data by the maximum data range [no scaling].
 To interpolate the points in the file testdata.txt on a global 1x1 degree grid with no tension, use
 .br
 .sp
-BD(sphinterpolate) testdata.txt OPT(Rg) OPT(I)1 OPT(G)solution.nc
+sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR greenspline (1)

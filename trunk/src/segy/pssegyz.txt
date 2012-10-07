@@ -115,7 +115,7 @@ locations, clipped at +-3 and with wiggle trace and positive variable area
 shading in black, use
 .br
 .sp
-BD(pssegyz) wa1.segy OPT(JX)5/\-5 OPT(D)1 OPT(Jz)0.05 OPT(E)180/5 OPT(R)0/100/0/10/0/10 OPT(C)3 OPT(N) OPT(S)o OPT(W) OPT(F)black > segy.ps
+pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 -C3 -N -So -W -Fblack > segy.ps
 .br
 .SH BUGS
 Variable area involves filling four-sided figures of distressing generality.

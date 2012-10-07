@@ -56,7 +56,7 @@ are used to obtain a weighted least squares solution [no weights].
 To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
 .br
 .sp
-x2sys_list COE_data.txt -V -TMGD77 -Cfaa -Fnc  > faa_coe.txt
+x2sys_list COE_data.txt -V -TMGD77 -Cfaa -Fnc > faa_coe.txt
 .br
 x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Ec > coe_table.txt
 .br
@@ -64,7 +64,7 @@ x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Ec > coe_table.txt
 To fit a faa linear drift with time instead, try
 .br
 .sp
-x2sys_list COE_data.txt -V -TMGD77 -Cfaa -FnTc  > faa_coe.txt
+x2sys_list COE_data.txt -V -TMGD77 -Cfaa -FnTc > faa_coe.txt
 .br
 x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Et > coe_table.txt
 .br

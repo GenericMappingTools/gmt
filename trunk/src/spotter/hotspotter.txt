@@ -51,7 +51,7 @@ To create a CVA image from the Pacific (x,y,z,r,t) data in the file seamounts.d,
 using the DC85.d Euler poles, run
 .br
 .sp
-BD(hotspotter) seamounts.d OPT(E)DC85.d OPT(G)CVA.nc OPT(R)130/260/-66/60 OPT(I)10BD(m) OPT(N)145 OPT(T) OPT(V)
+hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 .br
 .sp
 This file can then be plotted with BD(grdimage).

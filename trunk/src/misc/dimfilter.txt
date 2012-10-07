@@ -107,32 +107,32 @@ which you choose to be from 150E to 250E and 10N to 40N, and you want the output
 To prevent the medians from being biased by the sloping plane, you want to divide the filter circle into
 6 sectors and to choose the lowest value among 6 medians. Using spherical distance calculations, you need:
 .sp
-BD(dimfilter) north_pacific_dbdb5.nc OPT(G)filtered_pacific.nc OPT(Fm)600 OPT(D)4 OPT(N)l6 OPT(R)150/250/10/40 OPT(I)0.5 OPT(V)
+dimfilter north_pacific_dbdb5.nc -Gfiltered_pacific.nc -Fm600 -D4 -Nl6 -R150/250/10/40 -I0.5 -V
 .sp
 Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W to 15W and 8N to 25N, and you
 want to remove small-length-scale features in order to define a swell in an area extending from 27.5W
 to 20.5W and 12.5N to 19.5N, and you want the output value every 2 minute. Using cartesian distance calculations, you need:
 .sp
-BD(dimfilter) cape_verde.nc OPT(G)t.nc OPT(Fm)220 \OPT(Nl)8 OPT(D)2 OPT(R)-27.5/-20.5/12.5/19.5 OPT(I)2m OPT(V)
+dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
 .br
-BD(grdfilter) t.nc OPT(G)cape_swell.nc OPT(-Fg)50 OPT(D)2 OPT(V)
+grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
 .sp
 Suppose that you found a range of filter widths for a given area, and you filtered the given bathymetric
 data using the range of filter widths (e.g., IT(f100.nc f110.nc f120.nc f130.nc)), and you want to
 define a regional trend using the range of filter widths, and you want to obtain median absolute deviation
 (MAD) estimates at each data point. Then, you will need to do:
 .sp
-BD(grd2xyz) f100.nc BD(-Z) > f100.d
+grd2xyz f100.nc -Z > f100.d
 .sp
-BD(grd2xyz) f110.nc BD(-Z) > f110.d
+grd2xyz f110.nc -Z > f110.d
 .sp
-BD(grd2xyz) f120.nc BD(-Z) > f120.d
+grd2xyz f120.nc -Z > f120.d
 .sp
-BD(grd2xyz) f130.nc BD(-Z) > f130.d
+grd2xyz f130.nc -Z > f130.d
 .sp
-BD(paste) f100.d f110.d f120.d f130.d > depths.d
+paste f100.d f110.d f120.d f130.d > depths.d
 .sp
-BD(dimfilter) depths.d BD(-Q)4 > output.z
+dimfilter depths.d -Q4 > output.z
 .sp  
 .SH LIMITATIONS
 When working with geographic (lat, lon) grids, all three convolution filters (boxcar, cosine arch, and gaussian) will properly normalize

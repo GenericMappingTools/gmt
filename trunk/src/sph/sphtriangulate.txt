@@ -67,14 +67,14 @@ To triangulate the points in the file testdata.txt, and
 make a Voronoi diagram via BD(psxy), use
 .br
 .sp
-BD(sphtriangulate) testdata.txt OPT(Qv) | BD(psxy) OPT(Rg) OPT(JG)30/30/6i OPT(m) OPR(L) OPT(P) OPT(W)1p OPT(B)0g30 | gv \-
+sphtriangulate testdata.txt -Qv | psxy -Rg -JG30/30/6i -L -P -W1p -B0g30 | gv -
 .br
 .sp
 To compute the optimal Delaunay triangulation network based on the multiple segment file globalnodes.d
 and save the area of each triangle in the header record, try
 .br
 .sp
-BD(sphtriangulate) globalnodes.d OPT(m) OPT(Qd) OPT(A) > global_tri.d
+sphtriangulate globalnodes.d -Qd -A > global_tri.d
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR triangulate (1)

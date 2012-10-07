@@ -3,7 +3,7 @@
 #define	DIG_PORT	/dev/ttyS0
 #define	DIG_LPI		2540
 #define	LEN1	0.5
-#define SCALE1	OPT(Jm)1:1
+#define SCALE1	-Jm1:1
 .SH NAME
 gmtdigitize \- Digitizing and Inverse map transformation of map x/y coordinates 
 .SH SYNOPSIS
@@ -68,7 +68,7 @@ To digitize lines from a mercator map made for a given region, and
 save each line segment in individual files called segment_000.xy, segment_001.xy etc, try
 .br
 .sp
-gmtdigitize OPT(R)20/50/12/25 SCALE1 OPT(m) OPT(N)segment_%03d.xy
+gmtdigitize -R20/50/12/25 SCALE1 -Nsegment_%03d.xy
 .br
 .sp
 To digitize seismically defined interfaces from a multichannel seismic section, with horizontal
@@ -76,7 +76,7 @@ distances from 130 to 970, and vertical times from 0 to 10 seconds, write out th
 save all line segment to a single multisegment file, and beep at each click, try
 .br
 .sp
-gmtdigitize OPT(R)130/970/0/10 OPT(Jx)1/-1 OPT(m) OPT(A) OPT(Z) > interfaces.d
+gmtdigitize -R130/970/0/10 -Jx1/-1 -A -Z > interfaces.d
 .br
 .SH SYSTEM SETUP
 This applies to the Calcomp DrawingBoard III hooked up to a RedHat Linux workstation.

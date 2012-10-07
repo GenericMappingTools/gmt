@@ -59,7 +59,7 @@ Report statistics of extracted rotations.
 To convert the total reconstruction rotations in the file model_total_reconstruction.APM to stage poles, run
 .br
 .sp
-BD(rotconverter) model_total_reconstruction.APM OPT(Fs) > model_stages.APM
+rotconverter model_total_reconstruction.APM -Fs > model_stages.APM
 .br
 .sp
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
@@ -67,13 +67,13 @@ of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference model DC85
 and report the result as total reconstruction reconstruction poles in the northern hemisphere, try
 .br
 .sp
-BD(rotconverter) DC85_stages.APM + Pac_Naz_stages.RPM OPT(N) OPT(Ft) > Naz_HS_total reconstruction.APM
+rotconverter DC85_stages.APM + Pac_Naz_stages.RPM -N -Ft > Naz_HS_total reconstruction.APM
 .br
 .sp
 To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4),  try
 .br
 .sp
-BD(rotconverter) 150.1/70.5/-20.3 + 145/40/11.4
+rotconverter 150.1/70.5/-20.3 + 145/40/11.4
 .sp
 .br
 which prints out 157.32, -80.44, 11.97.
@@ -83,9 +83,9 @@ To make stage rotations suitable for generating flowlines (fracture zones) from 
 of relative plate motions PL1-PL2.RPM, assuming symmetric spreading,, try
 .br
 .sp
-BD(rotconverter) PL1-PL2.RPM OPT(E) OPT(Fs) > PL1-PL2_half.RPM
+rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2_half.RPM
 .br
-BD(rotconverter) - PL1-PL2.RPM OPT(E) OPT(Fs) > PL2-PL1_half.RPM
+rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1_half.RPM
 .br
 .sp
 To compute rotations for India relative to a fixed Africa using the plate circuit
@@ -93,7 +93,7 @@ India-Central Indian Basin-Antarctica-Africa, based on the GPlates rotations dat
 try
 .br
 .sp
-BD(rotconverter) IND-CIB CIB-ANT ANT-AFR > India_AFrica.RPM
+rotconverter IND-CIB CIB-ANT ANT-AFR > India_AFrica.RPM
 .SH "SEE ALSO"
 .IR backtracker (1),
 .IR grdrotater (1),

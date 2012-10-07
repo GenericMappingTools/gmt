@@ -38,10 +38,9 @@ OPT(Z) level of reference plane [Default = 0]. Use this option when the triangle
 .SH EXAMPLES
 Suppose you ...
 .sp
-BD(grdokb) 
+grdokb
 .SH "SEE ALSO"
 .IR GMT (1)
-
 .SH REFERENCE
 Okabe, M., Analytical expressions for gravity anomalies due to polyhedral bodies and translation into 
 magnetic anomalies, \fIGeophysics\fP, 44, (1979), p 730-741.

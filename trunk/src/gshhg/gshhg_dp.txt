@@ -27,7 +27,7 @@ Reports progress and statistics while running.
 .sp
 To simplify the full GSHHG data set with a custom tolerance of 2 km, try
 .sp
-BD(gshhg_dp) IT(gshhs_f.b 2 gshhs_2km.b)
+gshhg_dp gshhs_f.b 2 gshhs_2km.b
 .SH REFERENCES
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction
 of the number of points required to represent a digitized line
