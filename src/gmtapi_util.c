@@ -1435,7 +1435,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
 			if (!I_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
-				I_obj->data = GMT_memory_aligned (API->GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
+				I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
 			}
 			else {	/* Already have allocated space; check that it is enough */
 				size = GMTAPI_set_grdarray_size (API->GMT, I_obj->header, S_obj->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
@@ -1467,7 +1467,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			 * Otherwise we use everything passed in */
 			if (!I_obj->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
 				I_obj->header->size = GMTAPI_set_grdarray_size (API->GMT, I_obj->header, S_obj->wesn);	/* Get array dimension only, which may include padding */
-				I_obj->data = GMT_memory_aligned (API->GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
+				I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
 			}
 			I_obj->alloc_mode = GMT_ALLOCATED;
 			if (!S_obj->region && GMT_grd_pad_status (API->GMT, I_obj->header, API->GMT->current.io.pad)) {	/* Want an exact copy with no subset and same padding */
@@ -1530,7 +1530,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			/* Must convert to new array */
 			GMT_report (API->GMT, GMT_MSG_VERBOSE, "Importing image data from user memory location\n");
 			GMT_set_grddim (API->GMT, I_obj->header);	/* Set all dimensions */
-			I_obj->data = GMT_memory_aligned (API->GMT, NULL, I_obj->header->size, unsigned char);
+			I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size, unsigned char);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, complex_mode);
 			GMT_grd_loop (API->GMT, I_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);

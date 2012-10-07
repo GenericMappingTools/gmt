@@ -587,7 +587,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GRD_HEADER *h = C->Grid->header;
 
-	C->data = GMT_memory_aligned (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
+	C->data = GMT_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
 	/* Read in xyz data and computes index no and store it in a structure */
 	
@@ -638,7 +638,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		C->z_mean += in[GMT_Z];
 		if (k == C->n_alloc) {
 			C->n_alloc <<= 1;
-			C->data = GMT_memory_aligned (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
+			C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
 	} while (true);
 	
@@ -661,7 +661,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
 		GMT_report (GMT, GMT_MSG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
 	}
-	C->data = GMT_memory_aligned (GMT, C->data, C->npoints, struct SURFACE_DATA);
+	C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
 	if (C->set_low == 1)
 		C->low_limit = C->data[kmin].z;
@@ -1264,7 +1264,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	if (n_outside) {	/* Sort again; this time the SURFACE_OUTSIDE points will be thrown away  */
 		qsort (C->data, C->npoints, sizeof (struct SURFACE_DATA), compare_points);
 		C->npoints -= n_outside;
-		C->data = GMT_memory_aligned (GMT, C->data, C->npoints, struct SURFACE_DATA);
+		C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " unusable points were supplied; these will be ignored.\n", n_outside);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "You should have pre-processed the data with block-mean, -median, or -mode.\n");
 	}
@@ -1539,7 +1539,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	/* Now add the interpolated breakline to the C structure */
 
 	k = C->npoints;
-	C->data = GMT_memory_aligned (GMT, C->data, k+n_tot, struct SURFACE_DATA);
+	C->data = GMT_memory (GMT, C->data, k+n_tot, struct SURFACE_DATA);
 	C->z_mean *= k;		/* It was already computed, reset it to sum */
 	if (C->set_low == 1)
 		zmin = C->low_limit;
@@ -1566,7 +1566,7 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	}
 
 	if (k != (C->npoints + n_tot))		/* We had some NaNs */
-		C->data = GMT_memory_aligned (GMT, C->data, k, struct SURFACE_DATA);
+		C->data = GMT_memory (GMT, C->data, k, struct SURFACE_DATA);
 
 	C->npoints = k;
 	C->z_mean /= k;
