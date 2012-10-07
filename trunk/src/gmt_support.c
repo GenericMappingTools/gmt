@@ -3332,7 +3332,6 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 	*/
 
 	void *tmp = NULL;
-	size_t alignment = 32U;
 
 	if (nelem == SIZE_MAX) {	/* Probably 32-bit overflow */
 		GMT_report_func (C, GMT_MSG_NORMAL, where, "Error: Requesting SIZE_MAX number of items (%" PRIuS ") - exceeding 32-bit counting?\n", nelem);
@@ -3353,10 +3352,9 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 #ifdef HAVE_FFTW3F
 			tmp = fftwf_malloc (nelem * size);
 #elif defined(WIN32) && defined(USE_MEM_ALIGNED)
-			alignment = 16;
-			tmp = _aligned_realloc ( prev_addr, nelem * size, alignment);
+			tmp = _aligned_realloc ( prev_addr, nelem * size, 16U);
 #else
-			posix_memalign (&prev_addr, alignment, nelem * size);
+			posix_memalign (&prev_addr, 16U, nelem * size);
 #endif
 		}
 		else
@@ -3370,10 +3368,9 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 #ifdef HAVE_FFTW3F
 			tmp = fftwf_malloc (nelem * size);
 #elif defined(WIN32) && defined(USE_MEM_ALIGNED)
-			alignment = 16;
-			tmp = _aligned_malloc (nelem * size, alignment);
+			tmp = _aligned_malloc (nelem * size, 16U);
 #else
-			posix_memalign (&tmp, alignment, nelem * size);
+			posix_memalign (&tmp, 16U, nelem * size);
 #endif
 			if (tmp != NULL)
 				tmp = memset (tmp, 0, nelem * size);
