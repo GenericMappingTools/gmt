@@ -120,15 +120,14 @@ locations, clipped at +-3 and with wiggle trace and positive variable area
 shading in black, use
 .br
 .sp
-BD(pssegy) wa1.segy OPT(JX)5/\-5 OPT(R)0/100/0/10 OPT(D)1 OPT(C)3 OPT(N) OPT(S)o OPT(W) OPT(F)black > segy.ps
+pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack > segy.ps
 .br
 .sp
 To plot the SEGY file wa1.segy with traces plotted at true cdp*0.1, clipped
 at +-3, with bias -1 and negative variable area shaded red, use
 .br
 .sp
-BD(pssegy) wa1.segy OPT(JX)5/\-5 OPT(R)0/100/0/10 OPT(D)1 OPT(C)3 OPT(S)c OPT(X)0.1 OPT(F)red OPT(B)\-1 OPT(I) > segy.ps
-
+pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -X0.1 -Fred -B-1 -I > segy.ps
 .SH "SEE ALSO"
 .IR GMT (1),
 .IR pssegyz (1)

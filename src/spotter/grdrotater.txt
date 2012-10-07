@@ -58,20 +58,20 @@ To rotate the data defined by grid topo.nc and the polygon outline clip_path.d, 
 with pole at (135.5, -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try
 .br
 .sp
-BD(grdrotater) topo.nc OPT(e)135.5/-33/37.3 OPT(V) OPT(F)clip_path.d OPT(G)rot_topo.nc > rot_clip_path.d
+grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip_path.d -Grot_topo.nc > rot_clip_path.d
 .br
 .sp
 To rotate the entire grid faa.nc back to 32 Ma using the rotation file IT(rotations.txt)
 and a bilinear interpolation, try
 .br
 .sp
-BD(grdrotater) faa.nc OPT(E)rotations.txt OPT(T)32 OPT(V) OPT(G)rot_faa.nc OPT(nl) > rot_faa_path.d
+grdrotater faa.nc -Erotations.txt -T32 -V -Grot_faa.nc -nl > rot_faa_path.d
 .br
 .sp
 To just see how the outline of the grid large.nc will plot after the same rotation, try
 .br
 .sp
-BD(grdrotater) large.nc OPT(E)rotations.txt OPT(T)32 OPT(V) OPT(S) | psxy OPT(Rg) OPT(JH)180/6i OPT(B)30 OPT(m) OPT(W)0.5BD(p) | gv -
+grdrotater large.nc -Erotations.txt -T32 -V -S | psxy -Rg -JH180/6i -B30 -W0.5p | gv -
 .br
 .sp
 Let say you have rotated gridA.nc and gridB.nc, restricting each rotation to nodes inside polygons polyA.d and polyB.d, respectively,

@@ -56,7 +56,7 @@ To extract data from raster 1, taking one point every 30 minutes, in an
 area extended beyond 360 degrees to allow later filtering, run
 .br
 .sp
-BD(grdraster) 1 OPT(R)-4/364/-62/62 OPT(I)30BD(m) OPT(G)data.nc
+grdraster 1 -R-4/364/-62/62 -I30m -Gdata.nc
 .br
 .sp
 To obtain data for an oblique Mercator projection we need to extract more data
@@ -66,14 +66,14 @@ get all the data from the ETOPO2 data needed to make a contour map for the regio
 lower left and upper right corners and the desired projection, use
 .br
 .sp
-BD(grdraster) ETOPO2 OPT(R)160/20/220/30BD(r) OPT(Joc)190/25.5/292/69/1 OPT(G)data.nc
+grdraster ETOPO2 -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
 .br
 .sp
 To extract data from the 2 min Geoware relief blend and write it as binary double precision xyz-triplets to
 standard output:
 .br
 .sp
-BD(grdraster) "2 min Geoware" OPT(R)20/25/-10/5 OPT(bo) >! triplets.b
+grdraster "2 min Geoware" -R20/25/-10/5 -bo > triplets.b
 .br
 .sp
 .SH "SEE ALSO"

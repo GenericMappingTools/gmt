@@ -326,7 +326,7 @@ Overlay zero trace moment tensor using default pen (see OPT(W)), or sets pen att
 .sp
 The following file should give a normal-faulting CMT mechanism:
 .br
-BD(psmeca) OPT(R)239/240/34/35.2 OPT(Jm)4 OPT(Sc)0.4 OPT(H)1 <<END > test.ps
+psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
 .br
 lon     lat    depth str dip slip  st dip slip mant exp plon plat
 .br

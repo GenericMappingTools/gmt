@@ -121,7 +121,7 @@ OPT(W)).
 #include "explain_help.txt"
 .SH EXAMPLES
 .sp
-BD(pspolar) OPT(R)239/240/34/35.2 OPT(JM)8 OPT(N) OPT(Sc)0.4 OPT(H)1 OPT(D)239.5/34.5 OPT(M)5 <<END > test.ps
+pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
 .sp
 stat azim  ih pol
 .sp
@@ -139,7 +139,7 @@ END
 .sp
 or
 .sp
-BD(pspolar) OPT(R)239/240/34/35.2 OPT(JM)8 OPT(N) OPT(Sc)0.4 OPT(H)1 OPT(D)239.5/34.5 OPT(M)5 OPT(h) <<END > test.ps
+pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END > test.ps
 .sp
 Date   Or. time stat azim  ih                                    
 .sp

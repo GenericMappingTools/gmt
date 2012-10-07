@@ -120,7 +120,7 @@ with the same scale as the desired Mercator projection (see GMT Example 29).
 To extract data in the region OPT(R)-40/40/-70/-30 from \fIworld_grav.img.7.2\fP, run
 .br
 .sp
-\fBimg2grd\fP OPT(M) world_grav.img.7.2 OPT(G)merc_grav.nc OPT(R)-40/40/-70/-30 OPT(V)
+Bimg2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 .br
 .sp
 Note that the OPT(V) option tells us that the range was adjusted to 
@@ -131,11 +131,11 @@ and OPT(Jm)1.  Thus, to take ship.lonlatgrav and use it to sample the merc_grav.
 can do this:
 .br
 .sp
-\fBgmtset\fP \fBPROJ_ ELLIPSOID\fP Sphere
+gmtset PROJ_ ELLIPSOID Sphere
 .br
-\fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1i ship.lonlatgrav | \fBgrdtrack\fP 
-OPT(G)merc_grav.nc | \fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1i 
-OPT(I) > ship.lonlatgravsat
+mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav | grdtrack
+-Gmerc_grav.nc | mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i 
+-I > ship.lonlatgravsat
 .br
 .sp
 It is recommended to use the above method of projecting and unprojecting the data in such an 
@@ -147,18 +147,18 @@ tries to convert the grid file to lon,lat and then sample it, there are two inte
 To make a lon,lat grid from the above grid we can use
 .br
 .sp
-\fBgrdproject\fP merc_grav.nc OPT(R)-40/40/-70.0004681551/-29.9945810754 OPT(Jm)1i OPT(I) OPT(D)2m OPT(G)grav.nc
+grdproject merc_grav.nc -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -D2m -Ggrav.nc
 .br
 .sp
 In some cases this will not be easy as the OPT(R) in the two coordinate systems may not align well.  
 When this happens, we can also use (in fact, it may be always better to use)
 .br
 .sp
-\fBgrd2xyz\fP merc_grav.nc | \fBmapproject\fP OPT(R)-40/40/-70.0004681551/-29.994581075 OPT(Jm)1i 
-OPT(I) | \fBsurface\fP OPT(R)-40/40/-70/70 OPT(I)2m OPT(G)grav.nc
+grd2xyz merc_grav.nc | mapproject -R-40/40/-70.0004681551/-29.994581075 -Jm1i 
+-I | surface -R-40/40/-70/70 -I2m -Ggrav.nc
 .br
 .sp
-To make a Mercator map of the above region, suppose our \.gmtdefaults \fBPROJ_LENGTH_UNIT\fP is inch.  Then 
+To make a Mercator map of the above region, suppose our gmt.conf value for \fBPROJ_LENGTH_UNIT\fP is inch.  Then 
 since the above merc_grav.nc file is projected with OPT(Jm)1i it is 80 inches wide.  We can 
 make a map 8 inches wide by using OPT(Jx)0.1i on any map programs applied to this grid (e.g., 
 \fBgrdcontour\fP, \fBgrdimage\fP, \fBgrdview\fP), and then for overlays which work in lon,lat (e.g., \fBpsxy\fP, \fBpscoast\fP) 
@@ -174,8 +174,7 @@ we will probably choose to average the data much more (e.g., 6 by 6) to get smoo
 Since 2039 isn't divisible by 3 we will get a different adjusted OPT(R) this time:\"'
 .br
 .sp
-\fBimg2grd\fP OPT(M) world_grav.img.7.2 OPT(G)merc_grav_2.nc OPT(R)-40/40/-70/-30 OPT(N)3
-OPT(V)
+img2grd -M world_grav.img.7.2 -Gmerc_grav_2.nc -R-40/40/-70/-30 -N3 -V
 .br
 .sp
 This time we find the adjusted region is OPT(R)-40/40/-70.023256525/-29.9368261101 and the output 
@@ -183,15 +182,15 @@ is 800 by 601 pixels, a better size for us.  Now we can create an artificial ill
 this using \fBgrdgradient\fP:
 .br
 .sp
-\fBgrdgradient\fP merc_grav_2.nc OPT(G)illum.nc OPT(A)0/270 OPT(N)e0.6
+grdgradient merc_grav_2.nc -Gillum.nc -A0/270 -Ne0.6
 .br
 .sp
 and if we also have a cpt file called "grav.cpt" we can create a color shaded relief map like this:  
 .br
 .sp
-\fBgrdimage\fP merc_grav_2.nc OPT(I)illum.nc OPT(C)grav.cpt OPT(Jx)0.1i OPT(K) > map.ps
+grdimage merc_grav_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i -K > map.ps
 .br
-\fBpsbasemap\fP OPT(R)-40/40/-70.023256525/-29.9368261101 OPT(Jm)0.1i OPT(B)a10 OPT(O) >> map.ps
+psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >> map.ps
 .br
 .sp
 Suppose you want to obtain only the constrained data values from an img file, in lat/lon coordinates.  

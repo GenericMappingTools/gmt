@@ -32,7 +32,7 @@ Specify a maximum (north) latitude.
 .sp
 To convert the full GSHHG data set , try
 .sp
-BD(gshhg2grass) IT(gshhs_f.b)
+gshhg2grass gshhs_f.b
 .SH BUGS
 Not updated to handle the WDBII line data (borders or rivers).
 .SH AUTHOR
