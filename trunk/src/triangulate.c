@@ -379,7 +379,7 @@ int GMT_triangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
 		int nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
-		Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
+		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
 

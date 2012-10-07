@@ -305,7 +305,7 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	C->header->registration = A->header->registration;
 	GMT_set_grddim (GMT, C->header);
-	C->data = GMT_grdmemory (GMT, NULL, C->header->size, float);
+	C->data = GMT_memory_aligned (GMT, NULL, C->header->size, float);
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
 	A->header->no_BC = B->header->no_BC = true;	/* We must disable the BC machinery */

@@ -292,7 +292,7 @@ int GMT_grdlandmask (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
+	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 	/* All data nodes are thus initialized to 0 */
 	x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	y = GMT_memory (GMT, NULL, Grid->header->ny, double);

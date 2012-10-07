@@ -463,7 +463,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
-	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
+	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 #ifdef MEMDEBUG
 	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif

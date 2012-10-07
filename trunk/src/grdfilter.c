@@ -256,7 +256,7 @@ int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struc
 	
 	/* Based the grid on the input grid domain and increments. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, A, G->header->wesn, G->header->inc, G->header->registration), "");
-	A->data = GMT_grdmemory (GMT, NULL, A->header->size, float);
+	A->data = GMT_memory_aligned (GMT, NULL, A->header->size, float);
 	
 	if (mode) {	/* Geographic data */
 		if (mode == 5) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
@@ -609,7 +609,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
-	Gout->data = GMT_grdmemory (GMT, NULL, Gout->header->size, float);
+	Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
 	i_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
 	if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
 

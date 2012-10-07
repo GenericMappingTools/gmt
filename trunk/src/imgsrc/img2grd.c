@@ -515,7 +515,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Now malloc some space for float grd array, integer pixel index, and int16_t data buffer.  */
 
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, true), Ctrl->G.file);
-	Merc->data = GMT_grdmemory (GMT, NULL, Merc->header->size, float);
+	Merc->data = GMT_memory_aligned (GMT, NULL, Merc->header->size, float);
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
 	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
 

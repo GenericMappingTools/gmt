@@ -962,7 +962,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Get space */
 	if (Ctrl->T.active) {	/* Need just space for one row */
 		unsigned int col;
-		Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->nx, float);
+		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) x[col] = GMT_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -972,7 +972,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (error);
 		}
 	} else {	/* Need an entire (padded) grid */
-		Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
+		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 	}
 
 	ksize = get_byte_size (GMT, myras.type);

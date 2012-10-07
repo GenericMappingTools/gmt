@@ -160,7 +160,7 @@ char *GMTMEX_src_grid_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], int 
 		/*  Get the Z array and fill in the header info */
 		z = GMTMEX_info2grdheader (API, prhs, nrhs, G);
 		/*  Allocate memory for the grid */
-		G->data = GMT_grdmemory (API->GMT, NULL, G->header->size, float);
+		G->data = GMT_memory_aligned (API->GMT, NULL, G->header->size, float);
 		/* Transpose from Matlab orientation to grd orientation */
 		GMT_grd_loop (API->GMT, G, row, col, gmt_ij) G->data[gmt_ij] = (float)z[MEX_IJ(G,row,col)];
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMTAPI_NOTSET) {

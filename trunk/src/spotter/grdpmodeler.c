@@ -314,7 +314,7 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_mod, GMT->common.R.wesn, inc, registration), Ctrl->G.file);
 	
-	G_mod->data = GMT_grdmemory (GMT, NULL, G_mod->header->size, float);
+	G_mod->data = GMT_memory_aligned (GMT, NULL, G_mod->header->size, float);
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_mod->header->ny, double);

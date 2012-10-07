@@ -499,7 +499,7 @@ int GMT_grd2rgb (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
-		Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
+		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 
 		/* Note: While the picture array has no pads, we must assume the output grid may have one */
 		

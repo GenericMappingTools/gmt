@@ -1363,7 +1363,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 		else
 			Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
 		nxy = n_ok = Grid->header->size * Z.nz;
-		if (dimension == 2) Grid->data = GMT_grdmemory (GMT, NULL, nxy, float);
+		if (dimension == 2) Grid->data = GMT_memory_aligned (GMT, NULL, nxy, float);
 		Out = Grid;	/* Just point since we created Grid */
 	}
 

@@ -3341,6 +3341,9 @@ void *GMT_memory_func (struct GMT_CTRL *C, void *prev_addr, size_t nelem, size_t
 #endif
 		GMT_exit (EXIT_FAILURE);
 	}
+#if defined(WIN32) && !defined(USE_MEM_ALIGNED)
+	align = false;	/* Turn off alignment for Windows if not specifically selected via USE_MEM_ALIGNED */
+#endif
 	if (prev_addr) {
 		if (nelem == 0) { /* Take care of n == 0 */
 			GMT_free (C, prev_addr);
@@ -3401,6 +3404,9 @@ void GMT_free_func (struct GMT_CTRL *C, void *addr, bool align, const char *wher
 	if (g_mem_keeper.active)
 		gmt_memtrack_sub (C, &g_mem_keeper, where, addr);
 #endif
+#if defined(WIN32) && !defined(USE_MEM_ALIGNED)
+	align = false;	/* Turn off alignment for Windows if not specifically selected via USE_MEM_ALIGNED */
+#endif
 	if (align) {	/* Must free aligned memory */
 #ifdef HAVE_FFTW3F
 		fftwf_free (addr);
@@ -3433,6 +3439,7 @@ void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc
 	 * Note that n_alloc refers to the number of items to allocate, not the total memory taken
 	 * up by the allocated items (which is n_alloc * element_size).
 	 * module is the name of the module requesting the memory (main program or library function).
+	 * Note: This memory, used for all kinds of things, is not requested to be aligned (align = false),
 	 */
 
 	if (*n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
@@ -3450,7 +3457,7 @@ void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc
 		if (n >= *n_alloc) *n_alloc = n + 1;		/* If still not big enough, set n_alloc to n + 1 */
 	}
 
-	/* Here n_alloc is set one way or another.  Do the actual [re]allocation */
+	/* Here n_alloc is set one way or another.  Do the actual [re]allocation for non-aligned memory */
 
 	ptr = GMT_memory_func (C, ptr, *n_alloc, element_size, false, where);
 

@@ -322,7 +322,7 @@ int GMT_segy2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
-	Grid->data = GMT_grdmemory (GMT, NULL, Grid->header->size, float);
+	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 	flag = GMT_memory (GMT, NULL, Grid->header->size, unsigned int);
 
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */
