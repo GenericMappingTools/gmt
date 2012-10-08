@@ -1741,7 +1741,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct
 	time_t now;
 	char string[128];
 
-	if (MGD77_Open_File (C, file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
+	if (!F->path[0] && MGD77_Open_File (C, file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
 
 	MGD77_nc_status (C, nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 
@@ -1936,7 +1936,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CON
 	double scale, offset, *values = NULL;
 	struct MGD77_E77_APPLY E;
 
-	if (MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
+	if (!F->path[0] && MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
 
 	GMT_memset (&E, 1, struct MGD77_E77_APPLY);
 	count[0] = S->H.n_records;
@@ -2273,7 +2273,7 @@ static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *C, char *file, struct 
 	size_t count[2] = {0, 0}, length;
 	char name[32], text[GMT_BUFSIZ];
 
-	if (MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
+	if (!F->path[0] && MGD77_Open_File (C, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 
 	MGD77_nc_status (C, nc_open (F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
 
@@ -2499,7 +2499,7 @@ static int MGD77_Write_File_asc (struct GMT_CTRL *C, char *file, struct MGD77_CO
 {
 	int err = 0;
 
-	if (MGD77_Open_File (C, file, F, MGD77_WRITE_MODE)) return (-1);
+	if (!F->path[0] && MGD77_Open_File (C, file, F, MGD77_WRITE_MODE)) return (-1);
 	switch (F->format) {
 		case MGD77_FORMAT_TBL:
 			err = MGD77_Write_Header_Record_m77 (C, file, F, &S->H);  /* Will write the entire 24-section header structure */
@@ -2664,7 +2664,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 	 */
 	int has_suffix = MGD77_NOT_SET;
 	unsigned int id, fmt, f_start, f_stop;
-	bool append = false;
+	bool append = false, hard_path;
 	char geo_path[GMT_BUFSIZ];
 
 	for (fmt = 0; fmt < MGD77_FORMAT_ANY; fmt++) {	/* Determine if given track name contains one of the 3 possible extensions */
@@ -2675,9 +2675,9 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 		GMT_report (C, GMT_MSG_NORMAL, "Error: File has suffix (%s) that is set to be ignored!\n", MGD77_suffix[has_suffix]);
 		return (MGD77_FILE_NOT_FOUND);
 	}
-	if (has_suffix == MGD77_NOT_SET && (track[0] == '/' || track[1] == ':')) {	/* Hard path given without extension */
-		GMT_report (C, GMT_MSG_NORMAL, "Error: Hard path (%s) has no recognized extension!\n", track);
-		return (MGD77_FILE_NOT_FOUND);
+	hard_path = (track[0] == '/' || track[1] == ':');	/* Hard path given */
+	if (has_suffix == MGD77_NOT_SET && hard_path) {	/* Hard path given without extension */
+		GMT_report (C, GMT_MSG_VERBOSE, "Warning: Hard path (%s) without extension given; only look for matching file in the implied directory.\n", track);
 	}
 
 	if (has_suffix != MGD77_NOT_SET) {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
@@ -2724,7 +2724,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 		else
 			strcpy (geo_path, track);	/* Extension already there */
 
-		/* Here we have a relative path.  First look in current directory */
+		/* Here we have a relative (or absolute, if hard path was given) path.  First look in current directory */
 
 		if (!access (geo_path, R_OK)) {	/* OK, found it */
 			strcpy (track_path, geo_path);
@@ -2831,7 +2831,7 @@ int MGD77_Close_File (struct GMT_CTRL *C, struct MGD77_CONTROL *F)  /* Closes a 
 			error = MGD77_UNKNOWN_FORMAT;
 			break;
 	}
-
+	F->path[0] = '\0';	/* Wipe file path */
 	return (error);
 }
 
