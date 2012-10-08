@@ -1334,7 +1334,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 						}
 
 						for (k_off = 0; k_off < D->H.n_records; k_off++) {
-							cumdist_off[k_off] = cumdist[k_off] - Ctrl->A.sensor_offset;
+							cumdist_off[k_off] = cumdist[k_off] + Ctrl->A.sensor_offset;
 							if (clean && GMT_is_dnan (mtf_bak[k_off])) clean = false;
 						}
 
