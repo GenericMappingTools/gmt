@@ -2680,7 +2680,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 		return (MGD77_FILE_NOT_FOUND);
 	}
 
-	if (track[0] == '/' || track[1] == ':') {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
+	if (has_suffix != MGD77_NOT_SET) {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
 		if (!access (track, R_OK)) {	/* OK, found it */
 			F->format = has_suffix;	/* Set this format */
 			strcpy (track_path, track);
@@ -2689,7 +2689,6 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 		else
 			return (MGD77_FILE_NOT_FOUND);	/* Hard path did not work */
 	}
-
 
 	switch (((has_suffix == MGD77_NOT_SET) ? MGD77_FORMAT_ANY : has_suffix)) {
 		case MGD77_FORMAT_M77:		/* Look for MGD77 ASCII files only */
@@ -4116,17 +4115,18 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 			if (!(opt->option == GMTAPI_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
 			for (i = strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
-			if (i == -1)
+			if (i == -1) {	/* No extension present */
 				strcpy (this_arg, opt->arg);
-			else {
-				strncpy (this_arg, opt->arg, i);
-				this_arg[i] = '\0';
+				length = strlen (this_arg);
+				/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
+				for (k = n_dig = 0; k < length; k++) if (isdigit((int)this_arg[k])) n_dig++;
+				NGDC_ID_likely = ((n_dig == length) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
 			}
-			length = strlen (this_arg);
-			/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
-			for (k = n_dig = 0; k < length; k++) if (isdigit((int)this_arg[k])) n_dig++;
-			NGDC_ID_likely = ((n_dig == length) && (n_dig == 2 || n_dig == 4 || n_dig == 8));	/* All integers: 2 = agency, 4 = agency+vessel, 8 = single cruise */
-
+			else {	/* Gave a specific file with extension - pass along as is.  MGD77_Get_Path will bitch if extension is inactive */
+				strcpy (this_arg, opt->arg);
+				length = strlen (this_arg);
+				NGDC_ID_likely = false;
+			}
 			if (!NGDC_ID_likely || length == 8) {	/* Either a custom cruise name OR a full 8-integer NGDC ID, append name to list */
 				if (n == n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
 				L[n] = GMT_memory (C, NULL, length + 1, char);
