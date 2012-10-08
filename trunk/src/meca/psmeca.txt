@@ -268,13 +268,13 @@ OPT(R) [Default plots symbols inside frame only].
 OPT(T)[IT(num_of_planes)][BD(/)IT(pen)]
 Plots the nodal planes and outlines the bubble which is transparent.
 If IT(num_of_planes) is
-.br
+.sp
 IT(0): both nodal planes are plotted;
-.br
+.sp
 IT(1): only the first nodal plane is plotted;
-.br
+.sp
 IT(2): only the second nodal plane is plotted.
-.br
+.sp
 Append BD(/)IT(pen) to set the pen attributes for this feature. Default pen is as set by OPT(W).
 #include "explain_-U.txt"
 #include "explain_-V.txt"
@@ -325,13 +325,13 @@ Overlay zero trace moment tensor using default pen (see OPT(W)), or sets pen att
 .SH EXAMPLES
 .sp
 The following file should give a normal-faulting CMT mechanism:
-.br
+.sp
 psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
-.br
+.sp
 lon     lat    depth str dip slip  st dip slip mant exp plon plat
-.br
+.sp
 239.384 34.556  12.  180  18  -88   0  72  -90  5.5  0   0    0
-.br
+.sp
 END
 .br
 .sp
@@ -340,28 +340,20 @@ END
 .IR psbasemap (1),
 .IR psxy (1)
 .SH REFERENCES
-.br
 Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
-.br
+.sp
 Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
-.br
+.sp
 F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
-.br
+.sp
 Cliff Frohlich, Cliff's Nodes Concerning Plotting Nodal Lines for P, Sh and Sv\"'
-.br
+.sp
 Seismological Research Letters, Volume 67, Number 1, January-February, 1996
-.br
+.sp
 Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.384.
-.br
+.sp
 W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical Recipes in
  C, Cambridge University press (routine jacobi)
 .SH AUTHORS
-Genevieve Patau
-.br
-CNRS UMR 7580
-.br
-Seismology Dept.
-.br
-Institut de Physique du Globe de Paris
-.br
+Genevieve Patau CNRS UMR 7580 Seismology Dept. Institut de Physique du Globe de Paris
 (patau@.ipgp.jussieu.fr)

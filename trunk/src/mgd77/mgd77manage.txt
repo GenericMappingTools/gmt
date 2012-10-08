@@ -283,5 +283,5 @@ GMT style by Paul Wessel.
 #include "refs.i"
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
-.br
+.sp
 IGRF, see \fIhttp://www.ngdc.noaa.gov/IAGA/vmod/igrf.html\fP
