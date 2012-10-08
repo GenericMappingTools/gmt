@@ -2677,7 +2677,7 @@ int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MG
 	}
 	hard_path = (track[0] == '/' || track[1] == ':');	/* Hard path given */
 	if (has_suffix == MGD77_NOT_SET && hard_path) {	/* Hard path given without extension */
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning: Hard path (%s) without extension given; only look for matching file in the implied directory.\n", track);
+		GMT_report (C, GMT_MSG_VERBOSE, "Warning: Hard path (%s) without extension given;\n\tonly look for matching file in the implied directory.\n", track);
 	}
 
 	if (has_suffix != MGD77_NOT_SET) {	/* Hard path given (assumes X: is beginning of DOS path for arbitrary drive letter X) */
