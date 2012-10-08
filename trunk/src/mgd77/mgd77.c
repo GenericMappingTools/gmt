@@ -4404,6 +4404,7 @@ void MGD77_Free_Dataset (struct GMT_CTRL *C, struct MGD77_DATASET **D)
 	for (i = 0; i < S->n_fields; i++) GMT_free (C, S->values[i]);
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free (C, S->flags[i]);
 	for (i = 0; i < 2; i++) if (S->H.mgd77[i]) GMT_free (C, S->H.mgd77[i]);
+	MGD77_free_plain_mgd77 (C, &S->H);
 	GMT_free (C, S->H.author);
 	GMT_free (C, S->H.history);
 	GMT_free (C, S);
