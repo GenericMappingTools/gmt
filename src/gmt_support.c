@@ -2127,8 +2127,8 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 	 * Return the result as a palette struct.
 	 * source_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * cpt_flags is a combination of:
-	 * 1 = Suppress reading BFN (i.e. use parameter settings)
-	 * 2 = Make B and F equal to low and high color
+	 * GMT_CPT_NO_BNF = Suppress reading BFN (i.e. use parameter settings)
+	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
 	unsigned int n = 0, i, nread, annot, id, n_cat_records = 0, color_model;
@@ -2249,7 +2249,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 		}
 
 		if (id <= GMT_NAN) {	/* Foreground, background, or nan color */
-			if (X->cpt_flags & 1) continue; /* Suppress parsing B, F, N lines when bit 0 of X->cpt_flags is set */
+			if (X->cpt_flags & GMT_CPT_NO_BNF) continue; /* Suppress parsing B, F, N lines when bit 0 of X->cpt_flags is set */
 			X->patch[id].skip = false;
 			if ((nread = sscanf (&line[2], "%s %s %s %s", T1, T2, T3, T4)) < 1) error = true;
 			if (T1[0] == '-')	/* Skip this slice */
@@ -2440,7 +2440,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 
 	if (close_file) fclose (fp);
 
-	if (X->cpt_flags & 2) {	/* Use low and high colors as back and foreground */
+	if (X->cpt_flags & GMT_CPT_EXTEND_BNF) {	/* Use low and high colors as back and foreground */
 		GMT_rgb_copy (X->patch[GMT_BGD].rgb, X->range[0].rgb_low);
 		GMT_rgb_copy (X->patch[GMT_FGD].rgb, X->range[n-1].rgb_high);
 		GMT_rgb_copy (X->patch[GMT_BGD].hsv, X->range[0].hsv_low);
@@ -2780,8 +2780,8 @@ int GMT_write_cpt (struct GMT_CTRL *C, void *dest, unsigned int dest_type, unsig
 	/* We write the cpt table to fpr [or stdout].
 	 * dest_type can be GMT_IS_[FILE|STREAM|FDESC]
 	 * cpt_flags is a combination of:
-	 * 1 = Do not write BFN
-	 * 2 = Make B and F equal to low and high color
+	 * GMT_CPT_NO_BNF = Do not write BFN
+	 * GMT_CPT_EXTEND_BNF = Make B and F equal to low and high color
 	 */
 
 	unsigned int i;
@@ -2878,12 +2878,12 @@ int GMT_write_cpt (struct GMT_CTRL *C, void *dest, unsigned int dest_type, unsig
 
 	/* Background, foreground, and nan colors */
 
-	if (cpt_flags & 1) {	/* Do not want to write BFN to the cpt file */
+	if (cpt_flags & GMT_CPT_NO_BNF) {	/* Do not want to write BFN to the cpt file */
 		if (close_file) fclose (fp);
 		return (EXIT_SUCCESS);
 	}
 
-	if (cpt_flags & 2) {	/* Use low and high colors as back and foreground */
+	if (cpt_flags & GMT_CPT_EXTEND_BNF) {	/* Use low and high colors as back and foreground */
 		GMT_rgb_copy (P->patch[GMT_BGD].rgb, P->range[0].rgb_low);
 		GMT_rgb_copy (P->patch[GMT_FGD].rgb, P->range[P->n_colors-1].rgb_high);
 		GMT_rgb_copy (P->patch[GMT_BGD].hsv, P->range[0].hsv_low);
