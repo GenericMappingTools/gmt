@@ -2608,6 +2608,25 @@ void grd_SUB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	}
 }
 
+void grd_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: SUM 1 1 Sum of all values in A.  */
+{
+	uint64_t node, n_used;
+	double sum;
+
+	if (stack[last]->constant)
+		sum = stack[last]->factor * stack[last]->G->header->nm;
+	else {
+		for (node = n_used = 0, sum = 0.0; node < info->size; node++) {
+			if (GMT_is_fnan (stack[last]->G->data[node])) continue;
+			sum += (double)stack[last]->G->data[node];
+			n_used++;
+		}
+		if (n_used == 0) sum = GMT->session.d_NaN;
+	}
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum;
+}
+
 void grd_TAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: TAN 1 1 tan (A) (A in radians).  */
 {
