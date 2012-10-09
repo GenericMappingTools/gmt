@@ -58,6 +58,9 @@ Convolution filters are:
 (BD(g)) Gaussian: Weights are given by the Gaussian function, where IT(width) is 6 times the
 conventional Gaussian sigma.
 .sp
+(BD(f)) Custom: Weights are given by the precomputed values in the filter weight grid file IT(weight), which must
+have odd dimensions; also requires OPT(D0) and output spacing must match input spacing or be integer multiples.
+.sp
 Non-convolution filters are:
 .br
 .sp

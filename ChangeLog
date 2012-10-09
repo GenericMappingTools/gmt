@@ -5,6 +5,8 @@
 2012-10-09	pwessel
 	* grdmath.c:		Added operator SUM which adds up all non-NaN entries in a grid.
 				Returns a grid all set to the sum.
+	* grdfilter.c:		Added -Ff<weight> which reads a weight gridfile for custom Cartesian
+	 			grid convolution.  Must have odd dimensions.
 
 2012-09-28	pwessel
 	* gmt_init.c:		Allow for new length unit 'u' for US survey foot.
