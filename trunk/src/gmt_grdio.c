@@ -1844,25 +1844,24 @@ void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
 	if (n == 0) h->z_min = h->z_max = C->session.d_NaN;	/* No non-NaNs in the entire grid */
 }
 
-int GMT_init_complex (unsigned int complex_mode, unsigned int *inc, unsigned int *off)
+bool GMT_init_complex (unsigned int complex_mode, unsigned int *inc, unsigned int *off)
 {	/* Sets complex-related parameters based on the input complex_mode variable:
-	 * If complex_mode & 64 then we do not want to write a header [output only; only some formats]
-	 * complex_mode = 0 means real data
-	 * complex_mode = 1 means get/put real component of complex array
-	 * complex_mode = 2 means get/put imag component of complex array
-	 * true is return if we wish to write the grid header (normally true).
-	 * Here, *inc is 1|2 and *off = 0-2
+	 * If complex_mode & GMT_GRID_NO_HEADER then we do NOT want to write a header [output only; only some formats]
+	 * complex_mode & GMT_GRID_COMPLEX_REAL means get/put real component of complex array
+	 * complex_mode & GMT_GRID_COMPLEX_IMAG means get/put imag component of complex array
+	 * otherwise we have real data (GMT_GRID_REAL).
+	 * true is returned if we wish to write the grid header (this is normally true).
+	 * Here, *inc is initialized to 1|2 and *off initialized to 0|1.
 	 */
 
-	bool do_header = true;
-	if (complex_mode & 64) {	/* Want no header, adjust complex_mode */
-		complex_mode %= 64;
-		do_header = false;
+	bool do_header = !(complex_mode & GMT_GRID_NO_HEADER);	/* Want no header if that bit is set */
+	if (complex_mode & GMT_GRID_COMPLEX_REAL) {		/* Get/put real component of complex array */
+		*inc = 2; *off = 0;
 	}
-	if (complex_mode) {
-		*inc = 2; *off = complex_mode - 1;
+	else if (complex_mode & GMT_GRID_COMPLEX_IMAG) {	/* Get/put imag component of complex array */
+		*inc = 2; *off = 1;
 	}
-	else {
+	else {							/* Normal grid */
 		*inc = 1; *off = 0;
 	}
 	return (do_header);
@@ -1876,7 +1875,7 @@ bool GMT_check_url_name (char *fname) {
 		!strncmp(fname,"ftp:",4)      || 
 		!strncmp(fname,"/vsizip/",8)  || 
 		!strncmp(fname,"/vsigzip/",9) || 
-		!strncmp(fname,"/vsicurl/",9)  ||
+		!strncmp(fname,"/vsicurl/",9) ||
 		!strncmp(fname,"/vsimem/",8)  || 
 		!strncmp(fname,"/vsitar/",8) )
 
