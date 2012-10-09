@@ -131,14 +131,12 @@ enum GMT_enum_gridio {
 	GMT_GRID_ALL = 0,	/* Read|write both grid header and the entire grid (no subset) */
 	GMT_GRID_HEADER = 1,		/* Just read|write the grid header */
 	GMT_GRID_DATA = 2,		/* Read|write the grid array given w/e/s/n set in the header */
+	GMT_GRID_ALL2 = 3,		/* The 1|2 flags together, same meaning as GMT_GRID_ALL */
+	GMT_GRID_REAL = 0,		/* Read|write a normal real-valued grid */
 	GMT_GRID_COMPLEX_REAL = 4,	/* Read|write the real component to/from a complex grid */
 	GMT_GRID_COMPLEX_IMAG = 8,	/* Read|write the imaginary component to/from a complex grid */
+	GMT_GRID_COMPLEX_MASK = 12,	/* To mask out the rea|imag flags */
 	GMT_GRID_NO_HEADER = 16};	/* Write a native grid without the leading grid header */
-
-enum GMT_enum_complex {
-	GMT_IS_NORMAL = 0,	/* Normal floating point value */
-	GMT_IS_COMPLEX_REAL,			/* The real component of a complex value */
-	GMT_IS_COMPLEX_IMAG};			/* The imaginary component of a complex value */
 
 enum GMT_enum_read {
 	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */

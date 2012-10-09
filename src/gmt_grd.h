@@ -93,14 +93,14 @@ struct GRD_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
 	unsigned int nx;                /* Number of columns */
 	unsigned int ny;                /* Number of rows */
-	unsigned int registration;      /* 0 for node grids, 1 for pixel grids */
-/* This section is flexible. It is not copied to any grid header */
-	unsigned int type;                       /* Grid format */
+	unsigned int registration;      /* GMT_GRIDLINE_REG (0) for node grids, GMT_PIXEL_REG (1) for pixel grids */
+/* This section is flexible. It is not copied to any grid header or stored in the file */
+	unsigned int type;              /* Grid format */
 	unsigned int bits;              /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	unsigned int complex_mode;      /* 0 = normal, 1 = real part of complex grid, 2 = imag part of complex grid */
+	unsigned int complex_mode;      /* 0 = normal, GMT_GRID_COMPLEX_REAL = real part of complex grid, GMT_GRID_COMPLEX_IMAG = imag part of complex grid */
 	unsigned int mx, my;            /* Actual dimensions of the grid in memory, allowing for the padding */
-	size_t nm;                    /* Number of data items in this grid (nx * ny) [padding is excluded] */
-	size_t size;                  /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+	size_t nm;                      /* Number of data items in this grid (nx * ny) [padding is excluded] */
+	size_t size;                    /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
 	unsigned int n_bands;           /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
 	unsigned int pad[4];            /* Padding on west, east, south, north sides [2,2,2,2] */
 	unsigned int BC[4];             /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
