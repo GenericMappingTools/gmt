@@ -355,8 +355,8 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
 	if (!Ctrl->E.active) Ctrl->E.levels = (Ctrl->S.n_levels > 0) ? Ctrl->S.n_levels : GRD2CPT_N_LEVELS;	/* Default number of levels */
-	if (Ctrl->M.active) cpt_flags |= 1;		/* bit 0 controls if BFN is determined by parameters */
-	if (Ctrl->D.mode == 2) cpt_flags |= 2;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;		/* bit 0 controls if BFN is determined by parameters */
+	if (Ctrl->D.mode == 2) cpt_flags |= GMT_CPT_EXTEND_BNF;		/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
 	file = CPT_file;
 	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, file, NULL)) == NULL) {
@@ -553,8 +553,8 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;
-	if (Ctrl->N.active) cpt_flags |= 1;	/* bit 0 controls if BFN will be written out */
-	if (Ctrl->D.mode == 1) cpt_flags |= 2;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
+	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 
 	if (Ctrl->A.active) GMT_cpt_transparency (GMT, Pout, Ctrl->A.value, Ctrl->A.mode);	/* Set transparency */

@@ -247,7 +247,8 @@ int GMT_makecpt_parse (struct GMTAPI_CTRL *C, struct MAKECPT_CTRL *Ctrl, struct 
 
 int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	int i, nz, cpt_flags = 0, error = 0;
+	int i, nz, error = 0;
+	unsigned int cpt_flags = 0;
 
 	double *z = NULL;
 
@@ -289,8 +290,8 @@ int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* OK, we can now do the resampling */
 
-	if (Ctrl->M.active) cpt_flags |= 1;	/* bit 0 controls if BFN is determined by parameters */
-	if (Ctrl->D.mode == 1) cpt_flags |= 2;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->M.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN is determined by parameters */
+	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 
 	file = CPT_file;
 
@@ -367,8 +368,8 @@ int GMT_makecpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Determine mode flags for output */
 	cpt_flags = 0;
-	if (Ctrl->N.active) cpt_flags |= 1;	/* bit 0 controls if BFN will be written out */
-	if (Ctrl->D.mode == 1) cpt_flags |= 2;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
+	if (Ctrl->N.active) cpt_flags |= GMT_CPT_NO_BNF;	/* bit 0 controls if BFN will be written out */
+	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 
 	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_OK) {
