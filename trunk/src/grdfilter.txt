@@ -127,6 +127,15 @@ so we can compute the residuals, e.g.,
 .br
 .sp
 Here, the residual_pacific.nc grid will have the same 5 minute resolution as the original.
+.br
+.sp
+To filter the dataset in ripples.nc using a custom anisotropic Gaussian filter exp (-0.5*r^2) whose distances r from the
+center is given by (2x^2 + y^2 -2xy)/6, with major axis at an angle of 63 degrees with the horizontal, try
+.br
+.sp
+grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL SUB 6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
+.br
+grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
 .SH LIMITATIONS
 To use the OPT(D)5 option the input Mercator grid must be created by img2mercgrd using the OPT(C) option so the origin of the
 y-values is the Equator (i.e., x = y = 0 correspond to lon = lat = 0).
