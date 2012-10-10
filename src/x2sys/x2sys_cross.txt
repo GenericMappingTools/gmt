@@ -24,6 +24,7 @@ you may choose to project all data using one of the map-projections prior to cal
 OPT(A)IT(combi.lis)
 Only process the pair-combinations found in the file IT(combi.lis)
 [Default process all possible combinations among the specified files].
+The file IT(combi.lis) created by x2sys_get -L option
 .TP
 OPT(C)[IT(runtimes)]
 Compute and append the processing run-time for each pair to the progress message.
