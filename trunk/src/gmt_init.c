@@ -1765,7 +1765,7 @@ int gmt_parse_i_option (struct GMT_CTRL *C, char *arg)
 		if ((c = strchr (p, 's'))) {	/* Look for scale factor */
 			c[0] = '\0';	/* Wipe out the 's' so that next scan terminates there */
 #ifdef GMT_COMPAT
-			i = strlen (p) - 1;
+			i = (int)strlen (p) - 1;
 			convert = (p[i] == 'l') ? 2 : 1;
 			i = sscanf (&c[1], "%[^/]/%[^l]", txt_a, txt_b);
 			if (i == 0) GMT_report (C, GMT_MSG_NORMAL, "-i...s contains bad scale info\n");
@@ -2357,7 +2357,7 @@ bool gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	C->current.io.io_nan_ncols = 1;		/* Default is that single z column */
 	C->current.setting.io_nan_mode = 1;	/* Plain -s */
 	if (!item || !item[0]) return (false);	/* Nothing more to do */
-	n = strlen (item);
+	n = (int)strlen (item);
 	if (item[n-1] == 'a') C->current.setting.io_nan_mode = 3, n--;		/* Set -sa */
 	else if (item[n-1] == 'r') C->current.setting.io_nan_mode = 2, n--;	/* Set -sr */
 	if (n == 0) return (false);		/* No column arguments to process */
@@ -2683,7 +2683,7 @@ int gmt_decode_wesnz (struct GMT_CTRL *C, const char *in, unsigned int side[], b
 	int i, k;
 	bool go = true;
 
-	i = strlen (in);
+	i = (int)strlen (in);
 	if (i == 0) return (0);
 	
 	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
@@ -2757,7 +2757,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 	if (!value) return (1);		/* value argument missing */
 	strncpy (lower_value, value, GMT_BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
-	len = strlen (value);
+	len = (unsigned int)strlen (value);
 
 	case_val = GMT_hash_lookup (C, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
@@ -3749,6 +3749,26 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_EXTRAPOLATE_VAL:
+			if (!strcmp (lower_value, "nan"))
+				C->current.setting.extrapolate_val[0] = 0;
+			else if (!strcmp (lower_value, "extrap"))
+				C->current.setting.extrapolate_val[0] = 1;
+			else if (!strncmp (lower_value, "extrapval",9)) {
+				C->current.setting.extrapolate_val[0] = 2;
+				C->current.setting.extrapolate_val[1] = atof(&lower_value[10]);
+				if (lower_value[9] != ',') {
+					GMT_report (C, GMT_MSG_NORMAL, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
+					error = true;
+				}
+			}
+			else
+				error = true;
+			if (error) {
+				GMT_report (C, GMT_MSG_NORMAL, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
+				C->current.setting.extrapolate_val[0] = 0;
+			}
+			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
 				C->current.setting.triangulate = GMT_TRIANGLE_WATSON;
@@ -4591,6 +4611,14 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			else
 				strcpy (value, "undefined");
 			break;
+		case GMTCASE_GMT_EXTRAPOLATE_VAL:
+			if (C->current.setting.extrapolate_val[0] == 0)
+				strcpy (value, "NaN");
+			else if (C->current.setting.extrapolate_val[0] == 1)
+				strcpy (value, "extrap");
+			else if (C->current.setting.extrapolate_val[0] == 2)
+				strcpy (value, "extrapval");
+			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)
 				strcpy (value, "Watson");
@@ -4901,7 +4929,7 @@ double GMT_convert_units (struct GMT_CTRL *C, char *string, unsigned int default
 	bool have_unit = false;
 	double value;
 
-	if ((len = strlen(string))) {
+	if ((len = (int)strlen(string))) {
 		c = string[len-1];
 		if ((have_unit = isalpha ((int)c))) string[len-1] = '\0';	/* Temporarily remove unit */
 	}
@@ -7231,8 +7259,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 			p->v.v_width  = (float)GMT_to_inch (C, txt_a);
 			p->v.h_length = (float)GMT_to_inch (C, txt_b);
-			p->v.h_width  = (float)GMT_to_inch (C, txt_c) * 2.0;
-			p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length) * 2.0;
+			p->v.h_width  = (float)(GMT_to_inch (C, txt_c) * 2.0);
+			p->v.v_angle = (float)atand ((0.5 * p->v.h_width / p->v.h_length) * 2.0);
 			p->v.parsed_v4 = true;
 			p->size_x = p->given_size_x = p->v.h_length;
 		}
@@ -7648,8 +7676,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 						sscanf (&text[one], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 						p->v.v_width  = (float)GMT_to_inch (C, txt_a);
 						p->v.h_length = (float)GMT_to_inch (C, txt_b);
-						p->v.h_width  = (float)GMT_to_inch (C, txt_c) * 2.0;
-						p->v.v_angle = (float)atand (0.5 * p->v.h_width / p->v.h_length) * 2.0;
+						p->v.h_width  = (float)(GMT_to_inch (C, txt_c) * 2.0);
+						p->v.v_angle = (float)(atand (0.5 * p->v.h_width / p->v.h_length) * 2.0);
 					}
 				}
 				if (p->v.v_norm >= 0.0) text[j] = 'n';	/* Put back the n<shrink> part */
