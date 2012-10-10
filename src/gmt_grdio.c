@@ -1678,9 +1678,14 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	if (GMT_grd_pad_status (C, G->header, pad)) return;	/* Already padded as requested so nothing to do */
 	/* Here the pads differ (or G has no pad at all) */
 	size = gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
-	if (size > G->header->size) {	/* Must allocate more space */
-		G->data = GMT_memory_aligned (C, G->data, size, float);
-		G->header->size = size;
+	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
+		float *f = NULL;
+		GMT_report (C, GMT_MSG_NORMAL, "GRID REALLOCATION - MUST DUPLICATE ONTO LARGER GRID - NOTIFY GMT-DEVELOPERS\n");
+		f = GMT_memory_aligned (C, NULL, size, float);		/* New, larger grid size */
+		GMT_memcpy (f, G->data, G->header->size, float);	/* Copy over previous grid values */
+		GMT_free_aligned (C, G->data);				/* Free previous aligned grid memory */
+		G->data = f;						/* Attach the new, larger aligned memory */
+		G->header->size = size;					/* Update the size */
 	}
 	/* Because G may have a pad that is nonzero (but different from pad) we need a different header structure in the macros below */
 	h = GMT_duplicate_gridheader (C, G->header);
