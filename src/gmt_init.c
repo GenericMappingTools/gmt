@@ -4617,7 +4617,7 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 			else if (C->current.setting.extrapolate_val[0] == 1)
 				strcpy (value, "extrap");
 			else if (C->current.setting.extrapolate_val[0] == 2)
-				strcpy (value, "extrapval");
+				sprintf (value, "extrapval,%s", setting.extrapolate_val[1]);
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)
