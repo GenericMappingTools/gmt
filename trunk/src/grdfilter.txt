@@ -61,6 +61,10 @@ conventional Gaussian sigma.
 (BD(f)) Custom: Weights are given by the precomputed values in the filter weight grid file IT(weight), which must
 have odd dimensions; also requires OPT(D0) and output spacing must match input spacing or be integer multiples.
 .sp
+(BD(o)) Operator: Weights are given by the precomputed values in the filter weight grid file IT(weight), which must
+have odd dimensions; also requires OPT(D0) and output spacing must match input spacing or be integer multiples.
+Weights are assumed to sum to zero so no accumulation of weight sums and normalization will be done.
+.sp
 Non-convolution filters are:
 .br
 .sp
