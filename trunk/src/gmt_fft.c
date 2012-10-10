@@ -431,8 +431,8 @@ int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int n
 
 void GMT_fft_initialization (struct GMT_CTRL *C) {
 	/* Called by GMT_begin and sets up pointers to the available FFT calls */
-	int n_cpu;
 #if defined HAVE_FFTW3F_THREADS
+	int n_cpu;
 #if defined WIN32
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo ( &sysinfo );
