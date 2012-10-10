@@ -87,6 +87,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int fftw_plan;   /* Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 #endif
 	unsigned int history;     /* mode to pass information via history file .gmtcommands (k_history_off, k_history_read, k_history_write) */
+	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	/* IO group */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
 	unsigned int io_nan_mode;		/* -s: 1 means skip NaN (x,y) records on output, 2 = inverse (only output nan-records; -sr), 0 reports all records */

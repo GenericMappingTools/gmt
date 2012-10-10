@@ -224,6 +224,12 @@ only read, or not use the file at all  [true].
 Determines if linear (linear), Akima's spline (akima), natural cubic spline (cubic) or\"'
 no interpolation (none) should be used for 1-D interpolations in various programs [akima].
 .TP
+.B GMT_EXTRAPOLATE_VAL
+Determines what to do with extrapolated vales. Choose among 'NaN', 'extrap' or 'extrapval,val' (with no quotes).
+In first case return NaN for any element of xi that is outside range. Second case let the selected
+algorithm compute the extrapolation values. Third case sets the extrapolation values to the constant value
+passed in 'val' (this value must off course be numeric). 
+.TP
 .B GMT_TRIANGULATE
 Determines if we use the BD(Watson) [Default] or BD(Shewchuk) algorithm (if configured during installation) for triangulation.
 Note that Shewchuk is required for operations involving Voronoi constructions.

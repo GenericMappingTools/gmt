@@ -3127,7 +3127,10 @@ double GMT_csplint (struct GMT_CTRL *C, double *x, double *y, double *c, double 
  * GMT_intpol will interpolate from the dataset <x,y> onto a new set <u,v>
  * where <x,y> and <u> is supplied by the user. <v> is returned. The
  * parameter mode governs what interpolation scheme that will be used.
- * If u[i] is outside the range of x, then v[i] will contain NaN.
+ * If u[i] is outside the range of x, then v[i] will contain a value
+ * determined by the content of the GMT_EXTRAPOLATE_VAL. Namelly, NaN if
+ * GMT_EXTRAPOLATE_VAL[0] = 1; pure extrapolation if GMT_EXTRAPOLATE_VAL[0] = 1;
+ * or a constant value (GMT_EXTRAPOLATE_VAL[1]) if GMT_EXTRAPOLATE_VAL[0] = 2
  *
  * input:  x = x-values of input data
  *	   y = y-values "    "     "
@@ -3149,7 +3152,7 @@ double GMT_csplint (struct GMT_CTRL *C, double *x, double *y, double *c, double 
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  */
 
-int gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, unsigned int mode)
+int gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64_t m, double *u, double *v, int mode)
 {	/* Does the main work of interpolating a section that has no NaNs */
 	uint64_t i, j;
 	int err_flag = 0;
@@ -3185,8 +3188,14 @@ int gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64
 	j = 0;
 	for (i = 0; i < m; i++) {
 		if (u[i] < x_min || u[i] > x_max) {	/* Desired point outside data range */
-			v[i] = C->session.d_NaN;
-			continue;
+			if (C->current.setting.extrapolate_val[0] == 0) {
+				v[i] = C->session.d_NaN;
+				continue;
+			}
+			else if (C->current.setting.extrapolate_val[0] == 2) {
+				v[i] = C->current.setting.extrapolate_val[1];
+				continue;
+			}
 		}
 		while (j > 0 && x[j] >  u[i]) j--;	/* In case u is not sorted */
 		while (j < n && x[j] <= u[i]) j++;
