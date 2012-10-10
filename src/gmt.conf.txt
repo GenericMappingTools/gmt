@@ -768,7 +768,7 @@ Choose from one of the preset systems below (epoch and units are indicated):
 JD    -4713-11-25T12:00:00  d  (Julian Date)
 .br
 .sp
-MJD    1858-11-27T00:00:00  d  (Modified Julian Date)
+MJD    1858-11-17T00:00:00  d  (Modified Julian Date)
 .br
 .sp
 J2000  2000-01-01T12:00:00  d  (Astronomical time)

@@ -320,6 +320,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 	double xx, yy;				/* Temporary projection variables */
 	double dist_scale;			/* Scale to give selected distance units */
 	double vel_scale;			/* Scale to give selected velocity units */
+	double t_scale;				/* Scale to give time in seconds */
 
 	clock_t tic = 0, toc = 0;
 
@@ -514,6 +515,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 		default:	/*Cartesian */
 			break;
 	}
+	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) {
 		Return (error);
@@ -653,7 +655,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 						/* Check if speed is outside accepted domain */
 
-						speed[k] = (delt == 0.0) ? GMT->session.d_NaN : vel_scale * (deld / delt);
+						speed[k] = (delt == 0.0) ? GMT->session.d_NaN : vel_scale * (deld / (delt * t_scale));
 						if (Ctrl->S.active[VLO] && !GMT_is_dnan (speed[k]) && (speed[k] < Ctrl->S.limit[VLO] || speed[k] > Ctrl->S.limit[VHI])) continue;
 
 						/* Linearly estimate the crossover times and distances */
@@ -707,8 +709,9 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 							}
 
 							if (!n_right) continue;
-							if (got_time && ((time[k][t_right] - time_x[k]) > Bix.time_gap)) continue;
-							if (!got_time && ((dist[k][t_right] - dist_x[k]) > Bix.dist_gap)) continue;
+							/* See if we pass any gap criteria */
+							if (got_time && ((time[k][t_right] - time_x[k]) > Bix.time_gap)) continue;	/* Exceeded time gap */
+							if ((dist[k][t_right] - dist_x[k]) > Bix.dist_gap) continue;			/* Exceeded distance gap */
 
 							/* Ok, got enough data to interpolate at xover */
 

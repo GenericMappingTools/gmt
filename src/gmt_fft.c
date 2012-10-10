@@ -29,7 +29,7 @@
  *  Removed Norman Brenner's ancient Cooley-Tukey FFT implementation,
  *    now superseded by Kiss FFT.
  *  Support for Paul Swarztrauber's ancient FFTPACK and for Sun Performance
- *    Library (perflib) have been removed too because they are not mainteined
+ *    Library (perflib) have been removed too because they are not maintained
  *    anymore.
  *
  *  FFTW    : FFTW library (supplied externally)
@@ -425,13 +425,21 @@ int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int n
 	return status;
 }
 
+#if defined WIN32
+#include <windows.h>
+#endif
+
 void GMT_fft_initialization (struct GMT_CTRL *C) {
 	/* Called by GMT_begin and sets up pointers to the available FFT calls */
-
-#if defined HAVE_FFTW3F_THREADS && !defined WIN32
-	/* Don't know how to get the number of CPUs on Windows */
-	int n_cpu = (int)sysconf(_SC_NPROCESSORS_CONF);
-
+	int n_cpu;
+#if defined HAVE_FFTW3F_THREADS
+#if defined WIN32
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo ( &sysinfo );
+	n_cpu = sysinfo.dwNumberOfProcessors;
+#else
+	n_cpu = (int)sysconf (_SC_NPROCESSORS_CONF);
+#endif
 	if (n_cpu > 1) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
@@ -464,7 +472,7 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 
 void GMT_fft_cleanup (void) {
 	/* Called by GMT_end */
-#if defined HAVE_FFTW3F_THREADS && !defined WIN32
+#if defined HAVE_FFTW3F_THREADS
 	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
 #endif
 }
