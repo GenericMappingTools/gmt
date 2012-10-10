@@ -3674,9 +3674,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_GMT_FFT:
 			if (!strncmp (lower_value, "auto", 4))
 				C->current.setting.fft = k_fft_auto;
-			else if (!strncmp (lower_value, "fftw", 4)) /* complete name: fftw */
-			{
-				char *c;
+			else if (!strncmp (lower_value, "fftw", 4)) { /* complete name: fftw */
 				C->current.setting.fft = k_fft_fftw;
 #ifdef HAVE_FFTW3F
 				/* FFTW planner flags supported by the planner routines in FFTW
@@ -3685,8 +3683,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				 * FFTW_PATIENT:    like FFTW_MEASURE, but considers a wider range of algorithms
 				 * FFTW_EXHAUSTIVE: like FFTW_PATIENT, but considers an even wider range of algorithms */
 				C->current.setting.fftw_plan = FFTW_ESTIMATE; /* default planner flag */
-				if ((c = strchr (lower_value, ',')) != NULL) /* Parse FFTW planner flags */
-				{
+				if ((c = strchr (lower_value, ',')) != NULL) { /* Parse FFTW planner flags */
 					c += strspn(c, ", \t"); /* advance past ',' and whitespace */
 					if (!strncmp (c, "m", 1)) /* complete: measure */
 						C->current.setting.fftw_plan = FFTW_MEASURE;
@@ -5886,13 +5883,13 @@ int gmt_split_info_strings (struct GMT_CTRL *C, const char *in, char *x_info, ch
 	}
 
 	if (n_slash == 2) {	/* Got x/y/z */
-		i = strlen (in);
+		i = (unsigned int)strlen (in);
 		strncpy (x_info, in, s_pos[0]);					x_info[s_pos[0]] = '\0';
 		strncpy (y_info, &in[s_pos[0]+1], s_pos[1] - s_pos[0] - 1);	y_info[s_pos[1] - s_pos[0] - 1] = '\0';
 		strncpy (z_info, &in[s_pos[1]+1], i - s_pos[1] - 1);		z_info[i - s_pos[1] - 1] = '\0';
 	}
 	else if (n_slash == 1) {	/* Got x/y */
-		i = strlen (in);
+		i = (unsigned int)strlen (in);
 		strncpy (x_info, in, s_pos[0]);					x_info[s_pos[0]] = '\0';
 		strncpy (y_info, &in[s_pos[0]+1], i - s_pos[0] - 1);		y_info[i - s_pos[0] - 1] = '\0';
 	}
@@ -6187,7 +6184,7 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	gmt_handle_dosfile (C, in, 0);	/* Temporarily replace DOS files like X:/ with X;/ to avoid colon trouble */
 #endif
 
-	for (i = strlen (in) - 1, ignore = false; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
+	for (i = (int)strlen(in) - 1, ignore = false; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
 		if (in[i] == ':') ignore = !ignore;
 		if (ignore) continue;	/* Not look inside text items */
 		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
@@ -6233,7 +6230,7 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		if (out3[0] == 'c')
 			error += gmt_decode_tinfo (C, i, 'c', out3, &C->current.map.frame.axis[i]);
 		else {	/* Parse from back for 'a', 'f', 'g' chunks */
-			for (k = strlen (out3) - 1; k >= 0; k--) {
+			for (k = (int)strlen (out3) - 1; k >= 0; k--) {
 				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
 					error += gmt_decode_tinfo (C, i, out3[k], &out3[k+1], &C->current.map.frame.axis[i]);
 					out3[k] = '\0';	/* Replace with terminator */
@@ -6407,7 +6404,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
 	args += i;
 
-	last_pos = strlen (args) - 1;	/* Position of last character in this string */
+	last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
 	if (last_pos > 0) {	/* Avoid having -JXh|v be misinterpreted */
 		switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
@@ -6436,7 +6433,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 	if (project != GMT_ZAXIS) {
 		/* Check to see if scale is specified in 1:xxxx */
-		for (j = strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
+		for (j = (int)strlen (args), k = -1; j > 0 && k < 0 && args[j] != '/'; j--) if (args[j] == ':') k = j + 1;
 		C->current.proj.units_pr_degree = (k == -1) ? true : false;
 		C->current.io.col_type[GMT_OUT][GMT_X] = C->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
 		if (project != GMT_LINEAR) {
@@ -6475,7 +6472,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 			/* Distinguish between p for points and p<power> for scaling */
 
-			n = strlen (args);
+			n = (int)strlen (args);
 			for (j = 0; j < 2; j++) {
 				if (!p_pos[j]) continue;
 				i = p_pos[j] + 1;
@@ -6561,7 +6558,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 			/* Distinguish between p for points and p<power> for scaling */
 
-			n = strlen (args);
+			n = (int)strlen (args);
 			if (p_pos[GMT_Z]) {
 				i = p_pos[GMT_Z] + 1;
 				if (i == n || strchr ("LlTtDdGg", (int)args[i]))	/* This p is for points since no power is following */
@@ -6603,7 +6600,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				C->current.proj.got_azimuths = false;
 				i = 0;
 			}
-			j = strlen (args) - 1;
+			j = (int)strlen (args) - 1;
 			if (args[j] == 'r') {	/* Gave optional r for reverse (elevations, presumably) */
 				C->current.proj.got_elevations = true;
 				args[j] = '\0';	/* Temporarily chop off the r */
@@ -6858,7 +6855,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			if (error) GMT_message (C, "error reading latitude '%s'\n", &(txt_arr[1][0]));
 
 			/* g_alt    C->current.proj.pars[4] = atof(txt_c); */
-			nlen = strlen(&(txt_arr[2][0]));
+			nlen = (int)strlen(&(txt_arr[2][0]));
 			if (txt_arr[2][nlen-1] == 'r') {
 				C->current.proj.g_radius = true;
 				txt_arr[2][nlen-1] = 0;
@@ -6867,7 +6864,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			if (error) GMT_message (C, "error reading altitude '%s'\n", &(txt_arr[2][0]));
 
 			/* g_az    C->current.proj.pars[5] = atof(txt_d); */
-			nlen = strlen(&(txt_arr[3][0]));
+			nlen = (int)strlen(&(txt_arr[3][0]));
 			if (txt_arr[3][nlen-1] == 'l' || txt_arr[3][nlen-1] == 'L') {
 				C->current.proj.g_longlat_set = true;
 				txt_arr[3][nlen-1] = 0;
@@ -6876,7 +6873,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			if (error) GMT_message (C, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
 
 			/* g_tilt    C->current.proj.pars[6] = atof(txt_e); */
-			nlen = strlen(&(txt_arr[4][0]));
+			nlen = (int)strlen(&(txt_arr[4][0]));
 			if (txt_arr[4][nlen-1] == 'l' || txt_arr[4][nlen-1] == 'L') {
 				C->current.proj.g_longlat_set = true;
 				txt_arr[4][nlen-1] = 0;
@@ -6886,7 +6883,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 			if (n > 6) {
 				/*g_twist   C->current.proj.pars[7] = atof(txt_f); */
-				nlen = strlen(&(txt_arr[5][0]));
+				nlen = (int)strlen(&(txt_arr[5][0]));
 				if (txt_arr[5][nlen-1] == 'n') {
 					C->current.proj.g_auto_twist = true;
 					txt_arr[5][nlen-1] = 0;
@@ -7068,7 +7065,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
-				len = strlen (p);
+				len = (unsigned int)strlen (p);
 				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (p[len]) : -1;	/* Only -Sv|V takes unit */
 				if (j >= 0) { S->u = j; S->u_set = true; }
 				S->v.v_norm = (float)atof (&p[1]);
@@ -7178,7 +7175,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	   However, if size is not given then that is requred too so col_off++ */
 	
 	if (!strchr (GMT_VECTOR_CODES "fq", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
-		k = strlen (text) - 1;	/* Last character position */
+		k = (int)strlen (text) - 1;	/* Last character position */
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
 		p->convert_size = (text[k] == 'l') ? 2 : 1;		/* If last char is l we want log10 conversion */
 		if (p->convert_size == 2) text[k] = '\0';		/* Temporarily remove the l */
@@ -7226,7 +7223,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		}
 	}
 	else if (text[0] == 'k') {	/* Custom symbol spec */
-		for (j = strlen (text); j > 0 && text[j] != '/'; --j);
+		for (j = (int)strlen (text); j > 0 && text[j] != '/'; --j);
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 #if 0
@@ -7416,7 +7413,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
 			strcpy (text_cp, text);
 #ifdef GMT_COMPAT
-			len = strlen (text_cp) - 1;
+			len = (int)strlen (text_cp) - 1;
 			if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
 				GMT_report (C, GMT_MSG_COMPAT, "Warning in Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
 				if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
@@ -7425,7 +7422,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 					c--;	/* Go back to colon */
 					*c = 0;	/* Effectively chops off the offset modifier */
 				}
-				len = strlen (text_cp) - 1;
+				len = (int)strlen (text_cp) - 1;
 
 				switch (text_cp[len]) {
 					case 'f':	/* Fault front */
@@ -7651,7 +7648,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 						break;
 				}
 				for (j = one; text[j] && text[j] != 'n'; j++);
-				len = strlen(text) - 1;
+				len = (int)strlen(text) - 1;
 				if (text[j] == 'n') {	/* Normalize option used */
 					k = gmt_get_unit (text[len]);
 					if (k >= 0) { p->u = k; p->u_set = true; }
