@@ -265,6 +265,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t       m1 return mag as stored in file [Default].\n");
 	GMT_message (GMT, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
 	GMT_message (GMT, "\t       m4 return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
+	GMT_message (GMT, "\t       c<offset>[unit] Apply cable tow distance correction to mtf1.\n");
 	GMT_message (GMT, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
 	GMT_message (GMT, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
 	GMT_message (GMT, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
@@ -396,13 +397,6 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 								n_errors++;
 							}
 						}
-#if 0
-						else if (opt->arg[k+1] == 'p') {
-							MGD77_Set_Unit (GMT, &opt->arg[k+2], &dist_scale, 1);
-							Ctrl->A.cable_adjust_coord = true;
-							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]) * dist_scale;
-						}
-#endif
 						else {
 							code = atoi (&opt->arg[k+1]);
 							if (code < 1 || code > 31) {
@@ -1121,24 +1115,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				cumulative_dist = 0;
 			}
 
-#if 0
-			if (Ctrl->A.cable_adjust_coord && rec == 0) {
-				uint64_t rec_;
-				cumdist = GMT_memory(GMT, NULL, D->H.n_records, double);
-				cumdist_off = GMT_memory(GMT, NULL, D->H.n_records, double);   /* To put positions where mag was really measured */
-				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][0]) || GMT_is_dnan (dvalue[y_col][0]));
-				prevrec = 0;
-				for (rec_ = 1; rec_ < D->H.n_records; rec_++) {	/* Very bad luck if first rec has NaNs in coords */
-					ds = dist_scale * GMT_distance (GMT, dvalue[x_col][rec_], dvalue[y_col][rec_], dvalue[x_col][prevrec], dvalue[y_col][prevrec]);
-					cumulative_dist += ds;
-					cumdist[rec_] = cumulative_dist;
-					if (lonlat_not_NaN) prevrec = rec_;
-				}
-				prevrec = UINTMAX_MAX;	/* Reset for eventual reuse in (need_distances) */
-				cumulative_dist = 0;
-			}
-#endif
-
 			if (need_distances) {
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][rec]) || GMT_is_dnan (dvalue[y_col][rec]));
 				if (rec == 0) {	/* Azimuth at 1st point set to azimuth of 2nd point since there is no previous point */
@@ -1403,29 +1379,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 						dvalue[m1_col][rec] = mtf_int[rec];
 				}
 			}
-
-#if 0
-			if (Ctrl->A.cable_adjust_coord) {
-				/* This part doesn't deal with the point repetition problem */
-				if (first_time_on_sensor_offset) {  /* At first time here we interpolate ALL coords at offset pos */
-					int k_off;
-					double *lon_off = GMT_memory(GMT, NULL, D->H.n_records, double);
-					double *lat_off = GMT_memory(GMT, NULL, D->H.n_records, double);
-					Ctrl->A.sensor_offset *= dist_scale;	/* If this survives, this lime must be moved up up */
-					for (k_off = 0; k_off < D->H.n_records; k_off++)
-						cumdist_off[k_off] = cumdist[k_off] - Ctrl->A.sensor_offset;
-
-					GMT_intpol(GMT, cumdist, dvalue[x_col], D->H.n_records, D->H.n_records, cumdist_off, lon_off, GMT->current.setting.interpolant);
-					GMT_intpol(GMT, cumdist, dvalue[y_col], D->H.n_records, D->H.n_records, cumdist_off, lat_off, GMT->current.setting.interpolant);
-					for (k_off = 0; k_off < D->H.n_records; k_off++) {
-						dvalue[x_col][k_off] = lon_off[k_off];
-						dvalue[y_col][k_off] = lat_off[k_off];
-					}
-					GMT_free(GMT, lon_off);       GMT_free(GMT, lat_off);
-					first_time_on_sensor_offset = false;
-				}
-			}
-#endif
 
 			if (negative_depth) dvalue[z_col][rec] = -dvalue[z_col][rec];
 			if (negative_msd) dvalue[m_col][rec] = -dvalue[m_col][rec];
