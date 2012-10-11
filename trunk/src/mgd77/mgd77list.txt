@@ -285,6 +285,17 @@ OPT(Am4)
 returns the difference between BD(mgfx) and BD(igrf), where
 BD(x) is the sensor (BD(2) or BD(1)) IT(not) indicated by the BD(msens) data field
 (defaults to BD(2) if unspecified).
+.sp
+OPT(Amc<offset>[unit])
+Apply a correction that tries to compensate the fact that the magnetic field was not
+acquired at the same position as the navigation refer (ship's position). This is
+accomplished by reinterpolating the total magnetic field to what it would have had if
+it was measured at the ship's position (remember, it probably was measured <offset> meters behind).
+Due to this interpolation step, bad navigation namely too many repeated points may cause
+troubles. Measures are taken to minimize this effect but they aren't 100% full prof. The
+interpolation method is controlled by the gmtdefaults GMT_INTERPOLANT.
+Append BD(e) for meter, BD(f) for feet, BD(k) for km, BD(m) for miles, BD(n) for nautical miles,
+or BD(u) for survey feet [Default is e (meters)].
 .TP
 OPT(C)BD(f)|BD(g)|BD(e)
 Append a one-letter code to select the procedure for along-track distance
