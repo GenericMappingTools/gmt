@@ -2331,9 +2331,9 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 {	/* Set up Robinson projection */
 	int err_flag = 0;
 
-	if (C->current.setting.interpolant == 0) {	/* Must reset and warn */
+	if (C->current.setting.interpolant == GMT_SPLINE_LINEAR) {	/* Must reset and warn */
 		GMT_message (C, "Warning: -JN requires Akima or Cubic spline interpolant, set to Akima\n");
-		C->current.setting.interpolant = 1;
+		C->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	}
 
 	gmt_check_R_J (C, &lon0);
@@ -2361,7 +2361,7 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 	C->current.proj.n_phi[16] = 80;	C->current.proj.n_X[16] = 0.6213;	C->current.proj.n_Y[16] = 0.9394;
 	C->current.proj.n_phi[17] = 85;	C->current.proj.n_X[17] = 0.5722;	C->current.proj.n_Y[17] = 0.9761;
 	C->current.proj.n_phi[18] = 90;	C->current.proj.n_X[18] = 0.5322;	C->current.proj.n_Y[18] = 1.0000;
-	if (C->current.setting.interpolant == 2) {	/* Natural cubic spline */
+	if (C->current.setting.interpolant == GMT_SPLINE_CUBIC) {	/* Natural cubic spline */
 		err_flag  = GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_X, GMT_N_ROBINSON, C->current.proj.n_x_coeff);
 		err_flag += GMT_cspline (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
 		err_flag += GMT_cspline (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
@@ -2388,11 +2388,11 @@ double gmt_robinson_spline (struct GMT_CTRL *C, double xp, double *x, double *y,
 	if (j > 0) j--;
 
 	dx = xp - x[j];
-	switch (C->current.setting.interpolant) {	/* GMT_vrobinson would not allow case 0 so only 1 | 2 is possible */
-		case 1:
+	switch (C->current.setting.interpolant) {	/* GMT_vrobinson would not allow case 0 so only GMT_SPLINE_AKIMA | GMT_SPLINE_CUBIC is possible */
+		case GMT_SPLINE_AKIMA:
 			yp = ((c[3*j+2]*dx + c[3*j+1])*dx + c[3*j])*dx + y[j];
 			break;
-		case 2:
+		case GMT_SPLINE_CUBIC:
 			j1 = j + 1;
 			h = x[j1] - x[j];
 			ih = 1.0 / h;

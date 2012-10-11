@@ -2750,7 +2750,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 	unsigned int pos, len;
 	int i, ival, case_val, manual;
 	bool error = false, tf_answer;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
+	char *c = NULL, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
 
 	double dval;
 
@@ -3736,24 +3736,24 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #endif
 		case GMTCASE_GMT_INTERPOLANT:
 			if (!strcmp (lower_value, "linear"))
-				C->current.setting.interpolant = 0;
+				C->current.setting.interpolant = GMT_SPLINE_LINEAR;
 			else if (!strcmp (lower_value, "akima"))
-				C->current.setting.interpolant = 1;
+				C->current.setting.interpolant = GMT_SPLINE_AKIMA;
 			else if (!strcmp (lower_value, "cubic"))
-				C->current.setting.interpolant = 2;
+				C->current.setting.interpolant = GMT_SPLINE_CUBIC;
 			else if (!strcmp (lower_value, "none"))
-				C->current.setting.interpolant = 3;
+				C->current.setting.interpolant = GMT_SPLINE_NONE;
 			else
 				error = true;
 			break;
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
 			if (!strcmp (lower_value, "nan"))
-				C->current.setting.extrapolate_val[0] = 0;
+				C->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 			else if (!strcmp (lower_value, "extrap"))
-				C->current.setting.extrapolate_val[0] = 1;
+				C->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_SPLINE;
 			else if (!strncmp (lower_value, "extrapval",9)) {
-				C->current.setting.extrapolate_val[0] = 2;
-				C->current.setting.extrapolate_val[1] = atof(&lower_value[10]);
+				C->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_CONSTANT;
+				C->current.setting.extrapolate_val[1] = atof (&lower_value[10]);
 				if (lower_value[9] != ',') {
 					GMT_report (C, GMT_MSG_NORMAL, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
 					error = true;
@@ -3763,7 +3763,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				error = true;
 			if (error) {
 				GMT_report (C, GMT_MSG_NORMAL, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
-				C->current.setting.extrapolate_val[0] = 0;
+				C->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 			}
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
@@ -4597,24 +4597,24 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 		case GMTCASE_INTERPOLANT: GMT_COMPAT_WARN;
 #endif
 		case GMTCASE_GMT_INTERPOLANT:
-			if (C->current.setting.interpolant == 0)
+			if (C->current.setting.interpolant == GMT_SPLINE_LINEAR)
 				strcpy (value, "linear");
-			else if (C->current.setting.interpolant == 1)
+			else if (C->current.setting.interpolant == GMT_SPLINE_AKIMA)
 				strcpy (value, "akima");
-			else if (C->current.setting.interpolant == 2)
+			else if (C->current.setting.interpolant == GMT_SPLINE_CUBIC)
 				strcpy (value, "cubic");
-			else if (C->current.setting.interpolant == 3)
+			else if (C->current.setting.interpolant == GMT_SPLINE_NONE)
 				strcpy (value, "none");
 			else
 				strcpy (value, "undefined");
 			break;
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
-			if (C->current.setting.extrapolate_val[0] == 0)
+			if (C->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
 				strcpy (value, "NaN");
-			else if (C->current.setting.extrapolate_val[0] == 1)
+			else if (C->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_SPLINE)
 				strcpy (value, "extrap");
-			else if (C->current.setting.extrapolate_val[0] == 2)
-				sprintf (value, "extrapval,%s", C->current.setting.extrapolate_val[1]);
+			else if (C->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT)
+				sprintf (value, "extrapval,%g", C->current.setting.extrapolate_val[1]);
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (C->current.setting.triangulate == GMT_TRIANGLE_WATSON)

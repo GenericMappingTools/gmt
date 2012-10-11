@@ -694,7 +694,7 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 							if (!n_left) continue;
 							if (got_time && ((time_x[k] - time[k][t_left]) > Bix.time_gap)) continue;
-							if (!got_time && ((dist_x[k] - dist[k][t_left]) > Bix.dist_gap)) continue;
+							if ((dist_x[k] - dist[k][t_left]) > Bix.dist_gap) continue;
 
 							/* Ok, that worked.  Now for the right side: */
 
