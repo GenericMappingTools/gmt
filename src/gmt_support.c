@@ -3188,11 +3188,11 @@ int gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64
 	j = 0;
 	for (i = 0; i < m; i++) {
 		if (u[i] < x_min || u[i] > x_max) {	/* Desired point outside data range */
-			if (C->current.setting.extrapolate_val[0] == 0) {
+			if (C->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE) {
 				v[i] = C->session.d_NaN;
 				continue;
 			}
-			else if (C->current.setting.extrapolate_val[0] == 2) {
+			else if (C->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT) {
 				v[i] = C->current.setting.extrapolate_val[1];
 				continue;
 			}

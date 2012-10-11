@@ -1332,10 +1332,11 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					dvalue[m1_col][rec] = mtf_bak[rec];         /* Means, copy mtf1 into mtf2 */
 				else {
 					if (first_time_on_sensor_offset) {  /* At first time here we interpolate ALL mtf1 at offset pos */
-						int k_off, last_k = 0, n, *ind;
+						int n, *ind = NULL;
+						uint64_t k_off, last_k = 0;
 						bool clean = true;
 						double off_rescue = 0.0001;
-						double *cumdist_off_cl, *cumdist_cl, *mtf_int_cl, *mtf_cl;
+						double *cumdist_off_cl = NULL, *cumdist_cl = NULL, *mtf_int_cl = NULL, *mtf_cl = NULL;
 
 						for (k_off = 1; k_off < D->H.n_records; k_off++) {
 							/* Often cruises have repeated points that will prevent GMT_intpol usage because dx = 0

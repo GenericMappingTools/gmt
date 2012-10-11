@@ -86,7 +86,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: x2sys_datalist <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n");
-	GMT_message (GMT, "\t[%s] [-S] [%s] [%s] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
+	GMT_message (GMT, "\t[%s] [-S] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -102,9 +102,8 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
-	GMT_message (GMT, "\t   (Note: data columns exclude navigation (lon|x|alt|y|time) columns.)\n");
+	GMT_message (GMT, "\t   (Note: data columns exclude navigation (lon|x|lat|y|time) columns.)\n");
 	GMT_explain_options (GMT, "VD");
-	GMT_message (GMT, "\t-m Write a multi-segment header between the output from each file.\n");
 	
 	return (EXIT_FAILURE);
 }
@@ -162,7 +161,9 @@ int GMT_x2sys_datalist_parse (struct GMTAPI_CTRL *C, struct X2SYS_DATALIST_CTRL 
 		}
 	}
 
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Syntax error: -T must be used to set the TAG.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->F.flags, "Syntax error: -F must be given a comma-separated list of columns.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error: -I must be given a filename.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -211,12 +212,13 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 	char **trk_name = NULL, **ignore = NULL;
 
 	int this_col, xpos = -1, ypos = -1, tpos = -1;
-	bool error = false,  cmdline_files, gmt_formatting = false, *adj_col = NULL, skip;
+	bool error = false,  cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
 	unsigned int ocol, last_col, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
-	uint64_t i, j;
+	uint64_t row;
 
 	double **data = NULL, *out = NULL, correction = 0.0, aux_dvalue[N_GENERIC_AUX];
 	double ds = 0.0, cumulative_dist, dist_scale = 1.0, dt, vel_scale = 1.0, adj_amount;
+	double t_scale;				/* Scale to give time in seconds */
 
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_FILE_INFO p;		/* File information */
@@ -255,7 +257,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (EXIT_FAILURE);		
 	}
 
-	if (Ctrl->I.active && (i = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
+	if (Ctrl->I.active && (k = x2sys_read_list (GMT, Ctrl->I.file, &ignore, &n_ignore)) != X2SYS_NOERROR) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Ignore file %s cannot be read - aborting\n", Ctrl->I.file);
 		exit (EXIT_FAILURE);
 	}
@@ -380,6 +382,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(sfeet)");
 			break;
 	}
+	t_scale = GMT->current.setting.time_system.scale;	/* Convert user's TIME_UNIT to seconds */
 
 	GMT_init_distaz (GMT, s->dist_flag ? GMT_MAP_DIST_UNIT : 'X', s->dist_flag, GMT_MAP_DIST);
 	
@@ -410,7 +413,7 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading track %s\n", trk_name[trk_no]);
 
-		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &j), trk_name[trk_no]);
+		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk_no], &data, s, &p, &GMT->current.io, &row), trk_name[trk_no]);
 
 		if (Ctrl->L.active && s->t_col >= 0) MGD77_Init_Correction (GMT, CORR[trk_no], data);	/* Initialize origins if needed */
 
@@ -421,43 +424,43 @@ int GMT_x2sys_datalist (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->E.active) GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], s->n_fields);
 
 		cumulative_dist = 0.0;
-		for (j = 0; j < p.n_rows; j++) {	/* Process all records in this file */
-			if (GMT->common.R.active && GMT_map_outside (GMT, data[xpos][j], data[ypos][j])) continue;	/* Point is outside region */
+		for (row = 0; row < p.n_rows; row++) {	/* Process all records in this file */
+			if (GMT->common.R.active && GMT_map_outside (GMT, data[xpos][row], data[ypos][row])) continue;	/* Point is outside region */
 			if (Ctrl->S.active) {	/* Skip record if all data columns are NaN (not considering lon,lat,time) */
 				for (ocol = bad = 0; ocol < s->n_out_columns; ocol++) {
 					this_col = s->out_order[ocol];
 					if (this_col == s->t_col) continue;
 					if (this_col == s->x_col) continue;
 					if (this_col == s->y_col) continue;
-					if (GMT_is_dnan (data[ocol][j])) bad++;
+					if (GMT_is_dnan (data[ocol][row])) bad++;
 				}
 				if (bad == n_data_col_out) continue;	/* Yep, just NaNs here */
 			}
 			if (auxlist[MGD77_AUX_AZ].requested) {	/* Need azimuths to be computed from track coordinates */
-				if (j == 0)	/* Look forward from first to second point to get an azimuth at the first point */
+				if (row == 0)	/* Look forward from first to second point to get an azimuth at the first point */
 					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][1], data[ypos][1], data[xpos][0], data[ypos][0], false);
 				else		/* else go from previous to current point */
-					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][j], data[ypos][j], data[xpos][j-1], data[ypos][j-1], false);
+					aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, data[xpos][row], data[ypos][row], data[xpos][row-1], data[ypos][row-1], false);
 			}
 			if (auxlist[MGD77_AUX_DS].requested) {	/* Need distances to be computed from track coordinates */
-				ds = (j == 0) ? 0.0 : dist_scale * GMT_distance (GMT, data[xpos][j], data[ypos][j], data[xpos][j-1], data[ypos][j-1]);
+				ds = (row == 0) ? 0.0 : dist_scale * GMT_distance (GMT, data[xpos][row], data[ypos][row], data[xpos][row-1], data[ypos][row-1]);
 				cumulative_dist += ds;
 				aux_dvalue[MGD77_AUX_DS] = cumulative_dist;
 			}
 			if (auxlist[MGD77_AUX_SP].requested) {	/* Need speed to be computed from track coordinates and time */
-				dt = (j == 0) ? data[tpos][1] - data[tpos][0] : data[tpos][j] - data[tpos][j-1];
-				aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
+				dt = (row == 0) ? data[tpos][1] - data[tpos][0] : data[tpos][row] - data[tpos][row-1];
+				aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / (dt * t_scale);
 			}
 			for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Load output record one column at the time */
-				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, j) : 0.0;
+				correction = (Ctrl->L.active) ? MGD77_Correction (GMT, CORR[trk_no][ocol].term, data, aux_dvalue, row) : 0.0;
 				if (Ctrl->A.active && adj_col[ocol]) {	/* Determine along-track adjustment */
 					if (GMT_intpol (GMT, A[ocol]->d, A[ocol]->c, A[ocol]->n, 1, &aux_dvalue[MGD77_AUX_DS], &adj_amount, GMT->current.setting.interpolant)) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, j);
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error interpolating adjustment for %s near row %" PRIu64 " - no adjustment made!\n", s->info[s->out_order[ocol]].name, row);
 						adj_amount = 0.0;
 					}
 					correction -= adj_amount;
 				}
-				out[ocol] = data[ocol][j] - correction;	/* Save final [possibly corrected and adjusted] value */
+				out[ocol] = data[ocol][row] - correction;	/* Save final [possibly corrected and adjusted] value */
 			}
 			if (gmt_formatting)  {	/* Must use the specified formats in the definition file for one or more columns */
 				for (ocol = 0; ocol < s->n_out_columns; ocol++) {

@@ -153,6 +153,18 @@ enum GMT_enum_tri {
 	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */
 	GMT_TRIANGLE_SHEWCHUK};  /* Select Shewchuk's algorithm */
 
+/* Various 1-D interpolation modes */
+enum GMT_enum_spline {
+	GMT_SPLINE_LINEAR = 0, /* Linear spline */
+	GMT_SPLINE_AKIMA,      /* Akima spline */
+	GMT_SPLINE_CUBIC,      /* Cubic spline */
+	GMT_SPLINE_NONE};      /* No spline set */
+
+enum GMT_enum_extrap {
+	GMT_EXTRAPOLATE_NONE = 0,   /* No extrapolation; set to NaN outside bounds */
+	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
+	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
+
 /* Various grid/image interpolation modes */
 enum GMT_enum_bcr {
 	BCR_NEARNEIGHBOR = 0, /* Nearest neighbor algorithm */
