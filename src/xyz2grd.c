@@ -522,7 +522,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
 	if (Ctrl->Z.active && Ctrl->N.active && GMT_is_dnan (Ctrl->N.value)) Ctrl->N.active = false;	/* No point testing */
 
-	if (Ctrl->Z.active) {	/* Need to override input method */
+	if (Ctrl->Z.active) {	/* Need to override input method since reading single input column as z (not x,y) */
 		zcol = GMT_X;
 		save_i = GMT->current.io.input;
 		previous_bin_i = GMT->common.b.active[GMT_IN];
