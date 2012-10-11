@@ -1,0 +1,85 @@
+#!/bin/sh
+#--------------------------------------------------------------------
+#  $Id$
+#
+#  Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+#  See LICENSE.TXT file for copying and redistribution conditions.
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU Lesser General Public License as published by
+#  the Free Software Foundation; version 3 or any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Lesser General Public License for more details.
+#
+#  Contact info: gmt.soest.hawaii.edu
+#
+# gmt-config simply reports various paths and settings that are useful
+# to developers that need to include/link GMT resources.
+#--------------------------------------------------------------------*/
+#
+CONFIG_LIBS="-L/sw/lib -lgmt"
+CONFIG_DEP_LIBS=" -L/sw/opt/netcdf7/lib -lnetcdf"
+CONFIG_PREFIX="/sw"
+CONFIG_CFLAGS="-I/sw/include/gmt"
+CONFIG_DATA="/sw/share/gmt"
+CONFIG_VERSION="5.0.0"
+CONFIG_BITS="64"
+CONFIG_GDAL_ENABLED=yes
+usage()
+{
+	cat <<EOF
+Usage: gmt-config [OPTIONS]
+Options:
+	[--prefix]
+	[--libs]
+	[--dep-libs]
+	[--cflags]
+	[--datadir]
+	[--version]
+	[--gdal-enabled]
+	[--formats]
+EOF
+	exit $1
+}
+
+if test $# -eq 0; then
+	usage 1 1>&2
+fi
+
+case $1 in 
+  --libs)
+    echo $CONFIG_LIBS
+    ;;
+
+  --dep-libs)
+    echo $CONFIG_DEP_LIBS
+    ;;
+
+  --cflags)
+    echo $CONFIG_CFLAGS
+    ;;
+
+  --datadir)
+    echo $CONFIG_DATA
+    ;;
+
+  --prefix)
+    echo $CONFIG_PREFIX
+    ;;
+
+  --version)
+    echo $CONFIG_VERSION
+    ;;
+
+  --gdal-enabled)
+    echo $CONFIG_GDAL_ENABLED
+    ;;
+
+  *)
+    usage 1 1>&2
+    ;;
+
+esac
