@@ -208,7 +208,7 @@ typedef char* Text;	/* Used to indicate character strings */
  * MGD77_write_header will do exactly what they say.
  */
 
-#define MGD77_COL_ABBREV_LEN	16U
+#define MGD77_COL_ABBREV_LEN	64U
 #define MGD77_COL_NAME_LEN	64U
 #define MGD77_COL_UNIT_LEN	64U
 #define MGD77_COL_COMMENT_LEN	128U
