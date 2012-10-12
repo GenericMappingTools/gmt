@@ -219,7 +219,7 @@ int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ struct
 
 int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	char **trk_name = NULL, *c = NULL;
+	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ], record[GMT_BUFSIZ], word[GMT_BUFSIZ];
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
@@ -336,22 +336,49 @@ int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Time to issue output */
 
-	fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
-	fprintf (GMT->session.std[GMT_OUT], "# Command: %s", gmt_module_name(GMT));
-	if (!Ctrl->In.file) fprintf (GMT->session.std[GMT_OUT], " [stdin]");
-	for (opt = options; opt; opt = opt->next) (opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
-	fprintf (GMT->session.std[GMT_OUT], "\n#track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]\n", c, c, c, c, c, n_use);
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT,  GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {
+		Return (API->error);	/* Enables data output and sets access mode */
+	}
+
+	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
+	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, record);
+	sprintf (record, " Command: %s", gmt_module_name(GMT));
+	if (!Ctrl->In.file) strcat (record, " [stdin]");
+	for (opt = options; opt; opt = opt->next) {
+		strcat (record, " ");
+		if (opt->option == GMTAPI_OPT_INFILE) 
+			strcat (record, opt->arg);
+		else {
+			sprintf (word, "-%c%s", opt->option, opt->arg);
+			strcat (record, word);
+		}
+	}
+	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, record);
+	sprintf (record, "track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]", c, c, c, c, c, n_use);
+	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, record);
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;
-	printf ("TOTAL%s%" PRIu64 "%s%g%s%g%s%g%s1\n", c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
+	sprintf (fmt, "TOTAL%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s1", GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
+		GMT->current.setting.format_float_out);
+	sprintf (record, fmt, c, Tnx, c, Tmean, c, Tstdev, c, Trms, c);
+	GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+	sprintf (fmt, "%%s%%s%%" PRIu64 "%%s%s%%s%s%%s%s%%s%s\n", GMT->current.setting.format_float_out,GMT->current.setting.format_float_out,
+		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (k = 0; k < n_tracks; k++) {	/* For each track that generated crossovers */
 		if (R[k].nx <= Ctrl->N.min) continue;			/* Not enough COEs */
 		if (!GMT_is_dnan (R[k].W)) R[k].W *= scale;
 		R[k].mean = (R[k].nx) ? R[k].sum / R[k].nx : GMT->session.d_NaN;
 		R[k].stdev = (R[k].nx > 1) ? sqrt ((R[k].nx * R[k].sum2 - R[k].sum * R[k].sum) / (R[k].nx * (R[k].nx - 1.0))) : GMT->session.d_NaN;
 		R[k].rms = (R[k].nx) ? sqrt (R[k].sum2 / R[k].nx) : GMT->session.d_NaN;
-		printf ("%s%s%" PRIu64 "%s%g%s%g%s%g%s%g\n", trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
+		sprintf (record, fmt, trk_name[k], c, R[k].nx, c, R[k].mean, c, R[k].stdev, c, R[k].rms, c, R[k].W);
+		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
+	}
+ 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+		Return (API->error);
 	}
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
