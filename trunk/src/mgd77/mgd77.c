@@ -456,10 +456,22 @@ static inline void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEAD
 
 	for (c = 0; c < MGD77_N_SETS; c++) {
 		for (id = 0; id < MGD77_SET_COLS ; id++) {
-			if (H->info[c].col[id].abbrev) free (H->info[c].col[id].abbrev);
-			if (H->info[c].col[id].name) free (H->info[c].col[id].name);
-			if (H->info[c].col[id].units) free (H->info[c].col[id].units);
-			if (H->info[c].col[id].comment) free (H->info[c].col[id].comment);
+			if (H->info[c].col[id].abbrev) {
+				free (H->info[c].col[id].abbrev);
+				H->info[c].col[id].name[0] = '\0';		/* Reset to NULL because this fun may be called a second time */
+			}
+			if (H->info[c].col[id].name) {
+				free (H->info[c].col[id].name);
+				H->info[c].col[id].name[0] = '\0';
+			}
+			if (H->info[c].col[id].units) {
+				free (H->info[c].col[id].units);
+				H->info[c].col[id].units[0] = '\0';
+			}
+			if (H->info[c].col[id].comment) {
+				free (H->info[c].col[id].comment);
+				H->info[c].col[id].comment[0] = '\0';
+			}
 		}
 	}
 }
@@ -1864,14 +1876,14 @@ static int MGD77_Write_Data_cdf (struct GMT_CTRL *C, char *file, struct MGD77_CO
 				transform = (! (scale == 1.0 && offset == 0.0));	/* true if we must transform before writing */
 				values = S->values[entry];			/* Pointer to current double array */
 				if (S->H.info[set].col[id].constant) {	/* Only write a single value (after possibly transforming) */
-					n_bad = MGD77_do_scale_offset_before_write (C, &single_val, values, 1, scale, offset, S->H.info[set].col[id].type);
+					n_bad = (int)MGD77_do_scale_offset_before_write (C, &single_val, values, 1, scale, offset, S->H.info[set].col[id].type);
 					MGD77_nc_status (C, nc_put_var1_double (F->nc_id, S->H.info[set].col[id].var_id, start, &single_val));
 				}
 				else {	/* Must write the entire array */
 					if (transform) {	/* Must use temporary storage for scalings so that original values in S->values remain unchanged */
 						if (not_allocated) xtmp = GMT_memory (C, NULL, count[0], double);	/* Get mem the first time */
 						not_allocated = false;	/* No longer the first time */
-						n_bad = MGD77_do_scale_offset_before_write (C, xtmp, values, S->H.n_records, scale, offset, S->H.info[set].col[id].type);	/* mod copy */
+						n_bad = (int)MGD77_do_scale_offset_before_write (C, xtmp, values, S->H.n_records, scale, offset, S->H.info[set].col[id].type);	/* mod copy */
 						x = xtmp;	/* Points to modified copy */
 					}
 					else {	/* Save as is */
@@ -2759,8 +2771,7 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
 	 * rw		0  for read or 1 for write.
 	 */
 
-	int start, stop;
-	size_t len;
+	int len, start, stop;
 	char mode[2];
 
 	mode[1] = '\0';	/* Thus mode will be a 1-char string */
@@ -2800,7 +2811,7 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
 	/* Strip out Prefix and store in control structure */
 
 	start = stop = MGD77_NOT_SET;
-	len = strlen (F->path);
+	len = (int)strlen (F->path);
 	for (start = len - 1; stop == MGD77_NOT_SET && start > 0; start--) 
 		if (F->path[start] == '.') stop = start;
 	while (start >= 0 && F->path[start] != '/') start--;
@@ -4114,7 +4125,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		else {
 			if (!(opt->option == GMTAPI_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
-			for (i = strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
+			for (i = (int)strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
 			if (i == -1) {	/* No extension present */
 				strcpy (this_arg, opt->arg);
 				length = strlen (this_arg);
@@ -4155,7 +4166,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 				d_name = line;
 #endif /* HAVE_DIRENT_H_ */
 				if (length && strncmp (d_name, this_arg, length)) continue;
-				k = strlen (d_name) - 1;
+				k = (unsigned int)strlen (d_name) - 1;
 				while (k && d_name[k] != '.') k--;	/* Strip off file extension */
 				if (k < 8) continue;	/* Not a NGDC 8-char ID */
 				if (n == n_alloc) L = GMT_memory (C, L, n_alloc += GMT_CHUNK, char *);
@@ -5801,7 +5812,7 @@ void MGD77_gcal_from_dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, 
 	MGD77_dt2rdc (C, F, t, &rd, &x);
 	GMT_gcal_from_rd (C, rd, cal);
 	/* split double seconds and integer time */
-	i = GMT_splitinteger (x, 60, &cal->sec);
+	i = (int)GMT_splitinteger (x, 60, &cal->sec);
 	cal->hour = i/60;
 	cal->min  = i%60;
 	return;
