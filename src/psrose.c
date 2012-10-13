@@ -278,7 +278,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':	/* Get radius of unit circle in inches */
 				Ctrl->S.active = true;
-				n = strlen (opt->arg) - 1;
+				n = (int)strlen (opt->arg) - 1;
 				if (opt->arg[n] == 'n') {
 					Ctrl->S.normalize = true;
 					opt->arg[n] = 0;	/* Temporarily remove the n */
@@ -323,10 +323,13 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale <= 0.0, "Syntax error -S option: radius must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, GMT_IS_ZERO (Ctrl->Z.scale), "Syntax error -Z option: factor must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->A.inc < 0.0, "Syntax error -A option: sector width must be positive\n");
-	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
-		|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
-		|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)), "Syntax error -R option: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
+	if (!Ctrl->I.active) {
+		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+		n_errors += GMT_check_condition (GMT, !((GMT->common.R.wesn[YLO] == -90.0 && GMT->common.R.wesn[YHI] == 90.0) \
+			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 180.0)
+			|| (GMT->common.R.wesn[YLO] == 0.0 && GMT->common.R.wesn[YHI] == 360.0)),
+				"Syntax error -R option: theta0/theta1 must be either -90/90, 0/180 or 0/360\n");
+	}
 	n_errors += GMT_check_binary_io (GMT, 2);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -638,7 +641,7 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	else if (Ctrl->A.rose) {	/* Draw rose diagram */
 
-		for (bin = i = 0; bin < n_bins; bin++, i++) {
+		for (i = bin = 0; bin < n_bins; bin++, i++) {
 			az = (bin + 0.5) * Ctrl->A.inc - az_offset - half_bin_width;
 			sincosd (start_angle - az, &s, &c);
 			xx[i] = Ctrl->S.scale * sum[bin] * c;
@@ -651,7 +654,7 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 			yy[i++] = 0.0;
 		}
 		PSL_setfill (PSL, Ctrl->G.fill.rgb, Ctrl->W.active[0]);
-		PSL_plotpolygon (PSL, xx, yy, i);
+		PSL_plotpolygon (PSL, xx, yy, (int)i);
 	}
 
 	if (sector_plot && Ctrl->W.active[0] && !Ctrl->A.rose) {	/* Draw a line outlining the pie slices */
@@ -690,7 +693,7 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 				Return (API->error);
 			}
 			P = Cin->table[0];	/* Can only be one table since we read a single file; We also only use the first segment */
-			n_modes = P->n_records;
+			n_modes = (unsigned int)P->n_records;
 			mode_direction = P->segment[0]->coord[GMT_X];
 			mode_length = P->segment[0]->coord[GMT_Y];
 		}
