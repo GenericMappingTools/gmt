@@ -458,7 +458,7 @@ static inline void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEAD
 		for (id = 0; id < MGD77_SET_COLS ; id++) {
 			if (H->info[c].col[id].abbrev) {
 				free (H->info[c].col[id].abbrev);
-				H->info[c].col[id].name[0] = '\0';		/* Reset to NULL because this fun may be called a second time */
+				H->info[c].col[id].abbrev[0] = '\0';	/* Reset to NULL because this fun may be called a second time */
 			}
 			if (H->info[c].col[id].name) {
 				free (H->info[c].col[id].name);
