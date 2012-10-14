@@ -50,43 +50,43 @@ simply specify a single flux to apply for all records.
 .TP
 OPT(F)IT(flags)
 Selects output items; IT(flags) is a string made up of one or more of these characters:
-.br
+.sp
 BD(r) means output all input columns before adding the items below (all in nTesla).
-.br
+.sp
 BD(t) means list total field.
-.br
+.sp
 BD(h) means list horizontal field.
-.br
+.sp
 BD(x) means list X component.
-.br
+.sp
 BD(y) means list Y component.
-.br
+.sp
 BD(z) means list Z component.
-.br
+.sp
 BD(d) means list declination.
-.br
+.sp
 BD(i) means list inclination.
-.br
+.sp
 Append one or more number to indicate the requested field contribution(s):
-.br
+.sp
 BD(0) means IGRF field (no combinations allowed)
-.br
+.sp
 BD(1) means Core field
-.br
+.sp
 BD(2) means Lithospheric
-.br
+.sp
 BD(3) Primary Magnetospheric field
-.br
+.sp
 BD(4) Induced Magnetospheric field
-.br
+.sp
 BD(5) Primary ionospheric field
-.br
+.sp
 BD(6) Induced ionospheric field
-.br
+.sp
 BD(7) Toroidal field
-.br
+.sp
 BD(9) means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.
-.br
+.sp
 Appending several numbers (1-7) will add up the different contributions. For example
 OPT(Ft)/BD(12) computes the total field due to Core and Lithospheric sources.
 Two special cases are allowed, which mix which Core field from IGRF and other sources from CM4.
@@ -99,27 +99,27 @@ Specifies that coordinates are geocentric [geodetic].
 .TP
 OPT(L)
 Computes J field vectors from certain external sources.
-.br
+.sp
 BD(r) means output all input columns before adding the items below (all in Ampers/m).
-.br
+.sp
 BD(t) means list magnitude field.
-.br
+.sp
 BD(x) means list X component.
-.br
+.sp
 BD(y) means list Y component.
-.br
+.sp
 BD(z) means list Z or current function Psi.
-.br
+.sp
 Append a number to indicate the requested J contribution:
-.br
+.sp
 BD(1) means Induced Magnetospheric field. 
-.br
+.sp
 BD(2) means Primary ionospheric field. 
-.br
+.sp
 BD(3) means Induced ionospheric field. 
-.br
+.sp
 BD(4) means Poloidal field. 
-.br
+.sp
 .TP
 OPT(Sc)IT(low/high)
 Limits the wavelengths of the core field contribution to the band indicated by the low and high spherical
@@ -164,6 +164,6 @@ echo -28 38 0 2001-05-01T12:00:00 | mgd77magref -Ftdi/13456
 #include "refs.i"
 Comprehensive Modeling of the Geomagnetic Field, see
 \fIhttp://denali.gsfc.nasa.gov/cm/\fP.
-.br
+.sp
 The International Geomagnetic Reference Field (IGRF), see
 \fIhttp://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm\fP.

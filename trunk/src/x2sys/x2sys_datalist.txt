@@ -101,7 +101,7 @@ ABC z 7.1 1e-4*((time-T))
 .sp
 ABC obs 0.5*exp(-1e-3(lat))^1.5
 .sp
-ABC weight	-1
+ABC weight -1
 .sp
 ABC fuel 0.02*((dist))
 .SH "SEE ALSO"
