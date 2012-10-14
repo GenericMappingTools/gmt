@@ -38,7 +38,7 @@ crossovers.  The list is determined from the bin-index data base on the assumpti
 that tracks occupying the same bin are very likely to intersect.  By default we
 return all possible pairs in the data base.  Append the name of a file with a
 list of tracks if you want to limit the output to those pairs that involve
-at least one of the track names in your list.  The output is suitable for the OPT(K)
+at least one of the track names in your list.  The output is suitable for the OPT(A)
 option in BD(x2sys_cross).  By default, only external crossover pairs are listed.
 Use OPT(L+) to include internal pairs in the list.
 .TP
