@@ -41,7 +41,7 @@ BD(l) Linear interpolation [Default].
 BD(a) Akima spline interpolation.
 .sp
 BD(c) Cubic spline interpolation.
-.br
+.sp
 #include "explain_-J.txt"
 .TP
 OPT(Qe)|BD(i)
@@ -60,7 +60,7 @@ calculate a COE. Specify
     OPT(Su) sets upper speed [Default is Infinity].
 .sp
     OPT(Sh) does not limit the speed but sets a lower speed below which headings
-will not be computed (i.e., set to NaN) [Default calculates headings regardless of speed].
+    will not be computed (i.e., set to NaN) [Default calculates headings regardless of speed].
 .sp
 #include "explain_-V.txt"
 .TP

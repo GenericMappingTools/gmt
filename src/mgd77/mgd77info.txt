@@ -11,7 +11,7 @@ about each cruise specified.  The information includes beginning and end times, 
 track distances in km, longitude and latitude range, and the total number of geophysical
 observations.  Optionally, choose instead to see the original MGD77 header meta-data
 section or its individual members.
-.br
+.sp
 If you need to know which tracks are crossing through a given region and what kinds
 of geophysical observations are available, consider using the x2sys tools to set up
 a tracks index data base (see BD(x2sys_init) for more information).
