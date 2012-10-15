@@ -3387,6 +3387,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	else {	/* Regular table result */
 		bool template_used = false;
+		
 		if (stack[0]->D)	/* There is an output stack, select it */
 			R = stack[0]->D;
 		else {		/* Can happen if only -T [-N] was specified with no operators */
@@ -3397,6 +3398,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_set_tbl_minmax (GMT, R->table[0]);
 			}
 		}
+		if ((error = GMT_set_cols (GMT, GMT_OUT, R->n_columns))) Return (error);	/* Since -bo might have been used */
 		if (Ctrl->S.active) {	/* Only get one record */
 			uint64_t r, row;
 			unsigned int nr, c;
