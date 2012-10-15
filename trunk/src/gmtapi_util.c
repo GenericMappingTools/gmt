@@ -2633,8 +2633,12 @@ int GMT_Register_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int 
 		return (object_ID);	/* Already registered so we are done */
 	}
 
-	if (method >= GMT_VIA_VECTOR) via = (method / GMT_VIA_VECTOR) - 1;
-	m = method - (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
+	if (method >= GMT_VIA_VECTOR) {
+		via = (method / GMT_VIA_VECTOR) - 1;
+		m = method - (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
+	}
+	else
+		m = method;
 
 	switch (method) {	/* Consider CPT, data, text, and grids, accessed via a variety of methods */
 		case GMT_IS_FILE:	/* Registration via a single file name */

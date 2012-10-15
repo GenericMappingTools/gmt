@@ -7570,48 +7570,59 @@ int GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 
 void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 {	/* Assigns pointers to the chosen distance and azimuth functions */
+	char *type_name[3] = {"Map", "Contour", "Contour annotation"};
 	C->current.map.dist[type].scale = 1.0;	/* Default scale */
 
 	switch (mode) {	/* Set pointers to distance functions */
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
 			C->current.map.dist[type].func = &GMT_cartesian_dist;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
 			C->current.map.dist[type].func = &GMT_cartesian_dist_proj;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian_proj;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			C->current.map.dist[type].func = &gmt_flatearth_dist_meter;
 			C->current.map.azimuth_func  = &gmt_az_backaz_flatearth;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Flat Earth in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circles in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using geodesics in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			C->current.map.dist[type].func = gmt_flatearth_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_flatearth;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Flat Earth in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circles in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using geodesics in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_cos;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using cosine of spherical angle\n", type_name[type]);
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			C->current.map.dist[type].func = &GMT_geodesic_dist_cos;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
 			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_report (C, GMT_MSG_NORMAL, "Mode (=%d) for distance function is unknown. Must be bug.\n", mode);

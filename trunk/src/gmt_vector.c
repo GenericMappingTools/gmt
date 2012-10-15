@@ -272,7 +272,7 @@ int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int m, d
 	return(0);
 }
 
-int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsigned int nstore, double test, bool itriag)
+int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag)
 {
 
 /* subroutine gauss, by william menke */
@@ -283,7 +283,6 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
  *      a	(sent, destroyed)	n by n matrix
  *      vec	(sent, overwritten)	n vector, replaced w/ solution
  *      nstore	(sent)			dimension of a
- *      test	(sent)			div by zero check number
  *      ierror	(returned)		zero on no error
  *      itriag	(sent)			matrix triangularized only
  *					on true useful when solving
@@ -324,7 +323,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 					}
 				}
 			}
-			if (big<=test) iet=1;   /* test for div by 0 */
+			if (big<=DBL_EPSILON) iet=1;   /* test for div by 0 */
  
 			line[i]=1;  /* selected unused line becomes used line */
 			isub[j]=i;  /* isub points to j-th row of tri. matrix */
@@ -365,7 +364,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 	}
  
 	b = *(a+l1*nstore+(n-1));   /* apex of triangle */
-	if (fabs((double)b)<=test) ieb=2; /* check for div by zero in backsolving */
+	if (fabs((double)b)<=DBL_EPSILON) ieb=2; /* check for div by zero in backsolving */
 	vec[isub[n-1]]=vec[isub[n-1]]/b;
  
 	for (j1=n-1; j1>0; j1--) { /* backsolve rest of triangle*/
@@ -373,7 +372,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 		sum=vec[isub[j]];
 		for (j2=j+1; j2<n; j2++) sum -= (vec[isub[j2]] * (*(a+isub[j]*nstore+j2)));
 		b = *(a+isub[j]*nstore+j);
-		if (fabs((double)b)<=test) ieb=2; /* test for div by 0 in backsolving */
+		if (fabs((double)b)<=DBL_EPSILON) ieb=2; /* test for div by 0 in backsolving */
 		vec[isub[j]]=sum/b;   /* solution returned in vec */
 	}
 
