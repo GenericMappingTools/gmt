@@ -850,7 +850,7 @@ void GMT_vector_syntax (struct GMT_CTRL *C, unsigned int mode)
 	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
 	if (mode & 4) GMT_message (C, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
 	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
-	if (mode & 2) GMT_message (C, "\t     +s if input (angle,length) is instead (x),y) coordinates of tip.\n");
+	if (mode & 2) GMT_message (C, "\t     +s if input (angle,length) is instead (x,y) coordinates of tip.\n");
 }
 
 void GMT_syntax (struct GMT_CTRL *C, char option)
