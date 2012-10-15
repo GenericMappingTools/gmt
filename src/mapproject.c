@@ -133,8 +133,8 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[<lon0>/<lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "\t[-I] [-L<ltable>[/<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
+	GMT_message (GMT, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[-|+][<lon0>/<lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
+	GMT_message (GMT, "\t[-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -161,6 +161,8 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-F Force projected values to be in actual distances [Default uses the given plot scale].\n");
 	GMT_message (GMT, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot), i (inch), c (cm), or p (points) [e].\n");
 	GMT_message (GMT, "\t-G Calculate distances to <lon0>/<lat0> OR cumulative distances along track (if point not given).\n");
+	GMT_message (GMT, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
+	GMT_message (GMT, "\t   [Default is spherical great-circle calculations].\n");
 	GMT_message (GMT, "\t   Use -G[<unit>]+ to obtain <lon0> <lat0> from two extra input columns.\n");
 	GMT_message (GMT, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
@@ -169,6 +171,8 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
 	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
 	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
+	GMT_message (GMT, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
+	GMT_message (GMT, "\t   [Default is spherical great-circle calculations].\n");
 	GMT_message (GMT, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
 	GMT_message (GMT, "\t   Append + to get line segment id and fractional point number instead of lon/lat.\n");
 	GMT_message (GMT, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
@@ -271,7 +275,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 				Ctrl->G.active = true;
 				for (n_slash = k = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 				last = strlen (opt->arg) - 1;
-				if (n_slash == 2 || n_slash == 1) {	/* Got -Glon0/lat0[/[+|-]units] */
+				if (n_slash == 2 || n_slash == 1) {	/* Got -G[+|-]lon0/lat0[/[+|-]units] */
 					Ctrl->G.mode = 1;
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%c%c", txt_a, txt_b, &c, &d);
 					if (n_slash == 2) {

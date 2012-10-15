@@ -377,7 +377,7 @@ EXTERN_MSC void GMT_normalize3v (struct GMT_CTRL *C, double *a);
 EXTERN_MSC void GMT_normalize2v (struct GMT_CTRL *C, double *a);
 EXTERN_MSC uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode);
 EXTERN_MSC int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots);
-EXTERN_MSC int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsigned int nstore, double test, bool itriag);
+EXTERN_MSC int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag);
 EXTERN_MSC int GMT_gaussjordan (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int ndim, double *b, unsigned int m, unsigned int mdim);
 EXTERN_MSC int GMT_svdcmp (struct GMT_CTRL *C, double *a, unsigned int m, unsigned int n, double *w, double *v);
 EXTERN_MSC int GMT_solve_svd (struct GMT_CTRL *C, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double cutoff);

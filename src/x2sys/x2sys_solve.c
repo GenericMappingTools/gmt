@@ -339,7 +339,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	uint64_t i, p, j, k, r, s, off, row, n_COE = 0;
 	int ierror;
 	size_t n_alloc = GMT_CHUNK, n_alloc_t = GMT_CHUNK;
-	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, zero_test = 1.0e-08, old_mean, new_mean, sw2;
+	double *N = NULL, *a = NULL, *b = NULL, *data[N_COE_PARS], sgn, old_mean, new_mean, sw2;
 	double old_stdev, new_stdev, e_k, min_extent, max_extent, range = 0.0, Sw, Sx, Sxx;
 #ifdef SAVEFORLATER
 	double *start = NULL;
@@ -701,7 +701,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Get LS solution */
 
-	if ((ierror = GMT_gauss (GMT, N, b, m, m, zero_test, true))) {
+	if ((ierror = GMT_gauss (GMT, N, b, m, m, true))) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Error %d returned form GMT_gauss!\n", ierror);
 		Return (EXIT_FAILURE);					
 	}

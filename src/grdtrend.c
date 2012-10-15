@@ -480,7 +480,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	
 	char format[GMT_BUFSIZ];
 
-	double chisq, old_chisq, zero_test = 1.0e-08, scale = 1.0, dv;
+	double chisq, old_chisq, scale = 1.0, dv;
 	double *xval = NULL;	/* Pointer for array of change of variable: x[i]  */
 	double *yval = NULL;	/* Pointer for array of change of variable: y[j]  */
 	double *gtg = NULL;	/* Pointer for array for matrix G'G normal equations  */
@@ -588,7 +588,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	else {	/* Problem is not trivial  !!  */
 		int ierror;
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, true);
+		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 		if (ierror) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 			return (EXIT_FAILURE);
@@ -605,7 +605,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 				GMT_memcpy (old, gtd, Ctrl->N.value, double);
 				scale = compute_robust_weight (GMT, R, W);
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
-				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, zero_test, true);
+				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 				if (ierror) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 					return (EXIT_FAILURE);
