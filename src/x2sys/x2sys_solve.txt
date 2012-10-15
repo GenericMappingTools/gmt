@@ -3,7 +3,7 @@
 .SH NAME
 x2sys_solve \- Determine least-squares systematic correction from crossovers
 .SH SYNOPSIS
-BD(x2sys_solve) OPT(C)IT(column) OPT(T)IT(TAG) OPT(E)IT(mode) [ IT(COE_list.d) ] [ GMT_V_OPT ] [ OPT(W) ] [ GMT_bi_OPT ]
+BD(x2sys_solve) OPT(C)IT(column) OPT(T)IT(TAG) OPT(E)IT(mode) [ IT(COE_list.d) ] [ GMT_V_OPT ] [ OPT(W[u]) ] [ GMT_bi_OPT ]
 .SH DESCRIPTION
 BD(x2sys_solve) will use the supplied crossover information to
 solve for systematic corrections that can then be applied per track
@@ -49,7 +49,8 @@ records must contain cruise ID1, ID2, t1-t0, t2-t0, COE.
 .TP
 OPT(W)
 Means that each input records has an extra column with the composite weight for each crossover record.  These
-are used to obtain a weighted least squares solution [no weights].
+are used to obtain a weighted least squares solution [no weights]. Append 'u' to report unweighted mean/std
+[Default, report weighted stats].
 #include "explain_-bi.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
