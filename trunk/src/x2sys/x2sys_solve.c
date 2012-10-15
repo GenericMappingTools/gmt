@@ -61,30 +61,31 @@
 #define F_IS_DRIFT_T	6	/* Subtract a trend with time from each track */
 
 struct X2SYS_SOLVE_CTRL {
-	struct In {
+	struct X2S_SOLVE_In {
 		bool active;
 		char *file;
 	} In;
-	struct C {	/* -C */
+	struct X2S_SOLVE_C {	/* -C */
 		bool active;
 		char *col;
 	} C;
-	struct E {	/* -E */
+	struct X2S_SOLVE_E {	/* -E */
 		bool active;
 		int mode;
 	} E;
 #ifdef SAVEFORLATER
-	struct I {	/* -I */
+	struct X2S_SOLVE_I {	/* -I */
 		bool active;
 		char *file;
 	} I;
 #endif
-	struct T {	/* -T */
+	struct X2S_SOLVE_T {	/* -T */
 		bool active;
 		char *TAG;
 	} T;
-	struct W {	/* -W */
+	struct X2S_SOLVE_W {	/* -W */
 		bool active;
+		bool unweighted_stats;
 	} W;
 };
 
@@ -179,7 +180,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, int level) {
 #ifdef SAVEFORLATER
 	GMT_message (GMT, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [-I<tracklist>] [%s] [-W] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
 #else
-	GMT_message (GMT, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
+	GMT_message (GMT, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [%s] [-W[u]] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
 #endif
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -195,6 +196,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, int level) {
 #endif
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Weights are present in last column for weighted fit [no weights].\n");
+	GMT_message (GMT, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
 	GMT_explain_options (GMT, "C");
 	
 	return (EXIT_FAILURE);
@@ -264,6 +266,8 @@ int GMT_x2sys_solve_parse (struct GMTAPI_CTRL *C, struct X2SYS_SOLVE_CTRL *Ctrl,
 				break;
 			case 'W':
 				Ctrl->W.active = true;
+				if (opt->arg[0] == 'u')		/* Report unweighted statistics anyway */
+					Ctrl->W.unweighted_stats = true;
 				break;
 
 			default:	/* Report bad options */
@@ -465,7 +469,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 		char *check = NULL;
 		
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
-		n_expected_fields = n_active + Ctrl->W.active;
+		n_expected_fields = (unsigned int)(n_active + Ctrl->W.active);
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
 				ID[i][n_COE] = lrint (in[i]);
@@ -596,11 +600,11 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			
 			for (i = 0; i < 2; i++) {	/* Look up track IDs */
-				ID[i][n_COE] = x2sys_find_track (GMT, trk[i], trk_list, n_tracks);	/* Return track id # for this leg */
+				ID[i][n_COE] = x2sys_find_track (GMT, trk[i], trk_list, (unsigned int)n_tracks);	/* Return track id # for this leg */
 				if (ID[i][n_COE] == -1) {	/* Leg not in the data base yet */
 					if (grow_list) {	/* Add it */
 						trk_list[n_tracks] = strdup (trk[i]);
-						ID[i][n_COE] = n_tracks++;
+						ID[i][n_COE] = (int)n_tracks++;
 						if (n_tracks == n_alloc_t) {
 							n_alloc_t <<= 1;
 							trk_list = GMT_memory (GMT, trk_list, n_alloc_t, char *);
@@ -645,19 +649,28 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 		range = max_extent - min_extent;
 		for (k = 0; k < n_COE; k++) for (i = 0; i < 2; i++) data[j+i][k] /= range;
 	}
-	
+
 	/* Estimate old weighted mean and std.dev */
-	
-	for (k = 0, Sw = Sx = Sxx = 0.0; k < n_COE; k++) {	/* For each crossover */
-		Sw += data[COL_WW][k];
-		Sx += (data[COL_WW][k] * data[COL_COE][k]);
-		Sxx += (data[COL_WW][k] * data[COL_COE][k] * data[COL_COE][k]);
+
+	if (Ctrl->W.unweighted_stats) {
+		for (k = 0, Sw = Sx = Sxx = 0.0; k < n_COE; k++) {	/* For each crossover */
+			Sx += data[COL_COE][k];
+			Sxx += (data[COL_COE][k] * data[COL_COE][k]);
+		}
+		Sw = (double)n_COE;
+	}
+	else {
+		for (k = 0, Sw = Sx = Sxx = 0.0; k < n_COE; k++) {	/* For each crossover */
+			Sw += data[COL_WW][k];
+			Sx += (data[COL_WW][k] * data[COL_COE][k]);
+			Sxx += (data[COL_WW][k] * data[COL_COE][k] * data[COL_COE][k]);
+		}
 	}
 	old_mean = Sx / Sw;
 	old_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
-	
+
 	/* Set up matrix and column vectors */
-	
+
 	n = n_tracks * n_par;	/* Total number of unknowns */
 	m = (Ctrl->E.mode == F_IS_SCALE) ? n : n + 1;	/* Need extra row/column to handle Lagrange's multiplier for unknown absolute level */
 	N = GMT_memory (GMT, NULL, m*m, double);
@@ -690,7 +703,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->E.mode != F_IS_SCALE) {	/* Augmented row for Lagrange multiplier for constants */
 		for (i = 0, off = m*n; i < n; i += n_par) N[off+i] = 1.0;
 	}
-	
+
 #ifdef DEBUGX	
 	GMT_message (GMT, "Matrix equation N * a = b: (N = %d)\n", m);
 	for (i = 0; i < m; i++) {
@@ -701,10 +714,9 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Get LS solution */
 
-	if ((ierror = GMT_gauss (GMT, N, b, m, m, true))) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Error %d returned form GMT_gauss!\n", ierror);
-		Return (EXIT_FAILURE);					
-	}
+	if ((ierror = GMT_gauss (GMT, N, b, m, m, true)))
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Divisions by zero occurred in GMT_gauss()!\n");
+
 	GMT_free (GMT, N);
 	a = b;	/* Convenience since the solution is called a in the notes */
 
@@ -717,13 +729,21 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 		for (r = 0; r < n_par; r++) {	/* Correct crossover for track adjustments  */
 			e_k += a[j*n_par+r]*basis[r](data,1,k) - a[i*n_par+r]*basis[r](data,0,k);
 		}
-		Sw += data[COL_WW][k];
-		Sx += (data[COL_WW][k] * e_k);
-		Sxx += (data[COL_WW][k] * e_k * e_k);
+
+		if (Ctrl->W.unweighted_stats) {
+			Sx  += e_k;
+			Sxx += (e_k * e_k);
+		}
+		else {
+			Sw += data[COL_WW][k];
+			Sx += (data[COL_WW][k] * e_k);
+			Sxx += (data[COL_WW][k] * e_k * e_k);
+		}
 #ifdef DEBUGX	
 		GMT_message (GMT, "COE # %d: Was %g Is %g\n", k, data[COL_COE][k], e_k);
 #endif
 	}
+	if (Ctrl->W.unweighted_stats) Sw = (double)n_COE;
 	new_mean = Sx / Sw;
 	new_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 	
