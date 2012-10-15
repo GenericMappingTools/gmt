@@ -7,8 +7,8 @@ mapproject \- Do forward and inverse map transformations, datum conversions and 
 .SH SYNOPSIS
 BD(mapproject) [ IT(table) ] GMT_J_OPT GMT_Rgeo_OPT 
 [ OPT(Ab)|BD(B)|BD(f)|BD(F)|BD(o)|BD(O)[IT(lon0)/IT(lat0)] ] [ OPT(C)[IT(dx)/IT(dy)] ] [ OPT(Dc)|BD(i)|BD(p) ] [ OPT(E)[IT(datum)] ] 
-[ OPT(F)[IT(unit)] ] [ OPT(G)[IT(x0)/IT(y0)][/IT(unit)][BD(+)|BD(-)] ] [ OPT(I) ] 
-[ OPT(L)IT(line.xy)[/IT(unit)][BD(+)] ] [ OPT(N)[BD(a)|BD(c)|BD(g)|BD(m)] ] [ OPT(Q)[BD(d)|BD(e) ] [ OPT(S) ] [ OPT(T)[BD(h)]IT(from)[/IT(to)] ] 
+[ OPT(F)[IT(unit)] ] [ OPT(G)[IT(x0)/IT(y0)/][[BD(+)|BD(-)]IT(unit)][BD(+)|BD(-)] ] [ OPT(I) ] 
+[ OPT(L)IT(line.xy)[/[BD(+)|BD(-)]IT(unit)][BD(+)] ] [ OPT(N)[BD(a)|BD(c)|BD(g)|BD(m)] ] [ OPT(Q)[BD(d)|BD(e) ] [ OPT(S) ] [ OPT(T)[BD(h)]IT(from)[/IT(to)] ] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(mapproject) reads (longitude, latitude) positions from IT(infiles) [or standard input] and
@@ -60,7 +60,7 @@ Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projec
 append the desired unit (see UNITS).
 Without OPT(F), the output (or input, see OPT(I)) are in the units specified by BD(PROJ_LENGTH_UNIT) (but see OPT(D)).
 .TP
-OPT(G)[IT(x0)/IT(y0)][/IT(unit)][BD(+)|BD(-)]
+OPT(G)[IT(x0)/IT(y0)/][[BD(+)|BD(-)]IT(unit)][BD(+)|BD(-)]
 Calculate distances along track IT(or) to the optional point set with OPT(G)IT(x0/y0).  Append the distance unit (see UNITS),
 including BD(c) (Cartesian distance using input coordinates) or BD(C) (Cartesian distance using projected coordinates).  The
 BD(C) unit requires OPT(R) and OPT(J) to be set.  With no fixed point is given we
@@ -70,7 +70,7 @@ Append BD(+) to specify the 2nd point via two extra columns in the input file.
 OPT(I)
 Do the Inverse transformation, i.e., get (longitude,latitude) from (x,y) data.
 .TP
-OPT(L)IT(line.xy)[/IT(unit)][BD(+)]
+OPT(L)IT(line.xy)[/[BD(+)|BD(-)]IT(unit)][BD(+)]
 Determine the shortest distance from the input data points to the line(s) given in the ASCII multisegment file IT(line.xy).
 The distance and the coordinates of the nearest point will be appended to the output as three new columns.
 Append the distance unit (see UNITS), including BD(c) (Cartesian distance using input coordinates) or BD(C)
