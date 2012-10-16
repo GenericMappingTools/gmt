@@ -56,15 +56,15 @@ function split_file4coes(fname, n_int)
 	fname2 = fname2(n_cross);
 	times  = times(n_cross);
 
-	acum = cumsum(times);				% Compute the acumulated run-times
+	acum_time = cumsum(times);			% Compute the acum_timeulated run-times
 
-	dt = round(acum(end) / n_int);
-	lim = [1 dt:dt:numel(acum)];
-	lim(end) = numel(acum);				% Last chunk will have it all
+	dt = round(acum_time(end) / n_int);
+	lim = [1 dt:dt:acum_time(end)+2];	% +2 to ensure that last chunk is not lost due to roundings
+	lim(end) = acum_time(end);			% Reset the exact number of last element, which we know exactly
 	ind = zeros(1,numel(lim));
 
 	for (k = 2:numel(lim))
-		difa = abs(acum - lim(k));
+		difa = abs(acum_time - lim(k));
 		[mimi, ind(k)] = min(difa);		% Find indices of where to split the main file
 	end
 
