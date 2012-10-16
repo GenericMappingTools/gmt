@@ -715,7 +715,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Get LS solution */
 
 	if ((ierror = GMT_gauss (GMT, N, b, m, m, true)))
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Divisions by zero occurred in GMT_gauss()!\n");
+		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Divisions by a small number (< DBL_EPSILON) occurred in GMT_gauss()!\n");
 
 	GMT_free (GMT, N);
 	a = b;	/* Convenience since the solution is called a in the notes */
@@ -747,7 +747,7 @@ int GMT_x2sys_solve (struct GMTAPI_CTRL *API, int mode, void *args)
 	new_mean = Sx / Sw;
 	new_stdev = sqrt ((n_COE * Sxx - Sx * Sx) / (Sw*Sw*(n_COE - 1.0)/n_COE));
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Old mean and st.dev.: %g %g New mean and st.dev.: %g %g\n", old_mean, old_stdev, new_mean, new_stdev);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Before correction, mean and st.dev.: %g %g After correction, mean and st.dev.: %g %g\n", old_mean, old_stdev, new_mean, new_stdev);
 	
 	/* Write correction table */
 	
