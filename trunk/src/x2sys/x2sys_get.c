@@ -197,7 +197,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_BIX B;
 	struct X2SYS_BIX_TRACK *track = NULL;
 
-	bool error = false, no_suffix = false, y_ok, n_ok, first, *include = NULL;
+	bool error = false, y_ok, n_ok, first, *include = NULL;
 	int i, j, k, start_j, start_i, stop_j, stop_i;
 	unsigned int combo = 0, n_tracks_found, n_tracks, ii;
 	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0;
@@ -385,11 +385,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			for (kk = 0; kk < n_tracks; kk++) {
 				if (y_match[kk] == 0 || n_match[kk] == 1) continue;
-				if (no_suffix) {
-					for (i = strlen (B.head[kk].trackname) - 1; i > 0 && B.head[kk].trackname[i] != '.'; i--);
-					if (i) B.head[kk].trackname[i] = '\0';
-				}
-				printf ("%s", B.head[kk].trackname);
+				printf ("%s.%s", B.head[kk].trackname, s->suffix);
 				if (!Ctrl->D.active) {
 					for (ii = 0, bit = 1; ii < s->n_fields; ii++, bit <<= 1) {
 						(((Ctrl->G.active) ? B.head[kk].flag : in_bin_flag[kk]) & bit) ? printf ("%sY", GMT->current.setting.io_col_separator) : printf ("%sN", GMT->current.setting.io_col_separator);
