@@ -800,9 +800,6 @@ RATA   0000-12-31T00:00:00  d
 This parameter is not stored in the BD(gmt.conf) file but is translated to the respective
 values of BD(TIME_EPOCH) and BD(TIME_UNIT).
 .TP
-.B TIME_EPOCH
-Specifies the epoch for relative time  [1970-01-01T00:00:00].
-.TP
 .B TIME_UNIT
 Specifies the units of relative time data since epoch (see BD(TIME_EPOCH)).
 Choose y (year - assumes all years are 365.2425 days), o (month - assumes
