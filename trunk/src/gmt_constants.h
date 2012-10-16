@@ -186,6 +186,28 @@ enum GMT_enum_alloc {
 	GMT_READONLY,      /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called . Consider read-only data */
 	GMT_CLOBBER};      /* Free item no matter what its allocation status */
 
+enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
+	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
+	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */
+	GMT_RADIUS_VOLUMETRIC,	/* Volumetric radius 3/4*pi*r^3 = volume of ellipsoid, R_3 = (a*a*b)^(1/3) */
+	GMT_RADIUS_MERIDIONAL,	/* Meridional radius, M_r = [(a^3/2 + b^3/2)/2]^2/3 */
+	GMT_RADIUS_QUADRATIC};	/* Quadratic radius, Q_r = 1/2 sqrt (3a^2 + b^2) */
+
+enum GMT_enum_latswap {GMT_LATSWAP_NONE = -1,	/* Deactivate latswapping */
+	GMT_LATSWAP_G2A = 0,	/* input = geodetic;   output = authalic   */
+	GMT_LATSWAP_A2G,	/* input = authalic;   output = geodetic   */
+	GMT_LATSWAP_G2C,	/* input = geodetic;   output = conformal  */
+	GMT_LATSWAP_C2G,	/* input = conformal;  output = geodetic   */
+	GMT_LATSWAP_G2M,	/* input = geodetic;   output = meridional */
+	GMT_LATSWAP_M2G,	/* input = meridional; output = geodetic   */
+	GMT_LATSWAP_G2O,	/* input = geodetic;   output = geocentric */
+	GMT_LATSWAP_O2G,	/* input = geocentric; output = geodetic   */
+	GMT_LATSWAP_G2P,	/* input = geodetic;   output = parametric */
+	GMT_LATSWAP_P2G,	/* input = parametric; output = geodetic   */
+	GMT_LATSWAP_O2P,	/* input = geocentric; output = parametric */
+	GMT_LATSWAP_P2O,	/* input = parametric; output = geocentric */
+	GMT_LATSWAP_N};		/* number of defined swaps  */
+
 /* Help us with big and little endianness */
 #ifdef WORDS_BIGENDIAN
 #define GMT_BIGENDIAN	true

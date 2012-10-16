@@ -3630,6 +3630,24 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 
 		/* PROJ GROUP */
 
+		case GMTCASE_PROJ_AUX_LATITUDE:
+			if (!strncmp (lower_value, "none", 4U)) /* Use lat as is */
+				C->current.setting.proj_aux_latitude = GMT_LATSWAP_NONE;
+			else if (!strncmp (lower_value, "authalic", 8U)) /* Authalic latitude */
+				C->current.setting.proj_aux_latitude = GMT_LATSWAP_G2A;
+			else if (!strncmp (lower_value, "conformal", 9U)) /* Conformal latitude */
+				C->current.setting.proj_aux_latitude = GMT_LATSWAP_G2C;
+			else if (!strncmp (lower_value, "geocentric", 9U)) /* Geocentric latitude */
+				C->current.setting.proj_aux_latitude = GMT_LATSWAP_G2O;
+			else if (!strncmp (lower_value, "meridional", 10U)) /* Meridional latitude */
+				C->current.setting.proj_aux_latitude = GMT_LATSWAP_G2M;
+			else if (!strncmp (lower_value, "parametric", 10U)) /* Parametric latitude */
+				C->current.setting.proj_aux_latitude = GMT_LATSWAP_G2P;
+			else
+				error = true;
+			GMT_init_ellipsoid (C);	/* Set parameters depending on the ellipsoid */
+			break;
+
 #ifdef GMT_COMPAT
 		case GMTCASE_ELLIPSOID: GMT_COMPAT_CHANGE ("PROJ_ELLIPSOID");
 #endif
@@ -3654,6 +3672,22 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				default: error = true;
 			}
 			break;
+		case GMTCASE_PROJ_MEAN_RADIUS:
+			if (!strncmp (lower_value, "mean", 4U)) /* Mean radius R_1 */
+				C->current.setting.proj_mean_radius = GMT_RADIUS_MEAN;
+			else if (!strncmp (lower_value, "authalic", 8U)) /* Authalic radius R_2 */
+				C->current.setting.proj_mean_radius = GMT_RADIUS_AUTHALIC;
+			else if (!strncmp (lower_value, "volumetric", 10U)) /* Volumetric radius R_3 */
+				C->current.setting.proj_mean_radius = GMT_RADIUS_VOLUMETRIC;
+			else if (!strncmp (lower_value, "meridional", 10U)) /* Meridional radius */
+				C->current.setting.proj_mean_radius = GMT_RADIUS_MERIDIONAL;
+			else if (!strncmp (lower_value, "quadratic", 9U)) /* Quadratic radius */
+				C->current.setting.proj_mean_radius = GMT_RADIUS_AUTHALIC;
+			else
+				error = true;
+			GMT_init_ellipsoid (C);	/* Set parameters depending on the ellipsoid */
+			break;
+
 #ifdef GMT_COMPAT
 		case GMTCASE_MAP_SCALE_FACTOR: GMT_COMPAT_CHANGE ("PROJ_SCALE_FACTOR");
 #endif
@@ -4517,6 +4551,31 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 
 		/* PROJ GROUP */
 
+		case GMTCASE_PROJ_AUX_LATITUDE:
+			switch (C->current.setting.proj_aux_latitude) {
+				case GMT_LATSWAP_NONE:
+					strcpy (value, "none");
+					break;
+				case GMT_LATSWAP_G2A:
+					strcpy (value, "authalic");
+					break;
+				case GMT_LATSWAP_G2C:
+					strcpy (value, "conformal");
+					break;
+				case GMT_LATSWAP_G2M:
+					strcpy (value, "meridional");
+					break;
+				case GMT_LATSWAP_G2O:
+					strcpy (value, "geocentric");
+					break;
+				case GMT_LATSWAP_G2P:
+					strcpy (value, "parametric");
+					break;
+				default:
+					strcpy (value, "undefined");
+			}
+			break;
+
 #ifdef GMT_COMPAT
 		case GMTCASE_ELLIPSOID: GMT_COMPAT_WARN;
 #endif
@@ -4536,6 +4595,27 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 #endif
 		case GMTCASE_PROJ_LENGTH_UNIT:
 			sprintf (value, "%s", C->session.unit_name[C->current.setting.proj_length_unit]);
+			break;
+		case GMTCASE_PROJ_MEAN_RADIUS:
+			switch (C->current.setting.proj_mean_radius) {
+				case GMT_RADIUS_MEAN:
+					strcpy (value, "mean");
+					break;
+				case GMT_RADIUS_AUTHALIC:
+					strcpy (value, "authalic");
+					break;
+				case GMT_RADIUS_VOLUMETRIC:
+					strcpy (value, "volumetric");
+					break;
+				case GMT_RADIUS_MERIDIONAL:
+					strcpy (value, "meridional");
+					break;
+				case GMT_RADIUS_QUADRATIC:
+					strcpy (value, "quadratic");
+					break;
+				default:
+					strcpy (value, "undefined");
+			}
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_MAP_SCALE_FACTOR: GMT_COMPAT_WARN;
@@ -8555,7 +8635,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 
 	gmt_geo_C_format (C);
 	gmt_plot_C_format (C);
-
+	
 	/* Set default for -n parameters */
 	C->common.n.antialias = true; C->common.n.interpolant = BCR_BICUBIC; C->common.n.threshold = 0.5;
 
