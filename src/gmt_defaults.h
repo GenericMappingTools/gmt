@@ -132,6 +132,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */
 	unsigned int proj_ellipsoid;		/* Which ellipsoid to use [0 = GRS 80] */
 	unsigned int proj_length_unit;	/* Choose 0 (cm), 1 (inch), 2 (m) or 3 (point) [1] */
+	enum GMT_enum_radius proj_mean_radius;	/* Choose 0 (mean), 1 (authalic), 2 (volumetric), 3 (meridional) or 4 (quadratic) [0] */
+	enum GMT_enum_latswap proj_aux_latitude;	/* Choose GMT_LATSWAP_NONE, GMT_LATSWAP_G2A, GMT_LATSWAP_G2C, GMT_LATSWAP_G2M, GMT_LATSWAP_G2O, GMT_LATSWAP_G2P [GMT_LATSWAP_NONE] */
 	struct DATUM proj_datum[GMT_N_DATUMS];	/* Datum parameters */
 	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	/* PS group [These are arguments to pass to PSL_beginsession and PSL_setdefaults] */

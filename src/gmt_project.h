@@ -34,20 +34,6 @@
 /* GMT_WIND_LON will remove central meridian value and adjust so lon fits between -180/+180 */
 #define GMT_WIND_LON(C,lon) {lon -= C->current.proj.central_meridian; while (lon < -GMT_180) lon += 360.0; while (lon > +GMT_180) lon -= 360.0;}
 
-enum GMT_enum_latswap {GMT_LATSWAP_G2A = 0,	/* input = geodetic;   output = authalic   */
-	GMT_LATSWAP_A2G,	/* input = authalic;   output = geodetic   */
-	GMT_LATSWAP_G2C,	/* input = geodetic;   output = conformal  */
-	GMT_LATSWAP_C2G,	/* input = conformal;  output = geodetic   */
-	GMT_LATSWAP_G2M,	/* input = geodetic;   output = meridional */
-	GMT_LATSWAP_M2G,	/* input = meridional; output = geodetic   */
-	GMT_LATSWAP_G2O,	/* input = geodetic;   output = geocentric */
-	GMT_LATSWAP_O2G,	/* input = geocentric; output = geodetic   */
-	GMT_LATSWAP_G2P,	/* input = geodetic;   output = parametric */
-	GMT_LATSWAP_P2G,	/* input = parametric; output = geodetic   */
-	GMT_LATSWAP_O2P,	/* input = geocentric; output = parametric */
-	GMT_LATSWAP_P2O,	/* input = parametric; output = geocentric */
-	GMT_LATSWAP_N};		/* number of defined swaps  */
-
 /* Some shorthand notation for GMT specific cases */
 
 #define GMT_latg_to_latc(C,lat) GMT_lat_swap_quick (C, lat, C->current.proj.GMT_lat_swap_vals.c[GMT_LATSWAP_G2C])
@@ -266,6 +252,7 @@ struct GMT_PROJ {
 	double central_meridian;	/* Central meridian for projection [NaN] */
 	double lon0, lat0;		/* Projection center [NaN/NaN if not specified in -J] */
 	double pole;			/* +90 pr -90, depending on which pole */
+	double mean_radius;		/* Mean radius given the PROJ_* settings */
 	double EQ_RAD, i_EQ_RAD;	/* Current ellipsoid parameters */
 	double ECC, ECC2, ECC4, ECC6;	/* Powers of eccentricity */
 	double M_PR_DEG, KM_PR_DEG;	/* Current spherical approximations to convert degrees to dist */

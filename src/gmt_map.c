@@ -1940,18 +1940,44 @@ void gmt_map_setinfo (struct GMT_CTRL *C, double xmin, double xmax, double ymin,
 	gmt_map_setxy (C, xmin, xmax, ymin, ymax);
 }
 
-/* Compute mean radius r = (2a + b)/3 = a (1 - f/3) */
-#define GMT_mean_radius(a, f) (a * (1.0 - f / 3.0))
+double gmt_mean_radius (struct GMT_CTRL *C, double a, double f)
+{
+	double r, b = a * (1 - f);
+	
+	switch (C->current.setting.proj_mean_radius) {
+		case GMT_RADIUS_MEAN:
+			r = a * (1.0 - f / 3.0);
+			break;
+		case GMT_RADIUS_AUTHALIC:
+			r = sqrt (0.5 * a * a + 0.5 * b * b * atanh (C->current.proj.ECC) / C->current.proj.ECC);
+			break;
+		case GMT_RADIUS_VOLUMETRIC:
+			r = pow (a*a*b, 1.0/3.0);
+			break;
+		case GMT_RADIUS_MERIDIONAL:
+			r = pow (0.5 * (pow (a, 1.5) + pow (b, 1.5)), 2.0/3.0);
+			break;
+		case GMT_RADIUS_QUADRATIC:
+			r = 0.5 * sqrt (3.0 * a * a + b * b);
+			break;
+		default:	/* Cannot get here! Safety valve */
+			GMT_report (C, GMT_MSG_NORMAL, "Internal ERROR: GMT mean radius not specified\n");
+			exit (EXIT_FAILURE);
+			break;
+	}
+	
+	return (r);
+}
 
-void gmt_set_spherical (struct GMT_CTRL *C)
+void GMT_set_spherical (struct GMT_CTRL *C, bool notify)
 {
 	/* Set up ellipsoid parameters using spherical approximation */
 
 	C->current.setting.ref_ellipsoid[GMT_N_ELLIPSOIDS - 1].eq_radius =
-		GMT_mean_radius (C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].eq_radius, C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening);
+		gmt_mean_radius (C, C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].eq_radius, C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening);
 	C->current.setting.proj_ellipsoid = GMT_N_ELLIPSOIDS - 1;	/* Custom ellipsoid */
 	C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening = 0.0;
-	GMT_report (C, GMT_MSG_VERBOSE, "Warning: spherical approximation used!\n");
+	if (notify) GMT_report (C, GMT_MSG_VERBOSE, "Warning: spherical approximation used!\n");
 
 	GMT_init_ellipsoid (C);
 }
@@ -2766,7 +2792,7 @@ bool gmt_map_init_cyleq (struct GMT_CTRL *C) {
 bool gmt_map_init_cyleqdist (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);	/* Force spherical for now */
+	GMT_set_spherical (C, true);	/* Force spherical for now */
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -2800,7 +2826,7 @@ bool gmt_map_init_cyleqdist (struct GMT_CTRL *C) {
 bool gmt_map_init_miller (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);	/* Force spherical for now */
+	GMT_set_spherical (C, true);	/* Force spherical for now */
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -2834,7 +2860,7 @@ bool gmt_map_init_miller (struct GMT_CTRL *C) {
 bool gmt_map_init_cylstereo (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);	/* Force spherical for now */
+	GMT_set_spherical (C, true);	/* Force spherical for now */
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -3153,7 +3179,7 @@ bool gmt_map_init_oblique (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 	double o_x, o_y, p_x, p_y, c_x, c_y, c, az, b_x, b_y, w, e, s, n, P[3];
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	if (C->current.proj.units_pr_degree) C->current.proj.pars[4] /= C->current.proj.M_PR_DEG;	/* To get plot-units / m */
 
@@ -3681,7 +3707,7 @@ bool gmt_map_init_ortho (struct GMT_CTRL *C) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	gmt_set_polar (C);
 
@@ -3786,7 +3812,7 @@ bool gmt_map_init_genper (struct GMT_CTRL *C) {
 	width = C->current.proj.pars[8];
 	height = C->current.proj.pars[9];
 
-	if (C->current.proj.g_sphere) gmt_set_spherical (C); /* PW: Force spherical for now */
+	if (C->current.proj.g_sphere) GMT_set_spherical (C, true); /* PW: Force spherical for now */
 
 	gmt_set_polar (C);
 
@@ -3894,7 +3920,7 @@ bool gmt_map_init_genper (struct GMT_CTRL *C) {
 bool gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	gmt_set_polar (C);
 
@@ -3976,7 +4002,7 @@ bool gmt_map_init_azeqdist (struct GMT_CTRL *C) {
 	unsigned int i;
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	gmt_set_polar (C);
 
@@ -4166,7 +4192,7 @@ bool gmt_map_init_hammer (struct GMT_CTRL *C) {
 bool gmt_map_init_grinten (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);
+	GMT_set_spherical (C, true);
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	if (C->current.proj.pars[0] < 0.0) C->current.proj.pars[0] += 360.0;
@@ -4220,7 +4246,7 @@ bool gmt_map_init_grinten (struct GMT_CTRL *C) {
 bool gmt_map_init_winkel (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	if (C->current.proj.pars[0] < 0.0) C->current.proj.pars[0] += 360.0;
@@ -4374,7 +4400,7 @@ bool gmt_map_init_eckert6 (struct GMT_CTRL *C) {
 bool gmt_map_init_robinson (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	if (C->current.proj.pars[0] < 0.0) C->current.proj.pars[0] += 360.0;
@@ -4484,7 +4510,7 @@ bool gmt_map_init_cassini (struct GMT_CTRL *C) {
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	too_big = gmt_quicktm (C, C->current.proj.pars[0], 4.0);
-	if (too_big) gmt_set_spherical (C);	/* Cannot use ellipsoidal series for this area */
+	if (too_big) GMT_set_spherical (C, true);	/* Cannot use ellipsoidal series for this area */
 	GMT_vcassini (C, C->current.proj.pars[0], C->current.proj.pars[1]);
 	if (GMT_IS_SPHERICAL (C)) {
 		C->current.proj.fwd = &GMT_cassini_sph;
@@ -4640,7 +4666,7 @@ bool gmt_map_init_econic (struct GMT_CTRL *C) {
 bool gmt_map_init_polyconic (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
 
-	gmt_set_spherical (C);	/* PW: Force spherical for now */
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
 	if (GMT_is_dnan (C->current.proj.pars[0])) C->current.proj.pars[0] = 0.5 * (C->common.R.wesn[XLO] + C->common.R.wesn[XHI]);
 	C->current.map.is_world = GMT_360_RANGE (C->common.R.wesn[XLO], C->common.R.wesn[XHI]);
@@ -5020,6 +5046,10 @@ double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double l
 
 double GMT_distance (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE)
 {	/* Generic function available to programs */
+	if (C->current.setting.proj_aux_latitude != GMT_LATSWAP_NONE) {	/* Get selected auxiliary latitude */
+		latS = GMT_lat_swap (C, latS, C->current.setting.proj_aux_latitude);
+		latE = GMT_lat_swap (C, latE, C->current.setting.proj_aux_latitude);
+	}
 	return (GMT_distance_type (C, lonS, latS, lonE, latE, 0));
 }
 
@@ -6776,7 +6806,8 @@ void GMT_init_ellipsoid (struct GMT_CTRL *C)
 	C->current.proj.i_EQ_RAD = 1.0 / C->current.proj.EQ_RAD;
 
 	/* Spherical degrees to m or km */
-	C->current.proj.M_PR_DEG = TWO_PI * GMT_mean_radius (C->current.proj.EQ_RAD, f) / 360.0;
+	C->current.proj.mean_radius = gmt_mean_radius (C, C->current.proj.EQ_RAD, f);
+	C->current.proj.M_PR_DEG = TWO_PI * C->current.proj.mean_radius;
 	C->current.proj.KM_PR_DEG = C->current.proj.M_PR_DEG / METERS_IN_A_KM;
 	C->current.proj.DIST_M_PR_DEG = C->current.proj.M_PR_DEG;
 	C->current.proj.DIST_KM_PR_DEG = C->current.proj.KM_PR_DEG;
@@ -7571,6 +7602,9 @@ int GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 {	/* Assigns pointers to the chosen distance and azimuth functions */
 	char *type_name[3] = {"Map", "Contour", "Contour annotation"};
+	char *aux[6] = {"no", "authalic", "conformal", "meridional", "geocentric", "parametric"};
+	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
+	int choice = (C->current.setting.proj_aux_latitude == GMT_LATSWAP_NONE) ? 0 : 1 + C->current.setting.proj_aux_latitude/2;
 	C->current.map.dist[type].scale = 1.0;	/* Default scale */
 
 	switch (mode) {	/* Set pointers to distance functions */
@@ -7592,7 +7626,9 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circles in meters\n", type_name[type]);
+			GMT_report (C, GMT_MSG_VERBOSE, "Great circle approximation will use %s auxiliary latitudes and the %s radius of %.4f m.\n",
+				aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circles length in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_meter;
@@ -7607,7 +7643,9 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circles in degrees\n", type_name[type]);
+			GMT_report (C, GMT_MSG_VERBOSE, "Great circle approximation will use %s auxiliary latitudes and the %s radius of %.4f m.\n",
+				aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle length in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_degree;
@@ -7617,6 +7655,8 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_cos;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
+			GMT_report (C, GMT_MSG_VERBOSE, "Great circle approximation will use %s auxiliary latitudes and the %s radius of %.4f m.\n",
+				aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
 			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using cosine of spherical angle\n", type_name[type]);
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
