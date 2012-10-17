@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-10-16	pwessel
+	* gmt_init.c:		Added two additional GMT defaults (PROJ_MEAN_RADIUS and PROJ_AUX_LATITUDE)
+				that control how great circle distances are approximated.
+	
 2012-10-09	pwessel
 	* grdmath.c:		Added operator SUM which adds up all non-NaN entries in a grid.
 				Returns a grid with all nodes set to the sum constant.
