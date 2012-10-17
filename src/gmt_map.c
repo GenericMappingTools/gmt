@@ -5046,10 +5046,6 @@ double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double l
 
 double GMT_distance (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE)
 {	/* Generic function available to programs */
-	if (C->current.setting.proj_aux_latitude != GMT_LATSWAP_NONE) {	/* Get selected auxiliary latitude */
-		latS = GMT_lat_swap (C, latS, C->current.setting.proj_aux_latitude);
-		latE = GMT_lat_swap (C, latE, C->current.setting.proj_aux_latitude);
-	}
 	return (GMT_distance_type (C, lonS, latS, lonE, latE, 0));
 }
 
@@ -5105,29 +5101,46 @@ double gmt_flatearth_dist_meter (struct GMT_CTRL *C, double x0, double y0, doubl
 	return (gmt_flatearth_dist_degree (C, x0, y0, x1, y1) * C->current.proj.DIST_M_PR_DEG);
 }
 
+double gmt_haversine (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
+{
+	/* Haversine formula for great circle distance.  Intermediate function that returns sin^2 (half_angle).
+	 * This avoids problems with short distances where cos(c) is close to 1 and acos is inaccurate.
+	 */
+
+	double sx, sy, sin_half_squared;
+
+	if (lat1 == lat2 && lon1 == lon2) return (0.0);
+
+	if (C->current.setting.proj_aux_latitude != GMT_LATSWAP_NONE) {	/* Use selected auxiliary latitude */
+		lat1 = GMT_lat_swap (C, lat1, C->current.setting.proj_aux_latitude);
+		lat2 = GMT_lat_swap (C, lat2, C->current.setting.proj_aux_latitude);
+	}
+
+	sy = sind (0.5 * (lat2 - lat1));
+	sx = sind (0.5 * (lon2 - lon1));
+	sin_half_squared = sy * sy + cosd (lat2) * cosd (lat1) * sx * sx;
+
+	return (sin_half_squared);
+}
+
 double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
-{	/* great circle distance on a sphere in cos (angle) */
+{
+	/* Return cosine of great circle distance */
 
-	double cosa, cosb, sina, sinb;
-
-	if (lat1==lat2 && lon1==lon2) return (1.0);
-
-	sincosd (lat1, &sina, &cosa);
-	sincosd (lat2, &sinb, &cosb);
-
-	return (sina*sinb + cosa*cosb*cosd(lon1-lon2));
+	double sin_half_squared = gmt_haversine (C, lon1, lat1, lon2, lat2);
+	return (1.0 - 2.0 * sin_half_squared);	/* Convert sin^2 (half-angle) to cos (angle) */
 }
 
 double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
-{	/* great circle distance on a sphere in degrees */
+{	/* Great circle distance on a sphere in degrees */
 
-	double cos_c = GMT_great_circle_dist_cos (C, lon1, lat1, lon2, lat2);
-	return (d_acosd (cos_c));
+	double sin_half_squared = gmt_haversine (C, lon1, lat1, lon2, lat2);
+	return (2.0 * d_asind (d_sqrt (sin_half_squared)));
 }
 
-double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double x0, double y0, double x1, double y1)
+double GMT_great_circle_dist_meter (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
 {	/* Calculates the great circle distance in meter */
-	return (GMT_great_circle_dist_degree (C, x0, y0, x1, y1) * C->current.proj.DIST_M_PR_DEG);
+	return (GMT_great_circle_dist_degree (C, lon1, lat1, lon2, lat2) * C->current.proj.DIST_M_PR_DEG);
 }
 
 double gmt_geodesic_dist_degree (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE)
@@ -6807,7 +6820,7 @@ void GMT_init_ellipsoid (struct GMT_CTRL *C)
 
 	/* Spherical degrees to m or km */
 	C->current.proj.mean_radius = gmt_mean_radius (C, C->current.proj.EQ_RAD, f);
-	C->current.proj.M_PR_DEG = TWO_PI * C->current.proj.mean_radius;
+	C->current.proj.M_PR_DEG = TWO_PI * C->current.proj.mean_radius / 360.0;
 	C->current.proj.KM_PR_DEG = C->current.proj.M_PR_DEG / METERS_IN_A_KM;
 	C->current.proj.DIST_M_PR_DEG = C->current.proj.M_PR_DEG;
 	C->current.proj.DIST_KM_PR_DEG = C->current.proj.KM_PR_DEG;
@@ -7626,9 +7639,8 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "Great circle approximation will use %s auxiliary latitudes and the %s radius of %.4f m.\n",
-				aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circles length in meters\n", type_name[type]);
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m.\n",
+				type_name[type], aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_meter;
@@ -7643,9 +7655,8 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "Great circle approximation will use %s auxiliary latitudes and the %s radius of %.4f m.\n",
-				aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle length in degrees\n", type_name[type]);
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in degrees.\n",
+				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_degree;
@@ -7655,9 +7666,8 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_cos;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "Great circle approximation will use %s auxiliary latitudes and the %s radius of %.4f m.\n",
-				aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using cosine of spherical angle\n", type_name[type]);
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",
+				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			C->current.map.dist[type].func = &GMT_geodesic_dist_cos;

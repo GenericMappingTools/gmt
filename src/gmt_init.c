@@ -3682,7 +3682,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			else if (!strncmp (lower_value, "meridional", 10U)) /* Meridional radius */
 				C->current.setting.proj_mean_radius = GMT_RADIUS_MERIDIONAL;
 			else if (!strncmp (lower_value, "quadratic", 9U)) /* Quadratic radius */
-				C->current.setting.proj_mean_radius = GMT_RADIUS_AUTHALIC;
+				C->current.setting.proj_mean_radius = GMT_RADIUS_QUADRATIC;
 			else
 				error = true;
 			GMT_init_ellipsoid (C);	/* Set parameters depending on the ellipsoid */
