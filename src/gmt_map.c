@@ -104,6 +104,39 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
+/* Note by P. Wessel, 18-Oct-2012:
+ * In the olden days, GMT only did great circle distances.  In GMT 4 we implemented geodesic
+ * distances by Rudoe's formula as given in Bomford [1971].  However, that geodesic is not
+ * exactly what we wanted as it is a normal section and do not strictly follow the geodesic.
+ * Other candidates are Vicenty [1975], which is widely used and Karney [2012], which is super-
+ * accurate.  At this point their differences are in the micro-meter level.  For GMT 5 we have
+ * now switched to the Vicenty algorithm as provided by Gerald Evenden, USGS [author of proj4],
+ * which is a modified translation of the NAS algorithm and not exactly what is in proj4's geod
+ * program (which Evenden thinks is inferior.)  I ran a comparison between many algorithms that
+ * either were available via codes or had online calculators.  I sought the geodesic distance
+ * from (0,0) to (10,10) on WGS-84; the results were (in meters):
+ *
+ *	GMT4 (Rudoe):		1565109.099232116
+ *	proj4:			1565109.095557918
+ *	vdist(0,0,10,10) [0]	1565109.09921775
+ *	Karney [1]: 		1565109.09921789
+ *	vicenty [2]:		1565109.099218036
+ *	NGS [3]			1565109.0992
+ *
+ * [0] via Joaquim Luis, supposedly Karney [2012]
+ * [1] via online calculator at max precision http://geographiclib.sourceforge.net/cgi-bin/Geod
+ * [2] downloading, compiling and running http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478.
+ *     This is not identical to Vicenty in proj4 but written by Everenden (proj.4 author)
+ * [3] via online calculator http://www.ngs.noaa.gov/cgi-bin/Inv_Fwd/inverse2.prl. Their notes says
+ *     this is Vicenty; unfortunately I cannot control the output precision.
+ *
+ * Based on these comparisons we decided to implement the Vicenty [2] code as given.  The older Rudoe
+ * code remains in this file for reference.  The define of USE_VICENTY below selects the new Vicenty code.
+ * The choice was based on the readily available C code versus having to reimplement Karney in C.
+ */
+
+#define USE_VICENTY 1	/* New GMT-5 behavior */
+
 double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 
 /* Private functions internal to gmt_map.c */
@@ -2153,6 +2186,58 @@ double gmt_az_backaz_sphere (struct GMT_CTRL *C, double lonE, double latE, doubl
 	return (az);
 }
 
+#ifdef USE_VICENTY
+double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool back_az)
+{
+	/* Translation of NGS FORTRAN code for determination of true distance
+	** and respective forward and back azimuths between two points on the
+	** ellipsoid.  Good for any pair of points that are not antipodal.
+	**
+	**      INPUT
+	**	latS, lonS -- latitude and longitude of first point in radians.
+	**	latE, lonE -- latitude and longitude of second point in radians.
+	**
+	**	OUTPUT
+	**  	faz -- azimuth from first point to second in radians clockwise from North.
+	**	baz -- azimuth from second point back to first point.
+	**	bool back_az controls which is returned 
+	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
+	*/
+	static double az, c, d, e, r, f, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
+
+	f = C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening;
+	r = 1.0 - f;
+	tu1 = r * tand (latS);
+	tu2 = r * tand (latE);
+	cu1 = 1.0 / sqrt (tu1 * tu1 + 1.0);
+	su1 = cu1 * tu1;
+	cu2 = 1.0 / sqrt (tu2 * tu2 + 1.0);
+	ts  = cu1 * cu2;
+	baz = ts * tu2;
+	faz = baz * tu1;
+	x = dx = D2R * (lonE - lonS);
+	do {
+		sincos (x, &sx, &cx);
+		tu1 = cu2 * sx;
+		tu2 = baz - su1 * cu2 * cx;
+		sy = sqrt (tu1 * tu1 + tu2 * tu2);
+		cy = ts * cx + faz;
+		y = atan2 (sy, cy);
+		sa = ts * sx / sy;
+		c2a = -sa * sa + 1.0;
+		cz = faz + faz;
+		if (c2a > 0.0) cz = -cz / c2a + cy;
+		e = cz * cz * 2.0 - 1.0;
+		c = ((c2a * -3.0 + 4.0) * f + 4.0) * c2a * f / 16.0;
+		d = x;
+		x = ((e * cy * c + cz) * sy * c + y) * sa;
+		x = (1.0 - c) * x * f + dx;
+	} while (fabs (d - x) > DBL_EPSILON);
+	/* To give the same sense of results as all other codes, we must basically swap baz and faz; here done in the ? test */
+	az = (back_az) ? atan2 (tu1, tu2) : atan2 (cu1 * sx, baz * cx - su1 * cu2) + M_PI;
+	return (R2D * az);
+}
+#else
 double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool baz)
 {
 	/* Calculate azimuths or backazimuths for geodesics using geocentric latitudes.
@@ -2203,6 +2288,7 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, dou
 	if (az < 0.0) az += 360.0;
 	return (az);
 }
+#endif
 
 double GMT_az_backaz (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool baz)
 {
@@ -5190,6 +5276,60 @@ double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, doub
 	return (cosd (gmt_geodesic_dist_degree (C, lonS, latS, lonE, latE)));
 }
 
+#if USE_VICENTY
+double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE)
+{
+	/* Translation of NGS FORTRAN code for determination of true distance
+	** and respective forward and back azimuths between two points on the
+	** ellipsoid.  Good for any pair of points that are not antipodal.
+	**
+	**      INPUT
+	**	latS, lonS -- latitude and longitude of first point in radians.
+	**	latE, lonE -- latitude and longitude of second point in radians.
+	**
+	**	OUTPUT
+	**	s -- distance between points in meters.
+	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
+	*/
+	static double s, c, d, e, r, f, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
+
+	f = C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening;
+	r = 1.0 - f;
+	tu1 = r * tand (latS);
+	tu2 = r * tand (latE);
+	cu1 = 1.0 / sqrt (tu1 * tu1 + 1.0);
+	su1 = cu1 * tu1;
+	cu2 = 1.0 / sqrt (tu2 * tu2 + 1.0);
+	ts  = cu1 * cu2;
+	baz = ts * tu2;
+	faz = baz * tu1;
+	x = dx = D2R * (lonE - lonS);
+	do {
+		sincos (x, &sx, &cx);
+		tu1 = cu2 * sx;
+		tu2 = baz - su1 * cu2 * cx;
+		sy = sqrt (tu1 * tu1 + tu2 * tu2);
+		cy = ts * cx + faz;
+		y = atan2 (sy, cy);
+		sa = ts * sx / sy;
+		c2a = -sa * sa + 1.0;
+		cz = faz + faz;
+		if (c2a > 0.0) cz = -cz / c2a + cy;
+		e = cz * cz * 2.0 - 1.0;
+		c = ((c2a * -3.0 + 4.0) * f + 4.0) * c2a * f / 16.0;
+		d = x;
+		x = ((e * cy * c + cz) * sy * c + y) * sa;
+		x = (1.0 - c) * x * f + dx;
+	} while (fabs (d - x) > DBL_EPSILON);
+	x = sqrt ((1.0 / r / r - 1.0) * c2a + 1.0) + 1.0;
+	x = (x - 2.0) / x;
+	c = (x * x / 4.0 + 1.0) / (1.0 - x);
+	d = (x * 0.375 * x - 1.0) * x;
+	s = ((((sy * sy * 4.0 - 3.0) * (1.0 - e - e) * cz * d / 6.0 - e * cy) *
+		d / 4.0 + cz) * sy * d + y) * c * r;
+	return (s * C->current.proj.EQ_RAD);
+}
+#else
 double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE)
 {
 	/* Compute length of geodesic between locations in meters
@@ -5260,6 +5400,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 
 	return (dist);
 }
+#endif
 
 /* Functions dealing with distance between points */
 
