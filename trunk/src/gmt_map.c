@@ -111,7 +111,7 @@
  * Other candidates are Vicenty [1975], which is widely used and Karney [2012], which is super-
  * accurate.  At this point their differences are in the micro-meter level.  For GMT 5 we have
  * now switched to the Vicenty algorithm as provided by Gerald Evenden, USGS [author of proj4],
- * which is a modified translation of the NAS algorithm and not exactly what is in proj4's geod
+ * which is a modified translation of the NGS algorithm and not exactly what is in proj4's geod
  * program (which Evenden thinks is inferior.)  I ran a comparison between many algorithms that
  * either were available via codes or had online calculators.  I sought the geodesic distance
  * from (0,0) to (10,10) on WGS-84; the results were (in meters):
