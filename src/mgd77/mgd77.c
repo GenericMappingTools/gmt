@@ -458,19 +458,19 @@ static inline void MGD77_free_plain_mgd77 (struct GMT_CTRL *C, struct MGD77_HEAD
 		for (id = 0; id < MGD77_SET_COLS ; id++) {
 			if (H->info[c].col[id].abbrev) {
 				free (H->info[c].col[id].abbrev);
-				H->info[c].col[id].abbrev[0] = '\0';	/* Reset to NULL because this fun may be called a second time */
+				H->info[c].col[id].abbrev = NULL;	/* Reset to NULL because this fun may be called a second time */
 			}
 			if (H->info[c].col[id].name) {
 				free (H->info[c].col[id].name);
-				H->info[c].col[id].name[0] = '\0';
+				H->info[c].col[id].name = NULL;
 			}
 			if (H->info[c].col[id].units) {
 				free (H->info[c].col[id].units);
-				H->info[c].col[id].units[0] = '\0';
+				H->info[c].col[id].units = NULL;
 			}
 			if (H->info[c].col[id].comment) {
 				free (H->info[c].col[id].comment);
-				H->info[c].col[id].comment[0] = '\0';
+				H->info[c].col[id].comment = NULL;
 			}
 		}
 	}
@@ -1620,9 +1620,13 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *C, char *file, struct MGD77_CO
 	}
 
 	for (id = 0; id < MGD77_N_DATA_FIELDS; id++) {	/* See which columns correspond to our standard MGD77 columns */
-		for (k = 0, col[id] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, mgd77defs[id].abbrev)) col[id] = k;
+		for (k = 0, col[id] = MGD77_NOT_SET; k < F->n_out_columns; k++)
+			if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, mgd77defs[id].abbrev))
+				col[id] = k;
 	}
-	for (k = 0, col[MGD77_TIME] = MGD77_NOT_SET; k < F->n_out_columns; k++) if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, "time")) col[MGD77_TIME] = k;
+	for (k = 0, col[MGD77_TIME] = MGD77_NOT_SET; k < F->n_out_columns; k++)
+		if (S->H.info[MGD77_M77_SET].col[k].abbrev && !strcmp (S->H.info[MGD77_M77_SET].col[k].abbrev, "time"))
+			col[MGD77_TIME] = k;
 	make_ymdhm = (col[MGD77_TIME] >= 0 && (col[MGD77_YEAR] == MGD77_NOT_SET && col[MGD77_MONTH] == MGD77_NOT_SET && col[MGD77_DAY] == MGD77_NOT_SET && col[MGD77_HOUR] == MGD77_NOT_SET && col[MGD77_MIN] == MGD77_NOT_SET));
 
 	GMT_memset (&MGD77Record, 1, struct MGD77_DATA_RECORD);
@@ -4014,7 +4018,8 @@ int MGD77_Get_Column (struct GMT_CTRL *C, char *word, struct MGD77_CONTROL *F)
 	unsigned int j;
 	int k;
 
-	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < F->n_out_columns; j++) if (!strcmp (word, F->desired_column[j])) k = j;
+	for (j = 0, k = MGD77_NOT_SET; k == MGD77_NOT_SET && j < F->n_out_columns; j++)
+		if (!strcmp (word, F->desired_column[j])) k = j;
 	return (k);
 }
 
