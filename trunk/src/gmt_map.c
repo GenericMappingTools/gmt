@@ -2187,6 +2187,7 @@ double gmt_az_backaz_sphere (struct GMT_CTRL *C, double lonE, double latE, doubl
 }
 
 #ifdef USE_VICENTY
+#define GEOD_TEXT "Vicenty"
 double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool back_az)
 {
 	/* Translation of NGS FORTRAN code for determination of true distance
@@ -2238,6 +2239,7 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, dou
 	return (R2D * az);
 }
 #else
+#define GEOD_TEXT "Rudoe"
 double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool baz)
 {
 	/* Calculate azimuths or backazimuths for geodesics using geocentric latitudes.
@@ -7786,7 +7788,7 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using geodesics in meters\n", type_name[type]);
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using %s geodesics in meters\n", type_name[type], GEOD_TEXT);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			C->current.map.dist[type].func = gmt_flatearth_dist_degree;
