@@ -126,7 +126,7 @@
  * [0] via Joaquim Luis, supposedly Karney [2012]
  * [1] via online calculator at max precision http://geographiclib.sourceforge.net/cgi-bin/Geod
  * [2] downloading, compiling and running http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478.
- *     This is not identical to Vicenty in proj4 but written by Everenden (proj.4 author)
+ *     This is not identical to Vicenty in proj4 but written by Evenden (proj.4 author)
  * [3] via online calculator http://www.ngs.noaa.gov/cgi-bin/Inv_Fwd/inverse2.prl. Their notes says
  *     this is Vicenty; unfortunately I cannot control the output precision.
  *
