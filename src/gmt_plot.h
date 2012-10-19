@@ -152,7 +152,7 @@ struct GMT_SYMBOL {
 	/* These apply to bar|column symbols */
 
 	double base;		/* From what level to draw the bar|column */
-	bool user_unit;		/* if true */
+	bool user_unit[2];	/* If true then we must project the base via R -J to get base values, otherwise they are in c|i|p units */
 	unsigned int base_set;	/* 1 if user provided a custom base, 2 if we should read it from last column [otherwise 0: default to bottom axis] */
 
 	/* These apply to vectors */

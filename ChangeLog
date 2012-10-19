@@ -3,8 +3,8 @@
 -----------------------------------------------------------------------------------------
 
 2012-10-18	pwessel
-	* psxy[z].c:		Allow base for bars and columns to be read from data file by using
-				b+ as the base.
+	* psxy[z].c:		Allow base for bars and columns to be read from data file by appending b
+				with no trailing <base> value.
 	* gmt_map.c:		Geodesic distances are now calculated using Vincenty [1975] equation.
 				A detailed note discussing this switch is included in the source.
 
@@ -44,7 +44,7 @@
 
 2012-08-22	pwessel
 	* blockmedian.c:	Added -Es to read and output source id for median value.
-	* blockmode.c:		Added -Es to read and output source id for median value.
+	* blockmode.c:		Added -Es to read and output source id for modal value.
 	* gmtmath.c:		Now, -N<ncol> with input files will add extra columns.
 
 2012-08-13	pwessel

@@ -7252,7 +7252,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	char txt_c[GMT_TEXT_LEN256];
 #endif
 	p->n_required = p->convert_angles = p->n_nondim = p->base_set = 0;
-	p->user_unit = p->read_size = p->u_set = false;
+	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->read_size = p->u_set = false;
 	p->font = C->current.setting.font_annot[0];
 
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
@@ -7386,40 +7386,38 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B<size_x|size_y>[c|i|p|u][b<base>]				*/
-		/* Column:	-So|O<size_x>[c|i|p][/<ysize>[c|i|p]][u][b<base>]	*/
-		/* Cube:	-Su|U<size_x>[c|i|p|u]	*/
+		/* Bar:		-Sb|B[<size_x|size_y>[c|i|p|u]][b[<base>]]				*/
+		/* Column:	-So|O[<size_x>[c|i|p|u][/<ysize>[c|i|p|u]]][b[<base>]]	*/
+		/* Cube:	-Su|U[<size_x>[c|i|p|u]]	*/
 
-		for (j = 0; text[j]; j++) {
+		for (j = 1; text[j]; j++) {	/* Look at chars following the symbol code */
 			if (text[j] == '/') slash = j;
-			if (text[j] == 'b' || text[j] == 'B') bset = j;
+			if (text[j] == 'b') bset = j;
 		}
 		strcpy (text_cp, text);
-		if (bset) text_cp[bset] = 0;	/* Chop off the b<base> from copy */
-		if ((bset && text_cp[bset-1] == 'u') || (j && text[j-1] == 'u')) p->user_unit = true;
+		if (bset) text_cp[bset] = 0;	/* Chop off the b<base> from copy to avoid confusion when parsing.  <base> is always in user units */
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error = (n != 3);
-			if (p->user_unit) {
+			if ((len = strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
+			if ((len = strlen (txt_b)) && txt_b[len-1] == 'u') p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
+			if (p->user_unit[GMT_X])
 				p->size_x = p->given_size_x = atof (txt_a);
-				p->size_y = p->given_size_y = atof (txt_b);
-			}
-			else {
+			else
 				p->size_x = p->given_size_x = GMT_to_inch (C, txt_a);
+			if (p->user_unit[GMT_Y])
+				p->size_y = p->given_size_y = atof (txt_b);
+			else
 				p->size_y = p->given_size_y = GMT_to_inch (C, txt_b);
-			}
 		}
 		else {	/* Only a single x = y size */
 			n = sscanf (text_cp, "%c%s", &symbol_type, txt_a);
-			if (n == 2) {
-				if (p->user_unit) {
-					p->size_x = p->given_size_x = atof (txt_a);
-					p->size_y = p->given_size_y = p->size_x;
-				}
-				else {
-					p->size_x = p->given_size_x = GMT_to_inch (C, txt_a);
-					p->size_y = p->given_size_y = p->size_x;
-				}
+			if ((len = strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
+			if (n == 2) {	/* Gave size */
+				if (p->user_unit[GMT_X])
+					p->size_x = p->size_y = p->given_size_x = p->given_size_y = atof (txt_a);
+				else
+					p->size_x = p->size_y = p->given_size_x = p->given_size_y = GMT_to_inch (C, txt_a);
 			}
 			else {
 				if (p->size_x == 0.0) p->size_x = p->given_size_x;
@@ -7460,7 +7458,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
 			if (bset) {
-				if (text[bset+1] == '+') {	/* Read it from data file */
+				if (text[bset+1] == '\0') {	/* Read it from data file */
 					p->base_set = 2;
 					p->n_required = 1;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
@@ -7473,7 +7471,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			break;
 		case 'b':
 			p->symbol = GMT_SYMBOL_BARY;
-			if (text[bset+1] == '+') {	/* Read it from data file */
+			if (text[bset+1] == '\0') {	/* Read it from data file */
 				p->base_set = 2;
 				p->n_required = 1;
 				p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
@@ -7642,7 +7640,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case 'O':	/* Same but disable shading */
 			p->symbol = GMT_SYMBOL_COLUMN;
 			if (bset) {
-				if (text[bset+1] == '+') {	/* Read it from data file */
+				if (text[bset+1] == '\0') {	/* Read it from data file */
 					p->base_set = 2;
 					p->n_required = 1;
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */

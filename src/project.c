@@ -367,7 +367,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
 	GMT_message (GMT, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
 	GMT_message (GMT, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E) [90].\n");
-	GMT_message (GMT, "\t   Finally, append + if you want information on pole in a segment header [no header].\n");
+	GMT_message (GMT, "\t   Finally, append + if you want information about the pole in a segment header [no header].\n");
 	GMT_message (GMT, "\t-L Check the Length along the projected track and use only certain points.\n");
 	GMT_message (GMT, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
 	GMT_message (GMT, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
