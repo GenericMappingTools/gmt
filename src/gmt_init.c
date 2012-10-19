@@ -5593,6 +5593,10 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	char *hist_cpy[GMT_N_UNIQUE];
 #endif
 
+	if (C->current.proj.n_geodesic_approx) {
+		GMT_report (C, GMT_MSG_DEBUG, "Warning: Of % " PRIu64 " geodesic calls, % " PRIu64 " exceeded the iteration limit of 50.\n", C->current.proj.n_geodesic_calls, C->current.proj.n_geodesic_approx);
+	}
+
 	GMT_Garbage_Collection (C->parent, C->hidden.func_level);	/* Free up all registered memory for this module level */
 
 	/* At the end of the module we restore all GMT settings as we found them (in Ccopy) */
@@ -7247,8 +7251,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	int one, len;
 	char txt_c[GMT_TEXT_LEN256];
 #endif
-	p->n_required = p->convert_angles = p->n_nondim = 0;
-	p->user_unit = p->read_size = p->base_set = p->u_set = false;
+	p->n_required = p->convert_angles = p->n_nondim = p->base_set = 0;
+	p->user_unit = p->read_size = p->u_set = false;
 	p->font = C->current.setting.font_annot[0];
 
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
@@ -7382,7 +7386,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	}
 	else if (strchr (bar_symbols[mode], (int) text[0])) {	/* Bar, column, cube with size */
 
-		/* Bar:		-Sb|B<size_x|y>[c|i|p|u][b<base>]				*/
+		/* Bar:		-Sb|B<size_x|size_y>[c|i|p|u][b<base>]				*/
 		/* Column:	-So|O<size_x>[c|i|p][/<ysize>[c|i|p]][u][b<base>]	*/
 		/* Cube:	-Su|U<size_x>[c|i|p|u]	*/
 
@@ -7456,15 +7460,27 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case 'B':
 			p->symbol = GMT_SYMBOL_BARX;
 			if (bset) {
-				p->base = atof (&text[bset+1]);
-				p->base_set = true;
+				if (text[bset+1] == '+') {	/* Read it from data file */
+					p->base_set = 2;
+					p->n_required = 1;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
+				}	
+				else {
+					p->base = atof (&text[bset+1]);
+					p->base_set = 1;
+				}
 			}
 			break;
 		case 'b':
 			p->symbol = GMT_SYMBOL_BARY;
-			if (bset) {
+			if (text[bset+1] == '+') {	/* Read it from data file */
+				p->base_set = 2;
+				p->n_required = 1;
+				p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
+			}	
+			else {
 				p->base = atof (&text[bset+1]);
-				p->base_set = true;
+				p->base_set = 1;
 			}
 			break;
 		case 'C':
@@ -7626,8 +7642,15 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case 'O':	/* Same but disable shading */
 			p->symbol = GMT_SYMBOL_COLUMN;
 			if (bset) {
-				p->base = atof (&text[bset+1]);
-				p->base_set = true;
+				if (text[bset+1] == '+') {	/* Read it from data file */
+					p->base_set = 2;
+					p->n_required = 1;
+					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* base in user units */
+				}	
+				else {
+					p->base = atof (&text[bset+1]);
+					p->base_set = 1;
+				}
 			}
 			if (mode == 0) {
 				decode_error = true;

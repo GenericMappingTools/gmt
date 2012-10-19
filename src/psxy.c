@@ -295,7 +295,8 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Bars: Append b<base> to give the y-value of the base [Default = 0].\n");
 	GMT_message (GMT, "\t      Append u if width is in x-input units [Default is %s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t      Use upper case -SB for horizontal bars (base then refers to x\n");
-	GMT_message (GMT, "\t      and width may be in y-units [Default is vertical].\n");
+	GMT_message (GMT, "\t      and width may be in y-units [Default is vertical]. To read the <base>\n");
+	GMT_message (GMT, "\t      value from file, specify b+.\n");
 	GMT_message (GMT, "\t   Ellipses: Direction, major, and minor axis must be in columns 3-5.\n");
 	GMT_message (GMT, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     axes in km, and convert azimuths based on map projection.\n");
@@ -503,7 +504,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 	bool default_outline, outline_active;
 	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
 	unsigned int i, n_total_read = 0, j, geometry, read_mode;
-	unsigned int ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
+	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {0,0}, error_cols[3] = {1,4,5};
 	int error = GMT_NOERROR;
 
@@ -840,6 +841,10 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_setfill (GMT, &current_fill, outline_active);
 			GMT_setpen (GMT, &current_pen);
 
+			if (S.base_set == 2) {
+				bcol = (S.read_size) ? ex2 : ex1;
+				S.base = in[bcol];	/* Got base from input column */
+			}
 			if (S.read_size) S.size_x = in[ex1];	/* Got size from input column */
 			dim[0] = S.size_x;
 			if (S.convert_size) dim[0] = ((S.convert_size == 2) ? log10 (dim[0]) : dim[0]) * S.scale - S.origin;

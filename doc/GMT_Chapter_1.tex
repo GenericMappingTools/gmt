@@ -146,3 +146,194 @@ Several supplements have new feature as well:
 	\item The spotter programs can now read Gplates rotations directly as well as write this format.
 		Now, \GMTprog{rotconverter} can extract plate circuit rotations on-the-fly from the Gplates rotation file.
 \end{enumerate}
+
+\section{Incompatibilities between \gmt\ 5.x and \gmt\ 4.x}
+
+As features are added and bugs are discovered, there are occasionally necessary to break
+the established syntax of a \gmt\ program option, such as when the intent of the option
+is non-unique do to a modifier letter being the same as a unit indicator.  Other times we see a greatly improved
+commonality across similar options by making minor adjustments.  However, we are aware that
+such changes may cause trouble with established scripts and habits of many \gmt\ users.
+To alleviate this problem we have introduced an optional configuration that allows \gmt\ to
+tolerate and process obsolete program syntax (to the extent possible).  To activate you must
+make sure {\bf GMT\_COMPAT} is set not to ``no'' in your \filename{ConfigUser.cmake} file.  When not
+running in compatibility mode any obsolete syntax will be considered as errors.  We recommend
+that users with prior \gmt\ 4 experience run \gmt \5 in compatibility mode and heed the warnings
+about obsolete syntax and correct their scripts or habits accordingly.  When this transition
+has been successfully navigated it is better to turn compatibility mode off and leave the
+past behind.  Note that very infrequently users will supply an ancient \gmt\ 3 syntax which
+may have worked in \gmt 4 but is never allowed in \gmt 5.
+
+Here are a list of known incompatibilities that are correctly processed correctly with a warning under
+compatibility mode:
+\begin{enumerate}
+	\item \gmt\ default names: We have organized the default parameters logically by group and
+		renamed several to be easier to remember and to group.  Old and new names can be
+		found in Table~\ref{tbl:obsoletedefs}.  In addition, a few defaults are no longer
+		recognized, such as N\_COPIES, PS\_COPIES, DOTS\_PR\_INCH, GMT\_CPTDIR, PS\_DPI, and PS\_EPS, TRANSPARENCY.
+	\item Units: The unit abbreviation for arc seconds is now finally {\bf s} instead of {\bf c},
+		with the same change for upper case in some clock format statements.
+	\item Contour labels: The modifiers \Mod{k}{\it fontcolor} and \Mod{s}{\it fontsize} are obsolete, now being part of \Mod{f}{\it font}.
+	\item Ellipsoids: Assigning {\bf PROJ\_ELLIPSOID} a file name is deprecated, use {\it a,f$^{-1}$} instead.
+	\item Custom symbol macros: Circle macro symbol {\bf C} is deprecated; use {\bf c} instead.
+	\item Map scale: Used by \GMTprog{psbasemap} and others.  Here, the unit {\bf m} is deprecated; use {\bf M} for statute miles.
+	\item 3-D perspective: Some programs used a combination of \Opt{E}, \Opt{Z} to set up a 3-D perspective
+		view, but these options were not universal.  The new 3-D perspective in \gmt\ 5 means you
+		instead use the common option \Opt{p} to configure the 3-D projection.
+	\item Pixel vs. gridline registration: Some programs used to have a local \Opt{F} to turn on pixel registration;
+		now this is a common option \Opt{r}.
+	\item Table file headers: For consistency with other common i/o options we now use \Opt{h} instead of \Opt{H}.
+	\item Segment headers: These are now automatically detected and hence there is no longer a \Opt{m} (or the older \Opt{M} option).
+	\item Front symbol: The syntax for the front symbol has changed from Opt{Sf}{\it spacing/size}[\Mod{d}][{\Mod{t}][:{\it offset}]
+		to Opt{Sf}{\it spacing/size}[{\bf +r+l}][{\bf +f+t+s+c+b}][\Mod{o}{\it offset}].
+	\item Vector symbol: With the introduction of geo-vectors there are three kinds of vectors that can be drawn:
+		Cartesian (straight) vectors with \Opt{Sv}| or \Opt{SV}, geo-vectors (great circles) with \Opt{S=}, and circular vectors with \Opt{Sm}.
+		These are all composed of a line (controlled by pen settings) and 0–-2 arrow heads (control by fill and outline settings).
+		Many modifiers common to all arrows have been introduced using the {\bf +key}[{\it arg}] format.  The {\it size}
+		of a vector refers to the length of its head; all other quantities are given via modifiers (which have sensible default values).
+		In particular, giving size as {\it vectorwidth/headlength/headwidth} is deprecated.
+		See the \GMTprog{psxy} man page for a clear description of all modifiers.
+	\item \GMTprog{blockmean}: The \Opt{S} and \Opt{Sz} options are deprecated; use \Opt{Ss} instead.
+	\item \GMTprog{filter1d}: The \Opt{N}{\it ncol/tcol} option is deprecated; use Opt{N}{\it tcol} instead
+		as we automatically determine the number of columns in the file.
+	\item \GMTprog{gmtconvert}: The \Opt{F} is deprecated; use common option \Opt{o} instead.
+	\item \GMTprog{gmtdefaults}: The \Opt{L} is deprecated; this is the default behavior.
+	\item \GMTprog{gmtmath}: The \Opt{F} is deprecated; use common option \Opt{o} instead.
+	\item \GMTprog{gmtselect}: The \Opt{Cf} is deprecated; use common specification format \Opt{C-} instead. Also,
+		the \Opt{N}..{\bf o} is deprecated; use \Opt{E} instead.
+	\item \GMTprog{grd2xyz}: The \Opt{E} is deprecated as the ESRI exchange format is detected automatically.
+	\item \GMTprog{grdcontour}: The \Opt{m} is deprecated as segment headers are handled automatically.
+	\item \GMTprog{grdfft}: The \Opt{M} is deprecated; use common option \Opt{fg} instead.
+	\item \GMTprog{grdgradient}: The \Opt{L} is deprecated; use common option \Opt{n} instead.  Also,
+		the \Opt{M} is deprecated; use common option \Opt{fg} instead.
+	\item \GMTprog{grdlandmask}: The \Opt{N}..{\bf o} is deprecated; use \Opt{E} instead.
+	\item \GMTprog{grdimage}: The \Opt{S} is deprecated; use \Opt{n}\it mode}[\Mod{a}][\Mod{t}{\it threshold}] instead.
+	\item \GMTprog{grdmath}: LDIST and PDIST now return distances in spherical degrees; while in \gmt\ 4 it returned km.  Use DEG2KM for conversion, if needed.
+	\item \GMTprog{grdproject}: The \Opt{S} is deprecated; use \Opt{n}\it mode}[\Mod{a}][\Mod{t}{\it threshold}] instead.
+		Also, the \Opt{N} is deprecated; use \Opt{D} instead.
+	\item \GMTprog{grdsample}: The \Opt{Q} is deprecated; use \Opt{n}\it mode}[\Mod{a}][\Mod{t}{\it threshold}] instead.
+		Also, the \Opt{L} is deprecated; use common option \Opt{n} instead, and  \Opt{N}{\it nx>/<ny} is deprecated; use \Opt{I}{\it nx+>/<ny+} instead.
+	\item \GMTprog{grdtrack}: The \Opt{Q} is deprecated; use \Opt{n}\it mode}[\Mod{a}][\Mod{t}{\it threshold}] instead.
+		Also, the \Opt{L} is deprecated; use common option \Opt{n} instead, and \Opt{S} is deprecated; use common option \Opt{sa} instead.
+	\item \GMTprog{grdvector}: The \Opt{E} is deprecated; use the vector modifier \Mod{jc} as well as the general vector specifications discussed earlier.
+	\item \GMTprog{grdview}: The \Opt{L} is deprecated; use common option \Opt{n} instead.
+	\item \GMTprog{nearneighbor}: The \Opt{L} is deprecated; use common option \Opt{n} instead.
+	\item \GMTprog{project}: The \Opt{D} is deprecated; use {-}{-}FORMAT\_GEO\_OUT instead.
+	\item \GMTprog{psbasemap}: The \Opt{G} is deprecated; specify canvas color via \Opt{B} modifier \Mod{g}{\it color}.
+	\item \GMTprog{pscoast}: The \Opt{m} is deprecated and have reverted to \Opt{M}.
+	\item \GMTprog{pscontour}: The \Opt{T}\it indexfile} is deprecated; use \Opt{Q}\it indexfile}.
+	\item \GMTprog{pshistogram}: The \Opt{T}\it indexfile} is deprecated; use common option \Opt{i} instead.
+	\item \GMTprog{pslegend}: Paragraph text header flag > is deprecated; use P instead.
+	\item \GMTprog{psmask}: Option \Opt{D}..\Mod{n}{\it min} is deprecated; use \Opt{Q} instead.
+	\item \GMTprog{psrose}: Old vector specifications in Option \Opt{M} are deprecated; see new explanations.
+	\item \GMTprog{pstext}: The \Opt{m} is deprecated; use \Opt{M} to indicate paragraph mode.  Also,
+		the \Opt{S} is deprecated as fonts attributes are specified via the font itself.
+	\item \GMTprog{pswiggle}: The \Opt{D} is deprecated; use common option \Opt{g} to indicate data gaps.  Also,
+		the \Opt{N} is deprecated as all fills are set via the \Opt{G} option.
+	\item \GMTprog{psxy}: Old vector specifications in Option \Opt{S} are deprecated; see new explanations.
+	\item \GMTprog{psxyz}: Old vector specifications in Option \Opt{S} are deprecated; see new explanations.
+	\item \GMTprog{splitxyz}: The \Opt{G} is deprecated; use common option \Opt{g} to indicate data gaps.  Also,
+		the \Opt{M} is deprecated; use common option \Opt{fg} instead.
+	\item \GMTprog{triangulate}: The \Opt{m} is deprecated; use \Opt{M} to output triangle vertices.
+	\item \GMTprog{xyz2grd}: The \Opt{E} is deprecated as the ESRI exchange format is one of our recognized formats. Also,
+		the \Opt{A} (no arguments) option is deprecated; use \Opt{Az} instead.
+	\item \GMTprog{dbase/grdraster}: The H{\it skip} field in \filename{grdraster.info} is no longer
+		expected as we automatically determine if a raster has a \gmt\ header.  Also, to
+		output {\it x,y,z} triplets instead of writing a grid now requires \Opt{T}.
+	\item \GMTprog{img/img2grd}: The \Opt{m}{\it inc} is deprecated; use \Opt{I}{\it inc} instead.
+	\item \GMTprog{meca/psvelo}: Old vector specifications are deprecated; see new explanations.
+	\item \GMTprog{mgd77/mgd77convert}: The \Opt{4} option is deprecated; use \Opt{D} instead.
+	\item \GMTprog{mgd77/mgd77list}: The unit {\bf m} is deprecated; use {\bf M} for statute miles.
+	\item \GMTprog{mgd77/mgd77manage}: The unit {\bf m} is deprecated; use {\bf M} for statute miles.
+		The \Opt{Q} is deprecated; use \Opt{n}\it mode}[\Mod{a}][\Mod{t}{\it threshold}] instead
+	\item \GMTprog{mgd77/mgd77path}: The \Opt{P option is deprecated (clashes with \gmt\ common options); use \Opt{A} instead.
+	\item \GMTprog{spotter/backtracker}: The \Opt{C} option is deprecated as stage vs. finite rotations are detected automatically.
+	\item \GMTprog{spotter/grdrotater}: The \Opt{C} option is deprecated as stage vs. finite rotations are detected automatically.
+		Also, \Opt{T}{\it lon/lat/angle} is now set via \Opt{e}{\it lon/lat/angle}.
+	\item \GMTprog{spotter/grdspotter}: The \Opt{C} option is deprecated as stage vs. finite rotations are detected automatically.
+	\item \GMTprog{spotter/hotpotter}: The \Opt{C} option is deprecated as stage vs. finite rotations are detected automatically.
+	\item \GMTprog{spotter/originator}: The \Opt{C} option is deprecated as stage vs. finite rotations are detected automatically.
+	\item \GMTprog{spotter/rotconverter}: The \Opt{Ff} selection is deprecated, use \Opt{Ft} instead.
+	\item \GMTprog{x2sys/x2sys\_datalist}: The unit {\bf m} is deprecated; use {\bf M} for statute miles.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|} \hline
+\emph{Old}	& \emph{New} \\ \hline
+INPUT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_IN \\ \hline
+INPUT\_DATE\_FORMAT		&	FORMAT\_DATE\_IN \\ \hline
+OUTPUT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_OUT \\ \hline
+OUTPUT\_DATE\_FORMAT		&	FORMAT\_DATE\_OUT \\ \hline
+OUTPUT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_OUT \\ \hline
+OUTPUT\_DEGREE\_FORMAT		&	FORMAT\_GEO\_OUT \\ \hline
+PLOT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_MAP \\ \hline
+PLOT\_DATE\_FORMAT		&	FORMAT\_DATE\_MAP \\ \hline
+PLOT\_DEGREE\_FORMAT		&	FORMAT\_GEO\_MAP \\ \hline
+TIME\_FORMAT\_PRIMARY		&	FORMAT\_TIME\_PRIMARY\_MAP \\ \hline
+TIME\_FORMAT\_SECONDARY		&	FORMAT\_TIME\_SECONDARY\_MAP \\ \hline
+D\_FORMAT			&	FORMAT\_FLOAT\_OUT \\ \hline
+UNIX\_TIME\_FORMAT		&	FORMAT\_TIME\_LOGO \\ \hline
+ANNOT\_FONT\_PRIMARY		&	FONT\_ANNOT\_PRIMARY \\ \hline
+ANNOT\_FONT\_SECONDARY		&	FONT\_ANNOT\_SECONDARY \\ \hline
+HEADER\_FONT			&	FONT\_TITLE \\ \hline
+LABEL\_FONT			&	FONT\_LABEL \\ \hline
+ANNOT\_FONT\_SIZE\_PRIMARY	&	FONT\_ANNOT\_PRIMARY \\ \hline
+ANNOT\_FONT\_SIZE\_SECONDARY	&	FONT\_ANNOT\_SECONDARY \\ \hline
+HEADER\_FONT\_SIZE		&	FONT\_TITLE \\ \hline
+ANNOT\_OFFSET\_PRIMARY		&	MAP\_ANNOT\_OFFSET\_PRIMARY \\ \hline
+ANNOT\_OFFSET\_SECONDARY	&	MAP\_ANNOT\_OFFSET\_SECONDARY \\ \hline
+OBLIQUE\_ANNOTATION		&	MAP\_ANNOT\_OBLIQUE \\ \hline
+ANNOT\_MIN\_ANGLE		&	MAP\_ANNOT\_MIN\_SPACING \\ \hline
+Y\_AXIS\_TYPE			&	MAP\_ANNOT\_ORTHO \\ \hline
+DEGREE\_SYMBOL			&	MAP\_DEGREE\_SYMBOL \\ \hline
+BASEMAP\_AXES			&	MAP\_FRAME\_AXES \\ \hline
+BASEMAP\_FRAME\_RGB		&	MAP\_DEFAULT\_PEN \\ \hline
+FRAME\_PEN			&	MAP\_FRAME\_PEN \\ \hline
+BASEMAP\_TYPE			&	MAP\_FRAME\_TYPE \\ \hline
+FRAME\_WIDTH			&	MAP\_FRAME\_WIDTH \\ \hline
+GRID\_CROSS\_SIZE\_PRIMARY	&	MAP\_GRID\_CROSS\_SIZE\_PRIMARY \\ \hline
+GRID\_CROSS\_SIZE\_SECONDARY	&	MAP\_GRID\_CROSS\_SIZE\_SECONDARY \\ \hline
+GRID\_PEN\_PRIMARY		&	MAP\_GRID\_PEN\_PRIMARY \\ \hline
+GRID\_PEN\_SECONDARY		&	MAP\_GRID\_PEN\_SECONDARY \\ \hline
+LABEL\_OFFSET			&	MAP\_LABEL\_OFFSET \\ \hline
+LINE\_STEP			&	MAP\_LINE\_STEP \\ \hline
+UNIX\_TIME			&	MAP\_LOGO \\ \hline
+UNIX\_TIME\_POS			&	MAP\_LOGO\_POS \\ \hline
+X\_ORIGIN			&	MAP\_ORIGIN\_X \\ \hline
+Y\_ORIGIN			&	MAP\_ORIGIN\_Y \\ \hline
+POLAR\_CAP			&	MAP\_POLAR\_CAP \\ \hline
+TICK\_LENGTH			&	MAP\_TICK\_LENGTH\_PRIMARY and SECONDARY \\ \hline
+TICK\_PEN			&	MAP\_TICK\_PEN\_PRIMARY and MAP\_TICK\_PEN\_SECONDARY \\ \hline
+HEADER\_OFFSET			&	MAP\_TITLE\_OFFSET \\ \hline
+VECTOR\_SHAPE			&	MAP\_VECTOR\_SHAPE \\ \hline
+HSV\_MIN\_SATURATION		&	COLOR\_HSV\_MIN\_S \\ \hline
+HSV\_MAX\_SATURATION		&	COLOR\_HSV\_MAX\_S \\ \hline
+HSV\_MIN\_VALUE			&	COLOR\_HSV\_MIN\_V \\ \hline
+HSV\_MAX\_VALUE			&	COLOR\_HSV\_MAX\_V \\ \hline
+CHAR\_ENCODING			&	PS\_CHAR\_ENCODING \\ \hline
+PS\_COLOR			&	COLOR\_HSV\_MAX\_V \\ \hline
+PAGE\_COLOR			&	PS\_PAGE\_COLOR \\ \hline
+PAGE\_ORIENTATION		&	PS\_PAGE\_ORIENTATION \\ \hline
+PAPER\_MEDIA			&	PS\_MEDIA \\ \hline
+GLOBAL\_X\_SCALE		&	PS\_SCALE\_X \\ \hline
+GLOBAL\_Y\_SCALE		&	PS\_SCALE\_X \\ \hline
+FIELD\_DELIMITER		&	IO\_COL\_SEPARATOR \\ \hline
+GRIDFILE\_FORMAT		&	IO\_GRIDFILE\_FORMAT \\ \hline
+GRIDFILE\_SHORTHAND		&	IO\_GRIDFILE\_SHORTHAND \\ \hline
+NAN\_RECORDS			&	IO\_NAN\_RECORDS \\ \hline
+XY\_TOGGLE			&	IO\_LONLAT\_TOGGLE \\ \hline
+ELLIPSOID			&	PROJ\_ELLIPSOID \\ \hline
+MEASURE\_UNIT			&	PROJ\_LENGTH\_UNIT \\ \hline
+MAP\_SCALE\_FACTOR		&	PROJ\_SCALE\_FACTOR \\ \hline
+HISTORY				&	GMT\_HISTORY \\ \hline
+INTERPOLANT			&	GMT\_INTERPOLANT \\ \hline
+VERBOSE				&	GMT\_VERBOSE \\ \hline
+INTERPOLANT			&	GMT\_INTERPOLANT \\ \hline
+WANT\_LEAP\_SECONDS		&	TIME\_LEAP\_SECONDS \\ \hline
+Y2K\_OFFSET\_YEAR		&	TIME\_Y2K\_OFFSET\_YEAR \\ \hline
+INTERPOLANT			&	GMT\_INTERPOLANT \\ \hline
+\end{tabular}
+\caption{Renaming of some \gmt\ default parameters.}
+\label{tbl:obsoletedefs}
+\end{table}

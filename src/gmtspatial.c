@@ -911,13 +911,13 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 					handedness = area_size (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, out, &geo);
 					poly = true;
 				}
-				if (Ctrl->Q.header) {
-					if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
-						for (row_f = 0, row_l = S->n_rows - 1; row_f < S->n_rows/2; row_f++, row_l--) {
-							for (col = 0; col < S->n_columns; col++) double_swap (S->coord[col][row_f], S->coord[col][row_l]);
-						}
-						handedness = Ctrl->E.mode;
+				if (poly && Ctrl->E.active && handedness != Ctrl->E.mode) {	/* Must reverse line */
+					for (row_f = 0, row_l = S->n_rows - 1; row_f < S->n_rows/2; row_f++, row_l--) {
+						for (col = 0; col < S->n_columns; col++) double_swap (S->coord[col][row_f], S->coord[col][row_l]);
 					}
+					handedness = Ctrl->E.mode;
+				}
+				if (Ctrl->Q.header) {
 					if (S->header) {
 						if (poly)
 							sprintf (line, "%s -A%.12g -C%.12g/%.12g %s", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
@@ -933,12 +933,13 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					S->header = strdup (line);
 				}
-				else
+				else if (!Ctrl->E.active)
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write area or length to output */
 			}
 		}
 		/* Write out results */
-		if (Ctrl->Q.header) {
+		if (Ctrl->Q.header || Ctrl->E.active) {
+			if (D->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on "-mo" */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
