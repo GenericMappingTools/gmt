@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------------------
 
 2012-10-18	pwessel
-	* gmt_map.c:		Geodesic distances are now calculated using Vicenty [1975] equation.
+	* gmt_map.c:		Geodesic distances are now calculated using Vincenty [1975] equation.
 				A detailed note discussing this switch is included in the source.
 
 2012-10-16	pwessel
