@@ -262,6 +262,9 @@ struct GMT_PROJ {
 	double one_m_ECC2, i_one_m_ECC2; /* 1.0 - ECC2 and inverse */
 	unsigned int gave_map_width;	/* nonzero if map width (1), height (2), max dim (3) or min dim (4) is given instead of scale.  0 for 1:xxxxx */
 
+	uint64_t n_geodesic_calls;	/* Number of calls for geodesics in this session */
+	uint64_t n_geodesic_approx;	/* Number of calls for geodesics in this session that exceeded iteration limit */
+	
 	double f_horizon, rho_max;	/* Azimuthal horizon (deg) and in plot coordinates */
 
 	/* Linear plot parameters */

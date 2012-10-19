@@ -108,9 +108,9 @@
  * In the olden days, GMT only did great circle distances.  In GMT 4 we implemented geodesic
  * distances by Rudoe's formula as given in Bomford [1971].  However, that geodesic is not
  * exactly what we wanted as it is a normal section and do not strictly follow the geodesic.
- * Other candidates are Vicenty [1975], which is widely used and Karney [2012], which is super-
+ * Other candidates are Vincenty [1975], which is widely used and Karney [2012], which is super-
  * accurate.  At this point their differences are in the micro-meter level.  For GMT 5 we have
- * now switched to the Vicenty algorithm as provided by Gerald Evenden, USGS [author of proj4],
+ * now switched to the Vincenty algorithm as provided by Gerald Evenden, USGS [author of proj4],
  * which is a modified translation of the NGS algorithm and not exactly what is in proj4's geod
  * program (which Evenden thinks is inferior.)  I ran a comparison between many algorithms that
  * either were available via codes or had online calculators.  I sought the geodesic distance
@@ -120,22 +120,22 @@
  *	proj4:			1565109.095557918
  *	vdist(0,0,10,10) [0]	1565109.09921775
  *	Karney [1]: 		1565109.09921789
- *	vicenty [2]:		1565109.099218036
+ *	Vincenty [2]:		1565109.099218036
  *	NGS [3]			1565109.0992
  *
- * [0] via Joaquim Luis, supposedly Karney [2012]
+ * [0] via Joaquim Luis, supposedly Vincenty [2012]
  * [1] via online calculator at max precision http://geographiclib.sourceforge.net/cgi-bin/Geod
  * [2] downloading, compiling and running http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478.
- *     This is not identical to Vicenty in proj4 but written by Evenden (proj.4 author)
+ *     This is not identical to Vincenty in proj4 but written by Evenden (proj.4 author)
  * [3] via online calculator http://www.ngs.noaa.gov/cgi-bin/Inv_Fwd/inverse2.prl. Their notes says
- *     this is Vicenty; unfortunately I cannot control the output precision.
+ *     this is Vincenty; unfortunately I cannot control the output precision.
  *
- * Based on these comparisons we decided to implement the Vicenty [2] code as given.  The older Rudoe
- * code remains in this file for reference.  The define of USE_VICENTY below selects the new Vicenty code.
+ * Based on these comparisons we decided to implement the Vincenty [2] code as given.  The older Rudoe
+ * code remains in this file for reference.  The define of USE_VINCENTY below selects the new Vincenty code.
  * The choice was based on the readily available C code versus having to reimplement Karney in C.
  */
 
-#define USE_VICENTY 1	/* New GMT-5 behavior */
+#define USE_VINCENTY 1	/* New GMT-5 behavior */
 
 double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
 
@@ -2186,8 +2186,10 @@ double gmt_az_backaz_sphere (struct GMT_CTRL *C, double lonE, double latE, doubl
 	return (az);
 }
 
-#ifdef USE_VICENTY
-#define GEOD_TEXT "Vicenty"
+#ifdef USE_VINCENTY
+#define GEOD_TEXT "Vincenty"
+#define VINCENTY_EPS		5e-14
+#define VINCENTY_MAX_ITER	50
 double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool back_az)
 {
 	/* Translation of NGS FORTRAN code for determination of true distance
@@ -2204,6 +2206,7 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, dou
 	**	bool back_az controls which is returned 
 	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
 	*/
+	int n_iter = 0;
 	static double az, c, d, e, r, f, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
 
 	f = C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening;
@@ -2218,6 +2221,7 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, dou
 	faz = baz * tu1;
 	x = dx = D2R * (lonE - lonS);
 	do {
+		n_iter++;
 		sincos (x, &sx, &cx);
 		tu1 = cu2 * sx;
 		tu2 = baz - su1 * cu2 * cx;
@@ -2233,7 +2237,12 @@ double gmt_az_backaz_geodesic (struct GMT_CTRL *C, double lonE, double latE, dou
 		d = x;
 		x = ((e * cy * c + cz) * sy * c + y) * sa;
 		x = (1.0 - c) * x * f + dx;
-	} while (fabs (d - x) > DBL_EPSILON);
+	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= VINCENTY_MAX_ITER);
+	if (n_iter > 50) {
+		C->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
+		GMT_report (C, GMT_MSG_NORMAL, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+	}
+	C->current.proj.n_geodesic_calls++;
 	/* To give the same sense of results as all other codes, we must basically swap baz and faz; here done in the ? test */
 	az = (back_az) ? atan2 (tu1, tu2) : atan2 (cu1 * sx, baz * cx - su1 * cu2) + M_PI;
 	return (R2D * az);
@@ -5278,7 +5287,7 @@ double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, doub
 	return (cosd (gmt_geodesic_dist_degree (C, lonS, latS, lonE, latE)));
 }
 
-#if USE_VICENTY
+#if USE_VINCENTY
 double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE)
 {
 	/* Translation of NGS FORTRAN code for determination of true distance
@@ -5294,6 +5303,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 	** Modified by P.W. from: http://article.gmane.org/gmane.comp.gis.proj-4.devel/3478
 	*/
 	static double s, c, d, e, r, f, dx, x, y, sa, cx, cy, cz, sx, sy, c2a, cu1, cu2, su1, tu1, tu2, ts, baz, faz;
+	int n_iter = 0;
 
 	f = C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening;
 	r = 1.0 - f;
@@ -5307,6 +5317,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 	faz = baz * tu1;
 	x = dx = D2R * (lonE - lonS);
 	do {
+		n_iter++;
 		sincos (x, &sx, &cx);
 		tu1 = cu2 * sx;
 		tu2 = baz - su1 * cu2 * cx;
@@ -5322,13 +5333,24 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 		d = x;
 		x = ((e * cy * c + cz) * sy * c + y) * sa;
 		x = (1.0 - c) * x * f + dx;
-	} while (fabs (d - x) > DBL_EPSILON);
-	x = sqrt ((1.0 / r / r - 1.0) * c2a + 1.0) + 1.0;
-	x = (x - 2.0) / x;
-	c = (x * x / 4.0 + 1.0) / (1.0 - x);
-	d = (x * 0.375 * x - 1.0) * x;
-	s = ((((sy * sy * 4.0 - 3.0) * (1.0 - e - e) * cz * d / 6.0 - e * cy) *
-		d / 4.0 + cz) * sy * d + y) * c * r;
+	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= 50);
+	if (n_iter > VINCENTY_MAX_ITER) {
+		C->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
+		GMT_report (C, GMT_MSG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+		s = M_PI;
+	}
+	else {
+		x = sqrt ((1.0 / r / r - 1.0) * c2a + 1.0) + 1.0;
+		x = (x - 2.0) / x;
+		c = (x * x / 4.0 + 1.0) / (1.0 - x);
+		d = (x * 0.375 * x - 1.0) * x;
+		s = ((((sy * sy * 4.0 - 3.0) * (1.0 - e - e) * cz * d / 6.0 - e * cy) * d / 4.0 + cz) * sy * d + y) * c * r;
+		if (s > M_PI) {
+			GMT_report (C, GMT_MSG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+			s = M_PI;
+		}
+	}
+	C->current.proj.n_geodesic_calls++;
 	return (s * C->current.proj.EQ_RAD);
 }
 #else

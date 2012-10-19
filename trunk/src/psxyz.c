@@ -155,7 +155,8 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   of a circle of given dimater.\n");
 	GMT_message (GMT, "\t   Bar (or Column): Append b<base> to give the y- (or z-) value of the\n");
 	GMT_message (GMT, "\t      base [Default = 0 (1 for log-scales)]. Use -SB for horizontal\n");
-	GMT_message (GMT, "\t      bars; then base value refers to the x location.\n");
+	GMT_message (GMT, "\t      bars; then base value refers to the x location.  To read the <base>\n");
+	GMT_message (GMT, "\t      value from file, specify b+.\n");
 	GMT_message (GMT, "\t   Ellipses: Direction, major, and minor axis must be in columns 4-6.\n");
 	GMT_message (GMT, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     axes in km, and convert azimuths based on map projection.\n");
@@ -356,7 +357,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	bool default_outline, outline_active, save_u = false;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, set_type;
 	unsigned int n_cols_start = 3, justify;
-	unsigned int ex1, ex2, ex3, change, n_needed, read_mode;
+	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
 	int error = GMT_NOERROR;
 	
 	uint64_t i, n, n_total_read = 0;
@@ -610,6 +611,10 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || GMT_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].z = GMT_z_to_zz (GMT, in[GMT_Z]);
 
+			if (S.base_set == 2) {	/* Got base from input column */
+				bcol = (S.read_size) ? ex2 : ex1;
+				S.base = in[bcol];
+			}
 			if (S.read_size) {	/* Update sizes from input */
 				S.size_x = in[ex1];
 				S.size_y = in[ex2];

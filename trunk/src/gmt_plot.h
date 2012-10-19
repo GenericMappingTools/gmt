@@ -149,11 +149,11 @@ struct GMT_SYMBOL {
 	unsigned int convert_size;	/* 1 if we must convert given "size" to actual size, 2 if log10 is to be applied first */
 	double scale, origin;	/* Used to convert size = (given_size - origin) * scale */
 
-	/* These apply to bar symbols */
+	/* These apply to bar|column symbols */
 
-	double base;		/* From what level to draw the bar */
-	bool user_unit;	/* if true */
-	bool base_set;	/* true if user provided a custom base [otherwise default to bottom axis */
+	double base;		/* From what level to draw the bar|column */
+	bool user_unit;		/* if true */
+	unsigned int base_set;	/* 1 if user provided a custom base, 2 if we should read it from last column [otherwise 0: default to bottom axis] */
 
 	/* These apply to vectors */
 

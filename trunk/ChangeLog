@@ -3,6 +3,8 @@
 -----------------------------------------------------------------------------------------
 
 2012-10-18	pwessel
+	* psxy[z].c:		Allow base for bars and columns to be read from data file by using
+				b+ as the base.
 	* gmt_map.c:		Geodesic distances are now calculated using Vincenty [1975] equation.
 				A detailed note discussing this switch is included in the source.
 
