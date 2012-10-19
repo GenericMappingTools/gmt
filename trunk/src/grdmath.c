@@ -2612,12 +2612,13 @@ void grd_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 /*OPERATOR: SUM 1 1 Sum of all values in A.  */
 {
 	uint64_t node, n_used;
-	double sum;
+	double sum = 0.0;
 
 	if (stack[last]->constant)
 		sum = stack[last]->factor * stack[last]->G->header->nm;
 	else {
-		for (node = n_used = 0, sum = 0.0; node < info->size; node++) {
+		unsigned int row, col;
+		GMT_grd_loop (GMT, info->G, row, col, node) {
 			if (GMT_is_fnan (stack[last]->G->data[node])) continue;
 			sum += (double)stack[last]->G->data[node];
 			n_used++;

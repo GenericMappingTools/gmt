@@ -73,7 +73,8 @@ struct PSXYZ_CTRL {
 };
 
 struct PSXYZ_DATA {
-	int symbol, flag, outline;
+	int symbol, outline;
+	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-fucntions, 4 = x-base in units, 8 y-base in units */
 	double x, y, z, dim[PSL_MAX_DIMS], dist[2];
 	struct GMT_FILL f;
 	struct GMT_PEN p;
@@ -111,7 +112,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: psxyz [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>]\n", GMT_B_OPT, GMT_Jz_OPT);
-	GMT_message (GMT, "\t[-K] [-L] [-N] [-O] [-P] [-Q] [-S<symbol><size>|+s<scaling>[/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
+	GMT_message (GMT, "\t[-K] [-L] [-N] [-O] [-P] [-Q] [-S[<symbol>][<size>[<unit>]|+s<scaling>][/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
 	GMT_message (GMT, "\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
@@ -153,10 +154,10 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   use upper case O and U to disable this 3-D illumination.\n");
 	GMT_message (GMT, "\t   Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area\n");
 	GMT_message (GMT, "\t   of a circle of given dimater.\n");
-	GMT_message (GMT, "\t   Bar (or Column): Append b<base> to give the y- (or z-) value of the\n");
-	GMT_message (GMT, "\t      base [Default = 0 (1 for log-scales)]. Use -SB for horizontal\n");
-	GMT_message (GMT, "\t      bars; then base value refers to the x location.  To read the <base>\n");
-	GMT_message (GMT, "\t      value from file, specify b+.\n");
+	GMT_message (GMT, "\t   Bar (or Column): Append b[<base>] to give the y- (or z-) value of the\n");
+	GMT_message (GMT, "\t      base [Default = 0 (1 for log-scales) if b not given]. Use -SB for horizontal\n");
+	GMT_message (GMT, "\t      bars; then <base> value refers to the x location.  To read the <base>\n");
+	GMT_message (GMT, "\t      value from file, specify b with no trailing value.\n");
 	GMT_message (GMT, "\t   Ellipses: Direction, major, and minor axis must be in columns 4-6.\n");
 	GMT_message (GMT, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     axes in km, and convert azimuths based on map projection.\n");
@@ -762,7 +763,8 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 					GMT_memcpy (data[n].custom, S.custom, 1, struct GMT_CUSTOM_SYMBOL);
 					break;
 			}
-			if (S.user_unit) data[n].flag |= 4;
+			if (S.user_unit[GMT_X]) data[n].flag |= 4;
+			if (S.user_unit[GMT_Y]) data[n].flag |= 8;
 
 			if (Ctrl->W.mode) {
 				GMT_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
@@ -827,12 +829,16 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 						GMT_geo_to_xy (GMT, data[i].x - data[i].dim[0], data[i].y, &x_1, &y_1);
 						GMT_geo_to_xy (GMT, data[i].x + data[i].dim[0], data[i].y, &x_2, &y_2);
 						dim[0] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
+					}
+					else
+						dim[0] = data[i].dim[0];
+					if (data[i].flag & 8) {
 						GMT_geo_to_xy (GMT, data[i].x, data[i].y - data[i].dim[1], &x_1, &y_1);
 						GMT_geo_to_xy (GMT, data[i].x, data[i].y + data[i].dim[1], &x_2, &y_2);
 						dim[1] = 0.5 * hypot (x_1 - x_2, y_1 - y_2);
 					}
 					else
-						dim[0] = data[i].dim[0], dim[1] = data[i].dim[1];
+						dim[1] = data[i].dim[1];
 					column3D (GMT, PSL, data[i].x, data[i].y, (data[i].z + data[i].dim[2]) / 2.0, dim, rgb, data[i].outline);
 					break;
 				case GMT_SYMBOL_CUBE:

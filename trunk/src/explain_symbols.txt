@@ -36,14 +36,14 @@ st\fBa\fPr.  IT(size) is diameter of circumscribing circle.
 OPT(Sb)
 Vertical BD(b)ar extending from IT(base) to y.  IT(size) is bar width. Append BD(u)
 if IT(size) is in x-units [Default is plot-distance units]. By default,
-IT(base) = ymin.  Append BD(b)IT(base) to change this value.
-To read IT(base) from last input data column, append BD(b+).
+IT(base) = ymin.  Append BD(b)[IT(base)] to change this value.
+If IT(base) is not appended then we read it from the last input data column.
 .TP
 OPT(SB)
 Horizontal BD(b)ar extending from IT(base) to x.  IT(size) is bar width. Append BD(u)
 if IT(size) is in y-units [Default is plot-distance units]. By default,
-IT(base) = xmin.  Append BD(b)IT(base) to change this value.
-To read IT(base) from last input data column, append BD(b+).
+IT(base) = xmin.  Append BD(b)[IT(base)] to change this value.
+If IT(base) is not appended then we read it from the last input data column.
 .TP
 OPT(Sc)
 BD(c)ircle.  IT(size) is diameter of circle.
@@ -134,9 +134,9 @@ peBD(n)tagon.  IT(size) is diameter of circumscribing circle.
 OPT(So)
 cBD(o)lumn (3-D) extending from IT(base) to z.  IT(size) sets base width (Use IT(xsize/ysize) if not the same).  Append BD(u) if IT(size) is in x-units
 [Default is plot-distance units].  If no IT(size) is given we expect both IT(xsize) and IT(ysize) as two extra data columns.
-By default, IT(base) = 0.  Append bIT(base) to change this value.  The facet colors will be modified to simulate shading.
+By default, IT(base) = 0.  Append {\bf b}[IT(base)] to change this value.  The facet colors will be modified to simulate shading.
 Use OPT(SO) to disable such 3-D illumination.
-To read IT(base) from last input data column, append BD(b+).
+If IT(base) is not appended then we read it from the last input data column.
 #endif
 .TP
 OPT(Sp)

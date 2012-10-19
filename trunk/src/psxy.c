@@ -292,11 +292,11 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   [Note: if -C is selected then 3rd means 4th column, etc.]\n");
 	GMT_message (GMT, "\t   Symbols A, C, D, G, H, I, N, S, T are adjusted to have same area\n");
 	GMT_message (GMT, "\t   as a circle of the specified diameter.\n");
-	GMT_message (GMT, "\t   Bars: Append b<base> to give the y-value of the base [Default = 0].\n");
+	GMT_message (GMT, "\t   Bars: Append b[<base>] to give the y-value of the base [Default = 0 (1 for log-scales) if b not given].\n");
 	GMT_message (GMT, "\t      Append u if width is in x-input units [Default is %s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t      Use upper case -SB for horizontal bars (base then refers to x\n");
+	GMT_message (GMT, "\t      Use upper case -SB for horizontal bars (<base> then refers to x\n");
 	GMT_message (GMT, "\t      and width may be in y-units [Default is vertical]. To read the <base>\n");
-	GMT_message (GMT, "\t      value from file, specify b+.\n");
+	GMT_message (GMT, "\t      value from file, specify b with no trailing value.\n");
 	GMT_message (GMT, "\t   Ellipses: Direction, major, and minor axis must be in columns 3-5.\n");
 	GMT_message (GMT, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     axes in km, and convert azimuths based on map projection.\n");
@@ -854,7 +854,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 					break;
 				case GMT_SYMBOL_BARX:
 					if (!Ctrl->N.active) in[GMT_X] = MAX (GMT->common.R.wesn[XLO], MIN (in[GMT_X], GMT->common.R.wesn[XHI]));
-					if (S.user_unit) {	/* Width measured in y units */
+					if (S.user_unit[GMT_X]) {	/* Width measured in y units */
 						GMT_geo_to_xy (GMT, S.base, in[GMT_Y] - 0.5 * dim[0], &x_1, &y_1);
 						GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y] + 0.5 * dim[0], &x_2, &y_2);
 					}
@@ -867,7 +867,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 					break;
 				case GMT_SYMBOL_BARY:
 					if (!Ctrl->N.active) in[GMT_Y] = MAX (GMT->common.R.wesn[YLO], MIN (in[GMT_Y], GMT->common.R.wesn[YHI]));
-					if (S.user_unit) {	/* Width measured in x units */
+					if (S.user_unit[GMT_X]) {	/* Width measured in x units */
 						GMT_geo_to_xy (GMT, in[GMT_X] - 0.5 * dim[0], S.base, &x_1, &y_1);
 						GMT_geo_to_xy (GMT, in[GMT_X] + 0.5 * dim[0], in[GMT_Y], &x_2, &y_2);
 					}
