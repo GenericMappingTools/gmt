@@ -62,11 +62,13 @@ Quick, but approximate ``Flat Earth'' calculations make a first-order correction
 for the spherical nature of a planetary body by computing the distance between
 two points A and B as
 \begin{equation}
-	d_f = R \sqrt{(\theta_A - \theta_B)^2 + \frac{\theta_A + \theta_B}{2}(\lambda_A - \lambda_B)^2},
+	d_f = R \sqrt{(\theta_A - \theta_B)^2 + \cos \left [ \frac{\theta_A + \theta_B}{2} \right ] \Delta \lambda^2},
 	\label{eq:flatearth}
 \end{equation}
-where $R$ is the mean (or spherical) radius of the planet, $\theta$ is latitude, and the difference in longitudes, $\Delta \lambda$,
-is adjusted for any jumps that might occur across Greenwich or the Dateline.  This approach is suitable
+where $R$ is the representative (or spherical) radius of the planet, $\theta$ is latitude, and the
+difference in longitudes, $\Delta \lambda = \lambda_A - \lambda_B$,
+is adjusted for any jumps that might occur across Greenwich or the Dateline.  As written,
+the geographic coordinates are given in radians.  This approach is suitable
 when the points you use to compute $d_f$ do not greatly differ in latitude and computation
 speed is paramount. You can specify this mode of computation by using the \textbf{-} prefix to
 the specified distance (or to the unit itself in cases where no distance is required and only a unit is expected).
@@ -84,16 +86,18 @@ This approach is suitable for most situations unless exact calculations for an e
 is required (typically for a limited surface area).  For instance, a search radius of 5000 feet using this
 mode of computation would be specified as \Opt{S}5000\textbf{f}.
 
-Note: There are two additional \gmt\ defaults that control how great circle distances are computed. One concerns the selection
+Note: There are two additional \gmt\ defaults that control how great circle (and Flat Earth) distances are computed. One concerns the selection
 of the ``mean radius''.  This is selected by {\bf PROJ\_MEAN\_RADIUS}, which selects one of several possible
-mean radii.  The second is {\bf PROJ\_AUX\_LATITUDE}, which converts geodetic latitudes into one of
+representative radii.  The second is {\bf PROJ\_AUX\_LATITUDE}, which converts geodetic latitudes into one of
 several possible auxiliary latitudes that are better suited for the spherical approximation.  While both settings
 have default values to best approximate geodesic distances ({\it authalic} mean radius and latitudes),
-experts users can choose from a range of options as detailed in the \filename{gmt.conf} man page.
+expert users can choose from a range of options as detailed in the \filename{gmt.conf} man page.
 
 \subsubsection{Geodesic distances}
 For the most accurate calculations we use a full ellipsoidal formulation.  Currently,
-we are using Rudoe's formula.  You select this mode of computation by using the \textbf{+} prefix to
+we are using Vincenty's [1975] formula\footnote{Vicenty, T. (1975), Direct and inverse solutions
+of geodesics on the ellipsoid with application of nested equations, {\it Surv. Rev., XXII(176)}, 88–93.}.
+You select this mode of computation by using the \textbf{+} prefix to
 the specified distance (or to the unit itself in cases where no distance is required).
 For instance, a search radius of 20 km using this mode of computation would be set by \Opt{S+}20\textbf{k}.
 
@@ -346,7 +350,7 @@ file.  Note that depending on the nature of the calling program, this mechanism 
 and possibly the grid registration (see Section~\ref{sec:grid_registration}).
 \end{enumerate}
 For rectilinear projections the first two forms give identical results.  Depending on the selected map
-projection (or the kind of expected input data), the boundary coordinates may take on three different
+projection (or the kind of expected input data), the boundary coordinates may take on several different
 formats:
 
 \begin{description}
@@ -369,7 +373,7 @@ that you are using geographical coordinates in one of the following ways:
 Alternatively, you may indicate geographical coordinates by supplying \Opt{fg}; see Section \ref{sec:fg_option}.
 
 \item [Projected coordinates:]  These are Cartesian projected coordinates compatible with the chosen
-projection and are given with a leading length emph{unit}, (e.g., k-200/200/-300/300 for a 400 by 600 km
+projection and are given with a leading length \emph{unit}, (e.g., {\bf k}-200/200/-300/300 for a 400 by 600 km
 rectangular area centered on the projection center (0, 0).  These coordinates are internally converted
 to the corresponding geographic (longitude, latitude) coordinates for the lower left and upper right corners.
 This form is convenient when you want to specify a region directly in the projected units (e.g., UTM meters).
