@@ -395,7 +395,7 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 	bool GPlates = false, total_in = false;
 	unsigned int n, nf, i = 0, k, id, A_id = 0, B_id = 0, p1, p2, V1 = 0, V2 = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	double lon, lat, rot, t;
+	double lon, lat, rot, t, last_t = -DBL_MAX;
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
 	char buffer[GMT_BUFSIZ], A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], comment[GMT_BUFSIZ];
@@ -492,6 +492,11 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 			if (total_in && invert) e[i].omega = -e[i].omega;	/* Want the inverse rotation; easy to do if total reconstruction rotations */
 		}
 
+		if (total_in && e[i].t_start < last_t) {
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Rotation %d has time reversal\n", i);
+			GMT_exit (EXIT_FAILURE);
+		}
+		last_t = e[i].t_start;
 		if (e[i].t_stop >= e[i].t_start) {
 			GMT_report (C, GMT_MSG_NORMAL, "Error: Stage rotation %d has start time younger than stop time\n", i);
 			GMT_exit (EXIT_FAILURE);
