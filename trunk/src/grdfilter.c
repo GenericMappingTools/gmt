@@ -324,7 +324,7 @@ int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struc
 	}
 #ifdef DEBUG
 	if (file) {	/* For debug purposes: Save the area weight grid */
-		GMT_report (GMT, GMT_MSG_DEBUGL, "Write area weight grid to file %s\n", file);
+		GMT_report (GMT, GMT_MSG_DEBUG, "Write area weight grid to file %s\n", file);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_OK) return (GMT->parent->error);
 	}
 #endif
