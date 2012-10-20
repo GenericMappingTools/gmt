@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2012-10-19	pwessel
+	* spotter/libspotter.c:	Did not check for time reversals among total reconstruction rotations.
+
 2012-10-18	pwessel
 	* psxy[z].c:		Allow base for bars and columns to be read from data file by appending b
 				with no trailing <base> value.
