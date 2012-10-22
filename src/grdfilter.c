@@ -791,12 +791,17 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	weight = GMT_memory (GMT, NULL, F.nx*F.ny, double);	/* Allocate space for convolution grid */
 	
 	if (Ctrl->F.custom) {	/* Read convolution grid from file */
-		ij_wt = 0;
+		ij_wt = 0;	wt_sum = 0.0;
 		GMT_grd_loop (GMT, Fin, row_in, col_in, ij_in) { /* Just copy over to weight array while skipping the padding */
 			weight[ij_wt++] = Fin->data[ij_in];
+			wt_sum += Fin->data[ij_in];
 		}
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Fin) != GMT_OK) {	/* Done with this grid */
 			Return (API->error);
+		}
+		if (GMT_IS_ZERO (wt_sum)) {	/* The custom filter is an operator; should have used -Fo */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your custom filter weights sum to zero; switching to -Fo operator mode.\n");
+			Ctrl->F.operator = true;
 		}
 		if (Ctrl->F.operator) get_weight_sum = false;	/* As weights sum to zero we don't want to add them up and divide */
 	}
