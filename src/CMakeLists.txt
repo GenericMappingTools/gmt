@@ -492,7 +492,18 @@ if (WIN32 AND _debug_build)
 endif (WIN32 AND _debug_build)
 
 # Install public headers
-install (FILES gmtapi.h gmtapi_define.h
+#install (FILES gmtapi.h gmtapi_define.h
+#	DESTINATION ${GMT_INCDIR}
+#	COMPONENT Runtime)
+
+install (FILES common_math.h common_string.h declspec.h gmt.h gmtapi.h gmt_calclock.h
+	gmt_colors.h gmt_common.h gmt_constants.h gmt_contour.h gmt_crossing.h
+	gmt_customio.h gmt_defaults.h gmt_error.h gmt_gdalread.h gmt_grd.h
+	gmt_grdio.h gmt_hash.h gmt_init.h gmt_io.h gmt_macros.h gmt_map.h gmt_module.h
+	gmt_nan.h gmt_notposix.h gmt_plot.h gmt_project.h gmt_prototypes.h gmt_ps.h
+	gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h gmt_synopsis.h gmt_texture.h
+	gmt_time.h gmt_types.h gmt_vector.h gmtapi.h gmtapi_define.h
+	gmtapi_error_codes.h pslib.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 
