@@ -344,8 +344,7 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_grd_init (GMT, Grid[k]->header, options, true);
 	}
 
-	if (!(Grid[0]->header->nx == Grid[1]->header->nx && Grid[0]->header->ny == Grid[1]->header->ny && GMT_grd_same_region (GMT, Grid[0], Grid[1])
-		&& Grid[0]->header->inc[GMT_X] == Grid[1]->header->inc[GMT_X] && Grid[0]->header->inc[GMT_Y] == Grid[1]->header->inc[GMT_Y])) {
+	if (!(GMT_grd_same_shape (GMT, Grid[0], Grid[1]) && GMT_grd_same_region (GMT, Grid[0], Grid[1]) && GMT_grd_same_inc (GMT, Grid[0], Grid[1]))) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "files %s and %s does not match!\n", Ctrl->In.file[0], Ctrl->In.file[1]);
 		Return (EXIT_FAILURE);
 	}

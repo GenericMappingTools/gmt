@@ -268,6 +268,10 @@ enum GMT_enum_wesnIDs {
 #define GMT_is_subset(C,h,R) (R[XHI] > R[XLO] && R[YHI] > R[YLO] && (R[XLO] > h->wesn[XLO] || R[XHI] < h->wesn[XHI] || R[YLO] > h->wesn[YLO] || R[YHI] < h->wesn[YHI]))
 /* GMT_grd_same_region is true if two grids have the exact same regions */
 #define GMT_grd_same_region(C,G1,G2) (G1->header->wesn[XLO] == G2->header->wesn[XLO] && G1->header->wesn[XHI] == G2->header->wesn[XHI] && G1->header->wesn[YLO] == G2->header->wesn[YLO] && G1->header->wesn[YHI] == G2->header->wesn[YHI])
+/* GMT_grd_same_inc is true if two grids have the exact same grid increments */
+#define GMT_grd_same_inc(C,G1,G2) (G1->header->inc[GMT_X] == G2->header->inc[GMT_X] && G1->header->inc[GMT_Y] == G2->header->inc[GMT_Y])
+/* GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
+#define GMT_grd_same_shape(C,G1,G2) (G1->header->nx == G2->header->nx && G1->header->ny == G2->header->ny && G1->header->registration == G2->header->registration)
 /* GMT_y_is_outside is true if y is outside the given range */
 #define GMT_y_is_outside(C,y,bottom,top) ((GMT_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
 /* GMT_grd_is_global is true for a geographic grid with exactly 360-degree range (with or without repeating column) */
