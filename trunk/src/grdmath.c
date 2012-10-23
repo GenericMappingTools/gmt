@@ -3235,7 +3235,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				if ((stack[nstack]->G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, wesn, opt->arg, NULL)) == NULL) {	/* Get header only */
 					Return (API->error);
 				}
-				if (!subset && (stack[nstack]->G->header->nx != info.G->header->nx || stack[nstack]->G->header->ny != info.G->header->ny)) {
+				if (!subset && !GMT_grd_same_shape (GMT, stack[nstack]->G, info.G)) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "grid files not of same size!\n");
 					Return (EXIT_FAILURE);
 				}
