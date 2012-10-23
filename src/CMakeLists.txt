@@ -504,6 +504,7 @@ install (FILES common_math.h common_string.h declspec.h gmt.h gmtapi.h gmt_calcl
 	gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h gmt_synopsis.h gmt_texture.h
 	gmt_time.h gmt_types.h gmt_vector.h gmtapi.h gmtapi_define.h
 	gmtapi_error_codes.h pslib.h
+	compat/inttypes.h compat/stdbool.h compat/qsort.h compat/stdint.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 
