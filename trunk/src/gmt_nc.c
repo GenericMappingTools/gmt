@@ -1136,7 +1136,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode: 1|2 if complex array is to hold real (1) or imaginary (2) part (0 = read as real only)
+	 * complex_mode: &1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
 	 * Note: The file has only real values, we simply allow space in the complex array
 	 * for real and imaginary parts when processed by grdfft etc.
 	 *
@@ -1285,7 +1285,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode: 1|2 if complex array is to hold real (1) or imaginary (2) part (0 = read as real only)
+	 * complex_mode: &1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
 	 * Note: The file has only real values, we simply allow space in the complex array
 	 * for real and imaginary parts when processed by grdfft etc.
 	 */
