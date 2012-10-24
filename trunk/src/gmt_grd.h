@@ -223,7 +223,7 @@ enum GMT_enum_wesnIDs {
 
 /* gmt_grd_get_size computes grid size including the padding, and doubles it if complex values */
 
-#define gmt_grd_get_size(h) (((h->complex_mode > 0) + 1) * h->mx * h->my)
+#define gmt_grd_get_size(h) ((((h->complex_mode & GMT_GRID_COMPLEX_MASK) > 0) + 1) * h->mx * h->my)
 
 /* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.
  * Use GMT_IJP when array is padded by BC rows/cols, else use GMT_IJ0.  In both cases
