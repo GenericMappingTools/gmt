@@ -1018,13 +1018,14 @@ void table_DUP (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 {
 	uint64_t s, row;
 	unsigned int next = last + 1;
-	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_next = S[next]->D->table[0];
+	struct GMT_TABLE *T = S[last]->D->table[0], *T_next = S[next]->D->table[0];
 
-	S[next]->factor = S[last]->factor;
-	S[next]->constant = S[last]->constant;
+	/* The next stack is an array no matter what S[last]->constant may be.
+	   If S[last]->constant is true then gmtmath has just allocated space so we update that as well as next. */
+	S[next]->constant = false;
 	for (s = 0; s < info->T->n_segments; s++) {
-		if (S[last]->constant) {
-			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_next->segment[s]->coord[col][row] = T->segment[s]->coord[col][row] = S[next]->factor;
+		if (S[last]->constant) {	/* Constant, update both this and next */
+			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_next->segment[s]->coord[col][row] = T->segment[s]->coord[col][row] = S[last]->factor;
 		}
 		else
 			GMT_memcpy (T_next->segment[s]->coord[col], T->segment[s]->coord[col], info->T->segment[s]->n_rows, double);
