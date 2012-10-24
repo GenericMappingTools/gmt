@@ -290,7 +290,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;			/* Possibly doubled if complex_mode is true */
+	width_out *= inc;			/* Possibly doubled if complex_mode indicates complex data */
 	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	n_expected = header->nx;

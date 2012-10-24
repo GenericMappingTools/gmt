@@ -313,7 +313,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -400,7 +400,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to write  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to remove on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/* 		If 64 is added we write no header */
@@ -613,7 +613,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -700,7 +700,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		If 64 is added we write no header*/
 
@@ -843,7 +843,7 @@ int GMT_native_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *g
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -944,7 +944,7 @@ int GMT_native_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/*		If 64 is added we write no header */
@@ -1319,7 +1319,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -1427,7 +1427,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	/* grid:	array with final grid */
 	/* wesnn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -1591,7 +1591,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	1|2 if complex array is to hold real (1) and imaginary (2) parts (0 = read as real only) */
+	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -1605,9 +1605,9 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	to_gdalread = GMT_memory (C, NULL, 1, struct GDALREAD_CTRL);
 	from_gdalread = GMT_memory (C, NULL, 1, struct GD_CTRL);
 
-	if (complex_mode) {
+	if (complex_mode & GMT_GRID_COMPLEX_MASK) {
 		to_gdalread->Z.active = true;		/* Force reading into a compex array */
-		to_gdalread->Z.complex_mode = (int)complex_mode;
+		to_gdalread->Z.complex_mode = (int)((complex_mode & GMT_GRID_COMPLEX_MASK) >> 2);	/* Gives 0, 1, or 2 */
 	}
 
 	subset = GMT_is_subset (C, header, wesn);	/* We have a Sub-region demand */
