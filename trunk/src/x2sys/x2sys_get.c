@@ -188,8 +188,8 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 
-	uint32_t *in_bin_flag = NULL;	/* Match type in struct X2SYS_BIX_TRACK */
-	uint32_t *matrix = NULL;	/* Needs to be a 32-bit unsigned int, not int */
+	uint32_t *in_bin_flag = NULL;   /* Match type in struct X2SYS_BIX_TRACK */
+	uint32_t *matrix = NULL;        /* Needs to be a 32-bit unsigned int, not int */
 	
 	double x, y;
 
@@ -282,7 +282,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 		else {	/* Use all */
 			for (ii = 0; ii < n_tracks; ii++) include[ii] = true;
 		}
-		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags, uint32_t);
+		matrix = GMT_memory (GMT, NULL, n_tracks * n_flags + n_tracks / 32, uint32_t);
 		ids_in_bin = GMT_memory (GMT, NULL, n_tracks, uint64_t);
 	}
 	else {
@@ -333,10 +333,10 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 					for (id2 = id1 + 1; id2 < kk; id2++) {	/* Loop over all pairs */
 						if (!(include[ids_in_bin[id1]] || include[ids_in_bin[id2]])) continue;	/* At last one leg must be from our list (if given) */
 						/* This all requires matrix to be an in (32-bit) */
-						item = ids_in_bin[id2] / 32;
+						item = (unsigned int)(ids_in_bin[id2] / 32);
 						bit = ids_in_bin[id2] % 32;
 						matrix[ids_in_bin[id1]*n_flags+item] |= (1 << bit);
-						item = ids_in_bin[id1] / 32;
+						item = (unsigned int)(ids_in_bin[id1] / 32);
 						bit = ids_in_bin[id1] % 32;
 						matrix[ids_in_bin[id2]*n_flags+item] |= (1 << bit);
 					}
@@ -347,7 +347,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl->L.active) {
-		for (id1 = n_pairs = 0; id1 < n_tracks; id1++) {
+		for (id1 = (unsigned int)n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {
 				item = id2 / 32;
 				bit = id2 % 32;
