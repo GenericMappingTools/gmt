@@ -352,6 +352,7 @@ int GMT_x2sys_get (struct GMTAPI_CTRL *API, int mode, void *args)
 				item = id2 / 32;
 				bit = id2 % 32;
 				if ((id2 > id1) && !(matrix[id1*n_flags+item] & (1 << bit))) continue;	/* Pair not selected */
+				if (!B.head[id1].trackname || !B.head[id2].trackname)) continue;	/* No such track in list */
 				n_pairs++;
 				/* OK, print out pair, with lega alphabetically lower than legb */
 				if (strcmp (B.head[id1].trackname, B.head[id2].trackname) < 0)
