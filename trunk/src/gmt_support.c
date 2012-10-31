@@ -2708,9 +2708,13 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *C, struct GMT_PALETTE *Pin
 
 			if (Pin->model & GMT_HSV) {	/* Interpolation in HSV space */
 				for (k = 0; k < 4; k++) hsv_low[k] = hsv_high[k] = lut[j].hsv_low[k] + (lut[j].hsv_high[k] - lut[j].hsv_low[k]) * f * (a - lut[j].z_low);
+				gmt_hsv_to_rgb (C, rgb_low, hsv_low);
+				gmt_hsv_to_rgb (C, rgb_high, hsv_high);
 			}
 			else {	/* Interpolation in RGB space */
 				for (k = 0; k < 4; k++) rgb_low[k] = rgb_high[k] = lut[j].rgb_low[k] + (lut[j].rgb_high[k] - lut[j].rgb_low[k]) * f * (a - lut[j].z_low);
+				gmt_rgb_to_hsv (C, rgb_low, hsv_low);
+				gmt_rgb_to_hsv (C, rgb_high, hsv_high);
 			}
 		}
 
