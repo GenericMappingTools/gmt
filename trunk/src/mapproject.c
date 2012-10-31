@@ -788,7 +788,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			else {	/* Simply copy other columns and output */
 				if (!GMT_get_cols (GMT, GMT_OUT)) {
-					GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN) + 1 + 2 * Ctrl->L.active);
+					GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN));
 					n_output = GMT_get_cols (GMT, GMT_OUT);
 				}
 				for (k = two; k < n_output; k++) out[k] = in[k];
