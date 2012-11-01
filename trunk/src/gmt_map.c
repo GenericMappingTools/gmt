@@ -1977,6 +1977,8 @@ double gmt_mean_radius (struct GMT_CTRL *C, double a, double f)
 {
 	double r, b = a * (1 - f);
 	
+	if (f == 0.0) return a;	/* Not that hard */
+	
 	switch (C->current.setting.proj_mean_radius) {
 		case GMT_RADIUS_MEAN:
 			r = a * (1.0 - f / 3.0);
