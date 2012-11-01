@@ -70,10 +70,8 @@ extern "C" {
 #	define int64_abs(x) ((int64_t)(((x) >= 0) ? (x) : -(x)))
 #endif
 
-	EXTERN_MSC bool floatAlmostEqualUlpsAndAbs(float A, float B,
-																						 float maxDiff, int maxUlpsDiff);
-	EXTERN_MSC bool doubleAlmostEqualUlpsAndAbs(double A, double B,
-																							double maxDiff, int maxUlpsDiff);
+	EXTERN_MSC bool floatAlmostEqualUlpsAndAbs(float A, float B, float maxDiff, int maxUlpsDiff);
+	EXTERN_MSC bool doubleAlmostEqualUlpsAndAbs(double A, double B, double maxDiff, int maxUlpsDiff);
 	EXTERN_MSC bool floatAlmostEqualUlps(float A, float B, int maxUlpsDiff);
 	EXTERN_MSC bool doubleAlmostEqualUlps(double A, double B, int maxUlpsDiff);
 
