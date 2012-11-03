@@ -2322,13 +2322,13 @@ void table_ROTT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	shift = lrint (S[last]->factor / info->t_inc);
 	if (S[prev]->constant || !shift) return;	/* Easy, constant or no shift */
 	if (!info->local) {
-		if (shift < 0) shift += info->T->n_records;		/* Same thing */
+		if (shift < 0) shift += (int)info->T->n_records;		/* Same thing */
 		z = GMT_memory (GMT, NULL, info->T->n_records, double);
 	}
 	for (s = k = 0; s < info->T->n_segments; s++)  {
 		if (info->local) {
 			shift = lrint (S[last]->factor / info->t_inc);
-			if (shift < 0) shift += info->T->segment[s]->n_rows;		/* Same thing */
+			if (shift < 0) shift += (int)info->T->segment[s]->n_rows;		/* Same thing */
 			z = GMT_memory (GMT, NULL, info->T->segment[s]->n_rows, double);
 		}
 
