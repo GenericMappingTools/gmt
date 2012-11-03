@@ -349,7 +349,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Geographic (lon,lat) Data:\n");
 	GMT_message (GMT, "\t     -D1 grid x,y in degrees, <filter_width> in km, Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D2 grid x,y in degrees, <filter_width> in km, x_scaled by cos(middle y), Cartesian distances.\n");
-	GMT_message (GMT, "\t   These first three options are faster; they allow weight matrix to be computed only once.\n");
+	GMT_message (GMT, "\t   The options above are faster; they allow weight matrix to be computed only once.\n");
 	GMT_message (GMT, "\t   Next three options are slower; weights must be recomputed for each scan line.\n");
 	GMT_message (GMT, "\t     -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), Cartesian distances.\n");
 	GMT_message (GMT, "\t     -D4 grid x,y in degrees, <filter_width> in km, spherical distances.\n");
