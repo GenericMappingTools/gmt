@@ -739,10 +739,10 @@ void GMT_inc_syntax (struct GMT_CTRL *C, char option, bool error)
 	GMT_message (C, "\t   For geographic regions in degrees you can optionally append units\n");
 	GMT_message (C, "\t   among (f)oot, (m)inute, (s)econd, m(e)ter, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
 	GMT_message (C, "\t   Append = to adjust the region to fit increments [Adjust increment to fit domain].\n");
-	GMT_message (C, "\t   Alternatively, specify number of nodes by appending +. Then, the\n");
-	GMT_message (C, "\t   increments are calculated from the given domain and node-registration settings\n");
+	GMT_message (C, "\t   Alternatively, specify number of nodes by appending +. Then, the increments\n");
+	GMT_message (C, "\t   are calculated from the given domain and node-registration settings\n");
 	GMT_message (C, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then\n");
-	GMT_message (C, "\t   bot -R and -I have been set; use -I to override those values.\n");
+	GMT_message (C, "\t   both -R and -I have been set; use -I to override those values.\n");
 }
 
 void GMT_fill_syntax (struct GMT_CTRL *C, char option, char *string)
@@ -850,7 +850,7 @@ void GMT_vector_syntax (struct GMT_CTRL *C, unsigned int mode)
 	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
 	if (mode & 4) GMT_message (C, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
 	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
-	if (mode & 2) GMT_message (C, "\t     +s if input (angle,length) is instead (x,y) coordinates of tip.\n");
+	if (mode & 2) GMT_message (C, "\t     +s if (x,y) coordinates of tip is given instead of (angle,length) on input.\n");
 }
 
 void GMT_syntax (struct GMT_CTRL *C, char option)
