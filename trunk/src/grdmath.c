@@ -418,8 +418,8 @@ void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CAZ 2 1 Cartesian azimuth from grid nodes to stack x,y.  */
 {
-	uint64_t node;
-	unsigned int row, col, prev = last - 1;
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
 	double x, y, az;
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
@@ -435,8 +435,8 @@ void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 void grd_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CBAZ 2 1 Cartesian backazimuth from grid nodes to stack x,y.  */
 {
-	uint64_t node;
-	unsigned int row, col, prev = last - 1;
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
 	double x, y, az;
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
@@ -452,8 +452,8 @@ void grd_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 void grd_CDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CDIST 2 1 Cartesian distance between grid nodes and stack x,y.  */
 {
-	uint64_t node;
-	unsigned int row, col, prev = last - 1;
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
 	double a, b;
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
@@ -1153,7 +1153,7 @@ void grd_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	
 	mx_half = info->G->header->mx / 2;
 	mx1 = info->G->header->mx - 1;
-	for (row = node = 0; row < info->G->header->my; row++, node += info->G->header->mx) {	/* Do this to all rows */
+	for (node = row = 0; row < info->G->header->my; row++, node += info->G->header->mx) {	/* Do this to all rows */
 		for (col_l = 0, col_r = mx1; col_l < mx_half; col_l++, col_r--) float_swap (stack[last]->G->data[node+col_l], stack[last]->G->data[node+col_r]);
 	}
 }
@@ -1329,7 +1329,7 @@ void grd_INRANGE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			continue;
 		}
 
-		inrange = (b <= a && a <= c) ? 1.0 : 0.0;
+		inrange = (b <= a && a <= c) ? 1.0f : 0.0f;
 		stack[prev2]->G->data[node] = inrange;
 	}
 }
@@ -1337,8 +1337,8 @@ void grd_INRANGE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: INSIDE 1 1 1 when inside or on polygon(s) in A, else 0.  */
 {	/* Suitable for geographic (lon, lat) data and polygons */
-	uint64_t node, seg;
-	unsigned int row, col, inside;
+	uint64_t node, seg, row, col;
+	unsigned int inside;
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
@@ -1559,8 +1559,7 @@ void grd_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LDIST 1 1 Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A.  */
 {
-	uint64_t node;
-	unsigned int row, col;
+	uint64_t node, row, col;
 	double d;
 	struct GMT_TABLE *line = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -2025,8 +2024,7 @@ void grd_OR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: PDIST 1 1 Compute distance (in degrees if -fg) from points in ASCII file A.  */
 {
-	unsigned int row, col;
-	uint64_t dummy[2], node;
+	uint64_t dummy[2], node, row, col;
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
@@ -2346,8 +2344,8 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: SDIST 2 1 Spherical (Great circle) distance (in degrees) between grid nodes and stack lon,lat (A, B).  */
 {
-	uint64_t node;
-	unsigned int row, col, prev = last - 1;
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
 	double a, b;
 
 	GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);	/* Spherical, in degrees */
@@ -2360,8 +2358,8 @@ void grd_SDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 
 void grd_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, bool reverse)
 {
-	uint64_t node;
-	unsigned int row, col, prev = last - 1;
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
 	GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
@@ -2562,8 +2560,7 @@ void grd_STEP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 void grd_STEPX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: STEPX 1 1 Heaviside step function in x: H(x-A).  */
 {
-	uint64_t node;
-	unsigned int row, col;
+	uint64_t node, row, col;
 	double a;
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
@@ -2578,8 +2575,7 @@ void grd_STEPX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 void grd_STEPY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: STEPY 1 1 Heaviside step function in y: H(y-A).  */
 {
-	uint64_t node;
-	unsigned int row, col;
+	uint64_t node, row, col;
 	double a;
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
@@ -2611,13 +2607,13 @@ void grd_SUB (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 void grd_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: SUM 1 1 Sum of all values in A.  */
 {
-	uint64_t node, n_used;
+	uint64_t node, n_used = 0;
 	double sum = 0.0;
 
 	if (stack[last]->constant)
 		sum = stack[last]->factor * stack[last]->G->header->nm;
 	else {
-		unsigned int row, col;
+		uint64_t row, col;
 		GMT_grd_loop (GMT, info->G, row, col, node) {
 			if (GMT_is_fnan (stack[last]->G->data[node])) continue;
 			sum += (double)stack[last]->G->data[node];
@@ -2770,8 +2766,8 @@ void grd_Y1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 void grd_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last, bool ortho)
 {
 	/* Returns geophysical normalization, unless M < 0, then orthonormalized form */
-	uint64_t node;
-	unsigned int row, col, prev = last - 1;
+	uint64_t node, row, col;
+	unsigned int prev = last - 1;
 	int L, M;
 	double x, z, P, C, S;
 
@@ -2952,11 +2948,11 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int k, op = 0, new_stack = -1, rowx, colx, status, start;
-	unsigned int row, col, kk, nstack = 0, n_items = 0, this_stack, n_macros;
+	unsigned int kk, nstack = 0, n_items = 0, this_stack, n_macros;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool error = false, subset;
 	
-	uint64_t node;
+	uint64_t node, row, col;
 
 	struct GRDMATH_STACK *stack[GRDMATH_STACK_SIZE];
 	struct GMT_GRID *G_in = NULL;
