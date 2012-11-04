@@ -1575,7 +1575,7 @@ int GMT_gdal_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	}
 
 	GMT_free (C, to_gdalread);
-	GMT_free (C, from_gdalread->ColorMap);
+	if (from_gdalread->ColorMap) GMT_free (C, from_gdalread->ColorMap);
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);
 
@@ -1619,9 +1619,34 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 		to_gdalread->registration.x_inc = header->inc[GMT_X];
 		to_gdalread->registration.y_inc = header->inc[GMT_Y];
 	}
-	if (pad[XLO] > 0) {	/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
-		to_gdalread->p.active = true;
-		to_gdalread->p.pad = (int)pad[XLO];
+	if (pad[XLO] > 0 || pad[XHI] > 0 || pad[YLO] > 0 || pad[YHI] > 0) {
+		to_gdalread->mini_hdr.active = true;
+		if (pad[XLO] >= header->nx - 1) {	/* With -1 we account for both grid & pixel registration cases */
+			to_gdalread->mini_hdr.offset = pad[XLO];		to_gdalread->mini_hdr.side[0] = 'r';
+			to_gdalread->mini_hdr.BB_mx = header->BB_mx;
+			if (GMT_check_condition (C, !header->BB_mx, "Programming error, header.BB_mx not set\n")) return (EXIT_FAILURE);
+		}
+		else if (pad[XHI] >= header->nx - 1) {
+			to_gdalread->mini_hdr.offset = pad[XHI];		to_gdalread->mini_hdr.side[0] = 'l';
+			to_gdalread->mini_hdr.BB_mx = header->BB_mx;
+			if (GMT_check_condition (C, !header->BB_mx, "Programming error, header.BB_mx not set\n")) return (EXIT_FAILURE);
+		}
+		else if (pad[YLO] >= header->ny - 1) {
+			to_gdalread->mini_hdr.offset = pad[YLO];		to_gdalread->mini_hdr.side[0] = 't';
+			to_gdalread->mini_hdr.BB_my = header->BB_my;
+			if (GMT_check_condition (C, !header->BB_my, "Programming error, header.BB_my not set\n")) return (EXIT_FAILURE);
+		}
+		else if (pad[YHI] >= header->ny - 1) {
+			to_gdalread->mini_hdr.offset = pad[YHI];		to_gdalread->mini_hdr.side[0] = 'b';
+			to_gdalread->mini_hdr.BB_my = header->BB_my;
+			if (GMT_check_condition (C, !header->BB_my, "Programming error, header.BB_my not set\n")) return (EXIT_FAILURE);
+		}
+		else {
+			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
+			to_gdalread->mini_hdr.active = false;	/* Undo above setting */
+			to_gdalread->p.active = true;
+			to_gdalread->p.pad = (int)pad[XLO];
+		}
 	}
 	if (header->pocket) {	/* Have a band request. */
 		to_gdalread->B.active = true;
@@ -1649,8 +1674,8 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	header->registration = (int)from_gdalread->hdr[6];	/* Confirm registration. It may not be the same as reported by read_grd_info */
 
 	if (from_gdalread->Float.active) {
-		if (!to_gdalread->f_ptr.active)
-			grid = GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
+		if (!to_gdalread->f_ptr.active)		/* If the array was allocated inside _gdalread */
+			GMT_memcpy (grid, from_gdalread->Float.data, header->size, float);
 	}
 	else {
 		/* Convert everything else do float */
@@ -1704,8 +1729,8 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 		GMT_free (C, from_gdalread->Int32.data);
 
 	GMT_free (C, to_gdalread);
-	GMT_free (C, from_gdalread->ColorMap);
-	for ( i = 0; i < (uint64_t)from_gdalread->RasterCount; ++i )
+	if (from_gdalread->ColorMap) GMT_free (C, from_gdalread->ColorMap);
+	for (i = 0; i < (uint64_t)from_gdalread->RasterCount; i++)
 		free(from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
 	GMT_free (C, from_gdalread->band_field_names);
 	GMT_free (C, from_gdalread);
