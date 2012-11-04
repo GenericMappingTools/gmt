@@ -59,9 +59,9 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	bool	metadata_only;
 	bool	pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
 	bool	fliplr, got_R = false, got_r = false, error = false;
-	int	*whichBands = NULL, *mVector = NULL, *nVector = NULL;
-	int	off, pad = 0, i_x_nXYSize, startColPos, nXSize_withPad;
-	unsigned int nn;
+	int	*whichBands = NULL, *rowVec = NULL, *colVec = NULL;
+	int	off, pad = 0, i_x_nXYSize, startColPos, startRow = 0, nXSize_withPad;
+	unsigned int nn, mm;
 	size_t n_alloc;
 	//int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	unsigned char *tmp = NULL;
@@ -71,6 +71,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
+	GInt16	*tmpI16;
+	GUInt16	*tmpUI16;
+	GInt32	*tmpI32;
+	GUInt32	*tmpUI32;
 
 	Ctrl->band_field_names = NULL;		/* So we can test before trying to read its fields */
 	GMT_memset (anSrcWin, 4, int);
@@ -100,6 +104,7 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		nReqBands = 1;
 		whichBands = GMT_memory (C, NULL, 1, int);
 		whichBands[0] = 1;
+		Ctrl->Float.active = true;		/* Signals that output will be in the float array, no matter input type */
 	}
 
 	do_BIP = prhs->I.active;
@@ -292,16 +297,28 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 			}
 			break;
 		case GDT_Int16:
-			Ctrl->Int16.data = GMT_memory (C, NULL, n_alloc, int16_t);
+			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
+				Ctrl->Float.data = prhs->f_ptr.grd;
+			else
+				Ctrl->Int16.data = GMT_memory (C, NULL, n_alloc, int16_t);
 			break;
 		case GDT_UInt16:
-			Ctrl->UInt16.data = GMT_memory (C, NULL, n_alloc, uint16_t);
+			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
+				Ctrl->Float.data = prhs->f_ptr.grd;
+			else
+				Ctrl->UInt16.data = GMT_memory (C, NULL, n_alloc, uint16_t);
 			break;
 		case GDT_Int32:
-			Ctrl->Int32.data = GMT_memory (C, NULL, n_alloc, int32_t);
+			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
+				Ctrl->Float.data = prhs->f_ptr.grd;
+			else
+				Ctrl->Int32.data = GMT_memory (C, NULL, n_alloc, int32_t);
 			break;
 		case GDT_UInt32:
-			Ctrl->UInt32.data = GMT_memory (C, NULL, n_alloc, uint32_t);
+			if (prhs->f_ptr.active)		/* Use the previously allocated float pointer */
+				Ctrl->Float.data = prhs->f_ptr.grd;
+			else
+				Ctrl->UInt32.data = GMT_memory (C, NULL, n_alloc, uint32_t);
 			break;
 		case GDT_Float32:
 		case GDT_Float64:
@@ -332,9 +349,9 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 	else
 		nX = nXSize,	nY = nYSize;
 
-	mVector = GMT_memory(C, NULL, nY, int);
-	for (m = 0; m < nY; m++) mVector[m] = m*nX;
-	nVector = GMT_memory(C, NULL, nX+4*pad, int);	/* For now this will be used only to select BIP ordering */
+	rowVec = GMT_memory(C, NULL, nY, int);
+	for (m = 0; m < nY; m++) rowVec[m] = m*nX;
+	colVec = GMT_memory(C, NULL, nX+4*pad, int);	/* For now this will be used only to select BIP ordering */
 	/* --------------------------------------------------------------------------------- */
 
 	for ( i = 0; i < nBands; i++ ) {
@@ -361,24 +378,35 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		else
 			i_x_nXYSize= i * (nBufXSize + 2*pad) * (nBufYSize + 2*pad);
 
-		nXSize_withPad = nXSize + 2 * pad;
 		startColPos = pad + i_x_nXYSize + (complex_mode > 1);	/* Take into account nBands, Padding and Complex */
+		nXSize_withPad = nXSize + 2 * pad;
+
+		if (prhs->mini_hdr.active) {
+			if (prhs->mini_hdr.side[0] == 'l' || prhs->mini_hdr.side[0] == 'r') {
+				nXSize_withPad = prhs->mini_hdr.BB_mx;
+				if (prhs->mini_hdr.side[0] == 'r')
+					startColPos += prhs->mini_hdr.offset;
+			}
+			else if (prhs->mini_hdr.side[0] == 'b') {
+				startRow = prhs->mini_hdr.offset;
+			}
+		}
 
 		switch ( GDALGetRasterDataType(hBand) ) {
 			case GDT_Byte:
 				/* This chunk is kind of complicated because we want to take into account several different cases */
 				for (n = 0; n < nXSize; n++)
 					if (do_BIP)
-						nVector[n] = n * nRGBA + i;	/* Vector for Pixel Interleaving */
+						colVec[n] = n * nRGBA + i;	/* Vector for Pixel Interleaving */
 					else
-						nVector[n] = n + i_x_nXYSize;	/* Vector for Band Sequential */
+						colVec[n] = n + i_x_nXYSize;	/* Vector for Band Sequential */
 
 				Ctrl->UInt8.active = true;
 				if (fliplr) {				/* No BIP option yet, and maybe never */
 					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
-							Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];
+							Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];
 					}
 				}
 				else
@@ -386,104 +414,124 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 						/*nn = pad + (pad+m)*(nXSize + 2*pad) + i_x_nXYSize;*/
 						off = nRGBA * pad + (pad+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
 						for (n = 0; n < nXSize; n++)
-							Ctrl->UInt8.data[nVector[n] + off] = tmp[mVector[m]+n];
-							/*Ctrl->UInt8.data[nn++] = tmp[mVector[m]+n];*/
+							Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
+							/*Ctrl->UInt8.data[nn++] = tmp[rowVec[m]+n];*/
 					}
 				break;
 			case GDT_Int16:
-				Ctrl->Int16.active = true;
+				if (!prhs->f_ptr.active) Ctrl->Int16.active = true;
+				tmpI16 = (GInt16 *)tmp;
 				if (fliplr) {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
-							memcpy (&Ctrl->Int16.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(int16_t)], sizeof(int16_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++] = tmpI16[rowVec[mm]+n];
+							else
+								Ctrl->Int16.data[nn++] = tmpI16[rowVec[mm]+n];
 					}
 				}
 				else {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = 0; n < nXSize; n++)
-							memcpy (&Ctrl->Int16.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(int16_t)], sizeof(int16_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++] = tmpI16[rowVec[mm]+n];
+							else
+								Ctrl->Int16.data[nn++] = tmpI16[rowVec[mm]+n];
 					}
 				}
 				break;
 			case GDT_UInt16:
-				Ctrl->UInt16.active = true;
+				if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
+				tmpUI16 = (GUInt16 *)tmp;
 				if (fliplr) {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
-							memcpy (&Ctrl->UInt16.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(uint16_t)], sizeof(uint16_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++]  = tmpUI16[rowVec[mm]+n];
+							else
+								Ctrl->UInt16.data[nn++] = tmpUI16[rowVec[mm]+n];
 					}
 				}
 				else {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = 0; n < nXSize; n++)
-							memcpy (&Ctrl->UInt16.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(uint16_t)], sizeof(uint16_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++]  = tmpUI16[rowVec[mm]+n];
+							else
+								Ctrl->UInt16.data[nn++] = tmpUI16[rowVec[mm]+n];
 					}
 				}
 				break;
 			case GDT_Int32:
-				Ctrl->Int32.active = true;
+				if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
+				tmpI32 = (GInt32 *)tmp;
 				if (fliplr) {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
-							memcpy (&Ctrl->Int32.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(int32_t)], sizeof(int32_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++]  = (float)tmpI32[rowVec[mm]+n];
+							else
+								Ctrl->Int32.data[nn++]  = tmpI32[rowVec[mm]+n];
 					}
 				}
 				else {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = 0; n < nXSize; n++)
-							memcpy (&Ctrl->Int32.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(int32_t)], sizeof(int32_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++]  = (float)tmpI32[rowVec[mm]+n];
+							else
+								Ctrl->Int32.data[nn++]  = tmpI32[rowVec[mm]+n];
 					}
 				}
 				break;
 			case GDT_UInt32:
-				Ctrl->UInt32.active = true;
+				if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
+				tmpUI32 = (GUInt32 *)tmp;
 				if (fliplr) {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = nXSize-1; n >= 0; n--)
-							memcpy (&Ctrl->UInt32.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(uint32_t)], sizeof(uint32_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++]  = (float)tmpUI32[rowVec[mm]+n];
+							else
+								Ctrl->UInt32.data[nn++]  = tmpUI32[rowVec[mm]+n];
 					}
 				}
 				else {
-					for (m = 0; m < nYSize; m++) {
-						nn = pad + (pad+m)*(nXSize_withPad) + i_x_nXYSize;
+					for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
+						nn = (pad+m)*(nXSize_withPad) + startColPos;
 						for (n = 0; n < nXSize; n++)
-							memcpy (&Ctrl->UInt32.data[nn++],
-									&tmp[(mVector[m]+n) * sizeof(uint32_t)], sizeof(uint32_t));
+							if (prhs->f_ptr.active)
+								Ctrl->Float.data[nn++]  = (float)tmpUI32[rowVec[mm]+n];
+							else
+								Ctrl->UInt32.data[nn++]  = tmpUI32[rowVec[mm]+n];
 					}
 				}
 				break;
 			case GDT_Float32:
 				Ctrl->Float.active = true;
-				for (m = 0; m < nYSize; m++) {
+				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
 						memcpy (&Ctrl->Float.data[nn],
-								&tmp[(mVector[m]+n) * sizeof(float)], sizeof(float));
+								&tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
 						nn += incStep;
 					}
 				}
 				break;
 			case GDT_Float64:	/* For now we don't care about doubles */
 				Ctrl->Float.active = true;
-				for (m = 0; m < nYSize; m++) {
+				for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
 					nn = (pad+m)*(nXSize_withPad) + startColPos;
 					for (n = 0; n < nXSize; n++) {
 						memcpy (&tmpF64,
-								&tmp[(mVector[m]+n) * sizeof(double)], sizeof(double));
+								&tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
 						Ctrl->Float.data[nn] = (float)tmpF64;
 						nn += incStep;
 					}
@@ -494,10 +542,10 @@ int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL 
 		}
 	}
 
-	GMT_free(C, mVector);
+	GMT_free(C, rowVec);
 	free(tmp);
 	if (whichBands) GMT_free(C, whichBands);
-	if (nVector) GMT_free(C, nVector);
+	if (colVec) GMT_free(C, colVec);
 
 	GDALClose(hDataset);
 
