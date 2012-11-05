@@ -416,6 +416,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	struct GMT_PLOT_AXIS *A;
 
 	GMT->current.setting.map_annot_offset[0] = fabs (GMT->current.setting.map_annot_offset[0]);	/* No 'inside' annotations allowed in colorbar */
+	GMT_memset (format, GMT_TEXT_LEN256, char);
 
 	/* Temporarily change to miter join so boxes and end triangles have near corners */
 	PSL_setlinejoin (PSL, PSL_MITER_JOIN);
@@ -449,8 +450,10 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					ndec = dec;
 				}
 			}
-			sprintf (text, format, z);
-			if (strchr (text, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
+			if (format && !exp_notation) {
+				sprintf (text, format, z);
+				if (strchr (text, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
+			}
 			prev_del_z = this_del_z;
 			this_del_z = P->range[i].z_high - P->range[i].z_low;
 			if (i && !doubleAlmostEqualZero (this_del_z, prev_del_z)) const_interval = false;
