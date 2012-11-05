@@ -191,7 +191,7 @@ unsigned int GMT_strtok (const char *string, const char *sep, unsigned int *pos,
 
 	/* Wind up *pos to next non-separating character */
 	while (string[i] && strchr (sep, (int)string[i])) i++;
-	*pos = i;
+	*pos = (unsigned int)i;
 
 	return 1;
 }

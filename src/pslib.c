@@ -1417,7 +1417,7 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 
 	if (justify < 0)  {	/* Strip leading and trailing blanks */
 		for (i = 0; text[i] == ' '; i++);
-		for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
+		for (j = (int)strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
 		justify = -justify;
 	}
 
@@ -1668,7 +1668,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		}
 		if (justify < 0)  {	/* Strip leading and trailing blanks */
 			for (i = 0; text[i] == ' '; i++);
-			for (j = strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
+			for (j = (int)strlen (text) - 1; text[j] == ' '; j--) text[j] = 0;
 			justify = -justify;
 		}
 		string = psl_prepare_text (PSL, &text[i]);	/* Check for escape sequences */
@@ -1932,7 +1932,7 @@ int PSL_plottextpath (struct PSL_CTRL *PSL, double x[], double y[], int n, int n
 				label[i][j] = 0;
 			}
 			/* Then strip off trailing blanks, if any */
-			for (j = strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
+			for (j = (int)strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
 		}
 	}
 	justify = abs (justify);
@@ -2002,7 +2002,7 @@ int PSL_plottextclip (struct PSL_CTRL *PSL, double x[], double y[], int m, doubl
 				label[i][j] = 0;
 			}
 			/* Then strip off trailing blanks, if any */
-			for (j = strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
+			for (j = (int)strlen (label[i]) - 1; label[i][j] == ' '; j--) label[i][j] = 0;
 		}
 	}
 	justify = abs (justify);
@@ -2217,7 +2217,7 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 	double fs;
 	struct PSL_WORD *new = NULL;
 
-	if (!length) length = strlen (word);
+	if (!length) length = (int)strlen (word);
 	while (word[i] && word[i] == '\t') {	/* Leading tab(s) means indent once */
 		tab = true;
 		i++;
@@ -2281,7 +2281,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	c = strtok_r (copy, sep, &lastp);	/* Found first word */
 	while (c) {	/* Found another word */
 		text[n_words] = strdup (c);
-		len = strlen(text[n_words]) - 1;
+		len = (int)strlen(text[n_words]) - 1;
 		if (text[n_words][len] == '\r') {	/* New paragraph */
 			text[n_words][len] = '\0';	/* chop off CR */
 			n_words++;
@@ -2549,7 +2549,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 	PSL_command (PSL, "/PSL_word");
 	for (i = n = 0 ; i < n_items; i++) {
 		PSL_command (PSL, "%c(%s)", (n) ? ' ' : '\n', word[i]->txt);
-		n += strlen (word[i]->txt) + 1; if (n >= 60) n = 0;
+		n += (int)strlen (word[i]->txt) + 1; if (n >= 60) n = 0;
 	}
 	PSL_command (PSL, "\n%d array astore def\n", n_items);
 
@@ -3171,59 +3171,59 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 			switch (text[i]) {
 				case 'A':
 					strcat (string, psl_scandcodes[0][he]);
-					j += strlen(psl_scandcodes[0][he]); i++;
+					j += (int)strlen(psl_scandcodes[0][he]); i++;
 					break;
 				case 'E':
 					strcat (string, psl_scandcodes[1][he]);
-					j += strlen(psl_scandcodes[1][he]); i++;
+					j += (int)strlen(psl_scandcodes[1][he]); i++;
 					break;
 				case 'O':
 					strcat (string, psl_scandcodes[2][he]);
-					j += strlen(psl_scandcodes[2][he]); i++;
+					j += (int)strlen(psl_scandcodes[2][he]); i++;
 					break;
 				case 'a':
 					strcat (string, psl_scandcodes[3][he]);
-					j += strlen(psl_scandcodes[3][he]); i++;
+					j += (int)strlen(psl_scandcodes[3][he]); i++;
 					break;
 				case 'e':
 					strcat (string, psl_scandcodes[4][he]);
-					j += strlen(psl_scandcodes[4][he]); i++;
+					j += (int)strlen(psl_scandcodes[4][he]); i++;
 					break;
 				case 'o':
 					strcat (string, psl_scandcodes[5][he]);
-					j += strlen(psl_scandcodes[5][he]); i++;
+					j += (int)strlen(psl_scandcodes[5][he]); i++;
 					break;
 				case 'C':
 					strcat (string, psl_scandcodes[6][he]);
-					j += strlen(psl_scandcodes[6][he]); i++;
+					j += (int)strlen(psl_scandcodes[6][he]); i++;
 					break;
 				case 'N':
 					strcat (string, psl_scandcodes[7][he]);
-					j += strlen(psl_scandcodes[7][he]); i++;
+					j += (int)strlen(psl_scandcodes[7][he]); i++;
 					break;
 				case 'U':
 					strcat (string, psl_scandcodes[8][he]);
-					j += strlen(psl_scandcodes[8][he]); i++;
+					j += (int)strlen(psl_scandcodes[8][he]); i++;
 					break;
 				case 'c':
 					strcat (string, psl_scandcodes[9][he]);
-					j += strlen(psl_scandcodes[9][he]); i++;
+					j += (int)strlen(psl_scandcodes[9][he]); i++;
 					break;
 				case 'n':
 					strcat (string, psl_scandcodes[10][he]);
-					j += strlen(psl_scandcodes[10][he]); i++;
+					j += (int)strlen(psl_scandcodes[10][he]); i++;
 					break;
 				case 's':
 					strcat (string, psl_scandcodes[11][he]);
-					j += strlen(psl_scandcodes[1][he]); i++;
+					j += (int)strlen(psl_scandcodes[1][he]); i++;
 					break;
 				case 'u':
 					strcat (string, psl_scandcodes[12][he]);
-					j += strlen(psl_scandcodes[12][he]); i++;
+					j += (int)strlen(psl_scandcodes[12][he]); i++;
 					break;
 				case '@':
 					strcat (string, psl_scandcodes[13][he]);
-					j += strlen(psl_scandcodes[13][he]); i++;
+					j += (int)strlen(psl_scandcodes[13][he]); i++;
 					break;
 				case '%':	/* Font switcher */
 					if (isdigit ((int)text[i+1])) {	/* Got a font */
@@ -3286,7 +3286,7 @@ int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned 
 	n=0;
 	fseek (fp, (off_t)0, SEEK_SET);
 	buffer = PSL_memory (PSL, NULL, BLOCKSIZE, unsigned char);
-	while ((p = fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
+	while ((p = (int)fread ((unsigned char *)buffer + n, 1U, (size_t)BLOCKSIZE, fp)) == BLOCKSIZE)
 	{
 		n+=BLOCKSIZE;
 		buffer = PSL_memory (PSL, buffer, n+BLOCKSIZE, unsigned char);
@@ -3355,9 +3355,9 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		red   = PSL_memory (PSL, NULL, get, unsigned char);
 		green = PSL_memory (PSL, NULL, get, unsigned char);
 		blue  = PSL_memory (PSL, NULL, get, unsigned char);
-		n  = fread (red,   1U, (size_t)get, fp);
-		n += fread (green, 1U, (size_t)get, fp);
-		n += fread (blue,  1U, (size_t)get, fp);
+		n  = (int)fread (red,   1U, (size_t)get, fp);
+		n += (int)fread (green, 1U, (size_t)get, fp);
+		n += (int)fread (blue,  1U, (size_t)get, fp);
 		if (n != header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
 			return (PSL_READ_FAILURE);
@@ -3395,9 +3395,9 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		red   = PSL_memory (PSL, NULL, get, unsigned char);
 		green = PSL_memory (PSL, NULL, get, unsigned char);
 		blue  = PSL_memory (PSL, NULL, get, unsigned char);
-		n  = fread (red,   1U, (size_t)get, fp);
-		n += fread (green, 1U, (size_t)get, fp);
-		n += fread (blue,  1U, (size_t)get, fp);
+		n  = (int)fread (red,   1U, (size_t)get, fp);
+		n += (int)fread (green, 1U, (size_t)get, fp);
+		n += (int)fread (blue,  1U, (size_t)get, fp);
 		if ((size_t)n != (size_t)header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
 			return (PSL_READ_FAILURE);
@@ -3448,9 +3448,9 @@ int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, u
 		red   = PSL_memory (PSL, NULL, get, unsigned char);
 		green = PSL_memory (PSL, NULL, get, unsigned char);
 		blue  = PSL_memory (PSL, NULL, get, unsigned char);
-		n  = fread (red,   1U, (size_t)get, fp);
-		n += fread (green, 1U, (size_t)get, fp);
-		n += fread (blue,  1U, (size_t)get, fp);
+		n  = (int)fread (red,   1U, (size_t)get, fp);
+		n += (int)fread (green, 1U, (size_t)get, fp);
+		n += (int)fread (blue,  1U, (size_t)get, fp);
 		if ((size_t)n != (size_t)header->maplength) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error reading colormap!\n");
 			return (PSL_READ_FAILURE);
