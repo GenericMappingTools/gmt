@@ -450,7 +450,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					ndec = dec;
 				}
 			}
-			if (format && !exp_notation) {
+			if (format[0] && !exp_notation) {
 				sprintf (text, format, z);
 				if (strchr (text, 'e')) exp_notation = true;	/* Got exponential notation in at least one place */
 			}
