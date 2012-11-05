@@ -3215,7 +3215,7 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 					break;
 				case 's':
 					strcat (string, psl_scandcodes[11][he]);
-					j += (int)strlen(psl_scandcodes[1][he]); i++;
+					j += (int)strlen(psl_scandcodes[11][he]); i++;
 					break;
 				case 'u':
 					strcat (string, psl_scandcodes[12][he]);
