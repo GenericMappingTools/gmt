@@ -221,7 +221,7 @@ int GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, struct 
 				break;
 			case 'D':
 				Ctrl->D.active = true;
-				n = strlen (opt->arg) - 1;
+				n = (unsigned int)strlen (opt->arg) - 1;
 				flag = opt->arg[n];
 				if (flag == 'h' || flag == 'H') {
 					Ctrl->D.horizontal = true;

@@ -1548,7 +1548,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 		v = GMT_memory (GMT, NULL, nm * nm, double);
 		s = GMT_memory (GMT, NULL, nm, double);
-		if ((error = GMT_svdcmp (GMT, A, nm, nm, s, v))) Return (error);
+		if ((error = (unsigned int)GMT_svdcmp (GMT, A, nm, nm, s, v))) Return (error);
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			char format[GMT_TEXT_LEN256];
 			double *eig = GMT_memory (GMT, NULL, nm, double);

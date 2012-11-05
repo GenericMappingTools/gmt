@@ -403,8 +403,8 @@ void find_nearest_point (struct SURFACE_INFO *C) {
 	briggs_index = 0;
 	for (k = 0; k < C->npoints; k++) {	/* Find constraining value  */
 		if (C->data[k].index != last_index) {
-			block_i = C->data[k].index/C->block_ny;
-			block_j = C->data[k].index%C->block_ny;
+			block_i = (int)C->data[k].index/C->block_ny;
+			block_j = (int)C->data[k].index%C->block_ny;
 			last_index = C->data[k].index;
 	 		iu_index = C->ij_sw_corner + (block_i * C->my + block_j) * C->grid;
 	 		x0 = h->wesn[XLO] + block_i*C->grid_xinc;
@@ -1114,8 +1114,8 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 		Note that this loop checks all values, even though only nearest were used.  */
 
 	for (k = 0; k < C->npoints; k++) {
-		i = C->data[k].index / C->ny;
-		j = C->data[k].index % C->ny;
+		i = (int)C->data[k].index / C->ny;
+		j = (int)C->data[k].index % C->ny;
 	 	ij = C->ij_sw_corner + i * C->my + j;
 	 	if ( iu[ij] == 5 ) continue;
 	 	x0 = h->wesn[XLO] + i*h->inc[GMT_X];
