@@ -428,8 +428,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			size_t chunksize[5]; /* chunksize of z */
 			GMT_err_trap (nc_inq_var_chunking (ncid, z_id, &storage_mode, chunksize));
 			if (storage_mode == NC_CHUNKED) {
-				header->z_chunksize[0] = chunksize[dims[0]]; /* chunk size of lat */
-				header->z_chunksize[1] = chunksize[dims[1]]; /* chunk size of lon */
+				header->z_chunksize[0] = (unsigned int)chunksize[dims[0]]; /* chunk size of lat */
+				header->z_chunksize[1] = (unsigned int)chunksize[dims[1]]; /* chunk size of lon */
 			}
 			else { /* NC_CONTIGUOUS */
 				header->z_chunksize[0] = header->z_chunksize[1] = 0;
@@ -450,7 +450,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			if (item[1] != 0 && dummy[0] != dummy[1]) { /* avoid dvision by 0 */
 				double index = (t_value[i] - dummy[0]) / (dummy[1] - dummy[0]) * item[1];
 				if (index > 0)
-					header->t_index[i] = index;
+					header->t_index[i] = (size_t)index;
 			}
 		}
 
@@ -469,9 +469,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	else {
 		/* Store global attributes */
 		unsigned int row, col;
-		int reg;
+		int reg, kind;
 		const int *nc_vers = netcdf_libvers();
-		const bool is_nc4_file = header->z_chunksize[0] != 0;
+		bool is_nc4_file;
+		GMT_err_trap (nc_inq_format(ncid, &kind));
+		is_nc4_file = (kind > NC_FORMAT_64BIT);
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
@@ -973,7 +975,7 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 
 		/* adjust row count, so that it ends on the bottom of a chunk */
 		count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
-		remainder = start[yx_dim[0]] % chunksize[yx_dim[0]];
+		remainder = (unsigned int)start[yx_dim[0]] % chunksize[yx_dim[0]];
 		count[yx_dim[0]] -= remainder;
 
 		count[yx_dim[1]] = width;
