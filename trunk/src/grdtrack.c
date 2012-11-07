@@ -601,7 +601,7 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;
-		int ix, iy, n_fields, rmode;
+		int ix, iy, n_fields, rmode, n_out = 0;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
 		bool gmt_skip_output (struct GMT_CTRL *C, double *cols, int n_cols);
@@ -621,7 +621,8 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 		GMT_memset (line, GMT_BUFSIZ, char);
 		if (Ctrl->Z.active) {
 			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* Since we are outputting z all columns */
-			GMT->common.b.ncol[GMT_OUT] = Ctrl->G.n_grids;
+			n_out = Ctrl->G.n_grids;
+			if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
 		}
 		ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 		rmode = (pure_ascii && GMT_get_cols (GMT, GMT_IN) >= 2) ? GMT_READ_MIXED : GMT_READ_DOUBLE;
@@ -643,7 +644,10 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 			}
 
 			/* Data record to process */
-			if (GMT->common.b.ncol[GMT_OUT] == 0) GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN] + Ctrl->G.n_grids;	/* Set # of output cols */
+			if (n_out == 0) {
+				n_out = GMT->common.b.ncol[GMT_IN] + Ctrl->G.n_grids;	/* Set # of output cols */
+				if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
+			}
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, in[GMT_X], in[GMT_Y], value);

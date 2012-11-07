@@ -965,11 +965,14 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->nx, float);
 		x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 		for (col = 0; col < Grid->header->nx; col++) x[col] = GMT_col_to_x (GMT, col, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->inc[GMT_X], Grid->header->xy_off, Grid->header->nx);
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
-			Return (API->error);
-		}
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
+		}
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
 		}
 	} else {	/* Need an entire (padded) grid */
 		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
@@ -1080,24 +1083,19 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Doing line %06d\r", j);
 #endif
 				switch (myras.type) {
-					case 'u':
-						/* unsigned char */
+					case 'u':	/* unsigned char */
 						convert_u_row (GMT, myras, floatrasrow, buffer);
 						break;
-					case 'c':
-						/* char */
+					case 'c':	/* char */
 						convert_c_row (GMT, myras, floatrasrow, buffer);
 						break;
-					case 'd':
-						/* uint16_t */
+					case 'd':	/* uint16_t */
 						convert_d_row (GMT, myras, floatrasrow, buffer);
 						break;
-					case 'i':
-						/* int16_t */
+					case 'i':	/* int16_t */
 						convert_i_row (GMT, myras, floatrasrow, buffer);
 						break;
-					case 'l':
-						/* int32_t */
+					case 'l':	/* int32_t */
 						convert_l_row (GMT, myras, floatrasrow, buffer);
 						break;
 				}
@@ -1117,10 +1115,10 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 			}
 			if (Ctrl->T.active) {	/* Just dump the row as xyz triplets */
-				out[1] = y;
+				out[GMT_Y] = y;
 				for (col = 0; col < Grid->header->nx; col++) {
-					out[0] = x[col];
-					out[2] = Grid->data[col];
+					out[GMT_X] = x[col];
+					out[GMT_Z] = Grid->data[col];
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				}
 			}
