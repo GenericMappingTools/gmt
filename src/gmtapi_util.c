@@ -132,33 +132,6 @@ typedef size_t (*p_func_size_t) (int row, int col, int dim);
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
-void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
-{	/* Write verbose message about binary record i/o format */
-	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
-	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};
-	unsigned int col;
-	uint64_t n_bytes;
-	
-	if (C->current.setting.verbose < GMT_MSG_VERBOSE) return;	/* Not in verbose mode anyway */
-	if (!C->common.b.active[direction]) return;	/* Not using binary i/o */
-	GMT_memset (message, GMT_TEXT_LEN256, char);	/* Start with a blank message */
-	for (col = 0; col < C->common.b.ncol[direction]; col++) {	/* For each binary column of data */
-		if (C->current.io.fmt[direction][col].skip < 0) {	/* Must skip BEFORE reading this column */
-			n_bytes = -C->current.io.fmt[direction][col].skip;
-			sprintf (skip, "%" PRIu64 "x", n_bytes);
-			strcat (message, skip);
-		}
-		s[0] = letter[C->current.io.fmt[direction][col].type];	/* Get data type code */
-		strcat (message, s);
-		if (C->current.io.fmt[direction][col].skip > 0) {	/* Must skip AFTER reading this column */
-			n_bytes = C->current.io.fmt[direction][col].skip;
-			sprintf (skip, "%" PRIu64 "x", n_bytes);
-			strcat (message, skip);
-		}
-	}
-	GMT_report (C, GMT_MSG_VERBOSE, "%s %d columns via binary records using format %s\n", GMT_direction[direction], C->common.b.ncol[direction], message);
-}
-
 double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, uint64_t row, unsigned int type)
 {	/* Returns a double value from the <type> column array pointed to by the union pointer *u, at row position row.
  	 * Used in GMTAPI_Import_Dataset and GMTAPI_Import_Grid. */

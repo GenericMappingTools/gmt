@@ -573,6 +573,38 @@ FILE *GMT_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 
 /* Table I/O routines for ascii and binary io */
 
+void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
+{	/* Write verbose message about binary record i/o format */
+	static const char *gmt_direction[2] = {"Input", "Output"};
+	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
+	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};
+	unsigned int col;
+	uint64_t n_bytes;
+	
+	if (C->current.setting.verbose < GMT_MSG_VERBOSE) return;	/* Not in verbose mode anyway */
+	if (!C->common.b.active[direction]) return;	/* Not using binary i/o */
+	if (C->common.b.ncol[direction] == 0) {
+		if (direction == GMT_OUT) C->common.b.o_delay = true;
+		return;	/* Number of columns not set yet - delay message */
+	}
+	GMT_memset (message, GMT_TEXT_LEN256, char);	/* Start with a blank message */
+	for (col = 0; col < C->common.b.ncol[direction]; col++) {	/* For each binary column of data */
+		if (C->current.io.fmt[direction][col].skip < 0) {	/* Must skip BEFORE reading this column */
+			n_bytes = -C->current.io.fmt[direction][col].skip;
+			sprintf (skip, "%" PRIu64 "x", n_bytes);
+			strcat (message, skip);
+		}
+		s[0] = letter[C->current.io.fmt[direction][col].type];	/* Get data type code */
+		strcat (message, s);
+		if (C->current.io.fmt[direction][col].skip > 0) {	/* Must skip AFTER reading this column */
+			n_bytes = C->current.io.fmt[direction][col].skip;
+			sprintf (skip, "%" PRIu64 "x", n_bytes);
+			strcat (message, skip);
+		}
+	}
+	GMT_report (C, GMT_MSG_VERBOSE, "%s %d columns via binary records using format %s\n", gmt_direction[direction], C->common.b.ncol[direction], message);
+}
+
 int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expected)
 {	/* Initializes the internal GMT->common.b.ncol[] settings.
 	 * direction is either GMT_IN or GMT_OUT.
@@ -587,6 +619,7 @@ int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expec
 	static char *mode[2] = {"input", "output"};
 
 	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
+	
 	if (C->common.b.ncol[direction]) return (GMT_OK);	/* Already set by -b */
 
 	if (expected == 0 && (direction == GMT_OUT || C->common.b.active[direction])) {
@@ -605,6 +638,10 @@ int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expec
 	}
 	else
 		C->common.b.ncol[direction] = (direction == GMT_IN && expected == 0) ? GMT_MAX_COLUMNS : expected;
+	if (direction == GMT_OUT && C->common.b.o_delay) {	/* Issue delayed message */
+		GMT_io_banner (C, direction);
+		C->common.b.o_delay = false;
+	}
 	return (GMT_OK);
 }
 

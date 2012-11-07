@@ -1539,6 +1539,11 @@ int gmt_parse_b_option (struct GMT_CTRL *C, char *text)
 #endif
 	if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just save the type for the entire record */
 		C->common.b.type[id] = text[k];			/* Default column type */
+#ifdef GMT_COMPAT	/* Must switch s,S,D to f, f(with swab), and d (with swab) */
+		if (C->common.b.type[id] == 's') C->common.b.type[id] = 'f';
+		if (C->common.b.type[id] == 'S') { C->common.b.type[id] = 'f'; C->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	}
+		if (C->common.b.type[id] == 'D') { C->common.b.type[id] = 'd'; C->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	}
+#endif
 		if (text[k+1] == 'w') C->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	/* Default swab */
 	}
 	else {
