@@ -45,8 +45,10 @@ enum GMT_enum_dist {GMT_MAP_DIST = 0,	/* Distance in the map */
 enum GMT_enum_path {GMT_RESAMPLE_PATH = 0,	/* Default: Resample geographic paths based in a max gap allowed (path_step) */
 	GMT_LEAVE_PATH};	/* Options like -A can turn of this resampling, where available */
 
-enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data */
+enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hypot */
+	GMT_CARTESIAN_DIST2,		/* Cartesian 2-D x,y data, return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ,	/* Project lon,lat to Cartesian 2-D x,y data, then get distance */
+	GMT_CARTESIAN_DIST_PROJ2,	/* Same as --"-- but return r^2 to avoid hypot */
 	GMT_CARTESIAN_DIST_PROJ_INV};	/* Project Cartesian 2-D x,y data to lon,lat, then get distance */
 enum GMT_enum_mdist {GMT_FLATEARTH = 1,	/* Compute Flat Earth distances */
 	GMT_GREATCIRCLE,	/* Compute great circle distances */

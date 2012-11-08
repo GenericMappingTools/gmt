@@ -5170,12 +5170,27 @@ double GMT_cartesian_dist (struct GMT_CTRL *C, double x0, double y0, double x1, 
 	return (hypot ( (x1 - x0), (y1 - y0)));
 }
 
+double GMT_cartesian_dist2 (struct GMT_CTRL *C, double x0, double y0, double x1, double y1)
+{	/* Calculates the good-old straight line distance squared in users units */
+	x1 -= x0;	y1 -= y0;
+	return (x1*x1 + y1*y1);
+}
+
 double GMT_cartesian_dist_proj (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
 {	/* Calculates the good-old straight line distance after first projecting the data */
 	double x0, y0, x1, y1;
 	GMT_geo_to_xy (C, lon1, lat1, &x0, &y0);
 	GMT_geo_to_xy (C, lon2, lat2, &x1, &y1);
 	return (hypot ( (x1 - x0), (y1 - y0)));
+}
+
+double GMT_cartesian_dist_proj2 (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
+{	/* Calculates the good-old straight line distance squared after first projecting the data */
+	double x0, y0, x1, y1;
+	GMT_geo_to_xy (C, lon1, lat1, &x0, &y0);
+	GMT_geo_to_xy (C, lon2, lat2, &x1, &y1);
+	x1 -= x0;	y1 -= y0;
+	return (x1*x1 + y1*y1);
 }
 
 double gmt_flatearth_dist_degree (struct GMT_CTRL *C, double x0, double y0, double x1, double y1)
@@ -5465,10 +5480,10 @@ bool gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct 
 }
 
 bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
-{
+{	/* Since Cartesian we use a GMT_distance set to return distances^2 (avoiding hypot) */
 	bool inside = false, each_point_has_distance;
 	uint64_t row, seg;
-	double d, x0, y0, xn, d0, dn;
+	double d, x0, y0, xn, d0, d02, dn;
 
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
 
@@ -5482,7 +5497,8 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct 
 	if ((x < (x0 - d0)) || (x > (xn) + dn)) return (false);
 
 	/* No, must search the points */
-
+	if (!each_point_has_distance) d02 = dist * dist;
+	
 	for (seg = 0; !inside && seg < T->n_segments; seg++) {
 		for (row = 0; !inside && row < T->segment[seg]->n_rows; row++) {
 			x0 = T->segment[seg]->coord[GMT_X][row];
@@ -5491,8 +5507,9 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct 
 				y0 = T->segment[seg]->coord[GMT_Y][row];
 				if (fabs (y - y0) <= d0) {	/* Simple y-range test next */
 					/* Here we must compute distance */
+					if (each_point_has_distance) d02 = d0 * d0;
 					d = GMT_distance (C, x, y, x0, y0);
-					inside = (d <= d0);
+					inside = (d <= d02);
 				}
 			}
 		}
@@ -7793,8 +7810,18 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian;
 			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
+		case GMT_CARTESIAN_DIST2:	/* Cartesian 2-D x,y data, use r^2 instead of hypot */
+			C->current.map.dist[type].func = &GMT_cartesian_dist2;
+			C->current.map.azimuth_func = &gmt_az_backaz_cartesian;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
+			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
 			C->current.map.dist[type].func = &GMT_cartesian_dist_proj;
+			C->current.map.azimuth_func = &gmt_az_backaz_cartesian_proj;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
+			break;
+		case GMT_CARTESIAN_DIST_PROJ2:	/* Cartesian distance after projecting 2-D lon,lat data, use r^2 instead of hypot  */
+			C->current.map.dist[type].func = &GMT_cartesian_dist_proj2;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian_proj;
 			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
@@ -7921,7 +7948,7 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char c, unsigned int mode, uns
 			C->current.map.dist[type].scale = 1.0 / METERS_IN_A_NAUTICAL_MILE;
 			break;
 			
-			/* Cartesian distances.  Note: The X|C|S|P 'units' are only passed internally and are not available as user selections directly */
+			/* Cartesian distances.  Note: The X|C|R|Z|S|P 'units' are only passed internally and are not available as user selections directly */
 			
 		case 'X':	/* Cartesian distances in user units */
 			proj_type = GMT_CARTESIAN;
@@ -7932,6 +7959,15 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char c, unsigned int mode, uns
 			proj_type = GMT_GEO2CART;
 			break;
 			
+		case 'R':	/* Cartesian distances squared in user units */
+			proj_type = GMT_CARTESIAN;
+			gmt_set_distaz (C, GMT_CARTESIAN_DIST2, type);
+			break;
+		case 'Z':	/* Cartesian distances squared (in PROJ_LENGTH_UNIT^2) after first projecting input coordinates with -J */
+			gmt_set_distaz (C, GMT_CARTESIAN_DIST_PROJ2, type);
+			proj_type = GMT_GEO2CART;
+			break;
+
 			/* Specialized cosine distances used internally only (e.g., greenspline) */
 			
 		case 'S':	/* Spherical cosine distances (for various gridding functions) */

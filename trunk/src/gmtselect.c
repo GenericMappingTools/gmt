@@ -510,9 +510,9 @@ int GMT_gmtselect (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_init_distaz (GMT, Ctrl->L.unit, Ctrl->L.mode, GMT_MAP_DIST);
 	}
 	else if (do_project)	/* Lon/lat projected via -R -J */
-		GMT_init_distaz (GMT, 'C', 0, GMT_MAP_DIST);
+		GMT_init_distaz (GMT, 'Z', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r after projection to avoid hypot */
 	else	/* Cartesian data */
-		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);
+		GMT_init_distaz (GMT, 'R', 0, GMT_MAP_DIST);	/* Compute r-squared instead of r to avoid hypot  */
 	
 	if (Ctrl->C.active) { 	/* Initialize point structure used in test for proximity to points [use Ctrl->C.dist ]*/
 		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->C.file, NULL)) == NULL) {
