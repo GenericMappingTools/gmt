@@ -5465,23 +5465,23 @@ double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct 
 bool gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {
 	uint64_t row, seg;
-	bool inside = false, each_point_has_distance;
+	bool each_point_has_distance;
 	double d;
 
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
-	for (seg = 0; !inside && seg < T->n_segments; seg++) {
-		for (row = 0; !inside && row < T->segment[seg]->n_rows; row++) {
+	for (seg = 0; seg < T->n_segments; seg++) {
+		for (row = 0; row < T->segment[seg]->n_rows; row++) {
 			d = GMT_distance (C, x, y, T->segment[seg]->coord[GMT_X][row], T->segment[seg]->coord[GMT_Y][row]);
 			if (each_point_has_distance) dist = T->segment[seg]->coord[GMT_Z][row];
-			inside = (d <= dist);
+			if (d <= dist) return (true);
 		}
 	}
-	return (inside);
+	return (false);
 }
 
 bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
 {	/* Since Cartesian we use a GMT_distance set to return distances^2 (avoiding hypot) */
-	bool inside = false, each_point_has_distance;
+	bool each_point_has_distance;
 	uint64_t row, seg;
 	double d, x0, y0, xn, d0, d02, dn;
 
@@ -5499,8 +5499,8 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct 
 	/* No, must search the points */
 	if (!each_point_has_distance) d02 = dist * dist;
 	
-	for (seg = 0; !inside && seg < T->n_segments; seg++) {
-		for (row = 0; !inside && row < T->segment[seg]->n_rows; row++) {
+	for (seg = 0; seg < T->n_segments; seg++) {
+		for (row = 0; row < T->segment[seg]->n_rows; row++) {
 			x0 = T->segment[seg]->coord[GMT_X][row];
 			d0 = (each_point_has_distance) ? T->segment[seg]->coord[GMT_Z][row] : dist;
 			if (fabs (x - x0) <= d0) {	/* Simple x-range test first */
@@ -5509,12 +5509,12 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct 
 					/* Here we must compute distance */
 					if (each_point_has_distance) d02 = d0 * d0;
 					d = GMT_distance (C, x, y, x0, y0);
-					inside = (d <= d02);
+					if (d <= d02) return (true);
 				}
 			}
 		}
 	}
-	return (inside);
+	return (false);
 }
 
 /* Functions involving distance from arbitrary points to a line */
@@ -7876,7 +7876,7 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 	if (type > 0) return;	/* Contour-related assignemnts end here */
 
 	/* Mapping only */
-	if (mode == GMT_CARTESIAN_DIST)	{	/* Cartesian data */
+	if (mode == GMT_CARTESIAN_DIST || mode == GMT_CARTESIAN_DIST2)	{	/* Cartesian data */
 		C->current.map.near_lines_func   = &gmt_near_lines_cartesian;
 		C->current.map.near_a_line_func  = &gmt_near_a_line_cartesian;
 		C->current.map.near_point_func   = &gmt_near_a_point_cartesian;
