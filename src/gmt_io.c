@@ -4060,7 +4060,7 @@ int gmt_scanf_geo (char *s, double *val)
 	ncolons = 0;
 	if ((p = strpbrk (scopy, "dD"))) {
 		/* We found a D or d.  */
-		if (strlen (p) < 1 || (strpbrk (&p[1], "dD:") ) ){
+		if (strlen (p) == 1 || (strpbrk (&p[1], "dD:") ) ){
 			/* It is at the end, or followed by a colon or another d or D.  */
 			return (GMT_IS_NAN);
 		}
@@ -4069,7 +4069,7 @@ int gmt_scanf_geo (char *s, double *val)
 	}
 	p = scopy;
 	while ((p2 = strpbrk (p, ":"))) {
-		if (strlen (p2) < 1) return (GMT_IS_NAN);	/* Shouldn't end with a colon  */
+		if (strlen (p2) == 1) return (GMT_IS_NAN);	/* Shouldn't end with a colon  */
 		ncolons++;
 		if (ncolons > 2) return (GMT_IS_NAN);
 		p = &p2[1];
