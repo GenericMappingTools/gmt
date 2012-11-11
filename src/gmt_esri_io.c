@@ -172,6 +172,8 @@ int read_esri_info_hdr (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);		/* TOTALROWBYTES */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);		/* BANDGAPBYTES  */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
+	while (strncmp (record, "NODATA", 4) )		/* Keep reading till find this keyword */
+		GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->nan_value) != 1) {
 		GMT_report (C, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 		return (GMT_GRDIO_READ_FAILED);
