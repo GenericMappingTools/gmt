@@ -237,7 +237,8 @@ enum GMT_col_enum {
 /* Various ways to report longitudes */
 
 enum GMT_lon_enum {
-	GMT_IS_0_TO_P360_RANGE 	= 1,	/* Report 0 <= lon <= 360 */
+	GMT_IS_GIVEN_RANGE 			= 0,	/* Report lon as is */
+	GMT_IS_0_TO_P360_RANGE			= 1,	/* Report 0 <= lon <= 360 */
 	GMT_IS_0_TO_P360			= 2,	/* Report 0 <= lon < 360 */
 	GMT_IS_M360_TO_0_RANGE			= 3,	/* Report -360 <= lon <= 0 */
 	GMT_IS_M360_TO_0			= 4,	/* Report -360 < lon <= 0 */

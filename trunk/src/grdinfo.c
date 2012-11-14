@@ -324,7 +324,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (GMT_is_geographic (GMT, GMT_IN)) {
 			if (GMT_grd_is_global (GMT, G->header))
-				GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_0_TO_P360_RANGE;
+				GMT->current.io.geo.range = (G->header->wesn[XLO] < 0.0) ? ((G->header->wesn[XLO] <= -180.0) ? GMT_IS_M180_TO_P180_RANGE : GMT_IS_GIVEN_RANGE) : GMT_IS_0_TO_P360_RANGE;
 			else if (G->header->wesn[XLO] < 0.0 && G->header->wesn[XHI] >= 0.0)
 				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 			else
