@@ -7338,7 +7338,7 @@ unsigned int GMT_map_loncross (struct GMT_CTRL *C, double lon, double south, dou
 int gmt_init_three_D (struct GMT_CTRL *C) {
 	unsigned int i;
 	bool easy, positive;
-	double x, y, zmin = 0.0, zmax = 0.0;
+	double x, y, zmin = 0.0, zmax = 0.0, z_range;
 
 	C->current.proj.three_D = (C->current.proj.z_project.view_azimuth != 180.0 || C->current.proj.z_project.view_elevation != 90.0);
 	C->current.proj.scale[GMT_Z] = C->current.proj.z_pars[0];
@@ -7372,8 +7372,12 @@ int gmt_init_three_D (struct GMT_CTRL *C) {
 			C->current.proj.fwd_z = &GMT_transpowz;
 			C->current.proj.inv_z = &GMT_itranspowz;
 	}
-	if (C->current.proj.compute_scale[GMT_Z]) C->current.proj.scale[GMT_Z] /= fabs (zmin - zmax);
-	C->current.proj.zmax = (zmax - zmin) * C->current.proj.scale[GMT_Z];
+	z_range = zmax - zmin;
+	if (z_range == 0.0)
+		C->current.proj.scale[GMT_Z] = 0.0;	/* No range given, just flat projected map */
+	else if (C->current.proj.compute_scale[GMT_Z])
+		C->current.proj.scale[GMT_Z] /= fabs (z_range);
+	C->current.proj.zmax = z_range * C->current.proj.scale[GMT_Z];
 	C->current.proj.origin[GMT_Z] = -zmin * C->current.proj.scale[GMT_Z];
 
 	if (C->current.proj.z_project.view_azimuth >= 360.0) C->current.proj.z_project.view_azimuth -= 360.0;
