@@ -1647,7 +1647,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	const char *justcmd[12] = {"", "", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	int dy, i = 0, j, font, x_just, y_just, upen, ugap, mode = (pmode > 0);
 	int sub, super, small, old_font, n_uline, start_uline, stop_uline;
-	double orig_size, small_size, size, scap_size, ustep, dstep;
+	double orig_size, small_size, size, scap_size, ustep, dstep, last_rgb[4];
 
 	if (fontsize == 0.0) return (PSL_NO_ERROR);	/* Nothing to do if text has zero size */
 
@@ -1825,8 +1825,10 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			int n_scan, k, error = false;
 			double rgb[4];
 			ptr++;
-			if (ptr[0] == ';')	/* Reset color to previous value */
-				PSL_command (PSL, "%s ", psl_putcolor (PSL, PSL->current.rgb[PSL_IS_FILL]));
+			if (ptr[0] == ';') {	/* Reset color to previous value */
+				PSL_command (PSL, "%s ", psl_putcolor (PSL, last_rgb));
+				PSL_rgb_copy (PSL->current.rgb[PSL_IS_FONT], last_rgb);	/* Update present color */
+			}
 			else {
 				char *s = NULL;
 				j = 0;
@@ -1858,7 +1860,11 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				ptr[j] = ';';
 				if (s) s[0] = '@';
 				while (*ptr != ';') ptr++;
-				if (!error) PSL_command (PSL, "%s ", psl_putcolor (PSL, rgb));
+				if (!error) {
+					PSL_command (PSL, "%s ", psl_putcolor (PSL, rgb));
+					PSL_rgb_copy (last_rgb, PSL->current.rgb[PSL_IS_FONT]);	/* Save previous color */
+					PSL_rgb_copy (PSL->current.rgb[PSL_IS_FONT], rgb);	/* Update present color */
+				}
 			}
 			ptr++;
 			strcpy (piece, ptr);
