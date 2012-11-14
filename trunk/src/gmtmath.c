@@ -3200,6 +3200,8 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N] = (double)n_records;
 
 	gmtmath_init (call_operator, consumed_operands, produced_operands);
+	op = decode_gmt_argument (GMT, "EXCH", &value, localhashnode);
+	consumed_operands[op] = produced_operands[op] = 0;	/* Modify items since we simply swap pointers */
 
 	for (opt = list, error = false; !error && opt; opt = opt->next) {
 
