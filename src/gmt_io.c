@@ -1844,6 +1844,8 @@ void GMT_lon_range_adjust (unsigned int range, double *lon)
 			while ((*lon) < -180.0) (*lon) += 360.0;
 			while ((*lon) >= 270.0) (*lon) -= 360.0;
 			break;
+		default:	/* Do nothing */
+			break;
 	}
 }
 
