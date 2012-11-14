@@ -236,16 +236,22 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			C->header->ny = A->header->ny + B->header->ny - one_or_zero;
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
-		else if ( !one_or_zero && (fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
-			/* B is on top of A but their pixel reg limits overlap by one cell */
-			way = 11;
-			C->header->ny = A->header->ny + B->header->ny - 1;
+		else if ((fabs (A->header->wesn[YHI] - B->header->wesn[YLO]) < (C->header->inc[GMT_Y] + y_noise)) ) {
+			/* B is on top of A but their pixel|grid reg limits under|overlap by one cell */
+			if (one_or_zero)        /* Grid registration - underlap */
+				way = 10;
+			else                    /* Pixel registration - overlap */
+				way = 11;
+			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
 			C->header->wesn[YHI] = B->header->wesn[YHI];			/* ...but not for north */
 		}
-		else if ( !one_or_zero && (fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < (C->header->inc[GMT_Y] + y_noise)) ) {
-			/* A is on top of B but their pixel reg limits overlap by one cell */
-			way = 22;
-			C->header->ny = A->header->ny + B->header->ny - 1;
+		else if ((fabs (A->header->wesn[YLO] - B->header->wesn[YHI]) < (C->header->inc[GMT_Y] + y_noise)) ) {
+			/* A is on top of B but their pixel|grid reg limits under|overlap by one cell */
+			if (one_or_zero)        /* Grid registration - underlap */
+				way = 21;
+			else                    /* Pixel registration - overlap */
+				way = 22;
+			C->header->ny = A->header->ny + B->header->ny - !one_or_zero;
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else {
@@ -267,16 +273,22 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			C->header->nx = A->header->nx + B->header->nx - one_or_zero;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
-		else if ( !one_or_zero && (fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < (C->header->inc[GMT_X] + x_noise)) ) {
-			/* A is on right of B but their pixel reg limits overlap by one cell */
-			way = 33;
-			C->header->nx = A->header->nx + B->header->nx - 1;
+		else if ((fabs (A->header->wesn[XLO] - B->header->wesn[XHI]) < (C->header->inc[GMT_X] + x_noise)) ) {
+			/* A is on right of B but their pixel|grid reg limits under|overlap by one cell */
+			if (one_or_zero)        /* Grid registration - underlap */
+				way = 32;
+			else                    /* Pixel registration - overlap */
+				way = 33;
+			C->header->nx = A->header->nx + B->header->nx - !one_or_zero;
 			C->header->wesn[XLO] = B->header->wesn[XLO];			/* ...but not for west */
 		}
-		else if ( !one_or_zero && (fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < (C->header->inc[GMT_X] + x_noise)) ) {
-			/* A is on left of B but their pixel reg limits overlap by one cell */
-			way = 44;
-			C->header->nx = A->header->nx + B->header->nx - 1;
+		else if ((fabs (A->header->wesn[XHI] - B->header->wesn[XLO]) < (C->header->inc[GMT_X] + x_noise)) ) {
+			/* A is on left of B but their pixel|grid reg limits under|overlap by one cell */
+			if (one_or_zero)        /* Grid registration - underlap */
+				way = 43;
+			else                    /* Pixel registration - overlap */
+				way = 44;
+			C->header->nx = A->header->nx + B->header->nx - !one_or_zero;
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
@@ -312,16 +324,21 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	switch (way) {    /* How A and B are positioned relative to each other */
 		case 1:         /* B is on top of A */
+		case 10:		/* B is on top of A but their grid reg limits underlap by one cell */
 		case 11:        /* B is on top of A but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
 				A->header->data_offset = B->header->nx * (B->header->ny - one_or_zero);
 				if (way == 11)
 					A->header->data_offset -= B->header->nx;
+				else if (way == 10)
+					A->header->data_offset += B->header->nx;
 			}
 			else {
 				GMT->current.io.pad[YHI] = B->header->ny - one_or_zero;
 				if (way == 11)
-					--GMT->current.io.pad[YHI];
+					GMT->current.io.pad[YHI]--;
+				else if (way == 10)
+					GMT->current.io.pad[YHI]++;
 				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->BB_my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -335,7 +352,9 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.pad[YHI] = 0;
 				GMT->current.io.pad[YLO] = A->header->ny - one_or_zero;
 				if (way == 11)
-					--GMT->current.io.pad[YLO];
+					GMT->current.io.pad[YLO]--;
+				else if (way == 10)
+					GMT->current.io.pad[YLO]++;
 				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->BB_my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -344,11 +363,14 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			break;
 		case 2:         /* A is on top of B */
+		case 21:        /* A is on top of B but their grid reg limits underlap by one cell */
 		case 22:        /* A is on top of B but their pixel reg limits overlap by one cell */
 			if (!is_nc_grid(A)) {
 				GMT->current.io.pad[YLO] = B->header->ny - one_or_zero;
 				if (way == 22)
-					--GMT->current.io.pad[YLO];
+					GMT->current.io.pad[YLO]--;
+				else if (way == 21)
+					GMT->current.io.pad[YLO]++;
 				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->BB_my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -360,12 +382,16 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 				B->header->data_offset = A->header->nx * (A->header->ny - one_or_zero);
 				if (way == 22)
 					B->header->data_offset -= A->header->nx;
+				else if (way == 21)
+					B->header->data_offset += A->header->nx;
 			}
 			else {
 				GMT->current.io.pad[YLO] = 0;
 				GMT->current.io.pad[YHI] = A->header->ny - one_or_zero;
 				if (way == 22)
-					--GMT->current.io.pad[YHI];
+					GMT->current.io.pad[YHI]--;
+				else if (way == 21)
+					GMT->current.io.pad[YHI]++;
 				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->BB_my = C->header->my;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -374,17 +400,22 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			break;
 		case 3:         /* A is on the right of B */
+		case 32:        /* A is on right of B but their grid reg limits underlap by one cell */
 		case 33:        /* A is on right of B but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
 				A->header->stride = C->header->nx;
 				A->header->data_offset = B->header->nx - one_or_zero;
 				if (way == 33)
-					--A->header->data_offset;
+					A->header->data_offset--;
+				else if (way == 32)
+					A->header->data_offset++;
 			}
 			else {
 				GMT->current.io.pad[XLO] = B->header->nx - one_or_zero;
 				if (way == 33)
-					--GMT->current.io.pad[XLO];
+					GMT->current.io.pad[XLO]--;
+				else if (way == 32)
+					GMT->current.io.pad[XLO]++;
 				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->BB_mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -398,7 +429,9 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			else {
 				GMT->current.io.pad[XLO] = 0; GMT->current.io.pad[XHI] = A->header->nx - one_or_zero;
 				if (way == 33)
-					--GMT->current.io.pad[XHI];
+					GMT->current.io.pad[XHI]--;
+				else if (way == 32)
+					GMT->current.io.pad[XHI]++;
 				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->BB_mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -407,6 +440,7 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			break;
 		case 4:         /* A is on the left of B */
+		case 43:        /* A is on left of B but their grid reg limits underlap by one cell */
 		case 44:        /* A is on left of B but their pixel reg limits overlap by one cell */
 			if (is_nc_grid(A)) {
 				A->header->stride = C->header->nx;
@@ -414,7 +448,9 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 			else {
 				GMT->current.io.pad[XHI] = B->header->nx - one_or_zero;
 				if (way == 44)
-					--GMT->current.io.pad[XHI];
+					GMT->current.io.pad[XHI]--;
+				else if (way == 43)
+					GMT->current.io.pad[XHI]++;
 				GMT_grd_setpad (GMT, A->header, GMT->current.io.pad);
 			}
 			A->header->BB_mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
@@ -426,13 +462,17 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 				B->header->stride = C->header->nx;
 				B->header->data_offset = A->header->nx - one_or_zero;
 				if (way == 44)
-					--B->header->data_offset;
+					B->header->data_offset--;
+				else if (way == 43)
+					B->header->data_offset++;
 			}
 			else {
 				GMT->current.io.pad[XHI] = 0;
 				GMT->current.io.pad[XLO] = A->header->nx - one_or_zero;
 				if (way == 44)
-					--GMT->current.io.pad[XLO];
+					GMT->current.io.pad[XLO]--;
+				else if (way == 43)
+					GMT->current.io.pad[XLO]++;
 				GMT_grd_setpad (GMT, B->header, GMT->current.io.pad);
 			}
 			B->header->BB_mx = C->header->mx;		/* Needed if grid is read by GMT_gdal_read_grd */
