@@ -166,10 +166,10 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Only applicable in conjunction with the -L option.\n");
 	GMT_message (GMT, "\t-Db Backtrack mode: move forward in time (from older to younger positions) [Default].\n");
 	GMT_message (GMT, "\t-Df Flowline mode: move backward in time (from younger to older positions).\n");
-	GMT_message (GMT, "\t-F Give file with lon, lat, time records describing motion of hotspot responsible for)\n");
-	GMT_message (GMT, "\t   the seamount/path we are concerned with [fixed hotspots].  If given, then the)\n");
-	GMT_message (GMT, "\t   input lon, lat is replaced by the position of the drifting hotspot at the given age.)\n");
-	GMT_message (GMT, "\t   Note: If -F is used the <d_km> in -L is assumed to be point spacing in Ma.)\n");
+	GMT_message (GMT, "\t-F Give file with lon, lat, time records describing motion of hotspot responsible for\n");
+	GMT_message (GMT, "\t   the seamount/path we are concerned with [fixed hotspots].  If given, then the\n");
+	GMT_message (GMT, "\t   input lon, lat is replaced by the position of the drifting hotspot at the given age.\n");
+	GMT_message (GMT, "\t   Note: If -F is used the <d_km> in -L is assumed to be point spacing in Ma.\n");
 	GMT_message (GMT, "\t-Lb Compute hotspot tracks sampled every <d_km> interval [Default projects single points].\n");
 	GMT_message (GMT, "\t-Lf Compute flowline for seamounts of unknown but maximum age [Default projects single points].\n");
 	GMT_message (GMT, "\t    If no <d_km> is given, the start/stop points for each stage are returned.\n");
