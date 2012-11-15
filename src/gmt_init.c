@@ -1394,10 +1394,17 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		for (pos = 0; pos < 4; pos++) p[pos] *= inv_scale;
 	}
 	
-	if (GMT_is_geographic (C, GMT_IN) && p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
+	if (GMT_is_geographic (C, GMT_IN)) {	/* Arrange so geographic region always has w < e */
 		double w = p[0], e = p[1];
-		if (C->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning -R: Given west and east values [%g %g] were adjusted so west < east [%g %g]\n", w, e, p[0], p[1]);
+		if (p[0] <= -360.0 || p[1] > 360.0) {	/* Arrange so geographic region always has |w,e| <= 360 */
+			double shift = (p[0] <= -360.0) ? 360.0 : -360.0;
+			p[0] += shift;	p[1] += shift;
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
+		}
+		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
+			if (C->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
+			GMT_report (C, GMT_MSG_VERBOSE, "Warning -R: Given west and east values [%g %g] were adjusted so west < east [%g %g]\n", w, e, p[0], p[1]);
+		}
 	}
 	if (i < 4 || i > 6 || ((!C->common.R.oblique && GMT_check_region (C, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	GMT_memcpy (C->common.R.wesn, p, 6, double);	/* This will probably be reset by GMT_map_setup */
