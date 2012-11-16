@@ -43,4 +43,4 @@ echo "0 -10 GMT CONFERENCE" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thin
 echo "0 -30 Honolulu, Hawaii, April 1, 2012" | pstext -R -J -O \
 	-F+f18p,Helvetica-Bold,green=thinnest >> $ps
 
-rm -f l*.nc l*.cpt
+rm -f l*.nc l*.cpt gmt.conf

@@ -30,4 +30,4 @@ echo "3.2125 7.5 Gridding of Data" | pstext -R0/10/0/10 -Jx1i -O -K -N \
 	-F+f32p,Times-Roman+jCB -X-3.5i >> $ps
 psscale -D3.25i/0.35i/5i/0.25ih -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> $ps
 #
-rm -f *.nc
+rm -f *.nc gmt.conf

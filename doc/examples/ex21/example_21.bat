@@ -86,3 +86,4 @@ REM Clean up after ourselves:
 
 del RHAT.*
 del .gmt*
+del gmt.conf

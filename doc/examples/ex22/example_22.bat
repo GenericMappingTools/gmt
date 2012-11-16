@@ -94,3 +94,4 @@ REM Clean up after ourselves:
 
 del neis.*
 del .gmt*
+del gmt.conf

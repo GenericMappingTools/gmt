@@ -34,3 +34,4 @@ echo 3.2125 7.5 Gridding of Data | pstext -R0/10/0/10 -Jx1i -O -K -N -F+f32p,Tim
 psscale -D3.21/0.35/5/0.25h -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> %ps%
 del *.nc
 del .gmt*
+del gmt.conf

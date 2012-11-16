@@ -23,3 +23,4 @@ del .gmt*
 del HI_topo2_int.nc
 del ?.cpt
 del tmp
+del gmt.conf

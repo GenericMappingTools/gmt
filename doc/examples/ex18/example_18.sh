@@ -78,4 +78,4 @@ END
 
 # Clean up
 
-rm -f grav.cpt sm_*.txt *_i.nc tmp.nc mask.nc pratt.d center*
+rm -f grav.cpt sm_*.txt *_i.nc tmp.nc mask.nc pratt.d center* gmt.conf

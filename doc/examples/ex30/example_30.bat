@@ -61,3 +61,4 @@ echo 0 0 0 120 | psxy -R -J -O -Sml1i -W1p -Gblack >> %ps%
 
 REM Clean up
 del .gmt*
+del gmt.conf

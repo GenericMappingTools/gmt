@@ -79,3 +79,4 @@ del mask.nc
 del pratt.d
 del center*.*
 del .gmt*
+del gmt.conf
