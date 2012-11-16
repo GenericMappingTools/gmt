@@ -94,4 +94,4 @@ pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F neis.legend -Glightyellow >> $ps
 
 # Clean up after ourselves:
 
-rm -f neis.*
+rm -f neis.* gmt.conf

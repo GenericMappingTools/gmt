@@ -86,4 +86,4 @@ psxy -R -J RHAT.pw -Wthinner,- -O >> $ps
 
 # Clean up after ourselves:
 
-rm -f RHAT.*
+rm -f RHAT.* gmt.conf

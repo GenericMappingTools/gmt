@@ -86,3 +86,4 @@ del .gmt*
 del CUSTOM_font_info.d
 del legend.txt
 rem del ex31CropNoLogo.eps
+del gmt.conf

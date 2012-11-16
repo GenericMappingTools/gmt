@@ -45,4 +45,4 @@ psxy `minmax data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i
 	-B1/50WSne >> $ps
 psxy -R -J trend.d -Wthinner,- -O -U"Example 14 in Cookbook" >> $ps
 
-rm -f mean.xyz track *.nc *.d
+rm -f mean.xyz track *.nc *.d gmt.conf

@@ -21,4 +21,4 @@ pstext -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i >> $ps << END
 -0.4 7.5 a)
 -0.4 3.0 b)
 END
-rm -f HI_topo2_int.nc ?.cpt
+rm -f HI_topo2_int.nc ?.cpt gmt.conf

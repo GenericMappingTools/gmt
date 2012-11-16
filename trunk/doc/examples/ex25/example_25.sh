@@ -41,4 +41,4 @@ S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]
 S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]
 S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [$mixed %]
 END
-rm -f *.nc key.*
+rm -f *.nc key.* gmt.conf

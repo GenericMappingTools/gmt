@@ -92,4 +92,4 @@ pstext -J -R -O -F+f+a >> $ps << END
 200 200 16p 225 GMT 5
 END
 
-rm -f *.nc
+rm -f *.nc gmt.conf
