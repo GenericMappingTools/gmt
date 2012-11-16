@@ -266,7 +266,7 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 #ifdef GMT_COMPAT
 				if (opt->arg[0] == 0) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
 					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -S deprecated. Use -sa instead.\n");
-					GMT->current.setting.io_nan_mode = 3;
+					GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE;
 					break;
 				}
 #endif

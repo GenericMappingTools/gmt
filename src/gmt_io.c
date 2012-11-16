@@ -1579,15 +1579,15 @@ void * gmt_bin_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval
 }
 
 bool gmt_skip_output (struct GMT_CTRL *C, double *cols, unsigned int n_cols)
-{	/* Consult the -s[<cols>[r] setting and the cols values to determine if this record should be output */
+{	/* Consult the -s[<cols>][a|r] setting and the cols values to determine if this record should be output */
 	unsigned int c, n_nan;
 	
 	if (n_cols > GMT_MAX_COLUMNS) {
 		GMT_report (C, GMT_MSG_NORMAL, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n_cols, GMT_MAX_COLUMNS);
 		return (true);	/* Skip record since we cannot access that many columns */
 	}
-	if (!C->current.setting.io_nan_mode) return (false);				/* Normal case; output the record */
-	if (C->current.setting.io_nan_mode == 3) {	/* -sa: Skip records if any NaNs are found */
+	if (C->current.setting.io_nan_mode == GMT_IO_NAN_OK) return (false);				/* Normal case; output the record */
+	if (C->current.setting.io_nan_mode == GMT_IO_NAN_ONE) {	/* -sa: Skip records if any NaNs are found */
 		for (c = 0; c < n_cols; c++) if (GMT_is_dnan (cols[c]))  return (true);	/* Found a NaN so we skip */
 		return (false);	/* No NaNs, output record */
 	}
@@ -1595,8 +1595,8 @@ bool gmt_skip_output (struct GMT_CTRL *C, double *cols, unsigned int n_cols)
 		if (C->current.io.io_nan_col[c] >= n_cols) continue;			/* Input record does not have this column */
 		if (GMT_is_dnan (cols[C->current.io.io_nan_col[c]])) n_nan++;		/* Count the nan columns found */
 	}
-	if (n_nan < C->current.io.io_nan_ncols  && C->current.setting.io_nan_mode == 2) return (true);	/* Skip records if -sr and not enough NaNs found */
-	if (n_nan == C->current.io.io_nan_ncols && C->current.setting.io_nan_mode == 1) return (true);	/* Skip records if -s and NaNs in specified columns */
+	if (n_nan < C->current.io.io_nan_ncols  && C->current.setting.io_nan_mode == GMT_IO_NAN_KEEP) return (true);	/* Skip records if -sr and not enough NaNs found */
+	if (n_nan == C->current.io.io_nan_ncols && C->current.setting.io_nan_mode == GMT_IO_NAN_SKIP) return (true);	/* Skip records if -s and NaNs in specified columns */
 	return (false);	/* No match, output record */
 }
 
@@ -1617,7 +1617,7 @@ int gmt_bin_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *ptr)
 	unsigned int i, n_out, col_pos;
 	double val;
 	
-	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
+	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
 	if (C->current.setting.io_lonlat_toggle[GMT_OUT]) double_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
 	for (i = k = 0; i < n_out; i++) {
@@ -1658,7 +1658,7 @@ int GMT_ascii_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *ptr)
 	int e = 0, wn = 0;
 	double val;
 
-	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[r] */
+	if (gmt_skip_output (C, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
 	n_out = (C->common.o.active) ? C->common.o.n_cols : n;
 
 	last = n_out - 1;				/* Last filed, need to output linefeed instead of delimiter */
@@ -2399,9 +2399,9 @@ int gmt_a_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write ascii */
 	unsigned i;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < (n - 1); ++i) {
 		GMT_ascii_output_col (C, fp, d[i], GMT_Z);
 		fprintf (fp, "\t");
@@ -2417,9 +2417,9 @@ int gmt_c_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int8_t aka char */
 	unsigned i;
 	int8_t s;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		s = (int8_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int8_t), 1U, fp) != 1U)
@@ -2433,9 +2433,9 @@ int gmt_u_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint8_t aka unsigned char */
 	unsigned i;
 	uint8_t u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint8_t) d[i];
 		if (GMT_fwrite (&u, sizeof (uint8_t), 1U, fp) != 1U)
@@ -2449,9 +2449,9 @@ int gmt_h_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int16_t */
 	unsigned i;
 	int16_t s;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		s = (int16_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int16_t), 1U, fp) != 1U)
@@ -2466,9 +2466,9 @@ int gmt_h_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	uint16_t u;
 	int16_t *s = (int16_t *)&u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		*s = (int16_t) d[i];
 		u = bswap16 (u);
@@ -2483,9 +2483,9 @@ int gmt_H_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint16_t */
 	unsigned i;
 	uint16_t u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint16_t) d[i];
 		if (GMT_fwrite (&u, sizeof (uint16_t), 1U, fp) != 1U)
@@ -2499,9 +2499,9 @@ int gmt_H_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write byteswapped uint16_t */
 	unsigned i;
 	uint16_t u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = bswap16 ((uint16_t) d[i]);
 		if (GMT_fwrite (&u, sizeof (uint16_t), 1U, fp) != 1U)
@@ -2515,9 +2515,9 @@ int gmt_i_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int32_t */
 	unsigned i;
 	int32_t s;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		s = (int32_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int32_t), 1U, fp) != 1U)
@@ -2532,9 +2532,9 @@ int gmt_i_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	uint32_t u;
 	int32_t *s = (int32_t *)&u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		*s = (int32_t) d[i];
 		u = bswap32 (u);
@@ -2549,9 +2549,9 @@ int gmt_I_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint32_t */
 	unsigned i;
 	uint32_t u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint32_t) d[i];
 		if (GMT_fwrite (&u, sizeof (uint32_t), 1U, fp) != 1U)
@@ -2565,9 +2565,9 @@ int gmt_I_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write byteswapped uint32_t */
 	unsigned i;
 	uint32_t u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = bswap32 ((uint32_t) d[i]);
 		if (GMT_fwrite (&u, sizeof (uint32_t), 1U, fp) != 1U)
@@ -2581,8 +2581,8 @@ int gmt_l_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int64_t */
 	unsigned i;
 	int64_t s;
-	if (gmt_skip_output (C, d, n))
-		return (0); /* Record was skipped via -s[r] */
+//	if (gmt_skip_output (C, d, n))
+//		return (0); /* Record was skipped via -s[r] */
 	for (i = 0; i < n; ++i) {
 		s = (int64_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int64_t), 1U, fp) != 1U)
@@ -2597,9 +2597,9 @@ int gmt_l_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	uint64_t u;
 	int64_t *s = (int64_t *)&u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		*s = (int64_t) d[i];
 		u = bswap64(u);
@@ -2614,9 +2614,9 @@ int gmt_L_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint64_t */
 	unsigned i;
 	uint64_t u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint64_t) d[i];
 		if (GMT_fwrite (&u, sizeof (int64_t), 1U, fp) != 1U)
@@ -2630,8 +2630,8 @@ int gmt_L_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write byteswapped uint64_t */
 	unsigned i;
 	uint64_t u;
-	if (gmt_skip_output (C, d, n))
-		return (0);	/* Record was skipped via -s[r] */
+//	if (gmt_skip_output (C, d, n))
+//		return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; ++i) {
 		u = bswap64((uint64_t) d[i]);
 		if (GMT_fwrite (&u, sizeof (uint64_t), 1U, fp) != 1U)
@@ -2644,9 +2644,9 @@ int gmt_f_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write float */
 	unsigned i;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		float f = (float) d[i];
 		if (GMT_fwrite (&f, sizeof (float), 1U, fp) != 1U)
@@ -2663,9 +2663,9 @@ int gmt_f_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 		float f;
 		uint32_t bits;
 	} u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u.f = (float) d[i];
 		u.bits = bswap32(u.bits);
@@ -2678,9 +2678,9 @@ int gmt_f_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 int gmt_d_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write double */
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	if (GMT_fwrite (d, sizeof (double), n, fp) != n)
 		return (GMT_DATA_WRITE_ERROR);
 	return (n);
@@ -2694,9 +2694,9 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 		double d;
 		uint64_t bits;
 	} u;
-	if (gmt_skip_output (C, d, n))
-		/* Record was skipped via -s[r] */
-		return (0);
+//	if (gmt_skip_output (C, d, n))
+//		/* Record was skipped via -s[r] */
+//		return (0);
 	for (i = 0; i < n; ++i) {
 		u.d = d[i];
 		u.bits = bswap64 (u.bits);

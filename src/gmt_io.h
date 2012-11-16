@@ -246,6 +246,14 @@ enum GMT_lon_enum {
 	GMT_IS_M180_TO_P180			= 6,	/* Report -180 <= lon < +180 */
 	GMT_IS_M180_TO_P270_RANGE		= 7};	/* Report -180 <= lon < +270 [GSHHS only] */
 
+/* How to handle NaNs in records */
+
+enum GMT_io_nan_enum {
+	GMT_IO_NAN_OK = 0,	/* NaNs are fine; just ouput the record as is */
+	GMT_IO_NAN_SKIP,	/* -s[cols]	: Skip records with z == NaN in selected cols [z-col only] */
+	GMT_IO_NAN_KEEP,	/* -sr		: Skip records with z != NaN */
+	GMT_IO_NAN_ONE};	/* -sa		: Skip records with at least one NaN */
+
 /* Use POSIX functions ftello() and fseeko(), which represent the
  * position using the off_t type: */
 #ifdef HAVE_FSEEKO

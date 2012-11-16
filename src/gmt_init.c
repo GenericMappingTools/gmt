@@ -2367,11 +2367,11 @@ bool gmt_parse_s_option (struct GMT_CTRL *C, char *item) {
 	GMT_memset (C->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 	C->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
 	C->current.io.io_nan_ncols = 1;		/* Default is that single z column */
-	C->current.setting.io_nan_mode = 1;	/* Plain -s */
+	C->current.setting.io_nan_mode = GMT_IO_NAN_SKIP;	/* Plain -s */
 	if (!item || !item[0]) return (false);	/* Nothing more to do */
 	n = (int)strlen (item);
-	if (item[n-1] == 'a') C->current.setting.io_nan_mode = 3, n--;		/* Set -sa */
-	else if (item[n-1] == 'r') C->current.setting.io_nan_mode = 2, n--;	/* Set -sr */
+	if (item[n-1] == 'a') C->current.setting.io_nan_mode = GMT_IO_NAN_ONE, n--;		/* Set -sa */
+	else if (item[n-1] == 'r') C->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Set -sr */
 	if (n == 0) return (false);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
