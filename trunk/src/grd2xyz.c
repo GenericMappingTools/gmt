@@ -142,9 +142,9 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
 				GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 				GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
-				GMT->current.io.io_nan_ncols = 1;		/* Default is that single z column */
+				GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
 				GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
-				if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = 2;
+				if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP;	/* Old -Sr */
 				GMT->common.s.active = true;
 				break;
 #endif
@@ -189,7 +189,7 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	bool error = false, first = true, ok;
-	unsigned int row, col;
+	unsigned int row, col, n_output;
 	
 	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
 
@@ -237,8 +237,8 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
-	GMT->common.b.ncol[GMT_OUT] = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
-	if ((error = GMT_set_cols (GMT, GMT_OUT, 0)) != GMT_OK) Return (error);
+	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
+	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) Return (error);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, 0, options) != GMT_OK) {	/* Registers stdout, unless already set */
 		Return (API->error);
@@ -401,7 +401,7 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
-		if (GMT->current.setting.io_nan_mode == 2)
+		if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
 			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64" NaN values suppressed\n", n_suppressed);
