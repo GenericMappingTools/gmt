@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdimage
+%%Title: GMT v5.0.1b_r10662 [64-bit] [C4] Document from grdimage
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:52:13 2011
+%%CreationDate: Fri Nov 16 13:14:55 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt -R-85/5/10/55 -JM5.3i -P -K -nc+t1
+%%GMT: grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt -R-85/5/10/55 -JM5.3i -P -K -nc+t1
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -10395,7 +10400,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour ttt_atl.nc -R-85/5/10/55 -JM5.3i -O -K -C0.5 -A1+uhour+v+f8p,Bookman-Demi -GL80W/31N/17W/26N,17W/28N/17W/50N -S2
+%%GMT: grdcontour ttt_atl.nc -R-85/5/10/55 -JM5.3i -O -K -C0.5 -A1+uhour+v+f8p,Bookman-Demi -GL80W/31N/17W/26N,17W/28N/17W/50N -S2
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -52891,7 +52896,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-85/5/10/55 -JM5.3i -Wfatter,white great_NY_Canaries.d -O -K
+%%GMT: psxy -R-85/5/10/55 -JM5.3i -Wfatter,white great_NY_Canaries.d -O -K
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -52937,7 +52942,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R-85/5/10/55 -JM5.3i -B20f5:.Tsunami travel times from the Canaries:WSne -N1/thick -O -K -Glightgray -Wfaint -A500
+%%GMT: pscoast -R-85/5/10/55 -JM5.3i -B20f5:.Tsunami travel times from the Canaries:WSne -N1/thick -O -K -Glightgray -Wfaint -A500
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -62786,7 +62791,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-85/5/10/55 -JM5.3i -O -K -Sa0.15i -Gred -Wthin
+%%GMT: psxy -R-85/5/10/55 -JM5.3i -O -K -Sa0.15i -Gred -Wthin
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -62811,7 +62816,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-85/5/10/55 -JM5.3i -Wthick great_NY_Canaries.d -O -K -Sqn1:+f8p,Times-Italic+lDistance Canaries to New York = 5322 km+ap+v
+%%GMT: psxy -R-85/5/10/55 -JM5.3i -Wthick great_NY_Canaries.d -O -K -Sqn1:+f8p,Times-Italic+lDistance Canaries to New York = 5329 km+ap+v
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -62831,7 +62836,7 @@ PSL_font_encode 6 get 0 eq {ISOLatin1+_Encoding /Times-Italic /Times-Italic PSL_
 /PSL_just 6 def
 /PSL_gap_x 20 def
 /PSL_gap_y 20 def
-(Distance Canaries to New York = 5322 km) sH /PSL_height edef
+(Distance Canaries to New York = 5329 km) sH /PSL_height edef
 /PSL_x
 4805
 4799
@@ -63763,7 +63768,7 @@ PSL_font_encode 6 get 0 eq {ISOLatin1+_Encoding /Times-Italic /Times-Italic PSL_
 343.87
 1 array astore def
 /PSL_str
-(Distance Canaries to New York = 5322 km)
+(Distance Canaries to New York = 5329 km)
 1 array astore def
 /PSL_n 460 def
 /PSL_m 1 def
@@ -63811,7 +63816,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-85/5/10/55 -JM5.3i great_NY_Paris.d -O -K -Sc0.08c -Gblack
+%%GMT: psxy -R-85/5/10/55 -JM5.3i great_NY_Paris.d -O -K -Sc0.08c -Gblack
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -63891,7 +63896,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-85/5/10/55 -JM5.3i -Wthinner great_NY_Paris.d -O -K -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white
+%%GMT: psxy -R-85/5/10/55 -JM5.3i -Wthinner great_NY_Paris.d -O -K -SqD1000k:+an+o+gblue+LDk+f7p,Helvetica-Bold,white
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -63989,7 +63994,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R-85/5/10/55 -JM5.3i -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j
+%%GMT: pstext -R-85/5/10/55 -JM5.3i -O -K -Gwhite -Wthin -Dj0.1i/0.1i -F+f8p,Bookman-Demi+j
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -64036,7 +64041,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-85/5/10/55 -JM5.3i -O -T
+%%GMT: psxy -R-85/5/10/55 -JM5.3i -O -T
 %%PROJ: merc -85.00000000 5.00000000 10.00000000 55.00000000 -5009377.086 5009377.086 1111475.103 7326837.715 +proj=merc +lon_0=-40 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
