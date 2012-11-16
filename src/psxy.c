@@ -514,7 +514,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2;
 
 	struct GMT_PEN current_pen, default_pen;
-	struct GMT_FILL current_fill, default_fill;
+	struct GMT_FILL current_fill, default_fill, black;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_LINE_SEGMENT *L = NULL;
@@ -543,6 +543,7 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_memset (&S, 1, struct GMT_SYMBOL);
 	GMT_contlabel_init (GMT, &S.G, 0);
 	xy_errors[GMT_X] = xy_errors[1] = 0;	/* These will be col # of where to find this info in data */
+	GMT_init_fill (GMT, &black, 0.0, 0.0, 0.0);	/* Default fill for points, if needed */
 
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[0];
@@ -595,9 +596,10 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 	get_rgb = (not_line && Ctrl->C.active);	/* Need to read z-vales from input data file */
 	read_symbol = (S.symbol == GMT_SYMBOL_NOT_SET);	/* Only for ASCII input */
 	polygon = (S.symbol == GMT_SYMBOL_LINE && (Ctrl->G.active || Ctrl->L.active));
+	if (S.symbol == GMT_SYMBOL_DOT) penset_OK = false;	/* Dots have no outline */
 
 	current_pen = default_pen = Ctrl->W.pen;
-	current_fill = default_fill = Ctrl->G.fill;
+	current_fill = default_fill = (S.symbol == GMT_SYMBOL_DOT && !Ctrl->G.active) ? black : Ctrl->G.fill;
 	default_outline = Ctrl->W.active;
 	if (Ctrl->I.active) {
 		GMT_illuminate (GMT, Ctrl->I.value, current_fill.rgb);
@@ -788,6 +790,9 @@ int GMT_psxy (struct GMTAPI_CTRL *API, int mode, void *args)
 					else if (S.v.status & GMT_VEC_FILL) {
 						current_fill = default_fill, Ctrl->G.active = true;	/* Return to default fill */
 					}
+				}
+				else if (S.symbol == GMT_SYMBOL_DOT && !Ctrl->G.active) {	/* Must switch on default black fill */
+					current_fill = black;
 				}
 			}
 
