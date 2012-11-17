@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0_r9629:9632 [64-bit] Document from GMT_psxy
+%%Title: GMT v5.0.1b_r10618 [64-bit] [C4] Document from psxy
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sat Jan  7 15:15:08 2012
+%%CreationDate: Fri Nov 16 15:40:06 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -150,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -190,7 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -577,7 +576,7 @@ O0
 -3000 PSL_xorig sub PSL_page_xsize 2 div add -4500 PSL_yorig sub PSL_page_ysize 2 div add TM
 
 % PostScript produced by:
-%%GMT:  psxy all_psxy_symbols.txt -R0/4/0/6 -B1g1WSne:.PROJ_LENGTH_UNIT=inch: -Jx1.25i -Sc1i -W0.25p,blue,. -P -K --PROJ_LENGTH_UNIT=inch \
+%%GMT: psxy all_psxy_symbols.txt -R0/4/0/6 -B1g1WSne:.PROJ_LENGTH_UNIT=inch: -Jx1.25i -Sc1i -W0.25p,blue,. -P -K --PROJ_LENGTH_UNIT=inch \
 %%GMT:+ -Xc -Yc -i0,1
 %%PROJ: xy 0.00000000 4.00000000 0.00000000 6.00000000 0.000 4.000 0.000 6.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
@@ -769,7 +768,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy all_psxy_symbols.txt -R0/4/0/6 -Jx1.25i -S -Gred -W1p -O --PROJ_LENGTH_UNIT=inch
+%%GMT: psxy all_psxy_symbols.txt -R0/4/0/6 -Jx1.25i -S -Gred -W1p -O --PROJ_LENGTH_UNIT=inch
 %%PROJ: xy 0.00000000 4.00000000 0.00000000 6.00000000 0.000 4.000 0.000 6.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -849,14 +848,16 @@ U
 V 2250 5250 T
 17 W
 N 0 0 600 17.1887 102.811 arc S
-V N 20 155 600 -14.9794 3.48594 arc
+V
+N 20 155 600 -14.9794 3.48594 arc
 -46 -14 D
 22 -161 600 32.6404 15.5215 arcn
-P clip FO U
-V N 124 95 600 134.979 116.514 arcn
+P clip fs P S U
+V
+N 124 95 600 134.979 116.514 arcn
 11 -47 D
 -150 -61 600 87.3596 104.478 arc
-P clip FO U
+P clip fs P S U
 U 
 17 W
 600 3750 5250 Sn
@@ -870,11 +871,12 @@ V 4730 6450 T 30 R
 0 0 M
 180 -48 D
 0 96 D
-P clip FO U
-V 5770 7050 T 30 R 0 0 M
+P clip fs P S U
+V 5770 7050 T 30 R
+0 0 M
 -180 48 D
 0 -96 D
-P clip FO U
+P clip fs P S U
 17 W
 600 0 70 750 8250 Sw
 600 2250 8250 Sx
