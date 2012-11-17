@@ -5876,12 +5876,12 @@ void gmt_handle_dosfile (struct GMT_CTRL *C, char *in, int this)
 		return;	/* Nothing to work on */
 	if ((len = (int)strlen (in)) < 2)
 		return;	/* Nothing to work on */
-	--len; /* Since this use of : cannot be at the end anyway and we need to check the next character */
+	len -= 2; /* Since this use of : cannot be at the end anyway and we need to check the next two characters */
 	for (i = 1; i < len; ++i) {
 		/* Start at position 1 since we need the position before.
-		 * Look for "X:/" pattern, with X = A-Z */
+		 * Look for "X:/<nocolon>" pattern, with X = A-Z */
 		if (in[i] == mark[this] && (in[i-1] >= 'A' && in[i-1] <= 'Z')
-				&& (in[i+1] == '/' || in[i+1] == '\\'))
+				&& (in[i+1] == '/' || in[i+1] == '\\') && (in[i+2] != mark[this]))
 			in[i] = mark[other];
 	}
 }
