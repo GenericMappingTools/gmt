@@ -4560,7 +4560,7 @@ void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, uint64_t n, i
 	/* Determine handedness of the contour and if opposite of orient reverse the contour */
 	int side[2], z_dir, k, k2;
 	bool reverse;
-	uint64_t ij, i, j;
+	uint64_t i, j, ij_ul, ij_ur, ij_ll, ij_lr;
 	double fx[2], fy[2], dx, dy;
 
 	if (orient == 0) return;	/* Nothing to be done when no orientation specified */
@@ -4578,8 +4578,10 @@ void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, uint64_t n, i
 
 	i = lrint (floor (0.5 * (fx[0] + fx[1])));
 	j = lrint (ceil  (0.5 * (fy[0] + fy[1])));
-	ij = GMT_IJP (G->header, j, i);
-	z_dir = (G->data[ij] > 0.0) ? +1 : -1;	/* +1 if lower-left node is higher than contour value, else -1 */
+	ij_ll = GMT_IJP (G->header, j, i);     /* lower left corner  */
+	ij_lr = GMT_IJP (G->header, j, i+1);   /* lower right corner */
+	ij_ul = GMT_IJP (G->header, j-1, i);   /* upper left corner  */
+	ij_ur = GMT_IJP (G->header, j-1, i+1); /* upper right corner */
 
 	for (k = 0; k < 2; k++) {	/* Determine which edge the contour points lie on (0-3) */
 		/* We KNOW that for each k, either x[k] or y[k] lies EXACTLY on a gridline.  This is used
@@ -4597,34 +4599,22 @@ void gmt_orient_contour (struct GMT_GRID *G, double *x, double *y, uint64_t n, i
 			side[k] = (fy[k] > fy[k2]) ? 0 : 2;	/* Same for fy */
 	}
 
-	switch (side[0]) {	/* Entry side */
-		case 0:	/* Bottom: Regardless of exit the LL node is to the left of line vector */
-			reverse = (z_dir == orient);
+	switch (side[0]) {	/* Entry side: check heights of corner points.*/
+	                        /* if point to the right of the line is higher z_dir = +1 else -1 */
+		case 0:	/* Bottom: check heights of lower left and lower right nodes */
+			z_dir = (G->data[ij_lr] > G->data[ij_ll]) ? +1 : -1;
 			break;
-		case 1:	/* Right: Must check exit */
-			switch (side[1]) {
-				case  0:	/* Bottom: LL Node is the the right of vector */
-					reverse = (z_dir != orient);
-					break;
-				default:	/* left and top it is to the left */
-					reverse = (z_dir == orient);
-					break;
-			}
+		case 1:	/* Right */
+			z_dir = (G->data[ij_ur] > G->data[ij_lr]) ? +1 : -1;
 			break;
-		case 2:	/* Top: Must check exit */
-			switch (side[1]) {
-				case 3:		/* Left: LL node is to the left of vector */
-					reverse = (z_dir == orient);
-					break;
-				default:	/* Bottom and right: LL node is to the right of vector */
-					reverse = (z_dir != orient);
-					break;
-			}
+		case 2:	/* Top */
+			z_dir = (G->data[ij_ul] > G->data[ij_ur]) ? +1 : -1;
 			break;
-		default:/* Left: LL node is always to the right of line vector */
-			reverse = (z_dir != orient);
+		default:/* Left */
+			z_dir = (G->data[ij_ll] > G->data[ij_ul]) ? +1 : -1;
 			break;
 	}
+	reverse = (z_dir != orient);
 
 	if (reverse) {	/* Must reverse order of contour */
 		for (i = 0, j = n-1; i < n/2; i++, j--) {
