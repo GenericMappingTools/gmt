@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.1b_r10675 [64-bit] [C4] Document from psxy
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 13:01:45 2011
+%%CreationDate: Tue Nov 20 09:31:33 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 1200 900 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -P -K -JM3i -R-180/180/-60/60 -Bg180 -Wthin -SE -Gred -X1i -Y0.75i
+%%GMT: psxy ellipse.d -P -K -JM3i -R-180/180/-60/60 -Bg180 -Wthin -SE -Gred -X1i -Y0.75i
 %%PROJ: merc -180.00000000 180.00000000 -60.00000000 60.00000000 -20037508.343 20037508.343 -8362698.549 8362698.549 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -668,7 +673,7 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JH0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
+%%GMT: psxy ellipse.d -O -K -JH0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
 %%PROJ: hammer -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +unavailable +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1058,8 +1063,8 @@ S
 -8 0 D
 -8 0 D
 -7 0 D
-1768 1800 M
-32 0 D
+-32 0 D
+1800 1800 M
 S
 1642 1797 M
 4 -7 D
@@ -1206,7 +1211,7 @@ O0
 -4200 2160 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JW0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y1.8i
+%%GMT: psxy ellipse.d -O -K -JW0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y1.8i
 %%PROJ: moll -180.00000000 180.00000000 -90.00000000 90.00000000 -18019929.522 18019929.522 -9009964.761 9009964.761 +proj=moll +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1651,8 +1656,8 @@ S
 -7 0 D
 -6 0 D
 -7 0 D
-1726 1799 M
-74 1 D
+-74 1 D
+1800 1800 M
 S
 1427 1780 M
 746 0 D
@@ -1776,7 +1781,7 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JI0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
+%%GMT: psxy ellipse.d -O -K -JI0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
 %%PROJ: sinu -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.355 20015109.355 -10007554.678 10007554.678 +proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -2218,8 +2223,8 @@ O0
 -4200 2160 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JN0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y1.8i
-%%PROJ: robin -180.00000000 180.00000000 -90.00000000 90.00000000 -16986827.551 16986827.551 -8615515.162 8615515.162 +proj=robin +lon_0=0 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771415
+%%GMT: psxy ellipse.d -O -K -JN0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y1.8i
+%%PROJ: robin -180.00000000 180.00000000 -90.00000000 90.00000000 -16986823.310 16986823.310 -8615513.011 8615513.011 +proj=robin +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -2577,8 +2582,8 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JR0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
-%%PROJ: wintri -180.00000000 180.00000000 -90.00000000 90.00000000 -16377637.779 16377637.779 -10007557.176 10007557.176  +a=6371008.771 +b=6371008.771415
+%%GMT: psxy ellipse.d -O -K -JR0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
+%%PROJ: wintri -180.00000000 180.00000000 -90.00000000 90.00000000 -16377633.690 16377633.690 -10007554.678 10007554.678  +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -2939,7 +2944,7 @@ O0
 -4200 2400 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JKf0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y2i
+%%GMT: psxy ellipse.d -O -K -JKf0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y2i
 %%PROJ: eck4 -180.00000000 180.00000000 -90.00000000 90.00000000 -16902287.507 16902287.507 -8451143.753 8451143.753 +proj=eck4 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3321,7 +3326,7 @@ O0
 4200 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JKs0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
+%%GMT: psxy ellipse.d -O -K -JKs0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i
 %%PROJ: eck6 -180.00000000 180.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3618,8 +3623,8 @@ O0
 -3600 2160 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JV0/2i -Rg -Bg180 -Wthin -SE -Gred -X-3i -Y1.8i
-%%PROJ: vandg -180.00000000 180.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -20015114.352 20015114.352 +proj=vandg +lon_0=0 +x_0=0 +y_0=0 +R_A +a=6371008.771 +b=6371008.771415
+%%GMT: psxy ellipse.d -O -K -JV0/2i -Rg -Bg180 -Wthin -SE -Gred -X-3i -Y1.8i
+%%PROJ: vandg -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -20015109.356 20015109.356 +proj=vandg +lon_0=0 +x_0=0 +y_0=0 +R_A +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -3864,58 +3869,53 @@ S
 -42 22 D
 S
 1200 0 M
--107 5 D
--6 0 D
--12 2 D
--11 1 D
--10 1 D
--9 1 D
--9 1 D
+-151 9 D
+-9 2 D
 -8 1 D
+-8 1 D
+-8 1 D
+-7 1 D
 -8 2 D
--8 1 D
--7 1 D
--7 1 D
--7 1 D
 -6 1 D
--7 2 D
+-7 1 D
+-7 1 D
 -12 2 D
--11 2 D
 -11 3 D
 -11 2 D
+-11 2 D
+-10 3 D
 -10 2 D
--9 3 D
--9 2 D
 -9 2 D
 -9 3 D
--8 2 D
--8 2 D
+-9 2 D
 -8 2 D
 -8 3 D
 -8 2 D
--7 2 D
+-8 2 D
+-8 2 D
 -7 3 D
 -7 2 D
 -7 2 D
 -7 2 D
--6 3 D
+-7 3 D
 -6 2 D
 -7 2 D
 -6 2 D
 -6 3 D
 -6 2 D
--11 4 D
+-6 2 D
 -12 5 D
 -11 4 D
+-11 5 D
+-11 4 D
 -10 4 D
 -10 5 D
 -10 4 D
--10 5 D
--9 4 D
--9 4 D
 -9 4 D
 -9 5 D
--1 0 D
+-9 4 D
+-9 4 D
+-2 1 D
 S
 1200 0 M
 -23 17 D
@@ -3943,58 +3943,53 @@ S
 1 0 D
 S
 1200 0 M
-107 5 D
-6 0 D
-12 2 D
-11 1 D
-10 1 D
-9 1 D
-9 1 D
+151 9 D
+9 2 D
 8 1 D
+8 1 D
+8 1 D
+7 1 D
 8 2 D
-8 1 D
-7 1 D
-7 1 D
-7 1 D
 6 1 D
-7 2 D
+7 1 D
+7 1 D
 12 2 D
-11 2 D
 11 3 D
 11 2 D
+11 2 D
+10 3 D
 10 2 D
-9 3 D
-9 2 D
 9 2 D
 9 3 D
-8 2 D
-8 2 D
+9 2 D
 8 2 D
 8 3 D
 8 2 D
-7 2 D
+8 2 D
+8 2 D
 7 3 D
 7 2 D
 7 2 D
 7 2 D
-6 3 D
+7 3 D
 6 2 D
 7 2 D
 6 2 D
 6 3 D
 6 2 D
-11 4 D
+6 2 D
 12 5 D
 11 4 D
+11 5 D
+11 4 D
 10 4 D
 10 5 D
 10 4 D
-10 5 D
-9 4 D
-9 4 D
 9 4 D
 9 5 D
-1 0 D
+9 4 D
+9 4 D
+2 1 D
 S
 664 126 M
 8 9 D
@@ -4061,8 +4056,7 @@ S
 12 3 D
 6 1 D
 7 1 D
-7 1 D
-205 18 D
+212 19 D
 1200 2400 M
 S
 908 2111 M
@@ -4127,9 +4121,8 @@ S
 -12 3 D
 -6 1 D
 -7 1 D
--7 1 D
-995 2382 M
-205 18 D
+988 2381 M
+212 19 D
 S
 664 2274 M
 8 -9 D
@@ -4163,10 +4156,11 @@ S
 8 W
 25 W
 1200 0 M
--249 26 D
--74 18 D
--75 24 D
--68 26 D
+-172 12 D
+-91 17 D
+-81 21 D
+-78 27 D
+-44 17 D
 -68 31 D
 -62 33 D
 -53 32 D
@@ -4213,14 +4207,15 @@ S
 83 37 D
 101 35 D
 81 21 D
-81 15 D
-182 14 D
+45 9 D
+218 20 D
 S
 1200 0 M
-249 26 D
-74 18 D
-75 24 D
-68 26 D
+172 12 D
+91 17 D
+81 21 D
+78 27 D
+44 17 D
 68 31 D
 62 33 D
 53 32 D
@@ -4267,8 +4262,8 @@ S
 -83 37 D
 -101 35 D
 -81 21 D
--81 15 D
--182 14 D
+-45 9 D
+-218 20 D
 S
 1200 0 M
 0 0 D
@@ -4282,7 +4277,7 @@ O0
 3600 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy ellipse.d -O -K -JY0/45/3i -Rg -Bg180 -Wthin -SE -Gred -X3i
+%%GMT: psxy ellipse.d -O -K -JY0/45/3i -Rg -Bg180 -Wthin -SE -Gred -X3i
 %%PROJ: cea -180.00000000 180.00000000 -90.00000000 90.00000000 -14192323.588 14192323.588 -8984885.712 8984885.712 +proj=cea +lon_0=44.87170288012143 +lat_ts=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4383,7 +4378,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JY0/45/3i -O -T
+%%GMT: psxy -Rg -JY0/45/3i -O -T
 %%PROJ: cea -180.00000000 180.00000000 -90.00000000 90.00000000 -14192323.588 14192323.588 -8984885.712 8984885.712 +proj=cea +lon_0=44.87170288012143 +lat_ts=0 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin

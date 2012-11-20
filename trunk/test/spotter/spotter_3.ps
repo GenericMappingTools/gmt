@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pscoast
+%%Title: GMT v5.0.1b_r10675 [64-bit] [C4] Document from pscoast
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 13:02:50 2011
+%%CreationDate: Tue Nov 20 09:31:55 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1800 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R130/260/-55/60 -JM6i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20WSne -Xc -Y1.5i
+%%GMT: pscoast -R130/260/-55/60 -JM6i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20WSne -Xc -Y1.5i
 %%PROJ: merc 130.00000000 260.00000000 -55.00000000 60.00000000 -7235766.902 7235766.902 -7326837.715 8362698.549 +proj=merc +lon_0=195 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -15116,7 +15121,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy spotter_3.d -R130/260/-55/60 -JM6i -O -K -Ckey.cpt -i0,1,5 -Sc0.03i
+%%GMT: psxy spotter_3.d -R130/260/-55/60 -JM6i -O -K -Ckey.cpt -i0,1,5 -Sc0.03i
 %%PROJ: merc 130.00000000 260.00000000 -55.00000000 60.00000000 -7235766.902 7235766.902 -7326837.715 8362698.549 +proj=merc +lon_0=195 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -15272,8 +15277,8 @@ PSL_eoclip N
 18 1050 5483 Sc
 {1 0.867 0.4 C} FS
 18 817 5833 Sc
-18 1014 5559 Sc
 {0 0.533 0.8 C} FS
+18 1014 5559 Sc
 18 789 5653 Sc
 {0.667 0.333 0.267 C} FS
 18 741 5574 Sc
@@ -15817,7 +15822,9 @@ PSL_eoclip N
 {0 1 1 C} FS
 18 2582 3510 Sc
 18 2530 3338 Sc
+{0.667 0.333 0.267 C} FS
 18 2713 3385 Sc
+{0 1 1 C} FS
 18 2574 3354 Sc
 18 2514 3513 Sc
 18 2580 3387 Sc
@@ -15888,9 +15895,7 @@ PSL_eoclip N
 {0 1 0 C} FS
 18 2378 3839 Sc
 18 2352 3909 Sc
-{0 1 1 C} FS
 18 2374 3694 Sc
-{0 1 0 C} FS
 18 2408 3772 Sc
 {0 0.533 0.8 C} FS
 18 2624 4149 Sc
@@ -16662,9 +16667,7 @@ PSL_eoclip N
 18 3767 5139 Sc
 18 3476 5097 Sc
 18 3762 5081 Sc
-{1 0.867 0.4 C} FS
 18 3440 4864 Sc
-{1 0 0 C} FS
 18 3760 5315 Sc
 18 3479 5074 Sc
 18 3808 5168 Sc
@@ -17132,7 +17135,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R130/260/-55/60 -JM6i -O -K -Sa0.2i -W0.25p -Ckey.cpt
+%%GMT: psxy -R130/260/-55/60 -JM6i -O -K -Sa0.2i -W0.25p -Ckey.cpt
 %%PROJ: merc 130.00000000 260.00000000 -55.00000000 60.00000000 -7235766.902 7235766.902 -7326837.715 8362698.549 +proj=merc +lon_0=195 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -17172,7 +17175,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R130/260/-55/60 -JM6i -O -K -F+jCT+f10p -Dj0.15i/0.15i -Gwhite -W0.5p
+%%GMT: pstext -R130/260/-55/60 -JM6i -O -K -F+jCT+f10p -Dj0.15i/0.15i -Gwhite -W0.5p
 %%PROJ: merc 130.00000000 260.00000000 -55.00000000 60.00000000 -7235766.902 7235766.902 -7326837.715 8362698.549 +proj=merc +lon_0=195 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -17275,7 +17278,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -Ckey.cpt -D3i/-0.5i/5i/0.14ih -O -Li0.15i
+%%GMT: psscale -Ckey.cpt -D3i/-0.5i/5i/0.14ih -O -Li0.15i
 %%PROJ: xy 1.00000000 11.00000000 0.00000000 0.14000000 1.000 11.000 0.000 0.140 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin

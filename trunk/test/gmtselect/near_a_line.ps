@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxy
+%%Title: GMT v5.0.1b_r10675 [64-bit] [C4] Document from psxy
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:58:02 2011
+%%CreationDate: Tue Nov 20 09:30:26 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 900 1200 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred 30680.xyz -X0.75i -Y1i
+%%GMT: psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X0.75i -Y1i
 %%PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3331,7 +3336,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JX3.25i -O -K -Sc0.02 -Ggreen
+%%GMT: psxy -R0/5/0/5 -JX3.25i -O -K -Sc0.02 -Ggreen
 %%PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4156,7 +4161,6 @@ PSL_eoclip N
 12 2262 1326 Sc
 12 2340 1326 Sc
 12 2418 1326 Sc
-12 156 1248 Sc
 12 234 1248 Sc
 12 312 1248 Sc
 12 390 1248 Sc
@@ -4475,7 +4479,6 @@ PSL_eoclip N
 12 1014 156 Sc
 12 1092 156 Sc
 12 1170 156 Sc
-12 1248 156 Sc
 12 468 78 Sc
 12 546 78 Sc
 12 624 78 Sc
@@ -4493,7 +4496,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JX3.25i -O -K 30680.d -W1p
+%%GMT: psxy -R0/5/0/5 -JX3.25i -O -K tt.d -W1p
 %%PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -4510,7 +4513,7 @@ O0
 4500 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JX3.25i -O -B1g1WSne -K -Sc0.02 -Gred 30680.xyz -X3.75i
+%%GMT: psxy -R0/5/0/5 -JX3.25i -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i
 %%PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -7270,7 +7273,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JX3.25i -O -K -Sc0.02 -Ggreen
+%%GMT: psxy -R0/5/0/5 -JX3.25i -O -K -Sc0.02 -Ggreen
 %%PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -8116,7 +8119,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JX3.25i -O -K 30680.d -W1p
+%%GMT: psxy -R0/5/0/5 -JX3.25i -O -K tt.d -W1p
 %%PROJ: xy 0.00000000 5.00000000 0.00000000 5.00000000 0.000 5.000 0.000 5.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -8133,7 +8136,7 @@ O0
 -4500 4800 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred 30680.xyz -X-3.75i -Y4i
+%%GMT: psxy -R0/5/0/5 -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X-3.75i -Y4i
 %%PROJ: merc 0.00000000 5.00000000 0.00000000 5.00000000 -278298.727 278298.727 -0.000 553583.847 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -10867,7 +10870,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JM3.25i -O -K -Sc0.02 -Ggreen
+%%GMT: psxy -R0/5/0/5 -JM3.25i -O -K -Sc0.02 -Ggreen
 %%PROJ: merc 0.00000000 5.00000000 0.00000000 5.00000000 -278298.727 278298.727 -0.000 553583.847 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -10880,6 +10883,7 @@ clipsave
 PSL_eoclip N
 4 W
 {0 1 0 C} FS
+12 2886 3879 Sc
 12 2574 3801 Sc
 12 2652 3801 Sc
 12 2730 3801 Sc
@@ -12030,7 +12034,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JM3.25i -O -K 30680.d -W1p
+%%GMT: psxy -R0/5/0/5 -JM3.25i -O -K tt.d -W1p
 %%PROJ: merc 0.00000000 5.00000000 0.00000000 5.00000000 -278298.727 278298.727 -0.000 553583.847 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -12069,7 +12073,7 @@ O0
 4500 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred 30680.xyz -X3.75i
+%%GMT: psxy -R0/5/0/5 -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i
 %%PROJ: merc 0.00000000 5.00000000 0.00000000 5.00000000 -278298.727 278298.727 -0.000 553583.847 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -14803,7 +14807,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JM3.25i -O -K -Sc0.02 -Ggreen
+%%GMT: psxy -R0/5/0/5 -JM3.25i -O -K -Sc0.02 -Ggreen
 %%PROJ: merc 0.00000000 5.00000000 0.00000000 5.00000000 -278298.727 278298.727 -0.000 553583.847 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -15650,7 +15654,7 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R0/5/0/5 -JM3.25i -O 30680.d -W1p
+%%GMT: psxy -R0/5/0/5 -JM3.25i -O tt.d -W1p
 %%PROJ: merc 0.00000000 5.00000000 0.00000000 5.00000000 -278298.727 278298.727 -0.000 553583.847 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin

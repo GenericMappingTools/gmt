@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:08:59) [64-bit] Document from GMT_pscoast
+%%Title: GMT v5.0.1b_r10675 [64-bit] [C4] Document from pscoast
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 17:33:13 2011
+%%CreationDate: Tue Nov 20 09:29:06 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,7 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -572,8 +576,8 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Rg -JV4i -Bg -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -P
-%%PROJ: vandg 0.00000000 360.00000000 -90.00000000 90.00000000 -20015114.352 20015114.352 -20015114.352 20015114.352 +proj=vandg +lon_0=180 +x_0=0 +y_0=0 +R_A +a=6371008.771 +b=6371008.771415
+%%GMT: pscoast -Rg -JV4i -Bg -Dc -Glightgray -Scornsilk -A10000 -Wthinnest -P
+%%PROJ: vandg 0.00000000 360.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -20015109.356 20015109.356 +proj=vandg +lon_0=180 +x_0=0 +y_0=0 +R_A +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -793,8 +797,8 @@ FO
 110 32 D
 117 28 D
 120 22 D
-73 10 D
-306 20 D
+117 16 D
+262 14 D
 -90 -12 D
 -95 -17 D
 -92 -20 D
@@ -3885,29 +3889,32 @@ S
 -108 24 D
 -103 18 D
 -87 12 D
-339 -24 D
-108 -18 D
-92 -19 D
-114 -30 D
-59 -17 D
-79 -26 D
-99 -37 D
-73 -31 D
-73 -33 D
-86 -43 D
-95 -53 D
-84 -52 D
-104 -71 D
-46 -35 D
-13 -9 D
-66 -53 D
-71 -61 D
-64 -59 D
+248 -13 D
+107 -13 D
+119 -21 D
+123 -28 D
+131 -38 D
+93 -32 D
+81 -31 D
+66 -28 D
+49 -22 D
+93 -46 D
+31 -16 D
+19 -11 D
+74 -42 D
+25 -16 D
+88 -56 D
+91 -65 D
+56 -44 D
+80 -66 D
+57 -51 D
 4 -5 D
-19 -17 D
-63 -66 D
-54 -59 D
-46 -55 D
+34 -31 D
+4 -5 D
+49 -48 D
+56 -60 D
+52 -59 D
+21 -26 D
 -103 -43 D
 -96 -37 D
 -46 60 D
@@ -19783,61 +19790,43 @@ S
 -33 16 D
 S
 2400 0 M
--163 6 D
--10 0 D
--9 1 D
--9 1 D
--9 0 D
--8 1 D
--8 1 D
--7 0 D
--7 1 D
--7 1 D
--7 0 D
--7 1 D
--6 1 D
--7 1 D
--12 1 D
--12 1 D
--11 2 D
--11 1 D
+-325 22 D
 -10 1 D
 -10 2 D
--10 1 D
+-9 1 D
 -9 2 D
--10 1 D
+-9 1 D
 -9 1 D
 -8 2 D
--9 1 D
+-8 1 D
 -8 1 D
 -8 2 D
 -8 1 D
 -8 2 D
--8 1 D
+-7 1 D
 -7 1 D
 -8 2 D
 -7 1 D
 -7 1 D
--7 2 D
+-6 2 D
 -7 1 D
 -7 1 D
--7 2 D
+-6 2 D
+-7 1 D
+-6 2 D
 -6 1 D
--7 2 D
--6 1 D
--6 1 D
--7 2 D
--6 1 D
+-7 1 D
 -12 3 D
--12 2 D
--11 3 D
--11 3 D
+-12 3 D
 -11 2 D
+-12 3 D
 -11 3 D
--11 3 D
--10 3 D
 -10 2 D
+-11 3 D
 -10 3 D
+-11 3 D
+-10 2 D
+-9 3 D
 -10 3 D
 -10 2 D
 -9 3 D
@@ -19845,20 +19834,20 @@ S
 -9 2 D
 -9 3 D
 -9 3 D
+-8 2 D
+-9 3 D
+-8 3 D
 -9 2 D
--9 3 D
 -8 3 D
--8 2 D
--9 3 D
 -8 3 D
 -8 2 D
 -8 3 D
 -8 2 D
 -7 3 D
 -8 3 D
--8 2 D
--7 3 D
+-7 2 D
 -8 3 D
+-7 3 D
 -7 2 D
 -7 3 D
 -7 2 D
@@ -19871,30 +19860,29 @@ S
 -7 3 D
 -7 2 D
 -6 3 D
--7 2 D
+-6 2 D
+-7 3 D
+-6 2 D
 -6 3 D
 -6 3 D
 -7 2 D
 -6 3 D
 -6 2 D
 -6 3 D
--6 2 D
+-5 2 D
 -6 3 D
 -6 2 D
 -6 3 D
--6 3 D
--6 2 D
--5 3 D
+-11 5 D
+-11 5 D
 -12 5 D
--11 5 D
+-10 5 D
 -11 5 D
 -11 5 D
 -10 5 D
--11 5 D
 -10 5 D
 -10 5 D
--11 5 D
--1 1 D
+-3 2 D
 S
 2400 0 M
 -31 23 D
@@ -19936,61 +19924,43 @@ S
 41 53 D
 S
 2400 0 M
-163 6 D
-10 0 D
-9 1 D
-9 1 D
-9 0 D
-8 1 D
-8 1 D
-7 0 D
-7 1 D
-7 1 D
-7 0 D
-7 1 D
-6 1 D
-7 1 D
-12 1 D
-12 1 D
-11 2 D
-11 1 D
+325 22 D
 10 1 D
 10 2 D
-10 1 D
+9 1 D
 9 2 D
-10 1 D
+9 1 D
 9 1 D
 8 2 D
-9 1 D
+8 1 D
 8 1 D
 8 2 D
 8 1 D
 8 2 D
-8 1 D
+7 1 D
 7 1 D
 8 2 D
 7 1 D
 7 1 D
-7 2 D
+6 2 D
 7 1 D
 7 1 D
-7 2 D
+6 2 D
+7 1 D
+6 2 D
 6 1 D
-7 2 D
-6 1 D
-6 1 D
-7 2 D
-6 1 D
+7 1 D
 12 3 D
-12 2 D
-11 3 D
-11 3 D
+12 3 D
 11 2 D
+12 3 D
 11 3 D
-11 3 D
-10 3 D
 10 2 D
+11 3 D
 10 3 D
+11 3 D
+10 2 D
+9 3 D
 10 3 D
 10 2 D
 9 3 D
@@ -19998,20 +19968,20 @@ S
 9 2 D
 9 3 D
 9 3 D
+8 2 D
+9 3 D
+8 3 D
 9 2 D
-9 3 D
 8 3 D
-8 2 D
-9 3 D
 8 3 D
 8 2 D
 8 3 D
 8 2 D
 7 3 D
 8 3 D
-8 2 D
-7 3 D
+7 2 D
 8 3 D
+7 3 D
 7 2 D
 7 3 D
 7 2 D
@@ -20024,30 +19994,29 @@ S
 7 3 D
 7 2 D
 6 3 D
-7 2 D
+6 2 D
+7 3 D
+6 2 D
 6 3 D
 6 3 D
 7 2 D
 6 3 D
 6 2 D
 6 3 D
-6 2 D
+5 2 D
 6 3 D
 6 2 D
 6 3 D
-6 3 D
-6 2 D
-5 3 D
+11 5 D
+11 5 D
 12 5 D
-11 5 D
+10 5 D
 11 5 D
 11 5 D
 10 5 D
-11 5 D
 10 5 D
 10 5 D
-11 5 D
-1 1 D
+3 2 D
 S
 1328 253 M
 65 60 D
@@ -20536,8 +20505,7 @@ P S
 128 35 D
 113 24 D
 101 17 D
-34 4 D
-313 21 D
+347 25 D
 S
 2400 0 M
 122 3 D
@@ -20626,8 +20594,7 @@ S
 -128 35 D
 -113 24 D
 -101 17 D
--34 4 D
--313 21 D
+-347 25 D
 S
 2400 0 M
 0 0 D
