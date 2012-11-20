@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0_r9428:9430M [64-bit] Document from GMT_psxy
+%%Title: GMT v5.0.1b_r10676 [64-bit] [C4] Document from psxy
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Dec  2 13:38:03 2011
+%%CreationDate: Tue Nov 20 12:17:52 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -111,6 +111,11 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -145,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,7 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -572,8 +576,8 @@ O0
 -4200 PSL_xorig sub PSL_page_xsize 2 div add -4200 PSL_yorig sub PSL_page_ysize 2 div add TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -P -Bg -K gcircle.txt -Sc0.04i -Gred -Xc -Yc
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -P -Bg -K gcircle.txt -Sc0.04i -Gred -Xc -Yc
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1541,8 +1545,8 @@ PSL_eoclip N
 24 7241 6487 Sc
 24 6980 6872 Sc
 PSL_cliprestore
-5661 262 M
-44 18 D
+5655 260 M
+50 20 D
 13 7 D
 40 21 D
 33 20 D
@@ -1607,8 +1611,8 @@ PSL_cliprestore
 -78 99 D
 -5 6 D
 S
-6471 667 M
-54 36 D
+6463 662 M
+62 41 D
 67 52 D
 64 57 D
 53 54 D
@@ -1695,8 +1699,9 @@ S
 -55 41 D
 -21 16 D
 S
-7325 1393 M
-35 42 D
+7317 1385 M
+22 25 D
+21 25 D
 5 4 D
 53 66 D
 7 11 D
@@ -1782,8 +1787,8 @@ S
 -119 55 D
 -8 3 D
 S
-8077 2584 M
-30 76 D
+8074 2577 M
+33 83 D
 31 89 D
 30 97 D
 24 92 D
@@ -1925,8 +1930,8 @@ S
 -146 12 D
 -20 1 D
 S
-8077 5816 M
--26 58 D
+8074 5823 M
+-23 51 D
 -5 13 D
 -51 105 D
 -49 89 D
@@ -1981,8 +1986,8 @@ S
 -131 -10 D
 -75 -7 D
 S
-7325 7007 M
--38 41 D
+7317 7015 M
+-30 33 D
 -5 4 D
 -9 10 D
 -5 4 D
@@ -2023,8 +2028,8 @@ S
 -151 -37 D
 -110 -31 D
 S
-6471 7733 M
--58 35 D
+6463 7738 M
+-50 30 D
 -37 21 D
 -87 41 D
 -91 35 D
@@ -2048,10 +2053,10 @@ S
 -55 -29 D
 -21 -11 D
 S
-5661 8138 M
--59 18 D
--37 9 D
--60 9 D
+5655 8140 M
+-60 18 D
+-37 8 D
+-53 8 D
 -63 3 D
 -64 -2 D
 -57 -6 D
@@ -2073,10 +2078,9 @@ S
 -14 -15 D
 -10 -9 D
 S
-4913 8339 M
--26 2 D
--28 -1 D
--28 -6 D
+4909 8340 M
+-42 1 D
+-36 -7 D
 -34 -13 D
 -25 -13 D
 -31 -19 D
@@ -2097,10 +2101,9 @@ S
 4200 8400 M
 0 -760 D
 S
-3487 8339 M
-26 2 D
-28 -1 D
-28 -6 D
+3491 8340 M
+42 1 D
+36 -7 D
 34 -13 D
 25 -13 D
 31 -19 D
@@ -2118,10 +2121,10 @@ S
 65 -129 D
 25 -54 D
 S
-2739 8138 M
-59 18 D
-37 9 D
-60 9 D
+2745 8140 M
+60 18 D
+37 8 D
+53 8 D
 63 3 D
 64 -2 D
 57 -6 D
@@ -2143,8 +2146,8 @@ S
 14 -15 D
 10 -9 D
 S
-1929 7733 M
-58 35 D
+1937 7738 M
+50 30 D
 37 21 D
 87 41 D
 91 35 D
@@ -2168,8 +2171,8 @@ S
 55 -29 D
 21 -11 D
 S
-1075 7007 M
-38 41 D
+1083 7015 M
+30 33 D
 5 4 D
 9 10 D
 5 4 D
@@ -2210,8 +2213,8 @@ S
 151 -37 D
 110 -31 D
 S
-323 5816 M
-26 58 D
+326 5823 M
+23 51 D
 5 13 D
 51 105 D
 49 89 D
@@ -2331,8 +2334,8 @@ S
 146 12 D
 20 1 D
 S
-323 2584 M
--30 76 D
+326 2577 M
+-33 83 D
 -31 89 D
 -30 97 D
 -24 92 D
@@ -2409,8 +2412,9 @@ S
 160 42 D
 37 9 D
 S
-1075 1393 M
--35 42 D
+1083 1385 M
+-22 25 D
+-21 25 D
 -5 4 D
 -53 66 D
 -7 11 D
@@ -2496,8 +2500,8 @@ S
 119 55 D
 8 3 D
 S
-1929 667 M
--54 36 D
+1937 662 M
+-62 41 D
 -67 52 D
 -64 57 D
 -53 54 D
@@ -2584,8 +2588,8 @@ S
 55 41 D
 21 16 D
 S
-2739 262 M
--44 18 D
+2745 260 M
+-50 20 D
 -13 7 D
 -40 21 D
 -33 20 D
@@ -2650,8 +2654,8 @@ S
 78 99 D
 5 6 D
 S
-3487 61 M
--28 7 D
+3491 60 M
+-32 8 D
 -29 14 D
 -11 6 D
 -17 13 D
@@ -2697,8 +2701,8 @@ S
 4200 0 M
 0 7170 D
 S
-4913 61 M
-28 7 D
+4909 60 M
+32 8 D
 29 14 D
 11 6 D
 17 13 D
@@ -2852,9 +2856,20 @@ P S
 6 2 D
 6 2 D
 6 3 D
-1 0 D
-2584 323 M
+6 2 D
+6 3 D
+5 2 D
+6 3 D
+6 2 D
+5 2 D
+2551 337 M
+3 -1 D
+6 -3 D
+6 -2 D
 5 -2 D
+6 -3 D
+6 -2 D
+6 -3 D
 6 -2 D
 6 -3 D
 5 -2 D
@@ -3559,8 +3574,13 @@ S
 4 5 D
 4 5 D
 4 5 D
-1018 1459 M
-3 -3 D
+4 4 D
+4 5 D
+1 1 D
+1009 1469 M
+3 -4 D
+5 -5 D
+4 -4 D
 4 -5 D
 4 -5 D
 4 -5 D
@@ -4594,9 +4614,10 @@ S
 3 6 D
 2 6 D
 2 6 D
-1 3 D
-247 2781 M
-0 -1 D
+2 6 D
+1 2 D
+245 2786 M
+2 -6 D
 2 -6 D
 3 -6 D
 2 -6 D
@@ -7209,10 +7230,8 @@ S
 -2 6 D
 -2 6 D
 -2 6 D
--2 5 D
-247 5619 M
--1 -3 D
--2 -6 D
+245 5614 M
+-1 -4 D
 -2 -6 D
 -2 -6 D
 -2 -6 D
@@ -8577,13 +8596,9 @@ S
 -4 5 D
 -4 4 D
 -4 5 D
--4 5 D
--5 5 D
 -1 1 D
-1018 6941 M
--4 -4 D
--4 -5 D
--4 -5 D
+1009 6931 M
+-3 -4 D
 -4 -5 D
 -4 -5 D
 -4 -4 D
@@ -9941,20 +9956,9 @@ S
 -6 3 D
 -6 2 D
 -5 3 D
--6 2 D
--6 3 D
--6 2 D
--5 2 D
--6 3 D
--6 2 D
--1 1 D
-2584 8077 M
--5 -2 D
--6 -3 D
--5 -2 D
--6 -3 D
--6 -2 D
--6 -3 D
+-3 1 D
+2551 8063 M
+-1 -1 D
 -5 -2 D
 -6 -3 D
 -6 -2 D
@@ -11104,8 +11108,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K scircle.txt -Sc0.04i -Ggreen
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K scircle.txt -Sc0.04i -Ggreen
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -12189,8 +12193,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -W3p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -W3p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -12306,11 +12310,11 @@ O0
 -8 4 D
 -8 4 D
 -8 3 D
--7 4 D
--8 4 D
--6 2 D
-2466 375 M
-2 -1 D
+-6 3 D
+2451 382 M
+1 -1 D
+8 -4 D
+8 -3 D
 8 -4 D
 8 -3 D
 7 -4 D
@@ -13285,8 +13289,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -W1p,-
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -W1p,-
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -13409,11 +13413,11 @@ O0
 -8 3 D
 -8 3 D
 -8 3 D
--8 4 D
--8 3 D
--4 1 D
-2670 289 M
+-4 2 D
+2654 295 M
 4 -2 D
+8 -3 D
+8 -3 D
 8 -3 D
 8 -3 D
 8 -3 D
@@ -14383,8 +14387,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -W3p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -W3p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -14568,8 +14572,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -W1p,-
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -W1p,-
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -14760,8 +14764,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gred -W0.25p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gred -W0.25p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -14966,8 +14970,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Ggreen -W0.25p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Ggreen -W0.25p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -15172,8 +15176,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -15377,8 +15381,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -15582,8 +15586,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -15787,8 +15791,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -K -Sa0.2i -Gyellow -W0.25p
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -15992,8 +15996,8 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -Rg -JG-30/40/7i -O -T
-%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371008.771 6371008.771 -6371008.771 6371008.771 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: psxy -Rg -JG-30/40/7i -O -T
+%%PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
