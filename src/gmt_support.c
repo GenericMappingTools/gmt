@@ -4278,7 +4278,7 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 	size_t n_alloc;
 	uint64_t n = 1, m, ij0, ij_in, ij;
 	float z[5];
-	double xk[5], *xx = NULL, *yy = NULL;
+	double xk[5], dist1, dist2, *xx = NULL, *yy = NULL;
 	static int d_col[5] = {0, 1, 0, 0, 0}, d_row[5] = {0, 0, -1, 0, 0}, d_side[5] = {0, 1, 0, 1, 0};
 
 	/* Note: We need GMT_IJP to get us the index into the padded G->data whereas we use GMT_IJ0 to get the corresponding index for non-padded edge array */
@@ -4379,7 +4379,21 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 		}
 		else if (n_exits == 3) {	/* Saddle point: Turn to the correct side */
 			opposite_side = (old_side + 2) % 4;	/* Opposite side */
-			if (xk[old_side] + xk[opposite_side] > xk[old_side+1] + xk[opposite_side+1])
+			dist1 = xk[old_side] + xk[opposite_side];
+			dist2 = xk[old_side+1] + xk[opposite_side+1];
+			if (dist1 == dist2) {	/* Perfect saddle, must use fixed saddle decision to avoid a later crossing */
+				/* Connect S with W and E with N in this case */
+				fprintf (stderr, "Perfect saddle\n");
+				if (old_side == 0)
+					side = 3;
+				else if (old_side == 1)
+					side = 2;
+				else if (old_side == 2)
+					side = 1;
+				else
+					side = 0;
+			}
+			else if (dist1 > dist2)
 				side = (old_side + 1) % 4;
 			else
 				side = (old_side + 3) % 4;
