@@ -628,7 +628,7 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
 		int id = 0;
-		char header[GMT_BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"};
+		char header[GMT_BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"}, *version = NULL, *title = NULL, *source = NULL;
 		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
@@ -640,9 +640,18 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
-		sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], c.version);
+		if (Ctrl->W.active) {
+			version = c.version;	title = c.title;	source = c.source;
+		}
+		else if (Ctrl->N.active) {
+			version = b.version;	title = b.title;	source = b.source;
+		}
+		else {
+			version = r.version;	title = r.title;	source = r.source;
+		}
+		sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], version);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
-		sprintf (header, "# %s\n# %s\n", c.title, c.source);
+		sprintf (header, "# %s\n# %s\n", title, source);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
 	}
 	else {
