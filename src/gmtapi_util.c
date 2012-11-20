@@ -3343,6 +3343,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 				case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
 					s = (record) ? record : API->GMT->current.io.current_record;
 					GMT_write_textrecord (API->GMT, S_obj->fp, s);
+					wrote = 1;
 					break;
 				default:
 					GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");
@@ -3488,7 +3489,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 			break;
 	}
 
-	if (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
+	if (wrote && (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT)) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
 	
 	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory */
 		size_t size;

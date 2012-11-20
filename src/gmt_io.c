@@ -2399,9 +2399,6 @@ int gmt_a_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write ascii */
 	unsigned i;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < (n - 1); ++i) {
 		GMT_ascii_output_col (C, fp, d[i], GMT_Z);
 		fprintf (fp, "\t");
@@ -2417,9 +2414,6 @@ int gmt_c_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int8_t aka char */
 	unsigned i;
 	int8_t s;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		s = (int8_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int8_t), 1U, fp) != 1U)
@@ -2433,9 +2427,6 @@ int gmt_u_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint8_t aka unsigned char */
 	unsigned i;
 	uint8_t u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint8_t) d[i];
 		if (GMT_fwrite (&u, sizeof (uint8_t), 1U, fp) != 1U)
@@ -2449,9 +2440,6 @@ int gmt_h_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int16_t */
 	unsigned i;
 	int16_t s;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		s = (int16_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int16_t), 1U, fp) != 1U)
@@ -2466,9 +2454,6 @@ int gmt_h_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	uint16_t u;
 	int16_t *s = (int16_t *)&u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		*s = (int16_t) d[i];
 		u = bswap16 (u);
@@ -2483,9 +2468,6 @@ int gmt_H_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint16_t */
 	unsigned i;
 	uint16_t u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint16_t) d[i];
 		if (GMT_fwrite (&u, sizeof (uint16_t), 1U, fp) != 1U)
@@ -2499,9 +2481,6 @@ int gmt_H_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write byteswapped uint16_t */
 	unsigned i;
 	uint16_t u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = bswap16 ((uint16_t) d[i]);
 		if (GMT_fwrite (&u, sizeof (uint16_t), 1U, fp) != 1U)
@@ -2515,9 +2494,6 @@ int gmt_i_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int32_t */
 	unsigned i;
 	int32_t s;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		s = (int32_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int32_t), 1U, fp) != 1U)
@@ -2532,9 +2508,6 @@ int gmt_i_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	uint32_t u;
 	int32_t *s = (int32_t *)&u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		*s = (int32_t) d[i];
 		u = bswap32 (u);
@@ -2549,9 +2522,6 @@ int gmt_I_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint32_t */
 	unsigned i;
 	uint32_t u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint32_t) d[i];
 		if (GMT_fwrite (&u, sizeof (uint32_t), 1U, fp) != 1U)
@@ -2565,9 +2535,6 @@ int gmt_I_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write byteswapped uint32_t */
 	unsigned i;
 	uint32_t u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = bswap32 ((uint32_t) d[i]);
 		if (GMT_fwrite (&u, sizeof (uint32_t), 1U, fp) != 1U)
@@ -2581,8 +2548,6 @@ int gmt_l_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write int64_t */
 	unsigned i;
 	int64_t s;
-//	if (gmt_skip_output (C, d, n))
-//		return (0); /* Record was skipped via -s[r] */
 	for (i = 0; i < n; ++i) {
 		s = (int64_t) d[i];
 		if (GMT_fwrite (&s, sizeof (int64_t), 1U, fp) != 1U)
@@ -2597,9 +2562,6 @@ int gmt_l_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	unsigned i;
 	uint64_t u;
 	int64_t *s = (int64_t *)&u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		*s = (int64_t) d[i];
 		u = bswap64(u);
@@ -2614,9 +2576,6 @@ int gmt_L_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write uint64_t */
 	unsigned i;
 	uint64_t u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u = (uint64_t) d[i];
 		if (GMT_fwrite (&u, sizeof (int64_t), 1U, fp) != 1U)
@@ -2630,8 +2589,6 @@ int gmt_L_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 	/* write byteswapped uint64_t */
 	unsigned i;
 	uint64_t u;
-//	if (gmt_skip_output (C, d, n))
-//		return (0);	/* Record was skipped via -s[r] */
 	for (i = 0; i < n; ++i) {
 		u = bswap64((uint64_t) d[i]);
 		if (GMT_fwrite (&u, sizeof (uint64_t), 1U, fp) != 1U)
@@ -2644,9 +2601,6 @@ int gmt_f_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write float */
 	unsigned i;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		float f = (float) d[i];
 		if (GMT_fwrite (&f, sizeof (float), 1U, fp) != 1U)
@@ -2663,9 +2617,6 @@ int gmt_f_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 		float f;
 		uint32_t bits;
 	} u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u.f = (float) d[i];
 		u.bits = bswap32(u.bits);
@@ -2678,9 +2629,6 @@ int gmt_f_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 int gmt_d_write (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 {
 	/* write double */
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	if (GMT_fwrite (d, sizeof (double), n, fp) != n)
 		return (GMT_DATA_WRITE_ERROR);
 	return (n);
@@ -2694,9 +2642,6 @@ int gmt_d_write_swab (struct GMT_CTRL *C, FILE *fp, unsigned n, double *d)
 		double d;
 		uint64_t bits;
 	} u;
-//	if (gmt_skip_output (C, d, n))
-//		/* Record was skipped via -s[r] */
-//		return (0);
 	for (i = 0; i < n; ++i) {
 		u.d = d[i];
 		u.bits = bswap64 (u.bits);
@@ -3162,6 +3107,7 @@ void * GMT_z_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *status)
 	
 int GMT_z_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *data)
 {
+	if (gmt_skip_output (C, data, n)) return (0);	/* Record was skipped via -s[a|r] */
 	return (C->current.io.write_item (C, fp, n, data));
 }
 	
