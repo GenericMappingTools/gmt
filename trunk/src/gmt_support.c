@@ -2517,7 +2517,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_
 	   For 2 & 3 we use zmin/zmax/16+ to build a 16 level CPT via makecpt and return it.
 	*/
 	
-	if (file && file[0] && !access (file, R_OK)) {	/* A cptfile was given and exists */
+	if (GMT_File_Is_Memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A cptfile was given and exists or is memory location */
 		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Create a rought equidistant, continuous 16-level CPT on the fly */
