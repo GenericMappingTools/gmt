@@ -537,6 +537,11 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[A], &data[0], s, &data_set[0], &GMT->current.io, &n_rec[0]), trk_name[A]);
 
+		if (n_rec[0] == 0) {	/* No data in track A */
+			x2sys_free_data (GMT, data[0], s->n_out_columns, &data_set[0]);
+			continue;
+		}
+		
 		has_time[0] = false;
 		if (got_time) {	/* Check to make sure we do in fact have time */
 			for (i = n_bad = 0; i < n_rec[0]; i++) n_bad += GMT_is_dnan (data[0][s->t_col][i]);
@@ -587,6 +592,10 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 
 				x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[B], &data[1], s, &data_set[1], &GMT->current.io, &n_rec[1]), trk_name[B]);
 
+				if (n_rec[1] == 0) {	/* No data in track B */
+					x2sys_free_data (GMT, data[1], s->n_out_columns, &data_set[1]);
+					continue;
+				}
 				has_time[1] = false;
 				if (got_time) {	/* Check to make sure we do in fact have time */
 					for (i = n_bad = 0; i < n_rec[1]; i++) n_bad += GMT_is_dnan (data[1][s->t_col][i]);
