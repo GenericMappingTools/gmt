@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0_r9093M [Win64-bit] [C4] Document from GMT_grdcontour
+%%Title: GMT v5.0.1b_r10661M [64-bit] [C4] Document from grdcontour
 %%Creator: GMT
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Oct 05 00:11:47 2011
+%%CreationDate: Tue Nov 20 20:52:25 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,7 +576,7 @@ O0
 -2362 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT:  c:\progs_cygw\GMTdev\gmt5\trunk\WIN64\bin\grdcontour.exe lixo_xy.nc -JX10c -C10 -B5 -P -K -Xc
+%%GMT: grdcontour lixo_xy.nc -JX10c -C10 -B5 -P -K -Xc
 %%PROJ: xy -15.00000000 15.00000000 -15.00000000 15.00000000 -15.000 15.000 -15.000 15.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -1357,13 +1362,8 @@ S
 S
 4685 2362 M
 -2283 0 D
--40 -39 D
-0 -2284 D
-S
-2362 4685 M
-0 -2283 D
-40 -40 D
-2283 0 D
+-40 40 D
+0 2283 D
 S
 2255 39 M
 -11 223 D
@@ -2295,7 +2295,7 @@ O0
 0 5669 TM
 
 % PostScript produced by:
-%%GMT:  c:\progs_cygw\GMTdev\gmt5\trunk\WIN64\bin\grdcontour.exe lixo.nc -JX10c -C10 -B5 -O -Y12c
+%%GMT: grdcontour lixo.nc -JX10c -C10 -B5 -O -Y12c
 %%PROJ: xy -15.00000000 15.00000000 -15.00000000 15.00000000 -15.000 15.000 -15.000 15.000 +xy +a=6378137.000 +b=6356752.314245
 0 setlinecap
 0 setlinejoin
@@ -3081,13 +3081,8 @@ S
 S
 4685 2362 M
 -2283 0 D
--40 -39 D
-0 -2284 D
-S
-2362 4685 M
-0 -2283 D
-40 -40 D
-2283 0 D
+-40 40 D
+0 2283 D
 S
 2255 39 M
 -11 223 D
