@@ -388,12 +388,10 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	for (k = 0; k < n_components; k++) M[k] /= n;	/* Compute mean resultant vector [not normalized] */
 	GMT_memcpy (X, M, 3, double);
 	
-	/* Get covariance matrix */
+	/* Compute covariance matrix */
 	
 	GMT_memset (C, 9, double);
-	for (j = 0; j < n_components; j++) for (i = 0; i < n_components; i++) {
-		k = n_components*j + i;
-		C[k] = 0.0;
+	for (j = k = 0; j < n_components; j++) for (i = 0; i < n_components; i++, k++) {
 		for (p = 0; p < n; p++) C[k] += (P[j][p] - M[j]) * (P[i][p] - M[i]);
 		C[k] /= (n - 1.0);
 	}
@@ -402,18 +400,18 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	if (GMT_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
 		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
-	if (n_components == 3) {
+	if (n_components == 3) {	/* Recover lon,lat */
 		GMT_cart_to_geo (GMT, &lat, &lon, X, true);
 		if (lon < 0.0) lon += 360.0;
 	}
 	else { lon = X[GMT_X]; lat = X[GMT_Y]; }
 
-	/* Find the xy[z] point of end of eigenvector 1: */
+	/* Find the xy[z] point (B) of end of eigenvector 1: */
 	GMT_memset (B, 3, double);
 	for (k = 0; k < n_components; k++) B[k] = X[k] + sqrt (lambda[0]) * V[k];
-	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);
-	for (k = 0; k < n_components; k++) B[k] /= L;
-	if (n_components == 3) {
+	L = sqrt (B[0] * B[0] + B[1] * B[1] + B[2] * B[2]);	/* Length of B */
+	for (k = 0; k < n_components; k++) B[k] /= L;	/* Normalize */
+	if (n_components == 3) {	/* Recover lon,lat */
 		GMT_cart_to_geo (GMT, &lat2, &lon2, B, true);
 		if (lon2 < 0.0) lon2 += 360.0;
 		L = lon2 - lon;
@@ -474,9 +472,9 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	if (Ctrl->E.active) GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
 	
-	if (Ctrl->T.mode == DO_ROT3D)
+	if (Ctrl->T.mode == DO_ROT3D)	/* Spherical 3-D rotation */
 		make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
-	else if (Ctrl->T.mode == DO_ROT2D) {
+	else if (Ctrl->T.mode == DO_ROT2D) {	/* Cartesian 2-D rotation */
 		double s, c;
 		GMT_memset (R, 9, double);
 		sincosd (Ctrl->T.par[2], &s, &c);
