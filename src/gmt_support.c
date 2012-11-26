@@ -3223,7 +3223,7 @@ int gmt_intpol_sub (struct GMT_CTRL *C, double *x, double *y, uint64_t n, uint64
 				break;
 		}
 	}
-	GMT_free (C, c);
+	if (mode == 1 || mode == 2) GMT_free (C, c);
 
 	return (GMT_NOERROR);
 }
