@@ -306,7 +306,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	unsigned char *dummy = NULL;
 
-	double x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
+	double x_orig, y_orig, x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off;
 
 	struct imageinfo header;
@@ -390,6 +390,12 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	Ctrl->D.lon -= ((justify%4)-2) * Ctrl->D.dx;
 	Ctrl->D.lat -= ((justify/4)-1) * Ctrl->D.dy;
+	
+	/* Set new origin */
+	
+	PSL_setorigin (PSL, Ctrl->D.lon, Ctrl->D.lat, 0.0, PSL_FWD);
+	x_orig = Ctrl->D.lon;	y_orig = Ctrl->D.lat;
+	Ctrl->D.lon = Ctrl->D.lat = 0.0;	/* For now */
 	
 	/* First draw legend frame box. */
 
@@ -692,7 +698,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
 						Return (API->error);
 					}
-					sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -S%s%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], symbol, &size[i], string);
+					sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S%s%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], symbol, &size[i], string);
 					if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 					if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 					status = GMT_psxy (API, 0, buffer);	/* Plot the front */
@@ -866,6 +872,8 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	for (id = 0; id < 3; id++) GMT_free_textset (GMT, &D[id]);	/* Free directly since never used in Get|Put statements */
+
+	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
 
 	GMT_map_basemap (GMT);
 	GMT_plotend (GMT);
