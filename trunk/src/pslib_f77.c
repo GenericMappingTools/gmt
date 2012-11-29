@@ -35,10 +35,12 @@
  * List of API functions:
  * PSL_beginaxes
  * PSL_beginclipping	: Clips plot outside the specified polygon
+ * PSL_beginlayer	: Place begin object group DSC comment.
  * PSL_beginplot	: Initialize parameters for a new plot.
  * PSL_beginsession	: Creates a new PSL session
  * PSL_endaxes		: Turns off mapping of user coordinates to PS units
  * PSL_endclipping	: Restores previous clipping path
+ * PSL_endlayer		: Place end object group DSC comment.
  * PSL_endplot		: Close plotfile
  * PSL_endsession	: Terminates the PSL session
  * PSL_plotarc		: Plots a circular arc
@@ -113,6 +115,16 @@ int PSL_beginsession_ ()	/* Initialize PSL session */
 int PSL_endsession_ ()
 {
 	return (PSL_endsession (PSL_FORTRAN));
+}
+
+int PSL_beginlayer_ (int *layer)
+{
+	return (PSL_beginlayer (PSL_FORTRAN, *layer));
+}
+
+int PSL_endlayer_ ()
+{
+	return (PSL_endlayer (PSL_FORTRAN));
 }
 
 int PSL_plotarc_ (double *x, double *y, double *radius, double *az1, double *az2, int *type)

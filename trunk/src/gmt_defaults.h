@@ -125,8 +125,8 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
 	struct GMT_PEN map_grid_pen[2];		/* Pen attributes for primary and secondary gridlines [default,black/thinner,black] */
 	struct GMT_PEN map_tick_pen[2];		/* Pen attributes for primary and secondary tickmarks [thinner,black] */
-	char map_frame_axes[5];			/* Which axes to draw and annotate ["WESN"]  */
-	char map_annot_ortho[5];		/* Which axes have orthogonal annotations in linear projections ["we"] */
+	char map_frame_axes[6];			/* Which axes to draw and annotate ["WESNZ"]  */
+	char map_annot_ortho[6];		/* Which axes have orthogonal annotations in linear projections ["we"] */
 	enum GMT_enum_symbol { gmt_none = -1, gmt_ring, gmt_degree, gmt_colon, gmt_squote, gmt_dquote, gmt_lastsym } map_degree_symbol;
 	/* PROJ group */
 	double proj_scale_factor;		/* Central mapscale factor, typically 0.9996-1 (or -1 for default action) */

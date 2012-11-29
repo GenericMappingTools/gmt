@@ -302,10 +302,12 @@ struct imageinfo {
 EXTERN_MSC struct PSL_CTRL *New_PSL_Ctrl (char *session);
 EXTERN_MSC int PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
 EXTERN_MSC int PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, int n, double rgb[], int flag);
+EXTERN_MSC int PSL_beginlayer (struct PSL_CTRL *PSL, int layer);
 EXTERN_MSC int PSL_beginplot (struct PSL_CTRL *P, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]);
 EXTERN_MSC int PSL_beginsession (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endaxes (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endclipping (struct PSL_CTRL *P, int mode);
+EXTERN_MSC int PSL_endlayer (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endplot (struct PSL_CTRL *P, int lastpage);
 EXTERN_MSC int PSL_endsession (struct PSL_CTRL *P);
 EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *P, double x, double y, double radius, double az1, double az2, int type);
