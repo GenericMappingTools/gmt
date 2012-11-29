@@ -3001,15 +3001,15 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 #ifdef GMT_COMPAT
 		case GMTCASE_Y_AXIS_TYPE: GMT_COMPAT_CHANGE ("MAP_ANNOT_ORTHO");
 			if (!strcmp (lower_value, "ver_text"))
-				strcpy (C->current.setting.map_annot_ortho, "");
+				strncpy (C->current.setting.map_annot_ortho, "", 5U);
 			else if (!strcmp (lower_value, "hor_text"))
-				strcpy (C->current.setting.map_annot_ortho, "we");
+				strncpy (C->current.setting.map_annot_ortho, "we", 5U);
 			else
 				error = true;
 			break;
 #endif
 		case GMTCASE_MAP_ANNOT_ORTHO:
-			strcpy (C->current.setting.map_annot_ortho, lower_value);
+			strncpy (C->current.setting.map_annot_ortho, lower_value, 5U);
 			break;
 #ifdef GMT_COMPAT
 		case GMTCASE_DEGREE_SYMBOL: GMT_COMPAT_CHANGE ("MAP_DEGREE_SYMBOL");
@@ -3030,7 +3030,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 		case GMTCASE_BASEMAP_AXES: GMT_COMPAT_CHANGE ("MAP_FRAME_AXES");
 #endif
 		case GMTCASE_MAP_FRAME_AXES:
-			strcpy (C->current.setting.map_frame_axes, value);
+			strncpy (C->current.setting.map_frame_axes, value, 5U);
 			for (i = 0; i < 5; i++) C->current.map.frame.side[i] = 0;	/* Unset default settings */
 			C->current.map.frame.draw_box = false;
 			error += gmt_decode_wesnz (C, value, C->current.map.frame.side, &C->current.map.frame.draw_box);
@@ -5395,6 +5395,10 @@ int gmt_get_history (struct GMT_CTRL *C)
 			C->current.ps.clip_level = atoi (value);
 			continue;
 		}
+		else if (option[0] == 'L') {	/* Read PS layer */
+			C->current.ps.layer = atoi (value);
+			continue;
+		}
 		if ((id = GMT_hash_lookup (C, option, unique_hashnode, GMT_N_UNIQUE, GMT_N_UNIQUE)) < 0) continue;	/* Quietly skip malformed lines */
 		if (C->init.history[id])
 			free (C->init.history[id]);
@@ -5456,6 +5460,7 @@ int gmt_put_history (struct GMT_CTRL *C)
 		fprintf (fp, "%s\t%s\n", GMT_unique_option[id], C->init.history[id]);
 	}
 	if (C->current.ps.clip_level) fprintf (fp, "C\t%d\n", C->current.ps.clip_level); /* Write clip level */
+	if (C->current.ps.layer) fprintf (fp, "L\t%d\n", C->current.ps.layer); /* Write PS layer, if non-zero */
 	fprintf (fp, "EOF\n");
 
 	/* Close the file */
@@ -5636,6 +5641,7 @@ void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy)
 	/* GMT_CURRENT */
 
 	Ccopy->current.ps.clip_level = C->current.ps.clip_level;
+	Ccopy->current.ps.layer = C->current.ps.layer;
 
 	/* GMT_COMMON */
 

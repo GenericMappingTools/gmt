@@ -3695,6 +3695,8 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		free(pstr);
 	}
 
+	if (!C->common.O.active) C->current.ps.layer = 0;	/* New plot, reset layer counter */
+	PSL_beginlayer (C->PSL, ++C->current.ps.layer);
 	/* Set layer transparency, if requested. Note that PSL_transp actually sets the opacity alpha, which is (1 - transparency) */
 	if (C->common.t.active) PSL_command (P, "%g /%s PSL_transp\n", 1.0 - 0.01 * C->common.t.value, C->current.setting.ps_transpmode);
 
@@ -3736,6 +3738,7 @@ void GMT_plotcanvas (struct GMT_CTRL *C)
 
 void GMT_plotend (struct GMT_CTRL *C) {
 	struct PSL_CTRL *P = C->PSL;
+	PSL_endlayer (C->PSL);
 	if (C->common.t.active) PSL_command (P, "1 /Normal PSL_transp\n"); /* Reset transparency to fully opague, if required */
 
 	/* Check expected change of clip level to achieved one. Update overall clip level. Check for pending clips. */

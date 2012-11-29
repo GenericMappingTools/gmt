@@ -123,6 +123,18 @@ Specifically, this function will deallocate memory used and free up resources.
 .RE
 .br
 .sp
+BD(struct PS_CTRL *PSL_beginlayer) (ARG(struct PS_CTRL,*PSL), ARG(long,layer))
+.RS 5
+Adds a DSC comment by naming this layer; give a unique integer value.  Terminate layer with PSL_endlayer
+.RE
+.br
+.sp
+BD(struct PS_CTRL *PSL_endlayer) (ARG(struct PS_CTRL,*PSL))
+.RS 5
+Terminate current layer with a DSC comment.
+.RE
+.br
+.sp
 BD(long PSL_fopen) (ARG(char,*file), ARG(char,*mode))
 .RS 5
 This function simply opens a file, just like fopen.  The reason it is replicated here is that under Windows,
