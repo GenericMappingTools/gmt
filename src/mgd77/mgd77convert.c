@@ -242,7 +242,7 @@ int GMT_mgd77convert (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (opt->option != '<') continue;	/* We are only processing filenames here */
 			if ((pos = (int)(strlen (opt->arg) - 4)) < 0) continue;	/* Odd item, skip */
-			strcpy (prefix, opt->arg);	/* Make copy of name/file */
+			strncpy (prefix, opt->arg, GMT_BUFSIZ);	/* Make copy of name/file */
 			if (!strncmp (&prefix[pos], ".a77", 4U) || !strncmp (&prefix[pos], ".h77", 4U)) prefix[pos] = 0;	/* Truncate any extension */
 			sprintf (a77_file, "%s.a77", prefix);
 			sprintf (h77_file, "%s.h77", prefix);

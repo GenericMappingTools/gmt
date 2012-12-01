@@ -577,17 +577,17 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 		for (iseg = 0; iseg < ns; iseg++) {
 			G = segment[iseg].group;	L = segment[iseg].pos;
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
-				strcpy (name, &pp[2]);
+				strncpy (name, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name[j]; j++) if (name[j] == ' ') name[j] = '\0';		/* Just truncate after 1st word */
 			} else sprintf (name, "%" PRIu64, segment[iseg].orig_id);
 			G = segment[segment[iseg].buddy[0].id].group;	L = segment[segment[iseg].buddy[0].id].pos;
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
-				strcpy (name0, &pp[2]);
+				strncpy (name0, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name0[j]; j++) if (name0[j] == ' ') name0[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name0, "%" PRIu64, segment[iseg].buddy[0].orig_id);
 			G = segment[segment[iseg].buddy[1].id].group;	L = segment[segment[iseg].buddy[1].id].pos;
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
-				strcpy (name1, &pp[2]);
+				strncpy (name1, &pp[2], GMT_BUFSIZ);
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name1, "%" PRIu64, segment[iseg].buddy[1].orig_id);
 			sprintf (buffer, fmt, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \

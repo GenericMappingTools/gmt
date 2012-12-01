@@ -578,7 +578,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 				if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
 					char txt_cpy[GMT_BUFSIZ], p[GMT_TEXT_LEN256];
 					unsigned int pos = 0;
-					strcpy (txt_cpy, opt);
+					strncpy (txt_cpy, opt, GMT_BUFSIZ);
 					while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'u':	/* Label put behind annotation */

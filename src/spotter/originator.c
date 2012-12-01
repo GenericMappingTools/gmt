@@ -402,10 +402,10 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 			char path[GMT_BUFSIZ], file[GMT_TEXT_LEN64];
 			uint64_t row;
 			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
-			strcpy (path, file);
+			strncpy (path, file, GMT_BUFSIZ);
 			if (GMT_access (GMT, path, R_OK)) {	/* Not found in current dir or GMT_DATADIR; check if -F gave an explicit directory */
 				if (strchr (Ctrl->F.file, '/')) {	/* Filename has leading path so we will use that path */
-					strcpy (path, Ctrl->F.file);
+					strncpy (path, Ctrl->F.file, GMT_BUFSIZ);
 					k = strlen (path);
 					while (k && path[k] != '/') k--;	/* Look for last slash  */
 					k++; path[k] = 0;	/* Truncate anything after last slash */

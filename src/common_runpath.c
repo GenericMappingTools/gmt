@@ -183,7 +183,7 @@ char *GMT_runtime_bindir (char *result, const char *candidate) {
 		for (dir = strtok_r (path, ":", &save_ptr);
 				 dir != NULL;
 				 dir = strtok_r (NULL, ":", &save_ptr)) {
-			strcpy (candidate_abs, dir);
+			strncpy (candidate_abs, dir, MAX_PATH);
 			strcat (candidate_abs, "/");
 			strcat (candidate_abs, candidate);
 			if ( access (candidate_abs, X_OK) == 0 ) {

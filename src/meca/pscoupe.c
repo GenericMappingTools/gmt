@@ -688,7 +688,7 @@ int GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, struct 
 				break;
 			case 'a':	/* plot axis */
 				Ctrl->A2.active = true;
-				strcpy (txt, &opt->arg[1]);
+				strncpy (txt, &opt->arg[1], GMT_TEXT_LEN256);
 				if ((p = strchr (txt, '/'))) p[0] = '\0';
 				if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 				if (p) {

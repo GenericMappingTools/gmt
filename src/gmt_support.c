@@ -1026,7 +1026,7 @@ int GMT_colorname2index (struct GMT_CTRL *C, char *name)
 	int k;
 	char Lname[GMT_TEXT_LEN64];
 
-	strcpy (Lname, name);
+	strncpy (Lname, name, GMT_TEXT_LEN64);
 	GMT_str_tolower (Lname);
 	k = GMT_hash_lookup (C, Lname, C->session.rgb_hashnode, GMT_N_COLOR_NAMES, GMT_N_COLOR_NAMES);
 
@@ -1051,7 +1051,7 @@ bool GMT_getrgb (struct GMT_CTRL *C, char *line, double rgb[])
 		return (false);
 	}
 
-	strcpy (buffer, line);	/* Make local copy */
+	strncpy (buffer, line, GMT_TEXT_LEN64);	/* Make local copy */
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
 		double transparency = atof (&t[1]);
 		if (transparency < 0.0 || transparency > 100.0)
@@ -1137,7 +1137,7 @@ bool gmt_gethsv (struct GMT_CTRL *C, char *line, double hsv[])
 		return (false);
 	}
 
-	strcpy (buffer, line);	/* Make local copy */
+	strncpy (buffer, line, GMT_TEXT_LEN64);	/* Make local copy */
 	if ((t = strstr (buffer, "@")) && strlen (t) > 1) {	/* User requested transparency via @<transparency> */
 		double transparency = atof (&t[1]);
 		if (transparency < 0.0 || transparency > 100.0)
@@ -1334,7 +1334,7 @@ int GMT_getfont (struct GMT_CTRL *C, char *buffer, struct GMT_FONT *F)
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	strcpy (line, buffer);	/* Work on a copy of the arguments */
+	strncpy (line, buffer, GMT_BUFSIZ);	/* Work on a copy of the arguments */
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 
 	/* Processes font settings given as [size][,name][,fill][=pen] */
@@ -1358,34 +1358,34 @@ int GMT_getfont (struct GMT_CTRL *C, char *buffer, struct GMT_FONT *F)
 		if (line[i-1] == ',') {		/* Must be size,name, so we can continue */
 		}
 		else if (line[0] == ',') {	/* ,name,fill got stored in size,name */
-			strcpy (fill, name);
-			strcpy (name, size);
+			strncpy (fill, name, GMT_TEXT_LEN256);
+			strncpy (name, size, GMT_TEXT_LEN256);
 			size[0] = '\0';
 		}
 		else if (gmt_is_fill (C, name)) {	/* fill got stored in name */
-			strcpy (fill, name);
+			strncpy (fill, name, GMT_TEXT_LEN256);
 			name[0] = '\0';
 			if (gmt_is_fontname (C, size)) {	/* name got stored in size */
-				strcpy (name, size);
+				strncpy (name, size, GMT_TEXT_LEN256);
 				size[0] = '\0';
 			}
 		}
 	}
 	else if (n == 1) {	/* Could be size or name or fill */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,fill got stored in size */
-			strcpy (fill, size);
+			strncpy (fill, size, GMT_TEXT_LEN256);
 			size[0] = '\0';
 		}
 		else if (line[0] == ',') {		/* ,name got stored in size */
-			strcpy (name, size);
+			strncpy (name, size, GMT_TEXT_LEN256);
 			size[0] = '\0';
 		}
 		else if (gmt_is_fill (C, size)) {	/* fill got stored in size */
-			strcpy (fill, size);
+			strncpy (fill, size, GMT_TEXT_LEN256);
 			size[0] = '\0';
 		}
 		else if (gmt_is_fontname (C, size)) {	/* name got stored in size */
-			strcpy (name, size);
+			strncpy (name, size, GMT_TEXT_LEN256);
 			size[0] = '\0';
 		}
 		/* Unstated else branch means we got size stored correctly */
@@ -1439,7 +1439,7 @@ int gmt_name2pen (char *name)
 	int i, k;
 	char Lname[GMT_TEXT_LEN64];
 
-	strcpy (Lname, name);
+	strncpy (Lname, name, GMT_TEXT_LEN64);
 	GMT_str_tolower (Lname);
 	for (i = 0, k = -1; k < 0 && i < GMT_N_PEN_NAMES; i++) if (!strcmp (Lname, GMT_penname[i].name)) k = i;
 
@@ -1543,7 +1543,7 @@ int gmt_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 			GMT_report (C, GMT_MSG_NORMAL, "Error: Pen attributes too long!\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		strcpy (P->style, string);
+		strncpy (P->style, string, GMT_PEN_LEN);
 		P->offset *= C->session.u2u[unit][GMT_PT];
 	}
 	else  {	/* New way of building it up with - and . */
@@ -1594,7 +1594,7 @@ bool GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
-	strcpy (line, buffer);	/* Work on a copy of the arguments */
+	strncpy (line, buffer, GMT_BUFSIZ);	/* Work on a copy of the arguments */
 	GMT_chop (line);	/* Remove trailing CR, LF and properly NULL-terminate the string */
 	if (!line[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
@@ -1608,34 +1608,34 @@ bool GMT_getpen (struct GMT_CTRL *C, char *buffer, struct GMT_PEN *P)
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
 	if (n == 2) {	/* Could be width,color or width,style or color,style */
 		if (line[0] == ',') {	/* ,color,style got stored in width,color */
-			strcpy (style, color);
-			strcpy (color, width);
+			strncpy (style, color, GMT_TEXT_LEN256);
+			strncpy (color, width, GMT_TEXT_LEN256);
 			width[0] = '\0';
 		}
 		else if (gmt_is_penstyle (color)) {	/* style got stored in color */
-			strcpy (style, color);
+			strncpy (style, color, GMT_TEXT_LEN256);
 			color[0] = '\0';
 			if (gmt_is_color (C, width)) {	/* color got stored in width */
-				strcpy (color, width);
+				strncpy (color, width, GMT_TEXT_LEN256);
 				width[0] = '\0';
 			}
 		}
 	}
 	else if (n == 1) {	/* Could be width or color or style */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,style got stored in width */
-			strcpy (style, width);
+			strncpy (style, width, GMT_TEXT_LEN256);
 			width[0] = '\0';
 		}
 		else if (line[0] == ',') {		/* ,color got stored in width */
-			strcpy (color, width);
+			strncpy (color, width, GMT_TEXT_LEN256);
 			width[0] = '\0';
 		}
 		else if (gmt_is_penstyle (width)) {	/* style got stored in width */
-			strcpy (style, width);
+			strncpy (style, width, GMT_TEXT_LEN256);
 			width[0] = '\0';
 		}
 		else if (gmt_is_color (C, width)) {	/* color got stored in width */
-			strcpy (color, width);
+			strncpy (color, width, GMT_TEXT_LEN256);
 			width[0] = '\0';
 		}
 		/* Unstated else branch means we got width stored correctly */
@@ -1853,7 +1853,7 @@ int GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *unit)
 
 	if (!line) { GMT_report (C, GMT_MSG_NORMAL, "No argument given to GMT_get_distance\n"); return (-1); }
 
-	strcpy (copy, line);
+	strncpy (copy, line, GMT_TEXT_LEN64);
 	*dist = C->session.d_NaN;
 
 	switch (copy[0]) {	/* Look for modifers -/+ to set how spherical distances are computed */
@@ -2145,7 +2145,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strcpy (cpt_file, source);
+		strncpy (cpt_file, source, GMT_BUFSIZ);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open color palette table %s\n", cpt_file);
 			return (NULL);
@@ -2797,7 +2797,7 @@ int GMT_write_cpt (struct GMT_CTRL *C, void *dest, unsigned int dest_type, unsig
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
-		strcpy (cpt_file, dest);
+		strncpy (cpt_file, dest, GMT_BUFSIZ);
 		if ((fp = fopen (cpt_file, "w")) == NULL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Cannot create file %s\n", cpt_file);
 			return (EXIT_FAILURE);
@@ -3601,7 +3601,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR *G)
 				break;
 #endif
 			case 'l':	/* Exact Label specification */
-				strcpy (G->label, &p[1]);
+				strncpy (G->label, &p[1], GMT_BUFSIZ);
 				G->label_type = 1;
 				break;
 
@@ -3637,7 +3637,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR *G)
 						G->label_type = 8;
 						break;
 					default:	/* Probably meant lower case l */
-						strcpy (G->label, &p[1]);
+						strncpy (G->label, &p[1], GMT_BUFSIZ);
 						G->label_type = 1;
 						break;
 				}
@@ -3676,11 +3676,11 @@ int GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR *G)
 				G->save_labels = 1;
 			case 't':	/* Save contour label locations to given file [x y label] */
 				G->save_labels++;
-				if (p[1]) strcpy (G->label_file, &p[1]);
+				if (p[1]) strncpy (G->label_file, &p[1], GMT_BUFSIZ);
 				break;
 				
 			case 'u':	/* Label Unit specification */
-				if (p[1]) strcpy (G->unit, &p[1]);
+				if (p[1]) strncpy (G->unit, &p[1], GMT_TEXT_LEN64);
 				break;
 
 			case 'v':	/* Curved text [Default is straight] */
@@ -3692,7 +3692,7 @@ int GMT_contlabel_specs (struct GMT_CTRL *C, char *txt, struct GMT_CONTOUR *G)
 				break;
 
 			case '=':	/* Label Prefix specification */
-				if (p[1]) strcpy (G->prefix, &p[1]);
+				if (p[1]) strncpy (G->prefix, &p[1], GMT_TEXT_LEN64);
 				break;
 
 			default:
@@ -3711,7 +3711,7 @@ int GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GMT_CON
 	char txt_a[GMT_TEXT_LEN256], c, *p = NULL;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
-	strcpy (L->option, &txt[1]);	 /* May need to process L->option later after -R,-J have been set */
+	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
 	if ((p = strstr (txt, "+r"))) {	/* Want to isolate labels by given radius */
 		*p = '\0';	/* Temporarily chop off the +r<radius> part */
 		L->isolate = true;
@@ -3751,7 +3751,7 @@ int GMT_contlabel_info (struct GMT_CTRL *C, char flag, char *txt, struct GMT_CON
 			L->do_interpolate = true;
 		case 'x':	/* Crossing line */
 			L->crossing = GMT_CONTOUR_XCURVE;
-			strcpy (L->file, &txt[1]);
+			strncpy (L->file, &txt[1], GMT_BUFSIZ);
 			break;
 		case 'D':	/* Specify distances in geographic units (km, degrees, etc) */
 			L->dist_kind = 1;
@@ -7241,7 +7241,7 @@ int GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 	for (n_slash = 0, i = j; text[i] && text[i] != '+'; i++) if (text[i] == '/') n_slash++;
 	options = (text[i] == '+') ? i : -1;	/* -1, or starting point of first option */
 	if (options > 0) {	/* Have optional args, make a copy and truncate text */
-		strcpy (txt_cpy, &text[options]);
+		strncpy (txt_cpy, &text[options], GMT_BUFSIZ);
 		text[options] = '\0';
 		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fjlpu, change other + to ascii 1 to bypass strtok trouble later */
 			if (txt_cpy[i] == '+' && !strchr ("fjlpu", (int)txt_cpy[i+1])) txt_cpy[i] = 1;
@@ -7327,7 +7327,7 @@ int GMT_getscale (struct GMT_CTRL *C, char *text, struct GMT_MAP_SCALE *ms)
 					break;
 
 				case 'l':	/* Label specification */
-					if (p[1]) strcpy (ms->label, &p[1]);
+					if (p[1]) strncpy (ms->label, &p[1], GMT_TEXT_LEN64);
 					ms->do_label = true;
 					for (i = 0; ms->label[i]; i++) if (ms->label[i] == 1) ms->label[i] = '+';	/* Change back ASCII 1 to + */
 					break;
@@ -7420,7 +7420,7 @@ int GMT_getrose (struct GMT_CTRL *C, char *text, struct GMT_MAP_ROSE *ms)
 		tmpstring[k-colon] = '\0';
 		k = pos = 0;
 		while (k < 4 && (GMT_strtok (tmpstring, ",", &pos, p))) {	/* Get the four labels */
-			if (strcmp (p, "-")) strcpy (ms->label[order[k]], p);
+			if (strcmp (p, "-")) strncpy (ms->label[order[k]], p, GMT_TEXT_LEN64);
 			k++;
 		}
 		if (k == 0)	/* No labels wanted */
@@ -8974,7 +8974,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *C, char *name, struct GMT_CUSTOM_SY
 	}
 
 	head = GMT_memory (C, NULL, 1, struct GMT_CUSTOM_SYMBOL);
-	strcpy (head->name, name);
+	strncpy (head->name, name, GMT_TEXT_LEN64);
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 #ifdef PS_MACRO
 		if (head->PS) {	/* Working on a PS symbol, just append the text as is */
@@ -9522,7 +9522,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 				Tout->segment[seg]->coord[SEG_AZIM][row] = azimuth;
 			}
 			ID[0] = 0;
-			if (Tout->segment[seg]->label) strcpy (ID, Tout->segment[seg]->label);	/* Look for label in header */
+			if (Tout->segment[seg]->label) strncpy (ID, Tout->segment[seg]->label, GMT_BUFSIZ);	/* Look for label in header */
 			else if (Tout->segment[seg]->header) GMT_parse_segment_item (GMT, Tout->segment[seg]->header, "-L", ID);	/* Look for label in header */
 			if (!ID[0]) sprintf (ID, "%*.*" PRIu64, ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);
@@ -9586,7 +9586,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 				Tout->segment[seg]->coord[SEG_AZIM][row] = azimuth;
 			}
 			ID[0] = 0;
-			if (Tout->segment[seg]->label) strcpy (ID, Tout->segment[seg]->label);	/* Look for label in header */
+			if (Tout->segment[seg]->label) strncpy (ID, Tout->segment[seg]->label, GMT_BUFSIZ);	/* Look for label in header */
 			else if (Tout->segment[seg]->header) GMT_parse_segment_item (GMT, Tout->segment[seg]->header, "-L", ID);	/* Look for label in header */
 			if (!ID[0]) sprintf (ID, "%*.*" PRIu64, ndig, ndig, seg_no);	/* Must assign a label from running numbers */
 			if (!Tout->segment[seg]->label) Tout->segment[seg]->label = strdup (ID);

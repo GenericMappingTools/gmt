@@ -439,14 +439,14 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 			if (P->range[i].annot & 1) {
 				z = P->range[i].z_low;
 				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
-					strcpy (format, text);
+					strncpy (format, text, GMT_TEXT_LEN256);
 					ndec = dec;
 				}
 			}
 			if (P->range[i].annot & 2) {
 				z = P->range[i].z_high;
 				if ((dec = GMT_get_format (GMT, z, NULL, NULL, text)) > ndec) {
-					strcpy (format, text);
+					strncpy (format, text, GMT_TEXT_LEN256);
 					ndec = dec;
 				}
 			}
@@ -476,7 +476,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		if (fabs (z_width[i] - z_width[0]) > GMT_SMALL) const_width = false;
 	
 	if (ndec == 0) {	/* Not -B and no decimals are needed */
-		strcpy (format, GMT->current.setting.format_float_map);
+		strncpy (format, GMT->current.setting.format_float_map, GMT_TEXT_LEN256);
 		fix_format (GMT->current.map.frame.axis[GMT_X].unit, format);	/* Add units if needed */
 	}
 
@@ -495,7 +495,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		gap *= 0.5;
 		if (interval_annot) {
 			sprintf (text, "%s - %s", format, format);
-			strcpy (format, text);
+			strncpy (format, text, GMT_TEXT_LEN256);
 		}
 	}
 	if (gap < 0.0) gap = 0.0;
@@ -583,8 +583,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 	/* Save label and unit, because we are going to switch them off in GMT->current.map.frame and do it ourselves */
-	strcpy (label, GMT->current.map.frame.axis[GMT_X].label);
-	strcpy (unit, GMT->current.map.frame.axis[GMT_Y].label);
+	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_TEXT_LEN256);
+	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_TEXT_LEN256);
 	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
 
 	if (flip & 1) {
@@ -757,7 +757,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					this_just = justify;
 					do_annot = true;
 					if (use_labels && P->range[i].label) {
-						strcpy (text, P->range[i].label);
+						strncpy (text, P->range[i].label, GMT_TEXT_LEN256);
 						this_just = l_justify;
 					}
 					else if (center && interval_annot)
@@ -979,7 +979,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					this_just = justify;
 					do_annot = true;
 					if (use_labels && P->range[i].label) {
-						strcpy (text, P->range[i].label);
+						strncpy (text, P->range[i].label, GMT_TEXT_LEN256);
 						this_just = l_justify;
 					}
 					else if (center && interval_annot)

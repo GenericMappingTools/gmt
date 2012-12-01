@@ -435,7 +435,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
 					n_errors++;
 				}
-				strcpy (comment, &opt->arg[1]);
+				strncpy (comment, &opt->arg[1], GMT_BUFSIZ);
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
@@ -638,9 +638,9 @@ int GMT_mgd77track (struct GMTAPI_CTRL *API, int mode, void *args)
 		last_julian = -1;
 		
 		if (abs (Ctrl->A.mode) == 2)	/* Use MGD77 cruise ID */
-			strcpy (name, D->H.mgd77[use]->Survey_Identifier);
+			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_TEXT_LEN64);
 		else {			/* Use file name prefix */
-			strcpy (name, list[argno]);
+			strncpy (name, list[argno], GMT_TEXT_LEN64);
 			for (i = 0; i < strlen (name); i++) if (name[i] == '.') name[i] = '\0';
 		}
 	
@@ -703,7 +703,7 @@ int GMT_mgd77track (struct GMTAPI_CTRL *API, int mode, void *args)
 						cruise_id[n_id].lat = lat[rec];
 						cruise_id[n_id].angle = c_angle;
 
-						strcpy (cruise_id[n_id].text, name);
+						strncpy (cruise_id[n_id].text, name, 16U);
 						n_id++;
 						if (n_id == n_alloc_c) {
 							size_t old_n_alloc = n_alloc_c;

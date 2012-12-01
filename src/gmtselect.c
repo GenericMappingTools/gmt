@@ -333,7 +333,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				break;
 			case 'N':	/* Inside/outside GSHHS land */
 				Ctrl->N.active = true;
-				strcpy (buffer, opt->arg);
+				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 #ifdef GMT_COMPAT
 				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");

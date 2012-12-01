@@ -202,7 +202,7 @@ int GMT_kml2gmt (struct GMTAPI_CTRL *API, int mode, void *args)
 			start = i + 1;
 			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </name> */
 			line[i] = '\0';
-			strcpy (name, &line[start]);
+			strncpy (name, &line[start], GMT_BUFSIZ);
 			GMT_chop (name);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
@@ -215,7 +215,7 @@ int GMT_kml2gmt (struct GMTAPI_CTRL *API, int mode, void *args)
 			start = i + 1;
 			for (i = start; i < length && line[i] != '<'; i++);	/* Find start of </description> */
 			line[i] = '\0';
-			strcpy (description, &line[start]);
+			strncpy (description, &line[start], GMT_BUFSIZ);
 			GMT_chop (description);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);

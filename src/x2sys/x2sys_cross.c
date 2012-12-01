@@ -822,8 +822,8 @@ int GMT_x2sys_cross (struct GMTAPI_CTRL *API, int mode, void *args)
 								GMT_ascii_format_col (GMT, stop[k], time[k][j], 3);
 							}
 							else {
-								(void)strcpy (start[k], "NaN");
-								(void)strcpy (stop[k], "NaN");
+								strcpy (start[k], "NaN");
+								strcpy (stop[k], "NaN");
 							}
 						}
 						sprintf (info, "%s/%s/%g %s/%s/%g", start[0], stop[0], dist[0][n_rec[0]-1], start[1], stop[1], dist[1][n_rec[1]-1]);

@@ -240,7 +240,7 @@ int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GM
 			case 'S':	/* Get symbol [and size] */
  				txt_b[0] = '\0';
  				if (opt->arg[0] == 'e' || opt->arg[0] == 'r') {
-					strcpy (txt, &opt->arg[1]);
+					strncpy (txt, &opt->arg[1], GMT_TEXT_LEN256);
 					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;
 					Ctrl->S.scale = GMT_to_inch (GMT, txt);
 					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
@@ -250,7 +250,7 @@ int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GM
 				}
 				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[1]);
 				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
-					strcpy(txt, &opt->arg[1]);
+					strncpy(txt, &opt->arg[1], GMT_TEXT_LEN256);
 					n=0; while (txt[n] && txt[n] != '/') n++; txt[n]=0;
 					Ctrl->S.scale = GMT_to_inch (GMT, txt);
 					sscanf(strchr(&opt->arg[1],'/')+1, "%lf", &Ctrl->S.wedge_amp);

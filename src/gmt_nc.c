@@ -89,7 +89,7 @@ int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	char varname[GRD_VARNAME_LEN80];
 
 	/* Extract levels name from variable name */
-	strcpy (varname, header->varname);
+	strncpy (varname, header->varname, GRD_VARNAME_LEN80);
 	if (varname[0]) {
 		j = 0;
 		while (varname[j] && varname[j] != '[' && varname[j] != '(') j++;
@@ -164,7 +164,7 @@ void gmt_nc_put_units (int ncid, int varid, char *name_units)
 	int i = 0;
 	char name[GRD_UNIT_LEN80], units[GRD_UNIT_LEN80];
 
-	strcpy (name, name_units);
+	strncpy (name, name_units,  GRD_UNIT_LEN80);
 	units[0] = '\0';
 	while (name[i] && name[i] != '[') i++;
 	if (name[i]) {
@@ -507,7 +507,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
-		if (header->varname[0] && !strcmp (header->z_units, "z")) strcpy (header->z_units, header->varname);
+		if (header->varname[0] && !strcmp (header->z_units, "z")) strncpy (header->z_units, header->varname, GRD_UNIT_LEN80);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmt_nc_put_units (ncid, z_id, header->z_units);

@@ -497,8 +497,8 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		}
 		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
-		strcpy (Rect->header->x_units, unit_name);
-		strcpy (Rect->header->y_units, unit_name);
+		strncpy (Rect->header->x_units, unit_name, GRD_UNIT_LEN80);
+		strncpy (Rect->header->y_units, unit_name, GRD_UNIT_LEN80);
 
 		/* rect xy values are here in GMT projected units chosen by user */
 

@@ -701,8 +701,8 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 	if (Ctrl->t.active) {	/* Write the FFTed input grid as two grids; Real and Img */
 		int plus_minus;
 		char *infile_r = NULL, *infile_i = NULL;	/* File names for real and imaginary grids */
-		strcpy (line, Ctrl->G.file);
-		strcpy (line2, Ctrl->G.file);
+		strncpy (line, Ctrl->G.file, 256U);
+		strncpy (line2, Ctrl->G.file, 256U);
 		infile_r = strtok (line, ".");
 		infile_i = strtok (line2, ".");
 		strcat (infile_r, "_real.grd");		strcat (infile_i, "_imag.grd");

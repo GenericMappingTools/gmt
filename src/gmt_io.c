@@ -788,7 +788,7 @@ bool gmt_traverse_dir (const char *file, char *path) {
 
  	if ((D = opendir (path)) == NULL) return (false);	/* Unable to open directory listing */
 	len = strlen (file);
-	strcpy (savedpath, path);	/* Make copy of current directory path */
+	strncpy (savedpath, path, GMT_BUFSIZ);	/* Make copy of current directory path */
 
 	while (!ok && (F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
 		d_namlen = strlen (F->d_name);
@@ -916,7 +916,7 @@ unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *C, char *record, s
 		S->value  = GMT_memory (C, S->value,  S->n_aspatial, char *);
 		S->dvalue = GMT_memory (C, S->dvalue, S->n_aspatial, double);
 	}
-	strcpy (buffer, record); /* working copy */
+	strncpy (buffer, record, GMT_BUFSIZ); /* working copy */
 	stringp = buffer;
 	while ( (token = strsep (&stringp, "|")) != NULL ) {
 		if (col >= S->n_aspatial) {
@@ -1309,7 +1309,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
-			strcpy (C->current.io.current_record, line);
+			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 			C->current.io.status = GMT_IO_TBL_HEADER;
 			C->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 			*status = 0;
@@ -1335,7 +1335,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		}
 		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we go up to top of loop and get the next record */
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
-			strcpy (C->current.io.current_record, line);
+			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 			C->current.io.status = GMT_IO_TBL_HEADER;
 			*status = 0;
 			return (NULL);
@@ -1347,7 +1347,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 			C->current.io.seg_no++;
 			if (kind == 1) {
 				/* Just save the header content, not the marker and leading whitespace */
-				strcpy (C->current.io.segment_header, GMT_trim_segheader (C, line));
+				strncpy (C->current.io.segment_header, GMT_trim_segheader (C, line), GMT_BUFSIZ);
 			}
 			else	/* Got a segment break instead - set header to NULL */
 				C->current.io.segment_header[0] = '\0';
@@ -1369,7 +1369,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space, add linefeed */
 
 		bad_record = set_nan_flag = false;		/* Initialize flags */
-		strcpy (C->current.io.current_record, line);	/* Keep copy of current record around */
+		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);	/* Keep copy of current record around */
 		col_no = pos = n_ok = 0;			/* Initialize counters */
 		in_col = -1;					/* Since we will increment right away inside the loop */
 
@@ -1455,7 +1455,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 	}
 	/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
 	if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
-		strcpy (C->current.io.current_record, line);
+		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 		C->current.io.status = GMT_IO_TBL_HEADER;
 		*status = 0;
 		return (NULL);
@@ -1467,7 +1467,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 		return (NULL);
 	}
 	if (line[0] == '#') {	/* Got a file header, take action and return */
-		strcpy (C->current.io.current_record, line);
+		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 		C->current.io.status = GMT_IO_TBL_HEADER;
 		*n = 1;
 		*status = 0;
@@ -1479,7 +1479,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 		GMT_set_segmentheader (C, GMT_OUT, true);	/* Turn on segment headers on output */
 		C->current.io.seg_no++;
 		/* Just save the header content, not the marker and leading whitespace */
-		strcpy (C->current.io.segment_header, GMT_trim_segheader (C, line));
+		strncpy (C->current.io.segment_header, GMT_trim_segheader (C, line), GMT_BUFSIZ);
 		*n = 1;
 		*status = 0;
 		return (NULL);
@@ -1491,7 +1491,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 
 	GMT_strstrip (line, false); /* Eliminate DOS endings and trailing white space */
 
-	strcpy (C->current.io.current_record, line);
+	strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 
 	C->current.io.status = 0;
 	C->current.io.pt_no++;	/* Got a valid text record */
@@ -4305,14 +4305,14 @@ int GMT_scanf (struct GMT_CTRL *C, char *s, unsigned int expectation, double *va
 		if ((p = strchr ( s, (int)('T'))) == NULL) {
 			/* There is no T.  Put all of s in calstring.  */
 			clocklen = 0;
-			strcpy (calstring, s);
+			strncpy (calstring, s, GMT_TEXT_LEN64);
 		}
 		else {
 			clocklen = strlen (p);
 			callen -= clocklen;
 			strncpy (calstring, s, callen);
 			calstring[callen] = 0;
-			strcpy (clockstring, &p[1]);
+			strncpy (clockstring, &p[1], GMT_TEXT_LEN64);
 			clocklen--;
 		}
 		x = 0.0;
@@ -4398,7 +4398,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strcpy (file, source);
+		strncpy (file, source, GMT_BUFSIZ);
 		if ((fp = GMT_fopen (C, file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			return (NULL);
@@ -5121,7 +5121,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, dest);
+			strncpy (file, dest, GMT_BUFSIZ);
 			if (io_mode < GMT_WRITE_SEGMENTS) {	/* Only require one destination */
 				if ((fp = GMT_fopen (C, &file[append], open_mode)) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -5181,7 +5181,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (C, table->segment[seg]);	/* We have access to OGR metadata */
-			if (table->segment[seg]->header) strcpy (C->current.io.segment_header, table->segment[seg]->header);
+			if (table->segment[seg]->header) strncpy (C->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);
 			GMT_write_segmentheader (C, fp, table->segment[seg]->n_columns);
 			if (table->segment[seg]->ogr && C->common.a.output) gmt_write_ogr_segheader (C, fp, table->segment[seg]);
 		}
@@ -5221,7 +5221,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, dest);
+			strncpy (file, dest, GMT_BUFSIZ);
 			if (D->io_mode < GMT_WRITE_TABLES) {	/* Only need one destination */
 				if ((fp = GMT_fopen (C, &file[append], open_mode)) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -5305,7 +5305,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, dest);
+			strncpy (file, dest, GMT_BUFSIZ);
 			if (io_mode < GMT_WRITE_SEGMENTS) {	/* Only require one destination */
 				if ((fp = GMT_fopen (C, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s in gmt_write_texttable\n", &file[append]);
@@ -5362,7 +5362,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 			if (C->current.setting.io_header[GMT_OUT]) for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg]->header) strcpy (C->current.io.segment_header, table->segment[seg]->header);
+			if (table->segment[seg]->header) strncpy (C->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);
 			GMT_write_segmentheader (C, fp, 0);
 		}
 		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
@@ -5393,7 +5393,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
-			strcpy (file, dest);
+			strncpy (file, dest, GMT_BUFSIZ);
 			if (D->io_mode < GMT_WRITE_TABLES) {	/* Only need one destination */
 				if ((fp = GMT_fopen (C, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
@@ -5575,7 +5575,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		for (hdr = 0; hdr < D->table[0]->n_headers; hdr++) {	/* Concatenate headers */
 			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
-			strcpy (D->table[0]->header[hdr], Din->table[0]->header[hdr]);
+			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ);
 			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
 				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);
@@ -5751,7 +5751,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
-		strcpy (file, source);
+		strncpy (file, source, GMT_BUFSIZ);
 		if ((fp = GMT_fopen (C, file, open_mode)) == NULL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", file);
 			if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
@@ -6023,7 +6023,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 		for (hdr = 0; hdr < D->table[0]->n_headers; hdr++) {	/* Concatenate headers */
 			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
-			strcpy (D->table[0]->header[hdr], Din->table[0]->header[hdr]);
+			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ);
 			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
 				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);

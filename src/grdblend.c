@@ -223,7 +223,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	B = GMT_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
-		strcpy (B[n].file, L[n].file);
+		strncpy (B[n].file, L[n].file, GMT_TEXT_LEN256);
 		GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Read header structure */
 		not_supported = found_unsupported_format (GMT, &B[n].G.header, B[n].file);
 		B[n].weight = L[n].weight;
@@ -312,7 +312,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 					GMT_exit (EXIT_FAILURE);
 				}
 			}
-			strcpy (B[n].file, buffer);	/* Use the temporary file instead */
+			strncpy (B[n].file, buffer, GMT_TEXT_LEN256);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
 			GMT_err_fail (GMT, GMT_read_grd_info (GMT, B[n].file, &B[n].G.header), B[n].file);	/* Re-read header structure */
 			if (overlap_check (GMT, &B[n], h, 0)) continue;	/* In case grdreformat changed the region */

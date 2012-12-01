@@ -460,34 +460,34 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 
 			case 'F':	/* Selected output fields */
 				Ctrl->F.active = true;
-				strcpy (buffer, opt->arg);
-				if (!strcmp (buffer, "mgd77")) strcpy (buffer, MGD77_FMT);
+				strncpy (buffer, opt->arg, GMT_BUFSIZ);
+				if (!strcmp (buffer, "mgd77")) strncpy (buffer, MGD77_FMT, GMT_BUFSIZ);
 				if (!strcmp (buffer, "mgd77+")) {
-					strcpy (buffer, MGD77_FMT);
+					strncpy (buffer, MGD77_FMT, GMT_BUFSIZ);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
-				if (!strcmp (buffer, "mgd77t")) strcpy (buffer, MGD77T_FMT);
+				if (!strcmp (buffer, "mgd77t")) strncpy (buffer, MGD77T_FMT, GMT_BUFSIZ);
 				if (!strcmp (buffer, "mgd77t+")) {
-					strcpy (buffer, MGD77T_FMT);
+					strncpy (buffer, MGD77T_FMT, GMT_BUFSIZ);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
-				if (!strcmp (buffer, "all")) strcpy (buffer, MGD77_ALL);
+				if (!strcmp (buffer, "all")) strncpy (buffer, MGD77_ALL, GMT_BUFSIZ);
 				if (!strcmp (buffer, "all+")) {
-					strcpy (buffer, MGD77_ALL);
+					strncpy (buffer, MGD77_ALL, GMT_BUFSIZ);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
-				if (!strcmp (buffer, "allt")) strcpy (buffer, MGD77T_ALL);
+				if (!strcmp (buffer, "allt")) strncpy (buffer, MGD77T_ALL, GMT_BUFSIZ);
 				if (!strcmp (buffer, "allt+")) {
-					strcpy (buffer, MGD77T_ALL);
+					strncpy (buffer, MGD77T_ALL, GMT_BUFSIZ);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
-				if (!strcmp (buffer, "geo")) strcpy (buffer, MGD77_GEO);
+				if (!strcmp (buffer, "geo")) strncpy (buffer, MGD77_GEO, GMT_BUFSIZ);
 				if (!strcmp (buffer, "geo+")) {
-					strcpy (buffer, MGD77_GEO);
+					strncpy (buffer, MGD77_GEO, GMT_BUFSIZ);
 					strcat (buffer, ",");
 					strcat (buffer, MGD77_AUX);
 				}
@@ -1034,7 +1034,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
 		}
 		aux_dvalue[MGD77_AUX_DS] = cumulative_dist = ds = 0.0;
-		if (auxlist[MGD77_AUX_ID].requested) strcpy (aux_tvalue[MGD77_AUX_ID], M.NGDC_id);
+		if (auxlist[MGD77_AUX_ID].requested) strncpy (aux_tvalue[MGD77_AUX_ID], M.NGDC_id, GMT_TEXT_LEN64);
 	
 		t_col = MGD77_Get_Column (GMT, "time",   &M);
 		x_col = MGD77_Get_Column (GMT, "lon",    &M);

@@ -246,7 +246,7 @@ int GMT_grdokb_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, struct GM
 					if (n == 0)
 						Ctrl->Q.pad_dist = atof (opt->arg);	/* Pad given as a scalar distance */
 					else if (n == 3)
-						strcpy(Ctrl->Q.region, opt->arg);	/* Pad given as a -R region */
+						strncpy(Ctrl->Q.region, opt->arg, GMT_BUFSIZ);	/* Pad given as a -R region */
 					else {
 						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
 						n_errors++;

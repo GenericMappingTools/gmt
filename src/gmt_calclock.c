@@ -855,9 +855,9 @@ void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GM
 		GMT_memset (date, GMT_CALSTRING_LENGTH, char);			/* To set all to zero */
 		if (D->mw_text)	{						/* Must write month or week name */
 			if (D->iso_calendar)
-				strcpy (text, C->current.time.language.week_name[kind]);
+				strncpy (text, C->current.time.language.week_name[kind], GMT_CALSTRING_LENGTH);
 			else
-				strcpy (text, C->current.time.language.month_name[kind][ival[D->item_pos[1]]-1]);
+				strncpy (text, C->current.time.language.month_name[kind][ival[D->item_pos[1]]-1], GMT_CALSTRING_LENGTH);
 			if (upper) GMT_str_toupper (text);
 			if (D->item_pos[1] == 0)		/* Month/week first */
 				sprintf (date, D->format, text, ival[1], ival[2]);

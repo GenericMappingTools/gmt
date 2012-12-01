@@ -170,10 +170,10 @@ int GMT_grdreformat (struct GMTAPI_CTRL *API, int mode, void *args)
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
 	type[0] = Grid->header->type;
-	strcpy (fname[0], Grid->header->name);
+	strncpy (fname[0], Grid->header->name, GMT_BUFSIZ);
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
 	type[1] = Grid->header->type;
-	strcpy (fname[1], Grid->header->name);
+	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
 
 	if (type[1] == GMT_GRD_IS_SD) {
 		/* Golden Surfer format 7 is read-only */

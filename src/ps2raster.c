@@ -147,7 +147,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
 	
 	C->W.active = true;
-	strcpy (txt, arg);
+	strncpy (txt, arg, GMT_BUFSIZ);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
@@ -727,7 +727,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	for (k = 0; k < Ctrl->In.n_files; k++) {
 		excessK = false;
 		*out_file = '\0'; /* truncate string */
-		strcpy (ps_file, ps_names[k]);
+		strncpy (ps_file, ps_names[k], GMT_BUFSIZ);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot to open file %s\n", ps_file);
 			continue;
@@ -1088,7 +1088,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16];
-			strcpy (tag, &ext[Ctrl->T.device][1]);
+			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
 			GMT_str_toupper (tag);
 			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
 
@@ -1097,7 +1097,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				strncat (out_file, &ps_file[pos_file], (size_t)(pos_ext - pos_file));
 			}
 			else
-				strcpy (out_file, Ctrl->F.file);
+				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 			strcat (out_file, ext[Ctrl->T.device]);
 			pix_w = lrint (ceil (w * Ctrl->E.dpi / 72.0));
 			pix_h = lrint (ceil (h * Ctrl->E.dpi / 72.0));

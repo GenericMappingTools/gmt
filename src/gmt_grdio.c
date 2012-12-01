@@ -280,10 +280,10 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 				strncpy (tmp, &header->name[i+3], pch - &header->name[i+3] + 1);
 				strcat (tmp, "\"");	strncat(tmp, header->name, i-1);	strcat(tmp, "\"");
 				strcat (tmp, &pch[1]);
-				strcpy (header->name, tmp);
+				strncpy (header->name, tmp, GMT_TEXT_LEN256);
 			}
 			else
-				strcpy (header->name, &header->name[i+3]);
+				strncpy (header->name, &header->name[i+3], GMT_TEXT_LEN256);
 			magic = 0;	/* We don't want it to try to prepend any path */
 		} /* if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') */
 		else if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b') { /* A Band request for GDAL */
@@ -307,7 +307,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
-			strcpy (header->name, tmp);
+			strncpy (header->name, tmp, GMT_TEXT_LEN256);
 	} /* if (header->name[i]) */
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
@@ -346,7 +346,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from C->current.setting.io_gridfile_format */
 		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1)
-			strcpy (header->name, tmp);    /* Strip off variable name */
+			strncpy (header->name, tmp, GMT_TEXT_LEN256);    /* Strip off variable name */
 		/* parse grid format string: */
 		if ((val = parse_grd_format_scale (C, header, C->current.setting.io_gridfile_format)) != GMT_NOERROR)
 			return val;
@@ -430,9 +430,9 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	struct GMT_TIME_SYSTEM time_system;
 
 	/* Copy unit strings */
-	strcpy (string[0], header->x_units);
-	strcpy (string[1], header->y_units);
-	strcpy (string[2], header->z_units);
+	strncpy (string[0], header->x_units, GRD_UNIT_LEN80);
+	strncpy (string[1], header->y_units, GRD_UNIT_LEN80);
+	strncpy (string[2], header->z_units, GRD_UNIT_LEN80);
 
 	/* Parse the unit strings one by one */
 	for (i = 0; i < 3; i++) {
@@ -1208,7 +1208,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not create argc, argv from linked structure options!\n");
 			return;
 		}
-		strcpy (header->command, gmt_module_name(C));
+		strncpy (header->command, gmt_module_name(C), GRD_COMMAND_LEN320);
 		len = strlen (header->command);
 		for (i = 0; len < GRD_COMMAND_LEN320 && i < argc; i++) {
 			len += strlen (argv[i]) + 1;

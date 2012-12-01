@@ -540,7 +540,7 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		if (Ctrl->In.file) strcpy (text, Ctrl->In.file); else strcpy (text, "<stdin>");
+		if (Ctrl->In.file) strncpy (text, Ctrl->In.file, GMT_BUFSIZ); else strcpy (text, "<stdin>");
 		sprintf (format, "Info for %%s: n = %% " PRIu64 " rmax = %s mean r/az = (%s/%s) totlength = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_NORMAL, format, text, n, max, mean_radius, mean_theta, total);
 		if (Ctrl->I.active) {

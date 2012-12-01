@@ -677,9 +677,9 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_LOWER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].interval);
-		strcpy (buffer, GMT->current.map.frame.axis[GMT_X].label);
-		strcpy (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label);
-		strcpy (GMT->current.map.frame.axis[GMT_Y].label, buffer);
+		strncpy (buffer, GMT->current.map.frame.axis[GMT_X].label, GMT_TEXT_LEN256);
+		strncpy (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label, GMT_TEXT_LEN256);
+		strncpy (GMT->current.map.frame.axis[GMT_Y].label, buffer, GMT_TEXT_LEN256);
 		GMT_err_fail (GMT, GMT_map_setup (GMT, F.wesn), "");
 	}
 	else
