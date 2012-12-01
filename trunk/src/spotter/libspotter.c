@@ -404,7 +404,7 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
-		strcpy (Plates, ((this = getenv ("GPLATES_PLATES")) != NULL) ? this : GPLATES_PLATES);
+		strncpy (Plates, ((this = getenv ("GPLATES_PLATES")) != NULL) ? this : GPLATES_PLATES, GMT_BUFSIZ);
 #ifdef WIN32
 		DOS_path_fix (Plates);
 #endif
@@ -430,7 +430,7 @@ unsigned int spotter_init (struct GMT_CTRL *C, char *file, struct EULER **p, boo
 			GMT_exit (EXIT_FAILURE);
 		}
 		/* OK, here we have the two IDs */
-		strcpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != NULL) ? this : GPLATES_ROTATIONS);
+		strncpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != NULL) ? this : GPLATES_ROTATIONS, GMT_BUFSIZ);
 #ifdef WIN32
 		DOS_path_fix (Rotations);
 #endif

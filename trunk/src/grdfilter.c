@@ -438,7 +438,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 				if (strchr (GRDFILTER_CHOICES, opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = true;
 					Ctrl->F.filter = opt->arg[0];
-					strcpy (txt, opt->arg);	/* Work on a copy */
+					strncpy (txt, opt->arg, GMT_TEXT_LEN256);	/* Work on a copy */
 					if (Ctrl->F.filter == 'm') {
 						if ((p = strchr (txt, 'q'))) {	/* Requested another quantile */
 							*(--p) = 0;	/* Chop off the +q modifier */
@@ -483,7 +483,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 				break;
 			case 'I':	/* New grid spacings */
 				Ctrl->I.active = true;
-				strcpy (Ctrl->I.string, opt->arg);	/* Verbatim copy */
+				strncpy (Ctrl->I.string, opt->arg, GMT_TEXT_LEN256);	/* Verbatim copy */
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;

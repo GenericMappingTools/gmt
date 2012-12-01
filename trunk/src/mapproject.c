@@ -365,7 +365,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 				}
 				else {	/* to not given, set to - which means WGS-84 */
 					strcpy (to, "-");
-					strcpy (from, &opt->arg[k]);
+					strncpy (from, &opt->arg[k], GMT_TEXT_LEN256);
 				}
 				n_errors += GMT_check_condition (GMT, GMT_set_datum (GMT, to, &Ctrl->T.to) == -1 || GMT_set_datum (GMT, from, &Ctrl->T.from) == -1, "Syntax error -T: Usage -T[h]<from>[/<to>]\n");
 				break;
@@ -771,7 +771,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 				 * will then be the user text that we want to preserve.  Since strtok places
 				 * 0 to indicate start of next token we count our way to the start of the text. */
 
-				strcpy (line, GMT->current.io.current_record);
+				strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
 				GMT_chop (line);	/* Chop of line feed */
 				pos = record[0] = 0;	/* Start with blank record */
 				GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
@@ -891,7 +891,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 					 * will then be the user text that we want to preserve.  Since strtok places
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
-					strcpy (line, GMT->current.io.current_record);
+					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
 					GMT_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
 					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring (ignored) and update pos */
@@ -938,7 +938,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 					 * will then be the user text that we want to preserve.  Since strtok places
 					 * 0 to indicate start of next token we count our way to the start of the text. */
 
-					strcpy (line, GMT->current.io.current_record);
+					strncpy (line, GMT->current.io.current_record, GMT_BUFSIZ);
 					GMT_chop (line);
 					pos = record[0] = 0;	/* Start with blank record */
 					GMT_strtok (line, " \t,", &pos, p);	/* Returns xstring and update pos */

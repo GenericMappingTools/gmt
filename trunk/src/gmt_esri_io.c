@@ -72,10 +72,10 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 
 			if (!strncmp (record, "BYTEORDER", 4) ) {
 				sscanf (record, "%*s %c", &header->flags[0]);	/* Store the endianess flag here */
-				strcpy (header->title, file);
+				strncpy (header->title, file, GRD_TITLE_LEN80);
 			}
 			else if (!strncmp (record, "ncols ", 6) ) {	/* Ah. A Arc/Info float binary file with a separate .hdr */
-				strcpy (header->title, file);
+				strncpy (header->title, file, GRD_TITLE_LEN80);
 				header->flags[0] = 'L';	/* If is truly 'L' or 'B' we'll find only when parsing the whole header */
 				header->flags[1] = '2';	/* Flag to let us know the file type */
 			}
@@ -101,7 +101,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 				header->flags[1] = '0';		/* Flag to let us know the file type */
 				/* Store the file name with all extensions removed.
 				 * We'll use this to create header from file name info */
-				strcpy (header->title, file);
+				strncpy (header->title, file, GRD_TITLE_LEN80);
 			}
 			else if (name_len > 3 && !(strncmp (&header->name[name_len-4], ".hgt", 4) && strncmp (&header->name[name_len-4], ".HGT", 4))) {
 				/* Probably a SRTM1|3 file. In read_esri_info we'll check further if it is a 1 or 3 sec */
@@ -111,7 +111,7 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 					header->flags[1] = '1';	/* Flag to let us know the file type */
 					/* Store the file name with all extensions removed.
 					 * We'll use this to create header from file name info */
-					strcpy (header->title, file);
+					strncpy (header->title, file, GRD_TITLE_LEN80);
 				}
 			}
 			else {

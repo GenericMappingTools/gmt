@@ -346,12 +346,12 @@ int GMT_grdedit (struct GMTAPI_CTRL *API, int mode, void *args) {
 		h_tr->wesn[XLO] = G->header->wesn[YLO];
 		h_tr->wesn[XHI] = G->header->wesn[YHI];
 		h_tr->inc[GMT_X] = G->header->inc[GMT_Y];
-		strcpy (h_tr->x_units, G->header->y_units);
+		strncpy (h_tr->x_units, G->header->y_units, GRD_UNIT_LEN80);
 		h_tr->ny = G->header->nx;
 		h_tr->wesn[YLO] = G->header->wesn[XLO];
 		h_tr->wesn[YHI] = G->header->wesn[XHI];
 		h_tr->inc[GMT_Y] = G->header->inc[GMT_X];
-		strcpy (h_tr->y_units, G->header->x_units);
+		strncpy (h_tr->y_units, G->header->x_units, GRD_UNIT_LEN80);
 
 		/* Now transpose the matrix */
 

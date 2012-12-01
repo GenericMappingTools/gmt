@@ -353,7 +353,7 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				return (GMT_ERROR_ON_FOPEN);
 			}
 			S_obj->close_file = true;	/* We do want to close files we are opening, but later */
-			strcpy (API->GMT->current.io.current_filename[direction], S_obj->filename);
+			strncpy (API->GMT->current.io.current_filename[direction], S_obj->filename, GMT_BUFSIZ);
 			GMT_report (API->GMT, GMT_MSG_VERBOSE, "%s %s %s file %s\n", 
 				operation[direction], GMT_family[S_obj->family], dir[direction], S_obj->filename);
 			if (GMT_binary_header (API->GMT, direction)) {
@@ -3263,13 +3263,13 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 							/* Segment header: Just save the header content, not the
 							 *                 marker and leading whitespace
 							 */
-							strcpy (API->GMT->current.io.segment_header,
-											GMT_trim_segheader (API->GMT, t_record));
+							strncpy (API->GMT->current.io.segment_header,
+											GMT_trim_segheader (API->GMT, t_record), GMT_BUFSIZ);
 							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
 							record = NULL;
 						}
 						else {	/* Regular record */
-							strcpy (API->GMT->current.io.current_record, t_record);
+							strncpy (API->GMT->current.io.current_record, t_record, GMT_BUFSIZ);
 							record = t_record;
 						}
 						n_fields = 1;
@@ -3333,7 +3333,7 @@ int GMT_Put_Record (struct GMTAPI_CTRL *API, unsigned int mode, void *record)
 					GMT_write_tableheader (API->GMT, S_obj->fp, s);
 					break;
 				case GMT_WRITE_SEGHEADER:	/* Export a segment header record; write NaNs if binary  */
-					if (record) strcpy (API->GMT->current.io.segment_header, record);	/* Default to last segment record if NULL */
+					if (record) strncpy (API->GMT->current.io.segment_header, record, GMT_BUFSIZ);	/* Default to last segment record if NULL */
 					GMT_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);
 					break;
 				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */

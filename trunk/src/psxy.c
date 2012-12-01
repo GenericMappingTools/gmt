@@ -416,7 +416,7 @@ int GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct GMT_OP
 						if (opt->arg[j+1] == 'n') {Ctrl->E.ybar++; j++;}
 						break;
 					default:	/* Get error 'cap' width */
-						strcpy (txt_a, &opt->arg[j]);
+						strncpy (txt_a, &opt->arg[j], GMT_TEXT_LEN256);
 						j0 = 0;
 						while (txt_a[j0] && txt_a[j0] != '/') j0++;
 						txt_a[j0] = 0;

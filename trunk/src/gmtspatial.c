@@ -857,7 +857,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					else {
 						if (first) {
-							strcpy (GMT->current.io.segment_header, S->header);
+							strncpy (GMT->current.io.segment_header, S->header, GMT_BUFSIZ);
 							GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
 						}
 						write_record (GMT, S->coord, S->n_columns, row-1);
@@ -1041,7 +1041,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 										for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 										if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 											if (S2->header)
-												strcpy (GMT->current.io.segment_header, S2->header);
+												strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 											else
 												sprintf (GMT->current.io.segment_header, "New segment");
 											GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
@@ -1052,7 +1052,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 									/* Always output crossover point */
 									if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 										if (S2->header)
-											strcpy (GMT->current.io.segment_header, S2->header);
+											strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 										else
 											sprintf (GMT->current.io.segment_header, "New segment");
 										GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
@@ -1071,7 +1071,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 											for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];
 											if (first && GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 												if (S2->header)
-													strcpy (GMT->current.io.segment_header, S2->header);
+													strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 												else
 													sprintf (GMT->current.io.segment_header, "New segment");
 												GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
@@ -1092,8 +1092,8 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 									sprintf (T2, "%s-%" PRIu64, D->table[tbl2]->file[GMT_IN], seg2);
 								}
 								else {
-									strcpy (T1, C->table[tbl1]->file[GMT_IN]);
-									strcpy (T2, D->table[tbl2]->file[GMT_IN]);
+									strncpy (T1, C->table[tbl1]->file[GMT_IN], GMT_BUFSIZ);
+									strncpy (T2, D->table[tbl2]->file[GMT_IN], GMT_BUFSIZ);
 								}
 								for (px = 0; px < nx; px++) printf (fmt, XC.x[px], XC.y[px], (double)XC.xnode[0][px], (double)XC.xnode[1][px], T1, T2);
 							}
@@ -1104,7 +1104,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 								/* Inside, copy out the entire polygon */
 								if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 									if (S2->header)
-										strcpy (GMT->current.io.segment_header, S2->header);
+										strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 									else
 										sprintf (GMT->current.io.segment_header, "New segment");
 									GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
@@ -1338,7 +1338,7 @@ int GMT_gmtspatial (struct GMTAPI_CTRL *API, int mode, void *args)
 						else {	/* Add -Z<ID< to the segment header */
 							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
 							buffer[0] = txt[0] = 0;
-							if (S->header) { strcpy (buffer, S->header); free (S->header); }
+							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ); free (S->header); }
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);

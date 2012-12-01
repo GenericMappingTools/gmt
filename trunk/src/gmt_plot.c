@@ -477,7 +477,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				if (C->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
-					strcpy (string, label_c[i]);
+					strncpy (string, label_c[i], GMT_TEXT_LEN256);
 				else
 					GMT_get_coordinate_label (C, string, &C->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_deftextdim (P, ortho ? "-w" : "-h", font.size, string);
@@ -500,7 +500,7 @@ void GMT_xy_axis (struct GMT_CTRL *C, double x0, double y0, double length, doubl
 				/* Move to new anchor point */
 				PSL_command (P, "%d PSL_A%d_y MM\n", psl_iz (P, x), annot_pos);
 				if (label_c && label_c[i] && label_c[i][0])
-					strcpy (string, label_c[i]);
+					strncpy (string, label_c[i], GMT_TEXT_LEN256);
 				else
 					GMT_get_coordinate_label (C, string, &C->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_plottext (P, 0.0, 0.0, -font.size, string, (ortho == horizontal) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
@@ -1874,7 +1874,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				if (doubleAlmostEqual (val[i], -180.0))
 					done_Dateline = true;	/* OK, want to plot -180 */
 				if (label_c && label_c[i] && label_c[i][0])
-					strcpy (label, label_c[i]);
+					strncpy (label, label_c[i], GMT_TEXT_LEN256);
 				else
 					GMT_get_annot_label (C, val[i], label, do_minutes, do_seconds, 0, is_world_save);
 				/* Only annotate val[i] if
@@ -1933,7 +1933,7 @@ void gmt_map_annotate (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 				if ((C->current.proj.polar || C->current.proj.projection == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
 				if (label_c && label_c[i] && label_c[i][0])
-					strcpy (label, label_c[i]);
+					strncpy (label, label_c[i], GMT_TEXT_LEN256);
 				else
 					GMT_get_annot_label (C, tval[i], label, do_minutes, do_seconds, lonlat, is_world_save);
 				annot = true;
@@ -3684,9 +3684,9 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		Cartesian_m[3] = (C->current.proj.rect[XLO] - C->current.proj.origin[GMT_X]) * C->current.proj.i_scale[GMT_X];
 		/* It woul be simpler if we had a cleaner way of telling when data is lon-lat */
 		if (C->current.proj.projection == GMT_LINEAR && GMT_is_geographic (C, GMT_IN))
-			strcpy(proj4name, "latlong");
+			strcpy (proj4name, "latlong");
 		else
-			strcpy(proj4name, C->current.proj.proj4[id].name);
+			strncpy (proj4name, C->current.proj.proj4[id].name, 16U);
 
 		pstr = GMT_export2proj4 (C);
 		PSL_command (P, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
@@ -3706,7 +3706,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		char txt[4] = {' ', '-', 'X', 0};
 		struct GMT_OPTION *opt;
 		/* -Uc was given as shorthand for "plot current command line" */
-		strcpy (C->current.ps.map_logo_label, gmt_module_name(C));
+		strncpy (C->current.ps.map_logo_label, gmt_module_name(C), GMT_BUFSIZ);
 		for (opt = options; opt; opt = opt->next) {
 			if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;

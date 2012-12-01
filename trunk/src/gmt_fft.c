@@ -81,7 +81,7 @@ char *gmt_fftwf_wisdom_filename (struct GMT_CTRL *C) {
 			return NULL;
 		else {
 			/* create wisdom file in USERDIR */
-			strcpy (wisdom_file, C->session.USERDIR);
+			strncpy (wisdom_file, C->session.USERDIR, PATH_MAX);
 			strcat (wisdom_file, "/" FFTWF_WISDOM_FILENAME "_");
 			/* cat hostname */
 			memset (hostname, '\0', 257); /* in case gethostname does not null-terminate string */

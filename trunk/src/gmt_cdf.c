@@ -139,8 +139,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 	}
 	else {
 		int reg;
-		strcpy (text, header->command);
-		strcpy (&text[GRD_COMMAND_LEN320], header->remark);
+		strncpy (text, header->command, GRD_COMMAND_LEN320);
+		strncpy (&text[GRD_COMMAND_LEN320], header->remark, GRD_REMARK_LEN160);
 		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GRD_UNIT_LEN80, header->x_units));
 		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", GRD_UNIT_LEN80, header->y_units));
 		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN80, header->z_units));

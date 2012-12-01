@@ -374,7 +374,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 				i = strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->E.active)	/* Return extreme record */
-				strcpy (record, chosen);
+				strncpy (record, chosen, GMT_BUFSIZ);
 			else {				/* Return min/max for each column */
 				if (!Ctrl->C.active) {	/* Want info about each item */
 					record[0] = '\0';	/* Start with blank slate */
@@ -479,11 +479,11 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 				value = (work_on_abs_value) ? fabs (in[Ctrl->E.col]) : in[Ctrl->E.col];
 				if (Ctrl->E.mode == -1 && value < e_min) {	/* Lower than previous low */
 					e_min = value;
-					strcpy (chosen, GMT->current.io.current_record);
+					strncpy (chosen, GMT->current.io.current_record, GMT_BUFSIZ);
 				}
 				else if (Ctrl->E.mode == +1 && value > e_max) {	/* Higher than previous high */
 					e_max = value;
-					strcpy (chosen, GMT->current.io.current_record);
+					strncpy (chosen, GMT->current.io.current_record, GMT_BUFSIZ);
 				}
 			}
 		}
@@ -515,7 +515,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			n++;	/* Number of records processed in current block (all/table/segment; see -A) */
 		}
-		if (file[0] == 0) strcpy (file, GMT->current.io.current_filename[GMT_IN]);	/* Grab name of current file while we can */
+		if (file[0] == 0) strncpy (file, GMT->current.io.current_filename[GMT_IN], GMT_BUFSIZ);	/* Grab name of current file while we can */
 		
 	}
 	if (GMT_End_IO (API, GMT_IN,  0) != GMT_OK) {	/* Disables further data input */

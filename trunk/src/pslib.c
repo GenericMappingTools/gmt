@@ -804,7 +804,7 @@ int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode)
 	for (k = ok = 0; !ok && k < N_PDF_TRANSPARENCY_MODES; k++) if (!strcmp (PDF_transparency_modes[k], mode)) ok = 1;
 	if (!ok) PSL_message (PSL, PSL_MSG_FATAL, "Unknown PDF transparency mode %s - ignored\n", mode);
 
-	strcpy (PSL->current.transparency_mode, mode);
+	strncpy (PSL->current.transparency_mode, mode, 16U);
 	return (PSL_NO_ERROR);
 }
 
@@ -1463,7 +1463,7 @@ int PSL_plottextbox (struct PSL_CTRL *PSL, double x, double y, double fontsize, 
 		PSL_command (PSL, "PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub Sb\n");
 	PSL_command (PSL, "U\n");
 	PSL_comment (PSL, "PSL_plottextbox end:\n");
-	strcpy (PSL->current.string, &text[i]);	/* Save the string */
+	strncpy (PSL->current.string, &text[i], PSL_BUFSIZ);	/* Save the string */
 	return (PSL_NO_ERROR);
 }
 
@@ -1540,12 +1540,12 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				ptr += 4;
 			else
 				ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '~') {	/* Symbol font toggle */
 			font = (font == PSL_SYMBOL_FONT) ? old_font : PSL_SYMBOL_FONT;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '%') {	/* Switch font option */
 			ptr++;
@@ -1557,25 +1557,25 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			}
 			while (*ptr != '%') ptr++;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '-') {	/* Subscript toggle  */
 			sub = !sub;
 			size = (sub) ? small_size : fontsize;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '+') {	/* Superscript toggle */
 			super = !super;
 			size = (super) ? small_size : fontsize;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '#') {	/* Small caps toggle */
 			small = !small;
 			size = (small) ? scap_size : fontsize;
 			ptr++;
-			(small) ? psl_get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
+			(small) ? psl_get_uppercase (piece, ptr) : (void) strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ':') {	/* Font size change */
 			ptr++;
@@ -1588,20 +1588,20 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 			small_size = size * 0.7;
 			scap_size = size * 0.85;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ';') {	/* Color change */
 			ptr++;
 			while (*ptr != ';') ptr++;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '_') {	/* Small caps toggle */
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else	/* Not recognized or @@ for a single @ */
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		if (strlen (piece) > 0) PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 		ptr = strtok_r (NULL, "@", &plast);
 	}
@@ -1778,12 +1778,12 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			/* Try to center justify these two character to make a composite character - may not be right */
 			PSL_command (PSL, "%d F%d (%s) E exch %s -2 div dup 0 G\n", psl_ip (PSL, size), font, piece2, op[mode]);
 			PSL_command (PSL, "(%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", piece, op[mode]);
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '~') {	/* Symbol font */
 			font = (font == PSL_SYMBOL_FONT) ? old_font : PSL_SYMBOL_FONT;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '%') {	/* Switch font option */
 			ptr++;
@@ -1796,7 +1796,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			}
 			while (*ptr != '%') ptr++;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '-') {	/* Subscript */
 			sub = !sub;
@@ -1804,7 +1804,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			dy = (sub) ? -psl_ip (PSL, dstep) : psl_ip (PSL, dstep);
 			PSL_command (PSL, "0 %d G\n", dy);
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '+') {	/* Superscript */
 			super = !super;
@@ -1812,13 +1812,13 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			dy = (super) ? psl_ip (PSL, ustep) : -psl_ip (PSL, ustep);
 			PSL_command (PSL, "0 %d G\n", dy);
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '#') {	/* Small caps */
 			small = !small;
 			size = (small) ? scap_size : fontsize;
 			ptr++;
-			(small) ? psl_get_uppercase (piece, ptr) : (void) strcpy (piece, ptr);
+			(small) ? psl_get_uppercase (piece, ptr) : (void) strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ':') {	/* Font size change */
 			ptr++;
@@ -1833,7 +1833,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			upen = psl_ip (PSL, 0.025 * size);	/* Underline pen thickness */
 			ugap = psl_ip (PSL, 0.075 * size);	/* Underline shift */
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == ';') {	/* Font color change. r/g/b in 0-255 */
 			int n_scan, k, error = false;
@@ -1881,7 +1881,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				}
 			}
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else if (ptr[0] == '_') {	/* Toggle underline */
 			n_uline++;
@@ -1890,10 +1890,10 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			else
 				stop_uline = true;
 			ptr++;
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
 		else
-			strcpy (piece, ptr);
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		if (start_uline) PSL_command (PSL, "currentpoint /y0_u edef /x0_u edef\n");
 		if (stop_uline) PSL_command (PSL, "V %d W currentpoint pop /x1_u edef x0_u y0_u %d sub M x1_u x0_u sub 0 D S x1_u y0_u M U\n", upen, ugap);
 		start_uline = stop_uline = false;

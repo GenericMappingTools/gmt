@@ -542,7 +542,7 @@ int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
 	if (stat (header->name, &buf))
 		return (GMT_GRDIO_STAT_FAILED);		/* Inquiry about file failed somehow */
-	strcpy (t_head.name, header->name);
+	strncpy (t_head.name, header->name, GMT_TEXT_LEN256);
 	if ((status = GMT_native_read_grd_info (C, &t_head)))
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
 	if (t_head.nx <= 0 || t_head.ny <= 0)

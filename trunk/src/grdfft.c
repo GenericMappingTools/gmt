@@ -499,7 +499,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 
 	/* Syntax is either -F[x|y]lc/hc/lp/hp (Cosine taper), -F[x|y]lo/hi (Gaussian), or 0F[x|y]lo/hi/order (Butterworth) */
 
-	strcpy(line, c);
+	strncpy (line, c,  GMT_TEXT_LEN256);
 	i = j = 0;	/* j is Filter type: r=0, x=1, y=2  */
 
 	if (line[i] == 'x') {

@@ -255,7 +255,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		length = strlen(record);
 		if (length == 0) continue;	/* Skip blank lines */
 
-		strcpy (rasinfo[nfound].h.command, record);
+		strncpy (rasinfo[nfound].h.command, record, GRD_COMMAND_LEN320);
 
 		/* Find the integer file name first */
 		i = 0;
@@ -497,7 +497,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
 		buf[j-i] = '\0';
 
-		strcpy (rasinfo[nfound].h.remark, buf);
+		strncpy (rasinfo[nfound].h.remark, buf, GRD_REMARK_LEN160);
 
 		/* Decode SWAP flag or SKIP command, if present  */
 
@@ -576,7 +576,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		else
 			expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
-			strcpy (rasinfo[nfound].h.remark, path);
+			strncpy (rasinfo[nfound].h.remark, path, GRD_REMARK_LEN160);
 			stat (path, &F);
 		}
 		else {	/* Inquiry about file failed somehow */
@@ -812,7 +812,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		else {	/* We gave a text snippet to match in command */
-			strcpy (match, rasinfo[i].h.command);
+			strncpy (match, rasinfo[i].h.command, GRD_REMARK_LEN160);
 			GMT_str_toupper (match);	/* Make it upper case  */
 			if (strstr (match, tselect)) {	/* Found a matching text string */
 				if (j == UINT_MAX)
@@ -932,9 +932,9 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 		Grid->header->nx++;
 		Grid->header->ny++;
 	}
-	strcpy (Grid->header->title, myras.h.title);
-	strcpy (Grid->header->z_units, myras.h.z_units);
-	strcpy (Grid->header->remark, myras.h.remark);
+	strncpy (Grid->header->title, myras.h.title, GRD_TITLE_LEN80);
+	strncpy (Grid->header->z_units, myras.h.z_units, GRD_UNIT_LEN80);
+	strncpy (Grid->header->remark, myras.h.remark, GRD_REMARK_LEN160);
 	if (myras.geo) {
 		strcpy (Grid->header->x_units, "Longitude [degrees_east]");
 		strcpy (Grid->header->y_units, "Latitude [degrees_north]");

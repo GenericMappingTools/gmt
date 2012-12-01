@@ -165,7 +165,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 				break;
 			case 'N':	/* Mask values */
 				Ctrl->N.active = true;
-				strcpy (line, opt->arg);
+				strncpy (line, opt->arg,  GMT_TEXT_LEN256);
 #ifdef GMT_COMPAT
 				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");

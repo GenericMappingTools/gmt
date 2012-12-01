@@ -301,12 +301,12 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 				break;
 			case 's':	/* Get S polarity */
 				Ctrl->S2.active = true;
-				strcpy (txt, &opt->arg[1]);
+				strncpy (txt, &opt->arg[1], GMT_TEXT_LEN64);
 				n=0; while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++; txt[n]=0;
 				Ctrl->S2.size = GMT_to_inch (GMT, txt);
 				if (strchr (opt->arg, 'V')) {
 					Ctrl->S2.vector = true;
-					strcpy (txt, strchr (opt->arg, 'V'));
+					strncpy (txt, strchr (opt->arg, 'V'), GMT_TEXT_LEN64);
 					if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
 						Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
 						if (!GMT->current.setting.proj_length_unit) {

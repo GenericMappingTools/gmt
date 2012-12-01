@@ -508,7 +508,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		sprintf (Merc->header->x_units, "longitude [degrees_east]");
 		sprintf (Merc->header->y_units, "latitude [degrees_north]");
 	}
-	strcpy (Merc->header->z_units, z_units);
+	strncpy (Merc->header->z_units, z_units, GRD_UNIT_LEN80);
 	strcpy (Merc->header->title, "Data from Altimetry");
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
 
@@ -647,7 +647,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 	else	/* The output here is the final result */
-		strcpy (s_out_ID, Ctrl->G.file);
+		strncpy (s_out_ID, Ctrl->G.file, GMT_TEXT_LEN256);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1 -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
 	if (GMT_grdproject (API, 0, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
 		Return (API->error);
@@ -663,7 +663,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		strcpy (Geo->header->title, "Data from Altimetry");
-		strcpy (Geo->header->z_units, z_units);
+		strncpy (Geo->header->z_units, z_units, GRD_UNIT_LEN80);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, NULL, Geo)) == GMTAPI_NOTSET) {
