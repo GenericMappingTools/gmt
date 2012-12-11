@@ -111,7 +111,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"psmeca", "meca", "Plot focal mechanisms on maps", k_mode_psl, &GMT_psmeca},
 	{"pspolar", "meca", "Plot polarities on the inferior focal half-sphere on maps", k_mode_psl, &GMT_pspolar},
 	{"psrose", "core", "Plot a polar histogram (rose, sector, windrose diagrams)", k_mode_psl, &GMT_psrose},
-	{"psscale", "core", "Plot a gray-scale or color-scale on maps", k_mode_psl, &GMT_psscale},
+	{"psscale", "core", "Plot a gray or color scale-bar on maps", k_mode_psl, &GMT_psscale},
 	{"pssegy", "segy", "Plot a SEGY file on a map", k_mode_psl, &GMT_pssegy},
 	{"pssegyz", "segy", "Plot a SEGY file in PostScript", k_mode_psl, &GMT_pssegyz},
 	{"pstext", "core", "Plot or typeset text on maps", k_mode_psl, &GMT_pstext},
