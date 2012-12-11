@@ -6778,7 +6778,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				C->current.proj.lat0 = C->current.proj.pars[1];
 			}
 			error += gmt_scale_or_width (C, txt_c, &C->current.proj.pars[2]);
-			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_TM || project == GMT_POLYCONIC)
+			error += ((project == GMT_CYL_EQ || project == GMT_MERCATOR || project == GMT_POLYCONIC)
 				&& fabs (C->current.proj.pars[1]) >= 90.0);
 			error += !(n == n_slashes + 1);
 			break;
