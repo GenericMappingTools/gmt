@@ -2542,7 +2542,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *C, struct GMT_MAP_SCALE *ms)
 			case 'l':	/* Left */
 				x_label = x_left - f_len;
 				y_label = ms->y0 - a_len;
-				jj = PSL_BR;	/* XXX ARE THESE RIGHT ? XXX */
+				jj = PSL_BR;	/* Left side annotation are right-justified, etc. */
 				break;
 			case 'r':	/* right */
 				x_label = x_right + f_len;
