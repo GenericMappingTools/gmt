@@ -306,7 +306,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	unsigned char *dummy = NULL;
 
-	double x_orig, y_orig, x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
+	double x_orig, y_orig, x_off, x, y, x0, y0, y0_orig, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off;
 
 	struct imageinfo header;
@@ -425,7 +425,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
 
 	x0 = Ctrl->D.lon + Ctrl->C.dx;			/* Left justification edge of items inside legend box */
-	y0 = Ctrl->D.lat + Ctrl->D.height - Ctrl->C.dy;	/* Top justification edge of items inside legend box  */
+	y0_orig = y0 = Ctrl->D.lat + Ctrl->D.height - Ctrl->C.dy;	/* Top justification edge of items inside legend box  */
 	one_line_spacing = Ctrl->L.spacing * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 	half_line_spacing    = 0.5  * one_line_spacing;
 	quarter_line_spacing = 0.25 * one_line_spacing;
@@ -715,7 +715,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 						sprintf (sub, "%s%s", symbol, size);
 					if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse needs more arguments we use minor = 0.65*major, az = 0 */
 						x = GMT_to_inch (GMT, size);
-						sprintf (sarg, "%g %g 0 %g %g", x_off + off_ss, y0, x, 0.65 * x);
+						sprintf (sarg, "%g %g 0 %gi %gi", x_off + off_ss, y0, x, 0.65 * x);
 					}
 					else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector needs a prepended length/ string */
 						i = 0;
@@ -737,7 +737,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					else if (symbol[0] == 'r') {	/* Rectangle also need more args, we use h = 0.65*w */
 						x = GMT_to_inch (GMT, size);
-						sprintf (sarg, "%g %g %g %g", x_off + off_ss, y0, x, 0.65*x);
+						sprintf (sarg, "%g %g %gi %gi", x_off + off_ss, y0, x, 0.65*x);
 					}
 					else if (symbol[0] == 'w') {	/* Wedge also need more args; we set fixed az1,2 as -30 30 */
 						x = GMT_to_inch (GMT, size);
@@ -816,6 +816,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 			break;
 		}
 	} while (true);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Exact legend height estimated to be %g inches.\n", y0_orig - y0 + 2.0 * Ctrl->C.dy);
 
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
