@@ -28,17 +28,21 @@ Output the gravity anomaly at nodes of this grid file.
 .SH OPTIONAL ARGUMENTS
 #include "explain_-V.txt"
 .TP
-OPT(L) sets level of observation [Default = 0]. That is the height (z) at which anomalies are computed. 
+OPT(L)
+sets level of observation [Default = 0]. That is the height (z) at which anomalies are computed. 
 .TP
-OPT(M) Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit] 
+OPT(M)
+Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit] 
 .TP
-OPT(Z) level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
+OPT(Z)
+level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
 #include "explain_-f.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
-Suppose you ...
+Suppose you want to compute the gravity effect of the phantom "Sandy Island" together with its not phantom seamount 
+.br
 .sp
-grdokb
+grdokb sandy_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy_okb.grd -V
 .SH "SEE ALSO"
 .IR GMT (1)
 .SH REFERENCE
