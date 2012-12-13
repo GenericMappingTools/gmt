@@ -459,11 +459,11 @@ int GMT_psvelo (struct GMTAPI_CTRL *API, int mode, void *args)
 				get_trans (GMT, xy[GMT_X], xy[GMT_Y], &t11, &t12, &t21, &t22);
 				if (des_ellipse) {
 					if (Ctrl->E.active)
-						paint_ellipse (PSL, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
-							t11,t12,t21,t22, Ctrl->E.active, Ctrl->E.fill.rgb, Ctrl->L.active);
+						paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
+							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
 					else
-						paint_ellipse (PSL, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
-							t11,t12,t21,t22, Ctrl->E.active, Ctrl->G.fill.rgb, Ctrl->L.active);
+						paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, Ctrl->S.scale,
+							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->G.fill, Ctrl->L.active);
 				}
 				if (des_arrow) {	/* verify that arrow is not ridiculously small */
 					if (hypot (plot_x-plot_vx, plot_y-plot_vy) <= 1.5 * Ctrl->A.S.v.h_length) {

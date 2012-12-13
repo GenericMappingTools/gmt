@@ -1191,7 +1191,7 @@ void ellipse_convert (double sigx, double sigy, double rho, double conrad, doubl
 	/*    that is all */
 }
 
-void paint_ellipse (struct PSL_CTRL *PSL, double x0, double y0, double angle, double major, double minor, double scale, double t11, double t12, double t21, double t22, int polygon, double *rgb, int outline)
+void paint_ellipse (struct GMT_CTRL *GMT, double x0, double y0, double angle, double major, double minor, double scale, double t11, double t12, double t21, double t22, int polygon, struct GMT_FILL *fill, int outline)
 {	/* Make an ellipse at center x0,y0  */
 #define NPOINTS_ELLIPSE 362
 
@@ -1205,11 +1205,11 @@ void paint_ellipse (struct PSL_CTRL *PSL, double x0, double y0, double angle, do
 
 	for (i = 0; i < npoints - 2; i++) transform_local (x0, y0, dxe[i], dye[i], scale, t11, t12, t21, t22, &axe[i], &aye[i]);
 	if (polygon) {
-		PSL_setfill (PSL, rgb, true);
-		PSL_plotpolygon (PSL, axe, aye, npoints - 2);
+		GMT_setfill (GMT, fill, outline);
+		PSL_plotpolygon (GMT->PSL, axe, aye, npoints - 2);
 	}
 	else
-		PSL_plotline (PSL, axe, aye, npoints - 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
+		PSL_plotline (GMT->PSL, axe, aye, npoints - 2, PSL_MOVE + PSL_STROKE + PSL_CLOSE);
 }
 
 /************************************************************************/
