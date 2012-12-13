@@ -25,39 +25,39 @@ filter using a first order Taylor series expansion.
 IT(anom_grd)
 The anomaly grid to be converted.
 .TP
-OPT(G)
-IT(rtp_grd) is the filename for output grdfile with the RTP solution 
+OPT(G)IT(rtp_grd)
+is the filename for output grdfile with the RTP solution 
 .SH OPTIONAL ARGUMENTS
 .TP
-OPT(C)
-IT(dec/dip) Use this (constant) declination and inclination angles for both field and magnetization.
+OPT(C)IT(dec/dip)
+Use this (constant) declination and inclination angles for both field and magnetization.
 This option consists in the classical RTP procedure.
 .TP
-OPT(E)
-IT(dip_grd/dec_grd) Get magnetization DIP & DEC from these grids [default: use IGRF]. Note that
+OPT(E)IT(dip_grd/dec_grd)
+Get magnetization DIP & DEC from these grids [default: use IGRF]. Note that
 these two grids do not need to have the same resolution as the anomaly grid. Than can be coarser.
 .TP
-OPT(F)
-IT(m/n) The filter window size in terms of row/columns. The default value is 25x25.
+OPT(F)IT(m/n) 
+The filter window size in terms of row/columns. The default value is 25x25.
 .TP
-OPT(M)
-IT(m|r) Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding). 
+OPT(M)IT(m|r)
+Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding). 
 .TP
 OPT(N)
 Do NOT use Taylor expansion.
 .TP
-OPT(R)
-IT(west), IT(east), IT(south), and IT(north) defines the Region of the output points.  [Default:  Same as input.]
+OPT(R)IT(west)/IT(east)/IT(south)/IT(north)
+defines the Region of the output points. [Default:  Same as input.]
 .TP
-OPT(Y)
-IT(year) Decimal year used by the IGRF routine to compute the declination and inclination at each
+OPT(Y)IT(year)
+Decimal year used by the IGRF routine to compute the declination and inclination at each
 point [default: 2000] 
 .TP
-OPT(W)
-IT(wid)  The size of the moving window in degrees [5].
+OPT(W)IT(width)
+The size of the moving window in degrees [5].
 .TP
-OPT(Z)
-IT(filter_grd) Write the filter file on disk.
+OPT(Z)IT(filter_grd)
+Write the filter file on disk.
 #include "explain_-V.txt"
 .SH EXAMPLES
 Suppose that IT(anom.grd) is a file with the magnetic anomaly reduced to the 2010 epoch and that the IT(dec.grd) and IT(dip.grd) contain the magnetization declination and inclination respectively for an area that encloses that of the IT(anom.grd), compute the IT(RTP) using bins of 2 degrees and a filter of 45 coefficients.
