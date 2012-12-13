@@ -9255,14 +9255,21 @@ void GMT_free_custom_symbols (struct GMT_CTRL *C) {	/* Free the allocated list o
 
 bool GMT_polygon_is_open (struct GMT_CTRL *C, double x[], double y[], uint64_t n)
 {	/* Returns true if the first and last point is not identical */
-	if (n < 2) return false;	/*	A point is closed */
-	if (!doubleAlmostEqualZero (x[0], x[n-1]))
-		return true;	/* x difference exceeds threshold */
+	if (n < 2) return false;	/*	A single point is by definition closed */
 	if (!doubleAlmostEqualZero (y[0], y[n-1]))
-		return true;	/* y difference exceeds threshold */
+		return true;	/* y difference exceeds threshold: polygon is OPEN */
+	if (!doubleAlmostEqualZero (x[0], x[n-1])) {	/* The x values exceeds threshold, check further if by 360 under geo */
+		if (C->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {	/* Geographical coordinates: Worry about a 360 jump */
+			double dlon = fabs (x[0] - x[n-1]);	/* If exactly 360 then we are OK */
+			if (!doubleAlmostEqualZero (dlon, 360.0))
+				return true;	/* x difference exceeds threshold for an exact 360 offset: polygon is OPEN */
+		}
+		else	/* Cartesian case */
+			return true;	/* x difference exceeds threshold: polygon is OPEN */
+	}
 	/* Here, first and last are ~identical - to be safe we enforce exact closure */
-	x[n-1] = x[0];	y[n-1] = y[0];
-	return false;
+	x[n-1] = x[0];	y[n-1] = y[0];	/* Note: For geo data, this step may change a 0 to 360 or vice versa */
+	return false;	/* Passed the tests so polygon is CLOSED */
 }
 
 double GMT_polygon_area (struct GMT_CTRL *C, double x[], double y[], uint64_t n)

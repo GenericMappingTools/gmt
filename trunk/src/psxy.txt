@@ -179,10 +179,6 @@ BD(psxy) will look for the definition files in (1) the current directory, (2) th
 directory, and (3) the BD($GMT_SHAREDIR)/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of circles) can be designed - these polygons can be
 painted and filled with a pattern.  Other standard geometric symbols can also be used.  See Appendix N for macro definitions.
-.sp
-BD(psxy) cannot handle filling of polygons that contain the south or north pole.  For such a polygon,
-make a copy and split it into two and make each explicitly contain the polar point.  The two polygons
-will combine to give the desired effect when filled; to draw outline use the original polygon.
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),
