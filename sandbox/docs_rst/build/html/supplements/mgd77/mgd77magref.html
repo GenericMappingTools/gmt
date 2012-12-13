@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mgd77magref &mdash; GMT5 v0 documentation</title>
+    <title>mgd77magref &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MGD77" href="list.html" />
     <link rel="next" title="mgd77manage" href="mgd77manage.html" />
     <link rel="prev" title="mgd77list" href="mgd77list.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="mgd77list.html" title="mgd77list"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MGD77</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -126,52 +129,54 @@ apply for all records.</dd>
 radio flux for CM4 [F107_mon.plt]. Alternatively, simply specify a
 single flux to apply for all records.</dd>
 <dt><strong>-F</strong><em>flags</em></dt>
-<dd>Selects output items; <em>flags</em> is a string made up of one or more of
-these characters:
-<strong>r</strong> means output all input columns before adding the items below
-(all in nTesla).
-<strong>t</strong> means list total field.
-<strong>h</strong> means list horizontal field.
-<strong>x</strong> means list X component.
-<strong>y</strong> means list Y component.
-<strong>z</strong> means list Z component.
-<strong>d</strong> means list declination.
-<strong>i</strong> means list inclination.
-Append one or more number to indicate the requested field
-contribution(s):
-<strong>0</strong> means IGRF field (no combinations allowed)
-<strong>1</strong> means Core field
-<strong>2</strong> means Lithospheric
-<strong>3</strong> Primary Magnetospheric field
-<strong>4</strong> Induced Magnetospheric field
-<strong>5</strong> Primary ionospheric field
-<strong>6</strong> Induced ionospheric field
-<strong>7</strong> Toroidal field
-<strong>9</strong> means Core field from IGRF and other contributions from CM4.
-DO NOT USE BOTH 0 AND 9.
-Appending several numbers (1-7) will add up the different
+<dd><p class="first">Selects output items; <em>flags</em> is a string made up of one or more of
+these characters:</p>
+<p><strong>r</strong> means output all input columns before adding the items below
+(all in nTesla).</p>
+<p><strong>t</strong> means list total field.</p>
+<p><strong>h</strong> means list horizontal field.</p>
+<p><strong>x</strong> means list X component.</p>
+<p><strong>y</strong> means list Y component.</p>
+<p><strong>z</strong> means list Z component.</p>
+<p><strong>d</strong> means list declination.</p>
+<p><strong>i</strong> means list inclination.</p>
+<p>Append one or more number to indicate the requested field
+contribution(s):</p>
+<p><strong>0</strong> means IGRF field (no combinations allowed)</p>
+<p><strong>1</strong> means Core field</p>
+<p><strong>2</strong> means Lithospheric</p>
+<p><strong>3</strong> Primary Magnetospheric field</p>
+<p><strong>4</strong> Induced Magnetospheric field</p>
+<p><strong>5</strong> Primary ionospheric field</p>
+<p><strong>6</strong> Induced ionospheric field</p>
+<p><strong>7</strong> Toroidal field</p>
+<p><strong>9</strong> means Core field from IGRF and other contributions from CM4.
+DO NOT USE BOTH 0 AND 9.</p>
+<p class="last">Appending several numbers (1-7) will add up the different
 contributions. For example <strong>-Ft</strong>/<strong>12</strong> computes the total field
 due to Core and Lithospheric sources. Two special cases are allowed,
 which mix which Core field from IGRF and other sources from CM4.
 <strong>-Ft</strong>/<strong>934</strong> computes Core field due to IGRF plus terms 3 and 4
 from CM4 (but you can add others). <strong>-Ft</strong>/<strong>934</strong> the same as above
 but output the field components. The data is written out in the
-order they appear in <em>flags</em> [Default is <strong>-Frthxyzdi</strong>/<strong>1</strong>].</dd>
+order they appear in <em>flags</em> [Default is <strong>-Frthxyzdi</strong>/<strong>1</strong>].</p>
+</dd>
 <dt><strong>-G</strong></dt>
 <dd>Specifies that coordinates are geocentric [geodetic].</dd>
 <dt><strong>-L</strong></dt>
-<dd>Computes J field vectors from certain external sources.
-<strong>r</strong> means output all input columns before adding the items below
-(all in Ampers/m).
-<strong>t</strong> means list magnitude field.
-<strong>x</strong> means list X component.
-<strong>y</strong> means list Y component.
-<strong>z</strong> means list Z or current function Psi.
-Append a number to indicate the requested J contribution:
-<strong>1</strong> means Induced Magnetospheric field.
-<strong>2</strong> means Primary ionospheric field.
-<strong>3</strong> means Induced ionospheric field.
-<strong>4</strong> means Poloidal field.</dd>
+<dd><p class="first">Computes J field vectors from certain external sources.</p>
+<p><strong>r</strong> means output all input columns before adding the items below
+(all in Ampers/m).</p>
+<p><strong>t</strong> means list magnitude field.</p>
+<p><strong>x</strong> means list X component.</p>
+<p><strong>y</strong> means list Y component.</p>
+<p><strong>z</strong> means list Z or current function Psi.</p>
+<p>Append a number to indicate the requested J contribution:</p>
+<p><strong>1</strong> means Induced Magnetospheric field.</p>
+<p><strong>2</strong> means Primary ionospheric field.</p>
+<p><strong>3</strong> means Induced ionospheric field.</p>
+<p class="last"><strong>4</strong> means Poloidal field.</p>
+</dd>
 <dt><strong>-Sc</strong><em>low/high</em></dt>
 <dd>Limits the wavelengths of the core field contribution to the band
 indicated by the low and high spherical harmonic order [1/13].</dd>
@@ -179,11 +184,11 @@ indicated by the low and high spherical harmonic order [1/13].</dd>
 <dd>Limits the wavelengths of the lithosphere field contribution to the
 band indicated by the low and high spherical harmonic order [14/65].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 4 input columns unless <strong>-A</strong> is
 used].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is reflected by <strong>-F</strong>].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
@@ -194,6 +199,10 @@ used].</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -210,17 +219,17 @@ system (see the GMT default TIME_SYSTEM).</p>
 <p>To get the CM4 Total field, Declination and Inclination due to all but
 lithospheric and toroidal field at a one point location and decimal time
 2000.0, try</p>
-<p>echo -28 38 0 2000.0 | <strong>mgd77magref</strong> <strong>-A</strong>+y <strong>-F</strong>tdi/13456</p>
+<p>echo -28 38 0 2000.0 | mgd77magref -A+y -Ftdi/13456</p>
 <p>To do the same as above but at noon (Universal Time) of first May 2001,
 try</p>
-<p>echo -28 38 0 2001-05-01T12:00:00 | <strong>mgd77magref</strong> <strong>-F</strong>tdi/13456</p>
+<p>echo -28 38 0 2001-05-01T12:00:00 | mgd77magref -Ftdi/13456</p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> <a class="reference external" href="mgd77info.1.html">*mgd77info*(1)</a>
-<a class="reference external" href="mgd77list.1.html">*mgd77list*(1)</a>
-<a class="reference external" href="mgd77manage.1.html">*mgd77manage*(1)</a>
-<a class="reference external" href="mgd77track.1.html">*mgd77track*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> <a class="reference external" href="mgd77info.html">*mgd77info*(1)</a>
+<a class="reference external" href="mgd77list.html">*mgd77list*(1)</a>
+<a class="reference external" href="mgd77manage.html">*mgd77manage*(1)</a>
+<a class="reference external" href="mgd77track.html">*mgd77track*(1)</a></p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">References</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
@@ -229,10 +238,10 @@ Mapping Tools (GMT) version 5.0.0b Technical Reference &amp; Cookbook,
 SOEST/NOAA.</p>
 <p>Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
 Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.</p>
-<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
-<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released,
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released,
 <a class="reference external" href="http://www.agu.org/eos_elec/95154e.html,">http://www.agu.org/eos_elec/95154e.html,</a>
 Copyright 1995 by the American Geophysical Union.</p>
 <p>Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
@@ -306,14 +315,14 @@ Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
         <li class="right" >
           <a href="mgd77list.html" title="mgd77list"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MGD77</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

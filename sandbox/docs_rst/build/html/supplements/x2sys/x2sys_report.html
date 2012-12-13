@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>x2sys_report &mdash; GMT5 v0 documentation</title>
+    <title>x2sys_report &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="X2SYS" href="list.html" />
     <link rel="next" title="x2sys_solve" href="x2sys_solve.html" />
     <link rel="prev" title="x2sys_put" href="x2sys_put.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="x2sys_put.html" title="x2sys_put"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">X2SYS</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -86,7 +89,8 @@ space is allowed between the option flag and the associated arguments.</p>
 <dd>Specify which data column you want to process. Crossovers related to
 this column name must be present in the crossover data base.</dd>
 <dt><strong>-T</strong><em>TAG</em></dt>
-<dd>Specify the x2sys <em>TAG</em> which tracks the attributes of this data type.</dd>
+<dd>Specify the x2sys <em>TAG</em> which tracks the attributes of this data
+type.</dd>
 </dl>
 </div>
 <div class="section" id="id5">
@@ -124,20 +128,26 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid. For Cartesian data just give <em>xmin/xmax/ymin/ymax</em>. This
-option bases the statistics on those COE that fall inside the
-specified domain.</dd>
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region. For Cartesian
+data just give <em>xmin/xmax/ymin/ymax</em>. This option bases the
+statistics on those COE that fall inside the specified domain.</dd>
 <dt><strong>-S</strong><em>track</em></dt>
 <dd>Name of a single track. If given we restrict output to those
 crossovers involving this track [Default output is crossovers
 involving any track pair].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -145,11 +155,11 @@ options, then exits.</dd>
 <p>To report statistics of all the external magnetic crossovers associated
 with the tag MGD77 from the file COE_data.txt, restricted to occupy a
 certain region in the south Pacific, try</p>
-<p><strong>x2sys_report</strong> COE_data.txt <strong>-V</strong> <strong>-T</strong>MGD77
-<strong>-R</strong>180/240/-60/-30 <strong>-C</strong>mag &gt; mag_report.txt</p>
-<p>To report on the faa crossovers globally that involves track 12345678, try</p>
-<p><strong>x2sys_report</strong> COE_data.txt <strong>-V</strong> <strong>-T</strong>MGD77 <strong>-C</strong>faa
-<strong>-S</strong>12345678 &gt; faa_report.txt</p>
+<p>x2sys_report COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag &gt;
+mag_report.txt</p>
+<p>To report on the faa crossovers globally that involves track 12345678,
+try</p>
+<p>x2sys_report COE_data.txt -V -TMGD77 -Cfaa -S2345678 &gt; faa_report.txt</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">References</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
@@ -158,14 +168,14 @@ data along a survey network, <em>Geophysics</em>, <strong>49</strong>(4), 467-46
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="x2sys_binlist.html">*x2sys_binlist*</a>
-<a class="reference external" href="x2sys_cross.html">*x2sys_cross*</a>
-<a class="reference external" href="x2sys_datalist.html">*x2sys_datalist*</a>
-<a class="reference external" href="x2sys_get.html">*x2sys_get*</a>
-<a class="reference external" href="x2sys_init.html">*x2sys_init*</a>
-<a class="reference external" href="x2sys_list.html">*x2sys_list*</a>
-<a class="reference external" href="x2sys_put.html">*x2sys_put*</a>
-<a class="reference external" href="x2sys_solve.html">*x2sys_solve*</a></p>
+<p><a class="reference external" href="x2sys_binlist.html">*x2sys_binlist*(1)</a>
+<a class="reference external" href="x2sys_cross.html">*x2sys_cross*(1)</a>
+<a class="reference external" href="x2sys_datalist.html">*x2sys_datalist*(1)</a>
+<a class="reference external" href="x2sys_get.html">*x2sys_get*(1)</a>
+<a class="reference external" href="x2sys_init.html">*x2sys_init*(1)</a>
+<a class="reference external" href="x2sys_list.html">*x2sys_list*(1)</a>
+<a class="reference external" href="x2sys_put.html">*x2sys_put*(1)</a>
+<a class="reference external" href="x2sys_solve.html">*x2sys_solve*(1)</a></p>
 </div>
 </div>
 
@@ -230,14 +240,14 @@ data along a survey network, <em>Geophysics</em>, <strong>49</strong>(4), 467-46
         <li class="right" >
           <a href="x2sys_put.html" title="x2sys_put"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >X2SYS</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

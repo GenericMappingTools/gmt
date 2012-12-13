@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>GMT API &mdash; GMT5 v0 documentation</title>
+    <title>GMT API &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="blockmean" href="blockmean.html" />
     <link rel="prev" title="Mains" href="mains.html" /> 
@@ -40,7 +43,7 @@
         <li class="right" >
           <a href="mains.html" title="Mains"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
@@ -430,21 +433,21 @@ to hold 16 bytes. The function returns TRUE (1) if there is an error
 <col width="62%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">1|c|<em>family</em></th>
+<tr class="row-odd"><th class="head">1|c|<em>family</em></th>
 <th class="head">1c|<em>source points to</em></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>GMT_IS_DATASET</td>
+<tr class="row-even"><td>GMT_IS_DATASET</td>
 <td>A [multi-segment] table file</td>
 </tr>
-<tr><td>GMT_IS_TEXTSET</td>
+<tr class="row-odd"><td>GMT_IS_TEXTSET</td>
 <td>A [multi-segment] text file</td>
 </tr>
-<tr><td>GMT_IS_GMTGRID</td>
+<tr class="row-even"><td>GMT_IS_GMTGRID</td>
 <td>A &nbsp;grid file</td>
 </tr>
-<tr><td>GMT_IS_CPT</td>
+<tr class="row-odd"><td>GMT_IS_CPT</td>
 <td>A CPT file</td>
 </tr>
 </tbody>
@@ -458,27 +461,27 @@ families. [tbl:family]</p>
 <col width="74%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">1|c|<em>method</em></th>
+<tr class="row-odd"><th class="head">1|c|<em>method</em></th>
 <th class="head">1c|<em>how to read/write data</em></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>GMT_IS_FILE</td>
+<tr class="row-even"><td>GMT_IS_FILE</td>
 <td>Pointer to name of a file</td>
 </tr>
-<tr><td>GMT_IS_STREAM</td>
+<tr class="row-odd"><td>GMT_IS_STREAM</td>
 <td>Pointer to open file (or process)</td>
 </tr>
-<tr><td>GMT_IS_FDESC</td>
+<tr class="row-even"><td>GMT_IS_FDESC</td>
 <td>Pointer to integer file descriptor</td>
 </tr>
-<tr><td>GMT_IS_COPY</td>
+<tr class="row-odd"><td>GMT_IS_COPY</td>
 <td>Pointer to memory to <em>copy</em> data from</td>
 </tr>
-<tr><td>GMT_IS_REF</td>
+<tr class="row-even"><td>GMT_IS_REF</td>
 <td>Pointer to memory to <em>reference</em> data from (realloc OK)</td>
 </tr>
-<tr><td>GMT_IS_READONLY</td>
+<tr class="row-odd"><td>GMT_IS_READONLY</td>
 <td>Pointer to memory to <em>read</em> data from</td>
 </tr>
 </tbody>
@@ -492,15 +495,15 @@ methods. [tbl:methods]</p>
 <col width="76%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">1|c|<em>approach</em></th>
+<tr class="row-odd"><th class="head">1|c|<em>approach</em></th>
 <th class="head">1c|<em>how method is modified</em></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>GMT_VIA_VECTOR</td>
+<tr class="row-even"><td>GMT_VIA_VECTOR</td>
 <td>The user’s data columns are addressed via a GMT_VECTOR structure</td>
 </tr>
-<tr><td>GMT_VIA_MATRIX</td>
+<tr class="row-odd"><td>GMT_VIA_MATRIX</td>
 <td>The user’s grid is addressed via a GMT_MATRIX structure</td>
 </tr>
 </tbody>
@@ -515,24 +518,24 @@ resource. [tbl:via]</p>
 <col width="66%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">1|c|<em>geometry</em></th>
+<tr class="row-odd"><th class="head">1|c|<em>geometry</em></th>
 <th class="head">1c|<em>description</em></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td>GMT_IS_TEXT</td>
+<tr class="row-even"><td>GMT_IS_TEXT</td>
 <td>Not a geographic item</td>
 </tr>
-<tr><td>GMT_IS_POINT</td>
+<tr class="row-odd"><td>GMT_IS_POINT</td>
 <td>Multi-dimensional point data</td>
 </tr>
-<tr><td>GMT_IS_LINE</td>
+<tr class="row-even"><td>GMT_IS_LINE</td>
 <td>Geographic or Cartesian line segments</td>
 </tr>
-<tr><td>GMT_IS_POLYGON</td>
+<tr class="row-odd"><td>GMT_IS_POLYGON</td>
 <td>Geographic or Cartesian closed polygons</td>
 </tr>
-<tr><td>GMT_IS_SURFACE</td>
+<tr class="row-even"><td>GMT_IS_SURFACE</td>
 <td>2-D gridded surface</td>
 </tr>
 </tbody>
@@ -883,42 +886,42 @@ consult the source code of, say, blockmean_func.c or pstext_func.c.</p>
 <col width="64%" />
 </colgroup>
 <thead valign="bottom">
-<tr><th class="head">1|c|<em>Macro</em></th>
+<tr class="row-odd"><th class="head">1|c|<em>Macro</em></th>
 <th class="head">1c|<em>description</em></th>
 </tr>
 </thead>
 <tbody valign="top">
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_TBL_HEADER(API)</span></tt></td>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_TBL_HEADER(API)</span></tt></td>
 <td>TRUE if we read a table header</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_SEG_HEADER(API)</span></tt></td>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_SEG_HEADER(API)</span></tt></td>
 <td>TRUE if we read a segment header</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_ANY_HEADER(API)</span></tt></td>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_ANY_HEADER(API)</span></tt></td>
 <td>TRUE if we read either header type</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_ERROR(API)</span></tt></td>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_ERROR(API)</span></tt></td>
 <td>TRUE if we had a read or conversion failure</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_EOF(API)</span></tt></td>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_EOF(API)</span></tt></td>
 <td>TRUE if we reached the end of the file (EOF)</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_NAN(API)</span></tt></td>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_NAN(API)</span></tt></td>
 <td>TRUE if we only read NaNs</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_GAP(API)</span></tt></td>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_GAP(API)</span></tt></td>
 <td>TRUE if this record implies a data gap</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_NEW_SEGMENT(API)</span></tt></td>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_NEW_SEGMENT(API)</span></tt></td>
 <td>TRUE if we enter a new segment</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_LINE_BREAK(API)</span></tt></td>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_LINE_BREAK(API)</span></tt></td>
 <td>TRUE if we encountered a segment header, EOF, NaNs or gap</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_FILE_BREAK(API)</span></tt></td>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_FILE_BREAK(API)</span></tt></td>
 <td>TRUE if we finished one file but not the last</td>
 </tr>
-<tr><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_DATA(API)</span></tt></td>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">GMT_REC_IS_DATA(API)</span></tt></td>
 <td>TRUE if we read a data record</td>
 </tr>
 </tbody>
@@ -1576,13 +1579,13 @@ addresses.</p>
         <li class="right" >
           <a href="mains.html" title="Mains"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

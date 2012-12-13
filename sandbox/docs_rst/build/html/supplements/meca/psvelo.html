@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>psvelo &mdash; GMT5 v0 documentation</title>
+    <title>psvelo &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,9 +25,9 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
-    <link rel="next" title="&lt;no title&gt;" href="../mgd77/list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MECA" href="list.html" />
+    <link rel="next" title="MGD77" href="../mgd77/list.html" />
     <link rel="prev" title="pspolar" href="pspolar.html" /> 
   </head>
   <body>
@@ -35,14 +38,14 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../mgd77/list.html" title="&lt;no title&gt;"
+          <a href="../mgd77/list.html" title="MGD77"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="pspolar.html" title="pspolar"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MECA</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -90,7 +93,7 @@ space is allowed between the option flag and the associated arguments.</p>
 <div class="section" id="id4">
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p><em>table</em></p>
-<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.</p>
 <p><strong>-J</strong><em>parameters</em> (*)</p>
@@ -103,7 +106,10 @@ upper right map coordinates are given instead of w/e/s/n. The two
 shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360 and
 -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the <strong>-R</strong>
-settings (and grid spacing, if applicable) are copied from the grid.</p>
+settings (and grid spacing, if applicable) are copied from the grid.
+Using <strong>-R</strong><em>unit</em> expects projected (Cartesian) coordinates
+compatible with chosen <strong>-J</strong> and we inversely project to determine
+actual rectangular geographic region.</p>
 <p><strong>-S</strong></p>
 <p>Selects the meaning of the columns in the data file and the figure to be
 plotted.</p>
@@ -236,13 +242,15 @@ specified by <strong>-R</strong>. [Default plots symbols inside frame only].</dd
 <dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
 <dd>Draw GMT time stamp logo on plot.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong></dt>
 <dd>Set pen attributes for velocity arrows, ellipse circumference and
-fault plane edges. [Defaults: width = default, color = black, style = solid].</dd>
+fault plane edges. [Defaults: width = default, color = black, style
+= solid].</dd>
 </dl>
 <p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
-<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+(*)</p>
 <blockquote>
 <div>Shift plot origin.</div></blockquote>
 <dl class="docutils">
@@ -250,7 +258,7 @@ fault plane edges. [Defaults: width = default, color = black, style = solid].</d
 <dd>Specify number of plot copies [Default is 1].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
 <dd>Swap 1st and 2nd column on input and/or output.</dd>
@@ -259,6 +267,10 @@ fault plane edges. [Defaults: width = default, color = black, style = solid].</d
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -266,25 +278,25 @@ options, then exits.</dd>
 <p>Several modifiers may be appended to the vector-producing options to
 specify the placement of vector heads, their shapes, and the
 justification of the vector:</p>
-<p><strong>+a</strong><em>angle</em> sets the angle of the vector head apex [30].
-<strong>+b</strong> places a vector head at the beginning of the vector path [none].
-<strong>+e</strong> places a vector head at the end of the vector path [none].
-<strong>+g</strong>-|<em>fill</em> turns off vector head fill (if -) or sets the vector
-head fill [Default fill is used, which may be no fill].
-<strong>+l</strong> draws half-arrows, using only the left side [both].
-<strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
+<p><strong>+a</strong><em>angle</em> sets the angle of the vector head apex [30].</p>
+<p><strong>+b</strong> places a vector head at the beginning of the vector path [none].</p>
+<p><strong>+e</strong> places a vector head at the end of the vector path [none].</p>
+<p><strong>+g</strong>-|<em>fill</em> turns off vector head fill (if -) or sets the vector
+head fill [Default fill is used, which may be no fill].</p>
+<p><strong>+l</strong> draws half-arrows, using only the left side [both].</p>
+<p><strong>+n</strong><em>norm</em> scales down vector attributes (pen thickness, head size)
 with decreasing length, where vectors shorter than <em>norm</em> will have
 their attributes scaled by length/<em>norm</em> [arrow attributes remains
-invariant to length].
-<strong>+p</strong>[-][<em>pen</em>] sets the vector pen attributes. If <em>pen</em> has a
+invariant to length].</p>
+<p><strong>+p</strong>[-][<em>pen</em>] sets the vector pen attributes. If <em>pen</em> has a
 leading - then the head outline is not drawn. [Default pen is used, and
-head outline is drawn]
-<strong>+r</strong> draws half-arrows, using only the right side [both].</p>
+head outline is drawn]</p>
+<p><strong>+r</strong> draws half-arrows, using only the right side [both].</p>
 <p>In addition, all but circular vectors may take these modifiers:</p>
 <p><strong>+j</strong><em>just</em> determines how the input <em>x</em>,<em>y</em> point relates to the
 vector. Choose from <strong>b</strong>eginning [default], <strong>e</strong>nd, or
-<strong>c</strong>enter.
-<strong>+s</strong> means the input <em>angle</em>, <em>length</em> is instead the <em>x</em>, <em>y</em>
+<strong>c</strong>enter.</p>
+<p><strong>+s</strong> means the input <em>angle</em>, <em>length</em> is instead the <em>x</em>, <em>y</em>
 coordinates of the vector end point.</p>
 </div>
 <div class="section" id="id7">
@@ -292,39 +304,51 @@ coordinates of the vector end point.</p>
 <p>The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
 fits inside a rectangle of dimension Esig by Nsig.</p>
-<p><strong>psvelo</strong> &lt;&lt; END <strong>-H</strong>2 <strong>-R</strong>-10/10/-10/10 <strong>-W</strong>0.25p,red
-<strong>-G</strong>green <strong>-L</strong> <strong>-Se</strong>0.2/0.39/18 <strong>-B</strong>1g1 <strong>-Jx</strong>0.4/0.4
-<strong>-A</strong>0.3p <strong>-P</strong> <strong>-V</strong> &gt; test.ps
-Long. Lat. Evel Nvel Esig Nsig CorEN SITE
-(deg) (deg) (mm/yr) (mm/yr)
-0. -8. 0.0 0.0 4.0 6.0 0.500 4x6
--8. 5. 3.0 3.0 0.0 0.0 0.500 3x3
-0. 0. 4.0 6.0 4.0 6.0 0.500
--5. -5. 6.0 4.0 6.0 4.0 0.500 6x4
-5. 0. -6.0 4.0 6.0 4.0 -0.500 -6x4
-0. -5. 6.0 -4.0 6.0 4.0 -0.500 6x-4
-END</p>
+<p>psvelo &lt;&lt; END -h2 -R-10/10/-10/10 -W0.25p,red -Ggreen -L -Se0.2/0.39/18
+-B1g1 -Jx0.4/0.4 -A0.3p -P -V &gt; test.ps</p>
+<p>Long. Lat. Evel Nvel Esig Nsig CorEN SITE</p>
+<p>(deg) (deg) (mm/yr) (mm/yr)</p>
+<ol class="arabic simple" start="0">
+<li>-8. 0.0 0.0 4.0 6.0 0.500 4x6</li>
+</ol>
+<p>-8. 5. 3.0 3.0 0.0 0.0 0.500 3x3</p>
+<ol class="arabic simple" start="0">
+<li><ol class="first arabic" start="0">
+<li>4.0 6.0 4.0 6.0 0.500</li>
+</ol>
+</li>
+</ol>
+<p>-5. -5. 6.0 4.0 6.0 4.0 0.500 6x4</p>
+<ol class="arabic simple" start="5">
+<li><ol class="first arabic" start="0">
+<li>-6.0 4.0 6.0 4.0 -0.500 -6x4</li>
+</ol>
+</li>
+</ol>
+<ol class="arabic simple" start="0">
+<li>-5. 6.0 -4.0 6.0 4.0 -0.500 6x-4</li>
+</ol>
+<p>END</p>
 <p>This example should plot some residual rates of rotation in the Western
 Transverse Ranges, California. The wedges will be dark gray, with light
 gray wedges to represent the 2-sigma uncertainties.</p>
-<p><strong>psvelo</strong> &lt;&lt;END <strong>-Sw</strong>0.4/1.e7 <strong>-W</strong>0.75p <strong>-G</strong>darkgray
-<strong>-E</strong>lightgray <strong>-H</strong>1 <strong>-D</strong>2 <strong>-Jm</strong>2.2
-<strong>-R</strong>240./243./32.5/34.75 <strong>-B</strong>f10ma60m/WeSn <strong>-P</strong> &gt; test.ps
-lon lat spin(rad/yr) spin_sigma (rad/yr)
-241.4806 34.2073 5.65E-08 1.17E-08
-241.6024 34.4468 -4.85E-08 1.85E-08
-241.0952 34.4079 4.46E-09 3.07E-08
-241.2542 34.2581 1.28E-07 1.59E-08
-242.0593 34.0773 -6.62E-08 1.74E-08
-241.0553 34.5369 -2.38E-07 4.27E-08
-241.1993 33.1894 -2.99E-10 7.64E-09
-241.1084 34.2565 2.17E-08 3.53E-08
-END</p>
+<p>psvelo &lt;&lt; END -Sw0.4/1.e7 -W0.75p -Gdarkgray -Elightgray -h1 -D2 -Jm2.2
+-R240./243./32.5/34.75 -Bf10ma60m/WeSn -P &gt; test.ps</p>
+<p>lon lat spin(rad/yr) spin_sigma (rad/yr)</p>
+<p>241.4806 34.2073 5.65E-08 1.17E-08</p>
+<p>241.6024 34.4468 -4.85E-08 1.85E-08</p>
+<p>241.0952 34.4079 4.46E-09 3.07E-08</p>
+<p>241.2542 34.2581 1.28E-07 1.59E-08</p>
+<p>242.0593 34.0773 -6.62E-08 1.74E-08</p>
+<p>241.0553 34.5369 -2.38E-07 4.27E-08</p>
+<p>241.1993 33.1894 -2.99E-10 7.64E-09</p>
+<p>241.1084 34.2565 2.17E-08 3.53E-08</p>
+<p>END</p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">See Also</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
-<a class="reference external" href="psxy.1.html">*psxy*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psxy.html">*psxy*(1)</a></p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">References</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
@@ -332,15 +356,9 @@ END</p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">Authors</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
-<p>Kurt Feigl
-CNRS UMR 5562
-Toulouse, France
-(Kurt.Feigl&#64;.cnes.fr)
-Genevieve Patau
-CNRS UMR 7580
-Seismology Dept.
-Institut de Physique du Globe de Paris
-(<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</p>
+<p>Kurt Feigl CNRS UMR 5562 Toulouse, France (Kurt.Feigl&#64;.cnes.fr)</p>
+<p>Genevieve Patau CNRS UMR 7580 Seismology Dept. Institut de Physique du
+Globe de Paris (<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</p>
 </div>
 </div>
 
@@ -372,7 +390,7 @@ Institut de Physique du Globe de Paris
                         title="previous chapter">pspolar</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../mgd77/list.html"
-                        title="next chapter">&lt;no title&gt;</a></p>
+                        title="next chapter">MGD77</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/supplements/meca/psvelo.txt"
@@ -402,19 +420,19 @@ Institut de Physique du Globe de Paris
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../mgd77/list.html" title="&lt;no title&gt;"
+          <a href="../mgd77/list.html" title="MGD77"
              >next</a> |</li>
         <li class="right" >
           <a href="pspolar.html" title="pspolar"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MECA</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

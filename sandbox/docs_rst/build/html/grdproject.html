@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>grdproject &mdash; GMT5 v0 documentation</title>
+    <title>grdproject &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="grdraster" href="grdraster.html" />
     <link rel="prev" title="grdpaste" href="grdpaste.html" /> 
@@ -40,7 +43,7 @@
         <li class="right" >
           <a href="grdpaste.html" title="grdpaste"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
@@ -107,13 +110,13 @@ below.)</dd>
 <div class="section" id="id5">
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt><strong>-A</strong>[<strong>c|i|p|e|f|k|M|n</strong>]</dt>
+<dt><strong>-A</strong>[<strong>c|i|p|e|f|k|M|n|u</strong>]</dt>
 <dd>Force 1:1 scaling, i.e., output (or input, see <strong>-I</strong>) data are in
 actual projected meters [<strong>e</strong>]. To specify other units, append
-<strong>f</strong> (feet), <strong>k</strong> (km), <strong>M</strong> (statute mile), <strong>n</strong> (nautical
-mile), <strong>i</strong> (inch), <strong>c</strong> (cm), or <strong>p</strong> (points). Without <strong>-A</strong>,
-the output (or input, see <strong>-I</strong>) are in the units specified by
-<strong>PROJ_LENGTH_UNIT</strong> (but see <strong>-M</strong>).</dd>
+<strong>f</strong> (foot), <strong>k</strong> (km), <strong>M</strong> (statute mile), <strong>n</strong> (nautical
+mile), <strong>u</strong> (US survey foot), <strong>i</strong> (inch), <strong>c</strong> (cm), or <strong>p</strong>
+(point). Without <strong>-A</strong>, the output (or input, see <strong>-I</strong>) are in
+the units specified by <strong>PROJ_LENGTH_UNIT</strong> (but see <strong>-M</strong>).</dd>
 <dt><strong>-C</strong>[<em>dx/dy</em>]</dt>
 <dd>Let projected coordinates be relative to projection center [Default
 is relative to lower left corner]. Optionally, add offsets in the
@@ -121,8 +124,8 @@ projected units to be added (or subtracted when <strong>-I</strong> is set) to
 (from) the projected coordinates, such as false eastings and
 northings for particular projection zones [0/0].</dd>
 <dt><strong>-D</strong><em>xinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>][/<em>yinc</em>[<em>unit</em>][<strong>=</strong>|<strong>+</strong>]]</dt>
-<dd>Set the grid spacing for the new grid. Append <strong>m</strong> for arc minutes,
-<strong>s</strong> for arc seconds. If neither <strong>-D</strong> nor <strong>-E</strong> are set then we
+<dd>Set the grid spacing for the new grid. Append <strong>m</strong> for arc minute,
+<strong>s</strong> for arc second. If neither <strong>-D</strong> nor <strong>-E</strong> are set then we
 select the same number of output nodes as there are input nodes.</dd>
 <dt><strong>-E</strong><em>dpi</em></dt>
 <dd>Set the resolution for the new grid in dots per inch.</dd>
@@ -132,7 +135,7 @@ select the same number of output nodes as there are input nodes.</dd>
 <dd>Append <strong>c</strong>, <strong>i</strong>, or <strong>p</strong> to indicate that cm, inch, or point
 should be the projected measure unit [Default is set by
 <strong>PROJ_LENGTH_UNIT</strong> in <strong>gmt.conf</strong>]. Cannot be used with <strong>-A</strong>.</dd>
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dt><strong>-R</strong>[<em>unit</em>]<em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest. You may ask to project only a subset
 of the grid by specifying a smaller input <em>w/e/s/n</em> region [Default
 is the region given by the grid file].</dd>
@@ -280,13 +283,13 @@ than you are interested in.</p>
         <li class="right" >
           <a href="grdpaste.html" title="grdpaste"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

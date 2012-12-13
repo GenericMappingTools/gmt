@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mgd77list &mdash; GMT5 v0 documentation</title>
+    <title>mgd77list &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MGD77" href="list.html" />
     <link rel="next" title="mgd77magref" href="mgd77magref.html" />
     <link rel="prev" title="mgd77info" href="mgd77info.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="mgd77info.html" title="mgd77info"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MGD77</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -66,7 +69,7 @@
 ] [ <strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>r</strong>] ] [
 <strong>-Sa</strong><em>startdist</em>[unit] ] [ <strong>-Sb</strong><em>stopdist</em>[unit] ] [
 <strong>-T</strong>[<strong>m</strong>|<strong>e</strong>] ] [ <strong>-V</strong>[<em>level</em>] ] [ <strong>-W</strong><em>weight</em>
-] [ <strong>-Z</strong><em>+</em>|<strong>-</strong> ] [ <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ] [
+] [ <strong>-Z</strong><em>+</em>|<strong>-</strong> ] [ <strong>-bo</strong>[<em>ncols</em>][<em>type</em>] ] [
 <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ]</p>
 </div>
 <div class="section" id="id2">
@@ -99,20 +102,25 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>NGDC-ids</em></dt>
-<dd>Can be one or more of five kinds of specifiers:
-1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-2) 2-character &lt;agency&gt; codes which will return all cruises from
-each agency.
-3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all
-cruises from those vessels.
-4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC IDs, one per line.
-5) If nothing is specified we return all cruises in the data base.
-(See mgd77info <strong>-L</strong> for agency and vessel codes). The &#8221;.mgd77&#8221; or
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.</li>
+</ol>
+<p>2) 2-character &lt;agency&gt; codes which will return all cruises from
+each agency.</p>
+<p>3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises
+from those vessels.</p>
+<ol class="arabic simple" start="4">
+<li>=&lt;list&gt;, where &lt;list&gt; is a table with NGDC IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). The &#8221;.mgd77&#8221; or
 &#8221;.nc&#8221; extensions will automatically be appended, if needed (use
 <strong>-I</strong> to ignore certain file types). Cruise files will be looked
 for first in the current directory and second in all directories
 listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
-not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</dd>
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
 <dt><strong>-F</strong><em>columns</em>[,*logic*][:<em>bittests</em>]</dt>
 <dd>The required <em>columns</em> string must be a comma-separated list of
 parameter abbreviations given in the desired output order. Any
@@ -171,7 +179,8 @@ obtained (1 = observed, 3 = interpolated, 9 = unspecified).</dd>
 <dd>Magnetic sensor for used to evaluate the residual field (1 = 1st or
 leading sensor, 2 = 2nd or trailing sensor, 9 = unspecified).</dd>
 <dt><strong>msd</strong></dt>
-<dd>Depth (or altitude) of the magnetic sensor (in m, positive below sealevel).</dd>
+<dd>Depth (or altitude) of the magnetic sensor (in m, positive below
+sealevel).</dd>
 <dt><strong>diur</strong></dt>
 <dd>Magnetic diurnal correction (in nTesla).</dd>
 <dt><strong>eot</strong></dt>
@@ -282,7 +291,7 @@ the file is NaN. Additionally, you can use <strong>-At</strong> to create fake
 times for cruises that has no time; these are based on distances and
 cruise duration.</dd>
 <dt><strong>-Ac</strong></dt>
-<dd>Determines how the <strong>carter</strong> correction term is calculated. Below,
+<dd><p class="first">Determines how the <strong>carter</strong> correction term is calculated. Below,
 C(<strong>twt</strong>) stands for the Carter-corrected depth (it also depends
 on <strong>lon</strong>, <strong>lat</strong>), U(<strong>twt</strong>, <em>v</em>) is the uncorrected depth (=
 <strong>twt</strong> * <em>v</em> / 2) using as <em>v</em> the &#8220;Assumed Sound Velocity&#8221;
@@ -292,53 +301,71 @@ velocity <em>v</em> in m/s, TU(<strong>depth</strong>, <em>v</em>) is the 2-way 
 estimated from the (presumably) uncorrected <strong>depth</strong>, and
 TC(<strong>depth</strong>) is the 2-way travel time obtained by inverting the
 (presumably) corrected <strong>depth</strong> using the Carter correction
-formula. Select from
-<strong>-Ac1</strong>[,*v*] returns difference between U(<strong>twt</strong>, <em>v</em>) and
-<strong>depth</strong> [Default].
-<strong>-Ac2</strong>[,*v*] returns difference between U(<strong>twt</strong>, <em>v</em>) and
-Carter (<strong>twt</strong>).
-<strong>-Ac4</strong>[,*v*] returns difference between (assumed uncorrected)
-<strong>depth</strong> and Carter (TU(<strong>depth</strong>)).
-<strong>-Ac8</strong>[,*v*] returns difference between U(TC(<strong>depth</strong>), <em>v</em>)
-and <strong>depth</strong>.</dd>
+formula. Select from</p>
+<p><strong>-Ac1</strong>[,*v*] returns difference between U(<strong>twt</strong>, <em>v</em>) and
+<strong>depth</strong> [Default].</p>
+<p><strong>-Ac2</strong>[,*v*] returns difference between U(<strong>twt</strong>, <em>v</em>) and
+Carter (<strong>twt</strong>).</p>
+<p><strong>-Ac4</strong>[,*v*] returns difference between (assumed uncorrected)
+<strong>depth</strong> and Carter (TU(<strong>depth</strong>)).</p>
+<p class="last"><strong>-Ac8</strong>[,*v*] returns difference between U(TC(<strong>depth</strong>), <em>v</em>)
+and <strong>depth</strong>.</p>
+</dd>
 <dt><strong>-Ad</strong></dt>
-<dd>Determines how the <strong>depth</strong> column output is obtained:
-<strong>-Ad1</strong> returns <strong>depth</strong> as stored in the data set [Default].
-<strong>-Ad2</strong>[,*v*] returns calculated uncorrected depth U(<strong>twt</strong>, <em>v</em>).
-<strong>-Ad4</strong> returns calculated corrected depth C(<strong>twt</strong>).</dd>
+<dd><p class="first">Determines how the <strong>depth</strong> column output is obtained:</p>
+<p><strong>-Ad1</strong> returns <strong>depth</strong> as stored in the data set [Default].</p>
+<p><strong>-Ad2</strong>[,*v*] returns calculated uncorrected depth U(<strong>twt</strong>,
+<em>v</em>).</p>
+<p class="last"><strong>-Ad4</strong> returns calculated corrected depth C(<strong>twt</strong>).</p>
+</dd>
 <dt><strong>-Af</strong></dt>
-<dd>Determines how the <strong>faa</strong> column output is obtained. If <strong>ngrav</strong>
+<dd><p class="first">Determines how the <strong>faa</strong> column output is obtained. If <strong>ngrav</strong>
 (i.e., the International Gravity reference Field (IGF), or &#8220;normal
 gravity&#8221;) is required it is selected based on the MGD77 header
 parameter &#8220;Theoretical Gravity Formula Code&#8221;; if this code is not
 present or is invalid we default to 4. Alternatively, append the
 preferred <em>field</em> (1-4) to select 1 (Heiskanen 1924), 2 (IGF 1930),
-3 (IGF 1967) or 4 (IGF 1980). Select from
-<strong>-Af1</strong>[,*field*] returns <strong>faa</strong> as stored in the data set
+3 (IGF 1967) or 4 (IGF 1980). Select from</p>
+<p><strong>-Af1</strong>[,*field*] returns <strong>faa</strong> as stored in the data set
 [Default]. Optionally, sets the IGF <em>field</em> to use if you also have
-requested <strong>ngrav</strong> as an output column in <strong>-F</strong>.
-<strong>-Af2</strong>[,*field*] returns the difference between <strong>gobs</strong> and
-<strong>ngrav</strong> (with optional <em>field</em> directive).
-<strong>-Af3</strong>[,*field*] returns the combination of <strong>gobs</strong> + <strong>eot</strong>
-- <strong>ngrav</strong> (with optional <em>field</em> directive).</dd>
+requested <strong>ngrav</strong> as an output column in <strong>-F</strong>.</p>
+<p><strong>-Af2</strong>[,*field*] returns the difference between <strong>gobs</strong> and
+<strong>ngrav</strong> (with optional <em>field</em> directive).</p>
+<p class="last"><strong>-Af3</strong>[,*field*] returns the combination of <strong>gobs</strong> + <strong>eot</strong> -
+<strong>ngrav</strong> (with optional <em>field</em> directive).</p>
+</dd>
 <dt><strong>-Am</strong></dt>
-<dd>Determines how the <strong>mag</strong> column output is obtained. There may be
+<dd><p class="first">Determines how the <strong>mag</strong> column output is obtained. There may be
 one or two total field measurements in the file (<strong>mtf1</strong> and
 <strong>mtf2</strong>), and the column <strong>msens</strong> may state which one is the
-leading sensor (1 or 2; it may also be undefined). Select from
-<strong>-Am1</strong> returns <strong>mag</strong> as stored in the data set [Default].
-<strong>-Am2</strong> returns the difference between <strong>mgfx</strong> and <strong>igrf</strong>,
-where <strong>x</strong> is the leading sensor (<strong>1</strong> or <strong>2</strong>) indicated by the
-<strong>msens</strong> data field (defaults to <strong>1</strong> if unspecified).
-<strong>-Am4</strong> returns the difference between <strong>mgfx</strong> and <strong>igrf</strong>,
-where <strong>x</strong> is the sensor (<strong>2</strong> or <strong>1</strong>) <em>not</em> indicated by the
-<strong>msens</strong> data field (defaults to <strong>2</strong> if unspecified).</dd>
+leading sensor (1 or 2; it may also be undefined). Select from</p>
+<p><strong>-Am1</strong> returns <strong>mag</strong> as stored in the data set [Default].</p>
+<p><strong>-Am2</strong> returns the difference between <strong>mgfx</strong> and <strong>igrf</strong>, where
+<strong>x</strong> is the leading sensor (<strong>1</strong> or <strong>2</strong>) indicated by the
+<strong>msens</strong> data field (defaults to <strong>1</strong> if unspecified).</p>
+<p><strong>-Am4</strong> returns the difference between <strong>mgfx</strong> and <strong>igrf</strong>, where
+<strong>x</strong> is the sensor (<strong>2</strong> or <strong>1</strong>) <em>not</em> indicated by the
+<strong>msens</strong> data field (defaults to <strong>2</strong> if unspecified).</p>
+<p class="last"><strong>-Amc&lt;offset&gt;[unit]</strong> Apply a correction that tries to compensate
+the fact that the magnetic field was not acquired at the same
+position as the navigation refer (ship’s position). This is
+accomplished by reinterpolating the total magnetic field to what it
+would have had if it was measured at the ship’s position (remember,
+it probably was measured &lt;offset&gt; meters behind). Due to this
+interpolation step, bad navigation namely too many repeated points
+may cause troubles. Measures are taken to minimize this effect but
+they aren’t 100% full prof. The interpolation method is controlled
+by the gmtdefaults GMT_INTERPOLANT. Append <strong>e</strong> for meter, <strong>f</strong>
+for feet, <strong>k</strong> for km, <strong>m</strong> for miles, <strong>n</strong> for nautical miles,
+or <strong>u</strong> for survey feet [Default is e (meters)].</p>
+</dd>
 <dt><strong>-C</strong><strong>f</strong>|<strong>g</strong>|<strong>e</strong></dt>
-<dd>Append a one-letter code to select the procedure for along-track
-distance calculation (see <strong>-N</strong> for selecting units):
-`` `` `` `` <strong>f</strong> Flat Earth distances.
-`` `` `` `` <strong>g</strong> Great circle distances [Default].
-`` `` `` `` <strong>e</strong> Geodesic distances on current GMT ellipsoid.</dd>
+<dd><p class="first">Append a one-letter code to select the procedure for along-track
+distance calculation (see <strong>-N</strong> for selecting units):</p>
+<p><strong>f</strong> Flat Earth distances.</p>
+<p><strong>g</strong> Great circle distances [Default].</p>
+<p class="last"><strong>e</strong> Geodesic distances on current GMT ellipsoid.</p>
+</dd>
 <dt><strong>-Da</strong><em>startdate</em></dt>
 <dd>Do not list data collected before <em>startdate</em>
 (yyyy-mm-ddBD(T)[hh:mm:ss]) [Default is start of cruise]. Use
@@ -372,9 +399,10 @@ directory]. For the format of this file, see CORRECTIONS below.</dd>
 <dd>Issue a segment header record with cruise ID for each cruise.</dd>
 <dt><strong>-Nd</strong>|<strong>s</strong><em>unit</em></dt>
 <dd>Append <strong>d</strong> for distance or <strong>s</strong> for speed, then give the desired
-<em>unit</em> as <strong>e</strong> (meter or m/s), <strong>k</strong> (km or km/hr), <strong>m</strong> (miles or
-miles/hr), or <strong>n</strong> (nautical miles or knots). [Default is <strong>-Ndk</strong>
-<strong>-Nse</strong> (km and m/s)].</dd>
+<em>unit</em> as <strong>e</strong> (meter or m/s), <strong>f</strong> (feet or feet/s), <strong>k</strong> (km or
+km/hr), <strong>m</strong> (miles or miles/hr), <strong>n</strong> (nautical miles or knots),
+or <strong>u</strong> (survey feet or sfeet/s). [Default is <strong>-Ndk</strong> <strong>-Nse</strong> (km
+and m/s)].</dd>
 <dt><strong>-Qa</strong><em>min</em>/<em>max</em></dt>
 <dd>Specify an accepted range (<em>min</em>/<em>max</em>) of azimuths. Records whose
 track azimuth falls outside this range are ignored [0-360].</dd>
@@ -391,15 +419,19 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid.</dd>
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.</dd>
 <dt><strong>-Sa</strong><em>startdist</em>[unit]</dt>
 <dd>Do not list data that are less than <em>startdist</em> meter along track
-from port of departure. Append <strong>k</strong> for km, <strong>m</strong> for miles, or
-<strong>n</strong> for nautical miles [Default is 0 meters].</dd>
+from port of departure. Append <strong>e</strong> for meter, <strong>f</strong> for feet,
+<strong>k</strong> for km, <strong>m</strong> for miles, <strong>n</strong> for nautical miles, or <strong>u</strong>
+for survey feet [Default is 0e (meters)].</dd>
 <dt><strong>-Sb</strong><em>stopdist</em>[unit]</dt>
 <dd>Do not list data that are <em>stopdist</em> or more meters along track from
-port of departure. Append <strong>k</strong> for km, <strong>m</strong> for miles, or <strong>n</strong>
-for nautical miles [Default is end of track].</dd>
+port of departure. Append <strong>e</strong> for meter, <strong>f</strong> for feet, <strong>k</strong> for
+km, <strong>m</strong> for miles, <strong>n</strong> for nautical miles, or <strong>u</strong> for survey
+feet [Default is end of track].</dd>
 <dt><strong>-T</strong>[<strong>m</strong>|<strong>e</strong>]</dt>
 <dd>Turns OFF the otherwise automatic adjustment of values based on
 correction terms that are stored in the MGD77+ file and used to
@@ -409,7 +441,7 @@ derives (the option has no effect on plain MGD77 ASCII files).
 Append <strong>m</strong> or <strong>e</strong> to limit the option to the MGD77 or extended
 columns set only [Default applies to both].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>weight</em></dt>
 <dd>Set the weight for these data. Weight output option must be set in
 <strong>-F</strong>. This is useful if the data are to be processed with the
@@ -419,26 +451,21 @@ weighted averaging techniques offered by <strong>blockmean</strong>,
 <dd>Append the sign you want for <strong>depth</strong>, <strong>carter</strong>, and <strong>msd</strong>
 values below sea level (<strong>-Z-</strong> gives negative bathymetry) [Default
 is positive down].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>]</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>]</dt>
 <dd>Select binary output. Append one or more comma-separated
-combinations of <em>n</em><em>type</em>, where <em>type</em> is one of <strong>c</strong> (signed
-byte), <strong>u</strong> (unsigned byte), <strong>h</strong> (signed 2-byte int), <strong>H</strong>
-(unsigned 2-byte int), <strong>i</strong> (signed 4-byte int), <strong>I</strong> (unsigned
-4-byte int), <strong>l</strong> (signed 8-byte int), <strong>L</strong> (unsigned 8-byte int),
-<strong>f</strong> (4-byte single-precision float), and <strong>d</strong> (8-byte
-double-precision float). Append <strong>w</strong> to any item to force
-byte-swapping. Alternatively, append <strong>+L</strong>|<strong>B</strong> to indicate
-that the entire data file should be written as little- or
-big-endian, respectively. Here, <em>n</em> is the number of each items in
-your binary input file; the total may exceeds the columns actually
-needed by the program. If no <em>n</em> is specified we assume that <em>type</em>
-applies to all columns and that <em>n</em> is implied by the default output
-of the program. NetCDF file output is not supported. <strong>-h</strong> is
-ignored if <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] is selected. Likewise,
-string-fields cannot be selected. Note that if time is one of the
-binary output columns it will be stored as Unix-time (seconds since
-1970). To read this information in GMT to obtain absolute calendar
-time will require you to use &#8211;TIME_SYSTEM=unix.</dd>
+combinations of <em>ncols</em>/<em>type</em>, where <em>ncols</em> is the actual number
+of data columns and <em>type</em> must be one of <strong>c</strong>, <strong>u</strong>, <strong>h</strong>,
+<strong>H</strong>, <strong>i</strong>, <strong>I</strong>, <strong>l</strong>, <strong>L</strong>, <strong>f</strong>, and <strong>d</strong> (see <strong>-bi</strong>).
+Append <strong>w</strong> or <strong>+L</strong>|<strong>B</strong> for byte-swapping. <em>ncols</em> is the
+number of each item in the binary file. If no <em>ncols</em> is specified
+we assume that <em>type</em> applies to all columns and that <em>ncols</em> is
+implied by the default output of the program. NetCDF file output is
+not supported. <strong>-h</strong> is ignored if <strong>-bo</strong>[<em>ncols</em>][<em>type</em>]
+is selected. Likewise, string-fields cannot be selected. Note that
+if time is one of the binary output columns it will be stored as
+Unix-time (seconds since 1970). To read this information in GMT to
+obtain absolute calendar time will require you to use
+&#8211;TIME_SYSTEM=1.</dd>
 <dt><strong>-h</strong></dt>
 <dd>Issue a header record with names for each data field.</dd>
 <dt><strong>-^</strong> (*)</dt>
@@ -446,6 +473,10 @@ time will require you to use &#8211;TIME_SYSTEM=unix.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -453,33 +484,32 @@ options, then exits.</dd>
 <p>To get a (distance, heading, gravity, bathymetry) listing from
 01010047.mgd77, starting at June 3 1971 20:45 and ending at distance =
 5000 km, use the following command:</p>
-<p><strong>mgd77list</strong> 01010047 <strong>-Da</strong>1971-06-03T20:45 <strong>-Sb</strong>5000
-<strong>-F</strong>dist,azim,faa,depth &gt; myfile.d</p>
+<p>mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth &gt;
+myfile.d</p>
 <p>To make input for <strong>blockmean</strong> and <strong>surface</strong> using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
 that are inside the specified area, and make the output binary:</p>
-<p><strong>mgd77list</strong> ‘cat cruises.lis‘ <strong>-F</strong>lon,lat,faa <strong>-R</strong>-40/-30/25/35
-<strong>-bo</strong> &gt; allgrav.b</p>
+<p>mgd77list ‘cat cruises.lis‘ -Flon,lat,faa -R-40/-30/25/35 -bo &gt;
+allgrav.b</p>
 <p>To extract the locations of depths exceeding 9000 meter that were not
 interpolated (<strong>btc</strong> != 1) from all the cruises listed in the file
 cruises.lis:</p>
-<p><strong>mgd77list</strong> ‘cat cruises.lis‘ <strong>-F</strong>&#8220;depth,DEPTH&gt;9000,BTC!=1&#8221; &gt; really_deep.d</p>
+<p>mgd77list ‘cat cruises.lis‘ -F&#8221;depth,DEPTH&gt;9000,BTC!=1&#8221; &gt; really_deep.d</p>
 <p>To extract dist, faa, and grav12_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try</p>
-<p><strong>mgd77list</strong> ‘cat cruises.lis‘ <strong>-E</strong> <strong>-Ia</strong>
-<strong>-F</strong>&#8220;dist,faa,grav12_2,depth&lt;3000&#8221; &gt; shallow_grav.d</p>
+<p>mgd77list ‘cat cruises.lis‘ -E -Ia -F&#8221;dist,faa,grav12_2,depth&lt;3000&#8221; &gt;
+shallow_grav.d</p>
 <p>To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try</p>
-<p><strong>mgd77list</strong> ‘cat cruises.lis‘ <strong>-E</strong> <strong>-Ia</strong>
-<strong>-F</strong>&#8220;dist,faa,grav12_2:+faa&#8221; &gt; bad_grav.d</p>
+<p>mgd77list ‘cat cruises.lis‘ -E -Ia -F&#8221;dist,faa,grav12_2:+faa&#8221; &gt;
+bad_grav.d</p>
 <p>To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:</p>
-<p><strong>mgd77list</strong> ‘cat cruises.lis‘ <strong>-F</strong>lon,lat,mag,faa <strong>-Af</strong>2,4
-<strong>-Am</strong>2 &gt; data.d</p>
+<p>mgd77list ‘cat cruises.lis‘ -Flon,lat,mag,faa -Af2,4 -Am2 &gt; data.d</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">Recalculated Anomalies</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
@@ -499,14 +529,14 @@ Luis, U Algarve, and adapted to GMT-style by Paul Wessel.</p>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">Igf</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>The equations used are reproduced here using coefficients extracted
-directly from the source code (let us know if you find errors):
-(1) g = 978052.0 * [1 + 0.005285 * sin^2(lat) - 7e-6 * sin^2(2*lat)
-+ 27e-6 * cos^2(lat) * cos^2(lon-18)]
-(2) g = 978049.0 * [1 + 0.0052884 * sin^2(lat) - 0.0000059 *
-sin^2(2*lat)]
-(3) g = 978031.846 * [1 + 0.0053024 * sin^2(lat) - 0.0000058 *
-sin^2(2*lat)]
-(4) g = 978032.67714 * [(1 + 0.00193185138639 * sin^2(lat)) / sqrt (1
+directly from the source code (let us know if you find errors):</p>
+<p>(1) g = 978052.0 * [1 + 0.005285 * sin^2(lat) - 7e-6 * sin^2(2*lat)
++ 27e-6 * cos^2(lat) * cos^2(lon-18)]</p>
+<p>(2) g = 978049.0 * [1 + 0.0052884 * sin^2(lat) - 0.0000059 *
+sin^2(2*lat)]</p>
+<p>(3) g = 978031.846 * [1 + 0.0053024 * sin^2(lat) - 0.0000058 *
+sin^2(2*lat)]</p>
+<p>(4) g = 978032.67714 * [(1 + 0.00193185138639 * sin^2(lat)) / sqrt (1
 - 0.00669437999013 * sin^2(lat))]</p>
 </div>
 <div class="section" id="id10">
@@ -538,18 +568,17 @@ example of fictitious corrections to the cruise 99999999, implying the
 a linear trend removed, the magnetic anomaly (<strong>mag</strong>) should be
 corrected by a strange dependency on ship heading and latitude, and
 <strong>gob</strong>s needs to have 10 mGal added (hence given as -10):</p>
-<p>99999999 depth`` `` `` `` 1.0*((carter))
-99999999 faa`` `` `` `` 14.1`` `` `` `` 1e-5*((time-T))
-99999999 mag`` `` `` `` 0.5*cos(0.5*(azim-19))^2`` `` `` ``
-1.0*exp(-1e-3(lat))^1.5
-99999999 gobs`` `` `` `` -10</p>
+<p>99999999 depth 1.0*((carter))</p>
+<p>99999999 faa 14.1 1e-5*((time-T))</p>
+<p>99999999 mag 0.5*cos(0.5*(azim-19))^2 1.0*exp(-1e-3(lat))^1.5</p>
+<p>99999999 gobs -10</p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc11">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="mgd77convert.1.html">*mgd77convert*(1)</a> ,
-<a class="reference external" href="mgd77info.1.html">*mgd77info*(1)</a> ,
-<a class="reference external" href="mgd77manage.1.html">*mgd77manage*(1)</a> ,
-<a class="reference external" href="mgd77track.1.html">*mgd77track*(1)</a></p>
+<p><a class="reference external" href="mgd77convert.html">*mgd77convert*(1)</a> ,
+<a class="reference external" href="mgd77info.html">*mgd77info*(1)</a> ,
+<a class="reference external" href="mgd77manage.html">*mgd77manage*(1)</a> ,
+<a class="reference external" href="mgd77track.html">*mgd77track*(1)</a></p>
 </div>
 <div class="section" id="id12">
 <h2><a class="reference external" href="#toc12">References</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
@@ -558,10 +587,10 @@ Mapping Tools (GMT) version 5.0.0b Technical Reference &amp; Cookbook,
 SOEST/NOAA.</p>
 <p>Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
 Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.</p>
-<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
-<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released,
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released,
 <a class="reference external" href="http://www.agu.org/eos_elec/95154e.html,">http://www.agu.org/eos_elec/95154e.html,</a>
 Copyright 1995 by the American Geophysical Union.</p>
 <p>Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
@@ -638,14 +667,14 @@ Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
         <li class="right" >
           <a href="mgd77info.html" title="mgd77info"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MGD77</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

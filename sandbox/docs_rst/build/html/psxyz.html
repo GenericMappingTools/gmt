@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>psxyz &mdash; GMT5 v0 documentation</title>
+    <title>psxyz &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="sample1d" href="sample1d.html" />
     <link rel="prev" title="psxy" href="psxy.html" /> 
@@ -40,7 +43,7 @@
         <li class="right" >
           <a href="psxy.html" title="psxy"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
@@ -106,7 +109,7 @@ space is allowed between the option flag and the associated arguments.</p>
 <dd>Select map projection.</dd>
 <dt><strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> (*)</dt>
 <dd>Set z-axis scaling; same syntax as <strong>-Jx</strong>.</dd>
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dt><strong>-R</strong>[<em>unit</em>]<em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest.
 For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.</dd>
 </dl>
@@ -186,11 +189,15 @@ segment.</p>
 <p><strong>-Sb</strong></p>
 <p>Vertical <strong>b</strong>ar extending from <em>base</em> to y. <em>size</em> is bar width.
 Append <strong>u</strong> if <em>size</em> is in x-units [Default is plot-distance units].
-By default, <em>base</em> = ymin. Append <strong>b</strong><em>base</em> to change this value.</p>
+By default, <em>base</em> = ymin. Append <strong>b</strong>[<em>base</em>] to change this
+value. If <em>base</em> is not appended then we read it from the last input
+data column.</p>
 <p><strong>-SB</strong></p>
 <p>Horizontal <strong>b</strong>ar extending from <em>base</em> to x. <em>size</em> is bar width.
 Append <strong>u</strong> if <em>size</em> is in y-units [Default is plot-distance units].
-By default, <em>base</em> = xmin. Append <strong>b</strong><em>base</em> to change this value.</p>
+By default, <em>base</em> = xmin. Append <strong>b</strong>[<em>base</em>] to change this
+value. If <em>base</em> is not appended then we read it from the last input
+data column.</p>
 <p><strong>-Sc</strong></p>
 <p><strong>c</strong>ircle. <em>size</em> is diameter of circle.</p>
 <p><strong>-Sd</strong></p>
@@ -267,9 +274,10 @@ circle.</p>
 sets base width (Use <em>xsize/ysize</em> if not the same). Append <strong>u</strong> if
 <em>size</em> is in x-units [Default is plot-distance units]. If no <em>size</em> is
 given we expect both <em>xsize</em> and <em>ysize</em> as two extra data columns. By
-default, <em>base</em> = 0. Append bIT(base) to change this value. The facet
-colors will be modified to simulate shading. Use <strong>-SO</strong> to disable such
-3-D illumination.</p>
+default, <em>base</em> = 0. Append {bf b}[<em>base</em>] to change this value. The
+facet colors will be modified to simulate shading. Use <strong>-SO</strong> to
+disable such 3-D illumination. If <em>base</em> is not appended then we read it
+from the last input data column.</p>
 <p><strong>-Sp</strong></p>
 <p><strong>p</strong>oint. No size needs to be specified (1 pixel is used).</p>
 <p><strong>-Sq</strong></p>
@@ -285,13 +293,13 @@ lines. Choose among five controlling algorithms:</p>
 For lower case <strong>d</strong>, give distances between labels on the plot in
 your preferred measurement unit <strong>c</strong> (cm), <strong>i</strong> (inch), or <strong>p</strong>
 (points), while for upper case <strong>D</strong>, specify distances in map units
-and append the unit; choose among <strong>e</strong> (m), <strong>f</strong> (feet), <strong>k</strong>
-(km), <strong>M</strong> (mile), or <strong>n</strong> (nautical mile), and <strong>d</strong> (arc
-degree), <strong>m</strong> (arc minute), or <strong>s</strong> (arc second). [Default is
-10<strong>c</strong> or 4<strong>i</strong>]. As an option, you can append /<em>fraction</em>
-which is used to place the very first label for each contour when
-the cumulative along-contour distance equals <em>fraction * dist</em>
-[0.25].
+and append the unit; choose among <strong>e</strong> (m), <strong>f</strong> (foot), <strong>k</strong>
+(km), <strong>M</strong> (mile), <strong>n</strong> (nautical mile) or <strong>u</strong> (US survey foot),
+and <strong>d</strong> (arc degree), <strong>m</strong> (arc minute), or <strong>s</strong> (arc second).
+[Default is 10<strong>c</strong> or 4<strong>i</strong>]. As an option, you can append
+/<em>fraction</em> which is used to place the very first label for each
+contour when the cumulative along-contour distance equals <em>fraction
+* dist</em> [0.25].
 <strong>f</strong><em>ffile.d</em>
 Reads the ascii file <em>ffile.d</em> and places labels at locations in the
 file that matches locations along the quoted lines. Inexact matches
@@ -675,13 +683,13 @@ to obtain the correct BoundingBox.</p>
         <li class="right" >
           <a href="psxy.html" title="psxy"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

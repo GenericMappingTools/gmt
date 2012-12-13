@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>sphdistance &mdash; GMT5 v0 documentation</title>
+    <title>sphdistance &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,10 +25,10 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="SPH" href="list.html" />
     <link rel="next" title="sphinterpolate" href="sphinterpolate.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="list.html" /> 
+    <link rel="prev" title="SPH" href="list.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,11 +41,11 @@
           <a href="sphinterpolate.html" title="sphinterpolate"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="list.html" title="&lt;no title&gt;"
+          <a href="list.html" title="SPH"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">SPH</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -95,9 +98,9 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-C</strong></dt>
 <dd>For large data set you can save some memory (at the expense of more
 processing) by only storing one form of location coordinates
@@ -115,37 +118,39 @@ polygons that each grid node is inside [Default computes distances].</dd>
 <dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
 append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
 Append <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc
-seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, or <strong>n</strong> is
-appended instead, the increment is assumed to be given in meter,
-feet, km, Miles, or nautical miles, respectively, and will be
-converted to the equivalent degrees longitude at the middle latitude
-of the region (the conversion depends on <strong>PROJ_ELLIPSOID</strong>). If
-/<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
-otherwise it will be converted to degrees latitude. <strong>All
-coordinates</strong>: If <strong>=</strong> is appended then the corresponding max <em>x</em>
-(<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly adjusted to fit exactly
-the given increment [by default the increment may be adjusted
-slightly to fit the given domain]. Finally, instead of giving an
-increment you may specify the <em>number of nodes</em> desired by appending
-<strong>+</strong> to the supplied integer argument; the increment is then
-recalculated from the number of nodes and the domain. The resulting
-increment value depends on whether you have selected a
-gridline-registered or pixel-registered grid; see Appendix B for
-details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing
-has already been initialized; use <strong>-I</strong> to override the values.</dd>
+seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or
+<strong>u</strong> is appended instead, the increment is assumed to be given in
+meter, foot, km, Mile, nautical mile or US survey foot,
+respectively, and will be converted to the equivalent degrees
+longitude at the middle latitude of the region (the conversion
+depends on <strong>PROJ_ELLIPSOID</strong>). If /<em>y_inc</em> is given but set to 0
+it will be reset equal to <em>x_inc</em>; otherwise it will be converted
+to degrees latitude. <strong>All coordinates</strong>: If <strong>=</strong> is appended then
+the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the <em>number
+of nodes</em> desired by appending <strong>+</strong> to the supplied integer
+argument; the increment is then recalculated from the number of
+nodes and the domain. The resulting increment value depends on
+whether you have selected a gridline-registered or pixel-registered
+grid; see Appendix B for details. Note: if <strong>-R</strong><em>grdfile</em> is used
+then the grid spacing has already been initialized; use <strong>-I</strong> to
+override the values.</dd>
 <dt><strong>-L</strong><em>unit</em></dt>
 <dd>Specify the unit used for distance calculations. Choose among <strong>d</strong>
 (spherical degree), <strong>e</strong> (m), <strong>f</strong> (feet), <strong>k</strong> (km), <strong>M</strong>
-(mile), or <strong>n</strong> (nautical mile). A spherical approximation is used
-unless <strong>PROJ_ELLIPSOID</strong> is set to an actual ellipsoid. <strong>-N</strong>
-Read the information pertaining to each Voronoi polygon (the unique
-node lon, lat and polygon area) from a separate file [Default
-acquires this information from the ASCII segment headers of the
-output file]. Required if binary input via <strong>-Q</strong> is used.</dd>
+(mile), <strong>n</strong> (nautical mile) or <strong>u</strong> survey foot. A spherical
+approximation is used unless <strong>PROJ_ELLIPSOID</strong> is set to an actual
+ellipsoid. <strong>-N</strong> Read the information pertaining to each Voronoi
+polygon (the unique node lon, lat and polygon area) from a separate
+file [Default acquires this information from the ASCII segment
+headers of the output file]. Required if binary input via <strong>-Q</strong> is
+used.</dd>
 <dt><strong>-Q</strong><em>voronoi.d</em></dt>
 <dd>Append the name of a file with pre-calculated Voronoi polygons
 [Default performs the Voronoi construction on input data]. For
-binary data <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] you must specify the node
+binary data <strong>-bi</strong>[<em>ncols</em>][<em>type</em>] you must specify the node
 information separately (via <strong>-N</strong>).</dd>
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
 <dd><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
@@ -156,16 +161,18 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid.</dd>
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is same as input].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-r</strong></dt>
 <dd>Set pixel node registration [gridline].</dd>
@@ -176,6 +183,10 @@ the grid.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -205,19 +216,18 @@ normalizing the data prior to processing.</p>
 <p>To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid,
 use</p>
-<p><strong>sphdistance</strong> testdata.txt <strong>-Rg</strong> <strong>-I</strong>1 <strong>-G</strong>globedist.nc</p>
+<p>sphdistance testdata.txt -Rg -I1 -Gglobedist.nc</p>
 <p>To generate the same grid in two steps using <strong>sphtriangulate</strong>
 separately, try</p>
-<p><strong>sphtriangulate</strong> testdata.txt <strong>-Qv</strong> &gt; voronoi.d
-<strong>sphdistance</strong> <strong>-Q</strong>voronoi.d <strong>-Rg</strong> <strong>-I</strong>1
-<strong>-G</strong>globedist.nc</p>
+<p>sphtriangulate testdata.txt -Qv &gt; voronoi.d</p>
+<p>sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">See Also</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> ,
-<a class="reference external" href="sphinterpolate.1.html">*sphinterpolate*(1)</a>
-<a class="reference external" href="sphtriangulate.1.html">*sphtriangulate*(1)</a>
-<a class="reference external" href="triangulate.1.html">*triangulate*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> ,
+<a class="reference external" href="sphinterpolate.html">*sphinterpolate*(1)</a>
+<a class="reference external" href="sphtriangulate.html">*sphtriangulate*(1)</a>
+<a class="reference external" href="triangulate.html">*triangulate*(1)</a></p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">References</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
@@ -252,7 +262,7 @@ Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="list.html"
-                        title="previous chapter">&lt;no title&gt;</a></p>
+                        title="previous chapter">SPH</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="sphinterpolate.html"
                         title="next chapter">sphinterpolate</a></p>
@@ -288,16 +298,16 @@ Voronoi Diagram on the Surface of a Sphere, <em>AMC Trans. Math. Software</em>,
           <a href="sphinterpolate.html" title="sphinterpolate"
              >next</a> |</li>
         <li class="right" >
-          <a href="list.html" title="&lt;no title&gt;"
+          <a href="list.html" title="SPH"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >SPH</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

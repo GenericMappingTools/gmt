@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>grdpmodeler &mdash; GMT5 v0 documentation</title>
+    <title>grdpmodeler &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="SPOTTER" href="list.html" />
     <link rel="next" title="grdrotater" href="grdrotater.html" />
     <link rel="prev" title="backtracker" href="backtracker.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="backtracker.html" title="backtracker"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">SPOTTER</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -89,8 +92,8 @@ in Myr.</dd>
 <dd><p class="first">Give file with rotation parameters. This file must contain one
 record for each rotation; each record must be of the following
 format:</p>
-<p>`` `` `` `` <em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
-<p class="last">where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
+<p><em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
+<p>where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
 degrees. <em>tstart</em> and <em>tstop</em> are the ages of the old and young ends
 of a stage. If <em>tstop</em> is not present in the record then a total
 reconstruction rotation is expected and <em>tstop</em> is implicitly set to
@@ -102,9 +105,10 @@ which shows <strong>C</strong> made up of three row vectors. If the degrees of
 freedom (<em>df</em>) in fitting the rotation is 0 or not given it is set
 to 10000. Blank lines and records whose first column contains # will
 be ignored. You may prepend a leading + to the filename to indicate
-you wish to invert the rotations.
-Alternatively, give the filename composed of two plate IDs
-separated by a hyphen (e.g., PAC-MBL) and we will instead extract
+you wish to invert the rotations.</p>
+<blockquote>
+<div>Alternatively, give the filename composed of two plate IDs</div></blockquote>
+<p class="last">separated by a hyphen (e.g., PAC-MBL) and we will instead extract
 that rotation from the GPlates rotation database. We return an error
 if the rotation cannot be found.</p>
 </dd>
@@ -132,21 +136,25 @@ will be set to NaN [Default evaluates model on the entire grid].</dd>
 <dd>Use a fixed age for model evaluation (i.e., override the ages in the
 age grid). This lets you evaluate the model at a snapshot in time.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-:</strong></dt>
 <dd>Toggles between (longitude,latitude) and (latitude,longitude)
 input/output. [Default is (longitude,latitude)].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -171,12 +179,12 @@ formed, try</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="backtracker.1.html">*backtracker*(1)</a> ,
-<a class="reference external" href="grdrotater.1.html">*grdrotater*(1)</a> ,
-<a class="reference external" href="grdspotter.1.html">*grdspotter*(1)</a> ,
-<a class="reference external" href="hotspotter.1.html">*hotspotter*(1)</a> ,
-<a class="reference external" href="originator.1.html">*originator*(1)</a>
-<a class="reference external" href="rotconverter.1.html">*rotconverter*(1)</a></p>
+<p><a class="reference external" href="backtracker.html">*backtracker*(1)</a> ,
+<a class="reference external" href="grdrotater.html">*grdrotater*(1)</a> ,
+<a class="reference external" href="grdspotter.html">*grdspotter*(1)</a> ,
+<a class="reference external" href="hotspotter.html">*hotspotter*(1)</a> ,
+<a class="reference external" href="originator.html">*originator*(1)</a>
+<a class="reference external" href="rotconverter.html">*rotconverter*(1)</a></p>
 </div>
 </div>
 
@@ -240,14 +248,14 @@ formed, try</p>
         <li class="right" >
           <a href="backtracker.html" title="backtracker"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >SPOTTER</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

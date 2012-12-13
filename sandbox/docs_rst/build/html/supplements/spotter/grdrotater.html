@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>grdrotater &mdash; GMT5 v0 documentation</title>
+    <title>grdrotater &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="SPOTTER" href="list.html" />
     <link rel="next" title="grdspotter" href="grdspotter.html" />
     <link rel="prev" title="grdpmodeler" href="grdpmodeler.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="grdpmodeler.html" title="grdpmodeler"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">SPOTTER</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -92,8 +95,8 @@ space is allowed between the option flag and the associated arguments.</p>
 <dd><p class="first">Give file with rotation parameters. This file must contain one
 record for each rotation; each record must be of the following
 format:</p>
-<p>`` `` `` `` <em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
-<p class="last">where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
+<p><em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
+<p>where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
 degrees. <em>tstart</em> and <em>tstop</em> are the ages of the old and young ends
 of a stage. If <em>tstop</em> is not present in the record then a total
 reconstruction rotation is expected and <em>tstop</em> is implicitly set to
@@ -105,9 +108,10 @@ which shows <strong>C</strong> made up of three row vectors. If the degrees of
 freedom (<em>df</em>) in fitting the rotation is 0 or not given it is set
 to 10000. Blank lines and records whose first column contains # will
 be ignored. You may prepend a leading + to the filename to indicate
-you wish to invert the rotations.
-Alternatively, give the filename composed of two plate IDs
-separated by a hyphen (e.g., PAC-MBL) and we will instead extract
+you wish to invert the rotations.</p>
+<blockquote>
+<div>Alternatively, give the filename composed of two plate IDs</div></blockquote>
+<p class="last">separated by a hyphen (e.g., PAC-MBL) and we will instead extract
 that rotation from the GPlates rotation database. We return an error
 if the rotation cannot be found.</p>
 </dd>
@@ -125,7 +129,8 @@ according to the specified rotation.</dd>
 <dl class="docutils">
 <dt><strong>-F</strong><em>polygonfile</em></dt>
 <dd>Specify a multisegment closed polygon file that describes the inside
-area of the grid that should be projected [Default projects entire grid].</dd>
+area of the grid that should be projected [Default projects entire
+grid].</dd>
 <dt><strong>-N</strong></dt>
 <dd>Do Not output the rotated polygon outline [Default will write it to
 stdout].</dd>
@@ -137,32 +142,43 @@ and upper right map coordinates are given instead of w/e/s/n. The
 two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
-<strong>-R</strong> settings (and grid spacing, if applicable) are copied from the grid.</dd>
+<strong>-R</strong> settings (and grid spacing, if applicable) are copied from
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.</dd>
 <dt><strong>-S</strong></dt>
 <dd>Skip the rotation of the grid, just rotate the polygon outline
 (requires <strong>-F</strong>).</dd>
 <dt><strong>-T</strong><em>age</em></dt>
 <dd>Sets the desired age of reconstruction when <strong>-E</strong> is given.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-:</strong></dt>
 <dd>Toggles between (longitude,latitude) and (latitude,longitude)
 input/output. [Default is (longitude,latitude)].</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 2 input columns].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output. [Default is same as input].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
-<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>] (*)</dt>
-<dd>Select interpolation mode for grids.</dd>
+</dl>
+<p><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+t</strong><em>threshold</em>]
+(*)</p>
+<blockquote>
+<div>Select interpolation mode for grids.</div></blockquote>
+<dl class="docutils">
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -171,17 +187,16 @@ options, then exits.</dd>
 clip_path.d, using a total reconstruction rotation with pole at (135.5,
 -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation,
 try</p>
-<p><strong>grdrotater</strong> topo.nc <strong>-e</strong>135.5/-33/37.3 <strong>-V</strong>
-<strong>-F</strong>clip_path.d <strong>-G</strong>rot_topo.nc &gt; rot_clip_path.d</p>
+<p>grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip_path.d -Grot_topo.nc &gt;
+rot_clip_path.d</p>
 <p>To rotate the entire grid faa.nc back to 32 Ma using the rotation file
 <em>rotations.txt</em> and a bilinear interpolation, try</p>
-<p><strong>grdrotater</strong> faa.nc <strong>-E</strong>rotations.txt <strong>-T</strong>32 <strong>-V</strong>
-<strong>-G</strong>rot_faa.nc <strong>-nl</strong> &gt; rot_faa_path.d</p>
+<p>grdrotater faa.nc -Erotations.txt -T32 -V -Grot_faa.nc -nl &gt;
+rot_faa_path.d</p>
 <p>To just see how the outline of the grid large.nc will plot after the
 same rotation, try</p>
-<p><strong>grdrotater</strong> large.nc <strong>-E</strong>rotations.txt <strong>-T</strong>32 <strong>-V</strong> <strong>-S</strong>
-| psxy <strong>-Rg</strong> <strong>-JH</strong>180/6i <strong>-B</strong>30 <strong>-m</strong> <strong>-W</strong>0.5<strong>p</strong> |
-gv -</p>
+<p>grdrotater large.nc -Erotations.txt -T32 -V -S | psxy -Rg -JH180/6i
+-B30 -W0.5p | gv -</p>
 <p>Let say you have rotated gridA.nc and gridB.nc, restricting each
 rotation to nodes inside polygons polyA.d and polyB.d, respectively,
 using rotation A = (123W,22S,16,4) and rotation B = (108W, 16S, -14.5),
@@ -195,11 +210,11 @@ a polygon (contour).</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="backtracker.1.html">*backtracker*(1)</a> ,
-<a class="reference external" href="grdspotter.1.html">*grdspotter*(1)</a> ,
-<a class="reference external" href="hotspotter.1.html">*hotspotter*(1)</a> ,
-<a class="reference external" href="originator.1.html">*originator*(1)</a>
-<a class="reference external" href="rotconverter.1.html">*rotconverter*(1)</a></p>
+<p><a class="reference external" href="backtracker.html">*backtracker*(1)</a> ,
+<a class="reference external" href="grdspotter.html">*grdspotter*(1)</a> ,
+<a class="reference external" href="hotspotter.html">*hotspotter*(1)</a> ,
+<a class="reference external" href="originator.html">*originator*(1)</a>
+<a class="reference external" href="rotconverter.html">*rotconverter*(1)</a></p>
 </div>
 </div>
 
@@ -263,14 +278,14 @@ a polygon (contour).</p>
         <li class="right" >
           <a href="grdpmodeler.html" title="grdpmodeler"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >SPOTTER</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

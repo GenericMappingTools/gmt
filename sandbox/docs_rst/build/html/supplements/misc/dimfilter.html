@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>dimfilter &mdash; GMT5 v0 documentation</title>
+    <title>dimfilter &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,10 +25,10 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MISC" href="list.html" />
     <link rel="next" title="gmtdigitize" href="gmtdigitize.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="list.html" /> 
+    <link rel="prev" title="MISC" href="list.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,11 +41,11 @@
           <a href="gmtdigitize.html" title="gmtdigitize"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="list.html" title="&lt;no title&gt;"
+          <a href="list.html" title="MISC"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MISC</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -111,22 +114,20 @@ computed only once. The next three options are slower because they
 recompute weights for each latitude.</p>
 <p><em>flag</em> = 3: grid (x,y) in degrees, <em>width</em> in km, dx scaled by
 cosine(y), Cartesian distance calculation.</p>
-<blockquote>
-<div><em>flag</em> = 4: grid (x,y) in degrees, <em>width</em> in km, Spherical</div></blockquote>
-<p class="last">distance calculation.</p>
+<p class="last"><em>flag</em> = 4: grid (x,y) in degrees, <em>width</em> in km, Spherical distance
+calculation.</p>
 </dd>
 <dt><strong>-F</strong><em>&lt;filtertype&gt;&lt;width&gt;</em>[<em>mode</em>]</dt>
 <dd><p class="first">Sets the primary filter type. Choose among convolution and
 non-convolution filters. Append the filter code followed by the full
 diameter <em>width</em>. Available convolution filters are:</p>
-<blockquote>
-<div>(<strong>b</strong>) Boxcar: All weights are equal.
-(<strong>c</strong>) Cosine Arch: Weights follow a cosine arch curve.
-(<strong>g</strong>) Gaussian: Weights are given by the Gaussian function.
-Non-convolution filters are:
-(<strong>m</strong>) Median: Returns median value.
-(<strong>p</strong>) Maximum likelihood probability (a mode estimator): Return</div></blockquote>
-<p class="last">modal value. If more than one mode is found we return their average
+<p>(<strong>b</strong>) Boxcar: All weights are equal.</p>
+<p>(<strong>c</strong>) Cosine Arch: Weights follow a cosine arch curve.</p>
+<p>(<strong>g</strong>) Gaussian: Weights are given by the Gaussian function.</p>
+<p>Non-convolution filters are:</p>
+<p>(<strong>m</strong>) Median: Returns median value.</p>
+<p class="last">(<strong>p</strong>) Maximum likelihood probability (a mode estimator): Return
+modal value. If more than one mode is found we return their average
 value. Append - or + to the filter width if you rather want to
 return the smallest or largest of the modal values.</p>
 </dd>
@@ -135,12 +136,11 @@ return the smallest or largest of the modal values.</p>
 <em>n_sectors</em> must be integer and larger than 0. When <em>n_sectors</em> is
 set to 1, the secondary filter is not effective. Available secondary
 filters are:</p>
-<blockquote class="last">
-<div>(<strong>l</strong>) Lower: Return the minimum of all filtered values.
-(<strong>u</strong>) Upper: Return the maximum of all filtered values.
-(<strong>a</strong>) Average: Return the mean of all filtered values.
-(<strong>m</strong>) Median: Return the median of all filtered values.
-(<strong>p</strong>) Mode: Return the mode of all filtered values.</div></blockquote>
+<p>(<strong>l</strong>) Lower: Return the minimum of all filtered values.</p>
+<p>(<strong>u</strong>) Upper: Return the maximum of all filtered values.</p>
+<p>(<strong>a</strong>) Average: Return the mean of all filtered values.</p>
+<p>(<strong>m</strong>) Median: Return the median of all filtered values.</p>
+<p class="last">(<strong>p</strong>) Mode: Return the mode of all filtered values.</p>
 </dd>
 <dt><strong>-G</strong><em>output_file.nc</em></dt>
 <dd><em>output_file.nc</em> is the output of the filter.</dd>
@@ -171,7 +171,7 @@ MAD, and mean. So, the column with the medians is used to generate
 the regional component and the column with the MADs is used to
 conduct the error analysis.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
 <dt><strong>-^</strong> (*)</dt>
@@ -179,6 +179,10 @@ conduct the error analysis.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -187,7 +191,7 @@ options, then exits.</dd>
 COARDS-complaint netCDF file format. However, <strong>GMT</strong> is able to produce
 grid files in many other commonly used grid file formats and also
 facilitates so called &#8220;packing&#8221; of grids, writing out floating point
-data as 2- or 4-byte integers. To specify the precision, scale and
+data as 1- or 2-byte integers. To specify the precision, scale and
 offset, the user should add the suffix
 <strong>=</strong><em>id</em>[<strong>/</strong><em>scale</em><strong>/</strong><em>offset</em>[<strong>/</strong><em>nan</em>]], where
 <em>id</em> is a two-letter identifier of the grid type and precision, and
@@ -195,7 +199,7 @@ offset, the user should add the suffix
 to all grid values, and <em>nan</em> is the value used to indicate missing
 data. When reading grids, the format is generally automatically
 recognized. If not, the same suffix can be added to input grid file
-names. See <a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.17
+names. See <a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.</p>
 <p>When reading a netCDF file that contains multiple grids, <strong>GMT</strong> will
 read, by default, the first 2-dimensional grid that can find in that
@@ -206,7 +210,7 @@ special meaning of <strong>?</strong> in your shell program by putting a backsla
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The <strong>?</strong><em>varname</em> suffix can also be used for output
 grids to specify a variable name different from the default: &#8220;z&#8221;. See
-<a class="reference external" href="grdreformat.1.html">**grdreformat**(1)</a> and Section 4.18 of the GMT
+<a class="reference external" href="grdreformat.html">**grdreformat**(1)</a> and Section 4.20 of the GMT
 Technical Reference and Cookbook for more information, particularly on
 how to read splices of 3-, 4-, or 5-dimensional grids.</p>
 </div>
@@ -232,32 +236,29 @@ the output values every 0.5 degree. To prevent the medians from being
 biased by the sloping plane, you want to divide the filter circle into 6
 sectors and to choose the lowest value among 6 medians. Using spherical
 distance calculations, you need:</p>
-<p><strong>dimfilter</strong> north_pacific_dbdb5.nc <strong>-G</strong>filtered_pacific.nc
-<strong>-Fm</strong>600 <strong>-D</strong>4 <strong>-N</strong>l6 <strong>-R</strong>150/250/10/40 <strong>-I</strong>0.5
-<strong>-V</strong></p>
+<p>dimfilter north_pacific_dbdb5.nc -Gfiltered_pacific.nc -Fm600 -D4
+-Nl6 -R150/250/10/40 -I0.5 -V</p>
 <p>Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features
 in order to define a swell in an area extending from 27.5W to 20.5W and
 12.5N to 19.5N, and you want the output value every 2 minute. Using
 cartesian distance calculations, you need:</p>
-<p><strong>dimfilter</strong> cape_verde.nc <strong>-G</strong>t.nc <strong>-Fm</strong>220 \fB-Nl8
-<strong>-D</strong>2 <strong>-R</strong>-27.5/-20.5/12.5/19.5 <strong>-I</strong>2m <strong>-V</strong></p>
+<p>dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5
+-I2m -V</p>
 <blockquote>
-<div><strong>grdfilter</strong> t.nc <strong>-G</strong>cape_swell.nc <strong>&#8211;Fg</strong>50 <strong>-D</strong>2 <strong>-V</strong></div></blockquote>
+<div>grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V</div></blockquote>
 <p>Suppose that you found a range of filter widths for a given area, and
 you filtered the given bathymetric data using the range of filter widths
 (e.g., <em>f100.nc f110.nc f120.nc f130.nc</em>), and you want to define a
 regional trend using the range of filter widths, and you want to obtain
 median absolute deviation (MAD) estimates at each data point. Then, you
 will need to do:</p>
-<dl class="docutils">
-<dt><strong>grd2xyz</strong> f100.nc <strong>-Z</strong> &gt; f100.d</dt>
-<dd><strong>grd2xyz</strong> f110.nc <strong>-Z</strong> &gt; f110.d
-<strong>grd2xyz</strong> f120.nc <strong>-Z</strong> &gt; f120.d
-<strong>grd2xyz</strong> f130.nc <strong>-Z</strong> &gt; f130.d
-<strong>paste</strong> f100.d f110.d f120.d f130.d &gt; depths.d
-<strong>dimfilter</strong> depths.d <strong>-Q</strong>4 &gt; output.z</dd>
-</dl>
+<p>grd2xyz f100.nc -Z &gt; f100.d</p>
+<p>grd2xyz f110.nc -Z &gt; f110.d</p>
+<p>grd2xyz f120.nc -Z &gt; f120.d</p>
+<p>grd2xyz f130.nc -Z &gt; f130.d</p>
+<p>paste f100.d f110.d f120.d f130.d &gt; depths.d</p>
+<p>dimfilter depths.d -Q4 &gt; output.z</p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc9">Limitations</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
@@ -285,7 +286,7 @@ Geosyst.</em>, <strong>9</strong>, Q03005, doi:10.1029/2007GC001850.</p>
 </div>
 <div class="section" id="id13">
 <h2><a class="reference external" href="#toc12">See Also</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.html">*GMT*</a> , <a class="reference external" href="grdfilter.html">*grdfilter*</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="grdfilter.html">*grdfilter*(1)</a></p>
 </div>
 </div>
 
@@ -316,7 +317,7 @@ Geosyst.</em>, <strong>9</strong>, Q03005, doi:10.1029/2007GC001850.</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="list.html"
-                        title="previous chapter">&lt;no title&gt;</a></p>
+                        title="previous chapter">MISC</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="gmtdigitize.html"
                         title="next chapter">gmtdigitize</a></p>
@@ -352,16 +353,16 @@ Geosyst.</em>, <strong>9</strong>, Q03005, doi:10.1029/2007GC001850.</p>
           <a href="gmtdigitize.html" title="gmtdigitize"
              >next</a> |</li>
         <li class="right" >
-          <a href="list.html" title="&lt;no title&gt;"
+          <a href="list.html" title="MISC"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MISC</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

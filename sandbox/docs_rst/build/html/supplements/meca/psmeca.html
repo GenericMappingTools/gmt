@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>psmeca &mdash; GMT5 v0 documentation</title>
+    <title>psmeca &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MECA" href="list.html" />
     <link rel="next" title="pspolar" href="pspolar.html" />
     <link rel="prev" title="pscoupe" href="pscoupe.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="pscoupe.html" title="pscoupe"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MECA</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -94,7 +97,7 @@ space is allowed between the option flag and the associated arguments.</p>
 <div class="section" id="id4">
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <p><em>table</em></p>
-<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
+<p>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>]) data
 table file(s) holding a number of data columns. If no tables are given
 then we read from standard input.</p>
 <p><strong>-J</strong><em>parameters</em> (*)</p>
@@ -107,7 +110,10 @@ upper right map coordinates are given instead of w/e/s/n. The two
 shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360 and
 -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the <strong>-R</strong>
-settings (and grid spacing, if applicable) are copied from the grid.</p>
+settings (and grid spacing, if applicable) are copied from the grid.
+Using <strong>-R</strong><em>unit</em> expects projected (Cartesian) coordinates
+compatible with chosen <strong>-J</strong> and we inversely project to determine
+actual rectangular geographic region.</p>
 <p><strong>-S</strong><em>&lt;format&gt;&lt;scale&gt;</em>[/<strong>d</strong>]</p>
 <p>Selects the meaning of the columns in the data file . In order to use
 the same file to plot cross-sections, depth is in third column.
@@ -151,7 +157,8 @@ only the nodal planes and the circumference. The color or shade of the
 compressive quadrants can be specified with the <strong>-G</strong> option. The color
 or shade of the extensive quadrants can be specified with the <strong>-E</strong>
 option. Append <strong>u</strong> to have the text appear below the beach ball
-(default is above). Parameters are expected to be in the following columns:</p>
+(default is above). Parameters are expected to be in the following
+columns:</p>
 <blockquote>
 <div><strong>1</strong>,<strong>2</strong>:
 longitude, latitude of event (<strong>-:</strong> option interchanges order)
@@ -301,17 +308,18 @@ by <strong>-R</strong> [Default plots symbols inside frame only].</dd>
 <dt><strong>-P</strong> (*)</dt>
 <dd>Select &#8220;Portrait&#8221; plot orientation.</dd>
 <dt><strong>-T</strong>[<em>num_of_planes</em>][<strong>/</strong><em>pen</em>]</dt>
-<dd>Plots the nodal planes and outlines the bubble which is transparent.
-If <em>num_of_planes</em> is
-<em>0</em>: both nodal planes are plotted;
-<em>1</em>: only the first nodal plane is plotted;
-<em>2</em>: only the second nodal plane is plotted.
-Append <strong>/</strong><em>pen</em> to set the pen attributes for this feature.
-Default pen is as set by <strong>-W</strong>.</dd>
+<dd><p class="first">Plots the nodal planes and outlines the bubble which is transparent.
+If <em>num_of_planes</em> is</p>
+<p><em>0</em>: both nodal planes are plotted;</p>
+<p><em>1</em>: only the first nodal plane is plotted;</p>
+<p><em>2</em>: only the second nodal plane is plotted.</p>
+<p class="last">Append <strong>/</strong><em>pen</em> to set the pen attributes for this feature.
+Default pen is as set by <strong>-W</strong>.</p>
+</dd>
 <dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
 <dd>Draw GMT time stamp logo on plot.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>pen</em></dt>
 <dd>Set pen attributes for all lines and the outline of symbols
 [Defaults: width = default, color = black, style = solid]. This
@@ -319,7 +327,8 @@ setting applies to <strong>-C</strong>, <strong>-L</strong>, <strong>-T</strong>
 <strong>-z</strong>, unless overruled by options to those arguments.</dd>
 </dl>
 <p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
-<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+(*)</p>
 <blockquote>
 <div>Shift plot origin.</div></blockquote>
 <dl class="docutils">
@@ -335,13 +344,14 @@ cross. [Default: 6<strong>p</strong>/<strong>cc</strong>]</dd>
 <dt><strong>-c</strong><em>copies</em> (*)</dt>
 <dd>Specify number of plot copies [Default is 1].</dd>
 <dt><strong>-e</strong><em>fill</em></dt>
-<dd>Sets the color or fill pattern for the T axis symbol. [Default as set by <strong>-E</strong>]</dd>
+<dd>Sets the color or fill pattern for the T axis symbol. [Default as
+set by <strong>-E</strong>]</dd>
 <dt><strong>-g</strong><em>fill</em></dt>
 <dd>Sets the color or fill pattern for the P axis symbol. [Default as
 set by <strong>-G</strong>]</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-o</strong></dt>
 <dd>Use the <strong>psvelomeca</strong> input format without depth in the third
@@ -364,21 +374,24 @@ sets pen attributes.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
-<p>The following file should give a normal-faulting CMT mechanism:
-<strong>psmeca</strong> <strong>-R</strong>239/240/34/35.2 <strong>-Jm</strong>4 <strong>-Sc</strong>0.4 <strong>-H</strong>1
-&lt;&lt;END &gt; test.ps
-lon lat depth str dip slip st dip slip mant exp plon plat
-239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0
-END</p>
+<p>The following file should give a normal-faulting CMT mechanism:</p>
+<p>psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 &lt;&lt; END &gt; test.ps</p>
+<p>lon lat depth str dip slip st dip slip mant exp plon plat</p>
+<p>239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0</p>
+<p>END</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
-<a class="reference external" href="psxy.1.html">*psxy*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psxy.html">*psxy*(1)</a></p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
@@ -397,11 +410,8 @@ Recipes in C, Cambridge University press (routine jacobi)</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">Authors</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p>Genevieve Patau
-CNRS UMR 7580
-Seismology Dept.
-Institut de Physique du Globe de Paris
-(patau&#64;.ipgp.jussieu.fr)</p>
+<p>Genevieve Patau CNRS UMR 7580 Seismology Dept. Institut de Physique du
+Globe de Paris (patau&#64;.ipgp.jussieu.fr)</p>
 </div>
 </div>
 
@@ -467,14 +477,14 @@ Institut de Physique du Globe de Paris
         <li class="right" >
           <a href="pscoupe.html" title="pscoupe"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MECA</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

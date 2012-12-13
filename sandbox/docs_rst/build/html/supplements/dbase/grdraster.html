@@ -10,41 +10,42 @@
     
     <title>grdraster &mdash; GMT5 0 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    '../../',
         VERSION:     '0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 0 documentation" href="index.html" />
-    <link rel="up" title="Mains" href="mains.html" />
-    <link rel="next" title="grdreformat" href="grdreformat.html" />
-    <link rel="prev" title="grdproject" href="grdproject.html" /> 
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="DBASE" href="list.html" />
+    <link rel="next" title="GSHHG" href="../gshhg/list.html" />
+    <link rel="prev" title="DBASE" href="list.html" /> 
   </head>
   <body>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="grdreformat.html" title="grdreformat"
+          <a href="../gshhg/list.html" title="GSHHG"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="grdproject.html" title="grdproject"
+          <a href="list.html" title="DBASE"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
-          <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" accesskey="U">DBASE</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -112,10 +113,12 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid. If <strong>r</strong> is appended, you may also specify a map
-projection to define the shape of your region. The output region
-will be rounded off to the nearest whole grid-step in both
-dimensions.</dd>
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region. If <strong>r</strong> is
+appended, you may also specify a map projection to define the shape
+of your region. The output region will be rounded off to the nearest
+whole grid-step in both dimensions.</dd>
 </dl>
 </div>
 <div class="section" id="id5">
@@ -129,24 +132,25 @@ to stdout instead.</dd>
 <dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
 append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
 Append <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc
-seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, or <strong>n</strong> is
-appended instead, the increment is assumed to be given in meter,
-feet, km, Miles, or nautical miles, respectively, and will be
-converted to the equivalent degrees longitude at the middle latitude
-of the region (the conversion depends on <strong>PROJ_ELLIPSOID</strong>). If
-/<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
-otherwise it will be converted to degrees latitude. <strong>All
-coordinates</strong>: If <strong>=</strong> is appended then the corresponding max <em>x</em>
-(<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly adjusted to fit exactly
-the given increment [by default the increment may be adjusted
-slightly to fit the given domain]. Finally, instead of giving an
-increment you may specify the <em>number of nodes</em> desired by appending
-<strong>+</strong> to the supplied integer argument; the increment is then
-recalculated from the number of nodes and the domain. The resulting
-increment value depends on whether you have selected a
-gridline-registered or pixel-registered grid; see Appendix B for
-details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing
-has already been initialized; use <strong>-I</strong> to override the values.</dd>
+seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or
+<strong>u</strong> is appended instead, the increment is assumed to be given in
+meter, foot, km, Mile, nautical mile or US survey foot,
+respectively, and will be converted to the equivalent degrees
+longitude at the middle latitude of the region (the conversion
+depends on <strong>PROJ_ELLIPSOID</strong>). If /<em>y_inc</em> is given but set to 0
+it will be reset equal to <em>x_inc</em>; otherwise it will be converted
+to degrees latitude. <strong>All coordinates</strong>: If <strong>=</strong> is appended then
+the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the <em>number
+of nodes</em> desired by appending <strong>+</strong> to the supplied integer
+argument; the increment is then recalculated from the number of
+nodes and the domain. The resulting increment value depends on
+whether you have selected a gridline-registered or pixel-registered
+grid; see Appendix B for details. Note: if <strong>-R</strong><em>grdfile</em> is used
+then the grid spacing has already been initialized; use <strong>-I</strong> to
+override the values.</dd>
 <dt><strong>-J</strong><em>parameters</em> (*)</dt>
 <dd>Select map projection.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
@@ -171,18 +175,17 @@ options, then exits.</dd>
 <h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>To extract data from raster 1, taking one point every 30 minutes, in an
 area extended beyond 360 degrees to allow later filtering, run</p>
-<p><strong>grdraster</strong> 1 <strong>-R</strong>-4/364/-62/62 <strong>-I</strong>30<strong>m</strong> <strong>-G</strong>data.nc</p>
+<p>grdraster 1 -R-4/364/-62/62 -I30m -Gdata.nc</p>
 <p>To obtain data for an oblique Mercator projection we need to extract
 more data that is actually used. This is necessary because the output of
 <strong>grdraster</strong> has edges defined by parallels and meridians, while the
 oblique map in general does not. Hence, to get all the data from the
 ETOPO2 data needed to make a contour map for the region defined by its
 lower left and upper right corners and the desired projection, use</p>
-<p><strong>grdraster</strong> ETOPO2 <strong>-R</strong>160/20/220/30<strong>r</strong>
-<strong>-Joc</strong>190/25.5/292/69/1 <strong>-G</strong>data.nc</p>
+<p>grdraster ETOPO2 -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc</p>
 <p>To extract data from the 2 min Geoware relief blend and write it as
 binary double precision xyz-triplets to standard output:</p>
-<p><strong>grdraster</strong> &#8220;2 min Geoware&#8221; <strong>-R</strong>20/25/-10/5 <strong>-bo</strong> &gt;! triplets.b</p>
+<p>grdraster &#8220;2 min Geoware&#8221; -R20/25/-10/5 -bo &gt; triplets.b</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
@@ -195,20 +198,16 @@ binary double precision xyz-triplets to standard output:</p>
 <p>Wessel, P., W. H. F. Smith, R. Scharroo, and J. Luis, 2011, The Generic
 Mapping Tools (GMT) version 5.0.0b Technical Reference &amp; Cookbook,
 SOEST/NOAA.</p>
-<blockquote>
-<div>Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic</div></blockquote>
-<dl class="docutils">
-<dt>Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.</dt>
-<dd>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic</dd>
-<dt>Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.</dt>
-<dd>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic</dd>
-</dl>
-<p>Mapping Tools Released,
+<p>Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
+Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.</p>
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released,
 <a class="reference external" href="http://www.agu.org/eos_elec/95154e.html,">http://www.agu.org/eos_elec/95154e.html,</a>
 Copyright 1995 by the American Geophysical Union.</p>
-<blockquote>
-<div>Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and</div></blockquote>
-<p>Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
+<p>Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
+Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
 </div>
 </div>
 
@@ -218,7 +217,7 @@ Copyright 1995 by the American Geophysical Union.</p>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table Of Contents</a></h3>
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">grdraster</a><ul>
 <li><a class="reference internal" href="#id1">Synopsis</a></li>
@@ -234,19 +233,19 @@ Copyright 1995 by the American Geophysical Union.</p>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="grdproject.html"
-                        title="previous chapter">grdproject</a></p>
+  <p class="topless"><a href="list.html"
+                        title="previous chapter">DBASE</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="grdreformat.html"
-                        title="next chapter">grdreformat</a></p>
+  <p class="topless"><a href="../gshhg/list.html"
+                        title="next chapter">GSHHG</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="_sources/grdraster.txt"
+    <li><a href="../../_sources/supplements/dbase/grdraster.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
+    <form class="search" action="../../search.html" method="get">
       <input type="text" name="q" />
       <input type="submit" value="Go" />
       <input type="hidden" name="check_keywords" value="yes" />
@@ -265,16 +264,17 @@ Copyright 1995 by the American Geophysical Union.</p>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
+          <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="grdreformat.html" title="grdreformat"
+          <a href="../gshhg/list.html" title="GSHHG"
              >next</a> |</li>
         <li class="right" >
-          <a href="grdproject.html" title="grdproject"
+          <a href="list.html" title="DBASE"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
-          <li><a href="mains.html" >Mains</a> &raquo;</li> 
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" >DBASE</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

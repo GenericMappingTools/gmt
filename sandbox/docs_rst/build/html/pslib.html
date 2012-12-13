@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pslib &mdash; GMT5 v0 documentation</title>
+    <title>pslib &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="psmask" href="psmask.html" />
     <link rel="prev" title="pslegend" href="pslegend.html" /> 
@@ -40,7 +43,7 @@
         <li class="right" >
           <a href="pslegend.html" title="pslegend"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
@@ -137,13 +140,11 @@ corner to which the <em>x</em> and <em>y</em> coordinates of the subroutine call
 apply. Nine different values are possible, as shown schematically in
 this diagram:</p>
 <blockquote>
-<div><dl class="docutils">
-<dt>9&#8212;&#8212;&#8212;&#8212;10&#8212;&#8212;&#8212;&#8211; 11</dt>
-<dd>| |
-5 6 7
-| |
-1&#8212;&#8212;&#8212;&#8212; 2&#8212;&#8212;&#8212;&#8212; 3</dd>
-</dl>
+<div><p>9&#8212;&#8212;&#8212;&#8212;10&#8212;&#8212;&#8212;&#8211; 11</p>
+<p>| |</p>
+<p>5 6 7</p>
+<p>| |</p>
+<p>1&#8212;&#8212;&#8212;&#8212; 2&#8212;&#8212;&#8212;&#8212; 3</p>
 </div></blockquote>
 <p>The box represents the text or image. E.g., to plot a text string with
 its center at (<em>x</em>, <em>y</em>), you must use <em>justify</em> == 6. <em>justify</em> == 0
@@ -169,20 +170,20 @@ control structure and initialize the session parameters to those
 given by the arguments. Here, <em>err</em> is a stream pointer indicating
 where error messages should go (if NULL we will use <em>stderr</em>),
 <em>unit</em> indicates the units of the coordinates used in this session
-and must be one of PSL_CM (0), <a class="reference external" href="PSL_INCH.1.html">PSL_INCH (1)</a> ,
-<a class="reference external" href="PSL_METER.2.html">PSL_METER (2)</a> , or <a class="reference external" href="PSL_PT.3.html">PSL_PT
+and must be one of PSL_CM (0), <a class="reference external" href="PSL_INCH.html">PSL_INCH (1)</a> ,
+<a class="reference external" href="PSL_METER.2.html">PSL_METER (2)</a> , or <a class="reference external" href="PSL_PT.html">PSL_PT
 (3)</a> . This setting tells the <strong>PSL</strong> session what
 units are used for coordinates, distances and dimensions. The
 <em>verbose</em> setting indicates the <em>PostScript</em> verbosity level
-(PSL_MSG_SILENCE = silence (0), PSL_MSG_FATAL = fatal <a class="reference external" href="errors.1.html">errors
+(PSL_MSG_SILENCE = silence (0), PSL_MSG_FATAL = fatal <a class="reference external" href="errors.html">errors
 (1)</a> , PSL_MSG_NORMAL = warnings and <a class="reference external" href="progress.2.html">progress
 (2)</a> , PSL_MSG_VERBOSE = extensive progress
-<a class="reference external" href="reports.3.html">reports (3)</a> , or PSL_MSG_DEBUG = <a class="reference external" href="debugging.4.html">debugging
+<a class="reference external" href="reports.html">reports (3)</a> , or PSL_MSG_DEBUG = <a class="reference external" href="debugging.4.html">debugging
 (4)</a> ). Set <em>comments</em> to indicate if you want
 <em>PostScript</em> comments to be written (PSL_YES = 1) or not (PSL_NO =
 0). The <em>compression</em> parameter controls image compression (all are
 lossless). Choose from PSL_NONE = none (0), PSL_RLE = Run-length
-<a class="reference external" href="encoding.1.html">encoding (1)</a> , or PSL_LZW = Lempel-Ziv-Welch
+<a class="reference external" href="encoding.html">encoding (1)</a> , or PSL_LZW = Lempel-Ziv-Welch
 <a class="reference external" href="compression.2.html">compression (2)</a> . Use <em>imgtype</em> to indicate
 whether images should be written in ASCII (PSL_ASCII = 0) or BINARY
 (PSL_BINARY = 2) format. Note: if you use PSL_BINARY you may not
@@ -196,6 +197,14 @@ Appendix F for the enhanced Standard+ and ISOLatin1+ encodings.</div></blockquot
 <div>This function terminates the active <strong>PSL</strong> session; it is the last
 function you must call in your program. Specifically, this function
 will deallocate memory used and free up resources.</div></blockquote>
+<p><strong>struct PS_CTRL *PSL_beginlayer</strong> (<strong>struct PS_CTRL</strong> <em>*PSL</em>,
+<strong>long</strong> <em>layer</em>)</p>
+<blockquote>
+<div>Adds a DSC comment by naming this layer; give a unique integer
+value. Terminate layer with PSL_endlayer</div></blockquote>
+<p><strong>struct PS_CTRL *PSL_endlayer</strong> (<strong>struct PS_CTRL</strong> <em>*PSL</em>)</p>
+<blockquote>
+<div>Terminate current layer with a DSC comment.</div></blockquote>
 <p><strong>long PSL_fopen</strong> (<strong>char</strong> <em>*file</em>, <strong>char</strong> <em>*mode</em>)</p>
 <blockquote>
 <div>This function simply opens a file, just like fopen. The reason it is
@@ -225,7 +234,8 @@ and <em>lly</em> sets the lower left position of the mapping region, while
 units. Finally, <em>x0</em>, <em>x1</em> and <em>y0</em>, <em>y1</em> indicate the range of the
 users x- and y-coordinates, respectively. Specify a reverse axis
 direction (e.g., to let the y-axis be positive down) by setting <em>y0</em>
-larger than <em>y1</em>, and similarly for an x-axis that increases to the left.</div></blockquote>
+larger than <em>y1</em>, and similarly for an x-axis that increases to the
+left.</div></blockquote>
 <p><strong>void PSL_endaxes</strong> (<strong>struct PS_CTRL</strong> <em>*PSL</em>)</p>
 <blockquote>
 <div>Terminates the map scalings initialized by <strong>PSL_beginaxes</strong> and
@@ -242,27 +252,31 @@ written to <em>stdout</em>. The Fortran interface always sends to <em>stdout</em
 The <em>orientation</em> may be landscape (PSL_LANDSCAPE or 0) or portrait
 (PSL_PORTRAIT or 1). Set <em>overlay</em> to PSL_OVERLAY (0) if the
 following <em>PostScript</em> code should be appended to an existing plot;
-otherwise pass <a class="reference external" href="PSL_INIT.1.html">PSL_INIT (1)</a> to start a new
-plot. Let <em>colormode</em> be one of PSL_RGB (0), <a class="reference external" href="PSL_CMYK.1.html">PSL_CMYK
+otherwise pass <a class="reference external" href="PSL_INIT.html">PSL_INIT (1)</a> to start a new plot.
+Let <em>colormode</em> be one of PSL_RGB (0), <a class="reference external" href="PSL_CMYK.html">PSL_CMYK
 (1)</a> , <a class="reference external" href="PSL_HSV.2.html">PSL_HSV (2)</a> or
-<a class="reference external" href="PSL_GRAY.3.html">PSL_GRAY (3)</a> ; this setting controls how
-colors are presented in the <em>PostScript</em> code. The <em>origin</em> setting
+<a class="reference external" href="PSL_GRAY.html">PSL_GRAY (3)</a> ; this setting controls how colors
+are presented in the <em>PostScript</em> code. The <em>origin</em> setting
 determines for x and y separately the origin of the specified
-offsets (next argument). Each of the two characters are either The
-array <em>offset</em> specifies the offset of the new origin relative to
-the position indicated by <strong>origin</strong>. <em>page_size</em> means the
-physical width and height of the plotting media in points (typically
-612 by 792 for Letter or 595 by 842 for A4 format). The character
-string <em>title</em> can be used to specify the <strong>%%Title:</strong> header in the
-<em>PostScript</em> file (or use NULL for the default). The array
-<em>font_no</em> specifies all fonts used in the plot (by number), or use
-NULL to leave out the <strong>%%DocumentNeededResources:</strong> comment in the
-<em>PostScript</em> file.</div></blockquote>
+offsets (next argument). Each of the two characters are either ’r’
+for an offset relative to the current origin, ’a’ for a temporaty
+adjustment of the origin which is undone during BD(PSL_endplot),
+’f’ for a placement of the origin relative to the lower left corner
+of the page, ’c’ for a placement of the origin relative to the
+center of the page. The array <em>offset</em> specifies the offset of the
+new origin relative to the position indicated by <strong>origin</strong>.
+<em>page_size</em> means the physical width and height of the plotting
+media in points (typically 612 by 792 for Letter or 595 by 842 for
+A4 format). The character string <em>title</em> can be used to specify the
+<strong>%%Title:</strong> header in the <em>PostScript</em> file (or use NULL for the
+default). The array <em>font_no</em> specifies all fonts used in the plot
+(by number), or use NULL to leave out the
+<strong>%%DocumentNeededResources:</strong> comment in the <em>PostScript</em> file.</div></blockquote>
 <p><strong>long PSL_endplot</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>long</strong>
 <em>last_page</em>)</p>
 <blockquote>
 <div>Terminates the plotting sequence and closes plot file (if other than
-<em>stdout</em>). If <em>last_page</em> == <a class="reference external" href="PSL_FINALIZE.1.html">PSL_FINALIZE
+<em>stdout</em>). If <em>last_page</em> == <a class="reference external" href="PSL_FINALIZE.html">PSL_FINALIZE
 (1)</a> , then a <em>PostScript</em> <em>showpage</em> command
 is issued, which initiates the printing process on hardcopy devices.
 Otherwise, pass PSL_OVERLAY (0).</div></blockquote>
@@ -297,13 +311,13 @@ makes the stored color the current color.</div></blockquote>
 <em>rgb</em>[], <strong>long</strong> <em>mode</em>)</p>
 <blockquote>
 <div>Sets the current color for all stroked (mode = PSL_IS_STROKE (0))
-or filled (mode = <a class="reference external" href="PSL_IS_FILL.1.html">PSL_IS_FILL (1)</a> )
-material to follow (lines, symbol outlines, text). <em>rgb</em> is a
-triplet of red, green and blue values in the range 0.0 through 1.0.
-Set the red color to -3.0 and the green color to the pattern number
-returned by <strong>PSL_setpattern</strong> to select a pattern as current paint
-color. For PDF transparency, set <em>rgb</em>[3] to a value between 0
-(opaque) and 1 (fully transparent).</div></blockquote>
+or filled (mode = <a class="reference external" href="PSL_IS_FILL.html">PSL_IS_FILL (1)</a> ) material
+to follow (lines, symbol outlines, text). <em>rgb</em> is a triplet of red,
+green and blue values in the range 0.0 through 1.0. Set the red
+color to -3.0 and the green color to the pattern number returned by
+<strong>PSL_setpattern</strong> to select a pattern as current paint color. For
+PDF transparency, set <em>rgb</em>[3] to a value between 0 (opaque) and 1
+(fully transparent).</div></blockquote>
 <p><strong>long PSL_setpattern</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>long</strong>
 <em>image_no</em>, <strong>char</strong> <em>*imagefile</em>, <strong>long</strong> <em>dpi</em>, <strong>double</strong>
 <em>f_rgb</em>[], <strong>double</strong> <em>b_rgb</em>[])</p>
@@ -345,7 +359,7 @@ symbols. Special cases are handled by passing the red color as -1.0
 (no fill), -2.0 (do not change the outline setting) or -3.0 (select
 the image pattern indicated by the second (green) element of <em>rgb</em>).
 For PDF transparency, set <em>rgb</em>[3] to a value between 0 (opaque)
-and 1 (fully transparent). Set outline to <a class="reference external" href="PSL_OUTLINE.1.html">PSL_OUTLINE
+and 1 (fully transparent). Set outline to <a class="reference external" href="PSL_OUTLINE.html">PSL_OUTLINE
 (1)</a> to draw the outlines of polygons and
 symbols using the current pen.</div></blockquote>
 <p><strong>long PSL_setfont</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>long</strong> <em>fontnr</em>)</p>
@@ -385,17 +399,16 @@ to work fine on most <em>PostScript</em> printers).</div></blockquote>
 <blockquote>
 <div>Changes the current line cap, i.e., what happens at the beginning
 and end of a line segment. PSL_BUTT_CAP (0) gives butt line caps
-[Default], <a class="reference external" href="PSL_ROUND_CAP.1.html">PSL_ROUND_CAP (1)</a> selects
-round caps, while <a class="reference external" href="PSL_SQUARE_CAP.2.html">PSL_SQUARE_CAP (2)</a>
-results in square caps. THus, the two last options will visually
-lengthen a straight line-segment by half the line width at either
-end.</div></blockquote>
+[Default], <a class="reference external" href="PSL_ROUND_CAP.html">PSL_ROUND_CAP (1)</a> selects round
+caps, while <a class="reference external" href="PSL_SQUARE_CAP.2.html">PSL_SQUARE_CAP (2)</a> results
+in square caps. THus, the two last options will visually lengthen a
+straight line-segment by half the line width at either end.</div></blockquote>
 <p><strong>long PSL_setlinejoin</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>long</strong> <em>join</em>)</p>
 <blockquote>
 <div>Changes the current linejoin setting, which handles how lines of
 finite thickness are joined together when the meet at different
 angles. PSL_MITER_JOIN (0) gives a mitered joint [Default],
-<a class="reference external" href="PSL_ROUND_JOIN.1.html">PSL_ROUND_JOIN (1)</a> makes them round,
+<a class="reference external" href="PSL_ROUND_JOIN.html">PSL_ROUND_JOIN (1)</a> makes them round,
 while <a class="reference external" href="PSL_BEVEL_JOIN.2.html">PSL_BEVEL_JOIN (2)</a> produces bevel
 joins.</div></blockquote>
 <p><strong>long PSL_setmiterlimit</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>long</strong>
@@ -449,9 +462,9 @@ set prior to calling these functions; see CHANGING SETTINGS above.</p>
 starting from angle <em>angle1</em> and end at <em>angle2</em>. Angles must be
 given in decimal degrees. If <em>angle1</em> &gt; <em>angle2</em>, a negative arc is
 drawn. The <em>radius</em> is in user units. The <em>type</em> determines how the
-arc is interpreted: <a class="reference external" href="PSL_MOVE.1.html">PSL_MOVE (1)</a> means set new
+arc is interpreted: <a class="reference external" href="PSL_MOVE.html">PSL_MOVE (1)</a> means set new
 anchor point, <a class="reference external" href="PSL_STROKE.2.html">PSL_STROKE (2)</a> means stroke
-the arc, PSL_MOVE + <a class="reference external" href="PSL_STROKE.3.html">PSL_STROKE (3)</a> means
+the arc, PSL_MOVE + <a class="reference external" href="PSL_STROKE.html">PSL_STROKE (3)</a> means
 both, whereas PSL_DRAW (0) justs adds to arc path to the current
 path.</div></blockquote>
 <p><strong>long PSL_plotline</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>double</strong> <em>x</em>,
@@ -460,10 +473,10 @@ path.</div></blockquote>
 <div>Assemble a continuous line through <em>n</em> points whose the plot
 coordinates are in the <em>x</em>, <em>y</em> arrays. To continue an existing
 line, use <em>type</em> = PSL_DRAW (0), or if this is the first segment in
-a multisegment path, set <em>type</em> = <a class="reference external" href="PSL_MOVE.1.html">PSL_MOVE (1)</a>
-. To end the segments and draw the lines, add <a class="reference external" href="PSL_STROKE.2.html">PSL_STROKE
+a multisegment path, set <em>type</em> = <a class="reference external" href="PSL_MOVE.html">PSL_MOVE (1)</a> .
+To end the segments and draw the lines, add <a class="reference external" href="PSL_STROKE.2.html">PSL_STROKE
 (2)</a> . Thus, for a single segment, <em>type</em> must
-be PSL_MOVE + <a class="reference external" href="PSL_STROKE.3.html">PSL_STROKE (3)</a> . The line is
+be PSL_MOVE + <a class="reference external" href="PSL_STROKE.html">PSL_STROKE (3)</a> . The line is
 drawn using the current pen attributes. Add <a class="reference external" href="PSL_CLOSE.8.html">PSL_CLOSE
 (8)</a> to <em>type</em> to close the first and last point
 by the <em>PostScript</em> operators.</div></blockquote>
@@ -766,7 +779,8 @@ will be plotted using the current fill and outline settings. The
 between text and the surrounding text box in distance units. Use
 <em>mode</em> to indicate whether the box should be straight
 (PSL_RECT_STRAIGHT = 0), rounded (PSL_RECT_ROUNDED = 1),
-convex (PSL_RECT_CONVEX = 2) or concave (PSL_RECT_CONCAVE = 3).</div></blockquote>
+convex (PSL_RECT_CONVEX = 2) or concave (PSL_RECT_CONCAVE =
+3).</div></blockquote>
 <p><strong>long PSL_plotparagraph</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>double</strong>
 <em>x</em>, <strong>double</strong> <em>y</em>, <strong>double</strong> <em>fontsize</em>, <strong>char</strong> <em>*text</em>,
 <strong>double</strong> <em>angle</em>, <strong>long</strong> <em>justify</em>, <strong>long</strong> <em>mode</em>)</p>
@@ -838,11 +852,11 @@ clipped until <strong>PSL_endclipping</strong> is called. If <em>rgb</em>[0] = -
 inside of the path is left empty, otherwise it is filled with the
 specified color. <em>flag</em> is used to create complex clip paths
 consisting of several disconnected regions, and takes on values 0-3.
-<em>flag</em> = <a class="reference external" href="PSL_PEN_MOVE_ABS.1.html">PSL_PEN_MOVE_ABS (1)</a> means
+<em>flag</em> = <a class="reference external" href="PSL_PEN_MOVE_ABS.html">PSL_PEN_MOVE_ABS (1)</a> means
 this is the first path in a multisegment clip path. <em>flag</em> =
 <a class="reference external" href="PSL_PEN_DRAW_ABS.2.html">PSL_PEN_DRAW_ABS (2)</a> means this is
 the last segment. Thus, for a single path, <em>flag</em> =
-<a class="reference external" href="PSL_PEN_DRAW_AND_STROKE_ABS.3.html">PSL_PEN_DRAW_AND_STROKE_ABS
+<a class="reference external" href="PSL_PEN_DRAW_AND_STROKE_ABS.html">PSL_PEN_DRAW_AND_STROKE_ABS
 (3)</a> .</div></blockquote>
 <p><strong>long PSL_endclipping</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>long</strong> <em>mode</em>)</p>
 <blockquote>
@@ -862,17 +876,17 @@ passed.</p>
 <p><strong>long PSL_setcommand</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>char</strong> <em>*text</em>)</p>
 <blockquote>
 <div>Writes a raw <em>PostScript</em> command to the <em>PostScript</em> output file,
-e.g. &#8220;1 setlinejoin0.</div></blockquote>
+e.g., &#8220;1 setlinejoin0.</div></blockquote>
 <p><strong>long PSL_comment</strong> (<strong>struct PSL_CTRL</strong> <em>*P</em>, <strong>char</strong> <em>*text</em>)</p>
 <blockquote>
-<div>Writes a comment (<em>text</em>) to the <em>PostScript</em> output file, e.g.
+<div>Writes a comment (<em>text</em>) to the <em>PostScript</em> output file, e.g.,
 &#8220;Start of graph 20. The comment are prefixed with with %% .</div></blockquote>
 </div>
 <div class="section" id="id16">
 <h2><a class="reference external" href="#toc13">Authors</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
 <p>Paul Wessel, School of Ocean and Earth Science and Technology,
-<a class="reference external" href="http://www.soest.hawaii.edu.">http://www.soest.hawaii.edu.</a>
-Remko Scharroo, Altimetrics,
+<a class="reference external" href="http://www.soest.hawaii.edu.">http://www.soest.hawaii.edu.</a></p>
+<p>Remko Scharroo, Altimetrics,
 <a class="reference external" href="http://www.altimetrics.com.">http://www.altimetrics.com.</a></p>
 </div>
 <div class="section" id="id17">
@@ -958,13 +972,13 @@ edition, Addison-Wesley, (ISBN 0-201-18127-4).</p>
         <li class="right" >
           <a href="pslegend.html" title="pslegend"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

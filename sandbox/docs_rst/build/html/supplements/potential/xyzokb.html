@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>xyzokb &mdash; GMT5 v0 documentation</title>
+    <title>xyzokb &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,9 +25,9 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
     <link rel="up" title="POTENTIAL" href="list.html" />
-    <link rel="next" title="SEGYPROGS" href="../segyprogs/list.html" />
+    <link rel="next" title="SEGY" href="../segy/list.html" />
     <link rel="prev" title="redpol" href="redpol.html" /> 
   </head>
   <body>
@@ -35,12 +38,12 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../segyprogs/list.html" title="SEGYPROGS"
+          <a href="../segy/list.html" title="SEGY"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="redpol.html" title="redpol"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
           <li><a href="list.html" accesskey="U">POTENTIAL</a> &raquo;</li> 
       </ul>
@@ -53,7 +56,8 @@
             
   <div class="section" id="xyzokb">
 <h1>xyzokb<a class="headerlink" href="#xyzokb" title="Permalink to this headline">¶</a></h1>
-<p>xyzokb - Compute the gravity/magnetic effect of a body by the method of Okabe</p>
+<p>xyzokb - Compute the gravity/magnetic effect of a body by the method of
+Okabe</p>
 <div class="section" id="id1">
 <h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p><strong>xyzokb</strong> [ <strong>-C</strong><em>density</em> ] [ <strong>-D</strong> ] [ <strong>-E</strong><em>thickness</em> ] [
@@ -83,18 +87,19 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>-C</strong><em>density</em></dt>
-<dd>Sets body density in SI. This option is mutually exclusive with <strong>-H</strong>.</dd>
+<dd>Sets body density in SI. This option is mutually exclusive with
+<strong>-H</strong>.</dd>
 <dt><strong>-H</strong><em>f_dec</em>/<em>f_dip</em>/<em>m_int</em>/<em>m_dec</em>/<em>m_dip</em></dt>
 <dd>Sets parameters for computing a magnetic anomally. Use
 <em>f_dec</em>/<em>f_dip</em> to set the geomagnetic declination/inclination in
 degrees. <em>m_int</em>/<em>m_dec</em>/<em>m_dip</em> are the body magnetic intensity
 declination and inclination.</dd>
 <dt><strong>-F</strong><em>xy_file</em></dt>
-<dd>Provide locations where the anomaly will be computed.
-Note this option is mutually exlusive with <strong>-G</strong>.</dd>
+<dd>Provide locations where the anomaly will be computed. Note this
+option is mutually exlusive with <strong>-G</strong>.</dd>
 <dt><strong>-G</strong><em>outgrid.nc</em></dt>
 <dd>Output the gravity or magnetic anomaly at nodes of this grid file.</dd>
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dt><strong>-R</strong>[<em>unit</em>]<em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest.</dd>
 </dl>
 </div>
@@ -102,45 +107,46 @@ Note this option is mutually exlusive with <strong>-G</strong>.</dd>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
-<dt><strong>-E</strong></dt>
-<dd>Give layer thickness in m [Default = 0 m]. Use this option only
-when the triangles describe a
-non-closed surface and you want the anomaly of a constant thickness
-layer.</dd>
-<dt><strong>-L</strong></dt>
-<dd>Sets level of observation [Default = 0]. That is the height (z)
-at which anomalies are computed.</dd>
+<dd>Select verbosity level [c].</dd>
+<dt><strong>-E</strong>[<em>thickness</em>]</dt>
+<dd>give layer thickness in m [Default = 0 m]. Use this option only when
+the triangles describe a non-closed surface and you want the anomaly
+of a constant thickness layer.</dd>
+<dt><strong>-L</strong>[<em>z_observation</em>]</dt>
+<dd>sets level of observation [Default = 0]. That is the height (z) at
+which anomalies are computed.</dd>
 <dt><strong>-M</strong></dt>
-<dd>Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit]</dd>
-<dt><strong>-S</strong></dt>
-<dd>Search radius in km. Triangle centroids that are further away
-than <em>radius</em> from current output point will not be taken into account.
-Use this option to speed up computation at expenses of a less accurate result.</dd>
-<dt><strong>-T</strong></dt>
+<dd>Map units TRUE; x,y in degrees, dist units in m. [Default dist unit
+= x,y unit]</dd>
+<dt><strong>-S</strong><em>radius</em></dt>
+<dd>search radius in km. Triangle centroids that are further away than
+<em>radius</em> from current output point will not be taken into account.
+Use this option to speed up computation at expenses of a less
+accurate result.</dd>
+<dt><strong>-T</strong>[[<em>d</em>]<em>xyz_file</em>/<em>vert_file</em>[<em>/m</em>]]|[<em>r|s</em>]<em>raw_file</em>]</dt>
 <dd>Give either names of xyz[m] and <em>vertex</em> files or of a <em>raw</em> or
-<em>stl</em> file defining a close surface.
-In the first case append a <em>d</em> imediatly after <strong>-T</strong> and optionaly
-a <em>/m</em> after the vertex file name. In the second case append a <em>r</em>
-or a <em>s</em> imediatly after <strong>-T</strong> and before the file name. A <em>vertex</em>
-file is a file with N rows (one per triangle) and 3 columns with
-integers defining the order by which the points in the <em>xyz</em> file
-are to be connected to form a triangle. The output of the program
-triangulate comes in this format. The optional <em>/m</em> instructs the
-program that the xyzm file has four columns and that the fourth
-column contains the magnetization intensity (plus signal), which
-needs not to be constant. In this case the third argument of the
-<strong>-H</strong> option is ignored. A <em>raw</em> format (selected by the ’r’ flag
-is a file with N rows (one per triangle) and 9 columns corresponding
-to the x,y,x coordinates of each of the three vertex of each
-triangle. Alternatively, the ’s’ flag indicates that the surface
-file is in the ascii STL (Stereo Lithographic) format. These two
-type of files are used to provide a closed surface.</dd>
-<dt><strong>-Z</strong></dt>
-<dd>Level of reference plane [Default = 0]. Use this option when the
-triangles describe a non-closed surface and the volume is deffined from
-each triangle and this reference level. An example will be the whater
-depth to compute a Bouguer anomaly.</dd>
+<em>stl</em> file defining a close surface. In the first case append a <em>d</em>
+imediatly after <strong>-T</strong> and optionaly a <em>/m</em> after the vertex file
+name. In the second case append a <em>r</em> or a <em>s</em> imediatly after
+<strong>-T</strong> and before the file name. A <em>vertex</em> file is a file with N
+rows (one per triangle) and 3 columns with integers defining the
+order by which the points in the <em>xyz</em> file are to be connected to
+form a triangle. The output of the program triangulate comes in this
+format. The optional <em>/m</em> instructs the program that the xyzm file
+has four columns and that the fourth column contains the
+magnetization intensity (plus signal), which needs not to be
+constant. In this case the third argument of the <strong>-H</strong> option is
+ignored. A <em>raw</em> format (selected by the ’r’ flag is a file with N
+rows (one per triangle) and 9 columns corresponding to the x,y,x
+coordinates of each of the three vertex of each triangle.
+Alternatively, the ’s’ flag indicates that the surface file is in
+the ascii STL (Stereo Lithographic) format. These two type of files
+are used to provide a closed surface.</dd>
+<dt><strong>-Z</strong>[<em>level</em>]</dt>
+<dd>level of reference plane [Default = 0]. Use this option when the
+triangles describe a non-closed surface and the volume is deffined
+from each triangle and this reference level. An example will be the
+whater depth to compute a Bouguer anomaly.</dd>
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> (*)</dt>
 <dd>Specify data types of input and/or output columns.</dd>
 <dt><strong>-^</strong> (*)</dt>
@@ -148,6 +154,10 @@ depth to compute a Bouguer anomaly.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -157,7 +167,7 @@ options, then exits.</dd>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.html">*GMT*</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a></p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">Reference</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
@@ -192,8 +202,8 @@ polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
   <p class="topless"><a href="redpol.html"
                         title="previous chapter">redpol</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../segyprogs/list.html"
-                        title="next chapter">SEGYPROGS</a></p>
+  <p class="topless"><a href="../segy/list.html"
+                        title="next chapter">SEGY</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/supplements/potential/xyzokb.txt"
@@ -223,19 +233,19 @@ polyhedral bodies and translation into magnetic anomalies, <em>Geophysics</em>,
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../segyprogs/list.html" title="SEGYPROGS"
+          <a href="../segy/list.html" title="SEGY"
              >next</a> |</li>
         <li class="right" >
           <a href="redpol.html" title="redpol"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
           <li><a href="list.html" >POTENTIAL</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

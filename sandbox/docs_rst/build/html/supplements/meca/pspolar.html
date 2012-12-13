@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pspolar &mdash; GMT5 v0 documentation</title>
+    <title>pspolar &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MECA" href="list.html" />
     <link rel="next" title="psvelo" href="psvelo.html" />
     <link rel="prev" title="psmeca" href="psmeca.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="psmeca.html" title="psmeca"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MECA</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,7 +56,7 @@
             
   <div class="section" id="pspolar">
 <h1>pspolar<a class="headerlink" href="#pspolar" title="Permalink to this headline">¶</a></h1>
-<p><strong>pspolar</strong> - Plot polarities on the inferior focal half-sphere on maps</p>
+<p><strong>pspolar</strong>&nbsp;- Plot polarities on the inferior focal half-sphere on maps</p>
 <div class="section" id="id1">
 <h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p>pspolar [ <em>table</em> ] <strong>-J</strong><em>parameters</em>
@@ -71,7 +74,8 @@
 ] [
 <strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
 ] [ <strong>-c</strong><em>copies</em> ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
-<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] ]</p>
+<strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
+]</p>
 </div>
 <div class="section" id="id2">
 <h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -84,10 +88,13 @@ on a map. The <em>PostScript</em> code is written to standard output.</p>
 <dt><strong>1</strong>,<strong>2</strong>,<strong>3</strong>:</dt>
 <dd>station_code, azimuth, take-off angle</dd>
 <dt><strong>4</strong>:</dt>
-<dd>polarity:
-- compression can be c,C,u,U,+
-- rarefaction can be d,D,r,R,-
--</dd>
+<dd><p class="first">polarity:</p>
+<ul class="last simple">
+<li>compression can be c,C,u,U,+</li>
+<li>rarefaction can be d,D,r,R,-</li>
+<li></li>
+</ul>
+</dd>
 </dl>
 <p>not defined is anything else</p>
 </div></blockquote>
@@ -103,9 +110,9 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-J</strong><em>parameters</em> (*)</dt>
 <dd>Select map projection.</dd>
 <dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>r</strong>]</dt>
@@ -117,7 +124,9 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid.</dd>
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.</dd>
 <dt><strong>-D</strong>longitude/latitude)</dt>
 <dd>Maps the bubble at given longitude and latitude point.</dd>
 <dt><strong>-M</strong>size)</dt>
@@ -164,13 +173,14 @@ plots points inside border only].</dd>
 <dt><strong>-U</strong>[<em>just</em>/<em>dx</em>/<em>dy</em>/][<strong>c</strong>|<em>label</em>] (*)</dt>
 <dd>Draw GMT time stamp logo on plot.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>pen</em></dt>
 <dd>Set current pen attributes [Defaults: width = default, color =
 black, style = solid].</dd>
 </dl>
 <p><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>x-shift</em>[<strong>u</strong>]]
-<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]] (*)</p>
+<strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>y-shift</em>[<strong>u</strong>]]
+(*)</p>
 <blockquote>
 <div>Shift plot origin.</div></blockquote>
 <dl class="docutils">
@@ -183,7 +193,7 @@ black, style = solid].</dd>
 default pen (see <strong>-W</strong>).</dd>
 <dt><strong>-h</strong></dt>
 <dd>Use special format derived from HYPO71 output</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-s</strong><em>half-size</em>/[<strong>V</strong>[<em>v_width/h_length/h_width/shape</em>]][<strong>G</strong><em>color</em>][<strong>L</strong>]</dt>
 <dd>Plots S polarity azimuth. S polarity is in last column. It may be a
@@ -200,34 +210,38 @@ half-size,v_width,h_length,h_width in inch (unless <strong>c</strong>, <strong>i
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
-<p><strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4
-<strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 &lt;&lt;END &gt; test.ps
-stat azim ih pol
-0481 11 147 c
-6185 247 120 d
-0485 288 114 +
-0490 223 112 -
-0487 212 109 .
-END
-or
-<strong>pspolar</strong> <strong>-R</strong>239/240/34/35.2 <strong>-JM</strong>8 <strong>-N</strong> <strong>-Sc</strong>0.4
-<strong>-H</strong>1 <strong>-D</strong>239.5/34.5 <strong>-M</strong>5 <strong>-h</strong> &lt;&lt;END &gt; test.ps
-Date Or. time stat azim ih
-910223 1 22 0481 11 147 ipu0
-910223 1 22 6185 247 120 ipd0
-910223 1 22 0485 288 114 epu0
-910223 1 22 0490 223 112 epd0
-910223 1 22 0487 212 109 epu0
-END</p>
+<p>pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 &lt;&lt; END &gt;
+test.ps</p>
+<p>stat azim ih pol</p>
+<p>0481 11 147 c</p>
+<p>6185 247 120 d</p>
+<p>0485 288 114 +</p>
+<p>0490 223 112 -</p>
+<p>0487 212 109 .</p>
+<p>END</p>
+<p>or</p>
+<p>pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 &lt;&lt;END &gt;
+test.ps</p>
+<p>Date Or. time stat azim ih</p>
+<p>910223 1 22 0481 11 147 ipu0</p>
+<p>910223 1 22 6185 247 120 ipd0</p>
+<p>910223 1 22 0485 288 114 epu0</p>
+<p>910223 1 22 0490 223 112 epd0</p>
+<p>910223 1 22 0487 212 109 epu0</p>
+<p>END</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.1.html">*psbasemap*(1)</a> ,
-<a class="reference external" href="psxy.1.html">*psxy*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="psbasemap.html">*psbasemap*(1)</a> ,
+<a class="reference external" href="psxy.html">*psxy*(1)</a></p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
@@ -236,9 +250,7 @@ END</p>
 </div>
 <div class="section" id="id9">
 <h2><a class="reference external" href="#toc9">Authors</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
-<p>Genevieve Patau
-Seismology Dept.
-Institut de Physique du Globe de Paris
+<p>Genevieve Patau Seismology Dept. Institut de Physique du Globe de Paris
 (<a class="reference external" href="mailto:patau&#37;&#52;&#48;ipgp&#46;jussieu&#46;fr">patau<span>&#64;</span>ipgp<span>&#46;</span>jussieu<span>&#46;</span>fr</a>)</p>
 </div>
 </div>
@@ -305,14 +317,14 @@ Institut de Physique du Globe de Paris
         <li class="right" >
           <a href="psmeca.html" title="psmeca"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MECA</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

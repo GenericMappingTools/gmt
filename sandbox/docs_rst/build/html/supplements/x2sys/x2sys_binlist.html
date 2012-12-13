@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>x2sys_binlist &mdash; GMT5 v0 documentation</title>
+    <title>x2sys_binlist &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,10 +25,10 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="X2SYS" href="list.html" />
     <link rel="next" title="x2sys_cross" href="x2sys_cross.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="list.html" /> 
+    <link rel="prev" title="X2SYS" href="list.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,11 +41,11 @@
           <a href="x2sys_cross.html" title="x2sys_cross"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="list.html" title="&lt;no title&gt;"
+          <a href="list.html" title="X2SYS"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">X2SYS</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -73,7 +76,7 @@ files can be of any format, which must be described and passed with the
 the track goes and is used by the data archivist to build an x2sys track
 data base for miscellaneous track queries, such as when needing to
 determine which tracks should be compared in a crossover analysis. You
-must run <strong>x2ys_init</strong> to initialize the tag before you can run the
+must run <strong>x2sys_init</strong> to initialize the tag before you can run the
 indexing.</p>
 </div>
 <div class="section" id="id3">
@@ -121,33 +124,37 @@ a global region (e.g., <strong>-Rg</strong> or <strong>-Rd</strong>). This optio
 for statistics related to trackline density but should not be used
 when preparing bin-index files for the x2sys track data bases.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>To create a bin index file from the MGD77 file 01030061.mgd77 using the
 settings associated with the tag MGD77, do</p>
-<p><strong>x2sys_binlist</strong> 01030061.mgd77 <strong>-T</strong>MGD77 &gt; 01030061.tbf</p>
+<p>x2sys_binlist 01030061.mgd77 -TMGD77 &gt; 01030061.tbf</p>
 <p>To create a track bin index file of all MGD77+ files residing in the
 current directory using the settings associated with the tag MGD77+ and
 calculate track distances, run</p>
-<p><strong>x2sys_binlist</strong> *.nc <strong>-T</strong>MGD77+ <strong>-D</strong> &gt; all.tbf</p>
+<p>x2sys_binlist *.nc -TMGD77+ -D &gt; all.tbf</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="x2sys_cross.1.html">*x2sys_cross*(1)</a> ,
-<a class="reference external" href="x2sys_datalist.1.html">*x2sys_datalist*(1)</a> ,
-<a class="reference external" href="x2sys_get.1.html">*x2sys_get*(1)</a> ,
-<a class="reference external" href="x2sys_init.1.html">*x2sys_init*(1)</a> ,
-<a class="reference external" href="x2sys_put.1.html">*x2sys_put*(1)</a> ,
-<a class="reference external" href="x2sys_report.1.html">*x2sys_report*(1)</a> ,
-<a class="reference external" href="x2sys_solve.1.html">*x2sys_solve*(1)</a></p>
+<p><a class="reference external" href="x2sys_cross.html">*x2sys_cross*(1)</a> ,
+<a class="reference external" href="x2sys_datalist.html">*x2sys_datalist*(1)</a> ,
+<a class="reference external" href="x2sys_get.html">*x2sys_get*(1)</a> ,
+<a class="reference external" href="x2sys_init.html">*x2sys_init*(1)</a> ,
+<a class="reference external" href="x2sys_put.html">*x2sys_put*(1)</a> ,
+<a class="reference external" href="x2sys_report.html">*x2sys_report*(1)</a> ,
+<a class="reference external" href="x2sys_solve.html">*x2sys_solve*(1)</a></p>
 </div>
 </div>
 
@@ -173,7 +180,7 @@ calculate track distances, run</p>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="list.html"
-                        title="previous chapter">&lt;no title&gt;</a></p>
+                        title="previous chapter">X2SYS</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="x2sys_cross.html"
                         title="next chapter">x2sys_cross</a></p>
@@ -209,16 +216,16 @@ calculate track distances, run</p>
           <a href="x2sys_cross.html" title="x2sys_cross"
              >next</a> |</li>
         <li class="right" >
-          <a href="list.html" title="&lt;no title&gt;"
+          <a href="list.html" title="X2SYS"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >X2SYS</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

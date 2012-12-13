@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>grdsample &mdash; GMT5 v0 documentation</title>
+    <title>grdsample &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="grdtrack" href="grdtrack.html" />
     <link rel="prev" title="grdreformat" href="grdreformat.html" /> 
@@ -40,7 +43,7 @@
         <li class="right" >
           <a href="grdreformat.html" title="grdreformat"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
@@ -103,24 +106,25 @@ below.)</dd>
 <dd><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
 append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>:
 Append <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc
-seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, or <strong>n</strong> is
-appended instead, the increment is assumed to be given in meter,
-feet, km, Miles, or nautical miles, respectively, and will be
-converted to the equivalent degrees longitude at the middle latitude
-of the region (the conversion depends on <strong>PROJ_ELLIPSOID</strong>). If
-/<em>y_inc</em> is given but set to 0 it will be reset equal to <em>x_inc</em>;
-otherwise it will be converted to degrees latitude. <strong>All
-coordinates</strong>: If <strong>=</strong> is appended then the corresponding max <em>x</em>
-(<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly adjusted to fit exactly
-the given increment [by default the increment may be adjusted
-slightly to fit the given domain]. Finally, instead of giving an
-increment you may specify the <em>number of nodes</em> desired by appending
-<strong>+</strong> to the supplied integer argument; the increment is then
-recalculated from the number of nodes and the domain. The resulting
-increment value depends on whether you have selected a
-gridline-registered or pixel-registered grid; see Appendix B for
-details. Note: if <strong>-R</strong><em>grdfile</em> is used then the grid spacing
-has already been initialized; use <strong>-I</strong> to override the values.</dd>
+seconds. If one of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or
+<strong>u</strong> is appended instead, the increment is assumed to be given in
+meter, foot, km, Mile, nautical mile or US survey foot,
+respectively, and will be converted to the equivalent degrees
+longitude at the middle latitude of the region (the conversion
+depends on <strong>PROJ_ELLIPSOID</strong>). If /<em>y_inc</em> is given but set to 0
+it will be reset equal to <em>x_inc</em>; otherwise it will be converted
+to degrees latitude. <strong>All coordinates</strong>: If <strong>=</strong> is appended then
+the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the
+increment may be adjusted slightly to fit the given domain].
+Finally, instead of giving an increment you may specify the <em>number
+of nodes</em> desired by appending <strong>+</strong> to the supplied integer
+argument; the increment is then recalculated from the number of
+nodes and the domain. The resulting increment value depends on
+whether you have selected a gridline-registered or pixel-registered
+grid; see Appendix B for details. Note: if <strong>-R</strong><em>grdfile</em> is used
+then the grid spacing has already been initialized; use <strong>-I</strong> to
+override the values.</dd>
 <dt><strong>-L</strong><em>flag</em></dt>
 <dd>Boundary condition <em>flag</em> may be <em>x</em> or <em>y</em> or <em>xy</em> indicating data
 is periodic in range of x or y or both set by <strong>-R</strong>, or <em>flag</em> may
@@ -128,7 +132,7 @@ be <em>g</em> indicating geographical conditions (x and y are lon and lat).
 [Default uses &#8220;natural&#8221; conditions (second partial derivative normal
 to edge is zero) unless the grid is automatically recognized as
 periodic.]</dd>
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
+<dt><strong>-R</strong>[<em>unit</em>]<em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>r</strong>] (*)</dt>
 <dd>Specify the region of interest.</dd>
 <dt><strong>-T</strong></dt>
 <dd>Translate between grid and pixel registration; if the input is
@@ -285,13 +289,13 @@ registration while keeping the same region and grid interval:</p>
         <li class="right" >
           <a href="grdreformat.html" title="grdreformat"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

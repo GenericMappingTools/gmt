@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>rotconverter &mdash; GMT5 v0 documentation</title>
+    <title>rotconverter &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,9 +25,9 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
-    <link rel="next" title="&lt;no title&gt;" href="../x2sys/list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="SPOTTER" href="list.html" />
+    <link rel="next" title="X2SYS" href="../x2sys/list.html" />
     <link rel="prev" title="originator" href="originator.html" /> 
   </head>
   <body>
@@ -35,14 +38,14 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../x2sys/list.html" title="&lt;no title&gt;"
+          <a href="../x2sys/list.html" title="X2SYS"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="originator.html" title="originator"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">SPOTTER</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -124,48 +127,54 @@ positive rotation angles].</dd>
 <dd>Transpose the final result, i.e., change the sign of the rotation
 angles.</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1]. Report statistics of extracted
+<dd>Select verbosity level [c]. Report statistics of extracted
 rotations.</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>To convert the total reconstruction rotations in the file
 model_total_reconstruction.APM to stage poles, run</p>
-<p><strong>rotconverter</strong> model_total_reconstruction.APM <strong>-Fs</strong> &gt;
-model_stages.APM</p>
+<p>rotconverter model_total_reconstruction.APM -Fs &gt; model_stages.APM</p>
 <p>To obtain Nazca motion relative to Pacific hotspots by adding the motion
 of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
 model DC85_stages.d, and report the result as total reconstruction
 reconstruction poles in the northern hemisphere, try</p>
-<p><strong>rotconverter</strong> DC85_stages.APM + Pac_Naz_stages.RPM <strong>-N</strong> <strong>-Ft</strong>
-&gt; Naz_HS_total reconstruction.APM</p>
+<p>rotconverter DC85_stages.APM + Pac_Naz_stages.RPM -N -Ft &gt;
+Naz_HS_total reconstruction.APM</p>
 <p>To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0,
 11.4), try</p>
-<p><strong>rotconverter</strong> 150.1/70.5/-20.3 + 145/40/11.4</p>
-<p>which prints out 157.32, -80.44, 11.97.</p>
+<p>rotconverter 150.1/70.5/-20.3 + 145/40/11.4</p>
+<blockquote>
+<div>which prints out 157.32, -80.44, 11.97.</div></blockquote>
 <p>To make stage rotations suitable for generating flowlines (fracture
 zones) from a model of relative plate motions PL1-PL2.RPM, assuming
 symmetric spreading,, try</p>
-<p><strong>rotconverter</strong> PL1-PL2.RPM <strong>-E</strong> <strong>-Fs</strong> &gt; PL1-PL2_half.RPM
-<strong>rotconverter</strong> - PL1-PL2.RPM <strong>-E</strong> <strong>-Fs</strong> &gt; PL2-PL1_half.RPM</p>
+<dl class="docutils">
+<dt>rotconverter PL1-PL2.RPM -E -Fs &gt; PL1-PL2_half.RPM</dt>
+<dd>rotconverter - PL1-PL2.RPM -E -Fs &gt; PL2-PL1_half.RPM</dd>
+</dl>
 <p>To compute rotations for India relative to a fixed Africa using the
 plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
 GPlates rotations database, try</p>
-<p><strong>rotconverter</strong> IND-CIB CIB-ANT ANT-AFR &gt; India_AFrica.RPM</p>
+<p>rotconverter IND-CIB CIB-ANT ANT-AFR &gt; India_AFrica.RPM</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="backtracker.html">*backtracker*</a> ,
-<a class="reference external" href="grdrotater.html">*grdrotater*</a> ,
-<a class="reference external" href="grdspotter.html">*grdspotter*</a> ,
-<a class="reference external" href="hotspotter.html">*hotspotter*</a> ,
-<a class="reference external" href="originator.html">*originator*</a></p>
+<p><a class="reference external" href="backtracker.html">*backtracker*(1)</a> ,
+<a class="reference external" href="grdrotater.html">*grdrotater*(1)</a> ,
+<a class="reference external" href="grdspotter.html">*grdspotter*(1)</a> ,
+<a class="reference external" href="hotspotter.html">*hotspotter*(1)</a> ,
+<a class="reference external" href="originator.html">*originator*(1)</a></p>
 </div>
 </div>
 
@@ -194,7 +203,7 @@ GPlates rotations database, try</p>
                         title="previous chapter">originator</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../x2sys/list.html"
-                        title="next chapter">&lt;no title&gt;</a></p>
+                        title="next chapter">X2SYS</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/supplements/spotter/rotconverter.txt"
@@ -224,19 +233,19 @@ GPlates rotations database, try</p>
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../x2sys/list.html" title="&lt;no title&gt;"
+          <a href="../x2sys/list.html" title="X2SYS"
              >next</a> |</li>
         <li class="right" >
           <a href="originator.html" title="originator"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >SPOTTER</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

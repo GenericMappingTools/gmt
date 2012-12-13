@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>pscoast &mdash; GMT5 v0 documentation</title>
+    <title>pscoast &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="index.html" />
+    <link rel="top" title="GMT5 0 documentation" href="index.html" />
     <link rel="up" title="Mains" href="mains.html" />
     <link rel="next" title="pscontour" href="pscontour.html" />
     <link rel="prev" title="psclip" href="psclip.html" /> 
@@ -40,7 +43,7 @@
         <li class="right" >
           <a href="psclip.html" title="psclip"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" accesskey="U">Mains</a> &raquo;</li> 
       </ul>
     </div>  
@@ -62,7 +65,7 @@
 <strong>-C</strong>[<strong>l</strong>|<strong>r</strong>/]*fill* ] [ <strong>-D</strong><em>resolution</em>[<strong>+</strong>] ]
 [ <strong>-G</strong><em>fill</em>|<strong>c</strong> ] [ <strong>-I</strong><em>river</em>[/<em>pen</em>] ] [
 <strong>-Jz</strong>|<strong>Z</strong><em>parameters</em> ] [ <strong>-K</strong> ] [
-<strong>-L</strong>[<strong>f</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>[/<em>slon</em>]/<em>slat</em>/<em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>][<strong>+l</strong><em>label</em>][<strong>+j</strong><em>just</em>][<strong>+p</strong><em>pen</em>][<strong>+f</strong><em>fill</em>][<strong>+u</strong>]
+<strong>-L</strong>[<strong>f</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>[/<em>slon</em>]/<em>slat</em>/<em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+l</strong><em>label</em>][<strong>+j</strong><em>just</em>][<strong>+p</strong><em>pen</em>][<strong>+f</strong><em>fill</em>][<strong>+u</strong>]
 ] ] [ <strong>-M</strong> ] [ <strong>-N</strong><em>border</em>[/<em>pen</em>] ] [ <strong>-O</strong> ] [ <strong>-P</strong> ] [
 <strong>-Q</strong> ] [ <strong>-S</strong><em>fill</em>|<strong>c</strong> ] [
 <strong>-T</strong>[<strong>f</strong>|<strong>m</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>/<em>size</em>[/<em>info</em>][<strong>:</strong><em>w</em>,<em>e</em>,<em>s</em>,<em>n</em><strong>:</strong>][<strong>+</strong><em>gint</em>[/<em>mint</em>]]
@@ -114,7 +117,9 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid.
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region.
 For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.</dd>
 </dl>
 </div>
@@ -177,24 +182,24 @@ often as necessary.</p>
 <dt><strong>-K</strong> (*)</dt>
 <dd>Do not finalize the <em>PostScript</em> plot.</dd>
 </dl>
-<p><strong>-L</strong>[<strong>f</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>[/<em>slon</em>]/<em>slat</em>/<em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>][<strong>+l</strong><em>label</em>][<strong>+j</strong><em>just</em>][<strong>+p</strong><em>pen</em>][<strong>+f</strong><em>fill</em>][<strong>+u</strong>]
+<p><strong>-L</strong>[<strong>f</strong>][<strong>x</strong>]<em>lon0</em>/<em>lat0</em>[/<em>slon</em>]/<em>slat</em>/<em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+l</strong><em>label</em>][<strong>+j</strong><em>just</em>][<strong>+p</strong><em>pen</em>][<strong>+f</strong><em>fill</em>][<strong>+u</strong>]
 ]</p>
 <blockquote>
 <div>Draws a simple map scale centered on <em>lon0/lat0</em>. Use <strong>-Lx</strong> to
 specify x/y position instead. Scale is calculated at latitude <em>slat</em>
 (optionally supply longitude <em>slon</em> for oblique projections [Default
 is central meridian]), <em>length</em> is in km, or append unit from
-<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>. Use <strong>-Lf</strong> to
-get a &#8220;fancy&#8221; scale [Default is plain]. Append <strong>+l</strong> to select the
-default label which equals the distance unit (meter, feet, km,
-miles, nautical miles) and is justified on top of the scale [t].
-Change this by giving your own label (append <strong>+l</strong><em>label</em>).
-Change label justification with <strong>+j</strong><em>justification</em> (choose
-among l(eft), r(ight), <a class="reference external" href="t.op.html">t(op)</a> , and
-<a class="reference external" href="b.ottom.html">b(ottom)</a> ). Apply <strong>+u</strong> to append the unit to all
-distance annotations along the scale. If you want to place a
-rectangle behind the scale, specify suitable <strong>+p</strong><em>pen</em> and/or
-<strong>+f</strong><em>fill</em> parameters.</div></blockquote>
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>. Use
+<strong>-Lf</strong> to get a &#8220;fancy&#8221; scale [Default is plain]. Append <strong>+l</strong> to
+select the default label which equals the distance unit (meter,
+foot, km, mile, nautical mile, US survey foot) and is justified on
+top of the scale [t]. Change this by giving your own label (append
+<strong>+l</strong><em>label</em>). Change label justification with
+<strong>+j</strong><em>justification</em> (choose among l(eft), r(ight),
+<a class="reference external" href="t.op.html">t(op)</a> , and <a class="reference external" href="b.ottom.html">b(ottom)</a> ). Apply
+<strong>+u</strong> to append the unit to all distance annotations along the
+scale. If you want to place a rectangle behind the scale, specify
+suitable <strong>+p</strong><em>pen</em> and/or <strong>+f</strong><em>fill</em> parameters.</div></blockquote>
 <dl class="docutils">
 <dt><strong>-M</strong></dt>
 <dd>Dumps a single multisegment ASCII (or binary, see
@@ -438,13 +443,13 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
         <li class="right" >
           <a href="psclip.html" title="psclip"
              >previous</a> |</li>
-        <li><a href="index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="mains.html" >Mains</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

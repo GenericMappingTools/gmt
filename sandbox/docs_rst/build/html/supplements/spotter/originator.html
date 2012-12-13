@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>originator &mdash; GMT5 v0 documentation</title>
+    <title>originator &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="SPOTTER" href="list.html" />
     <link rel="next" title="rotconverter" href="rotconverter.html" />
     <link rel="prev" title="hotspotter" href="hotspotter.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="hotspotter.html" title="hotspotter"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">SPOTTER</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -56,11 +59,11 @@
 <p>originator - Associate seamounts with nearest hotspot point sources</p>
 <div class="section" id="id1">
 <h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p><strong>originator</strong> [ <em>table</em> ] <strong>-E</strong><em>rotfile</em> <strong>-F</strong><em>hs_file</em> [
-<strong>-D</strong><em>d_km</em> ] [ <strong>-L</strong>[<em>flag</em>] ] [ <strong>-N</strong><em>upper_age</em> ] [
-<strong>-Q</strong><em>r/t</em> ] [ <strong>-S</strong>[<em>n_hs</em>] ] [ <strong>-T</strong> ] [ <strong>-V</strong>[<em>level</em>]
-] <strong>-W</strong><em>maxdist</em> ] [ <strong>-Z</strong> ] [ <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] ] [
-<strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
+<p><strong>originator</strong> [ <em>table</em> ] <strong>-E</strong>[<strong>+</strong>]<em>rotfile</em>
+<strong>-F</strong>[<strong>+</strong>]<em>hs_file</em> [ <strong>-D</strong><em>d_km</em> ] [ <strong>-L</strong>[<em>flag</em>] ]
+[ <strong>-N</strong><em>upper_age</em> ] [ <strong>-Q</strong><em>r/t</em> ] [ <strong>-S</strong>[<em>n_hs</em>] ] [
+<strong>-T</strong> ] [ <strong>-V</strong>[<em>level</em>] ] <strong>-W</strong><em>maxdist</em> ] [ <strong>-Z</strong> ] [
+<strong>-bi</strong>[<em>ncols</em>][<em>type</em>] ] [ <strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] ] [
 <strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>]
 ] [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]</p>
 </div>
@@ -93,7 +96,7 @@ space is allowed between the option flag and the associated arguments.</p>
 <dd><p class="first">Give file with rotation parameters. This file must contain one
 record for each rotation; each record must be of the following
 format:</p>
-<p>`` `` `` `` <em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
+<p><em>lon lat tstart [tstop] angle</em> [ <em>khat a b c d e f g df</em> ]</p>
 <p>where <em>tstart</em> and <em>tstop</em> are in Myr and <em>lon lat angle</em> are in
 degrees. <em>tstart</em> and <em>tstop</em> are the ages of the old and young ends
 of a stage. If <em>tstop</em> is not present in the record then a total
@@ -111,17 +114,16 @@ you wish to invert the rotations.</p>
 <div>Alternatively, give the filename composed of two plate IDs</div></blockquote>
 <p class="last">separated by a hyphen (e.g., PAC-MBL) and we will instead extract
 that rotation from the GPlates rotation database. We return an error
-if the rotation cannot be found.</p>
+if the rotation cannot be found. Prepend <strong>+</strong> if you want to invert
+the rotations prior to use.</p>
 </dd>
 <dt><strong>-F</strong><em>file</em></dt>
 <dd><p class="first">Give file with hotspot locations. This file must contain one record
 for each hotspot to be considered; each record must be of the
 following format:</p>
-<p>`` `` `` `` lon lat hs_abbrev hs_id r t_off t_on create fit plot name</p>
+<p>lon lat hs_abbrev hs_id r t_off t_on create fit plot name</p>
 <p>E.g., for Hawaii this may look like</p>
-<p>205`` `` `` `` 20`` `` `` `` HWI`` `` `` `` 1`` `` `` ``
-25`` `` `` `` 0`` `` `` `` 90`` `` `` `` Y`` `` `` ``
-Y`` `` `` `` Y`` `` `` `` Hawaii</p>
+<p>205 20 HWI 1 25 0 90 Y Y Y Hawaii</p>
 <p class="last">Most applications only need the first 4 columns which thus
 represents the minimal hotspot information record type. The
 abbreviation may be maximum 3 characters long. The id must be an
@@ -134,7 +136,11 @@ determine rotations, if the hotspot chain will be used to determine
 rotations, and if the hotspot should be included in various plots.
 The name is a 32-character maximum text string with the full hotspot
 name. Blank lines and records whose first column contains # will be
-ignored.</p>
+ignored. Prepend <strong>+</strong> if we should look for hotspot drift tables
+whose name must be <em>hs_abbrev</em>_drift.txt. Such files may be
+located in the current directory, the same directory as <em>hs_file</em>,
+or in the directories pointed to by GMT_DATADIR. If found then we
+interpolate to get hotspot location as a function of time [fixed].</p>
 </dd>
 </dl>
 </div>
@@ -142,9 +148,9 @@ ignored.</p>
 <h2><a class="reference external" href="#toc5">Optional Arguments</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>table</em></dt>
-<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>]) data
-table file(s) holding a number of data columns. If no tables are
-given then we read from standard input.</dd>
+<dd>One or more ASCII (or binary, see <strong>-bi</strong>[<em>ncols</em>][<em>type</em>])
+data table file(s) holding a number of data columns. If no tables
+are given then we read from standard input.</dd>
 <dt><strong>-D</strong><em>d_km</em></dt>
 <dd>Sets the flowline sampling interval in km. [Default is 5].</dd>
 <dt><strong>-L</strong>[<em>flag</em>]</dt>
@@ -158,28 +164,29 @@ Normally, <em>dist</em> is in km; use upper case modifiers <strong>TWL</strong> 
 extension].</dd>
 </dl>
 <p><strong>-Q</strong><em>r/t</em>
-INput files only has (<em>x</em>,<em>y</em>,<em>z</em>); specify constant values for
+Input files only has (<em>x</em>,<em>y</em>,<em>z</em>); specify constant values for
 <em>r</em>,<em>t</em> that</p>
 <blockquote>
-<div>will be implied for each record. <strong>-S</strong>[<em>n_hs</em>] Set the number
-of closest hotspots to report [Default is 1].</div></blockquote>
+<div>will be implied for each record.</div></blockquote>
 <dl class="docutils">
+<dt><strong>-S</strong>[<em>n_hs</em>]</dt>
+<dd>Set the number of closest hotspots to report [Default is 1].</dd>
 <dt><strong>-T</strong></dt>
 <dd>Truncate seamount ages exceeding the upper age set with <strong>-N</strong> [no
 truncation].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>maxdist</em></dt>
 <dd>Only report those seamounts whose flowlines came within <em>maxdist</em> to
 any hotspot [Default reports all seamounts].</dd>
 <dt><strong>-Z</strong></dt>
 <dd>Use the hotspot ID number rather than the name tag in output
 records.</dd>
-<dt><strong>-bi</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bi</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary input. [Default is 5 input columns].</dd>
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>] (*)</dt>
 <dd>Skip or produce header record(s).</dd>
-<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>] (*)</dt>
+<dt><strong>-i</strong><em>cols</em>[<strong>l</strong>][<strong>s</strong><em>scale</em>][<strong>o</strong><em>offset</em>][,<em>...</em>](*)</dt>
 <dd>Select input columns.</dd>
 <dt><strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] (*)</dt>
 <dd>Swap 1st and 2nd column on input and/or output.</dd>
@@ -188,6 +195,10 @@ records.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
@@ -196,17 +207,27 @@ options, then exits.</dd>
 (x,y,z,r,tc) points in the file seamounts.d, using the DC85.d Euler
 poles and the pac_hs.d list of possible hotspots, and report the 2 most
 likely hotspot candidates for each seamount, run</p>
-<p><strong>originator</strong> seamounts.d <strong>-S</strong>2 <strong>-E</strong>DC85.d <strong>-F</strong>pac_hs.d &gt;
-origins.d</p>
+<p>originator seamounts.d -S2 -EDC85.d -Fpac_hs.d &gt; origins.d</p>
+<p>To determine the predicted age of a seamount, distances to the closest
+hotspot, and echo the observed age given its location, observed age, and
+a rotation model, try</p>
+<p>echo &#8220;1.55 -8.43 52.3&#8221; | originator -FONeill_2005_hotspots.txt
+-EOMS2005_APM_fixed.txt -Q1/120 -Lt</p>
+<p>where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
+the same exercise with a moving hotspot model, try</p>
+<p>echo &#8220;1.55 -8.43 52.3&#8221; | originator -F+ONeill_2005_hotspots.txt
+-EOMS2005_APM_smooth.txt -Q1/120 -Lt</p>
+<p>Now the output is 80 -213.135 52.3. Negative distances means the closest
+approach was east of the hotspot.</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> , <a class="reference external" href="grdrotater.1.html">*grdrotater*(1)</a> ,
-<a class="reference external" href="grdspotter.1.html">*grdspotter*(1)</a> ,
-<a class="reference external" href="project.1.html">*project*(1)</a> ,
-<a class="reference external" href="mapproject.1.html">*mapproject*(1)</a> ,
-<a class="reference external" href="backtracker.1.html">*backtracker*(1)</a> ,
-<a class="reference external" href="hotspotter.1.html">*hotspotter*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="grdrotater.html">*grdrotater*(1)</a> ,
+<a class="reference external" href="grdspotter.html">*grdspotter*(1)</a> ,
+<a class="reference external" href="project.html">*project*(1)</a> ,
+<a class="reference external" href="mapproject.html">*mapproject*(1)</a> ,
+<a class="reference external" href="backtracker.html">*backtracker*(1)</a> ,
+<a class="reference external" href="hotspotter.html">*hotspotter*(1)</a></p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
@@ -276,14 +297,14 @@ p. 319.</p>
         <li class="right" >
           <a href="hotspotter.html" title="hotspotter"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >SPOTTER</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>x2sys_cross &mdash; GMT5 v0 documentation</title>
+    <title>x2sys_cross &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="X2SYS" href="list.html" />
     <link rel="next" title="x2sys_datalist" href="x2sys_datalist.html" />
     <link rel="prev" title="x2sys_binlist" href="x2sys_binlist.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="x2sys_binlist.html" title="x2sys_binlist"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">X2SYS</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -57,10 +60,10 @@
 <div class="section" id="id1">
 <h2><a class="reference external" href="#toc1">Synopsis</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
 <p><strong>x2sys_cross</strong> <em>track(s)</em> <strong>-T</strong><em>TAG</em> [ <strong>-A</strong><em>combi.lis</em> ] [
-<strong>-Il</strong>|<strong>a</strong>|<strong>c</strong> ] [ <strong>-J</strong><em>parameters</em> ] [
-<strong>-Qe</strong>|<strong>i</strong> ] [ <strong>-Sl</strong>|<strong>u</strong>|<strong>h</strong><em>speed</em> ] [
-<strong>-V</strong>[<em>level</em>] ] [ <strong>-W</strong><em>size</em> ] [ <strong>-Z</strong> ] [
-<strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] ]</p>
+<strong>-C</strong>[<em>runtimes</em>] ] [ <strong>-Il</strong>|<strong>a</strong>|<strong>c</strong> ] [
+<strong>-J</strong><em>parameters</em> ] [ <strong>-Qe</strong>|<strong>i</strong> ] [
+<strong>-Sl</strong>|<strong>u</strong>|<strong>h</strong><em>speed</em> ] [ <strong>-V</strong>[<em>level</em>] ] [
+<strong>-W</strong><em>size</em> ] [ <strong>-Z</strong> ] [ <strong>-bo</strong>[<em>ncols</em>][<em>type</em>] ]</p>
 </div>
 <div class="section" id="id2">
 <h2><a class="reference external" href="#toc2">Description</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
@@ -107,13 +110,23 @@ type.</dd>
 <dl class="docutils">
 <dt><strong>-A</strong><em>combi.lis</em></dt>
 <dd>Only process the pair-combinations found in the file <em>combi.lis</em>
-[Default process all possible combinations among the specified files].</dd>
+[Default process all possible combinations among the specified
+files]. The file <em>combi.lis</em> created by x2sys_get -L option</dd>
+<dt><strong>-C</strong>[<em>runtimes</em>]</dt>
+<dd>Compute and append the processing run-time for each pair to the
+progress message. Append a filename to save these run-times to file.
+The idea here is to use the knowledge of run-times to split the main
+process in a number of sub-processes that can each be launched in a
+different processor of your multi-core machine. See the MATLAB
+function <em>split_file4coes.m</em> that lives in the x2sys supplement
+source code.</dd>
 <dt><strong>-Il</strong>|<strong>a</strong>|<strong>c</strong></dt>
-<dd>Sets the interpolation mode for estimating values at the crossover.
-Choose among:
-<strong>l</strong> Linear interpolation [Default].
-<strong>a</strong> Akima spline interpolation.
-<strong>c</strong> Cubic spline interpolation.</dd>
+<dd><p class="first">Sets the interpolation mode for estimating values at the crossover.
+Choose among:</p>
+<p><strong>l</strong> Linear interpolation [Default].</p>
+<p><strong>a</strong> Akima spline interpolation.</p>
+<p class="last"><strong>c</strong> Cubic spline interpolation.</p>
+</dd>
 <dt><strong>-J</strong><em>parameters</em> (*)</dt>
 <dd>Select map projection.</dd>
 <dt><strong>-Qe</strong>|<strong>i</strong></dt>
@@ -128,55 +141,64 @@ two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global do
 and -180/+180 in longitude respectively, with -90/+90 in latitude).
 Alternatively, specify the name of an existing grid file and the
 <strong>-R</strong> settings (and grid spacing, if applicable) are copied from
-the grid. For Cartesian data just give <em>xmin/xmax/ymin/ymax</em>. This
-option limits the COEs to those that fall inside the specified
-domain.</dd>
+the grid. Using <strong>-R</strong><em>unit</em> expects projected (Cartesian)
+coordinates compatible with chosen <strong>-J</strong> and we inversely project
+to determine actual rectangular geographic region. For Cartesian
+data just give <em>xmin/xmax/ymin/ymax</em>. This option limits the COEs to
+those that fall inside the specified domain.</dd>
 <dt><strong>-Sl</strong>|<strong>u</strong>|<strong>h</strong><em>speed</em></dt>
-<dd>Defines window of track speeds. If speeds are outside this window we
-do not calculate a COE. Specify
-`` `` `` `` <strong>-Sl</strong> sets lower speed [Default is 0].
-`` `` `` `` <strong>-Su</strong> sets upper speed [Default is Infinity].
-`` `` `` `` <strong>-Sh</strong> does not limit the speed but sets a lower speed
-below which headings
-will not be computed (i.e., set to NaN) [Default calculates
-headings regardless of speed].</dd>
+<dd><p class="first">Defines window of track speeds. If speeds are outside this window we
+do not calculate a COE. Specify</p>
+<p><strong>-Sl</strong> sets lower speed [Default is 0].</p>
+<p><strong>-Su</strong> sets upper speed [Default is Infinity].</p>
+<p><strong>-Sh</strong> does not limit the speed but sets a lower speed below which
+headings</p>
+<blockquote>
+<div>will not be computed (i.e., set to NaN) [Default calculates</div></blockquote>
+<p class="last">headings regardless of speed].</p>
+</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1].</dd>
+<dd>Select verbosity level [c].</dd>
 <dt><strong>-W</strong><em>size</em></dt>
 <dd>Give the maximum number of data points on either side of the
 crossover to use in the spline interpolation [3].</dd>
 <dt><strong>-Z</strong></dt>
 <dd>Report the values of each track at the crossover [Default reports
 the crossover value and the mean value].</dd>
-<dt><strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] (*)</dt>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] (*)</dt>
 <dd>Select binary output.</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Remarks</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>The COEs found are printed out to standard output in ASCII format
-(unless <strong>-bo</strong>[<em>ncol</em>][<strong>t</strong>] is set). When ASCII is chosen, the
-output format depends on whether or not old-style XOVER output (<strong>-L</strong>)
-has been selected [See the <strong>x_over</strong> man page for more details]. If
-ASCII, then the first record contains the name of the tag used, the
-second records specifies the exact command line used for this run, and
-the third record contains the names of each column. For each track pair,
-there will be a segment header record containing the two file names and
-their start/stop/dist information (start/stop is absolute time or NaN if
-unavailable while dist is the total track length), whereas subsequent
-records have the data for each COE encountered. The fields written out
-are x, y, time along track #1 and #2, distance along track #1 and #2,
-heading along track #1 and #2, velocity along track #1 and #2, and then
-pairs of columns for each selected observable. These are either pairs of
-(COE, average value) for each data type (or track-values #1 and #2; see
-<strong>-2</strong>). It is recommended that the Akima spline is used instead of the
-natural cubic spline, since it is less sensitive to outliers that tend
-to introduce wild oscillations in the interpolation.</p>
+(unless <strong>-bo</strong>[<em>ncols</em>][<em>type</em>] is set). When ASCII is chosen,
+the output format depends on whether or not old-style XOVER output
+(<strong>-L</strong>) has been selected [See the <strong>x_over</strong> man page for more
+details]. If ASCII, then the first record contains the name of the tag
+used, the second records specifies the exact command line used for this
+run, and the third record contains the names of each column. For each
+track pair, there will be a segment header record containing the two
+file names and their start/stop/dist information (start/stop is absolute
+time or NaN if unavailable while dist is the total track length),
+whereas subsequent records have the data for each COE encountered. The
+fields written out are x, y, time along track #1 and #2, distance along
+track #1 and #2, heading along track #1 and #2, velocity along track #1
+and #2, and then pairs of columns for each selected observable. These
+are either pairs of (COE, average value) for each data type (or
+track-values #1 and #2; see <strong>-Z</strong>). It is recommended that the Akima
+spline is used instead of the natural cubic spline, since it is less
+sensitive to outliers that tend to introduce wild oscillations in the
+interpolation.</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">Sign Convention</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
@@ -195,10 +217,10 @@ to give you enough significant digits to achieve the desired precision.</p>
 <h2><a class="reference external" href="#toc9">Examples</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h2>
 <p>To compute all internal crossovers in the gmt-formatted file c2104.gmt,
 and using the tag GMT, try</p>
-<p><strong>x2sys_cross</strong> c2104.gmt <strong>-T</strong>GMT &gt; c2104.d</p>
+<p>x2sys_cross c2104.gmt -TGMT &gt; c2104.d</p>
 <p>To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try</p>
-<p><strong>x2sys_cross</strong> A13232.mgd77 A99938.mgd77 <strong>-Qe</strong> <strong>-T</strong>MGD77 &gt; crossovers.d</p>
+<p>x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 &gt; crossovers.d</p>
 </div>
 <div class="section" id="id10">
 <h2><a class="reference external" href="#toc10">References</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
@@ -209,16 +231,15 @@ package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354.</p>
 </div>
 <div class="section" id="id11">
 <h2><a class="reference external" href="#toc11">See Also</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> ,
-<a class="reference external" href="x2sys_binlist.1.html">*x2sys_binlist*(1)</a> ,
-<a class="reference external" href="x2sys_init.1.html">*x2sys_init*(1)</a> ,
-<a class="reference external" href="x2sys_datalist.1.html">*x2sys_datalist*(1)</a> ,
-<a class="reference external" href="x2sys_get.1.html">*x2sys_get*(1)</a> ,
-<a class="reference external" href="x2sys_list.1.html">*x2sys_list*(1)</a> ,
-<a class="reference external" href="x2sys_put.1.html">*x2sys_put*(1)</a> ,
-<a class="reference external" href="x2sys_report.1.html">*x2sys_report*(1)</a> ,
-<a class="reference external" href="x2sys_solve.1.html">*x2sys_solve*(1)</a> ,
-<a class="reference external" href="x_over.1.html">*x_over*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> , <a class="reference external" href="x2sys_binlist.html">*x2sys_binlist*(1)</a>
+, <a class="reference external" href="x2sys_init.html">*x2sys_init*(1)</a> ,
+<a class="reference external" href="x2sys_datalist.html">*x2sys_datalist*(1)</a> ,
+<a class="reference external" href="x2sys_get.html">*x2sys_get*(1)</a> ,
+<a class="reference external" href="x2sys_list.html">*x2sys_list*(1)</a> ,
+<a class="reference external" href="x2sys_put.html">*x2sys_put*(1)</a> ,
+<a class="reference external" href="x2sys_report.html">*x2sys_report*(1)</a> ,
+<a class="reference external" href="x2sys_solve.html">*x2sys_solve*(1)</a> ,
+<a class="reference external" href="x_over.html">*x_over*(1)</a></p>
 </div>
 </div>
 
@@ -286,14 +307,14 @@ package. <em>Computers and Geosciences</em>, <strong>36</strong>, 348-354.</p>
         <li class="right" >
           <a href="x2sys_binlist.html" title="x2sys_binlist"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >X2SYS</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>

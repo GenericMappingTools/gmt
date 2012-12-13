@@ -3,13 +3,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mgd77path &mdash; GMT5 v0 documentation</title>
+    <title>mgd77path &mdash; GMT5 0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
@@ -22,8 +25,8 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="GMT5 v0 documentation" href="../../index.html" />
-    <link rel="up" title="&lt;no title&gt;" href="list.html" />
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="MGD77" href="list.html" />
     <link rel="next" title="mgd77sniffer" href="mgd77sniffer.html" />
     <link rel="prev" title="mgd77manage" href="mgd77manage.html" /> 
   </head>
@@ -40,9 +43,9 @@
         <li class="right" >
           <a href="mgd77manage.html" title="mgd77manage"
              accesskey="P">previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" accesskey="U">&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" accesskey="U">MGD77</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -76,20 +79,25 @@ space is allowed between the option flag and the associated arguments.</p>
 <h2><a class="reference external" href="#toc4">Required Arguments</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
 <dt><em>NGDC-ids</em></dt>
-<dd>Can be one or more of five kinds of specifiers:
-1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-2) 2-character &lt;agency&gt; codes which will return all cruises from
-each agency.
-3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all
-cruises from those vessels.
-4) =&lt;list&gt;, where &lt;list&gt; is a table with NGDC IDs, one per line.
-5) If nothing is specified we return all cruises in the data base.
-(See mgd77info <strong>-L</strong> for agency and vessel codes). The &#8221;.mgd77&#8221; or
+<dd><p class="first">Can be one or more of five kinds of specifiers:</p>
+<ol class="arabic simple">
+<li>8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.</li>
+</ol>
+<p>2) 2-character &lt;agency&gt; codes which will return all cruises from
+each agency.</p>
+<p>3) 4-character &lt;agency&gt;&lt;vessel&gt; codes, which will return all cruises
+from those vessels.</p>
+<ol class="arabic simple" start="4">
+<li>=&lt;list&gt;, where &lt;list&gt; is a table with NGDC IDs, one per line.</li>
+<li>If nothing is specified we return all cruises in the data base.</li>
+</ol>
+<p class="last">(See mgd77info <strong>-L</strong> for agency and vessel codes). The &#8221;.mgd77&#8221; or
 &#8221;.nc&#8221; extensions will automatically be appended, if needed (use
 <strong>-I</strong> to ignore certain file types). Cruise files will be looked
 for first in the current directory and second in all directories
 listed in <strong>$MGD77_HOME</strong>/mgd77_paths.txt [If <strong>$MGD77_HOME</strong> is
-not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</dd>
+not set it will default to <strong>$GMT_SHAREDIR</strong>/mgd77].</p>
+</dd>
 </dl>
 </div>
 <div class="section" id="id5">
@@ -107,32 +115,36 @@ used in the search.</dd>
 tab-separated ASCII table files, respectively. The option may be
 repeated to ignore more than one format. [Default ignores none].</dd>
 <dt><strong>-V</strong>[<em>level</em>] (*)</dt>
-<dd>Select verbosity level [1]. Reports the total number of cruises
+<dd>Select verbosity level [c]. Reports the total number of cruises
 found.</dd>
 <dt><strong>-^</strong> (*)</dt>
 <dd>Print a short message about the syntax of the command, then exits.</dd>
 <dt><strong>-?</strong> (*)</dt>
 <dd>Print a full usage (help) message, including the explanation of
 options, then exits.</dd>
+<dt><strong>&#8211;version</strong> (*)</dt>
+<dd>Print GMT version and exit.</dd>
+<dt><strong>&#8211;show-sharedir</strong> (*)</dt>
+<dd>Print full path to GMT share directory and exit.</dd>
 </dl>
 </div>
 <div class="section" id="id6">
 <h2><a class="reference external" href="#toc6">Examples</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h2>
 <p>To obtain pathnames for cruises 01010008 and 01010007, run</p>
-<p><strong>mgd77path</strong> 01010008 01010007</p>
+<p>mgd77path 01010008 01010007</p>
 <p>To obtain pathnames for cruises 01010008 and 01010007, but only if there
 are MGD77+ version in netCDF, run</p>
-<p><strong>mgd77path</strong> 01010008 01010007 <strong>-Ia</strong> <strong>-It</strong></p>
+<p>mgd77path 01010008 01010007 -Ia -It</p>
 <p>To see the list of active directories where MGD77 files might be stored,
 run</p>
-<p><strong>mgd77path</strong> <strong>-D</strong></p>
+<p>mgd77path -D</p>
 </div>
 <div class="section" id="id7">
 <h2><a class="reference external" href="#toc7">See Also</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="GMT.1.html">*GMT*(1)</a> <a class="reference external" href="mgd77info.1.html">*mgd77info*(1)</a>
-<a class="reference external" href="mgd77list.1.html">*mgd77list*(1)</a>
-<a class="reference external" href="mgd77manage.1.html">*mgd77manage*(1)</a>
-<a class="reference external" href="mgd77track.1.html">*mgd77track*(1)</a></p>
+<p><a class="reference external" href="GMT.html">*GMT*(1)</a> <a class="reference external" href="mgd77info.html">*mgd77info*(1)</a>
+<a class="reference external" href="mgd77list.html">*mgd77list*(1)</a>
+<a class="reference external" href="mgd77manage.html">*mgd77manage*(1)</a>
+<a class="reference external" href="mgd77track.html">*mgd77track*(1)</a></p>
 </div>
 <div class="section" id="id8">
 <h2><a class="reference external" href="#toc8">References</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
@@ -141,10 +153,10 @@ Mapping Tools (GMT) version 5.0.0b Technical Reference &amp; Cookbook,
 SOEST/NOAA.</p>
 <p>Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
 Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.</p>
-<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
-<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
-Mapping Tools Released,
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released, EOS Trans., AGU, 76 (33), p. 329.</p>
+<p>Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic Mapping
+Tools Released,
 <a class="reference external" href="http://www.agu.org/eos_elec/95154e.html,">http://www.agu.org/eos_elec/95154e.html,</a>
 Copyright 1995 by the American Geophysical Union.</p>
 <p>Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
@@ -215,14 +227,14 @@ Display Data, EOS Trans., AGU, 72 (41), p. 441.</p>
         <li class="right" >
           <a href="mgd77manage.html" title="mgd77manage"
              >previous</a> |</li>
-        <li><a href="../../index.html">GMT5 v0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
           <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
-          <li><a href="list.html" >&lt;no title&gt;</a> &raquo;</li> 
+          <li><a href="list.html" >MGD77</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2012, GMT_TEAM.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.8.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
 </html>
