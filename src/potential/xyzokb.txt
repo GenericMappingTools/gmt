@@ -16,14 +16,16 @@ but allows computing the anomaly of arbitrarily complex shapes.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
-OPT(C)IT(density) Sets body density in SI. This option is mutually exclusive with OPT(H).
+OPT(C)IT(density)
+Sets body density in SI. This option is mutually exclusive with OPT(H).
 .TP
 OPT(H)IT(f_dec)/IT(f_dip)/IT(m_int)/IT(m_dec)/IT(m_dip)
 Sets parameters for computing a magnetic anomally. Use IT(f_dec)/IT(f_dip) to set the geomagnetic
 declination/inclination in degrees. IT(m_int)/IT(m_dec)/IT(m_dip) are the body magnetic intensity 
 declination and inclination. 
 .TP
-OPT(F)IT(xy_file) Provide locations where the anomaly will be computed. Note this option is mutually 
+OPT(F)IT(xy_file)
+Provide locations where the anomaly will be computed. Note this option is mutually 
 exlusive with OPT(G).
 .TP
 OPT(G)IT(outgrid.nc)
@@ -32,16 +34,21 @@ Output the gravity or magnetic anomaly at nodes of this grid file.
 .SH OPTIONAL ARGUMENTS
 #include "explain_-V.txt"
 .TP
-OPT(E) give layer thickness in m [Default = 0 m]. Use this option only when the triangles describe a
+OPT(E)[IT(thickness)]
+give layer thickness in m [Default = 0 m]. Use this option only when the triangles describe a
 non-closed surface and you want the anomaly of a constant thickness layer.
 .TP
-OPT(L) sets level of observation [Default = 0]. That is the height (z) at which anomalies are computed. 
+OPT(L)[IT(z_observation)]
+sets level of observation [Default = 0]. That is the height (z) at which anomalies are computed. 
 .TP
-OPT(M) Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit] 
+OPT(M)
+Map units TRUE; x,y in degrees, dist units in m. [Default dist unit = x,y unit] 
 .TP
-OPT(S) search radius in km. Triangle centroids that are further away than IT(radius) from current output point will not be taken into account. Use this option to speed up computation at expenses of a less accurate result.
+OPT(S)IT(radius) 
+search radius in km. Triangle centroids that are further away than IT(radius) from current output point will not be taken into account. Use this option to speed up computation at expenses of a less accurate result.
 .TP
-OPT(T) Give either names of xyz[m] and IT(vertex) files or of a IT(raw) or IT(stl) file defining a close surface. 
+OPT(T)[[IT(d)]IT(xyz_file)/IT(vert_file)[IT(/m)]]|[IT(r|s)]IT(raw_file)]
+Give either names of xyz[m] and IT(vertex) files or of a IT(raw) or IT(stl) file defining a close surface. 
 In the first case append a IT(d) imediatly after OPT(T) and optionaly a IT(/m) after the vertex file name.
 In the second case append a IT(r) or a IT(s) imediatly after OPT(T) and before the file name.
 A IT(vertex) file is a file with N rows (one per triangle) and 3 columns with integers defining the order by 
@@ -54,7 +61,8 @@ to the x,y,x coordinates of each of the three vertex of each triangle. Alternati
 surface file is in the ascii STL (Stereo Lithographic) format. These two type of files are used to provide a 
 closed surface.
 .TP
-OPT(Z) level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
+OPT(Z)[IT(level)]
+level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
 #include "explain_-f.txt"
 #include "explain_help.txt"
 .SH EXAMPLES
