@@ -13,8 +13,8 @@ conversions and geodesy
 **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*]
 ] [ **-C**\ [*dx*/*dy*] ] [ **-Dc**\ \|\ **i**\ \|\ **p** ] [
 **-E**\ [*datum*\ ] ] [ **-F**\ [*unit*\ ] ] [
-**-G**\ [*x0*/*y0*][/\ *unit*][\ **+**\ \|\ **-**] ] [ **-I** ] [
-**-L**\ *line.xy*\ [/*unit*][**+**\ ] ] [
+**-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ] [
+**-I** ] [ **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**\ ] ] [
 **-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ] [
 **-Q**\ [**d**\ \|\ **e** ] [ **-S** ] [
 **-T**\ [**h**\ ]\ *from*\ [/*to*] ] [ **-V**\ [*level*\ ] ] [
@@ -54,7 +54,7 @@ space is allowed between the option flag and the associated arguments.
 
 **-J**\ *parameters* (\*)
     Select map projection.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Special case for the UTM projection:
     If **-C** is used and **-R** is not given then the region is set to
     coincide with the given UTM zone so as to preserve the full
@@ -102,7 +102,7 @@ space is allowed between the option flag and the associated arguments.
     unit (see UNITS). Without **-F**, the output (or input, see **-I**)
     are in the units specified by **PROJ\_LENGTH\_UNIT** (but see
     **-D**).
-**-G**\ [*x0*/*y0*][/\ *unit*][\ **+**\ \|\ **-**]
+**-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**]
     Calculate distances along track *or* to the optional point set with
     **-G**\ *x0/y0*. Append the distance unit (see UNITS), including
     **c** (Cartesian distance using input coordinates) or **C**
@@ -114,7 +114,7 @@ space is allowed between the option flag and the associated arguments.
 **-I**
     Do the Inverse transformation, i.e., get (longitude,latitude) from
     (x,y) data.
-**-L**\ *line.xy*\ [/*unit*][**+**\ ]
+**-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**\ ]
     Determine the shortest distance from the input data points to the
     line(s) given in the ASCII multisegment file *line.xy*. The distance
     and the coordinates of the nearest point will be appended to the
@@ -183,14 +183,14 @@ space is allowed between the option flag and the associated arguments.
 `Units <#toc6>`_
 ----------------
 
-For map distance units, append *unit* **d** for arc degrees, **m** for
-arc minutes, and **s** for arc seconds, or **e** for meters [Default],
-**f** for feet, **k** for km, **M** for statute miles, and **n** for
-nautical miles. By default we compute such distances using a spherical
-approximation with great circles. Prepend **-** to a distance (or the
-unit is no distance is given) to perform "Flat Earth" calculations
-(quicker but less accurate) or prepend **+** to perform exact geodesic
-calculations (slower but more accurate).
+For map distance unit, append *unit* **d** for arc degree, **m** for arc
+minute, and **s** for arc second, or **e** for meter [Default], **f**
+for foot, **k** for km, **M** for statute mile, **n** for nautical mile,
+and **u** for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend **-** to a
+distance (or the unit is no distance is given) to perform "Flat Earth"
+calculations (quicker but less accurate) or prepend **+** to perform
+exact geodesic calculations (slower but more accurate).
 
 `Ascii Format Precision <#toc7>`_
 ---------------------------------

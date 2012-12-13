@@ -140,7 +140,7 @@ space is allowed between the option flag and the associated arguments.
     Make grid nodes with z = NaN transparent, using the colormasking
     feature in *PostScript* Level 3 (the PS device must support PS Level
     3).
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*. You
     may ask for a larger *w/e/s/n* region to have more room between the

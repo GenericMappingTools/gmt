@@ -101,7 +101,7 @@ space is allowed between the option flag and the associated arguments.
     3). For any of these choices, you may force a monochrome image by
     appending **g**. Colors are then converted to shades of gray using
     the (television) YIQ transformation.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
     This option may be used to indicate the range used for the 3-D axes

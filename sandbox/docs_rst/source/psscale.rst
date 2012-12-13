@@ -2,7 +2,7 @@
 psscale
 *******
 
-psscale - Plot a gray-scale or color-scale on maps
+psscale - Plot a gray or color scale-bar on maps
 
 `Synopsis <#toc1>`_
 -------------------
@@ -138,7 +138,9 @@ space is allowed between the option flag and the associated arguments.
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing, if applicable) are copied from
-    the grid.
+    the grid. Using **-R**\ *unit* expects projected (Cartesian)
+    coordinates compatible with chosen **-J** and we inversely project
+    to determine actual rectangular geographic region.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 **-S**
     Do not separate different color intervals with black grid lines.

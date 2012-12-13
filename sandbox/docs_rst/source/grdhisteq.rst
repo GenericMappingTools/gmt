@@ -78,7 +78,7 @@ space is allowed between the option flag and the associated arguments.
     the <-1,+1> range [Default is standard normal scores].
 **-Q**
     Use quadratic intensity scaling. [Default is linear].
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Using the **-R** option will select
     a subsection of *in\_grdfile* grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be extracted.

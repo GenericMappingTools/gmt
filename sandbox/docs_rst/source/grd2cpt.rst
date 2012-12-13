@@ -114,7 +114,7 @@ space is allowed between the option flag and the associated arguments.
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-S**\ *zstart/zstop/zinc* or **-S**\ *n*
     Set steps in cpt file. Calculate entries in cpt file from *zstart*

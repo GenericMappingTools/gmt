@@ -80,7 +80,7 @@ space is allowed between the option flag and the associated arguments.
     Suppress the writing of the **GMT** header structure. This is useful
     when you want to write a native grid to be used by **grdraster**. It
     only applies to native grids and is ignored for netCDF output.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-V**\ [*level*\ ] (\*)
     Select verbosity level [c].

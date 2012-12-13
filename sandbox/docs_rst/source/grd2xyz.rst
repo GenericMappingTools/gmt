@@ -7,9 +7,10 @@ grd2xyz - Convert grid file to data table
 `Synopsis <#toc1>`_
 -------------------
 
-**grd2xyz** *grid* [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ]
-[ **-V**\ [*level*\ ] ] [ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ]
-[ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
+**grd2xyz** *grid* [ **-N**\ *nodata* ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
+] [ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ] [
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
 **-ho**\ [*n*\ ] ] [ **-o**\ *cols*\ [,*...*] ] [
 **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ]
 
@@ -42,7 +43,10 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-N**
+    Output this z-value where the latter equals NaN [Default writes
+    NaN].
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Using the **-R** option will select
     a subsection of the grid. If this subsection exceeds the boundaries
     of the grid, only the common region will be output.

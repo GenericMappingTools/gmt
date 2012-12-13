@@ -2,7 +2,6 @@
 pslib
 *****
 
-
 PSL 5.0 - A *PostScript* based plotting library
 
 `Description <#toc1>`_
@@ -97,10 +96,14 @@ apply. Nine different values are possible, as shown schematically in
 this diagram:
 
     9------------10----------- 11
-     \| \|
-     5 6 7
-     \| \|
-     1------------ 2------------ 3
+
+    \| \|
+
+    5 6 7
+
+    \| \|
+
+    1------------ 2------------ 3
 
 The box represents the text or image. E.g., to plot a text string with
 its center at (*x*, *y*), you must use *justify* == 6. *justify* == 0
@@ -128,20 +131,20 @@ initialization:
     given by the arguments. Here, *err* is a stream pointer indicating
     where error messages should go (if NULL we will use *stderr*),
     *unit* indicates the units of the coordinates used in this session
-    and must be one of PSL\_CM (0), `PSL\_INCH (1) <PSL_INCH.1.html>`_ ,
+    and must be one of PSL\_CM (0), `PSL\_INCH (1) <PSL_INCH.html>`_ ,
     `PSL\_METER (2) <PSL_METER.2.html>`_ , or `PSL\_PT
-    (3) <PSL_PT.3.html>`_ . This setting tells the **PSL** session what
+    (3) <PSL_PT.html>`_ . This setting tells the **PSL** session what
     units are used for coordinates, distances and dimensions. The
     *verbose* setting indicates the *PostScript* verbosity level
     (PSL\_MSG\_SILENCE = silence (0), PSL\_MSG\_FATAL = fatal `errors
-    (1) <errors.1.html>`_ , PSL\_MSG\_NORMAL = warnings and `progress
+    (1) <errors.html>`_ , PSL\_MSG\_NORMAL = warnings and `progress
     (2) <progress.2.html>`_ , PSL\_MSG\_VERBOSE = extensive progress
-    `reports (3) <reports.3.html>`_ , or PSL\_MSG\_DEBUG = `debugging
+    `reports (3) <reports.html>`_ , or PSL\_MSG\_DEBUG = `debugging
     (4) <debugging.4.html>`_ ). Set *comments* to indicate if you want
     *PostScript* comments to be written (PSL\_YES = 1) or not (PSL\_NO =
     0). The *compression* parameter controls image compression (all are
     lossless). Choose from PSL\_NONE = none (0), PSL\_RLE = Run-length
-    `encoding (1) <encoding.1.html>`_ , or PSL\_LZW = Lempel-Ziv-Welch
+    `encoding (1) <encoding.html>`_ , or PSL\_LZW = Lempel-Ziv-Welch
     `compression (2) <compression.2.html>`_ . Use *imgtype* to indicate
     whether images should be written in ASCII (PSL\_ASCII = 0) or BINARY
     (PSL\_BINARY = 2) format. Note: if you use PSL\_BINARY you may not
@@ -156,6 +159,16 @@ initialization:
     This function terminates the active **PSL** session; it is the last
     function you must call in your program. Specifically, this function
     will deallocate memory used and free up resources.
+
+**struct PS\_CTRL \*PSL\_beginlayer** (**struct PS\_CTRL** *\*PSL*,
+**long** *layer*)
+
+    Adds a DSC comment by naming this layer; give a unique integer
+    value. Terminate layer with PSL\_endlayer
+
+**struct PS\_CTRL \*PSL\_endlayer** (**struct PS\_CTRL** *\*PSL*)
+
+    Terminate current layer with a DSC comment.
 
 **long PSL\_fopen** (**char** *\*file*, **char** *\*mode*)
 
@@ -188,7 +201,8 @@ initialization:
     units. Finally, *x0*, *x1* and *y0*, *y1* indicate the range of the
     users x- and y-coordinates, respectively. Specify a reverse axis
     direction (e.g., to let the y-axis be positive down) by setting *y0*
-    larger than *y1*, and similarly for an x-axis that increases to the left.
+    larger than *y1*, and similarly for an x-axis that increases to the
+    left.
 
 **void PSL\_endaxes** (**struct PS\_CTRL** *\*PSL*)
 
@@ -207,29 +221,33 @@ initialization:
     The *orientation* may be landscape (PSL\_LANDSCAPE or 0) or portrait
     (PSL\_PORTRAIT or 1). Set *overlay* to PSL\_OVERLAY (0) if the
     following *PostScript* code should be appended to an existing plot;
-    otherwise pass `PSL\_INIT (1) <PSL_INIT.1.html>`_ to start a new
-    plot. Let *colormode* be one of PSL\_RGB (0), `PSL\_CMYK
-    (1) <PSL_CMYK.1.html>`_ , `PSL\_HSV (2) <PSL_HSV.2.html>`_ or
-    `PSL\_GRAY (3) <PSL_GRAY.3.html>`_ ; this setting controls how
-    colors are presented in the *PostScript* code. The *origin* setting
+    otherwise pass `PSL\_INIT (1) <PSL_INIT.html>`_ to start a new plot.
+    Let *colormode* be one of PSL\_RGB (0), `PSL\_CMYK
+    (1) <PSL_CMYK.html>`_ , `PSL\_HSV (2) <PSL_HSV.2.html>`_ or
+    `PSL\_GRAY (3) <PSL_GRAY.html>`_ ; this setting controls how colors
+    are presented in the *PostScript* code. The *origin* setting
     determines for x and y separately the origin of the specified
-    offsets (next argument). Each of the two characters are either The
-    array *offset* specifies the offset of the new origin relative to
-    the position indicated by **origin**. *page\_size* means the
-    physical width and height of the plotting media in points (typically
-    612 by 792 for Letter or 595 by 842 for A4 format). The character
-    string *title* can be used to specify the **%%Title:** header in the
-    *PostScript* file (or use NULL for the default). The array
-    *font\_no* specifies all fonts used in the plot (by number), or use
-    NULL to leave out the **%%DocumentNeededResources:** comment in the
-    *PostScript* file.
+    offsets (next argument). Each of the two characters are either ’r’
+    for an offset relative to the current origin, ’a’ for a temporaty
+    adjustment of the origin which is undone during BD(PSL\_endplot),
+    ’f’ for a placement of the origin relative to the lower left corner
+    of the page, ’c’ for a placement of the origin relative to the
+    center of the page. The array *offset* specifies the offset of the
+    new origin relative to the position indicated by **origin**.
+    *page\_size* means the physical width and height of the plotting
+    media in points (typically 612 by 792 for Letter or 595 by 842 for
+    A4 format). The character string *title* can be used to specify the
+    **%%Title:** header in the *PostScript* file (or use NULL for the
+    default). The array *font\_no* specifies all fonts used in the plot
+    (by number), or use NULL to leave out the
+    **%%DocumentNeededResources:** comment in the *PostScript* file.
 
 **long PSL\_endplot** (**struct PSL\_CTRL** *\*P*, **long**
 *last\_page*)
 
     Terminates the plotting sequence and closes plot file (if other than
     *stdout*). If *last\_page* == `PSL\_FINALIZE
-    (1) <PSL_FINALIZE.1.html>`_ , then a *PostScript* *showpage* command
+    (1) <PSL_FINALIZE.html>`_ , then a *PostScript* *showpage* command
     is issued, which initiates the printing process on hardcopy devices.
     Otherwise, pass PSL\_OVERLAY (0).
 
@@ -268,13 +286,13 @@ affect the current state of parameters such as line and fill attributes.
 *rgb*\ [], **long** *mode*)
 
     Sets the current color for all stroked (mode = PSL\_IS\_STROKE (0))
-    or filled (mode = `PSL\_IS\_FILL (1) <PSL_IS_FILL.1.html>`_ )
-    material to follow (lines, symbol outlines, text). *rgb* is a
-    triplet of red, green and blue values in the range 0.0 through 1.0.
-    Set the red color to -3.0 and the green color to the pattern number
-    returned by **PSL\_setpattern** to select a pattern as current paint
-    color. For PDF transparency, set *rgb*\ [3] to a value between 0
-    (opaque) and 1 (fully transparent).
+    or filled (mode = `PSL\_IS\_FILL (1) <PSL_IS_FILL.html>`_ ) material
+    to follow (lines, symbol outlines, text). *rgb* is a triplet of red,
+    green and blue values in the range 0.0 through 1.0. Set the red
+    color to -3.0 and the green color to the pattern number returned by
+    **PSL\_setpattern** to select a pattern as current paint color. For
+    PDF transparency, set *rgb*\ [3] to a value between 0 (opaque) and 1
+    (fully transparent).
 
 **long PSL\_setpattern** (**struct PSL\_CTRL** *\*P*, **long**
 *image\_no*, **char** *\*imagefile*, **long** *dpi*, **double**
@@ -320,7 +338,7 @@ affect the current state of parameters such as line and fill attributes.
     the image pattern indicated by the second (green) element of *rgb*).
     For PDF transparency, set *rgb*\ [3] to a value between 0 (opaque)
     and 1 (fully transparent). Set outline to `PSL\_OUTLINE
-    (1) <PSL_OUTLINE.1.html>`_ to draw the outlines of polygons and
+    (1) <PSL_OUTLINE.html>`_ to draw the outlines of polygons and
     symbols using the current pen.
 
 **long PSL\_setfont** (**struct PSL\_CTRL** *\*P*, **long** *fontnr*)
@@ -363,18 +381,17 @@ affect the current state of parameters such as line and fill attributes.
 
     Changes the current line cap, i.e., what happens at the beginning
     and end of a line segment. PSL\_BUTT\_CAP (0) gives butt line caps
-    [Default], `PSL\_ROUND\_CAP (1) <PSL_ROUND_CAP.1.html>`_ selects
-    round caps, while `PSL\_SQUARE\_CAP (2) <PSL_SQUARE_CAP.2.html>`_
-    results in square caps. THus, the two last options will visually
-    lengthen a straight line-segment by half the line width at either
-    end.
+    [Default], `PSL\_ROUND\_CAP (1) <PSL_ROUND_CAP.html>`_ selects round
+    caps, while `PSL\_SQUARE\_CAP (2) <PSL_SQUARE_CAP.2.html>`_ results
+    in square caps. THus, the two last options will visually lengthen a
+    straight line-segment by half the line width at either end.
 
 **long PSL\_setlinejoin** (**struct PSL\_CTRL** *\*P*, **long** *join*)
 
     Changes the current linejoin setting, which handles how lines of
     finite thickness are joined together when the meet at different
     angles. PSL\_MITER\_JOIN (0) gives a mitered joint [Default],
-    `PSL\_ROUND\_JOIN (1) <PSL_ROUND_JOIN.1.html>`_ makes them round,
+    `PSL\_ROUND\_JOIN (1) <PSL_ROUND_JOIN.html>`_ makes them round,
     while `PSL\_BEVEL\_JOIN (2) <PSL_BEVEL_JOIN.2.html>`_ produces bevel
     joins.
 
@@ -435,9 +452,9 @@ set prior to calling these functions; see CHANGING SETTINGS above.
     starting from angle *angle1* and end at *angle2*. Angles must be
     given in decimal degrees. If *angle1* > *angle2*, a negative arc is
     drawn. The *radius* is in user units. The *type* determines how the
-    arc is interpreted: `PSL\_MOVE (1) <PSL_MOVE.1.html>`_ means set new
+    arc is interpreted: `PSL\_MOVE (1) <PSL_MOVE.html>`_ means set new
     anchor point, `PSL\_STROKE (2) <PSL_STROKE.2.html>`_ means stroke
-    the arc, PSL\_MOVE + `PSL\_STROKE (3) <PSL_STROKE.3.html>`_ means
+    the arc, PSL\_MOVE + `PSL\_STROKE (3) <PSL_STROKE.html>`_ means
     both, whereas PSL\_DRAW (0) justs adds to arc path to the current
     path.
 
@@ -447,10 +464,10 @@ set prior to calling these functions; see CHANGING SETTINGS above.
     Assemble a continuous line through *n* points whose the plot
     coordinates are in the *x*, *y* arrays. To continue an existing
     line, use *type* = PSL\_DRAW (0), or if this is the first segment in
-    a multisegment path, set *type* = `PSL\_MOVE (1) <PSL_MOVE.1.html>`_
-    . To end the segments and draw the lines, add `PSL\_STROKE
+    a multisegment path, set *type* = `PSL\_MOVE (1) <PSL_MOVE.html>`_ .
+    To end the segments and draw the lines, add `PSL\_STROKE
     (2) <PSL_STROKE.2.html>`_ . Thus, for a single segment, *type* must
-    be PSL\_MOVE + `PSL\_STROKE (3) <PSL_STROKE.3.html>`_ . The line is
+    be PSL\_MOVE + `PSL\_STROKE (3) <PSL_STROKE.html>`_ . The line is
     drawn using the current pen attributes. Add `PSL\_CLOSE
     (8) <PSL_CLOSE.8.html>`_ to *type* to close the first and last point
     by the *PostScript* operators.
@@ -772,7 +789,8 @@ and others and issue calculations with **PSL\_setcommand**.
         between text and the surrounding text box in distance units. Use
         *mode* to indicate whether the box should be straight
         (PSL\_RECT\_STRAIGHT = 0), rounded (PSL\_RECT\_ROUNDED = 1),
-        convex (PSL\_RECT\_CONVEX = 2) or concave (PSL\_RECT\_CONCAVE = 3).
+        convex (PSL\_RECT\_CONVEX = 2) or concave (PSL\_RECT\_CONCAVE =
+        3).
 
     **long PSL\_plotparagraph** (**struct PSL\_CTRL** *\*P*, **double**
     *x*, **double** *y*, **double** *fontsize*, **char** *\*text*,
@@ -847,12 +865,12 @@ Here are functions used to activate and deactivate clipping regions.
     inside of the path is left empty, otherwise it is filled with the
     specified color. *flag* is used to create complex clip paths
     consisting of several disconnected regions, and takes on values 0-3.
-    *flag* = `PSL\_PEN\_MOVE\_ABS (1) <PSL_PEN_MOVE_ABS.1.html>`_ means
+    *flag* = `PSL\_PEN\_MOVE\_ABS (1) <PSL_PEN_MOVE_ABS.html>`_ means
     this is the first path in a multisegment clip path. *flag* =
     `PSL\_PEN\_DRAW\_ABS (2) <PSL_PEN_DRAW_ABS.2.html>`_ means this is
     the last segment. Thus, for a single path, *flag* =
     `PSL\_PEN\_DRAW\_AND\_STROKE\_ABS
-    (3) <PSL_PEN_DRAW_AND_STROKE_ABS.3.html>`_ .
+    (3) <PSL_PEN_DRAW_AND_STROKE_ABS.html>`_ .
 
 **long PSL\_endclipping** (**struct PSL\_CTRL** *\*P*, **long** *mode*)
 
@@ -874,11 +892,11 @@ passed.
 **long PSL\_setcommand** (**struct PSL\_CTRL** *\*P*, **char** *\*text*)
 
     Writes a raw *PostScript* command to the *PostScript* output file,
-    e.g. "1 setlinejoin0.
+    e.g., "1 setlinejoin0.
 
 **long PSL\_comment** (**struct PSL\_CTRL** *\*P*, **char** *\*text*)
 
-    Writes a comment (*text*) to the *PostScript* output file, e.g.
+    Writes a comment (*text*) to the *PostScript* output file, e.g.,
     "Start of graph 20. The comment are prefixed with with %% .
 
 `Authors <#toc13>`_
@@ -886,6 +904,7 @@ passed.
 
 Paul Wessel, School of Ocean and Earth Science and Technology,
 `http://www.soest.hawaii.edu. <http://www.soest.hawaii.edu.>`_
+
 Remko Scharroo, Altimetrics,
 `http://www.altimetrics.com. <http://www.altimetrics.com.>`_
 
@@ -903,4 +922,3 @@ recreate the problem.
 
 Adobe Systems Inc., 1990, *PostScript* language reference manual, 2nd
 edition, Addison-Wesley, (ISBN 0-201-18127-4).
-

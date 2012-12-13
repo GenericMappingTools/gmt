@@ -101,7 +101,7 @@ None
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
     **-S~**. Should your pattern happen to start with ~ you need to
-    escape this character with a backslash [Default output all
+    escape this character with a backslash  [Default output all
     segments]. Cannot be used with **-Q**. For matching segments based
     on aspatial values (via OGR/GMT format), give the search string as
     *varname*\ =\ *value* and we will compare *value* against the value

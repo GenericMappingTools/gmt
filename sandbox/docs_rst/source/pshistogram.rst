@@ -12,8 +12,9 @@ pshistogram - Calculate and plot histograms
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
 **-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [
 **-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] [ **-O** ] [
-**-P** ] [ **-Q** ] [ **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] ] [
-**-S** ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
+**-P** ] [ **-Q** ] [
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] ] [ **-S** ]
+[ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
 **-V**\ [*level*\ ] ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
@@ -88,7 +89,7 @@ space is allowed between the option flag and the associated arguments.
     Select "Portrait" plot orientation.
 **-Q**
     Draw a cumulative histogram.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*. If
     not given, **pshistogram** will automatically find reasonable values

@@ -30,11 +30,11 @@ The full explanation for how to specify pens, pattern fills, colors, and
 fonts can be found in the **gmt** man page.
 
 **COLOR\_BACKGROUND**
-    Color used for the background of images (i.e., when z < lowest
-    colortable entry) [black].
+    Color used for the background of images (i.e., when z < lowest color
+    table entry) [black].
 **COLOR\_FOREGROUND**
     Color used for the foreground of images (i.e., when z > highest
-    colortable entry) [white].
+    color table entry) [white].
 **COLOR\_HSV\_MAX\_SATURATION**
     Maximum saturation (0-1) assigned for most positive intensity value
     [0.1].
@@ -71,8 +71,8 @@ fonts can be found in the **gmt** man page.
     not included in the **gmt.conf** file.
 **FONT\_ANNOT\_PRIMARY**
     Font used for primary annotations, etc. [12p,Helvetica,black]. When
-    **+** is prepended, scale fonts, offsets and ticklengths relative to
-    **FONT\_ANNOT\_PRIMARY**.
+    **+** is prepended, scale fonts, offsets and tick-lengths relative
+    to **FONT\_ANNOT\_PRIMARY**.
 **FONT\_ANNOT\_SECONDARY**
     Font to use for time axis secondary annotations
     [14p,Helvetica,black].
@@ -214,22 +214,42 @@ fonts can be found in the **gmt** man page.
     with **F**, **A**, and **C** the entire annotation will be in upper
     case [full].
 **GMT\_FFT**
-    Determines which Fast Fourier Transform should be used among those
-    that have been configured during installation. Choose from **auto**
-    (pick the most suitable for the task among available algorithms),
-    **fftw3** (The Fastest Fourier Transform in the West),
-    **accelerate** (Use the Accelerate Framework under OS X; Note, that
-    the number of samples to be processed must be a base 2 exponent.),
-    **kiss** (Kiss FFT) [auto].
+    Determines which Fast Fourier Transform (FFT) should be used among
+    those that have been configured during installation. Choose from
+    **auto** (pick the most suitable for the task among available
+    algorithms), **fftw**\ [,*planner\_flag*] (The Fastest Fourier
+    Transform in the West), **accelerate** (Use the Accelerate Framework
+    under OS X; Note, that the number of samples to be processed must be
+    a base 2 exponent), **kiss** (Kiss FFT) [auto].
+    FFTW can "learn" how to optimally compute Fourier transforms on the
+    current hardware and OS by computing several FFTs and measuring
+    their execution time. This so gained "Wisdom" will be stored in and
+    reloaded from the file fftw\_wisdom\_<hostname> in DIR\_USER or, if
+    DIR\_USER is not writable, in the current directory. To use this
+    feature append *planner\_flag*, which can be one of *measure*,
+    *patient*, and *exhaustive*; see FFTW reference for details. The
+    default FFTW planner flag is *estimate*, i.e., pick a (probably
+    sub-optimal) plan quickly. Note: if you need a single transform of a
+    given size only, the one-time cost of the smart planner becomes
+    significant. In that case, stick to the default planner, *estimate*,
+    based on heuristics.
 **GMT\_HISTORY**
     Passes the history of past common command options via the hidden
-    .gmtcommands file. The dfferent values for this setting are:
+    .gmtcommands file. The different values for this setting are:
     **true**, **readonly**, **false**, to either read and write to the
     .gmtcommands file, only read, or not use the file at all [true].
 **GMT\_INTERPOLANT**
     Determines if linear (linear), Akima’s spline (akima), natural cubic
     spline (cubic) or no interpolation (none) should be used for 1-D
     interpolations in various programs [akima].
+**GMT\_EXTRAPOLATE\_VAL**
+    Determines what to do if extrapolating beyond the data domain.
+    Choose among ’NaN’, ’extrap’ or ’extrapval,val’ (with no quotes). In
+    the first case return NaN for any element of x that is outside range
+    [Default]. Second case lets the selected algorithm compute the
+    extrapolation values. Third case sets the extrapolation values to
+    the constant value passed in ’val’ (this value must off course be
+    numeric).
 **GMT\_TRIANGULATE**
     Determines if we use the **Watson** [Default] or **Shewchuk**
     algorithm (if configured during installation) for triangulation.
@@ -292,7 +312,7 @@ fonts can be found in the **gmt** man page.
     unexpectedly bad performance. Note that a chunk of a single
     precision floating point variable of size 2896x2896 completely fills
     the chunk cache of 32MiB. Specify the chunk size for each dimension
-    separeted by a comma, or **a**\ uto for optimally chosen chunk sizes
+    separated by a comma, or **a**\ uto for optimally chosen chunk sizes
     in the range [128,256]. Set IO\_NC4\_CHUNK\_SIZE to **c**\ lassic
     for classic netCDF. [auto]
 **IO\_NC4\_DEFLATION\_LEVEL**
@@ -335,13 +355,13 @@ fonts can be found in the **gmt** man page.
     longitude annotations will be plotted horizontally. If bit 3 is `set
     (4) <set.4.html>`_ , then latitude annotations will be plotted
     horizontally. If bit 4 is `set (8) <set.8.html>`_ , then oblique
-    tickmarks are extended to give a projection equal to the specified
-    tick length. If bit 5 is set (16), tickmarks will be drawn normal to
-    the border regardless of gridline angle. If bit 6 is set (32), then
-    latitude annotations will be plotted parallel to the border. To set
-    a combination of these, add up the values in parentheses. [1].
+    tick-marks are extended to give a projection equal to the specified
+    tick length. If bit 5 is set (16), tick-marks will be drawn normal
+    to the border regardless of gridline angle. If bit 6 is set (32),
+    then latitude annotations will be plotted parallel to the border. To
+    set a combination of these, add up the values in parentheses. [1].
 **MAP\_ANNOT\_OFFSET\_PRIMARY**
-    Distance from end of tickmark to start of annotation [5p].
+    Distance from end of tick-mark to start of annotation [5p].
 **MAP\_ANNOT\_OFFSET\_SECONDARY**
     Distance from base of primary annotation to the top of the secondary
     annotation [5p] (Only applies to time axes with both primary and
@@ -375,10 +395,10 @@ fonts can be found in the **gmt** man page.
     [fancy]. For some map projections (e.g., Oblique Mercator), plain is
     the only option even if fancy is set as default. In general, fancy
     only applies to situations where the projected x and y directions
-    parallel the lon and lat directions (e.g., rectangular projections,
-    polar projections). For situations where all boundary ticks and
-    annotations must be inside the maps (e.g., for preparing geotiffs),
-    chose **inside**.
+    parallel the longitude and latitude directions (e.g., rectangular
+    projections, polar projections). For situations where all boundary
+    ticks and annotations must be inside the maps (e.g., for preparing
+    geotiffs), chose **inside**.
 **MAP\_FRAME\_WIDTH**
     Width (> 0) of map borders for fancy map frame [5p].
 **MAP\_GRID\_CROSS\_SIZE\_PRIMARY**
@@ -430,17 +450,18 @@ fonts can be found in the **gmt** man page.
     Sets the height (> 0) on the map of the map scale bars drawn by
     various programs [5p].
 **MAP\_TICK\_LENGTH\_PRIMARY**
-    The length of a primary major/minor tickmarks [5p/2.5p]. If only the
-    first value is set, the second is assumed to be 50% of the first.
+    The length of a primary major/minor tick-marks [5p/2.5p]. If only
+    the first value is set, the second is assumed to be 50% of the
+    first.
 **MAP\_TICK\_LENGTH\_SECONDARY**
-    The length of a secondary major/minor tickmarks [15p/3.75p]. If only
-    the first value is set, the second is assumed to be 25% of the
+    The length of a secondary major/minor tick-marks [15p/3.75p]. If
+    only the first value is set, the second is assumed to be 25% of the
     first.
 **MAP\_TICK\_PEN\_PRIMARY**
-    Pen attributes to be used for primary tickmarks in dpi units or
+    Pen attributes to be used for primary tick-marks in dpi units or
     points (append p) [thinner,black].
 **MAP\_TICK\_PEN\_SECONDARY**
-    Pen attributes to be used for secondary tickmarks in dpi units or
+    Pen attributes to be used for secondary tick-marks in dpi units or
     points (append p) [thinner,black].
 **MAP\_TITLE\_OFFSET**
     Distance from top of axis annotations (or axis label, if present) to
@@ -451,6 +472,13 @@ fonts can be found in the **gmt** man page.
     to an `arrow (1) <arrow.html>`_ or an open `V (2) <V.2.html>`_ .
     Intermediate settings give something in between. Negative values (up
     to -2) are allowed as well [0].
+**PROJ\_AUX\_LATITUDE**
+    Only applies when geodesics are approximated by great circle
+    distances on an equivalent sphere. Select from authalic, geocentric,
+    conformal, meridional, parametric, or none [authalic]. When not none
+    we convert any latitude used in the great circle calculation to the
+    chosen auxiliary latitude before doing the distance calculation. See
+    also PROJ\_MEAN\_RADIUS.
 **PROJ\_ELLIPSOID**
     The (case sensitive) name of the ellipsoid used for the map
     projections [WGS-84]. Choose among:
@@ -546,7 +574,7 @@ fonts can be found in the **gmt** man page.
 
     *a* implies a zero flattening
 
-    *a*,\ *inv\_f*\ `` `` `` `` where *inv\_f* is the inverse flattening
+    *a*,\ *inv\_f* where *inv\_f* is the inverse flattening
 
     *a*,\ **b=**\ *b* where *b* is the semi-minor axis (in m)
 
@@ -564,6 +592,11 @@ fonts can be found in the **gmt** man page.
     as 1/72 inch (the *PostScript* definition), while it is often
     defined as 1/72.27 inch in the typesetting industry. There is no
     universal definition.
+**PROJ\_MEAN\_RADIUS**
+    Applies when geodesics are approximated by great circle distances on
+    an equivalent sphere or when surface areas are computed. Select from
+    mean (R\_1), authalic (R\_2), volumetric (R\_3), meridional, or
+    quadratic [authalic]. See also PROJ\_MEAN\_RADIUS.
 **PROJ\_SCALE\_FACTOR**
     Changes the default map scale factor used for the Polar
     Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1]
@@ -597,8 +630,8 @@ fonts can be found in the **gmt** man page.
     Determines how the ends of a line segment will be drawn. Choose
     among a *butt* cap (default) where there is no projection beyond the
     end of the path, a *round* cap where a semicircular arc with
-    diameter equal to the linewidth is drawn around the end points, and
-    *square* cap where a half square of size equal to the linewidth
+    diameter equal to the line-width is drawn around the end points, and
+    *square* cap where a half square of size equal to the line-width
     extends beyond the end of the path [butt].
 **PS\_LINE\_JOIN**
     Determines what happens at kinks in line segments. Choose among a
@@ -779,7 +812,7 @@ fonts can be found in the **gmt** man page.
 
     PL Polish
 
-    PT\ `` `` `` `` Portuguese
+    PT Portuguese
 
     RU Russian
 
@@ -787,7 +820,7 @@ fonts can be found in the **gmt** man page.
 
     SG Scottish Gaelic
 
-    TO\ `` `` `` `` Tongan
+    TO Tongan
 
     TR Turkish
 
@@ -810,7 +843,7 @@ fonts can be found in the **gmt** man page.
 
     JD -4713-11-25T12:00:00 d (Julian Date)
 
-    MJD 1858-11-27T00:00:00 d (Modified Julian Date)
+    MJD 1858-11-17T00:00:00 d (Modified Julian Date)
 
     J2000 2000-01-01T12:00:00 d (Astronomical time)
 
@@ -826,8 +859,6 @@ fonts can be found in the **gmt** man page.
     translated to the respective values of **TIME\_EPOCH** and
     **TIME\_UNIT**.
 
-**TIME\_EPOCH**
-    Specifies the epoch for relative time [1970-01-01T00:00:00].
 **TIME\_UNIT**
     Specifies the units of relative time data since epoch (see
     **TIME\_EPOCH**). Choose y (year - assumes all years are 365.2425

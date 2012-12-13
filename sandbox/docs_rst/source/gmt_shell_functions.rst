@@ -1,6 +1,6 @@
-*******
+*******************
 gmt_shell_functions
-*******
+*******************
 
 gmt\_shell\_functions.sh - Practical functions to be used in GMT bourne
 shell scripts
@@ -104,7 +104,7 @@ functions made available are:
 `Notes <#toc3>`_
 ----------------
 
- 1. These functions only work in the bourne shell (**sh**) and their
+1. These functions only work in the bourne shell (**sh**) and their
 derivatives (like **ash**, **bash**, **ksh** and **zsh**). These
 functions do not work in the C shell (**csh**) or their derivatives
 (like **tcsh**), and cannot be used in DOS batch scripts either.

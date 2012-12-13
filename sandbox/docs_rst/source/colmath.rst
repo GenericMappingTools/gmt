@@ -65,7 +65,7 @@ space is allowed between the option flag and the associated arguments.
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
     **-S~**. Should your pattern happen to start with ~ you need to
-    escape this character with a backslash [Default output all
+    escape this character with a backslash  [Default output all
     segments]. Cannot be used with **-Q**.
 **-T**
     Suppress the writing of segment headers on output.

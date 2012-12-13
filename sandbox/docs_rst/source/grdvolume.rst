@@ -55,14 +55,14 @@ space is allowed between the option flag and the associated arguments.
     [Default base is contour].
 **-S**\ [*unit*\ ]
     Convert degrees to Flat Earth distances, append a unit from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n** [Default is
-    Cartesian].
+    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**
+    [Default is Cartesian].
 **-T**\ [**c**\ \|\ **h**]
     Determine the single contour that maximized the average height (=
     volume/area). Select **-Tc** to use the maximum curvature of heights
     versus contour value rather than the contour with the maximum height
     to pick the best contour value (requires **-C**).
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-V**\ [*level*\ ] (\*)
     Select verbosity level [c].

@@ -60,7 +60,7 @@ space is allowed between the option flag and the associated arguments.
     Select map projection.
 **-Jz**\ \|\ **Z**\ *parameters* (\*)
     Set z-axis scaling; same syntax as **-Jx**.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 
@@ -174,13 +174,17 @@ st\ **a**\ r. *size* is diameter of circumscribing circle.
 
 Vertical **b**\ ar extending from *base* to y. *size* is bar width.
 Append **u** if *size* is in x-units [Default is plot-distance units].
-By default, *base* = ymin. Append **b**\ *base* to change this value.
+By default, *base* = ymin. Append **b**\ [*base*\ ] to change this
+value. If *base* is not appended then we read it from the last input
+data column.
 
 **-SB**
 
 Horizontal **b**\ ar extending from *base* to x. *size* is bar width.
 Append **u** if *size* is in y-units [Default is plot-distance units].
-By default, *base* = xmin. Append **b**\ *base* to change this value.
+By default, *base* = xmin. Append **b**\ [*base*\ ] to change this
+value. If *base* is not appended then we read it from the last input
+data column.
 
 **-Sc**
 
@@ -289,9 +293,10 @@ circle.
 sets base width (Use *xsize/ysize* if not the same). Append **u** if
 *size* is in x-units [Default is plot-distance units]. If no *size* is
 given we expect both *xsize* and *ysize* as two extra data columns. By
-default, *base* = 0. Append bIT(base) to change this value. The facet
-colors will be modified to simulate shading. Use **-SO** to disable such
-3-D illumination.
+default, *base* = 0. Append {bf b}[*base*\ ] to change this value. The
+facet colors will be modified to simulate shading. Use **-SO** to
+disable such 3-D illumination. If *base* is not appended then we read it
+from the last input data column.
 
 **-Sp**
 
@@ -311,13 +316,13 @@ lines. Choose among five controlling algorithms:
     For lower case **d**, give distances between labels on the plot in
     your preferred measurement unit **c** (cm), **i** (inch), or **p**
     (points), while for upper case **D**, specify distances in map units
-    and append the unit; choose among **e** (m), **f** (feet), **k**
-    (km), **M** (mile), or **n** (nautical mile), and **d** (arc
-    degree), **m** (arc minute), or **s** (arc second). [Default is
-    10\ **c** or 4\ **i**]. As an option, you can append /*fraction*
-    which is used to place the very first label for each contour when
-    the cumulative along-contour distance equals *fraction \* dist*
-    [0.25].
+    and append the unit; choose among **e** (m), **f** (foot), **k**
+    (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
+    and **d** (arc degree), **m** (arc minute), or **s** (arc second).
+    [Default is 10\ **c** or 4\ **i**]. As an option, you can append
+    /*fraction* which is used to place the very first label for each
+    contour when the cumulative along-contour distance equals *fraction
+    \* dist* [0.25].
     **f**\ *ffile.d*
     Reads the ascii file *ffile.d* and places labels at locations in the
     file that matches locations along the quoted lines. Inexact matches

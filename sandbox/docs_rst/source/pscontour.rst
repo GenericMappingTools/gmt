@@ -58,7 +58,7 @@ space is allowed between the option flag and the associated arguments.
     annotation flags set will be annotated.
 **-J**\ *parameters* (\*)
     Select map projection.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 
@@ -223,13 +223,13 @@ controlling algorithms:
     For lower case **d**, give distances between labels on the plot in
     your preferred measurement unit **c** (cm), **i** (inch), or **p**
     (points), while for upper case **D**, specify distances in map units
-    and append the unit; choose among **e** (m), **f** (feet), **k**
-    (km), **M** (mile), or **n** (nautical mile), and **d** (arc
-    degree), **m** (arc minute), or **s** (arc second). [Default is
-    10\ **c** or 4\ **i**]. As an option, you can append /*fraction*
-    which is used to place the very first label for each contour when
-    the cumulative along-contour distance equals *fraction \* dist*
-    [0.25].
+    and append the unit; choose among **e** (m), **f** (foot), **k**
+    (km), **M** (mile), **n** (nautical mile) or **u** (US survey foot),
+    and **d** (arc degree), **m** (arc minute), or **s** (arc second).
+    [Default is 10\ **c** or 4\ **i**]. As an option, you can append
+    /*fraction* which is used to place the very first label for each
+    contour when the cumulative along-contour distance equals *fraction
+    \* dist* [0.25].
     **-G**\ **f**\ *ffile.d*
     Reads the ascii file *ffile.d* and places labels at locations in the
     file that matches locations along the contours. Inexact matches and

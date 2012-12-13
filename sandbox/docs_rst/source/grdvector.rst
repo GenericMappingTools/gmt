@@ -81,7 +81,7 @@ space is allowed between the option flag and the associated arguments.
     Modify vector parameters. For vector heads, append vector head
     *size* [Default is 0, i.e., stick-plot]. See VECTOR ATTRIBUTES for
     specifying additional attributes.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Specify a subset of the grid.
 **-S**\ [**l**\ ]\ *scale*
     Sets scale for vector length in data units per distance measurement

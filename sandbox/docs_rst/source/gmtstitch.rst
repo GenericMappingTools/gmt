@@ -126,14 +126,14 @@ None.
 `Units <#toc6>`_
 ----------------
 
-For map distance units, append *unit* **d** for arc degrees, **m** for
-arc minutes, and **s** for arc seconds, or **e** for meters [Default],
-**f** for feet, **k** for km, **M** for statute miles, and **n** for
-nautical miles. By default we compute such distances using a spherical
-approximation with great circles. Prepend **-** to a distance (or the
-unit is no distance is given) to perform "Flat Earth" calculations
-(quicker but less accurate) or prepend **+** to perform exact geodesic
-calculations (slower but more accurate).
+For map distance unit, append *unit* **d** for arc degree, **m** for arc
+minute, and **s** for arc second, or **e** for meter [Default], **f**
+for foot, **k** for km, **M** for statute mile, **n** for nautical mile,
+and **u** for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend **-** to a
+distance (or the unit is no distance is given) to perform "Flat Earth"
+calculations (quicker but less accurate) or prepend **+** to perform
+exact geodesic calculations (slower but more accurate).
 
 `Ascii Format Precision <#toc7>`_
 ---------------------------------

@@ -85,7 +85,7 @@ None.
     triangle edges]. Requires **-R** and is only available if linked
     with the Shewchuk [1996] library. Note that **-Z** is ignored on
     output.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-S**
     Output triangles as polygon segments separated by a segment header

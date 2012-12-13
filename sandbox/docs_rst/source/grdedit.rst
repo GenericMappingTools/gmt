@@ -64,7 +64,7 @@ space is allowed between the option flag and the associated arguments.
     Read the ASCII (or binary; see **-bi**\ [*ncols*\ ][*type*\ ]) file
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. The new w/e/s/n values will replace
     those in the grid, and the *x\_inc*, *y\_inc* values are adjusted,
     if necessary.

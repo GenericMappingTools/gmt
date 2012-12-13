@@ -85,7 +85,6 @@ space is allowed between the option flag and the associated arguments.
 **-L**\ *listfile*
     The *listfile* is an ASCII file with the names of the *PostScript*
     files to be converted.
-**-M**
 **-N**
     This option is obsolete. Use **-S** to print the GhostScript
     command, if applicable. Use **-Te** to save the intermediate EPS

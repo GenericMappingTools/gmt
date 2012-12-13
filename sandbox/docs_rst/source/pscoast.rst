@@ -14,7 +14,7 @@ pscoast - Plot continents, shorelines, rivers, and borders on maps
 **-C**\ [**l**\ \|\ **r**/]*fill* ] [ **-D**\ *resolution*\ [**+**\ ] ]
 [ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/*pen*] ] [
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ] ] [ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ] [
 **-Q** ] [ **-S**\ *fill*\ \|\ **c** ] [
 **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
@@ -68,7 +68,9 @@ space is allowed between the option flag and the associated arguments.
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing, if applicable) are copied from
-    the grid.
+    the grid. Using **-R**\ *unit* expects projected (Cartesian)
+    coordinates compatible with chosen **-J** and we inversely project
+    to determine actual rectangular geographic region.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 
 `Optional Arguments <#toc5>`_
@@ -148,23 +150,23 @@ space is allowed between the option flag and the associated arguments.
     Set z-axis scaling; same syntax as **-Jx**.
 **-K** (\*)
     Do not finalize the *PostScript* plot.
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ]
     Draws a simple map scale centered on *lon0/lat0*. Use **-Lx** to
     specify x/y position instead. Scale is calculated at latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
     is central meridian]), *length* is in km, or append unit from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**. Use **-Lf** to
-    get a "fancy" scale [Default is plain]. Append **+l** to select the
-    default label which equals the distance unit (meter, feet, km,
-    miles, nautical miles) and is justified on top of the scale [t].
-    Change this by giving your own label (append **+l**\ *label*).
-    Change label justification with **+j**\ *justification* (choose
-    among l(eft), r(ight), `t(op) <t.op.html>`_ , and
-    `b(ottom) <b.ottom.html>`_ ). Apply **+u** to append the unit to all
-    distance annotations along the scale. If you want to place a
-    rectangle behind the scale, specify suitable **+p**\ *pen* and/or
-    **+f**\ *fill* parameters.
+    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**. Use
+    **-Lf** to get a "fancy" scale [Default is plain]. Append **+l** to
+    select the default label which equals the distance unit (meter,
+    foot, km, mile, nautical mile, US survey foot) and is justified on
+    top of the scale [t]. Change this by giving your own label (append
+    **+l**\ *label*). Change label justification with
+    **+j**\ *justification* (choose among l(eft), r(ight),
+    `t(op) <t.op.html>`_ , and `b(ottom) <b.ottom.html>`_ ). Apply
+    **+u** to append the unit to all distance annotations along the
+    scale. If you want to place a rectangle behind the scale, specify
+    suitable **+p**\ *pen* and/or **+f**\ *fill* parameters.
 **-M**
     Dumps a single multisegment ASCII (or binary, see
     **-bo**\ [*ncols*\ ][*type*\ ]) file to standard output. No plotting

@@ -118,8 +118,11 @@ None.
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Clips polygons to the map region, including map boundary
-    to the polygon as needed. The result is a closed polygon.
+    the grid. Using **-R**\ *unit* expects projected (Cartesian)
+    coordinates compatible with chosen **-J** and we inversely project
+    to determine actual rectangular geographic region. Clips polygons to
+    the map region, including map boundary to the polygon as needed. The
+    result is a closed polygon.
 **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j**
     Spatial processing of polygons. Choose from **-Si** which returns
     the intersection of polygons (closed), **-Sc** which returns the
@@ -165,14 +168,14 @@ None.
 `Units <#toc6>`_
 ----------------
 
-For map distance units, append *unit* **d** for arc degrees, **m** for
-arc minutes, and **s** for arc seconds, or **e** for meters [Default],
-**f** for feet, **k** for km, **M** for statute miles, and **n** for
-nautical miles. By default we compute such distances using a spherical
-approximation with great circles. Prepend **-** to a distance (or the
-unit is no distance is given) to perform "Flat Earth" calculations
-(quicker but less accurate) or prepend **+** to perform exact geodesic
-calculations (slower but more accurate).
+For map distance unit, append *unit* **d** for arc degree, **m** for arc
+minute, and **s** for arc second, or **e** for meter [Default], **f**
+for foot, **k** for km, **M** for statute mile, **n** for nautical mile,
+and **u** for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend **-** to a
+distance (or the unit is no distance is given) to perform "Flat Earth"
+calculations (quicker but less accurate) or prepend **+** to perform
+exact geodesic calculations (slower but more accurate).
 
 `Ascii Format Precision <#toc7>`_
 ---------------------------------

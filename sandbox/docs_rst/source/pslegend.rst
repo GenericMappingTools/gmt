@@ -92,27 +92,29 @@ records are presented below:
     Place a map scale in the legend. Specify *slon slat*, the point on
     the map where the scale applies (*slon* is only meaningful for
     certain oblique projections. If not needed, you must specify **-**
-    instead), *length*, the length of the scale in km (append **m** or
-    **n** for miles or nautical miles), and **f** or **p** for fancy or
+    instead), *length*, the length of the scale in km (for other units
+    append **e** (meter), **f** (foot), **M** (mile), **n** (nautical
+    mile), or **u** (survey foot)), and **f** or **p** for fancy or
     plain scale. If the **-R** **-J** supplied to **pslegend** is
     different than the projection needed for the scale (or not given at
     all, i.e., with **-Dx**), supply the optional **-R** **-J** settings
     as well. Append **+l** to the *length* to select the default label
-    which equals the distance unit (km, miles, nautical miles) and is
-    justified on top of the scale [t]. Change this by giving your own
-    label (append **+l**\ *label*). Change label justification with
-    **+j**\ *justification* (choose among l(eft), r(ight),
-    `t(op) <t.op.html>`_ , and `b(ottom) <b.ottom.html>`_ ). Apply
-    **+u** to append the unit to all distance annotations along the
-    scale. If you want to place a rectangle behind the scale, specify
-    suitable **+p**\ *pen* and/or **+f**\ *fill* parameters. All these
-    )+)\ *modifiers* are appended to *length* to make a single string.
+    which equals the distance unit (meter, feet, km, miles, nautical
+    miles, survey feet) and is justified on top of the scale [t]. Change
+    this by giving your own label (append **+l**\ *label*). Change label
+    justification with **+j**\ *justification* (choose among l(eft),
+    r(ight), `t(op) <t.op.html>`_ , and `b(ottom) <b.ottom.html>`_ ).
+    Apply **+u** to append the unit to all distance annotations along
+    the scale. If you want to place a rectangle behind the scale,
+    specify suitable **+p**\ *pen* and/or **+f**\ *fill* parameters. All
+    these )+)\ *modifiers* are appended to *length* to make a single
+    string.
     **N** *ncolumns*
     Change the number of columns in the legend [1]. This only affects
     the printing of symbols (**S**) and labels (**L**). The number of
     columns stay in effect until **N** is used again.
     **S** *dx1 symbol size fill pen* [ *dx2 text* ]
-    Plots the selected symbol with specified size, fill, and outline
+    Plots the selected symbol with specified diameter, fill, and outline
     (see **psxy**). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
@@ -180,7 +182,7 @@ records are presented below:
     Append to existing *PostScript* plot.
 **-P** (\*)
     Select "Portrait" plot orientation.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.

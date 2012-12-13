@@ -72,7 +72,7 @@ space is allowed between the option flag and the associated arguments.
     **-X** and **-Y** settings if you have moved since the clip started.
 **-J**\ *parameters* (\*)
     Select map projection.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 

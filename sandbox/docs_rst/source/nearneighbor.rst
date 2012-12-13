@@ -47,24 +47,25 @@ space is allowed between the option flag and the associated arguments.
     *x\_inc* [and optionally *y\_inc*] is the grid spacing. Optionally,
     append a suffix modifier. **Geographical (degrees) coordinates**:
     Append **m** to indicate arc minutes or **s** to indicate arc
-    seconds. If one of the units **e**, **f**, **k**, **M**, or **n** is
-    appended instead, the increment is assumed to be given in meter,
-    feet, km, Miles, or nautical miles, respectively, and will be
-    converted to the equivalent degrees longitude at the middle latitude
-    of the region (the conversion depends on **PROJ\_ELLIPSOID**). If
-    /*y\_inc* is given but set to 0 it will be reset equal to *x\_inc*;
-    otherwise it will be converted to degrees latitude. **All
-    coordinates**: If **=** is appended then the corresponding max *x*
-    (*east*) or *y* (*north*) may be slightly adjusted to fit exactly
-    the given increment [by default the increment may be adjusted
-    slightly to fit the given domain]. Finally, instead of giving an
-    increment you may specify the *number of nodes* desired by appending
-    **+** to the supplied integer argument; the increment is then
-    recalculated from the number of nodes and the domain. The resulting
-    increment value depends on whether you have selected a
-    gridline-registered or pixel-registered grid; see Appendix B for
-    details. Note: if **-R**\ *grdfile* is used then the grid spacing
-    has already been initialized; use **-I** to override the values.
+    seconds. If one of the units **e**, **f**, **k**, **M**, **n** or
+    **u** is appended instead, the increment is assumed to be given in
+    meter, foot, km, Mile, nautical mile or US survey foot,
+    respectively, and will be converted to the equivalent degrees
+    longitude at the middle latitude of the region (the conversion
+    depends on **PROJ\_ELLIPSOID**). If /*y\_inc* is given but set to 0
+    it will be reset equal to *x\_inc*; otherwise it will be converted
+    to degrees latitude. **All coordinates**: If **=** is appended then
+    the corresponding max *x* (*east*) or *y* (*north*) may be slightly
+    adjusted to fit exactly the given increment [by default the
+    increment may be adjusted slightly to fit the given domain].
+    Finally, instead of giving an increment you may specify the *number
+    of nodes* desired by appending **+** to the supplied integer
+    argument; the increment is then recalculated from the number of
+    nodes and the domain. The resulting increment value depends on
+    whether you have selected a gridline-registered or pixel-registered
+    grid; see Appendix B for details. Note: if **-R**\ *grdfile* is used
+    then the grid spacing has already been initialized; use **-I** to
+    override the values.
 **-N**\ *sectors*\ [/*min\_sectors*]
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
@@ -75,7 +76,7 @@ space is allowed between the option flag and the associated arguments.
     coverage, i.e., *sectors* = 4 and *min\_sectors* = 2]. Note that
     only the nearest value per sector enters into the averaging, not all
     values inside the circle.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 **-S**\ *search\_radius*\ [*unit*\ ]
     Sets the *search\_radius* that determines which data points are
@@ -128,14 +129,14 @@ space is allowed between the option flag and the associated arguments.
 `Units <#toc6>`_
 ----------------
 
-For map distance units, append *unit* **d** for arc degrees, **m** for
-arc minutes, and **s** for arc seconds, or **e** for meters [Default],
-**f** for feet, **k** for km, **M** for statute miles, and **n** for
-nautical miles. By default we compute such distances using a spherical
-approximation with great circles. Prepend **-** to a distance (or the
-unit is no distance is given) to perform "Flat Earth" calculations
-(quicker but less accurate) or prepend **+** to perform exact geodesic
-calculations (slower but more accurate).
+For map distance unit, append *unit* **d** for arc degree, **m** for arc
+minute, and **s** for arc second, or **e** for meter [Default], **f**
+for foot, **k** for km, **M** for statute mile, **n** for nautical mile,
+and **u** for US survey foot. By default we compute such distances using
+a spherical approximation with great circles. Prepend **-** to a
+distance (or the unit is no distance is given) to perform "Flat Earth"
+calculations (quicker but less accurate) or prepend **+** to perform
+exact geodesic calculations (slower but more accurate).
 
 `Grid Values Precision <#toc7>`_
 --------------------------------

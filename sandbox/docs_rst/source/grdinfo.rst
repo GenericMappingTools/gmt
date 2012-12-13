@@ -73,7 +73,7 @@ space is allowed between the option flag and the associated arguments.
 **-M**
     Find and report the location of min/max z-values, and count and
     report the number of nodes set to NaN, if any.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Using the **-R** option will select
     a subsection of the input grid(s). If this subsection exceeds the
     boundaries of the grid, only the common region will be extracted.

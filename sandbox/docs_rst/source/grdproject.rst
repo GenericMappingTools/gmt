@@ -61,13 +61,13 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-A**\ [**c\|i\|p\|e\|f\|k\|M\|n**\ ]
+**-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters [**e**\ ]. To specify other units, append
-    **f** (feet), **k** (km), **M** (statute mile), **n** (nautical
-    mile), **i** (inch), **c** (cm), or **p** (points). Without **-A**,
-    the output (or input, see **-I**) are in the units specified by
-    **PROJ\_LENGTH\_UNIT** (but see **-M**).
+    **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
+    mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
+    (point). Without **-A**, the output (or input, see **-I**) are in
+    the units specified by **PROJ\_LENGTH\_UNIT** (but see **-M**).
 **-C**\ [*dx/dy*\ ]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
@@ -75,8 +75,8 @@ space is allowed between the option flag and the associated arguments.
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0].
 **-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-    Set the grid spacing for the new grid. Append **m** for arc minutes,
-    **s** for arc seconds. If neither **-D** nor **-E** are set then we
+    Set the grid spacing for the new grid. Append **m** for arc minute,
+    **s** for arc second. If neither **-D** nor **-E** are set then we
     select the same number of output nodes as there are input nodes.
 **-E**\ *dpi*
     Set the resolution for the new grid in dots per inch.
@@ -86,7 +86,7 @@ space is allowed between the option flag and the associated arguments.
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
     **PROJ\_LENGTH\_UNIT** in **gmt.conf**]. Cannot be used with **-A**.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. You may ask to project only a subset
     of the grid by specifying a smaller input *w/e/s/n* region [Default
     is the region given by the grid file].

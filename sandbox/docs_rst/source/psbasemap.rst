@@ -11,7 +11,7 @@ psbasemap - Plot *PostScript* base maps
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ] ] [ **-O** ] [ **-P** ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
 **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
@@ -31,7 +31,7 @@ Several map projections are available, and the user may specify separate
 tickmark intervals for boundary annotation, ticking, and [optionally]
 gridlines. A simple map scale or directional rose may also be plotted.
 At least one of the options **-B**,
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ], or
 **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
 must be specified.
@@ -49,7 +49,7 @@ space is allowed between the option flag and the associated arguments.
 
 **-J**\ *parameters* (\*)
     Select map projection.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 
@@ -62,23 +62,23 @@ space is allowed between the option flag and the associated arguments.
     Set z-axis scaling; same syntax as **-Jx**.
 **-K** (\*)
     Do not finalize the *PostScript* plot.
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ]
     Draws a simple map scale centered on *lon0/lat0*. Use **-Lx** to
     specify x/y position instead. Scale is calculated at latitude *slat*
     (optionally supply longitude *slon* for oblique projections [Default
     is central meridian]), *length* is in km, or append unit from
-    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**. Use **-Lf** to
-    get a "fancy" scale [Default is plain]. Append **+l** to select the
-    default label which equals the distance unit (meter, feet, km,
-    miles, nautical miles) and is justified on top of the scale [t].
-    Change this by giving your own label (append **+l**\ *label*).
-    Change label justification with **+j**\ *justification* (choose
-    among l(eft), r(ight), `t(op) <t.op.html>`_ , and
-    `b(ottom) <b.ottom.html>`_ ). Apply **+u** to append the unit to all
-    distance annotations along the scale. If you want to place a
-    rectangle behind the scale, specify suitable **+p**\ *pen* and/or
-    **+f**\ *fill* parameters.
+    **e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**. Use
+    **-Lf** to get a "fancy" scale [Default is plain]. Append **+l** to
+    select the default label which equals the distance unit (meter,
+    foot, km, mile, nautical mile, US survey foot) and is justified on
+    top of the scale [t]. Change this by giving your own label (append
+    **+l**\ *label*). Change label justification with
+    **+j**\ *justification* (choose among l(eft), r(ight),
+    `t(op) <t.op.html>`_ , and `b(ottom) <b.ottom.html>`_ ). Apply
+    **+u** to append the unit to all distance annotations along the
+    scale. If you want to place a rectangle behind the scale, specify
+    suitable **+p**\ *pen* and/or **+f**\ *fill* parameters.
 **-O** (\*)
     Append to existing *PostScript* plot.
 **-P** (\*)

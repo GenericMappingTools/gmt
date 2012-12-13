@@ -107,7 +107,7 @@ space is allowed between the option flag and the associated arguments.
     yielding *gn* = (2 \* *amp* / PI) \* atan( (*g* - *offset*)/
     *sigma*) where *sigma* is estimated using the L2 norm of (*g* -
     *offset*) if it is not given.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Using the **-R** option will select
     a subsection of *in\_grdfile* grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be extracted.

@@ -104,7 +104,9 @@ space is allowed between the option flag and the associated arguments.
     and -180/+180 in longitude respectively, with -90/+90 in latitude).
     Alternatively, specify the name of an existing grid file and the
     **-R** settings (and grid spacing, if applicable) are copied from
-    the grid.
+    the grid. Using **-R**\ *unit* expects projected (Cartesian)
+    coordinates compatible with chosen **-J** and we inversely project
+    to determine actual rectangular geographic region.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
     Draw GMT time stamp logo on plot.

@@ -85,6 +85,17 @@ space is allowed between the option flag and the associated arguments.
     (**g**) Gaussian: Weights are given by the Gaussian function, where
     *width* is 6 times the conventional Gaussian sigma.
 
+    (**f**) Custom: Weights are given by the precomputed values in the
+    filter weight grid file *weight*, which must have odd dimensions;
+    also requires **-D0** and output spacing must match input spacing or
+    be integer multiples.
+
+    (**o**) Operator: Weights are given by the precomputed values in the
+    filter weight grid file *weight*, which must have odd dimensions;
+    also requires **-D0** and output spacing must match input spacing or
+    be integer multiples. Weights are assumed to sum to zero so no
+    accumulation of weight sums and normalization will be done.
+
     Non-convolution filters are:
 
     (**m**) Median: Returns median value. To select another quantile
@@ -216,6 +227,15 @@ grdfilter north\_pacific\_etopo5.nc -Gresidual\_pacific.nc -Fm-600 -D4
 
 Here, the residual\_pacific.nc grid will have the same 5 minute
 resolution as the original.
+
+To filter the dataset in ripples.nc using a custom anisotropic Gaussian
+filter exp (-0.5\*r^2) whose distances r from the center is given by
+(2x^2 + y^2 -2xy)/6, with major axis at an angle of 63 degrees with the
+horizontal, try
+
+grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL SUB
+6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
+ grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
 
 `Limitations <#toc9>`_
 ----------------------

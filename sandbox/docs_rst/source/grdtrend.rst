@@ -56,7 +56,7 @@ space is allowed between the option flag and the associated arguments.
 
 **-D**\ *diff.nc*
     Write the difference (input data - trend) to the file *diff.nc*.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. Using the **-R** option will select
     a subsection of the input grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be extracted.

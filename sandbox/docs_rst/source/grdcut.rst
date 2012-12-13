@@ -38,7 +38,7 @@ space is allowed between the option flag and the associated arguments.
     This is the input grid file.
 **-G**\ *outgrid*
     This is the output grid file.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest. This defines the subregion to be cut
     out.
 

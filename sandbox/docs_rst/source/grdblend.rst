@@ -49,25 +49,26 @@ space is allowed between the option flag and the associated arguments.
     *x\_inc* [and optionally *y\_inc*] is the grid spacing. Optionally,
     append a suffix modifier. **Geographical (degrees) coordinates**:
     Append **m** to indicate arc minutes or **s** to indicate arc
-    seconds. If one of the units **e**, **f**, **k**, **M**, or **n** is
-    appended instead, the increment is assumed to be given in meter,
-    feet, km, Miles, or nautical miles, respectively, and will be
-    converted to the equivalent degrees longitude at the middle latitude
-    of the region (the conversion depends on **PROJ\_ELLIPSOID**). If
-    /*y\_inc* is given but set to 0 it will be reset equal to *x\_inc*;
-    otherwise it will be converted to degrees latitude. **All
-    coordinates**: If **=** is appended then the corresponding max *x*
-    (*east*) or *y* (*north*) may be slightly adjusted to fit exactly
-    the given increment [by default the increment may be adjusted
-    slightly to fit the given domain]. Finally, instead of giving an
-    increment you may specify the *number of nodes* desired by appending
-    **+** to the supplied integer argument; the increment is then
-    recalculated from the number of nodes and the domain. The resulting
-    increment value depends on whether you have selected a
-    gridline-registered or pixel-registered grid; see Appendix B for
-    details. Note: if **-R**\ *grdfile* is used then the grid spacing
-    has already been initialized; use **-I** to override the values.
-**-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
+    seconds. If one of the units **e**, **f**, **k**, **M**, **n** or
+    **u** is appended instead, the increment is assumed to be given in
+    meter, foot, km, Mile, nautical mile or US survey foot,
+    respectively, and will be converted to the equivalent degrees
+    longitude at the middle latitude of the region (the conversion
+    depends on **PROJ\_ELLIPSOID**). If /*y\_inc* is given but set to 0
+    it will be reset equal to *x\_inc*; otherwise it will be converted
+    to degrees latitude. **All coordinates**: If **=** is appended then
+    the corresponding max *x* (*east*) or *y* (*north*) may be slightly
+    adjusted to fit exactly the given increment [by default the
+    increment may be adjusted slightly to fit the given domain].
+    Finally, instead of giving an increment you may specify the *number
+    of nodes* desired by appending **+** to the supplied integer
+    argument; the increment is then recalculated from the number of
+    nodes and the domain. The resulting increment value depends on
+    whether you have selected a gridline-registered or pixel-registered
+    grid; see Appendix B for details. Note: if **-R**\ *grdfile* is used
+    then the grid spacing has already been initialized; use **-I** to
+    override the values.
+**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
     Specify the region of interest.
 
 `Optional Arguments <#toc5>`_
