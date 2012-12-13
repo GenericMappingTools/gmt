@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gravfft &mdash; GMT5 0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="GMT5 0 documentation" href="../../index.html" />
+    <link rel="up" title="POTENTIAL" href="list.html" />
+    <link rel="next" title="grdokb" href="grdokb.html" />
+    <link rel="prev" title="POTENTIAL" href="list.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="grdokb.html" title="grdokb"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="list.html" title="POTENTIAL"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" accesskey="U">POTENTIAL</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="gravfft">
+<h1>gravfft<a class="headerlink" href="#gravfft" title="Permalink to this headline">¶</a></h1>
+<p>Section: Misc. Reference Manual Pages (l)
+Updated: 14 Sep 2002
+<a class="reference external" href="#index">Index</a> <a class="reference external" href="http://localhost/cgi-bin/man/man2html">Return to Main
+Contents</a></p>
+<hr class="docutils" />
+<div class="section" id="name">
+<h2>NAME<a class="headerlink" href="#name" title="Permalink to this headline">¶</a></h2>
+<p>gravfft - Compute gravitational attraction of 3-D surfaces and
+admittance/coherence between grids (ATTENTION z positive up)</p>
+</div>
+<div class="section" id="synopsis">
+<h2>SYNOPSIS<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
+<p><strong>gravfft</strong> T&lt;te/rl/rm/rw&gt; -C&lt;n/wavelength/mean_depth/tbw&gt; -D&lt;density&gt;
+-G&lt;out_grdfile&gt; [-E&lt;n_terms&gt;] [-F] -H [-L[m|h]] [-l[n]]
+-I&lt;second_file&gt;[/&lt;wbctk&gt;] [-M] [-N&lt;stuff&gt;] [-Q] [-S] [-s&lt;scale&gt;]
+-T[c|a] [-V] -Z&lt;zm&gt;[/&lt;zl&gt;] [-z&lt;cte&gt;]</p>
+</div>
+<div class="section" id="description">
+<h2>DESCRIPTION<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p><strong>gravfft</strong> can be used into two main modes. First one computes the
+gravity/geoid response of a bathymetry file. It will take the 2-D
+forward FFT of a bathymetry grid and compute it&#8217;s gravity/geoid response
+using full Parker&#8217;s method applyied to the chosen model. The available
+models are the &#8220;loading from top&#8221;, or elastic plate model, and the
+&#8220;loading from below&#8221; which accounts for the plate&#8217;s response to a
+sub-surface load (apropriate for hot spot modeling - by the way, kill as
+many as you can because if you leave on top of a hill and have a
+geophysicist or geologist neighbour that don&#8217;t like you he will propose
+that your are siting on top of a new one). In both cases, the model
+parameters are set with <strong>-T</strong> and <strong>-Z</strong> options. Second mode computes
+the admittance or coherence between two grids. The output is the average
+in the radial direction. Optionaly, the model admittance may also be
+calculated. If <strong>-T</strong> option is used, the FFT transform of a grid is
+writen as two grids. One for the Real part and the other for the
+Imaginary part. The horizontal dimensions of the grdfiles are assumed to
+be in meters. Geographical grids may be used by specifying the <strong>-M</strong>
+option that scales degrees to meters. If you have grdfiles with
+dimensions in km, you could change this to meters using <strong>grdedit</strong> or
+scale the output with <strong>grdmath</strong>. Given the number of choices this
+program offers, is difficult to state what are options and what are
+required arguments. It depends on what you are doing.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;No&nbsp;space&nbsp;between&nbsp;the&nbsp;option&nbsp;flag&nbsp;and&nbsp;the&nbsp;associated&nbsp;arguments.&nbsp;Use&nbsp;upper&nbsp;case&nbsp;for&nbsp;the
+option flags and lower case for modifiers.</p>
+<p><em>topo_grd</em></p>
+<p>2-D binary grd file to be operated on.</p>
+<p><strong>-T</strong></p>
+<p>Computes the isostatic compensation due to topo load. Append elastic
+thickness and densities of load, mantle, and water, all in SI units.
+Give average mantle depth via <strong>-Z</strong>. If <em>te</em> = 0 then the Airy response
+is returned. If the elastic thickness is &gt; 1e10 it will be interpreted
+as the flexural rigidity (by default it&#8217;s computed from Te and Young
+modulus, which is set in the program to be 1e+11). Also, number of
+powers in Parker expansion is restricted to 1 (default&#8217;s). See an
+example further down.</p>
+<p><strong>-C</strong></p>
+<p>Compute only the theoretical admittance curves of the chosed model and
+exit. <em>n</em> and <em>wavelength</em> are used to compute (<em>n</em> * <em>wavelength</em>) the
+total profile length in meters. <em>mean_depth</em> is the mean water depth.
+Append dataflags (one or two) of <em>tbw</em> in any order. <strong>t</strong> = use &#8220;from
+top&#8221; model, <strong>b</strong> = use &#8220;from below&#8221; model. Optionally specify <strong>w</strong> to
+write wavelength instead of frequency.</p>
+<p><strong>-D</strong></p>
+<p>Sets density contrast across surface. Used, for example, to compute the
+gravity atraction of the water layer that can later be combined with the
+free-air anomaly to get the Bouguer anomaly. In this case do not use
+<strong>-T</strong>. It also implicitly sets <strong>-L</strong></p>
+<p><strong>-F</strong></p>
+<p>compute geoid rather than gravity</p>
+<p><strong>-G</strong></p>
+<p>Specify the name of the output grd file for operations that do create
+one.</p>
+<p><strong>-H</strong></p>
+<p>writes a grid with the Moho&#8217;s gravity|geoid effect from model selcted
+by <strong>-T</strong> (and output by <strong>-G</strong>). <strong>-H</strong> implicitly sets <strong>-L</strong></p>
+<p><strong>-I</strong></p>
+<p>Use <em>second_file</em> and <em>topo_grd</em> to estimate admittance or coherence
+and write it to stdout (<strong>-G</strong> ignored if set). This grid should contain
+gravity or geoid for the same region of <em>topo_grd</em>. Default computes
+admittance. Output contains 3 or 4 columns. Frequency (or wavelength),
+admittance (or coherence) one sigma error bar (but don&#8217;t beleave on it)
+and, optionally, a theoretical admittance. Append dataflags (one to
+three) of <em>tbwk</em> in any order. <strong>t</strong> = use &#8220;from top&#8221; model, <strong>b</strong> = use
+&#8220;from below&#8221; model, <strong>c</strong> = computes coherence instead of admittance,
+<strong>k</strong> = frequency (or wavelength) in units of 1/km (km).</p>
+<p><strong>-Q</strong></p>
+<p>writes out a grid with the flexural topography (with z positive up)
+whose average was set by <strong>-Z</strong><em>zm</em> and model parameters by <strong>-T</strong>
+(and output by -G). That is the &#8220;gravimetric Moho&#8221;. <strong>-Q</strong> implicitly
+sets <strong>-L</strong></p>
+<p><strong>-S</strong></p>
+<p>Computes predicted gravity or geoide grid due to a subplate load
+produced by the current bathymetry and the theoretical model. The
+necessary parametrs are set within <strong>-T</strong> and <strong>-Z</strong> options. The number
+of powers in Parker expansion is restricted to 1 (default&#8217;s). See an
+example further down.</p>
+<p><strong>-T</strong></p>
+<p>Writes the FFT of the input grid in the form of two grids. One for the
+real part and the other for the imaginary. The grid names are built from
+the input grid name with _real and _imag appended. These grids have
+the DC at the center and coordinates are the kx,ky frequencies.
+Appending <em>a</em> or <em>c</em> will make the program write a csh script
+(admit_coher.sc) that computes, respectively, admittance or coherence
+by an alternative (but much slower than the one used with -I) method
+based on grid interpolations using grdtrack. Read comments/instructions
+on the script.</p>
+<p><strong>-Z</strong></p>
+<p>Moho [and swell] average compensation depths. For the &#8220;load from top&#8221;
+model you only have to provide <em>zm</em>, but for the &#8220;loading from below&#8221;
+don&#8217;t forget <em>zl</em>.</p>
+</div>
+<div class="section" id="options">
+<h2>OPTIONS<a class="headerlink" href="#options" title="Permalink to this headline">¶</a></h2>
+<p><strong>-E</strong></p>
+<p>number of terms used in Parker expansion (limit is 10, otherwise terms
+depending on n will blow out the program) [Default = 1]</p>
+<p>Leave trend alone. By default, a linear least squares plane trend will
+be removed prior to the transform. It applies both to bathymetry as well
+as <em>second_file</em> [Default removes plane].</p>
+<p><strong>-l</strong></p>
+<p>Removes half-way from bathymetry data [Default removes mean]. Append <em>n</em>
+to do not remove any constant from input bathymetry data.</p>
+<p><strong>-M</strong></p>
+<p>Map units. Choose this option if your grdfile is a geographical grid and
+you want to convert degrees into meters. If the data are close to either
+pole, you should consider projecting the grdfile onto a rectangular
+coordinate system using <strong>grdproject</strong>.</p>
+<p><strong>-N</strong></p>
+<p>Choose or inquire about suitable grid dimensions for FFT.</p>
+<p><strong>-Nf</strong> will force the FFT to use the dimensions of the data.</p>
+<p><strong>-Nq</strong> will inquire about more suitable dimensions.</p>
+<p><strong>-N&lt;nx&gt;/&lt;ny&gt;</strong> will do FFT on array size <em>&lt;nx&gt;/&lt;ny&gt;</em> (Must be &gt;=
+grdfile size).</p>
+<p>Default chooses dimensions &gt;= data which optimize speed, accuracy of
+FFT. If FFT dimensions &gt; grdfile dimensions, data are extended and
+tapered to zero.</p>
+<p><strong>-Ns</strong> will will print out a table with FFT suitable dimensions and
+exits the program.</p>
+<p><strong>-V</strong></p>
+<p>Selects verbose mode, which will send progress reports to stderr
+[Default runs &#8220;silently&#8221;].</p>
+<p><strong>-z</strong></p>
+<p>add a constant to the bathymetry data (not to <em>second_file</em>) before
+doing anything else. Pay attention to the sign of added constant,
+remember z positive up.</p>
+</div>
+<div class="section" id="examples">
+<h2>EXAMPLES<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>To compute the effect of the water layer above the bat.grd bathymetry
+using 2600 and 1035 for the densities of crust and water and writing the
+result on water_g.grd (computing up to the sixth power of bathymetry in
+Parker expansion):</p>
+<p><strong>gravfft</strong> bat.grd <strong>-D</strong>1565 <strong>-G</strong>water_g.grd <strong>-E6</strong></p>
+<p>Now subtract it to your free-air anomaly faa.grd and you&#8217;ll get the
+Bouguer anomaly. You may wonder why we are subtracting and not adding.
+After all the Bouger anomaly pretends to correct the mass deficiency
+presented by the water layer, so we should add because water is less
+dense than the rocks below. The answer relyies on the way gravity
+effects are computed by the Parker&#8217;s method and pratical aspects of
+using the FFT.</p>
+<p><strong>grdmath</strong> faa.grd water_g.grd SUB = bouguer.grd</p>
+<p>Want an MBA anomaly? Well compute the crust mantle contribution and add
+it to the sea-bottom anomaly. Addmiting a 6 km thick crust of density
+2600 and a mantle with 3300 density we could repeat the command used to
+compute the water layer anomaly, using 700 (3300 - 2600) as the density
+contrast. But we now have a problem because we need to know the mean
+moho depth. That is when <strong>-z</strong> option comes in hand. Notice that we
+didn&#8217;t need to do that before because mean water depth was computed
+directly from data. (notice also the negative sign of the argument to
+<strong>-z</strong>, remember z positive up):</p>
+<p><strong>gravfft</strong> bat.grd <strong>-D</strong>700 <strong>-G</strong>moho_g.grd <strong>-z</strong>-6000</p>
+<p>Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That
+is:</p>
+<p><strong>grdmath</strong> water_g.grd moho_g.grd ADD = mba.grd</p>
+<p>To compute the Moho gravity effect of an elastic plate bat.grd with Te =
+7 km, density of 2600, over a mantle of density 3300, at an averge depth
+of 9 km</p>
+<p><strong>gravfft</strong> bat.grd <strong>-G</strong>elastic.grd <strong>-T</strong>7000/2600/3300/1035 -H
+-Z9000</p>
+<p>If you add now the sea-bottom and Moho&#8217;s effects, you&#8217;ll get the full
+gravity response of your isostatic model. We will use here only the
+first term in Parker expansion (default).</p>
+<p><strong>gravfft</strong> bat.grd <strong>-D</strong>1565 <strong>-G</strong>water_g.grd</p>
+<p><strong>gravfft</strong> bat.grd <strong>-G</strong>elastic.grd <strong>-T</strong>7000/2600/3300/1035 -H
+-Z9000</p>
+<p><strong>grdmath</strong> water_g.grd elastic.grd ADD = model.grd</p>
+<p>The same result can be obtained directly by the next command. However,
+PAY ATTENTION to the following. I don&#8217;t yet know if it&#8217;s because of a
+bug or due to some limitation (mine probably), but the fact is that the
+following and the previous commands only give the same result if
+<strong>-E</strong>1 (the dafault) is used. For higher powers of bathymetry in
+Parker expansion, only the above example seams to give the correct
+result.</p>
+<p><strong>gravfft</strong> bat.grd <strong>-G</strong>model.grd <strong>-T</strong>7000/2600/3300/1035 -Z9000
+<strong>-L</strong></p>
+<p>And what would be the geoid anomaly produced by a load at 50 km depth,
+below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
+depth and the same densities as before?</p>
+<p><strong>gravfft</strong> topo.grd <strong>-G</strong>swell_geoid.grd
+<strong>-T</strong>7000/2600/3300/1035 <strong>-F</strong> <strong>-Z</strong>9000/50000 <strong>-S</strong></p>
+<p>To compute the admittance between the topo.grd bathymetry and faa.grd
+free-air anomaly grid using the elastic plate model of a crust of 6 km
+mean thickness with 10 km efective elastic thickness in a region of 3 km
+mean water depth:</p>
+<p><strong>gravfft</strong> topo.grd <strong>-I</strong>faa.grd/t <strong>-T</strong>10000/2600/3300/1035
+<strong>-Z</strong>9000</p>
+<p>To compute the admittance between the topo.grd bathymetry and geoid.grd
+geoid grid with the &#8220;loading from below&#8221; (LFB) model with the same as
+above and sub-surface load at 40 km, but assuming now the grids are in
+geographic and we want wavelengths instead of frequency:</p>
+<p><strong>gravfft</strong> topo.grd <strong>-I</strong>geoid.grd/bw <strong>-T</strong>10000/2600/3300/1035
+<strong>-Z</strong>9000/40000 <strong>-M</strong></p>
+<p>To compute the gravity theoretical admittance of a LFB along a 1000 km
+long profile using the same parameters as above</p>
+<p><strong>gravfft</strong> <strong>-C</strong>400/5000/3000/b <strong>-T</strong>10000/2600/3300/1035
+<strong>-Z</strong>9000/40000</p>
+<p>To write the FFT transform (in the form of two grids) of the faa.grd
+grid and also a csh script to compute the coherence by the alternative
+way (read instructions in admit_coher.sc):</p>
+<p><strong>gravfft</strong> faa.grd <strong>-T</strong>c</p>
+<p>Want a grid with the gravity power spectrum? That&#8217;s easy now (after
+having run the previous command)</p>
+<p><strong>grdmath</strong> faa_real.grd faa_imag R2 = power.grd</p>
+</div>
+<div class="section" id="see-also">
+<h2>SEE ALSO<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><em>`gmt &lt;http://localhost/cgi-bin/man/man2html?l+gmt&gt;`_</em>(l),
+<em>`grdedit &lt;http://localhost/cgi-bin/man/man2html?l+grdedit&gt;`_</em>(l),
+<em>`grdmath &lt;http://localhost/cgi-bin/man/man2html?l+grdmath&gt;`_</em>(l),
+<em>`grdproject &lt;http://localhost/cgi-bin/man/man2html?l+grdproject&gt;`_</em>(l)</p>
+</div>
+<div class="section" id="references">
+<h2>REFERENCES<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+</div>
+<hr class="docutils" />
+<div class="section" id="id1">
+<h2>Index<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="#lbAB">NAME</a></p>
+<p><a class="reference external" href="#lbAC">SYNOPSIS</a></p>
+<p><a class="reference external" href="#lbAD">DESCRIPTION</a></p>
+<p><a class="reference external" href="#lbAE">OPTIONS</a></p>
+<p><a class="reference external" href="#lbAF">EXAMPLES</a></p>
+<p><a class="reference external" href="#lbAG">SEE ALSO</a></p>
+<p><a class="reference external" href="#lbAH">REFERENCES</a></p>
+<hr class="docutils" />
+<p>This document was created by
+<a class="reference external" href="http://localhost/cgi-bin/man/man2html">man2html</a>, using the manual
+pages.</p>
+<blockquote>
+<div>Time: GMT, February 09, 2005</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">gravfft</a><ul>
+<li><a class="reference internal" href="#name">NAME</a></li>
+<li><a class="reference internal" href="#synopsis">SYNOPSIS</a></li>
+<li><a class="reference internal" href="#description">DESCRIPTION</a></li>
+<li><a class="reference internal" href="#options">OPTIONS</a></li>
+<li><a class="reference internal" href="#examples">EXAMPLES</a></li>
+<li><a class="reference internal" href="#see-also">SEE ALSO</a></li>
+<li><a class="reference internal" href="#references">REFERENCES</a></li>
+<li><a class="reference internal" href="#id1">Index</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="list.html"
+                        title="previous chapter">POTENTIAL</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="grdokb.html"
+                        title="next chapter">grdokb</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/supplements/potential/gravfft.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="grdokb.html" title="grdokb"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="list.html" title="POTENTIAL"
+             >previous</a> |</li>
+        <li><a href="../../index.html">GMT5 0 documentation</a> &raquo;</li>
+          <li><a href="../supplements.html" >Supplements</a> &raquo;</li>
+          <li><a href="list.html" >POTENTIAL</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, GMT_TEAM.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
