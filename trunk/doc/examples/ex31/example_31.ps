@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
-%%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0_r9362M [64-bit] Document from GMT_pscoast
+%%BoundingBox: 0 0 595 842
+%%HiResBoundingBox: 0 0 595 842
+%%Title: GMT v5.0.1b_r10690M [64-bit] [C4] Document from pscoast
 %%Creator: GMT
-%%For: florian
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica LinBiolinumO LinLibertineOB
-%%CreationDate: Tue Nov  1 02:00:43 2011
+%%CreationDate: Fri Dec 14 12:00:59 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /ISO-8859-5_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -554,7 +559,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
+PSLevel 1 gt { << /PageSize [595 842] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
 %%Page: 1 1
@@ -563,8 +568,8 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 V 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 10200 def
-/PSL_page_ysize 13200 def
+/PSL_page_xsize 9917 def
+/PSL_page_ysize 14033 def
 1 setlinejoin
 0 A
 FQ
@@ -572,9 +577,10 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -B10g10/5g5:.Europe\072 Countries and Capital Cities: -A250 -UExample 31 in Cookbook \
+%%GMT: pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -B10g10/5g5:.Europe\072 Countries and Capital Cities: -A250 -UExample 31 in Cookbook \
 %%GMT:+ -Slightblue -Glightgreen -W0.25p -N1/1p,white -K
 %%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
 -900 -900 T
@@ -583,7 +589,7 @@ V
 /PSL_g_h 180 def
 PSL_font_encode 0 get 0 eq {ISO-8859-5_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(  Version 5  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
+(  2012 Dec 14 12:00:59  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
 {0 A} FS
 O1
 180 438 219 90 Sr
@@ -605,7 +611,7 @@ DTIS7MsoF"n\M"l#Q~>
 U
 {1 A} FS
 PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  Version 5  ) Z
+438 38 M (  2012 Dec 14 12:00:59  ) Z
 117 F0
 (   Example 31 in Cookbook) Z
 U
@@ -656,7 +662,7 @@ S
 -17 -20 D
 S
 {0.678 0.847 0.902 C} FS
--7 -2 -8 -1 -8 -2 -8 -1 4 -17 90 0 5 15 -60 9 8 4825 7246 SP
+-7 -2 -8 -1 -8 -2 -8 -1 1 -5 1 -4 1 -4 1 -4 90 0 5 15 -60 9 11 4825 7246 SP
 4378 7177 M
 -13 28 D
 -10 -7 D
@@ -1131,7 +1137,7 @@ S
 -4 17 D
 FO
 {0.565 0.933 0.565 C} FS
--5 -6 -22 17 19 20 -40 -12 -13 23 -22 2 -7 22 35 18 16 40 14 0 10 4860 7270 SP
+6 -31 7 -31 6 -31 -5 -6 -22 17 19 20 -40 -12 -13 23 -22 2 -7 22 35 18 16 40 14 0 13 4860 7270 SP
 4860 7270 M
 14 0 D
 16 40 D
@@ -1707,11 +1713,11 @@ FO
 -17 -13 D
 29 -4 D
 FO
-6 1 -7 -18 2 3353 5853 SP
-13 1 2 -19 -17 -11 3 3355 5883 SP
-46 19 -29 -21 22 -3 -13 -15 -28 -5 5 3357 5911 SP
+1 5 0 4 0 4 6 1 -7 -18 5 3353 5853 SP
+0 8 1 7 0 7 13 1 2 -19 -17 -11 6 3355 5883 SP
+0 6 1 6 0 6 46 19 -29 -21 22 -3 -13 -15 -28 -5 8 3357 5911 SP
 5 2 -5 -3 2 3357 5919 SP
-6 1 -7 -23 2 3359 5947 SP
+1 6 0 5 0 6 6 1 -7 -23 5 3359 5947 SP
 -20 4 12 10 50 13 25 -14 -47 -30 -12 -1 1 13 -13 -7 8 3265 5869 SP
 21 -7 -11 3 6 -16 -26 4 -7 -26 -19 16 12 9 7 2967 5631 SP
 -16 -32 -11 3 7 42 18 4 16 -22 5 2861 5292 SP
@@ -2125,9 +2131,9 @@ FO
 3 38 D
 FO
 0 -1 1 3353 5854 SP
--11 -7 11 4 2 3355 5886 SP
--22 -3 4 -11 18 7 3 3357 5918 SP
--16 -11 15 5 2 3358 5925 SP
+0 1 0 1 -11 -7 11 4 4 3355 5886 SP
+0 2 0 2 0 1 -22 -3 4 -11 18 7 6 3357 5918 SP
+1 2 0 1 0 2 -16 -11 15 5 5 3358 5925 SP
 4079 7153 M
 -15 -18 D
 39 -24 D
@@ -2395,9 +2401,9 @@ FO
 148 6 D
 FO
 2 0 -2 3 -1 -3 3 4111 7155 SP
-6 15 -6 -7 2 4165 7013 SP
-34 -7 -21 -10 48 -3 50 -27 -17 29 -21 -4 -71 30 -3 4 8 4181 6777 SP
-3 3 -4 9 2 4289 5171 SP
+0 -2 0 -2 0 -2 6 15 -6 -7 5 4165 7013 SP
+0 -3 1 -3 0 -3 34 -7 -21 -10 48 -3 50 -27 -17 29 -21 -4 -71 30 -3 4 11 4181 6777 SP
+0 -3 0 -3 1 -3 3 3 -4 9 5 4289 5171 SP
 {0.565 0.933 0.565 C} FS
 3797 6794 M
 42 44 D
@@ -2890,8 +2896,24 @@ FO
 157 4 D
 125 6 D
 FO
-1 -2 4 13 3 -14 0 10 17 -4 13 -38 -16 -8 -3 25 -7 -26 17 -19 -25 12 -2 29 3 3 -4 9 14 4289 5171 SP
-18 -11 -15 -29 2 4158 7119 SP
+4289 5171 M
+-4 9 D
+3 3 D
+-2 29 D
+-25 12 D
+17 -19 D
+-7 -26 D
+-3 25 D
+-16 -8 D
+13 -38 D
+17 -4 D
+0 10 D
+3 -14 D
+4 13 D
+1 -2 D
+-1 10 D
+FO
+0 10 -1 10 -1 10 18 -11 -15 -29 5 4158 7119 SP
 -7 -1 -6 0 -1 0 29 45 39 -24 -15 -18 -7 0 -8 -1 -7 0 -7 -1 -2 3 -1 -3 12 4111 7155 SP
 3797 6794 M
 42 44 D
@@ -3859,8 +3881,8 @@ FO
 1 -8 D
 -11 -1 D
 FO
--6 -1 -5 0 12 -19 3 4290 5161 SP
--41 60 -23 10 -1 1 1 -18 17 8 12 -31 0 11 15 -13 15 -39 6 -1 10 4180 6789 SP
+0 5 -1 5 0 5 -6 -1 -5 0 12 -19 6 4290 5161 SP
+-1 3 0 3 0 3 -41 60 -23 10 -1 1 1 -18 17 8 12 -31 0 11 15 -13 15 -39 6 -1 13 4180 6789 SP
 4165 7021 M
 21 59 D
 -10 75 D
@@ -3883,11 +3905,11 @@ FO
 -19 -20 D
 0 8 D
 FO
--11 1 11 -7 2 4161 7079 SP
+0 1 0 2 0 1 -11 1 11 -7 5 4161 7079 SP
 8 1 9 1 8 0 9 1 -52 51 23 -40 -8 -13 -5 12 -1 -14 9 4303 7170 SP
 6 1 7 1 -2 5 8 11 -31 -15 5 -4 6 4398 7180 SP
-8 1 8 2 8 1 7 2 8 1 -16 3 17 24 -28 -7 10 50 -31 -31 10 4873 7207 SP
-2 12 -4 1 2 4876 7192 SP
+2 -11 3 -12 2 -11 8 1 8 2 8 1 7 2 8 1 -16 3 17 24 -28 -7 10 50 -31 -31 13 4873 7207 SP
+1 -3 1 -3 0 -4 2 12 -4 1 5 4876 7192 SP
 5139 5905 M
 -7 -1 D
 15 -34 D
@@ -3907,10 +3929,10 @@ FO
 12 -7 D
 1 -6 D
 FO
-23 -19 1 0 11 -1 -36 28 4 5192 5646 SP
-11 23 -9 9 -6 -11 3 5198 5618 SP
-11 -7 4 10 -19 16 3 5223 5498 SP
-22 -8 -24 17 2 5225 5488 SP
+0 -2 1 -2 0 -2 23 -19 1 0 11 -1 -36 28 7 5192 5646 SP
+1 -5 1 -6 1 -5 11 23 -9 9 -6 -11 6 5198 5618 SP
+1 -5 1 -4 1 -5 11 -7 4 10 -19 16 6 5223 5498 SP
+0 -2 1 -3 0 -2 22 -8 -24 17 5 5225 5488 SP
 {0.565 0.933 0.565 C} FS
 -24 -20 20 0 -3 -16 -7 7 -42 -24 9 27 7 33 15 -9 20 14 4 -11 10 4523 5172 SP
 {0.678 0.847 0.902 C} FS
@@ -4355,7 +4377,7 @@ FO
 -13 -22 40 -46 -19 39 21 -3 -29 31 5 5131 5789 SP
 {0.565 0.933 0.565 C} FS
 -20 33 16 -7 4 46 21 0 41 -48 -45 -26 -15 30 8 -32 -10 3 9 5127 5673 SP
-6 0 12 -19 1 -10 -8 16 -21 -17 5 29 6 4313 5143 SP
+6 0 12 -19 0 -3 1 -2 0 -2 0 -3 -8 16 -21 -17 5 29 9 4313 5143 SP
 2 1 2 -4 -7 3 3 4574 5166 SP
 4595 5168 M
 13 8 D
@@ -4449,8 +4471,8 @@ FO
 12 -7 D
 -262 1281 D
 -4 1 D
-2 12 D
--1 2 D
+2 13 D
+-1 1 D
 -31 -31 D
 10 50 D
 -28 -7 D
@@ -4646,9 +4668,9 @@ FO
 1 -8 D
 10 1 D
 FO
-15 -34 -7 -1 2 5139 5905 SP
--18 -36 -10 75 21 59 4 -52 -11 1 11 -7 6 4161 7079 SP
--28 13 8 22 10 -10 8 4 4 4288 5183 SP
+-2 9 -2 9 -2 8 15 -34 -7 -1 5 5139 5905 SP
+1 -10 0 -10 1 -10 -18 -36 -10 75 21 59 1 -13 1 -13 1 -13 1 -13 -11 1 11 -7 12 4161 7079 SP
+1 -7 0 -8 1 -7 -28 13 8 22 10 -10 8 4 7 4288 5183 SP
 -24 -20 20 0 -3 -16 -7 7 -42 -24 9 27 7 33 15 -9 20 14 4 -11 10 4523 5172 SP
 {0.678 0.847 0.902 C} FS
 5019 5457 M
@@ -6051,9 +6073,9 @@ P S
 -48 -11 D
 FO
 -1 -1 -1 0 3 0 3 5268 5274 SP
--3 -4 -8 22 1 -40 17 -14 -1 8 -4 2 2 5 7 5194 5639 SP
--20 15 -1 0 5 38 -11 -27 -18 7 48 -48 0 -1 7 5147 5870 SP
--7 -1 8 -5 2 5138 5911 SP
+-1 6 -1 5 -1 5 -3 -4 -8 22 1 -40 17 -14 0 2 -1 2 0 2 0 2 -4 2 2 5 13 5194 5639 SP
+-1 4 -1 4 -1 4 -20 15 -1 0 5 38 -11 -27 -18 7 48 -48 0 -1 10 5147 5870 SP
+0 1 0 2 0 1 -7 -1 8 -5 5 5138 5911 SP
 4874 7205 M
 0 4 D
 -1 -2 D
@@ -6558,9 +6580,9 @@ FO
 44 15 D
 -302 867 D
 FO
-32 -23 11 -24 0 -26 -12 -17 4 5848 6599 SP
--1 -2 0 4 2 4874 7205 SP
--4 2 2 5 2 5194 5639 SP
+-8 23 -7 22 -8 23 32 -23 11 -24 0 -26 -12 -17 7 5848 6599 SP
+1 -1 -1 -2 0 4 3 4874 7205 SP
+0 -2 0 -1 1 -2 -4 2 2 5 5 5194 5639 SP
 -2 2 2 -1 2 5223 5497 SP
 {0.678 0.847 0.902 C} FS
 5566 5926 M
@@ -7157,7 +7179,7 @@ S
 8 -5 D
 -7 -1 D
 S
--44 6 -6 -37 34 -17 6 -23 8 15 5 -28 35 -23 7 5879 6509 SP
+-9 27 -9 27 -10 27 -44 6 -6 -37 34 -17 6 -23 8 15 5 -28 35 -23 10 5879 6509 SP
 5807 6715 M
 1 0 D
 27 46 D
@@ -7186,7 +7208,8 @@ S
 36 21 D
 36 50 D
 4 37 D
-89 -175 D
+44 -88 D
+45 -87 D
 -47 -79 D
 -36 2 D
 21 -10 D
@@ -7235,7 +7258,7 @@ S
 -25 -36 D
 -41 116 D
 FO
--2 9 -1 -4 2 6398 7356 SP
+1 -2 0 -1 1 -1 -2 9 -1 -4 5 6398 7356 SP
 6508 6116 M
 -36 10 D
 -70 -15 D
@@ -7270,8 +7293,8 @@ FO
 {0.565 0.933 0.565 C} FS
 6398 7356 M
 -1 -4 D
--2 9 D
--3 6 D
+-3 11 D
+-2 4 D
 -47 -79 D
 -36 2 D
 21 -10 D
@@ -7336,8 +7359,8 @@ FO
 134 66 D
 -729 1434 D
 FO
-4 37 36 50 1 1 35 20 -9 -5 36 -19 -6 15 27 -54 4 -72 -33 -38 -69 13 11 6277 7594 SP
--39 23 5 11 -17 12 -13 -14 -30 9 -38 82 -36 21 -7 59 26 98 27 46 1 0 11 5807 6715 SP
+-7 13 -6 13 -7 13 4 37 36 50 1 1 35 20 -9 -5 36 -19 -6 15 27 -54 4 -72 -33 -38 -69 13 14 6277 7594 SP
+30 -87 30 -87 31 -87 -39 23 5 11 -17 12 -13 -14 -30 9 -38 82 -36 21 -7 59 26 98 27 46 1 0 14 5807 6715 SP
 {0.678 0.847 0.902 C} FS
 6508 6116 M
 -36 10 D
@@ -7619,8 +7642,8 @@ FO
 -401 581 D
 -462 0 D
 FO
--13 3 -26 23 0 29 10 -30 3 27 5 6303 7542 SP
--1 -3 -2 9 2 6395 7361 SP
+6 -13 7 -13 6 -13 -13 3 -26 23 0 29 10 -30 3 27 8 6303 7542 SP
+1 -1 0 -2 1 -1 -1 -3 -2 9 5 6395 7361 SP
 {0.678 0.847 0.902 C} FS
 7154 7172 M
 -15 25 D
@@ -7769,9 +7792,9 @@ S
 45 -16 D
 P S
 {0.565 0.933 0.565 C} FS
-0 581 401 -581 2 7158 7608 SP
+0 581 78 -113 251 -363 72 -105 4 7158 7608 SP
 {0.678 0.847 0.902 C} FS
-0 634 -438 -634 2 438 7608 SP
+0 634 -334 -482 -104 -152 3 438 7608 SP
 1327 7608 M
 -311 -610 D
 1 18 D
@@ -7938,7 +7961,8 @@ P S
 -41 23 D
 -125 74 D
 0 791 D
-438 634 D
+334 482 D
+104 152 D
 889 0 D
 FO
 {0.565 0.933 0.565 C} FS
@@ -8935,7 +8959,7 @@ P S
 -149 29 D
 31 150 D
 FO
-15 -2 -15 5 2 3250 4327 SP
+0 -1 0 -1 15 -2 -15 5 4 3250 4327 SP
 3246 4270 M
 -33 -4 D
 12 -11 D
@@ -8970,7 +8994,7 @@ FO
 48 -6 D
 -2 -30 D
 FO
-18 13 -17 0 2 3232 4063 SP
+0 -3 0 -3 0 -4 18 13 -17 0 5 3232 4063 SP
 {0.565 0.933 0.565 C} FS
 35 -19 -29 -23 -15 -1 -42 33 36 2 19 -27 12 9 -31 20 14 6 9 2475 3588 SP
 {0.678 0.847 0.902 C} FS
@@ -9143,8 +9167,8 @@ FO
 30 -2 D
 58 866 D
 FO
-22 -13 3 -14 -13 8 23 -24 -37 17 5 3239 4163 SP
-4 13 24 -68 -11 4 12 -11 -33 -4 5 3246 4270 SP
+1 6 0 6 1 7 22 -13 3 -14 -13 8 23 -24 -37 17 8 3239 4163 SP
+1 16 1 17 1 16 4 13 24 -68 -11 4 12 -11 -33 -4 8 3246 4270 SP
 2913 5178 M
 -3 -9 D
 -34 -17 D
@@ -9258,8 +9282,8 @@ FO
 FO
 -5 1 9 3 1 -4 3 2887 5181 SP
 -10 2 -10 1 5 18 12 2 14 -22 -2 -2 6 2853 5186 SP
--5 40 12 -9 2 2077 4049 SP
--16 16 -11 63 52 46 3 2050 3913 SP
+-1 -7 -2 -8 -2 -8 -5 40 12 -9 5 2077 4049 SP
+-6 -31 -7 -31 -6 -31 -16 16 -11 63 52 46 6 2050 3913 SP
 1968 3514 M
 27 -16 D
 71 25 D
@@ -9690,8 +9714,8 @@ P S
 {0.678 0.847 0.902 C} FS
 3233 4076 M
 4 2 D
--2 19 D
-2 40 D
+-2 29 D
+2 30 D
 9 3 D
 -7 23 D
 3 41 D
@@ -10186,7 +10210,7 @@ FO
 119 7 D
 -60 887 D
 FO
-11 18 -2 -55 -7 -1 3 4358 4150 SP
+0 9 -1 10 0 9 11 18 -2 -55 -7 -1 6 4358 4150 SP
 3292 4949 M
 2 5 D
 20 -5 D
@@ -10392,7 +10416,7 @@ FO
 -71 -23 D
 -23 -341 D
 FO
--6 2 4 25 4 0 3 3248 4300 SP
+0 -7 -1 -6 0 -7 -6 2 4 25 4 0 6 3248 4300 SP
 3242 4204 M
 18 -15 D
 -11 -10 D
@@ -10411,8 +10435,8 @@ FO
 -36 -14 D
 -4 -66 D
 FO
-0 1 -7 22 9 3 3 3237 4137 SP
--2 19 4 2 2 3233 4076 SP
+0 -6 -1 -6 0 -7 0 1 -7 22 9 3 6 3237 4137 SP
+0 -5 0 -6 -1 -5 -2 19 4 2 5 3233 4076 SP
 3454 4153 M
 28 -2 D
 2 23 D
@@ -11061,7 +11085,7 @@ P S
 -33 2 D
 34 9 D
 P S
--45 -22 36 8 11 -14 3 4360 4112 SP
+0 7 -1 7 0 7 -45 -22 36 8 11 -14 6 4360 4112 SP
 4302 5142 M
 10 -3 D
 1 4 D
@@ -11467,7 +11491,7 @@ P S
 -23 41 D
 5 18 D
 P S
-1 1 -4 24 -18 1 -13 -23 33 -3 5 5271 5274 SP
+1 1 -1 6 -1 6 -1 6 -1 6 -18 1 -13 -23 33 -3 8 5271 5274 SP
 9 2 10 2 10 3 9 2 0 12 -37 0 -13 -13 2 -10 8 5420 5306 SP
 6109 5278 M
 81 -55 D
@@ -12132,7 +12156,7 @@ P S
 4 29 D
 -25 -5 D
 P S
--17 -12 0 -20 19 -1 7 16 4 7533 5122 SP
+-2 4 -2 4 -2 5 -17 -12 0 -20 19 -1 7 16 7 7533 5122 SP
 {0.565 0.933 0.565 C} FS
 7533 5122 M
 7 16 D
@@ -12212,11 +12236,11 @@ FO
 -368 -1052 D
 FO
 {0.565 0.933 0.565 C} FS
-20 -1 -23 -7 2 842 4004 SP
-17 1 8 -11 -9 -13 22 7 3 -13 -21 -5 -5 -17 -35 -5 8 867 4076 SP
-54 -11 -19 -22 -24 -3 4 11 -12 1 -12 -10 0 6 7 880 4114 SP
-18 -13 -22 -6 13 -21 -22 4 4 963 4350 SP
-22 20 -11 -28 -16 -7 0 1 4 1009 4483 SP
+1 2 0 2 1 2 20 -1 -23 -7 5 842 4004 SP
+5 14 5 14 5 14 17 1 8 -11 -9 -13 22 7 3 -13 -21 -5 -5 -17 -35 -5 11 867 4076 SP
+2 7 3 7 2 7 54 -11 -19 -22 -24 -3 4 11 -12 1 -12 -10 0 6 10 880 4114 SP
+4 9 3 9 3 9 18 -13 -22 -6 13 -21 -22 4 7 963 4350 SP
+1 4 2 4 1 3 22 20 -11 -28 -16 -7 0 1 7 1009 4483 SP
 867 4076 M
 -35 -5 D
 -5 -17 D
@@ -12697,8 +12721,8 @@ FO
 -131 45 D
 105 300 D
 FO
--63 -19 58 3 2 847 4020 SP
--32 -5 28 -5 2 871 4086 SP
+1 4 2 4 1 4 -63 -19 58 3 5 847 4020 SP
+1 3 1 2 1 3 -32 -5 28 -5 5 871 4086 SP
 950 4314 M
 4 -3 D
 17 6 D
@@ -12738,8 +12762,8 @@ FO
 -2 11 D
 70 200 D
 FO
--37 6 23 -17 -8 -20 -41 6 -4 -19 43 -9 -10 -14 -9 12 5 -26 -14 -13 19 6 -12 -8 4 -23 13 1004 4469 SP
-10 -8 14 -25 60 -3 -5 13 -14 -10 -36 5 -6 14 -21 25 8 2075 4038 SP
+21 59 10 30 -37 6 23 -17 -8 -20 -41 6 -4 -19 43 -9 -10 -14 -9 12 5 -26 -14 -13 19 6 -12 -8 4 -23 15 1004 4469 SP
+0 -3 -1 -3 0 -3 10 -8 14 -25 60 -3 -5 13 -14 -10 -36 5 -6 14 -21 25 11 2075 4038 SP
 1 0 1 2049 3913 SP
 {0.565 0.933 0.565 C} FS
 1541 5060 M
@@ -16383,7 +16407,7 @@ S
 -144 53 D
 -30 31 D
 P S
--25 -4 -91 -95 0 -251 38 -51 43 3 26 -30 31 -6 82 9 16 -24 38 -3 10 7285 2485 SP
+-40 113 -39 113 -40 113 -25 -4 -91 -95 0 -251 38 -51 43 3 26 -30 31 -6 82 9 16 -24 38 -3 13 7285 2485 SP
 3 1 -9 40 6 54 16 2 -16 11 -9 61 19 128 -23 9 18 -14 -22 -123 15 -46 -10 -82 9 -42 13 7495 3943 SP
 7359 3720 M
 17 11 D
@@ -17386,8 +17410,8 @@ FO
 -196 16 D
 FO
 -8 1 -7 1 -8 1 -7 1 -8 1 -7 1 -7 1 -13 27 9 -6 -4 14 10 2 33 -27 26 -4 -2 -15 14 2116 1357 SP
--3 1 -4 1 9 9 1 0 4 1545 1447 SP
--31 33 41 17 2 1493 1190 SP
+-1 -2 0 -3 -1 -3 -3 1 -4 1 9 9 1 0 7 1545 1447 SP
+-3 -13 -3 -12 -2 -13 -31 33 41 17 5 1493 1190 SP
 31 -14 11 -42 26 17 21 -32 -73 -40 -68 -10 22 9 -18 5 13 20 -16 12 -16 -9 -17 18 48 63 28 14 8 -12 15 1972 1244 SP
 26 -13 -2 -17 -26 -19 -29 -3 -2 25 5 1747 1218 SP
 3007 714 M
@@ -17650,9 +17674,9 @@ FO
 -48 -714 D
 122 0 D
 FO
-1 0 53 -52 1 -23 -43 2 15 24 -13 6 -3 29 -10 1 8 4560 1151 SP
-3 -1 -2 -17 2 4556 1211 SP
--8 0 -1 24 17 -23 3 4537 1254 SP
+0 4 0 3 -1 3 1 0 53 -52 1 -23 -43 2 15 24 -13 6 -3 29 -10 1 11 4560 1151 SP
+0 5 -1 4 0 5 3 -1 -2 -17 5 4556 1211 SP
+-8 0 0 6 0 6 -1 6 0 6 17 -23 6 4537 1254 SP
 -8 0 -8 0 -9 -1 -8 0 -8 0 -9 -1 -8 0 14 42 46 -26 6 -13 10 4253 1239 SP
 3902 1231 M
 84 -225 D
@@ -18058,7 +18082,7 @@ S
 -1709 0 D
 -76 1138 D
 FO
--1 -17 3 -3 2 4554 1231 SP
+0 5 0 5 -1 5 -1 -17 3 -3 5 4554 1231 SP
 {0.565 0.933 0.565 C} FS
 5395 345 M
 7 -15 D
@@ -18195,8 +18219,8 @@ FO
 -12 -1 -12 -1 -21 13 58 -9 4 5061 1301 SP
 4554 1231 M
 3 -3 D
--1 -17 D
-1 -18 D
+-1 -26 D
+1 -9 D
 29 -9 D
 -6 -20 D
 19 -2 D
@@ -18304,7 +18328,7 @@ FO
 -174 -13 D
 1 -24 D
 FO
--11 1 -8 15 18 -3 3 4561 1138 SP
+0 -3 0 -4 0 -3 -11 1 -8 15 18 -3 6 4561 1138 SP
 5395 345 M
 7 -15 D
 192 51 D
@@ -19056,7 +19080,7 @@ P S
 93 265 D
 153 -52 D
 FO
-34 34 37 55 -3 60 -26 58 4 1503 1240 SP
+-10 -52 -11 -51 -10 -52 34 34 37 55 -3 60 -26 58 7 1503 1240 SP
 {0.565 0.933 0.565 C} FS
 1383 653 M
 -27 -5 D
@@ -21195,14 +21219,16 @@ PSL_font_encode 38 get 0 eq {ISO-8859-5_Encoding /LinLibertineOB /LinLibertineOB
 0 0 M 7559 0 D S
 0 7608 M 7559 0 D S
 0 setlinecap
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy europe-capitals-ru.csv -R-7/31/64/66/r -JL15/50/40/60/16c -i0,1 -Sc0.15c -G196/80/80 -O -K
+%%GMT: psxy europe-capitals-ru.csv -R-7/31/64/66/r -JL15/50/40/60/16c -i0,1 -Sc0.15c -G196/80/80 -O -K
 %%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
@@ -21254,14 +21280,16 @@ PSL_eoclip N
 35 4513 3638 Sc
 35 3932 2366 Sc
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-7/31/64/66/r -JL15/50/40/60/16c -Sc0.15c -W0.25p -O -K
+%%GMT: psxy -R-7/31/64/66/r -JL15/50/40/60/16c -Sc0.15c -W0.25p -O -K
 %%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
@@ -21288,14 +21316,16 @@ O1
 35 3719 420 Sc
 35 4953 4165 Sc
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R-7/31/64/66/r -JL15/50/40/60/16c -Sc0.15c -W1.25p -O -K
+%%GMT: psxy -R-7/31/64/66/r -JL15/50/40/60/16c -Sc0.15c -W1.25p -O -K
 %%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
@@ -21320,14 +21350,16 @@ O1
 35 3976 2831 Sc
 35 4513 3638 Sc
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R-7/31/64/66/r -JL15/50/40/60/16c -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K
+%%GMT: pstext -R-7/31/64/66/r -JL15/50/40/60/16c -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K
 %%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_5
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
@@ -21343,166 +21375,175 @@ PSL_font_encode 36 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOI /LinBiolinumOI P
 117 F36
 V
 (Берлин) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-3656 3710 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+3656 3710 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 3656 3710 M (Берлин) Z
 V
 (Брюссель) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-2543 3482 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+2543 3482 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 2543 3482 M (Брюссель) Z
 V
 (Бухарест) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-5387 2259 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+5387 2259 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 5387 2259 M (Бухарест) Z
 V
 (Будапешт) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-4378 2748 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+4378 2748 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 4378 2748 M (Будапешт) Z
 V
 (Лондон) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-2028 3701 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+2028 3701 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 2028 3701 M (Лондон) Z
 V
 (Мадрид) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-1072 1706 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+1072 1706 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 1072 1706 M (Мадрид) Z
 V
 (Париж) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-2236 3139 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+2236 3139 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 2236 3139 M (Париж) Z
 V
 (Прага) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-3773 3240 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+3773 3240 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 3773 3240 M (Прага) Z
 V
 (Рим) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-3480 1656 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+3480 1656 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 3480 1656 M (Рим) Z
 V
 (София) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-5042 1873 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+5042 1873 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 5042 1873 M (София) Z
 V
 (Вена) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-4023 2878 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+4023 2878 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 4023 2878 M (Вена) Z
 V
 (Варшава) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
-/PSL_dx 6 def
-/PSL_dy 6 def
-4560 3685 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 6 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
+/PSL_dx 2 def
+/PSL_dy 2 def
+4560 3685 T PSL_dim_h PSL_dim_d sub PSL_dy 2 mul add PSL_dim_x1 PSL_dim_x0 sub PSL_dx 2 mul add 2 PSL_dim_x0 PSL_dx sub PSL_dim_d PSL_dy sub SB
 U
 4560 3685 M (Варшава) Z
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R-7/31/64/66/r -JL15/50/40/60/16c -Gwhite -Dx7.9c/12.6c/8.0c/3.4c/BL -C0.3c/0.4c -L1.2 -F -O legend.txt
+%%GMT: pslegend -R-7/31/64/66/r -JL15/50/40/60/16c -Gwhite -Dx7.9c/12.6c/8.0c/BL -C0.3c/0.4c -L1.2 -F -O legend.txt
 %%PROJ: lcc -34.45308791 64.10000000 30.90000000 72.28949544 -2143629.360 2122739.224 -1792683.700 2501293.818 +proj=lcc +lat_1=40 +lat_2=60 +lat_0=50 +lon_0=15 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_6
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
+3732 5953 T
 25 W
 {1 A} FS
 O1
-1606 3780 5622 6756 Sr
+1632 3780 1890 816 Sr
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/6.29921/0/6.33998 -Jx1i -O -K -N -S @GMTAPI@-000001
+%%GMT: psxy -R0/6.29921/0/6.33998 -Jx1i -O -K -N -S @GMTAPI@-000001
 %%PROJ: xy 0.00000000 6.29921000 0.00000000 6.33998000 0.000 6.299 0.000 6.340 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_7
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
 4 W
 {0.769 0.314 0.314 C} FS
 O1
-35 3945 7066 Sc
+35 213 1140 Sc
 21 W
-35 5835 7066 Sc
+35 2102 1140 Sc
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  N -R0/6.29921/0/6.33998 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002
+%%GMT: pstext -R0/6.29921/0/6.33998 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002
 %%PROJ: xy 0.00000000 6.29921000 0.00000000 6.33998000 0.000 6.299 0.000 6.340 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_8
 0 setlinecap
 1 setlinejoin
 3.32551 setmiterlimit
-5622 7259 M PSL_font_encode 37 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOB /LinBiolinumOB PSL_reencode PSL_font_encode 37 1 put} if
+1890 1332 M PSL_font_encode 37 get 0 eq {ISO-8859-5_Encoding /LinBiolinumOB /LinBiolinumOB PSL_reencode PSL_font_encode 37 1 put} if
 167 F37
 (Population of the European Union capital cities) bc Z
-4110 7020 M PSL_font_encode 35 get 0 eq {ISO-8859-5_Encoding /LinBiolinumO /LinBiolinumO PSL_reencode PSL_font_encode 35 1 put} if
+378 1093 M PSL_font_encode 35 get 0 eq {ISO-8859-5_Encoding /LinBiolinumO /LinBiolinumO PSL_reencode PSL_font_encode 35 1 put} if
 133 F35
 (\< 1 Million inhabitants) Z
-6000 7020 M (\> 1 Million inhabitants) Z
-3874 6789 M 133 F37
+2268 1093 M (\> 1 Million inhabitants) Z
+142 862 M 133 F37
 (Population in Millions) Z
-3874 6629 M 133 F35
+142 702 M 133 F35
 (Берлин:) Z
-4504 6629 M (3.44) Z
-5134 6629 M (Брюссель:) Z
-5764 6629 M (1.05) Z
-6394 6629 M (Бухарест:) Z
-7024 6629 M (1.94) Z
-3874 6469 M (Будапешт:) Z
-4504 6469 M (1.72) Z
-5134 6469 M (Лондон:) Z
-5764 6469 M (7.56) Z
-6394 6469 M (Мадрид:) Z
-7024 6469 M (3.26) Z
-3874 6309 M (Париж:) Z
-4504 6309 M (2.20) Z
-5134 6309 M (Прага:) Z
-5764 6309 M (1.29) Z
-6394 6309 M (Рим:) Z
-7024 6309 M (2.75) Z
-3874 6149 M (София:) Z
-4504 6149 M (1.40) Z
-5134 6149 M (Вена:) Z
-5764 6149 M (1.69) Z
-6394 6149 M (Варшава:) Z
-7024 6149 M (1.71) Z
+772 702 M (3.44) Z
+1402 702 M (Брюссель:) Z
+2031 702 M (1.05) Z
+2661 702 M (Бухарест:) Z
+3291 702 M (1.94) Z
+142 542 M (Будапешт:) Z
+772 542 M (1.72) Z
+1402 542 M (Лондон:) Z
+2031 542 M (7.56) Z
+2661 542 M (Мадрид:) Z
+3291 542 M (3.26) Z
+142 382 M (Париж:) Z
+772 382 M (2.20) Z
+1402 382 M (Прага:) Z
+2031 382 M (1.29) Z
+2661 382 M (Рим:) Z
+3291 382 M (2.75) Z
+142 222 M (София:) Z
+772 222 M (1.40) Z
+1402 222 M (Вена:) Z
+2031 222 M (1.69) Z
+2661 222 M (Варшава:) Z
+3291 222 M (1.71) Z
+%%EndObject
+-3732 -5953 T
+%%EndObject
 %%PageTrailer
 U
 showpage

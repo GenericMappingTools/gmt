@@ -35,7 +35,7 @@ grdimage key.nc -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y
 	-UL/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > $ps
 pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
 # Place an explanatory legend below
-pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/0.3i/TC -Y-0.2i -Fthick >> $ps << END
+pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/TC -Y-0.2i -Fthick >> $ps << END
 N 3
 S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]
 S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]
