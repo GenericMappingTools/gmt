@@ -709,7 +709,7 @@ be at least half of a full interval.
 \label{sec:custaxes}
 Irregularly spaced annotations or annotations based on look-up tables can be implemented using
 the \emph{custom} annotation mechanism.  Here, we given the \textbf{c} (custom) type to the \Opt{B}
-option followed by a filename that contains the annotations (and or tick/grid-lines) for one axis.
+option followed by a filename that contains the annotations (and tick/grid-lines specifications) for one axis.
 The file can contain any number of comments (lines starting with \#) and any number of records of
 the format
 \\
@@ -738,7 +738,7 @@ with an interval annotations on the \emph{x}-axis and irregular annotations on t
 
 \GMTfig[h]{GMT_-P}{Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.}
 
-\Opt{P} selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
+The \Opt{P} option selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
 Default is Landscape, see \GMTprog{gmt.conf} to change this.}.  In general,
 a plot has an \emph{x}-axis increasing from left to
 right and a \emph{y}-axis increasing from bottom to top.  If the
@@ -812,7 +812,7 @@ of verbosity.
 \index{Offset, plot}
 \GMTfig[h]{GMT_-XY}{Plot origin can be translated freely with \Opt{X} \Opt{Y}.}
 
-\Opt{X} and \Opt{Y} shift origin of plot by (\emph{xoff},\emph{yoff})
+The \Opt{X} and \Opt{Y} options shift origin of plot by (\emph{xoff},\emph{yoff})
 inches (Default is (\textbf{MAP\_ORIGIN\_X}, \textbf{MAP\_ORIGIN\_Y}) for new plots\footnote{Ensures that
 boundary annotations do not fall off the page.} and (0,0) for overlays (\Opt{O})).
 By default, all translations are relative to the previous origin
@@ -1175,7 +1175,7 @@ projection, specified as
 
 \vspace{\baselineskip}
 
-\texttt{-Joc170W/25:30S/33W/56:20N/1:500000} \\
+\texttt{-Joc170W/25:30S/33W/56:20N/1:500000}
 
 \vspace{\baselineskip}
 \noindent
@@ -1284,16 +1284,16 @@ such as counts of points read, names of data files
 processed, convergence of iterative solutions, and the like.
 Since these messages are written to \emph{stderr},  the
 verbose talk remains separate from your data output.
-You may optionally choose among five levels of \emph{verbosity}; each level
-adds more messages with an increasing level of details.  The levels are
+You may optionally choose among five models of \emph{verbosity}; each mode
+adds more messages with an increasing level of details.  The modes are
 \begin{description}
-	\item [0]: Complete silence, not even fatal error messages.
-	\item [1]: Fatal error messages.
-	\item [2]: Warnings and progress messages [Default].
-	\item [3]: Detailed progress messages.
-	\item [4]: Debugging messages.
+	\item [q]: Complete silence, not even fatal error messages.
+	\item [n]: Warnings and progress messages [Default].
+	\item [c]: Warnings about deprecated usage (if compiled for compatibility).
+	\item [l]: Detailed progress messages.
+	\item [d]: Debugging messages.
 \end{description}
-The verbosity is cumulative, i.e., level 3 means all messages of levels 0--3
+The verbosity is cumulative, i.e., mode {\bf l} means all messages of mode {\bf n} as well.
 will be reported.
 
 \section{Program output}
@@ -1386,8 +1386,8 @@ directly into the plot file.  By default, \GMT\ will produce
 freeform \PS\ output with embedded printer directives.  To
 produce Encapsulated \PS\ (EPS) that can be imported into graphics programs such as
 \progname{CorelDraw}, \progname{Illustrator} or \progname{InkScape} for further
-embellishment, change the \textbf{PS\_MEDIA} setting in the \filename{gmt.conf}
-file.  See Appendix~\ref{app:C} and the \GMTprog{gmt.conf} man page for more details.
+embellishment, simply run \GMTprog{ps2raster} \Opt{Te}.  See Appendix~\ref{app:C}
+for an extensive discussion of converting \PS\ to other formats.
 
 \section{Specifying pen attributes}
 

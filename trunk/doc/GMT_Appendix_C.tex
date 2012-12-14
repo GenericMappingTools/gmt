@@ -18,7 +18,7 @@ Now that you made some nice graphics with \GMT, it is time to add them to a docu
 \item When the aim is to display the graphics on a computer screen or present it using a projector, it is wise to convert the \PS\ into a raster format. Although applications like \progname{PowerPoint} can do this for you, you can best take the conversion into your own hands for the best results.
 \end{itemize}
 A large number of questions to the GMT-Help mailing list are related to these rendering issues, showing that something as seemingly straightforward as incorporating a \PS\ file into a document is a far from trivial exercise.
-This Chapter will show how to include \GMT\ graphics into documents and how to achieve the best quality results.
+This Appendix will show how to include \GMT\ graphics into documents and how to achieve the best quality results.
 
 \section{Making \gmt\ Encapsulated \PS\ Files}
 \label{sec:eps}
@@ -26,12 +26,10 @@ This Chapter will show how to include \GMT\ graphics into documents and how to a
 \index{PostScript@\PS!BoundingBox}
 \index{EPS file}
 
-\GMT\ can produce both freeform \PS\ files and the more restricted Encapsulated \PS\ files (EPS).  The former is intended to be sent to a printer or \PS\ previewer,
-while the latter is intended to be included in another document (but should also be able to print and preview).  You control what kind of \PS\ that \GMT\ produces by
-manipulating the \textbf{PS\_MEDIA} parameter (see the \GMTprog{gmt.conf} man page for how this is accomplished).  Note that a freeform \PS\ file may contain special operators (such as \texttt{Setpagedevice}) that is specific to printers (e.g., selection of paper tray). Some previewers (among them, Sun's \progname{pageview}) do not understand these valid instructions and may fail to image the file. Also, embedding freeform \PS\ with such instructions in it into a larger document can create printing to fail. While you could choose another viewer (we recommend \progname {ghostview}) to view single plots prepared by \GMT, it is generally wiser anyhow to select EPS output when you are creating a plot intended for inclusion into a larger document. Some programs (and some publishers as well) do not allow the use of instructions like \texttt{Setpagedevice} as part of embedded graphics.
+\GMT\ produces freeform \PS\ files. Note that a freeform \PS\ file may contain special operators (such as \texttt{Setpagedevice}) that is specific to printers (e.g., selection of paper tray). Some previewers (among them, Sun's \progname{pageview}) may not understand these valid instructions and may fail to image the file. Also, embedding freeform \PS\ with such instructions in it into a larger document can cause printing to fail. While you could choose another viewer (we recommend \progname {ghostview}) to view single plots prepared by \GMT, it is generally wiser to convert \PS\ to EPS output when you are creating a plot intended for inclusion into a larger document. Some programs (and some publishers as well) do not allow the use of instructions like \texttt{Setpagedevice} as part of embedded graphics.
 
 An EPS file that is to be placed into another document needs to have correct bounding box parameters.  These are found in the \PS\ Document Comment \%\%BoundingBox.  Applications that generate EPS files should set these parameters correctly.  Because \GMT\
-makes the \PS\ files on the fly, often with several overlays, it is not possible to do so accurately.  However, \GMT\ does make an effort to ensure that the BoundingBox is large enough to contain the entire composite plot\footnote{In contrast, regular \GMT\ \PS\ files simply have a \%\%BoundingBox that equal the size of the chosen paper.}. Therefore, if you need a ``tight'' BoundingBox you need to post-process your \PS\ file.  There are several ways in which this can be accomplished.
+makes the \PS\ files on the fly, often with several overlays, it is not possible to do so accurately.  Therefore, if you need and EPS version with a ``tight'' BoundingBox you need to post-process your \PS\ file.  There are several ways in which this can be accomplished.
 
 \begin{itemize}
 \item Programs such as Adobe \progname{Illustrator}, Aldus \progname{Freehand}, and Corel \progname{Draw} will allow you to edit the BoundingBox graphically.
@@ -71,7 +69,7 @@ you will not be able to view the figure on-screen, but it will print correctly.
 \index{PNG file}
 \index{PostScript@\PS!rendering}
 
-Since Adobe's PDF (Portable Document Format) seems to become the \emph{de facto} standard for vector graphics, you are often well off converting \GMT\ produced \PS\ files to PDF. Being both vector formats (i.e., they basically describe all objects, text and graphics as lines and curves), such conversion sounds awfully straightforward and not worth a full section in this document. But experience has shown differently, since most converters cut corners by using the same tool (Aladdin's \progname{ghostscript}) with basic default options that are not devised to produce the best quality PDF files.
+Since Adobe's PDF (Portable Document Format) seems to have become the \emph{de facto} standard for vector graphics, you are often well off converting \GMT\ produced \PS\ files to PDF. Being both vector formats (i.e., they basically describe all objects, text and graphics as lines and curves), such conversion sounds awfully straightforward and not worth a full section in this document. But experience has shown differently, since most converters cut corners by using the same tool (Aladdin's \progname{ghostscript}) with basic default options that are not devised to produce the best quality PDF files.
 
 For some applications it is practical or even essential that you convert your \PS\ file into a raster format, such as GIF (Graphics Interchange Format), TIFF (Tagged Image File Format), PNG (Portable Network Graphics), or JPEG (Joint Photographic Experts Group). A web page is better served with a raster image that will immediately show on a web browser, than with a \PS\ file that needs to be downloaded to view, despite the better printing quality of the \PS\ image. A less obvious reason to convert your image to a raster format is to by-pass \progname{PowerPoint}'s rendering engine in case you want to embed the image into a presentation.
 
