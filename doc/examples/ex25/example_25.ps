@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
-%%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdimage
+%%BoundingBox: 0 0 595 842
+%%HiResBoundingBox: 0 0 595 842
+%%Title: GMT v5.0.1b_r10690M [64-bit] [C4] Document from grdimage
 %%Creator: GMT
-%%For: remko
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:42 2011
+%%CreationDate: Fri Dec 14 11:57:45 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -111,41 +111,46 @@
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
 }!
-/Standard+_Encoding [
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
+}!
+/ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
-/.notdef	/threequarters	/threesuperior	/trademark	/twosuperior	/yacute		/ydieresis	/zcaron
+/.notdef	/bullet		/ellipsis	/trademark	/emdash		/endash		/fi		/zcaron
 /space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
-/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash
+/parenleft	/parenright	/asterisk	/plus		/comma		/minus		/period		/slash
 /zero		/one		/two		/three		/four		/five		/six		/seven
 /eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
 /at		/A		/B		/C		/D		/E		/F		/G
 /H		/I		/J		/K		/L		/M		/N		/O
 /P		/Q		/R		/S		/T		/U		/V		/W
 /X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
-/quoteleft	/a		/b		/c		/d		/e		/f		/g
+/quoteleft	/a		/b		/c 		/d		/e		/f		/g
 /h		/i		/j		/k		/l		/m		/n		/o
 /p		/q		/r		/s		/t		/u		/v		/w
-/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/florin
-/Atilde		/Ccedilla	/Eth		/Lslash		/Ntilde		/Otilde		/Scaron		/Thorn
-/Yacute		/Ydieresis	/Zcaron		/atilde		/brokenbar	/ccedilla	/copyright	/degree
-/divide		/eth		/logicalnot	/lslash		/minus		/mu		/multiply	/ntilde
-/onehalf	/onequarter	/onesuperior	/otilde		/plusminus	/registered	/scaron		/thorn
-/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section
-/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl
-/Aacute		/endash		/dagger		/daggerdbl	/periodcentered	/Acircumflex	/paragraph	/bullet
-/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/Adieresis	/questiondown
-/Agrave		/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
-/dieresis	/Eacute		/ring		/cedilla	/Ecircumflex	/hungarumlaut	/ogonek		/caron
-/emdash		/Edieresis	/Egrave		/Iacute		/Icircumflex	/Idieresis	/Igrave		/Oacute
-/Ocircumflex	/Odieresis	/Ograve		/Uacute		/Ucircumflex	/Udieresis	/Ugrave		/aacute
-/acircumflex	/AE		/adieresis	/ordfeminine	/agrave		/eacute		/ecircumflex	/edieresis
-/egrave		/Oslash		/OE		/ordmasculine	/iacute		/icircumflex	/idieresis	/igrave
-/oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
-/udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/scaron
+/OE		/dagger		/daggerdbl	/Lslash		/fraction	/guilsinglleft	/Scaron		/guilsinglright
+/oe		/Ydieresis	/Zcaron		/lslash		/perthousand	/quotedblbase	/quotedblleft	/quotedblright
+/dotlessi	/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
+/dieresis	/quotesinglbase	/ring		/cedilla	/quotesingle	/hungarumlaut	/ogonek		/caron
+/space		/exclamdown	/cent		/sterling	/currency	/yen		/brokenbar	/section
+/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron
+/degree		/plusminus	/twosuperior	/threesuperior	/acute		/mu		/paragraph	/periodcentered
+/cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown
+/Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla
+/Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis
+/Eth		/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/multiply
+/Oslash		/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Yacute		/Thorn		/germandbls
+/agrave		/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/ccedilla
+/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis
+/eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
+/oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -185,6 +190,7 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
+/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -554,34 +560,35 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
+PSLevel 1 gt { << /PageSize [595 842] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
 %%Page: 1 1
 
 %%BeginPageSetup
-V 612 0 T 90 R 0.06 0.06 scale
+V 595 0 T 90 R 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 13200 def
-/PSL_page_ysize 10200 def
+/PSL_page_xsize 14033 def
+/PSL_page_ysize 9917 def
 0 A
 FQ
 O0
 1200 1440 TM
 
 % PostScript produced by:
-%%GMT:  grdimage key.nc -JKs180/9i -B60/30:.Antipodal comparisons:WsNE -K -Ckey.cpt -Y1.2i -U/-0.75i/-0.95i/Example 25 in Cookbook -nn
+%%GMT: grdimage key.nc -JKs180/9i -B60/30:.Antipodal comparisons:WsNE -K -Ckey.cpt -Y1.2i -UL/-0.75i/-0.95i/Example 25 in Cookbook -nn
 %%PROJ: eck6 0.00000000 360.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=180 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
 -900 -1140 T
 4 W
 /PSL_g_w 438 def
 /PSL_g_h 180 def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(  Version 5  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
+(  2012 Dec 14 11:57:45  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
 {0 A} FS
 O1
 180 438 219 90 Sr
@@ -603,7 +610,7 @@ DTIS7MsoF"n\M"l#Q~>
 U
 {1 A} FS
 PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  Version 5  ) Z
+438 38 M (  2012 Dec 14 11:57:45  ) Z
 117 F0
 (   Example 25 in Cookbook) Z
 U
@@ -930,27 +937,27 @@ PSL_cliprestore
 333 F0
 (Antipodal comparisons) bc Z
 2759 5507 M 167 F0
-(0Ê) bc Z
-3650 5517 M (60ÊE) bc Z
-4532 5531 M (120ÊE) bc Z
-5400 5539 M (180Ê) bc Z
-6268 5531 M (120ÊW) bc Z
-7150 5517 M (60ÊW) bc Z
-8041 5507 M (0Ê) bc Z
-2561 0 M (90ÊS) mr Z
-8239 0 M (90ÊS) ml Z
-1759 519 M (60ÊS) mr Z
-9041 519 M (60ÊS) ml Z
-436 1558 M (30ÊS) mr Z
-10364 1558 M (30ÊS) ml Z
--139 2700 M (0Ê) mr Z
-10939 2700 M (0Ê) ml Z
-436 3842 M (30ÊN) mr Z
-10364 3842 M (30ÊN) ml Z
-1759 4881 M (60ÊN) mr Z
-9041 4881 M (60ÊN) ml Z
-2561 5400 M (90ÊN) mr Z
-8239 5400 M (90ÊN) ml Z
+(0š) bc Z
+3650 5517 M (60šE) bc Z
+4532 5531 M (120šE) bc Z
+5400 5539 M (180š) bc Z
+6268 5531 M (120šW) bc Z
+7150 5517 M (60šW) bc Z
+8041 5507 M (0š) bc Z
+2561 0 M (90šS) mr Z
+8239 0 M (90šS) ml Z
+1759 519 M (60šS) mr Z
+9041 519 M (60šS) ml Z
+436 1558 M (30šS) mr Z
+10364 1558 M (30šS) ml Z
+-139 2700 M (0š) mr Z
+10939 2700 M (0š) ml Z
+436 3842 M (30šN) mr Z
+10364 3842 M (30šN) ml Z
+1759 4881 M (60šN) mr Z
+9041 4881 M (60šN) ml Z
+2561 5400 M (90šN) mr Z
+8239 5400 M (90šN) ml Z
 25 W
 2700 0 M
 -15 9 D
@@ -1128,14 +1135,16 @@ S
 2700 5400 M
 5400 0 D
 S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Rg -JKs180/9i -O -K -Wthinnest -Dc -A500
+%%GMT: pscoast -Rg -JKs180/9i -O -K -Wthinnest -Dc -A500
 %%PROJ: eck6 0.00000000 360.00000000 -90.00000000 90.00000000 -17653837.706 17653837.706 -8826918.853 8826918.853 +proj=eck6 +lon_0=180 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1280,6 +1289,9 @@ S
 8 -4 D
 26 3 D
 -35 1 D
+P S
+3423 5335 M
+9 4 D
 P S
 3340 5151 M
 -12 8 D
@@ -4520,6 +4532,9 @@ P S
 6901 4986 M
 3 8 D
 -2 -8 D
+P S
+6882 4993 M
+3 7 D
 P S
 7091 4676 M
 21 -14 D
@@ -10428,55 +10443,64 @@ S
 -20 2 D
 -47 -19 D
 S
+%%EndObject
 0 A
 FQ
 O0
 0 -240 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/0.3i/TC -Y-0.2i -Fthick
+%%GMT: pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/TC -Y-0.2i -Fthick
 %%PROJ: xy 0.00000000 9.00000000 0.00000000 0.50000000 0.000 9.000 0.000 0.500 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
+1800 -317 T
 25 W
 O1
-360 7200 5400 -180 Sr
+317 7200 3600 158 Sr
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/9/0/0.5 -Jx1i -O -K -N -S @GMTAPI@-000001
+%%GMT: psxy -R0/9/0/0.5 -Jx1i -O -K -N -S @GMTAPI@-000001
 %%PROJ: xy 0.00000000 9.00000000 0.00000000 0.50000000 0.000 9.000 0.000 0.500 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 4 W
 {1 0 0 C} FS
 O1
-120 2047 -158 Ss
+120 247 158 Ss
 {0 0 1 C} FS
-120 4447 -158 Ss
+120 2647 158 Ss
 {0.745 A} FS
-120 6847 -158 Ss
+120 5047 158 Ss
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pslegend -R0/9/0/0.5 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002
+%%GMT: pstext -R0/9/0/0.5 -Jx1i -O -K -N -F+f+j @GMTAPI@-000002
 %%PROJ: xy 0.00000000 9.00000000 0.00000000 0.50000000 0.000 9.000 0.000 0.500 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
-2227 -217 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+427 100 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 (Terrestrial Antipodes \[4 %\]) Z
-4627 -217 M (Oceanic Antipodes \[46 %\]) Z
-7027 -217 M (Mixed Antipodes \[50 %\]) Z
+2827 100 M (Oceanic Antipodes \[46 %\]) Z
+5227 100 M (Mixed Antipodes \[50 %\]) Z
+%%EndObject
+-1800 317 T
+%%EndObject
 %%PageTrailer
 U
 showpage
