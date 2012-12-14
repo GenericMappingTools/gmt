@@ -47,9 +47,9 @@ line (and every \emph{dist} thereafter).  If not given, \emph{frac} defaults to 
 This option is similar to \textbf{d} except the original data must be referred to geographic
 coordinates (and a map projection must have been chosen) and actual Earth\footnote{or whatever
 planet we are dealing with.} surface distances along the lines are considered.  Append the
-unit you want to measure distances in; choose among arc \textbf{d}egree, \textbf{m}minute, and \textbf{s}second,
+unit you want to measure distances in; choose among arc \textbf{d}egree, \textbf{m}inute, and \textbf{s}econd,
 or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, statute \textbf{M}iles, or \textbf{n}autical miles.  Other aspects are similar to code \textbf{d}.
-\item [f:] Full syntax is \textbf{f}\emph{fix.d}[/\emph{slop}[\textbf{c$|$i$|$p}]].  Here, an ASCII file \emph{fix.d} is
+\item [f:] Full syntax is \textbf{f}\emph{fix.txt}[/\emph{slop}[\textbf{c$|$i$|$p}]].  Here, an ASCII file \emph{fix.txt} is
 given which must contain records whose first two columns hold the coordinates of points along
 the lines at which locations the labels should be placed.  Labels will only be placed if the coordinates
 match the line coordinates to within a distance of \emph{slop} (append unit or we use \textbf{PROJ\_LENGTH\_UNIT}).
@@ -107,7 +107,7 @@ fixed percentage of the label font size in use.  The default is 15\%.
 \item [+d:] Debug mode.  This is useful when testing contour placement as it will draw the normally
 invisible helper lines and points in the label placement algorithms above.
 \item [+d:] Delayed mode, to delay the plotting of the text as text clipping is set instead.
-\item [+f:] Specifies the desired label font.  See \GMTprog{pstext} for font names or numbers.  The
+\item [+f:] Specifies the desired label font, including size or color.  See \GMTprog{pstext} for font names or numbers.  The
 default font is given by \textbf{FONT\_ANNOT\_PRIMARY}.
 \item [+g:] Selects opaque rather than the default transparent text boxes.  You may optionally append
 the color you want to fill the label boxes; the default is the same as \textbf{PS\_PAGE\_COLOR}.
@@ -116,7 +116,6 @@ above.  Normally this is center/mid justified (\textbf{CM} in \GMTprog{pstext} j
 this is indeed the default setting.  Override by using this option and append another justification
 key code from [\textbf{L$|$C$|$R}][\textbf{B$|$M$|$T}].  Note for curved text (\textbf{+v}) only vertical
 justification will be affected.
-\item [+k:] Sets the color of the text labels, which otherwise defaults to that given by \textbf{COLOR\_BACKGROUND}.
 \item [+o:] Request a rounded, rectangular label box shape; the default is rectangular.  This is only
 manifested if the box is filled or outlined, neither of which is implied by this option alone (see \textbf{+g}
 and \textbf{+p}).  As this option only applies to straight text, it is ignored if \textbf{+v} is given.
@@ -124,7 +123,6 @@ and \textbf{+p}).  As this option only applies to straight text, it is ignored i
 want the default \GMT\ pen [0.25p,black].
 \item [+r:] Do not place labels at points along the line whose local radius of curvature falls below
 the given threshold value.  Append the radius unit of your choice (\textbf{c$|$i$|$p}) [Default is 0].
-\item [+s:] Change the font size of the labels, which by default is 9 points.
 \item [+u:] Append the chosen \emph{unit} to the label.  Normally a space will separate the label
 and the unit.  If you want to close this gap, append a \emph{unit} that begins with a hyphen (--).
 If you are contouring with \GMTprog{grdcontour} and you specify this option without appending a unit, the unit will be taken from the
@@ -156,7 +154,7 @@ case we determine the appropriate format from the distance value itself.
 the label; append \textbf{d$|$e$|$f$|$k$|$m$|$M$|$n$|$s} to specify the unit [If not given we default to \textbf{d}egrees,
 \emph{unless} label placement was determined from map distances along the segment lines, in which case we
 use the same unit specified for that algorithm].  Requires a map projection to be used.
-\item [+Lf:]  Use all text after the 2nd column in the fixed label location file \emph{fix.d} as labels.
+\item [+Lf:]  Use all text after the 2nd column in the fixed label location file \emph{fix.txt} as labels.
 This choice obviously requires the fixed label location algorithm (code \textbf{f}) to be in effect.
 \item [+Ln:]  Use the running number of the current multi-segment as label.
 \item [+LN:]  Use a slash-separated combination of the current file number and the current multi-segment number as label.
@@ -214,7 +212,7 @@ the given maximum distance will host the label.
 The angle of the label is evaluated from the contour line geometry, and the final result
 is shown in Figure~\ref{fig:GMT_App_O_3}.
 \GMTfig[H]{GMT_App_O_3}{Four labels are positioned on the points along the contours that
-are closest to the locations given in the file \protect\filename{fix.d} in the \protect\Opt{Gf} option.}
+are closest to the locations given in the file \protect\filename{fix.txt} in the \protect\Opt{Gf} option.}
 To aid in understanding the algorithm we chose to specify ``debug'' mode (\textbf{+d}) which placed a
 small circle at each of the fixed points.
 
