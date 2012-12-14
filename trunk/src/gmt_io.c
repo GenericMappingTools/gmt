@@ -4497,7 +4497,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 
 		while (!(C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 
-			T->segment[seg]->record[row++] = strdup (in);
+			if (in) T->segment[seg]->record[row++] = strdup (in);	/* in might be NULL if comment record is found - these are skipped */
 
 			if (row == n_row_alloc) {
 				n_row_alloc <<= 1;
