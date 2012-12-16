@@ -16,6 +16,7 @@ gmtconvert	core	k_mode_gmt	Convert, paste, or extract columns from data tables
 gmtdefaults	core	k_mode_psl	List current GMT default parameters
 gmtdp	core	k_mode_gmt	Line reduction using the Douglas-Peucker algorithm
 gmtget	core	k_mode_psl	Get individual GMT default parameters
+gmtgravmag3d	potential	k_mode_gmt	Compute the gravity/magnetic anomaly of a body by the method of Okabe
 gmtmath	core	k_mode_gmt	Reverse Polish Notation (RPN) calculator for data tables
 gmtselect	core	k_mode_gmt	Select data table subsets based on multiple spatial criteria
 gmtset	core	k_mode_psl	Change individual GMT default parameters
@@ -35,13 +36,13 @@ grdedit	core	k_mode_gmt	Modify header or content of a grid
 grdfft	core	k_mode_gmt	Do mathematical operations on grids in the wavenumber (or frequency) domain
 grdfilter	core	k_mode_gmt	Filter a grid in the space (or time) domain
 grdgradient	core	k_mode_gmt	Compute directional gradients from a grid
+grdgravmag3d	potential	k_mode_gmt	Computes the gravity effect of one (or two) grids by the method of Okabe
 grdhisteq	core	k_mode_gmt	Perform histogram equalization for a grid
 grdimage	core	k_mode_psl	Project grids or images and plot them on maps
 grdinfo	core	k_mode_gmt	Extract information from grids
 grdlandmask	core	k_mode_gmt	Create a \"wet-dry\" mask grid from shoreline data base
 grdmask	core	k_mode_gmt	Create mask grid from polygons or point coverage
 grdmath	core	k_mode_gmt	Reverse Polish Notation (RPN) calculator for grids (element by element)
-grdokb	potential	k_mode_gmt	Computes the gravity effect of one (or two) grids by the method of Okabe
 grdpaste	core	k_mode_gmt	Join two grids along their common edge
 grdpmodeler	spotter	k_mode_gmt	Evaluate a plate model on a geographic grid
 grdproject	core	k_mode_gmt	Forward and inverse map transformation of grids
@@ -120,4 +121,3 @@ x2sys_put	x2sys	k_mode_gmt	Update track index database from track bin file
 x2sys_report	x2sys	k_mode_gmt	Report statistics from crossover data base
 x2sys_solve	x2sys	k_mode_gmt	Determine least-squares systematic correction from crossovers
 xyz2grd	core	k_mode_gmt	Convert data table to a grid file
-xyzokb	potential	k_mode_gmt	Compute the gravity/magnetic anomaly of a body by the method of Okabe
