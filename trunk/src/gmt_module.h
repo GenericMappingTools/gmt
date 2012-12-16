@@ -54,6 +54,7 @@ enum Gmt_module_id {
 	k_mod_gmtdefaults,
 	k_mod_gmtdp,
 	k_mod_gmtget,
+	k_mod_gmtgravmag3d,
 	k_mod_gmtmath,
 	k_mod_gmtselect,
 	k_mod_gmtset,
@@ -73,13 +74,13 @@ enum Gmt_module_id {
 	k_mod_grdfft,
 	k_mod_grdfilter,
 	k_mod_grdgradient,
+	k_mod_grdgravmag3d,
 	k_mod_grdhisteq,
 	k_mod_grdimage,
 	k_mod_grdinfo,
 	k_mod_grdlandmask,
 	k_mod_grdmask,
 	k_mod_grdmath,
-	k_mod_grdokb,
 	k_mod_grdpaste,
 	k_mod_grdpmodeler,
 	k_mod_grdproject,
@@ -158,7 +159,6 @@ enum Gmt_module_id {
 	k_mod_x2sys_report,
 	k_mod_x2sys_solve,
 	k_mod_xyz2grd,
-	k_mod_xyzokb,
 	k_mod_nongmt
 };
 
@@ -176,6 +176,7 @@ EXTERN_MSC int GMT_gmtconvert (struct GMTAPI_CTRL *api_ctrl, int mode, void *arg
 EXTERN_MSC int GMT_gmtdefaults (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtdp (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtget (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
+EXTERN_MSC int GMT_gmtgravmag3d (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtmath (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtselect (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtset (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
@@ -195,13 +196,13 @@ EXTERN_MSC int GMT_grdedit (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdfft (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdfilter (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdgradient (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
+EXTERN_MSC int GMT_grdgravmag3d (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdhisteq (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdimage (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdinfo (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdlandmask (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdmask (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdmath (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdokb (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdpaste (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdpmodeler (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdproject (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
@@ -280,7 +281,6 @@ EXTERN_MSC int GMT_x2sys_put (struct GMTAPI_CTRL *api_ctrl, int mode, void *args
 EXTERN_MSC int GMT_x2sys_report (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_x2sys_solve (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_xyzokb (struct GMTAPI_CTRL *api_ctrl, int mode, void *args);
 
 /* Pretty print all module names and their purposes */
 EXTERN_MSC void gmt_module_show_all();
