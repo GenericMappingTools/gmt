@@ -23,7 +23,7 @@ grd2xyz mag.nc -o2 > m.dat
 paste sombrero_xyz.dat m.dat > sombrero_xyzm.dat
 
 # Compute the mag anomaly using a F dec=10,dip=60 & M dec=-10,dip=40. Intensity came from mag.nc grid
-xyzokb -Gsombrero_mag.nc -R-15/15/-15/15 -I1.0 -E2 -H10/60/0/-10/40 -Tdsombrero_xyzm.dat/sombrero_tri.dat/m
+gmtgravmag3d -Gsombrero_mag.nc -R-15/15/-15/15 -I1.0 -E2 -H10/60/0/-10/40 -Tdsombrero_xyzm.dat/sombrero_tri.dat/m
 
 grd2cpt sombrero_mag.nc -E20 -D > m.cpt
 grdimage sombrero_mag.nc -Cm.cpt -JX12c -Ba -P > $ps
