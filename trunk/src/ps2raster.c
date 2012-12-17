@@ -643,7 +643,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot to open list file %s\n", Ctrl->L.file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -729,7 +729,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 		*out_file = '\0'; /* truncate string */
 		strncpy (ps_file, ps_names[k], GMT_BUFSIZ);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot to open file %s\n", ps_file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
 			continue;
 		}
 
