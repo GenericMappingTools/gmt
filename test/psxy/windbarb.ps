@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0_r9428:9430M [64-bit] Document from GMT_pscoast
+%%Title: GMT v5.0.1b_r10708 [64-bit] [C4] Document from pscoast
 %%Creator: GMT
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec 15 09:05:56 2011
+%%CreationDate: Mon Dec 17 13:50:58 2012
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -150,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 40 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -190,7 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/LinBiolinumO Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -577,8 +576,9 @@ O0
 -3000 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -K -P -Xc
+%%GMT: pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -K -P -Xc
 %%PROJ: merc 110.00000000 165.00000000 -45.00000000 -10.00000000 -3061285.997 3061285.997 -5591295.919 -1111475.103 +proj=merc +lon_0=137.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -3626,9 +3626,8 @@ FO
 -53 21 -9 12 24 4 -1 -6 22 -5 0 -7 10 1 10 -15 8 4710 4239 SP
 -12 3 8 -11 -12 1 1 12 15 -4 5 4446 4321 SP
 -8 12 24 3 7 -7 3 4800 4240 SP
-2 9 16 -2 -11 -7 3 4473 4325 SP
 -10 7 15 5 25 -10 3 4638 4321 SP
-2 28 3 -10 2 5444 3351 SP
+2 9 16 -2 -11 -7 3 4473 4325 SP
 6 4 12 -11 2 4699 4258 SP
 -5 -3 -3 7 8 -3 3 4619 4313 SP
 5 -2 1 4686 4298 SP
@@ -3663,9 +3662,8 @@ FO
 -53 21 -9 12 24 4 -1 -6 22 -5 0 -7 10 1 10 -15 8 4710 4239 SP
 -12 3 8 -11 -12 1 1 12 15 -4 5 4446 4321 SP
 -8 12 24 3 7 -7 3 4800 4240 SP
-2 9 16 -2 -11 -7 3 4473 4325 SP
 -10 7 15 5 25 -10 3 4638 4321 SP
-2 28 3 -10 2 5444 3351 SP
+2 9 16 -2 -11 -7 3 4473 4325 SP
 6 4 12 -11 2 4699 4258 SP
 -5 -3 -3 7 8 -3 3 4619 4313 SP
 5 -2 1 4686 4298 SP
@@ -3713,19 +3711,15 @@ P S
 24 3 D
 -8 12 D
 P S
-4473 4325 M
--11 -7 D
-16 -2 D
-2 9 D
-P S
 4638 4321 M
 25 -10 D
 15 5 D
 -10 7 D
 P S
-5444 3351 M
-3 -10 D
-2 28 D
+4473 4325 M
+-11 -7 D
+16 -2 D
+2 9 D
 P S
 4492 4390 M
 -6 -5 D
@@ -7061,14 +7055,16 @@ S
 6083 4473 M -6166 0 D S
 0 4473 M 0 -4556 D S
 -83 4473 M 0 -4556 D S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -JM5i -R110/165/-45/-10 -W1p,black -Gblack -L -Skwindbarb/1.5i -O -K tmp
+%%GMT: psxy -JM5i -R110/165/-45/-10 -W1p,black -Gblack -L -Skwindbarb/1.5i -O -K tmp
 %%PROJ: merc 110.00000000 165.00000000 -45.00000000 -10.00000000 -3061285.997 3061285.997 -5591295.919 -1111475.103 +proj=merc +lon_0=137.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -7090,14 +7086,16 @@ V 4364 2067 T
 -54 -540 0 540 900 0 3 0 0 SP
 U
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 6000 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -JS120/-90/5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -O -K -Y5i
+%%GMT: pscoast -JS120/-90/5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -O -K -Y5i
 %%PROJ: stere 110.00000000 165.00000000 -45.00000000 -10.00000000 -1853887.778 7549152.759 3739919.064 10676114.053 +proj=stere +lat_0=-90 +lon_0=120 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -9845,7 +9843,7 @@ P S
 -526 -912 D
 -152 85 D
 FO
-5 -3 6 -3 5 -3 0 3 -11 15 5 4584 3504 SP
+-1 -3 -2 -2 -1 -2 5 -3 6 -3 5 -3 0 3 -11 15 8 4584 3504 SP
 {0.961 0.871 0.702 C} FS
 -3 -11 -5 7 9 26 9 -6 -4 -11 7 -18 6 3766 2893 SP
 -3 16 14 3 4 -13 3 3716 3849 SP
@@ -9998,7 +9996,7 @@ FO
 90 -46 D
 30 -16 D
 FO
-2 -4 12 -6 -19 2 3 4560 3462 SP
+1 2 1 2 1 2 2 -4 12 -6 -19 2 6 4560 3462 SP
 4584 3504 M
 -11 15 D
 0 3 D
@@ -10310,15 +10308,14 @@ S
 -96 56 D
 526 912 D
 FO
--11 1 8 -7 2 4563 3468 SP
+1 2 0 1 1 2 -11 1 8 -7 5 4563 3468 SP
 4 -2 5 -3 -6 9 -8 -1 4 4710 3442 SP
 {0.961 0.871 0.702 C} FS
 -35 50 -1 16 24 -11 -5 -5 17 -17 -4 -6 9 -5 1 -20 8 4821 3180 SP
 1 -15 -10 8 7 10 11 -12 4 4629 3404 SP
 0 15 23 -12 2 -10 3 4902 3127 SP
-7 7 14 -10 -14 -1 3 4655 3392 SP
 -4 12 16 -4 16 -24 3 4805 3295 SP
-18 19 -4 -9 2 4884 2039 SP
+7 7 14 -10 -14 -1 3 4655 3392 SP
 7 -1 5 -17 2 4823 3203 SP
 -7 0 2 7 6 -7 3 4782 3299 SP
 3 -5 1 4835 3246 SP
@@ -10329,7 +10326,7 @@ FO
 3 -7 1 4615 3412 SP
 4 -4 1 4778 3247 SP
 3 -7 1 4828 3212 SP
--1 -11 -9 -1 2 5451 2700 SP
+2 3 3 3 2 3 -1 -11 -9 -1 5 5451 2700 SP
 -4 3 16 17 21 -25 -9 -9 1 -1 -4 3 -3 2 -6 9 -8 -1 9 4710 3442 SP
 4563 3468 M
 8 -7 D
@@ -10353,9 +10350,8 @@ FO
 -35 50 -1 16 24 -11 -5 -5 17 -17 -4 -6 9 -5 1 -20 8 4821 3180 SP
 1 -15 -10 8 7 10 11 -12 4 4629 3404 SP
 0 15 23 -12 2 -10 3 4902 3127 SP
-7 7 14 -10 -14 -1 3 4655 3392 SP
 -4 12 16 -4 16 -24 3 4805 3295 SP
-18 19 -4 -9 2 4884 2039 SP
+7 7 14 -10 -14 -1 3 4655 3392 SP
 7 -1 5 -17 2 4823 3203 SP
 -7 0 2 7 6 -7 3 4782 3299 SP
 3 -5 1 4835 3246 SP
@@ -10402,19 +10398,15 @@ P S
 23 -12 D
 0 15 D
 P S
-4655 3392 M
--14 -1 D
-14 -10 D
-7 7 D
-P S
 4805 3295 M
 16 -24 D
 16 -4 D
 -4 12 D
 P S
-4884 2039 M
--4 -9 D
-18 19 D
+4655 3392 M
+-14 -1 D
+14 -10 D
+7 7 D
 P S
 4710 3442 M
 -8 -1 D
@@ -10506,7 +10498,7 @@ FO
 2 6 -1 -6 2 5719 2660 SP
 -8 -16 1 5136 1762 SP
 1 -6 1 5137 1771 SP
--23 76 14 -12 0 -30 19 -21 0 -1 5 5441 2688 SP
+-3 -3 -2 -3 -3 -3 -23 76 14 -12 0 -30 19 -21 0 -1 8 5441 2688 SP
 18 -23 9 -35 -15 -20 16 -21 -10 -11 -13 11 -28 75 -9 1 0 35 11 12 -10 11 31 -34 12 5678 2605 SP
 4 8 2 -8 2 5696 2678 SP
 2 6 -1 -6 2 5719 2660 SP
@@ -11012,8 +11004,8 @@ FO
 7 2 D
 -3 -7 D
 -15 -9 D
--2 -21 D
--4 -5 D
+-3 -22 D
+-3 -4 D
 -4 27 D
 -26 -9 D
 17 14 D
@@ -11127,7 +11119,7 @@ FO
 72 -41 D
 362 628 D
 FO
--2 -21 -15 -9 2 3915 2345 SP
+4 7 4 7 4 8 -2 -21 -15 -9 5 3915 2345 SP
 -7 -2 1 3918 2352 SP
 12 -8 -11 -10 1 10 3 3930 2569 SP
 -9 -8 9 16 1 -8 3 3904 2354 SP
@@ -11342,7 +11334,7 @@ S
 -23 15 D
 FO
 7 -4 1 10 0 1 3 3600 1641 SP
--2 9 -2 -14 2 3898 2315 SP
+1 1 1 2 1 1 -2 9 -2 -14 5 3898 2315 SP
 {0.961 0.871 0.702 C} FS
 3 -5 -32 -9 0 -18 -17 -3 10 16 0 15 64 51 -2 -24 -12 -9 9 3981 1922 SP
 -6 0 -6 14 -6 -2 12 29 7 -26 0 -15 6 3929 2185 SP
@@ -12302,8 +12294,9 @@ FO
 -15 -6 D
 3 -16 D
 -5 -4 D
-8 -30 D
-1 2 D
+8 -29 D
+1 0 D
+0 1 D
 FO
 8 -19 -7 -10 -78 6 8 13 -14 4 5 10 -14 -8 -13 13 9 6 26 -10 7 10 11 2 14 -14 17 -1 14 2395 1579 SP
 9 6 2 -4 2 2233 1974 SP
@@ -12570,12 +12563,13 @@ S
 15 -3 D
 8 19 D
 4 -2 D
--119 -206 D
+-90 -154 D
+-29 -52 D
 -94 53 D
 -6 3 D
 FO
 0 2 0 1 0 -4 3 2558 1392 SP
-12 11 3 -3 1 12 9 6 -6 6 5 3206 1118 SP
+-5 -8 -4 -8 -5 -8 12 11 3 -3 1 12 9 6 -6 6 8 3206 1118 SP
 {0.961 0.871 0.702 C} FS
 -10 12 11 1 4 -5 3 2864 1174 SP
 -13 0 0 11 14 -11 3 2849 1168 SP
@@ -12617,9 +12611,9 @@ FO
 -103 41 D
 -94 36 D
 -232 -636 D
-0 -1 D
--1 -2 D
-12 -42 D
+0 -2 D
+-1 0 D
+12 -43 D
 3 16 D
 -3 -18 D
 9 -16 D
@@ -12994,7 +12988,8 @@ P S
 -119 78 D
 -101 61 D
 -26 15 D
-119 206 D
+89 155 D
+30 51 D
 FO
 {0.961 0.871 0.702 C} FS
 -2 -8 1 4052 1152 SP
@@ -13090,7 +13085,7 @@ FO
 -90 56 D
 -8 4 D
 FO
--1 0 3 11 3 -1 3 3201 1108 SP
+-2 -2 -1 -3 -1 -2 -1 0 3 11 3 -1 6 3201 1108 SP
 -2 -8 1 4052 1152 SP
 {0.941 1 1 C} FS
 -20 -1 11 -5 9 5 3 3569 1389 SP
@@ -14235,14 +14230,16 @@ N 1183 -2386 6812 44.2991 100.701 arc S
 N 1183 -2386 6896 44.3076 100.692 arc S
 -14 4404 M 625 -3549 D S
 -97 4390 M 626 -3549 D S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -JS120/-90/5i -R110/165/-45/-10 -W2p,red -Gblack -L -Skwindbarb/1.5i -O tmp
+%%GMT: psxy -JS120/-90/5i -R110/165/-45/-10 -W2p,red -Gblack -L -Skwindbarb/1.5i -O tmp
 %%PROJ: stere 110.00000000 165.00000000 -45.00000000 -10.00000000 -1853887.778 7549152.759 3739919.064 10676114.053 +proj=stere +lat_0=-90 +lon_0=120 +k=0.9996 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -14348,6 +14345,7 @@ V 3532 1682 T
 -54 -540 0 540 900 0 3 0 0 SP
 U
 PSL_cliprestore
+%%EndObject
 %%PageTrailer
 U
 showpage
