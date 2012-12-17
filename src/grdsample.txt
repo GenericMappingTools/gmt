@@ -4,12 +4,12 @@
 grdsample \- Resample a grid onto a new lattice
 .SH SYNOPSIS
 BD(grdsample) IT(in_grdfile) OPT(G)IT(out_grdfile) [ GMT_I_OPT ] 
-[ OPT(L)IT(flag) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] 
+[ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] 
 [ GMT_fi_OPT ] [ GMT_n_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
 BD(grdsample) reads a grid file and interpolates it to create a new grid file with either:  a different registration 
 (OPT(r) or OPT(T)); or, a new grid-spacing or number of nodes (OPT(I)), and perhaps also a new sub-region 
-(OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation (OPT(n)) is used, requiring boundary conditions (OPT(L)).  
+(OPT(R)).  A bicubic [Default], bilinear, B-spline or nearest-neighbor interpolation is used; see OPT(n) for settings.
 Note that using OPT(R) only is equivalent to BD(grdcut) or BD(grdedit \-S).  BD(grdsample) safely 
 creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
 BD(grdfft) or BD(grdfilter).
@@ -31,12 +31,6 @@ The name of the output grid file.
 (See GRID FILE FORMAT below.)
 .SH OPTIONAL ARGUMENTS
 #include "explain_-I.txt"
-.TP
-OPT(L)IT(flag)
-Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of 
-x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
-lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless the grid is
-automatically recognized as periodic.]  
 #include "explain_-R.txt"
 .TP
 OPT(T)
