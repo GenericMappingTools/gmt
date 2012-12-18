@@ -244,21 +244,19 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 					ng++;
 				}
 				break;
-			case 'L':	/* Sets BCs */
 #ifdef GMT_COMPAT
+			case 'L':	/* Sets BCs */
 				if (opt->arg[0]) {
-#endif
 					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 					strncpy (GMT->common.n.BC, opt->arg, 4U);
-#ifdef GMT_COMPAT
 				}
 				else {
 					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; please use -f instead.\n");
+					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; please use -fg instead.\n");
 				}
-#endif
 				break;
+#endif
 			case 'N':
 				Ctrl->N.active = true;
 				break;
