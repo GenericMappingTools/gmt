@@ -4,7 +4,7 @@
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
 BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
-[ OPT(C)IT(length)/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(L)IT(flag) ] [ OPT(N) ] 
+[ OPT(C)IT(length)/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(N) ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -16,7 +16,8 @@ Alternatively (OPT(C)), the input is considered to be line-segments and we creat
 at each data point or with an equidistant separation and sample the grid(s) along these profiles.
 A bicubic 
 [Default], bilinear, B-spline or nearest-neighbor (see OPT(n)) interpolation is used, requiring boundary conditions at the limits 
-of the region (see OPT(L)).
+of the region (see OPT(n); Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
+the grid is automatically recognized as periodic.)
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
@@ -58,12 +59,6 @@ OPT(D)IT(dfile)
 In concert with OPT(C) we can save the (possibly resampled) original lines to the
 file IT(dfile) [Default only saves the cross-profiles].
 The columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
-.TP
-OPT(L)IT(flag)
-Boundary condition IT(flag) may be IT(x) or IT(y) or IT(xy) indicating data is periodic in range of 
-x or y or both set by OPT(R), or IT(flag) may be IT(g) indicating geographical conditions (x and y are 
-lon and lat).  [Default uses "natural" conditions (second partial derivative normal to edge is zero) unless
-the grid is automatically recognized as periodic.]
 .TP
 OPT(N)
 Do IT(not) skip points that fall outside the domain of the grid(s) [Default only output points within grid domain].
