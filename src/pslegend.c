@@ -519,10 +519,10 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->D.height == 0.0) {	/* Use the computed height */
 		Ctrl->D.height = height;
-		GMT_report (GMT, GMT_MSG_NORMAL, "No legend height given, use an estimated height of %g inches.\n", height);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No legend height given, use an estimated height of %g inches.\n", height);
 	}
 	else
-		GMT_report (GMT, GMT_MSG_NORMAL, "Legend height given as %g inches; estimated height is %g inches.\n", Ctrl->D.height, height);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Legend height given as %g inches; estimated height is %g inches.\n", Ctrl->D.height, height);
 	
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
