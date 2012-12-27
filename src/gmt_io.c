@@ -3090,7 +3090,7 @@ void GMT_init_z_io (struct GMT_CTRL *C, char format[], bool repeat[], enum GMT_s
 	r->binary = (strchr ("Aa", type)) ? false : true;
 	C->current.io.read_item  = GMT_get_io_ptr (C, GMT_IN,  swab, type);	/* Set read pointer depending on data format */
 	C->current.io.write_item = GMT_get_io_ptr (C, GMT_OUT, swab, type);	/* Set write pointer depending on data format */
-	
+	C->common.b.type[GMT_IN] = C->common.b.type[GMT_OUT] = type;		/* Since -b is not setting this */	
 	if (r->binary) {	/* Use the binary modes (which only matters under Windoze)  */
 		strcpy (C->current.io.r_mode, "rb");
 		strcpy (C->current.io.w_mode, "wb");

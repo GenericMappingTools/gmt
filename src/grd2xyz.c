@@ -188,7 +188,7 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 
 int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool error = false, first = true, ok;
+	bool error = false, first = true, write_error;
 	unsigned int row, col, n_output;
 	
 	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
@@ -284,8 +284,8 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 				d_value = G->data[gmt_ij];
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
 				if (Ctrl->N.active && GMT_is_dnan (d_value)) d_value = Ctrl->N.value;
-				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
-				if (!ok) n_suppressed++;	/* Bad value caught by -s[r] */
+				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
+				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT->current.io.output = save;			/* Reset pointer */
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
@@ -387,8 +387,8 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_grd_loop (GMT, G, row, col, ij) {
 				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 				if (Ctrl->N.active && GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = Ctrl->N.value;
-				ok = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
-				if (!ok) n_suppressed++;	/* Bad value caught by -s[r] */
+				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
+				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
 			GMT_free (GMT, x);
 			GMT_free (GMT, y);
