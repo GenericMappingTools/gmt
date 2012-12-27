@@ -29,16 +29,16 @@ satisfy arc constraints [Default is no tension].
 OPT(Q)0
 Piecewise linear interpolation; no tension is applied.
 .TP
-OPT(Q)Q1
+OPT(Q)1
 Smooth interpolation with local gradient estimates.
 .TP
-OPT(Q)Q2
+OPT(Q)2
 Smooth interpolation with global gradient estimates.  You may optionally append /IT(N)/IT(M)/IT(U), where
 IT(N) is the number of iterations used to converge at solutions for gradients when variable tensions are selected (e.g., OPT(T) only) [3],
 IT(M) is the number of Gauss-Seidel iterations used when determining the global gradients [10], and
 IT(U) is the maximum change in a gradient at the last iteration [0.01].
 .TP
-OPT(Q)Q3
+OPT(Q)3
 Smoothing.  Optionally append IT(/E/U) [/0/0], where
 IT(E) is Expected squared error in a typical (scaled) data value, and
 IT(U) is Upper bound on  weighted sum of squares of deviations from data.
