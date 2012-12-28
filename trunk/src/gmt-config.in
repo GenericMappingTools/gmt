@@ -2,7 +2,7 @@
 #--------------------------------------------------------------------
 #  $Id$
 #
-#  Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+#  Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 #  See LICENSE.TXT file for copying and redistribution conditions.
 #
 #  This program is free software; you can redistribute it and/or modify
@@ -17,30 +17,51 @@
 #  Contact info: gmt.soest.hawaii.edu
 #
 # gmt-config simply reports various paths and settings that are useful
-# to developers that need to include/link GMT resources.
+# to developers that need to include/link GMT5 resources.
 #--------------------------------------------------------------------*/
 #
-CONFIG_LIBS="-L/sw/lib -lgmt"
-CONFIG_DEP_LIBS=" -L/sw/opt/netcdf7/lib -lnetcdf"
-CONFIG_PREFIX="/sw"
-CONFIG_CFLAGS="-I/sw/include/gmt"
-CONFIG_DATA="/sw/share/gmt"
-CONFIG_VERSION="5.0.0"
-CONFIG_BITS="64"
-CONFIG_GDAL_ENABLED=yes
+CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
+CONFIG_DEP_LIBS="@NETCDF_LIBRARY@"
+CONFIG_PREFIX="@CMAKE_INSTALL_PREFIX@"
+CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include -I@NETCDF_INCLUDE_DIR@"
+CONFIG_DATA="@CMAKE_INSTALL_PREFIX@/@GMT_SHARE_PATH@"
+CONFIG_VERSION="@GMT_PACKAGE_VERSION@"
+CONFIG_GSHHG="@GSHHG_PATH@"
+if [ ! "X@GDAL_INCLUDE_DIR@" = "X" ]; then
+	CONFIG_GDAL_ENABLED=yes
+	CONFIG_CFLAGS="$CONFIG_CFLAGS -I@GDAL_INCLUDE_DIR@"
+	CONFIG_DEP_LIBS="@GDAL_LIBRARY@ $CONFIG_DEP_LIBS"
+else
+	CONFIG_GDAL_ENABLED=no
+fi
+
+if [ ! "X@PCRE_LIBRARY@" = "X" ]; then
+	CONFIG_DEP_LIBS="@PCRE_LIBRARY@ $CONFIG_DEP_LIBS"
+elif [ ! "X@REGEX_LIBRARY@" = "X" ]; then
+	CONFIG_DEP_LIBS="@REGEX_LIBRARY@ $CONFIG_DEP_LIBS"
+fi
+
+psxy - 2>&1 | grep 64-bit > /tmp/$$
+if [ -s /tmp/$$ ]; then
+	CONFIG_BITS=64
+else
+	CONFIG_BITS=32
+fi
+
 usage()
 {
 	cat <<EOF
 Usage: gmt-config [OPTIONS]
 Options:
+	[--bits]
 	[--prefix]
 	[--libs]
 	[--dep-libs]
 	[--cflags]
 	[--datadir]
+	[--gshhg]
 	[--version]
 	[--gdal-enabled]
-	[--formats]
 EOF
 	exit $1
 }
@@ -50,6 +71,10 @@ if test $# -eq 0; then
 fi
 
 case $1 in 
+  --bits)
+    echo $CONFIG_BITS
+    ;;
+
   --libs)
     echo $CONFIG_LIBS
     ;;
@@ -64,6 +89,10 @@ case $1 in
 
   --datadir)
     echo $CONFIG_DATA
+    ;;
+
+  --gshhg)
+    echo $CONFIG_GSHHG
     ;;
 
   --prefix)

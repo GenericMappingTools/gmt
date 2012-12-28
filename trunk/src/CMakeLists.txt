@@ -308,6 +308,7 @@ add_custom_target (gen_gmt_headers DEPENDS ${GMT_GEN_HDRS} ${GMT_GEN_MAN_HDRS})
 configure_file (gmt_config.h.in gmt_config.h)
 configure_file (gmt_version.h.in gmt_version.h)
 configure_file (isogmt.in isogmt @ONLY)
+configure_file (gmt-config.in gmt-config @ONLY)
 
 # gmtprogram
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
@@ -544,6 +545,7 @@ endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 # install extra files
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/isogmt
+	${CMAKE_CURRENT_BINARY_DIR}/gmt-config
 	gmtlogo
 	gmtswitch
 	gmt_shell_functions.sh
