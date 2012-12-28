@@ -1520,7 +1520,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	return (GMT_NOERROR);
 }
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 #include "gmt_gdalread.c"
 #include "gmt_gdalwrite.c"
 /* Experimental GDAL support */
@@ -2111,7 +2111,7 @@ void GMT_grdio_init (struct GMT_CTRL *C) {
 	/* FORMAT: Import via the GDAL interface */
 
 	id                        = GMT_GRD_IS_GD;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	C->session.grdformat[id]  = "gd = Import/export through GDAL";
 	C->session.readinfo[id]   = &GMT_gdal_read_grd_info;
 	C->session.updateinfo[id] = &GMT_gdal_write_grd_info;

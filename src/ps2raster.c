@@ -581,7 +581,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 	char at_sign[2] = "";
 #endif
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	struct GDALREAD_CTRL *to_gdalread = NULL;
 	struct GD_CTRL *from_gdalread = NULL;
 #endif
@@ -1006,7 +1006,7 @@ int GMT_ps2raster (struct GMTAPI_CTRL *API, int mode, void *args)
 				xt = yt = 0.0;
 				r = 0;
 			}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 			else if (!strncmp (line, "%%PageTrailer", 13) && found_proj) {
 				GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp);
 				fprintf (fpo, "%%%%PageTrailer\n");

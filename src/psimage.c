@@ -307,7 +307,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
 #endif
 
@@ -344,7 +344,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 	}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
 		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -390,7 +390,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		buffer = psl_gray_encode (PSL, &n, picture);
 		header.depth = 8;
 		if (known) PSL_free (picture); /* EPS or Sun raster file */
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
 				Return (API->error);
@@ -410,7 +410,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		buffer = GMT_memory (GMT, NULL, n, unsigned char);
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
 			Return (API->error);
 		}
@@ -484,7 +484,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
 		Return (API->error);	/* If I is NULL then nothing is done */
 	}

@@ -722,7 +722,7 @@ char *GMT_getdatapath (struct GMT_CTRL *C, const char *stem, char *path)
 
 	/* If we got here and a full path is given, we give up ... unless it is one of those /vsi.../ files */
 	if (stem[0] == '/') {
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		if (GMT_check_url_name ((char *)stem))
 			return ((char *)stem);			/* With GDAL all the /vsi-stuff is given existence credit */
 		else
@@ -6188,7 +6188,7 @@ void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
 	GMT_free (C, *data);
 }
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 {	/* Allocates space for a new image container. */
 	struct GMT_IMAGE *I = GMT_memory (C, NULL, 1, struct GMT_IMAGE);
