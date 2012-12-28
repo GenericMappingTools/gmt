@@ -37,7 +37,7 @@ EXTERN_MSC int GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double 
 
 /* gmt_customio.c: */
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 /* Format # 22 */
 EXTERN_MSC int GMT_gdalread (struct GMT_CTRL *C, char *gdal_filename, struct GDALREAD_CTRL *prhs, struct GD_CTRL *Ctrl);
 EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *C, char *filename, struct GDALWRITE_CTRL *prhs);
@@ -83,7 +83,7 @@ EXTERN_MSC int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, double 
 EXTERN_MSC int GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int registration);
 EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *Grid, double shift);
 EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 EXTERN_MSC int GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, 
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */
 int GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I);
@@ -169,7 +169,7 @@ EXTERN_MSC void GMT_free_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *s
 EXTERN_MSC void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table);
 EXTERN_MSC void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data);
 EXTERN_MSC void GMT_free_palette (struct GMT_CTRL *C, struct GMT_PALETTE **P);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 EXTERN_MSC struct GMT_IMAGE * GMT_create_image (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, bool free_image);
 #endif

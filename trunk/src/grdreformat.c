@@ -77,7 +77,7 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 		if (!strstr (grdformats[i], "not supported"))
 			GMT_message (GMT, "\t%s\n", grdformats[i]);
 	}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	GMT_message (GMT, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
 	GMT_message (GMT, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
 	GMT_message (GMT, "	<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");

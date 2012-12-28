@@ -102,7 +102,7 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	GMT_message (GMT, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>] [-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>]\n", 
 			GMT_J_OPT, GMT_B_OPT);
 #else
@@ -117,19 +117,19 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t<grd_z> is data set to be plotted.  Its z-values are in user units and will be\n");
 	GMT_message (GMT, "\t  converted to rgb colors via the cpt file.  Alternatively, give three separate\n");
 	GMT_message (GMT, "\t  grid files that contain the red, green, and blue components in the 0-255 range.\n");
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	GMT_message (GMT, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
 #endif
 	GMT_explain_options (GMT, "j");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	GMT_message (GMT, "\t-A Save image in a raster format instead of PostScript. Append =<driver> to select.\n");
 	GMT_message (GMT, "\t   the image format. The 'driver' is the driver code name used by GDAL. For example\n");
 	GMT_message (GMT, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
 #endif
 	GMT_explain_options (GMT, "b");
 	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.\n");
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	GMT_message (GMT, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
 #endif
 	GMT_message (GMT, "\t-E Set dpi for the projected grid which must be constructed [100]\n");
@@ -160,7 +160,7 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	int n;
 #endif
 
@@ -175,7 +175,7 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 
 			/* Processes program-specific parameters */
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
 				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
@@ -195,7 +195,7 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 				Ctrl->C.active = true;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 			case 'D':	/* Get via GDAL */
 				Ctrl->D.active = true;
 				Ctrl->D.mode = (opt->arg[0] == 'r');
@@ -262,12 +262,12 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 	}
 
 	if (n_files == 3) Ctrl->In.do_rgb = true;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (Ctrl->D.active) {} else
 #endif
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, 
 					"Syntax error: Must specify a map projection with the -J option\n");
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 //	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && !Ctrl->In.do_rgb && !Ctrl->D.active, 
 //					"Syntax error: Must specify color palette table\n");
 #else
@@ -371,7 +371,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
 	struct GRD_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	bool do_indexed = false;
 	double *r_table = NULL, *g_table = NULL, *b_table = NULL;
 	struct GMT_IMAGE *I = NULL, *Img_proj = NULL;		/* A GMT image datatype, if GDAL is used */
@@ -409,7 +409,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 	}
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (Ctrl->D.active) {
 		/* One more test though */
 		if (Ctrl->D.mode && !GMT->common.R.active) {
@@ -479,7 +479,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			gray_only = (P && P->is_gray);
 		}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		else if (Ctrl->D.active) {
 			uint64_t dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
@@ -555,7 +555,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		ny = GMT_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (Ctrl->D.active) {	/* Trust more on info from gdal to make it more stable against pixel vs grid registration troubles */
 		nx = I->header->nx;
 		ny = I->header->ny;
@@ -592,7 +592,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		if (Ctrl->D.active && (I->header->nx != Intens_orig->header->nx || I->header->ny != Intens_orig->header->ny)) {
 			/* Resize illumination grid to the image's size */
 
@@ -637,7 +637,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			nx_proj = nx;
 			ny_proj = ny;
 		}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		if (Ctrl->D.active) { 
 			if ((Img_proj = GMT_create_image (GMT)) == NULL) Return (API->error);
 			grid_registration = GMT_PIXEL_REG;	/* Force pixel */
@@ -668,7 +668,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			if ((Intens_proj = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 			if (n_grids)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 			else
 				GMT_memcpy (Intens_proj->header->wesn, Img_proj->header->wesn, 4, double);
 #endif
@@ -695,7 +695,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->I.active) Intens_proj = Intens_orig;
 		if (n_grids)
 			grid_registration = Grid_orig[0]->header->registration;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		else {
 			GMT_memcpy (&tmp_header, I->header, 1, struct GRD_HEADER);
 			Img_proj = I;
@@ -708,7 +708,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		Grid_proj[0]->header->n_bands = 1;
 		header_work = Grid_proj[0]->header;	/* Later when need to refer to the header, use this copy */
 	}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (Ctrl->D.active)
 		header_work = Img_proj->header;	/* Later when need to refer to the header, use this copy */
 #endif
@@ -749,7 +749,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (Ctrl->D.active && row == 0) node_RGBA = kk;		/* First time per row equals 'node', after grows alone */
 			for (col = 0; col < nx; col++) {	/* Compute rgb for each pixel */
 				node = kk + (normal_x ? col : nx - col - 1);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 				if (Ctrl->D.active) {
 					if (!Ctrl->In.do_rgb) {
 						rgb[0] = r_table[(int)Img_proj->data[node]];
@@ -837,7 +837,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	dx = GMT_get_inc (GMT, header_work->wesn[XLO], header_work->wesn[XHI], header_work->nx, header_work->registration);
 	dy = GMT_get_inc (GMT, header_work->wesn[YLO], header_work->wesn[YHI], header_work->ny, header_work->registration);
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (Ctrl->A.active) {
 		int	id, k;
 		unsigned int this_proj = GMT->current.proj.projection;
@@ -935,7 +935,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_free (GMT, bit);
 	}
 	else if ((P && gray_only) || Ctrl->M.active) {
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		if (Ctrl->A.active) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image via GDAL\n");
 			to_GDALW->data = bitimage_8;
@@ -946,7 +946,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Creating 8-bit grayshade image\n");
 			PSL_plotcolorimage (PSL, x0, y0, x_side, y_side, PSL_BL, bitimage_8, nx, ny, (Ctrl->E.device_dpi ? -8 : 8));
 	}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	}
 	else if (Ctrl->A.active) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Creating 24-bit color image via GDAL\n");
@@ -974,7 +974,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (need_to_project && n_grids) GMT_free_grid (GMT, &Grid_proj[0], true);
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 	if (Ctrl->D.active) {
 		if (r_table) GMT_free (GMT, r_table);
 		if (g_table) {

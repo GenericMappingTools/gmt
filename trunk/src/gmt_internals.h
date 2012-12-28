@@ -274,7 +274,7 @@ EXTERN_MSC void GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P);
 EXTERN_MSC void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, bool free_grid);
 EXTERN_MSC void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, bool free_matrix);
 EXTERN_MSC void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, bool free_vector);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 EXTERN_MSC void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, bool free_image);
 #endif
 #endif /* _GMT_INTERNALS_H */

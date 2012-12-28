@@ -82,7 +82,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
 #include "gmt_crossing.h"       /* Declarations of structure for GMT map crossings */
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 #	include "gmt_gdalread.h"      /* GDAL support */
 #endif
 

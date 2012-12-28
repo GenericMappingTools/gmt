@@ -105,7 +105,7 @@ struct GMT_TEXTSET * gmt_get_textset_ptr (struct GMT_TEXTSET **ptr) {return (*pt
 struct GMT_GRID    * gmt_get_grid_ptr (struct GMT_GRID **ptr) {return (*ptr);}
 struct GMT_MATRIX  * gmt_get_matrix_ptr (struct GMT_MATRIX **ptr) {return (*ptr);}
 struct GMT_VECTOR  * gmt_get_vector_ptr (struct GMT_VECTOR **ptr) {return (*ptr);}
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 struct GMT_IMAGE   * gmt_get_image_ptr (struct GMT_IMAGE **ptr) {return (*ptr);}
 #endif
 
@@ -119,7 +119,7 @@ void *return_address (void *data, unsigned int type) {
 		case GMT_IS_CPT:	p = gmt_get_cpt_ptr (data);	break;
 		case GMT_IS_MATRIX:	p = gmt_get_matrix_ptr (data);	break;
 		case GMT_IS_VECTOR:	p = gmt_get_vector_ptr (data);	break;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	p = gmt_get_image_ptr (data);	break;
 #endif
 	}
@@ -1353,7 +1353,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	return GMT_OK;
 }
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_IMAGE *image)
 {	/* Handles the reading of a 2-D grid given in one of several ways.
 	 * Get the entire image:
@@ -1931,7 +1931,7 @@ void * GMTAPI_Import_Data (struct GMTAPI_CTRL *API, unsigned int family, int obj
 		case GMT_IS_GRID:
 			new = GMTAPI_Import_Grid (API, object_ID, mode, data);		/* Try to import a grid */
 			break;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
 			new = GMTAPI_Import_Image (API, object_ID, mode, data);	/* Try to import a image */
 			break;
@@ -2114,7 +2114,7 @@ int GMTAPI_Begin_IO (struct GMTAPI_CTRL *API, unsigned int direction)
 	return (GMT_OK);	/* No error encountered */
 }
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 int GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_IMAGE **I_obj)
 {
 	/* Delete the given image resource.
@@ -2258,7 +2258,7 @@ int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *pt
 		case GMT_IS_CPT:
 			GMT_free_cpt_ptr (API->GMT, ptr);
 			break;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
 			GMT_free_image_ptr (API->GMT, ptr, GMT_CLOBBER);
 			break;
@@ -3602,7 +3602,7 @@ int GMT_Destroy_Data (struct GMTAPI_CTRL *API, unsigned int mode, void *object)
 		case GMT_IS_CPT:
 			error = GMTAPI_Destroy_CPT (API, mode, object);
 			break;
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
 			error = GMTAPI_Destroy_Image (API, mode, object);
 			break;

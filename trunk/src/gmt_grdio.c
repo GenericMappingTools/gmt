@@ -87,7 +87,7 @@ int GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
 #endif
 
@@ -337,7 +337,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		/* Then check for ESRI grid */
 		if (GMT_is_esri_grid (C, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 		/* Then check for GDAL grid */
 		if (GMT_is_gdal_grid (C, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
@@ -1889,7 +1889,7 @@ bool GMT_check_url_name (char *fname) {
 		return (false);
 }
 
-#ifdef USE_GDAL
+#ifdef HAVE_GDAL
 int GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
 	int i;
 	size_t k;

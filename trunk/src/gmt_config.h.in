@@ -45,9 +45,6 @@
 
 /* compile with GDAL support <gdal.h> */
 #cmakedefine HAVE_GDAL
-#ifdef HAVE_GDAL
-#	define USE_GDAL    /* Unfortunately, GMT uses this define and not HAVE_GDAL */
-#endif
 
 /* compile with FFTW3 support <fftw3.h> */
 #cmakedefine HAVE_FFTW3F
