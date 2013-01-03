@@ -262,6 +262,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
 		int k, row, col, col_0;
+		bool wrap;
 		double lon, lat, distance, radius;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -309,26 +310,37 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			wesn_new[YHI] = MIN (wesn_new[YHI], +90.0);
 		}
 		else {	/* Determine longitude limits */
+			wrap = GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI]);
 			radius /= cosd (Ctrl->S.lat);					/* Approximate e-w width in degrees longitude */
 			wesn_new[XLO] -= radius;					/* Approximate west limit in degrees */
-			col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
-			lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
-			distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
-			while (distance < Ctrl->S.radius) {
-				wesn_new[XLO] -= G->header->inc[GMT_X];
+			if (!wrap && wesn_new[XLO] < G->header->wesn[XLO]) {		/* Outside grid range */
+				wesn_new[XLO] = G->header->wesn[XLO];
+			}
+			else {
 				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+				while (distance < Ctrl->S.radius) {
+					wesn_new[XLO] -= G->header->inc[GMT_X];
+					col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+					lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
+					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+				}
 			}
 			wesn_new[XHI] += radius;					/* Approximate east limit in degrees */
-			col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
-			lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
-			distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
-			while (distance < Ctrl->S.radius) {
-				wesn_new[XHI] += G->header->inc[GMT_X];
+			if (!wrap && wesn_new[XHI] > G->header->wesn[XHI]) {		/* Outside grid range */
+				wesn_new[XHI] = G->header->wesn[XHI];
+			}
+			else {
 				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+				while (distance < Ctrl->S.radius) {
+					wesn_new[XHI] += G->header->inc[GMT_X];
+					col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+					lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
+					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+				}
 			}
 			if (wesn_new[XHI] > 360.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
