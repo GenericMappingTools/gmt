@@ -682,8 +682,8 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 	xval = GMT_memory (GMT, NULL, Topo->header->nx, double);
 	yval = GMT_memory (GMT, NULL, Topo->header->ny, double);
 
-	for (row = 0; row < Topo->header->nx; row++) xval[row] = GMT_grd_col_to_x (GMT, row, Topo->header);
-	for (col = 0; col < Topo->header->ny; col++) yval[col] = GMT_grd_row_to_y (GMT, col, Topo->header);
+	for (col = 0; col < Topo->header->nx; col++) xval[col] = GMT_grd_col_to_x (GMT, col, Topo->header);
+	for (row = 0; row < Topo->header->ny; row++) yval[row] = GMT_grd_row_to_y (GMT, row, Topo->header);
 
 	if (!GMT->current.proj.xyz_pos[2]) double_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 

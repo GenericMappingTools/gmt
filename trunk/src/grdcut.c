@@ -41,6 +41,12 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct S {	/* -S<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
+		bool active;
+		int mode;	/* Could be negative */
+		char unit;
+		double lon, lat, radius;
+	} S;
 	struct Z {	/* -Z[min/max] */
 		bool active;
 		unsigned int mode;	/* 1 means NaN */
@@ -74,7 +80,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-Z[n][min/max]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-S<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -85,6 +91,8 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "V");
+	GMT_message (GMT, "\t-S Specify an origin and radius and determine the corresponding rectangular region so that\n");
+	GMT_message (GMT, "\t   all nodes outside this region are also outside the circle.\n");
 	GMT_message (GMT, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_message (GMT, "\t   all values outside this region are outside the range [-inf/+inf].\n");
 	GMT_message (GMT, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs].\n");
@@ -102,7 +110,7 @@ int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0, k, n_files = 0;
-	char za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
+	char za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64], zc[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -120,7 +128,15 @@ int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GM
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
- 			case 'Z':	/* Detect region via z-range */
+ 			case 'S':	/* Origin and radius */
+				Ctrl->S.active = true;
+				if (sscanf (opt->arg, "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
+					n_errors += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
+					n_errors += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
+					Ctrl->S.mode = GMT_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
+				}
+				break;
+			case 'Z':	/* Detect region via z-range */
 				Ctrl->Z.active = true;
 				k = 0;
 				if (opt->arg[k] == 'n') {
@@ -139,7 +155,7 @@ int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GM
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, (GMT->common.R.active + Ctrl->Z.active) != 1, "Syntax error: Must specify either the -R or the -Z options\n");
+	n_errors += GMT_check_condition (GMT, (GMT->common.R.active + Ctrl->S.active + Ctrl->Z.active) != 1, "Syntax error: Must specify only one of the -R, -S or the -Z options\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify one input grid file\n");
 
@@ -243,6 +259,80 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			wesn_new[YHI] = G->header->wesn[YHI] - col0 * G->header->inc[GMT_Y];
 		}
 		GMT_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
+	}
+	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
+		int k, row, col, col_0;
+		double lon, lat, distance, radius;
+		
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
+			Return (API->error);	/* Get header only */
+		}
+		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
+		wesn_new[XLO] = wesn_new[XHI] = Ctrl->S.lon;
+		wesn_new[YLO] = wesn_new[YHI] = Ctrl->S.lat;
+		/* First adjust the S and N boundaries */
+		radius = R2D * (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;	/* Approximate radius in degrees */
+		wesn_new[YLO] -= radius;					/* Approximate south limit in degrees */
+		if (wesn_new[YLO] <= -90.0) {
+			wesn_new[YLO] = -90.0;
+		}
+		else {
+			row = GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);		/* Nearest row with this latitude */
+			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
+			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+			while (distance < Ctrl->S.radius) {
+				wesn_new[YLO] -= G->header->inc[GMT_Y];
+				row = GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);	/* Nearest row with this latitude */
+				lat = GMT_grd_row_to_y (GMT, row, G->header);		/* Latitude of that row */
+				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+			}
+		}
+		wesn_new[YHI] += radius;					/* Approximate north limit in degrees */
+		if (wesn_new[YHI] >= 90.0) {
+			wesn_new[YHI] = 90.0;
+		}
+		else {
+			row = GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);		/* Nearest row with this latitude */
+			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
+			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+			while (distance < Ctrl->S.radius) {
+				wesn_new[YHI] += G->header->inc[GMT_Y];
+				row = GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);	/* Nearest row with this latitude */
+				lat = GMT_grd_row_to_y (GMT, row, G->header);		/* Latitude of that row */
+				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
+			}
+		}
+		if (wesn_new[YLO] <= -90.0 || wesn_new[YHI] >= 90.0) {	/* Need all longitudes */
+			wesn_new[XLO] = G->header->wesn[XLO];
+			wesn_new[XHI] = G->header->wesn[XHI];
+			wesn_new[YLO] = MAX (wesn_new[YLO], -90.0);
+			wesn_new[YHI] = MIN (wesn_new[YHI], +90.0);
+		}
+		else {	/* Determine longitude limits */
+			radius /= cosd (Ctrl->S.lat);					/* Approximate e-w width in degrees longitude */
+			wesn_new[XLO] -= radius;					/* Approximate west limit in degrees */
+			col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+			lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
+			distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+			while (distance < Ctrl->S.radius) {
+				wesn_new[XLO] -= G->header->inc[GMT_X];
+				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
+				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+			}
+			wesn_new[XHI] += radius;					/* Approximate east limit in degrees */
+			col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+			lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
+			distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+			while (distance < Ctrl->S.radius) {
+				wesn_new[XHI] += G->header->inc[GMT_X];
+				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
+				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
+			}
+			if (wesn_new[XHI] > 360.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
+			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
+		}
 	}
 	else {	/* Just the usual subset selection via -R */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
