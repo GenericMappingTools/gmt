@@ -3,7 +3,7 @@
 .SH NAME
 grdcut \- Extract subregion from a grid
 .SH SYNOPSIS
-BD(grdcut) IT(ingrid) OPT(G)IT(outgrid) GMT_Rgeo_OPT [ OPT(S)IT(lon/lat/radius) ] 
+BD(grdcut) IT(ingrid) OPT(G)IT(outgrid) GMT_Rgeo_OPT [ OPT(S)[BD(n)]IT(lon/lat/radius)[IT(unit)] ] 
 [ GMT_V_OPT ] [ OPT(Z)[BD(n)]IT(min/max)] ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdcut) will produce a new IT(outgrid) file which is a subregion of IT(ingrid).
@@ -25,9 +25,9 @@ This is the output grid file.
 #include "explain_-R.txt"
 This defines the subregion to be cut out.
 .TP
-OPT(S)IT(lon/lat/radius)
-Specify an origin and radius and determine the corresponding rectangular region so that
-all grid nodes outside this region are also outside of the circle.
+OPT(S)[BD(n)]IT(lon/lat/radius)[IT(unit)]
+Specify an origin and radius; append a distance unit (see UNITS) and we determine the corresponding rectangular region so that
+all grid nodes on or inside the circle are contained in the subset.  If OPT(Sn) is used we set all nodes outside the circle to NaN.
 #include "explain_-V.txt"
 .TP
 OPT(Z)[BD(n)]IT(min/max)]
@@ -36,6 +36,7 @@ To indicate no limit on min or max, specify a hyphen (-).  Normally, any NaNs en
 OPT(Zn) to consider a NaN to be outside the IT(z)-range.
 #include "explain_-f.txt"
 #include "explain_help.txt"
+#include "explain_distunits.txt"
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
 .SH EXAMPLES
