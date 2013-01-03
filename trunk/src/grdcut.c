@@ -41,8 +41,9 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct S {	/* -S<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
+	struct S {	/* -S[n]<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
+		bool set_nan;
 		int mode;	/* Could be negative */
 		char unit;
 		double lon, lat, radius;
@@ -80,7 +81,7 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-S<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-S[n]<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -91,8 +92,9 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "V");
-	GMT_message (GMT, "\t-S Specify an origin and radius and determine the corresponding rectangular region so that\n");
-	GMT_message (GMT, "\t   all nodes outside this region are also outside the circle.\n");
+	GMT_dist_syntax (GMT, 'S', "Specify an origin and radius to find the corresponding rectantular area.");
+	GMT_message (GMT, "\t   all nodes on or inside the radius are contained in the subset grid.\n");
+	GMT_message (GMT, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_message (GMT, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_message (GMT, "\t   all values outside this region are outside the range [-inf/+inf].\n");
 	GMT_message (GMT, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs].\n");
@@ -130,7 +132,12 @@ int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GM
 				break;
  			case 'S':	/* Origin and radius */
 				Ctrl->S.active = true;
-				if (sscanf (opt->arg, "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
+				k = 0;
+				if (opt->arg[k] == 'n') {
+					Ctrl->S.set_nan = true;
+					k = 1;
+				}
+				if (sscanf (&opt->arg[k], "%[^/]/%[^/]/%s", za, zb, zc) == 3) {
 					n_errors += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf_arg (GMT, za, GMT_IS_LON, &Ctrl->S.lon), za);
 					n_errors += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf_arg (GMT, zb, GMT_IS_LAT, &Ctrl->S.lat), zb);
 					Ctrl->S.mode = GMT_get_distance (GMT, zc, &(Ctrl->S.radius), &(Ctrl->S.unit));
@@ -169,8 +176,10 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int error = 0;
 	unsigned int nx_old, ny_old;
+	uint64_t node;
 
 	double wesn_new[4], wesn_old[4];
+	double lon, lat, distance, radius;
 
 	struct GRD_HEADER test_header;
 	struct GRDCUT_CTRL *Ctrl = NULL;
@@ -197,7 +206,6 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
-		uint64_t ij;
 		bool go;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -205,11 +213,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		
 		for (row = 0, go = true; go && row < G->header->nx; row++) {	/* Scan from xmin towards xmax */
-			for (col = 0, ij = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, ij += G->header->mx) {
-				if (GMT_is_fnan (G->data[ij])) {
+			for (col = 0, node = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, node += G->header->mx) {
+				if (GMT_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_OUTSIDE) go = false;	/* Must stop since this NaN value defines the inner box */
 				}
-				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
+				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 					go = false;
 				if (!go) row0 = row;	/* Found starting column */
 			}
@@ -219,31 +227,31 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		for (row = G->header->nx-1, go = true; go && row > row0; row--) {	/* Scan from xmax towards xmin */
-			for (col = 0, ij = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, ij += G->header->mx) {
-				if (GMT_is_fnan (G->data[ij])) {
+			for (col = 0, node = GMT_IJP (G->header, 0, row); go && col < G->header->ny; col++, node += G->header->mx) {
+				if (GMT_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = false;	/* Must stop since this value defines the inner box */
 				}
-				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
+				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 					go = false;
 				if (!go) row1 = row;	/* Found stopping column */
 			}
 		}
 		for (col = 0, go = true; go && col < G->header->ny; col++) {	/* Scan from ymin towards ymax */
-			for (row = row0, ij = GMT_IJP (G->header, col, row0); go && row < row1; row++, ij++) {
-				if (GMT_is_fnan (G->data[ij])) {
+			for (row = row0, node = GMT_IJP (G->header, col, row0); go && row < row1; row++, node++) {
+				if (GMT_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = false;	/* Must stop since this value defines the inner box */
 				}
-				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
+				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 					go = false;
 				if (!go) col0 = col;	/* Found starting row */
 			}
 		}
 		for (col = G->header->ny-1, go = true; go && col >= col0; col--) {	/* Scan from ymax towards ymin */
-			for (row = row0, ij = GMT_IJP (G->header, col, row0); go && row < row1; row++, ij++) {
-				if (GMT_is_fnan (G->data[ij])) {
+			for (row = row0, node = GMT_IJP (G->header, col, row0); go && row < row1; row++, node++) {
+				if (GMT_is_fnan (G->data[node])) {
 					if (Ctrl->Z.mode == NAN_IS_INSIDE) go = false;	/* Must stop since this value defines the inner box */
 				}
-				else if (G->data[ij] >= Ctrl->Z.min && G->data[ij] <= Ctrl->Z.max)
+				else if (G->data[node] >= Ctrl->Z.min && G->data[node] <= Ctrl->Z.max)
 					go = false;
 				if (!go) col1 = col;	/* Found starting row */
 			}
@@ -263,7 +271,6 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
 		int row, col;
 		bool wrap;
-		double lon, lat, distance, radius;
 		
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
@@ -285,11 +292,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			row = GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
 			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
-			while (distance < Ctrl->S.radius) {	/* Extend region by one more row */
+			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row */
 				lat -= G->header->inc[GMT_Y];
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
-			wesn_new[YLO] = lat;
+			wesn_new[YLO] = lat + G->header->inc[GMT_Y];	/* Go one back since last was outside */
 		}
 		wesn_new[YHI] += radius;	/* Approximate north limit in degrees */
 		if (wesn_new[YHI] >= 90.0) {	/* Way north, reset to N pole */
@@ -299,11 +306,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			row = GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
 			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
-			while (distance < Ctrl->S.radius) {
+			while (distance <= Ctrl->S.radius) {
 				lat += G->header->inc[GMT_Y];
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
-			wesn_new[YHI] = lat;
+			wesn_new[YHI] = lat - G->header->inc[GMT_Y];	/* Go one back since last was outside */
 		}
 		if (wesn_new[YLO] <= -90.0 || wesn_new[YHI] >= 90.0) {	/* Need all longitudes */
 			wesn_new[XLO] = G->header->wesn[XLO];
@@ -322,11 +329,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
-				while (distance < Ctrl->S.radius) {
+				while (distance <= Ctrl->S.radius) {
 					lon -= G->header->inc[GMT_X];
 					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
-				wesn_new[XLO] = lon;
+				wesn_new[XLO] = lon + G->header->inc[GMT_X];	/* Go one back since last was outside */
 			}
 			wesn_new[XHI] += radius;					/* Approximate east limit in degrees */
 			if (!wrap && wesn_new[XHI] > G->header->wesn[XHI]) {		/* Outside grid range */
@@ -336,11 +343,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 				col = GMT_grd_x_to_col (GMT, wesn_new[XHI], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
-				while (distance < Ctrl->S.radius) {
+				while (distance <= Ctrl->S.radius) {
 					lon += G->header->inc[GMT_X];
 					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
-				wesn_new[XHI] = lon;
+				wesn_new[XHI] = lon - G->header->inc[GMT_X];	/* Go one back since last was outside */
 			}
 			if (wesn_new[XHI] > 360.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
@@ -422,6 +429,23 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->nx, G->header->ny);
 	}
 
+	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
+		unsigned int row, col;
+		double *grd_lon = GMT_memory (GMT, NULL, G->header->nx, double);
+		for (col = 0; col < G->header->nx; col++) grd_lon[col] = GMT_grd_col_to_x (GMT, col, G->header);
+		for (row = 0; row < G->header->ny; row++) {
+			lat = GMT_grd_row_to_y (GMT, row, G->header);
+			for (col = 0; col < G->header->nx; col++) {
+				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, grd_lon[col], lat);
+				if (distance > Ctrl->S.radius) {
+					node = GMT_IJP (G->header, row, col);
+					G->data[node] = GMT->session.f_NaN;
+				}
+			}
+		}
+		GMT_free (GMT, grd_lon);	
+	}
+	
 	/* Send the subset of the grid to the destination. */
 	
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
