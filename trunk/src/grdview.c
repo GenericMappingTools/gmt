@@ -679,11 +679,8 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 	else
 		Z = Topo;
 
-	xval = GMT_memory (GMT, NULL, Topo->header->nx, double);
-	yval = GMT_memory (GMT, NULL, Topo->header->ny, double);
-
-	for (col = 0; col < Topo->header->nx; col++) xval[col] = GMT_grd_col_to_x (GMT, col, Topo->header);
-	for (row = 0; row < Topo->header->ny; row++) yval[row] = GMT_grd_row_to_y (GMT, row, Topo->header);
+	xval = GMT_grd_coord (GMT, Topo->header, GMT_X);
+	yval = GMT_grd_coord (GMT, Topo->header, GMT_Y);
 
 	if (!GMT->current.proj.xyz_pos[2]) double_swap (GMT->common.R.wesn[ZLO], GMT->common.R.wesn[ZHI]);	/* Negative z-scale, must flip */
 
@@ -952,11 +949,9 @@ int GMT_grdview (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Resampling illumination grid to drape grid resolution\n");
 			ix = GMT_memory (GMT, NULL, Z->header->nm, int);
 			iy = GMT_memory (GMT, NULL, Z->header->nm, int);
-			x_drape = GMT_memory (GMT, NULL, Z->header->nx, double);
-			y_drape = GMT_memory (GMT, NULL, Z->header->ny, double);
+			x_drape = GMT_grd_coord (GMT, Z->header, GMT_X);
+			y_drape = GMT_grd_coord (GMT, Z->header, GMT_Y);
 			if (Ctrl->I.active) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
-			for (col = 0; col < Z->header->nx; col++) x_drape[col] = GMT_grd_col_to_x (GMT, col, Z->header);
-			for (row = 0; row < Z->header->ny; row++) y_drape[row] = GMT_grd_row_to_y (GMT, row, Z->header);
 			bin = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row]);

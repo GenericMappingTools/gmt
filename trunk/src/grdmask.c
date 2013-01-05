@@ -292,10 +292,8 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	nx = Grid->header->nx;	ny = Grid->header->ny;	/* Signed versions */
 	if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
-		grd_x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
-		grd_y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-		for (col = 0; col < nx; col++) grd_x0[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-		for (row = 0; row < ny; row++) grd_y0[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
+		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
+		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 		if (!Ctrl->S.variable_radius) {
 			radius = Ctrl->S.radius;
 			n_cols = 3;	/* Get x, y, radius */

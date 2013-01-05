@@ -86,14 +86,14 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<ingrid> is file to extract a subset from.\n");
-	GMT_message (GMT, "\t-G Specify output grid file\n");
+	GMT_message (GMT, "\t-G Specify output grid file.\n");
 	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t   Obviously, the WESN you specify must be within the WESN of the input grid.\n");
+	GMT_message (GMT, "\t   The WESN you specify must be within the WESN of the input grid.\n");
 	GMT_message (GMT, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "V");
-	GMT_dist_syntax (GMT, 'S', "Specify an origin and radius to find the corresponding rectantular area.");
-	GMT_message (GMT, "\t   all nodes on or inside the radius are contained in the subset grid.\n");
+	GMT_dist_syntax (GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
+	GMT_message (GMT, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
 	GMT_message (GMT, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_message (GMT, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_message (GMT, "\t   all values outside this region are outside the range [-inf/+inf].\n");
@@ -292,11 +292,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			row = GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
 			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
-			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row */
+			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row until we are outside */
 				lat -= G->header->inc[GMT_Y];
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
-			wesn_new[YLO] = lat + G->header->inc[GMT_Y];	/* Go one back since last was outside */
+			wesn_new[YLO] = lat + G->header->inc[GMT_Y];	/* Go one back since last row was outside */
 		}
 		wesn_new[YHI] += radius;	/* Approximate north limit in degrees */
 		if (wesn_new[YHI] >= 90.0) {	/* Way north, reset to N pole */
@@ -306,34 +306,32 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 			row = GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
 			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
-			while (distance <= Ctrl->S.radius) {
+			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row until we are outside */
 				lat += G->header->inc[GMT_Y];
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			}
-			wesn_new[YHI] = lat - G->header->inc[GMT_Y];	/* Go one back since last was outside */
+			wesn_new[YHI] = lat - G->header->inc[GMT_Y];	/* Go one back since last row was outside */
 		}
-		if (wesn_new[YLO] <= -90.0 || wesn_new[YHI] >= 90.0) {	/* Need all longitudes */
+		if (doubleAlmostEqual (wesn_new[YLO], -90.0) || doubleAlmostEqual (wesn_new[YHI], 90.0)) {	/* Need all longitudes when a pole is included */
 			wesn_new[XLO] = G->header->wesn[XLO];
 			wesn_new[XHI] = G->header->wesn[XHI];
-			wesn_new[YLO] = MAX (wesn_new[YLO], -90.0);
-			wesn_new[YHI] = MIN (wesn_new[YHI], +90.0);
 		}
 		else {	/* Determine longitude limits */
-			wrap = GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI]);
+			wrap = GMT_360_RANGE (G->header->wesn[XLO], G->header->wesn[XHI]);	/* true if grid is 360 global */
 			radius /= cosd (Ctrl->S.lat);					/* Approximate e-w width in degrees longitude */
 			wesn_new[XLO] -= radius;					/* Approximate west limit in degrees */
-			if (!wrap && wesn_new[XLO] < G->header->wesn[XLO]) {		/* Outside grid range */
+			if (!wrap && wesn_new[XLO] < G->header->wesn[XLO]) {		/* Outside non-periodic grid range */
 				wesn_new[XLO] = G->header->wesn[XLO];
 			}
 			else {
 				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
-				while (distance <= Ctrl->S.radius) {
+				while (distance <= Ctrl->S.radius) {	/* Extend region by one more col until we are outside */
 					lon -= G->header->inc[GMT_X];
 					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
-				wesn_new[XLO] = lon + G->header->inc[GMT_X];	/* Go one back since last was outside */
+				wesn_new[XLO] = lon + G->header->inc[GMT_X];	/* Go one back since last col was outside */
 			}
 			wesn_new[XHI] += radius;					/* Approximate east limit in degrees */
 			if (!wrap && wesn_new[XHI] > G->header->wesn[XHI]) {		/* Outside grid range */
@@ -343,11 +341,11 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 				col = GMT_grd_x_to_col (GMT, wesn_new[XHI], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
-				while (distance <= Ctrl->S.radius) {
+				while (distance <= Ctrl->S.radius) {	/* Extend region by one more col until we are outside */
 					lon += G->header->inc[GMT_X];
 					distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				}
-				wesn_new[XHI] = lon - G->header->inc[GMT_X];	/* Go one back since last was outside */
+				wesn_new[XHI] = lon - G->header->inc[GMT_X];	/* Go one back since last col was outside */
 			}
 			if (wesn_new[XHI] > 360.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
@@ -431,19 +429,22 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
-		double *grd_lon = GMT_memory (GMT, NULL, G->header->nx, double);
-		for (col = 0; col < G->header->nx; col++) grd_lon[col] = GMT_grd_col_to_x (GMT, col, G->header);
+		uint64_t n_nodes = 0;
+		double *grd_lon = GMT_grd_coord (GMT, G->header, GMT_X);
+		
 		for (row = 0; row < G->header->ny; row++) {
 			lat = GMT_grd_row_to_y (GMT, row, G->header);
 			for (col = 0; col < G->header->nx; col++) {
 				distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, grd_lon[col], lat);
-				if (distance > Ctrl->S.radius) {
+				if (distance > Ctrl->S.radius) {	/* Outside circle */
 					node = GMT_IJP (G->header, row, col);
 					G->data[node] = GMT->session.f_NaN;
+					n_nodes++;
 				}
 			}
 		}
 		GMT_free (GMT, grd_lon);	
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
 	}
 	
 	/* Send the subset of the grid to the destination. */

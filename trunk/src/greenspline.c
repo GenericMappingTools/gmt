@@ -1633,12 +1633,8 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
-		xp = GMT_memory (GMT, NULL, Grid->header->nx, double);
-		for (col = 0; col < Grid->header->nx; col++) xp[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-		if (dimension > 1) {
-			yp = GMT_memory (GMT, NULL, Grid->header->ny, double);
-			for (row = 0; row < Grid->header->ny; row++) yp[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
-		}
+		xp = GMT_grd_coord (GMT, Grid->header, GMT_X);
+		if (dimension > 1) yp = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ascii table to named file or stdout */

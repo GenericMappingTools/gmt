@@ -2,9 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-2013-01-02	pwessel
-	* grdcut.c:		Added option -Slon/lat/radius to extract subset that contains all
-				grid nodes that fall inside the circle.
+2013-01-03	pwessel
+	* grdcut.c:		Added option -S[n]lon/lat/radius to extract subset that contains all
+				grid nodes that fall inside the circle, and optionally (-Sn) set those
+				outside circle to NaN.
 
 2012-10-19	pwessel
 	* spotter/libspotter.c:	Did not check for time reversals among total reconstruction rotations.

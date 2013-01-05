@@ -360,13 +360,10 @@ int GMT_grd2xyz (struct GMTAPI_CTRL *API, int mode, void *args)
 				Return (API->error);
 			}
 
-			x = GMT_memory (GMT, NULL, G->header->nx, double);
-			y = GMT_memory (GMT, NULL, G->header->ny, double);
-
 			/* Compute grid node positions once only */
 
-			for (row = 0; row < G->header->ny; row++) y[row] = GMT_grd_row_to_y (GMT, row, G->header);
-			for (col = 0; col < G->header->nx; col++) x[col] = GMT_grd_col_to_x (GMT, col, G->header);
+			x = GMT_grd_coord (GMT, G->header, GMT_X);
+			y = GMT_grd_coord (GMT, G->header, GMT_Y);
 
 			if (GMT->current.setting.io_header[GMT_OUT] && first) {
 				if (!G->header->x_units[0]) strcpy (G->header->x_units, "x");
