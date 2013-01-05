@@ -83,6 +83,7 @@ EXTERN_MSC int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, double 
 EXTERN_MSC int GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int registration);
 EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *Grid, double shift);
 EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc);
+EXTERN_MSC double * GMT_grd_coord (struct GMT_CTRL *C, struct GRD_HEADER *h, int dir);
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_read_image (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I, double *wesn, 
 			unsigned int *pad, unsigned int complex_mode);		/* Function to read true images via GDAL */

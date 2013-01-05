@@ -118,6 +118,23 @@ void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 		strcpy (fname, file);
 }
 
+double * GMT_grd_coord (struct GMT_CTRL *C, struct GRD_HEADER *header, int dir)
+{	/* Allocate, compute, and return the x- or y-coordinates for a grid */
+	unsigned int k;
+	double *coord = NULL;
+	assert (dir == GMT_X || dir == GMT_Y);
+	if (dir == GMT_X) {
+		coord = GMT_memory (C, NULL, header->nx, double);
+		for (k = 0; k < header->nx; k++) coord[k] = GMT_grd_col_to_x (C, k, header);
+	}
+	else if (dir == GMT_Y) {
+		coord = GMT_memory (C, NULL, header->ny, double);
+		for (k = 0; k < header->ny; k++) coord[k] = GMT_grd_row_to_y (C, k, header);
+	}
+	
+	return (coord);
+}
+
 enum Grid_packing_mode {
 	k_grd_pack = 0, /* scale and offset before writing to disk */
 	k_grd_unpack    /* remove scale and offset after reading packed data */
