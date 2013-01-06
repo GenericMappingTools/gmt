@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #--------------------------------------------------------------------
 #  $Id$
 #
@@ -20,27 +20,19 @@
 # to developers that need to include/link GMT5 resources.
 #--------------------------------------------------------------------*/
 #
+CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include"
+CONFIG_DATA=$(gmt --show-sharedir)
+CONFIG_DEP_LIBS="@GMT_OPTIONAL_LIBRARIES@"
+CONFIG_GSHHG=$(gmtget DIR_GSHHG)
 CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
-CONFIG_DEP_LIBS="@NETCDF_LIBRARY@"
 CONFIG_PREFIX="@CMAKE_INSTALL_PREFIX@"
-CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include -I@NETCDF_INCLUDE_DIR@"
-CONFIG_DATA="@CMAKE_INSTALL_PREFIX@/@GMT_SHARE_PATH@"
 CONFIG_VERSION="@GMT_PACKAGE_VERSION@"
-CONFIG_GSHHG="@GSHHG_PATH@"
 SIZEOF_VOID_P=@CMAKE_SIZEOF_VOID_P@
 
-if [ ! "X@GDAL_INCLUDE_DIR@" = "X" ]; then
+if [ -n "@GDAL_LIBRARY@" ]; then
 	CONFIG_GDAL_ENABLED=yes
-	CONFIG_CFLAGS="$CONFIG_CFLAGS -I@GDAL_INCLUDE_DIR@"
-	CONFIG_DEP_LIBS="@GDAL_LIBRARY@ $CONFIG_DEP_LIBS"
 else
 	CONFIG_GDAL_ENABLED=no
-fi
-
-if [ ! "X@PCRE_LIBRARY@" = "X" ]; then
-	CONFIG_DEP_LIBS="@PCRE_LIBRARY@ $CONFIG_DEP_LIBS"
-elif [ ! "X@REGEX_LIBRARY@" = "X" ]; then
-	CONFIG_DEP_LIBS="@REGEX_LIBRARY@ $CONFIG_DEP_LIBS"
 fi
 
 if [ "$SIZEOF_VOID_P" -eq 8 ]; then
@@ -81,7 +73,7 @@ case $1 in
     ;;
 
   --dep-libs)
-    echo $CONFIG_DEP_LIBS
+    echo ${CONFIG_DEP_LIBS//;/ }
     ;;
 
   --cflags)
