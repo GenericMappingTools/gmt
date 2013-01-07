@@ -30,14 +30,6 @@
 #ifndef _GMT_GRD_H
 #define _GMT_GRD_H
 
-/* Declaration modifier for netcdf DLL support
- * annoying: why can't netcdf.h do this on its own? */
-#if defined WIN32 && ! defined NETCDF_STATIC
-#define DLL_NETCDF
-#endif
-
-#include "netcdf.h"
-
 /* netcdf convention */
 #define GMT_NC_CONVENTION "COARDS, CF-1.5"
 
