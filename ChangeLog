@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-07	pwessel
+	* grdvector.c:		Enforce that -Idx/dy must be multiples of grid dx/dy and
+				abort if they are not.  Before we would crash, hang, etc.
+	* gmt_grd.h:		Moved the #include <netcdf.h> from here to gmt_nc.c so that
+				custom programs only need gmt.h.
+
 2013-01-03	pwessel
 	* grdcut.c:		Added option -S[n]lon/lat/radius to extract subset that contains all
 				grid nodes that fall inside the circle, and optionally (-Sn) set those
