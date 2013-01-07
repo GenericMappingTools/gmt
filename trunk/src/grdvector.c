@@ -412,12 +412,23 @@ int GMT_grdvector (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval */
 		struct GRD_HEADER tmp_h;
+		double val;
 		GMT_memcpy (&tmp_h, Grid[0]->header, 1, struct GRD_HEADER);
 		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
 		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
 		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);
-		d_row = lrint (Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y]);
-		d_col = lrint (Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X]);
+		val = Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];
+		d_row = lrint (val);
+		if (d_row == 0 || !doubleAlmostEqualZero (d_row, val)) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: New y grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_Y], Grid[0]->header->inc[GMT_Y]);
+			Return (EXIT_FAILURE);
+		}
+		val = Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X];
+		d_col = lrint (val);
+		if (d_col == 0 || !doubleAlmostEqualZero (d_col, val)) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: New x grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_X], Grid[0]->header->inc[GMT_X]);
+			Return (EXIT_FAILURE);
+		}
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
 		row_0 = lrint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
