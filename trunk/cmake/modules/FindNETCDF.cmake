@@ -124,7 +124,7 @@ if (NETCDF_LIBRARY AND NETCDF_INCLUDE_DIR AND NOT HAVE_NETCDF4)
   check_symbol_exists (nc_def_var_deflate netcdf.h HAVE_NETCDF4)
   cmake_pop_check_state() # restore state of CMAKE_REQUIRED_*
   if (NOT HAVE_NETCDF4)
-    message (SEND_ERROR "NetCDF-4 extensions not supported. Upgrade to NetCDF-4/HDF-5.")
+    message (SEND_ERROR "Library found but netCDF-4/HDF5 format unsupported. Do not configure netCDF-4 with --disable-netcdf-4.")
   endif (NOT HAVE_NETCDF4)
 endif (NETCDF_LIBRARY AND NETCDF_INCLUDE_DIR AND NOT HAVE_NETCDF4)
 
