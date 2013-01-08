@@ -32,7 +32,6 @@ include (CreateDebugSym)
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
 find_package (NETCDF REQUIRED)
 include_directories (${NETCDF_INCLUDE_DIR})
-add_definitions (${NETCDF_DEFINITIONS})
 
 find_package (GDAL)
 if (GDAL_FOUND)
@@ -566,7 +565,7 @@ gmt_create_manpages (${GMT_MAN_1} ${GMT_MAN_3} ${GMT_MAN_5}
 # this prints out the final version of the compiler/linker flags
 string (TOUPPER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE_UPPER)
 string(REGEX REPLACE "[ ]+" " " _using_cflags ${CMAKE_C_FLAGS} " "
-	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}} " " ${NETCDF_DEFINITIONS})
+	${CMAKE_C_FLAGS_${CMAKE_BUILD_TYPE_UPPER}})
 message (STATUS "Using CFLAGS = '${_using_cflags}'")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

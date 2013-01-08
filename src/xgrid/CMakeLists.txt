@@ -46,7 +46,6 @@ if (X11_FOUND AND X11_Xt_FOUND AND XAW_LIBRARY)
 		xGridEdit.c)
 
 	include_directories (${X11_INCLUDE_DIR})
-	#add_definitions (${NETCDF_DEFINITIONS})
 
 	# build target
 	add_executable (xgridedit ${GMT_XGRID_PROGS_SRCS})

@@ -1,7 +1,7 @@
 ////
 $Id$
 
-Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis
+Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis
 and F. Wobbe. See LICENSE.TXT file for copying and redistribution conditions.
 
 Contact info: gmt.soest.hawaii.edu
@@ -13,8 +13,8 @@ CMake User Guide
 Build and runtime prerequisites
 -------------------------------
 
-You need Ghostscript, CMake (>=2.8.5), netCDF (>=3.6.3, version 4 recommended).
-Optionally install PCRE and GDAL.
+You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5 support
+mandatory).  Optionally install PCRE and GDAL.
 
 Information for building GMT 5 with CMake
 -----------------------------------------

@@ -49,7 +49,8 @@ Install netCDF library
 ----------------------
 
 Get and install netCDF from http://www.unidata.ucar.edu/downloads/netcdf/.
-You need at least version 3.6.3 but we recommend installing version 4.
+You need at least version 4.0 with netCDF-4/HDF5 data model support (do not
+disable HDF5/ZLIB in netCDF with --disable-netcdf-4).
 
 For all major Linux distributions there are prepackaged development binaries
 available. netCDF is also available on MacOSX trough the macports and fink
