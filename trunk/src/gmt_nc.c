@@ -1205,7 +1205,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	else if (C->session.grdformat[header->type][0] != 'n')
 		return (NC_ENOTNC);
 
-	GMT_err_pass (C, nc_grd_prep_io (C, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
+	GMT_err_fail (C, nc_grd_prep_io (C, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
 
 	/* Set stride and offset if complex */
 	(void)GMT_init_complex (complex_mode, &inc, &off);
