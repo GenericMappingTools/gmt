@@ -52,6 +52,7 @@
  *  n_chunked_rows_in_cache Determines how many chunks to read at once
  *  io_nc_grid              Does the actual netcdf I/O
  *  netcdf_libvers          returns the netCDF library version
+ *  set_optimal_chunksize   Determines the optimal chunksize
  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
@@ -203,6 +204,54 @@ void gmt_nc_check_step (struct GMT_CTRL *C, int n, double *x, char *varname, cha
 	}
 }
 
+void set_optimal_chunksize (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+	/* For optimal performance, set the number of elements in a given chunk
+	 * dimension (n) to be the ceiling of the number of elements in that
+	 * dimension of the array variable (d) divided by a natural number N>1.
+	 * That is, set n = ceil (d / Ν).  Using a chunk size slightly larger than
+	 * this value is also acceptable.  For example: 129 = ceil (257 / 2).
+	 * Do NOT set n = floor (d / N), for example 128 = floor (257 / 2). */
+
+	double chunksize[2] = {128, 128};                            /* default min chunksize */
+	const size_t min_chunk_pixels = chunksize[0] * chunksize[1]; /* min pixel count per chunk */
+
+	if (C->current.setting.io_nc4_chunksize[0] == k_netcdf_io_classic)
+		/* no chunking with classic model */
+		return;
+
+	if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_chunked_auto && (
+			header->ny >= C->current.setting.io_nc4_chunksize[0] ||
+			header->nx >= C->current.setting.io_nc4_chunksize[1])) {
+		/* if chunk size is smaller than grid size */
+		return;
+	}
+
+	/* here, chunk size is either k_netcdf_io_chunked_auto or the chunk size is
+	 * larger than grid size */
+
+	if ( (header->ny * header->nx) < min_chunk_pixels ) {
+		/* the grid dimension is too small for chunking to make sense. switch to
+		 * classic model */
+		C->current.setting.io_nc4_chunksize[0] = k_netcdf_io_classic;
+		return;
+	}
+
+	/* adjust default chunk sizes for grids that have more than min_chunk_pixels
+	 * cells but less than chunksize (default 128) cells in one dimension */
+	if (header->ny < chunksize[0]) {
+		chunksize[0] = header->ny;
+		chunksize[1] = floor (min_chunk_pixels / chunksize[0]);
+	}
+	else if (header->nx < chunksize[1]) {
+		chunksize[1] = header->nx;
+		chunksize[0] = floor (min_chunk_pixels / chunksize[1]);
+	}
+
+	/* determine optimal chunk size in the range [chunksize,2*chunksize) */
+	C->current.setting.io_nc4_chunksize[0] = (size_t) ceil (header->ny / floor (header->ny / chunksize[0]));
+	C->current.setting.io_nc4_chunksize[1] = (size_t) ceil (header->nx / floor (header->nx / chunksize[1]));
+}
+
 int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 {
 	int j, err;
@@ -244,14 +293,16 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 			break;
 		default:
 			/* create new nc-file */
-			if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic &&
-					header->ny >= C->current.setting.io_nc4_chunksize[0] &&
-					header->nx >= C->current.setting.io_nc4_chunksize[1]) {
-				/* if chunk size is smaller than grid size: create chunked nc4 file */
+			set_optimal_chunksize (C, header);
+			if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
+				/* create chunked nc4 file */
 				GMT_err_trap (nc_create (header->name, NC_NETCDF4, &ncid));
+				header->is_netcdf4 = true;
 			}
 			else {
+				/* create nc using classic data model */
 				GMT_err_trap (nc_create (header->name, NC_CLOBBER, &ncid));
+				header->is_netcdf4 = false;
 			}
 			GMT_err_trap (nc_set_fill (ncid, NC_NOFILL, &old_fill_mode));
 			break;
@@ -260,6 +311,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	/* Retrieve or define dimensions and variables */
 
 	if (job == 'r' || job == 'u') {
+		int kind;
+		/* determine netCDF data model */
+		GMT_err_trap (nc_inq_format(ncid, &kind));
+		header->is_netcdf4 = (kind == NC_FORMAT_NETCDF4 || kind == NC_FORMAT_NETCDF4_CLASSIC);
+
 		/* First see if this is an old NetCDF formatted file */
 		if (!nc_inq_dimid (ncid, "xysize", &i)) return (gmt_cdf_grd_info (C, ncid, header, job));
 
@@ -336,21 +392,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 
 		/* set deflation and chunking */
 		if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_classic) {
-			if (C->current.setting.io_nc4_chunksize[0] == k_netcdf_io_chunked_auto &&
-					header->ny >= 256.0 && header->nx >= 256.0) {
-				/* special case: determine optimal chunk size in the range [128,256] */
-				size_t chunksize[2];
-				chunksize[0] = (size_t) ceil (header->ny / floor (header->ny / 128.0));
-				chunksize[1] = (size_t) ceil (header->nx / floor (header->nx / 128.0));
-				GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, chunksize));
-			}
-			else if (C->current.setting.io_nc4_chunksize[0] != k_netcdf_io_chunked_auto &&
-							 header->ny >= C->current.setting.io_nc4_chunksize[0] &&
-							 header->nx >= C->current.setting.io_nc4_chunksize[1])
-				/* set chunk size from defaults */
-				GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, C->current.setting.io_nc4_chunksize));
-			/* else: use netCDF default chunk size, usually equals dimension length */
-
+			/* set chunk size */
+			GMT_err_trap (nc_def_var_chunking (ncid, z_id, NC_CHUNKED, C->current.setting.io_nc4_chunksize));
 			/* set deflation level and shuffle for z variable */
 			if (C->current.setting.io_nc4_deflation_level)
 				GMT_err_trap (nc_def_var_deflate (ncid, z_id, true, true, C->current.setting.io_nc4_deflation_level));
@@ -476,11 +519,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	else {
 		/* Store global attributes */
 		unsigned int row, col;
-		int reg, kind;
 		const int *nc_vers = netcdf_libvers();
-		bool is_nc4_file;
-		GMT_err_trap (nc_inq_format(ncid, &kind));
-		is_nc4_file = (kind > NC_FORMAT_64BIT);
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
 		if (header->title[0]) {
 			GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
@@ -492,7 +531,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_PIXEL_REG) {
-			reg = header->registration;
+			int reg = header->registration;
 			GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1U, &reg));
 		}
 		else
@@ -528,7 +567,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
-		if (job == 'u' && is_nc4_file && nc_vers[0] == 4 && nc_vers[1] < 3) {
+		if (job == 'u' && header->is_netcdf4 && nc_vers[0] == 4 && nc_vers[1] < 3) {
 			/* netCDF-4 libs of versions < 4.3 have a bug and crash when
 			 * rewriting the _FillValue attribute in netCDF-4 files */
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: netCDF libraries < 4.3 cannot alter the _FillValue attribute in netCDF-4 files.\n");

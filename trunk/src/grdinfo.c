@@ -511,8 +511,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			if (strspn(GMT->session.grdformat[G->header->type], "nc") != 0) {
 				/* type is netCDF: report chunk size and deflation level */
-				bool is_nc4_file = G->header->z_chunksize[0] != 0;
-				if (is_nc4_file) {
+				if (G->header->is_netcdf4) {
 					sprintf (text, " chunk_size: %u,%u shuffle: %s deflation_level: %u",
 							G->header->z_chunksize[0], G->header->z_chunksize[1],
 							G->header->z_shuffle ? "on" : "off", G->header->z_deflate_level);
@@ -520,7 +519,7 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 				else
 					text[0] = '\0';
 				sprintf (record, "%s: format: %s%s",
-						G->header->name, is_nc4_file ? "netCDF-4" : "classic", text);
+						G->header->name, G->header->is_netcdf4 ? "netCDF-4" : "classic", text);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			}
 		} /* !(Ctrl->T.active || (Ctrl->I.active && Ctrl->I.status == 2))) */
