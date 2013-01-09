@@ -286,7 +286,7 @@ lead to unexpectedly bad performance.
 Note that a chunk of a single precision floating point variable of size 2896x2896
 completely fills the chunk cache of 32MiB.
 Specify the chunk size for each dimension separated by a comma, or BD(a)uto for
-optimally chosen chunk sizes in the range [128,256].
+optimally chosen chunk sizes in the range [128,256).
 Set IO_NC4_CHUNK_SIZE to BD(c)lassic for classic netCDF. [auto]
 .TP
 .B IO_NC4_DEFLATION_LEVEL

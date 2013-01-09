@@ -120,6 +120,7 @@ struct GRD_HEADER {
 	bool no_BC;                     /* If true we skip BC stuff entirely */
 	bool gn;                        /* true if top    edge will be set as N pole  */
 	bool gs;                        /* true if bottom edge will be set as S pole  */
+	bool is_netcdf4;                /* true if netCDF-4/HDF5 format */
 	unsigned int z_chunksize[2];    /* chunk size (lat,lon) */
 	bool z_shuffle;                 /* if shuffle filter is turned on */
 	unsigned int z_deflate_level;   /* if deflate filter is in use */
