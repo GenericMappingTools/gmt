@@ -8699,14 +8699,15 @@ int gmt_gnomonic_adjust (struct GMT_CTRL *C, double angle, double x, double y)
 	/* Called when GNOMONIC and global region.  angle has been fixed to the +- 90 range */
 	/* This is a kludge until we rewrite the entire justification stuff */
 	bool inside;
-	double xp, yp;
+	double xp, yp, r;
 
 	/* Create a point a small step away from (x,y) along the angle baseline
 	 * If it is inside the circle the we want right-justify, else left-justify. */
 	sincosd (angle, &yp, &xp);
 	xp = xp * C->current.setting.map_line_step + x;
 	yp = yp * C->current.setting.map_line_step + y;
-	inside = (hypot (xp - C->current.proj.r, yp - C->current.proj.r) < C->current.proj.r);
+	r = hypot (xp - C->current.proj.r, yp - C->current.proj.r);
+	inside = (r < C->current.proj.r);
 	return ((inside) ? 7 : 5);
 }
 
