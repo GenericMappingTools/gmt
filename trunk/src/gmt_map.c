@@ -2015,6 +2015,7 @@ void GMT_set_spherical (struct GMT_CTRL *C, bool notify)
 	C->current.setting.proj_ellipsoid = GMT_N_ELLIPSOIDS - 1;	/* Custom ellipsoid */
 	C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].flattening = 0.0;
 	if (notify) GMT_report (C, GMT_MSG_VERBOSE, "Warning: spherical approximation used!\n");
+	C->current.setting.proj_aux_latitude = GMT_LATSWAP_NONE;	/* No lat swapping for spherical */
 
 	GMT_init_ellipsoid (C);
 }
@@ -4021,9 +4022,7 @@ bool gmt_map_init_genper (struct GMT_CTRL *C) {
 bool gmt_map_init_gnomonic (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax, dummy, radius;
 
-	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
-
-	gmt_set_polar (C);
+	GMT_set_spherical (C, true);	/* PW: Force spherical for now */	gmt_set_polar (C);
 
 	if (C->current.proj.units_pr_degree) {
 		GMT_vgnomonic (C, 0.0, 90.0, 60.0);
