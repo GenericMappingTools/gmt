@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-09	pwessel
+	* gmt_io.c:		Formats for degree annotations using colons should never
+				end in a trailing colon.
+
 2013-01-07	pwessel
 	* grdvector.c:		Enforce that -Idx/dy must be multiples of grid dx/dy and
 				abort if they are not.  Before we would crash, hang, etc.
