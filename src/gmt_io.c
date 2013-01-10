@@ -1935,7 +1935,8 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 		lon_sum += dlon;
 		lat_sum += S->coord[GMT_Y][row];
 	}
-	if (GMT_360_RANGE (lon_sum, 0.0)) {	/* true if contains a pole */
+	// if (GMT_360_RANGE (lon_sum, 0.0)) {	/* true if contains a pole */
+	if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* true if contains a pole */
 		S->pole = lrint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
 		if (S->pole == -1) S->min[GMT_Y] = -90.0;
