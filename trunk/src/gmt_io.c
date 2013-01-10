@@ -3682,7 +3682,7 @@ int gmt_geo_C_format (struct GMT_CTRL *C)
 
 void gmt_plot_C_format (struct GMT_CTRL *C)
 {
-	unsigned int i, j;
+	unsigned int i, j, length;
 	struct GMT_GEO_IO *S = &C->current.plot.calclock.geo;
 
 	/* Determine the plot geographic location formats. */
@@ -3790,7 +3790,11 @@ void gmt_plot_C_format (struct GMT_CTRL *C)
 
 		/* Finally add %s for the [leading space]W,E,S,N char (or NULL) */
 
-		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) strcat (C->current.plot.format[i][j], "%s");
+		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) {
+			length = MAX (1, strlen (C->current.plot.format[i][j])) - 1;
+			if (C->current.plot.format[i][j][length] == ':') C->current.plot.format[i][j][length] = '\0';	/* Chop off a trailing colon */
+			strcat (C->current.plot.format[i][j], "%s");
+		}
 	}
 }
 
