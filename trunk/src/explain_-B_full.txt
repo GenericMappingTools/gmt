@@ -47,8 +47,8 @@ If you want to plot just the map boundary and nothing else, OPT(B)0 suffices.
 By default, all 4 boundaries are plotted (referred to as BD(W), BD(E), BD(S), BD(N)).  To change the default,
 append the code for only those axes you want (e.g., BD(WS) for standard lower-left x- and y-axis system).
 Upper case (e.g., BD(W)) means draw axis/tickmarks AND annotate it, whereas lower case
-(e.g., BD(w)) will only draw axis/tickmarks.  If ONLY s is appended, separate it with a comma to avoid
-its interpretation as the unit of second.  If a 3-D basemap is selected with OPT(p) and
+(e.g., BD(w)) will only draw axis/tickmarks.  If s is appended first, separate it with a comma to avoid
+its interpretation as the unit of arc second.  If a 3-D basemap is selected with OPT(p) and
 OPT(Jz), append BD(Z) or BD(z) to control the appearance
 of the vertical axis.  Append BD(+) to draw the outline of the cube defined by OPT(R); this is
 also needed to display gridlines in the x-z, y-z planes.  Note
