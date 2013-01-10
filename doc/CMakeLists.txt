@@ -26,7 +26,7 @@ set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
 	GMT_Appendix_D.tex GMT_Appendix_E.tex GMT_Appendix_F.tex GMT_Appendix_G.tex
 	GMT_Appendix_H.tex GMT_Appendix_I.tex GMT_Appendix_J.tex GMT_Appendix_K.tex
 	GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex GMT_Appendix_O.tex
-	GMT_Appendix_P.tex GMT_Appendix_Q.tex GMT_Chapter_1.tex GMT_Chapter_2.tex
+	GMT_Appendix_P.tex GMT_Chapter_1.tex GMT_Chapter_2.tex
 	GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.tex GMT_Chapter_6.tex
 	GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex GMT_Frontmatter.tex
 	)
