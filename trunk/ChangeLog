@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-10	pwessel
+	* gmt_proj.c:		Inverse -JR blew up at origin; now added check.
+
 2013-01-09	pwessel
 	* gmt_io.c:		Formats for degree annotations using colons should never
 				end in a trailing colon.

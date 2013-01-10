@@ -45,6 +45,7 @@
 # Note: This script uses the GMT4 registration dir since that part is in GMT 4 subversion
 
 GMT4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/GMT4
+HDF5_DISABLE_VERSION_CHECK=2
 
 if [ "X$GMTHOME" = "X" ]; then	# Running crontab and environment is not set
 	. /sw/bin/init.sh

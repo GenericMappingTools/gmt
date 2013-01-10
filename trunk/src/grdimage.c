@@ -576,7 +576,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 	}
-
+	
 	/* If given, get intensity file or compute intensities */
 
 	if (Ctrl->I.active) {	/* Illumination wanted */
