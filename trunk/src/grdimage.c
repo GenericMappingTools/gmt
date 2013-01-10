@@ -288,7 +288,7 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD_HEADER *g)
+void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD_HEADER *g, bool projected)
 {
 	/* Sets the projected extent of the grid given the map projection
 	 * The extreme x/y coordinates are returned in r, and dx/dy, and
@@ -337,11 +337,13 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 		r->wesn[XLO] = MIN (r->wesn[XLO], x), r->wesn[XHI] = MAX (r->wesn[XHI], x);
 		r->wesn[YLO] = MIN (r->wesn[YLO], y), r->wesn[YHI] = MAX (r->wesn[YHI], y);
 	}
-	if (all_lons) {	/* Full 360, use min/max for x */
-		r->wesn[XLO] = GMT->current.proj.rect[XLO];	r->wesn[XHI] = GMT->current.proj.rect[XHI];
-	}
-	if (all_lats) {	/* Full -90/+90, use min/max for y */
-		r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
+	if (projected) {
+		if (all_lons) {	/* Full 360, use min/max for x */
+			r->wesn[XLO] = GMT->current.proj.rect[XLO];	r->wesn[XHI] = GMT->current.proj.rect[XHI];
+		}
+		if (all_lats) {	/* Full -90/+90, use min/max for y */
+			r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
+		}
 	}
 }
 
@@ -641,7 +643,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->D.active) { 
 			if ((Img_proj = GMT_create_image (GMT)) == NULL) Return (API->error);
 			grid_registration = GMT_PIXEL_REG;	/* Force pixel */
-			GMT_set_proj_limits (GMT, Img_proj->header, I->header);
+			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
 			if (Ctrl->A.active)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
@@ -654,7 +656,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 		for (k = 0; k < n_grids; k++) {
 			if (!Grid_proj[k] && (Grid_proj[k] = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header);
+			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project);
 			if (grid_registration == GMT_GRIDLINE_REG)		/* Force pixel if dpi is set */
 				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
 			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
@@ -690,7 +692,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		for (k = 0; k < n_grids; k++) {	/* Must get a copy so we can change one without affecting the other */
 			GMT_memcpy (&tmp_header, Grid_orig[k]->header, 1, struct GRD_HEADER);
 			Grid_proj[k] = Grid_orig[k];
-			GMT_set_proj_limits (GMT, Grid_proj[k]->header, &tmp_header);
+			GMT_set_proj_limits (GMT, Grid_proj[k]->header, &tmp_header, need_to_project);
 		}
 		if (Ctrl->I.active) Intens_proj = Intens_orig;
 		if (n_grids)
@@ -699,7 +701,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 		else {
 			GMT_memcpy (&tmp_header, I->header, 1, struct GRD_HEADER);
 			Img_proj = I;
-			GMT_set_proj_limits (GMT, Img_proj->header, &tmp_header);
+			GMT_set_proj_limits (GMT, Img_proj->header, &tmp_header, need_to_project);
 		}
 #endif
 	}
