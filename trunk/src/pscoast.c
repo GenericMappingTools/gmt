@@ -782,13 +782,19 @@ int GMT_pscoast (struct GMTAPI_CTRL *API, int mode, void *args)
 		bin_trouble = (anti_bin == bin) ? anti_bin : -1;
 
 		if (possibly_donut_hell) {
+			/* Fill a 5-point polygon with bin corners */
 			bin_x[0] = bin_x[3] = bin_x[4] = c.lon_sw;
 			bin_x[1] = bin_x[2] = c.lon_sw + c.bsize;
 			bin_y[0] = bin_y[1] = bin_y[4] = c.lat_sw;
 			bin_y[2] = bin_y[3] = c.lat_sw + c.bsize;
+			/* Determine (x,y) coordinate of projected bin center */
 			GMT_geo_to_xy (GMT, c.lon_sw + 0.5 * c.bsize, c.lat_sw + 0.5 * c.bsize, &x_c, &y_c);
-			dist = hypot (x_c - x_0, y_c - y_0);
-			donut_hell = (GMT_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5) || dist > 0.8 * GMT->current.proj.r);
+			dist = hypot (x_c - x_0, y_c - y_0);	/* Distance from projection center to mid-point of current bin */
+			/* State donut_hell if we are close (within 20%) to the horizon or if the bin contains the antipole.
+			 * This is simply done with a Cartesian inside/outside test, which is adequate.
+			 * the 0.8 factor is arbitrary of course [PW] */
+			
+			donut_hell = (dist > 0.8 * GMT->current.proj.r || GMT_non_zero_winding (GMT, anti_lon, anti_lat, bin_x, bin_y, 5));
 		}
 
 		for (direction = start_direction; paint_polygons && direction <= stop_direction; direction += 2) {
