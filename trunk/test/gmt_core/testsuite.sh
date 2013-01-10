@@ -7,7 +7,7 @@
 # compare actual dirs with expected values
 GMT_PATH=$(fix_mingw_path "${GMT_BINARY_DIR}/src/${CMAKE_CONFIG_TYPE:-.}/gmt")
 echo -n "gmt location: "
-which gmt           | grep -E "^${GMT_PATH}(|[.]exe)$"
+which gmt           | grep -E "^${GMT_PATH}($|[.]exe)$" # note: depending on regexp engine the $ in the subexpression may be mandatory
 echo -n "sharedir    : "
 gmt --show-sharedir | grep "^${GMT_SHAREDIR}$"
 echo -n "userdir     : "
