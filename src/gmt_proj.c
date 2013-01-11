@@ -1825,7 +1825,7 @@ void GMT_azeqdist (struct GMT_CTRL *C, double lon, double lat, double *x, double
 
 	GMT_WIND_LON (C, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_IS_ZERO (lat-C->current.proj.pole) && GMT_IS_ZERO (lat-C->current.proj.central_meridian)) {	/* Center of projection */
+	if (GMT_IS_ZERO (lat-C->current.proj.pole) && GMT_IS_ZERO (lon)) {	/* Center of projection */
 		*x = *y = 0.0;
 		return;
 	}
