@@ -3,6 +3,10 @@
 -----------------------------------------------------------------------------------------
 
 2013-01-10	pwessel
+	* gmt_proj.c:		The -JE projection returned NaN if projection center was used,
+				causing some artifacts in pscoast -JE for global maps.
+
+2013-01-10	pwessel
 	* gmt_proj.c:		Inverse -JR blew up at origin; now added check.
 
 2013-01-09	pwessel
