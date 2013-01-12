@@ -2951,6 +2951,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	unsigned int kk, nstack = 0, n_items = 0, this_stack, n_macros;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool error = false, subset;
+	char *in_file = NULL;
 	
 	uint64_t node, row, col;
 
@@ -3036,14 +3037,15 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
 		if (status == GRDMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
 		if (status != GRDMATH_ARG_IS_FILE) continue;				/* Skip operators and numbers */
-		if ((G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+		in_file = opt->arg;
+		if ((G_in = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, in_file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
 
 	if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, info.G->header, options, true);
-	subset = (GMT->common.R.active && Ctrl->I.active);
+	subset = GMT->common.R.active;
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
 		if (GMT->common.R.active && Ctrl->I.active) {
@@ -3056,7 +3058,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		if (subset) {	/* Gave -R and files: Read the subset to set the header properly */
 			GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, opt->arg, G_in) == NULL) {	/* Get subset only */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, in_file, G_in) == NULL) {	/* Get subset only */
 				Return (API->error);
 			}
 		}
