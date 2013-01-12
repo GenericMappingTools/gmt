@@ -1921,9 +1921,16 @@ void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, uint64_t n_rows, doubl
 }
 
 void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
-{	/* Must check if polygon is a polar cap */
+{	/* Must check if polygon is a polar cap.  We use the idea that the sum of
+ 	 * the change in angle along the polygon is either -/+360 (if pole is inside)
+	 * or 0 if outside.  The sign (not used here) gives the handedness of the polygon.
+	 * Which pole (S or N) is determined by computng the average latitude and 
+	 * assuming the pole is in the heimsphere most visited.  This may not be
+	 * true of course. */
 	uint64_t row;
+	int n_360;
 	double dlon, lon_sum = 0.0, lat_sum = 0.0;
+	static char *pole[3] = {"south", "no", "north"};
 	
 	if (GMT_polygon_is_open (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows)) {
 		GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot call GMT_set_seg_polar on an open polygon\n");
@@ -1935,13 +1942,15 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 		lon_sum += dlon;
 		lat_sum += S->coord[GMT_Y][row];
 	}
+	n_360 = lrint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
 	// if (GMT_360_RANGE (lon_sum, 0.0)) {	/* true if contains a pole */
-	if (fabs (fabs (lon_sum) - 360.0) < GMT_CONV_LIMIT) {	/* true if contains a pole */
+	if (n_360) {	/* true if contains a pole; adjust rectangular bounds and set pole flag */
 		S->pole = lrint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
 		if (S->pole == -1) S->min[GMT_Y] = -90.0;
 		if (S->pole == +1) S->max[GMT_Y] = +90.0;
 	}
+	GMT_report (C, GMT_MSG_DEBUG, "GMT_set_seg_polar: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", S->n_rows, n_360, lon_sum - n_360 * 360.0, pole[S->pole+1]);
 }
 
 bool GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix)
