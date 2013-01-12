@@ -1947,8 +1947,8 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	if (n_360) {	/* true if contains a pole; adjust rectangular bounds and set pole flag */
 		S->pole = lrint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
-		if (S->pole == -1) S->min[GMT_Y] = -90.0;
-		if (S->pole == +1) S->max[GMT_Y] = +90.0;
+		if (S->pole == -1) S->lat_limit = S->min[GMT_Y], S->min[GMT_Y] = -90.0;
+		if (S->pole == +1) S->lat_limit = S->max[GMT_Y], S->max[GMT_Y] = +90.0;
 	}
 	GMT_report (C, GMT_MSG_DEBUG, "GMT_set_seg_polar: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", S->n_rows, n_360, lon_sum - n_360 * 360.0, pole[S->pole+1]);
 }

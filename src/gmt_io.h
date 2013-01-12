@@ -479,6 +479,7 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 	int pole;			/* Spherical polygons only: If it encloses the S (-1) or N (+1) pole, or none (0) */
 	size_t n_alloc;			/* The current allocation length of each coord */
 	double dist;			/* Distance from a point to this feature */
+	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
 	double **coord;			/* Coordinates x,y, and possibly other columns */

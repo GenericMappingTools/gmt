@@ -5688,11 +5688,13 @@ unsigned int GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, c
 	if (P->pole) {	/* Case 1 of an enclosed polar cap */
 		if (P->pole == +1) {	/* N polar cap */
 			if (plat < P->min[GMT_Y]) return (GMT_OUTSIDE);	/* South of a N polar cap */
-			if (plat > P->max[GMT_Y]) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
+			//if (plat > P->max[GMT_Y]) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
+			if (plat > P->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a N polar cap */
 		}
 		if (P->pole == -1) {	/* S polar cap */
 			if (plat > P->max[GMT_Y]) return (GMT_OUTSIDE);	/* North of a S polar cap */
-			if (plat < P->min[GMT_Y]) return (GMT_INSIDE);	/* North of a S polar cap */
+			//if (plat < P->min[GMT_Y]) return (GMT_INSIDE);	/* North of a S polar cap */
+			if (plat < P->lat_limit) return (GMT_INSIDE);	/* Clearly inside of a S polar cap */
 		}
 
 		/* Tally up number of intersections between polygon and meridian through P */
