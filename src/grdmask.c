@@ -217,7 +217,7 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 
 int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool error = false, periodic = false, periodic_grid = false;
+	bool error = false, periodic = false, periodic_grid = false, do_test = true;
 	unsigned int side, *d_col = NULL, d_row = 0, col_0, row_0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
 	int row, col, nx, ny;
@@ -393,8 +393,20 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 					/* First check if y/latitude is outside, then there is no need to check all the x/lon values */
 					
 					if (periodic) {	/* Containing annulus test */
-						if (S->pole != +1 && yy > S->max[GMT_Y]) continue;	/* No N polar cap and beyond north */
-						if (S->pole != -1 && yy < S->min[GMT_Y]) continue;	/* No S polar cap and beyond south */
+						do_test = true;
+						switch (S->pole) {
+							case 0:	/* Not a polar cap */
+								if (yy < S->min[GMT_Y] || yy > S->max[GMT_Y]) continue;	/* Outside */
+								break;
+							case -1:	/* S polar cap */
+								if (yy > S->max[GMT_Y]) continue;
+								if (yy < S->lat_limit) side = GMT_INSIDE, do_test = false;
+								break;
+							case +1:	/* N polar cap */
+								if (yy < S->min[GMT_Y]) continue;
+								if (yy > S->lat_limit) side = GMT_INSIDE, do_test = false;
+								break;
+						}
 					}
 					else if (yy < S->min[GMT_Y] || yy > S->max[GMT_Y])	/* Cartesian case */
 						continue;
@@ -402,7 +414,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 					/* Here we will have to consider the x coordinates as well */
 					for (col = 0; col < nx; col++) {
 						xx = GMT_grd_col_to_x (GMT, col, Grid->header);
-						if ((side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
+						if (do_test && (side = GMT_inonout (GMT, xx, yy, S)) == 0) continue;	/* Outside polygon, go to next point */
 						/* Here, point is inside or on edge, we must assign value */
 
 						ij = GMT_IJP (Grid->header, row, col);
