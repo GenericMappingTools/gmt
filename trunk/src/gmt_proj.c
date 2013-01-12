@@ -2110,6 +2110,7 @@ void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 	*lat = y / M_PI;	/* Initial guesses for lon and lat */
 	*lon = x / M_PI;
 	if (fabs (y) < GMT_CONV_LIMIT) {	/* On ~equator, C is ~zero so no division */
+		*lon *= R2D;
 		*lon += P->current.proj.central_meridian;
 		return;
 	}
