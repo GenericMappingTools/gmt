@@ -382,6 +382,7 @@ struct GMT_IO {				/* Used to process input data records */
 	bool skip_bad_records;	/* true if records where x and/or y are NaN or Inf */
 	bool give_report;		/* true if functions should report how many bad records were skipped */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
+	bool read_mixed;		/* true if we are reading ascii x y [z] [variable numbers of text] */
 
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */

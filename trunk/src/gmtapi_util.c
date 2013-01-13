@@ -2108,6 +2108,7 @@ int GMTAPI_Begin_IO (struct GMTAPI_CTRL *API, unsigned int direction)
 	API->io_mode[direction] = GMT_BY_SET;
 	API->io_enabled[direction] = true;	/* OK to access resources */
 	API->GMT->current.io.ogr = GMTAPI_NOTSET;
+	API->GMT->current.io.read_mixed = false;
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Begin_IO: %s resource access is now enabled [container]\n", GMT_direction[direction]);
 
@@ -3109,6 +3110,7 @@ void * GMT_Get_Record (struct GMTAPI_CTRL *API, unsigned int mode, int *retval)
 	if (!API->io_enabled[GMT_IN]) return_null (API, GMT_ACCESS_NOT_ENABLED);
 
 	S_obj = API->object[API->current_item[GMT_IN]];	/* Shorthand for the current data source we are working on */
+	API->GMT->current.io.read_mixed = (mode == GMT_READ_MIXED);	/* Cannot worry about constant # of columns if text is present */
 	
 	do {	/* We do this until we can secure the next record or we run out of records (and return EOF) */
 		get_next_record = false;	/* We expect to read one data record and return */
