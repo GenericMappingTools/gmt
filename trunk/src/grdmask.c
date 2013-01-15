@@ -103,6 +103,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
 	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
 	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
+	GMT_message (GMT, "\t   If -S is selected then only <out> and <in> will be used.\n");
 	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
@@ -207,6 +208,7 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -1, "Syntax error -S: Unrecognized unit\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -2, "Syntax error -S: Unable to decode radius\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == -3, "Syntax error -S: Radius is negative\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->N.mode, "Syntax error -S, -N: Cannot specify -Nz|Z|p|P for points\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -265,27 +267,33 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	z_value = Ctrl->N.mask[0];	/* Starting value if running IDs */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char line[GMT_BUFSIZ];
+		char line[GMT_BUFSIZ], *msg[2] = {"polygons", "search radius"};
+		k = (Ctrl->S.active) ? 1 : 0; 
 		if (Ctrl->N.mode == 1) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n", msg[k]);
 		}
 		else if (Ctrl->N.mode == 3) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", msg[k], lrint (z_value + 1.0));
 		}
 		else if (Ctrl->N.mode == 4) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", msg[k], lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely outside the polygons will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
 			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to ");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
 			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on the polygons boundary will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
+			if (Ctrl->S.active) {
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes at exactly the search radius distance are considered inside\n");
+			}
+			else {
+				GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on the polygons boundary will be set to ");
+				(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
+			}
 		}
 	}
 
@@ -300,6 +308,12 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			d_col = GMT_prep_nodesearch (GMT, Grid, radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 		}
 	}
+	else {
+		char *method[2] = {"Cartesian non-zero winding", "spherical ray-intersection"};
+		int use = GMT_is_geographic (GMT, GMT_IN);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Node status w.r.t. the polygon(s) will be determined using a %s algorithm.\n", method[use]);
+	}
+	
 	
 	periodic = GMT_is_geographic (GMT, GMT_IN);	/* Dealing with geographic coordinates */
 	if ((Ctrl->A.active && Ctrl->A.mode == 0) || !GMT_is_geographic (GMT, GMT_IN)) GMT->current.map.path_mode = GMT_LEAVE_PATH;	/* Turn off resampling */
