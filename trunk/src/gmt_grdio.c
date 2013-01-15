@@ -588,6 +588,7 @@ int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, u
 int gmt_get_grdtype (struct GMT_CTRL *C, struct GRD_HEADER *h)
 {	/* Determine if grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
 	if (GMT_x_is_lon (C, GMT_IN)) {	/* Data set is geographic with x = longitudes */
+		GMT_report (C, GMT_MSG_VERBOSE, "Grid is Geographic\n");
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span exactly 360\n");
 			/* If w/e is 360 and gridline reg then we have a repeat entry for 360.  For pixel there are never repeat pixels */
