@@ -1,0 +1,101 @@
+		PROPOSAL FOR NEW -B SYNTAX
+
+Problem: The -B option is very confusing to users, even those
+who have used GMT for decades, so the mnemonics are terrible.
+Some characters have multiple meanings (i.e., s for south or
+seconds), leading to potential misunderstanding.  The parser
+is cluttered with helper functions that seek to prevent pslib
+color escape sequences and Windows file syntax using colons
+from being misconstrued as :<label>: entries.  Finally, scripts
+that seek to build -B options must combine all desired settings
+into a single long -B<string>, which adds to script complexity.
+
+Solution: Break -B into many sub-options that only deal with
+a small aspect of setting the frame and annotation parameters.
+Consequently, the -B option can be given repeatedly, each time
+operating on different aspects of the basemap construction.
+We distinguish between frame-specific and axis-specific
+information.  The former applies to the entire base frame
+while the latter applies to a particular axis.
+
+FRAME SETTINGS:
+-Bf<args> sets parameters for the entire map frame.
+   <args> is [WESNZwesnzq][+g<fill>][+t<title>]
+   Append +g<fill> to paint frame interior [none].
+   Append +t<title> to plot title [none].
+     Lower case w,e,s,n,z will draw those axes, while
+     upper case versionswill both draw and annotate.
+     If no axes are given we default to MAP_FRAME_AXES.
+     For 3-D plots, add q to draw 3-D wire box.
+
+AXIS SETTINGS:
+-B[p|s][x|y|z]<info>
+  p is primary annotations [Default], s is secondary.
+  x, y, z selects which axes [Default is both x and y].
+  <info> is <intervals>[+l<label>][+p<prefix>][+s<suffix>].
+  Alternatively, <intervals> and the optional modifiers may
+  be given via separate -B switches, i.e.,
+    -B[p|s][x|y|z]<intervals>
+    -B[p|s][x|y|z][+l<label>][+p<prefix>][+s<suffix>]
+    Append +l<label> to add label to this axis [none].
+    Append +s<suffix> to set annotation suffix [none].
+    Append +p<prefix> to set annotation prefix [none].
+    A leading - in <prefix>, <suffix> closes gap between
+    the text item and the annotion [Default adds a space].
+  <intervals> is itself a concatenation of one or more
+  items of the form [t][<stride>][+|-<phase>][unit].
+  t is from a,i,f,g and unit is <time-units> or m|s,
+  or use c<custom.txt> for custom annot, tick, and grid intervals.
+  If <stride> is omitted we automatically compute it.
+  For logarithmic projection the <stride> may be followed
+  by l (to plot log10(x)) or p (to plot 10^log10(x)).
+
+  Note that <title>, <label>, <prefix>, and <suffix>
+  must escape any + (plus) characters they contain with
+  a leading backslash (e.g., -Bf+t"S = A \+ B") to avoid
+  being interpreted as a modifier.
+
+
+Advantages of this syntax:
+
+1) Breaks down a very complicated option into manageable pieces;
+   this is helpful in scripts and documentation to avoid long lines.
+2) Components are specified with +<flag> modifiers which are much
+   easier to remember (e.g., +t<title> vs :.<title>:)
+3) Avoids double meaning of some letters, e.g., s for both seconds
+   and south [Issue #200]
+4) Minimizes number of characters to be escaped for non-ambiguous
+   parsing (only + is special and can be escaped via backslash; no
+   longer any obscure octal code needed to print colons.
+5) Intermediate parsing issues such as temporarily replacing @:<color>:
+   with @; to avoid :label: parsing trouble can be eliminated.
+   Under Windows, a filename X:\dir will no longer have to be
+   temporarily replaced with X;\dir, for the same reasons.
+6) The parser will be much simpler to maintain and less prone to error.
+
+Q: Won't the optional +<phase> interfere with +<flag> modifiers?
+A: We scan to the first + not preceded by a valid number, then
+   split <intervals> from any +<modifiers>.  The <intervals>
+   and the optional modifiers are parsed separately.
+
+Q: What if a user uses a slash (/) to separate x and y information?
+A: Under --enable-compat this will work as before provided the user
+   otherwise use GMT 4 syntax.  You cannot mix and match GMT4 and GMT5
+   syntax.  Without --enable-compat this throws an error.
+
+Q: Will the changes break any backwards compatibility?
+A: No. If any of the old-style flags or modifiers are detected we route
+   the parsing through the obsolete workflow.  New syntax will be parsed
+   through a new and simpler parser.
+
+Q: Must we change all the example -B strings?
+A: Yes, obviously, unless they are GMT5-ready, e.g., -B10 which means
+   -Bx10 -By10 and no labels, titles, use default frame, etc.
+
+Example of -B option with old and new syntax:
+
+Old: -B1000f250g250:"Topography (m)":/2f1g1:"Frequency"::",-%"::."My histogram":WEsn+glightblue
+
+New: -Bf+t"My histogram"+fWEsn+glightblue -Bx1000f250g250+l"Topography (m)" -By2f1g1+l"Frequency"+s"-%"
+
+or   -Bf+t"My histogram"+fWEsn+glightblue -Bx+l"Topography (m)" -By+l"Frequency"+s"-%" -Bx1000f250g250 -By2f1g1
