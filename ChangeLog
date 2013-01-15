@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-15	pwessel
+	* gmtmath.c:		The MIN and MAX operators ignored NaNs, but result should
+				be NaN if one of the operands equal NaN.
+	* grdmath.c:		---"---
+	
 2013-01-10	pwessel
 	* gmt_proj.c:		The -JE projection returned NaN if projection center was used,
 				causing some artifacts in pscoast -JE for global maps.
