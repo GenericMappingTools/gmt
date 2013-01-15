@@ -1787,7 +1787,7 @@ void grd_MAX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	for (node = 0; node < info->size; node++) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-		stack[prev]->G->data[node] = (float)MAX (a, b);
+		stack[prev]->G->data[node] = (GMT_is_dnan (a) || GMT_is_dnan (b)) ? GMT->session.f_NaN : (float)MAX (a, b);
 	}
 }
 
@@ -1848,7 +1848,7 @@ void grd_MIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	for (node = 0; node < info->size; node++) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		b = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-		stack[prev]->G->data[node] = (float)MIN (a, b);
+		stack[prev]->G->data[node] = (GMT_is_dnan (a) || GMT_is_dnan (b)) ? GMT->session.f_NaN : (float)MIN (a, b);
 	}
 }
 

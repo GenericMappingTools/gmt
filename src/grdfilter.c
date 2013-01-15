@@ -527,7 +527,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error -D option: Choose from p or 0-5\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.mode < GRDFILTER_XY_PIXEL || Ctrl->D.mode > GRDFILTER_GEO_MERCATOR, "Syntax error -D option: Choose from p or 0-5\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->D.mode < GRDFILTER_XY_PIXEL || Ctrl->D.mode > GRDFILTER_GEO_MERCATOR), "Syntax error -D option: Choose from p or 0-5\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && Ctrl->F.rect, "Syntax error -F option: Rectangular Cartesian filtering requires -Dp|0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && Ctrl->F.custom, "Syntax error -Ff|o option: Custom Cartesian convolution requires -D0\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.active, "Syntax error: -F option is required:\n");
@@ -820,7 +820,11 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (tid == 0) {	/* First or only thread */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s", filter_name[filter_type]);
+		if (Ctrl->F.quantile != 0.5)
+			GMT_report (GMT, GMT_MSG_VERBOSE, " [using %g%% quantile].\n", 100.0 * Ctrl->F.quantile);
+		else
+			GMT_report (GMT, GMT_MSG_VERBOSE, ".\n");
 #ifdef _OPENMP
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
 #endif

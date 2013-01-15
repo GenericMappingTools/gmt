@@ -85,7 +85,7 @@ values.
 (BD(U)) Upper: Return maximum or all negative values only.
 .sp
 In the case of BD(L)|BD(U) it is possible that no data passes the initial sign test; in that case
-the filter will return 0.0.
+the filter will return NaN.
 .TP
 OPT(G)IT(outgrid)
 IT(outgrid) is the output grid file of the filter.
