@@ -602,6 +602,10 @@ int gmt_get_grdtype (struct GMT_CTRL *C, struct GRD_HEADER *h)
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span more than 360\n");
 			return (GMT_GRD_GEOGRAPHIC_MORE360);
 		}
+		else {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span less than 360\n");
+			return (GMT_GRD_GEOGRAPHIC_LESS360);
+		}
 	}
 	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
