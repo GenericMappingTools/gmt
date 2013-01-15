@@ -43,11 +43,11 @@ z-value obtained from the data (either segment header OPT(Z)IT(zval), OPT(L)IT(h
 use OPT(NZ) to consider the polygon boundary as part of the inside. Alternatively, use
 OPT(Np) to use a running number as polygon ID; optionally append start of the sequence [0].
 Here, OPT(NP) includes the polygon perimeter as inside.  Note: OPT(N)BD(z)|BD(Z)|BD(p)|BD(P)
-cannot be used in conjunction with OPT(S).
+cannot be used in conjunction with OPT(S); they also all optionally accept /IT(out) [0].
 .TP
 OPT(S)IT(search_radius)[IT(unit)]
-Set nodes depending on their distance from the nearest data point.  Nodes within IT(radius) [0] from
-a data point are considered inside (nodes with a distance that equals IT(radius) are also considered to be inside);
+Set nodes to inside, on edge, or outside depending on their distance to the nearest data point.
+Nodes within IT(radius) [0] from the nearest data point are considered inside;
 append a distance unit (see UNITS).  If IT(radius) is given as BD(z)
 then we instead read individual radii from the 3rd input column.
 If OPT(S) is not set then we consider the input data to define closed polygon(s) instead.

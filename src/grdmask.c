@@ -95,15 +95,16 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e., connect by straight lines,\n");
 	GMT_message (GMT, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
-	GMT_message (GMT, "\t   Ignored if -S is used since points are then not considered to be lines.\n");
-	GMT_message (GMT, "\t-N Set <out>/<edge>/<in> to use if point is outside, on the path, or inside.\n");
+	GMT_message (GMT, "\t   Ignored if -S is used since input data are then considered to be points.\n");
+	GMT_message (GMT, "\t-N Set <out>/<edge>/<in> to use if node is outside, on the path, or inside.\n");
 	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
-	GMT_message (GMT, "\t   Optionally, use -Nz (inside) or -NZ (inside+edge) to set a z-value:\n");
+	GMT_message (GMT, "\t   Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside\n");
+	GMT_message (GMT, "\t   nodes of a polygon to a z-value obtained as follows (in this order):\n");
 	GMT_message (GMT, "\t     a) If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.\n");
 	GMT_message (GMT, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
 	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
 	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
-	GMT_message (GMT, "\t   If -S is selected then only <out> and <in> will be used.\n");
+	GMT_message (GMT, "\t   For -Nz|z|p|P you may optionally append /<out [0].\n");
 	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
@@ -112,6 +113,12 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "VC2fghiF:.");
 	
 	return (EXIT_FAILURE);
+}
+
+double grdmask_assign (struct GMT_CTRL *C, char *p) {
+	/* Handle the parsing of NaN|<value> */
+	double value = (p[0] == 'N' || p[0] == 'n') ? C->session.d_NaN : atof (p);
+	return (value);
 }
 
 int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
@@ -161,22 +168,26 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 				switch (opt->arg[0]) {
 					case 'z':	/* Z-value from file (inside only) */
 						Ctrl->N.mode = 1;
+						if (opt->arg[1] == '/' && opt->arg[2]) Ctrl->N.mask[GMT_OUTSIDE] = grdmask_assign (GMT, &opt->arg[2]);	/* Change the outside value */
 						break;
 					case 'Z':	/* Z-value from file (inside + edge) */
 						Ctrl->N.mode = 2;
+						if (opt->arg[1] == '/' && opt->arg[2]) Ctrl->N.mask[GMT_OUTSIDE] = grdmask_assign (GMT, &opt->arg[2]);	/* Change the outside value */
 						break;
 					case 'p':	/* Polygon ID from running number (inside only) */
 						Ctrl->N.mode = 3;
-						Ctrl->N.mask[0] = (opt->arg[1]) ? atof (&opt->arg[1]) - 1.0 : -1.0;	/* Running ID start [0] (we increment first) */
+						Ctrl->N.mask[GMT_INSIDE] = (opt->arg[1]) ? atof (&opt->arg[1]) - 1.0 : -1.0;	/* Running ID start [0] (we increment first) */
+						if ((c = strchr (opt->arg, '/')) && c[1]) Ctrl->N.mask[GMT_OUTSIDE] = grdmask_assign (GMT, &c[1]);	/* Change the outside value */
 						break;
 					case 'P':	/* Polygon ID from running number (inside + edge) */
 						Ctrl->N.mode = 4;
-						Ctrl->N.mask[0] = (opt->arg[1]) ? atof (&opt->arg[1]) - 1.0 : -1.0;	/* Running ID start [0] (we increment first) */
+						Ctrl->N.mask[GMT_INSIDE] = (opt->arg[1]) ? atof (&opt->arg[1]) - 1.0 : -1.0;	/* Running ID start [0] (we increment first) */
+						if ((c = strchr (opt->arg, '/')) && c[1]) Ctrl->N.mask[GMT_OUTSIDE] = grdmask_assign (GMT, &c[1]);	/* Change the outside value */
 						break;
 					default:	/* Standard out/on/in constant values */
 						j = pos = 0;
 						while (j < GRDMASK_N_CLASSES && (GMT_strtok (opt->arg, "/", &pos, ptr))) {
-							Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);
+							Ctrl->N.mask[j] = grdmask_assign (GMT, ptr);
 							j++;
 						}
 						break;
@@ -185,10 +196,10 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 			case 'S':	/* Search radius */
 				Ctrl->S.active = true;
 				if ((c = strchr (opt->arg, 'z'))) {	/* Gave -S[-|=|+]z[d|e|f|k|m|M|n] which means read radii from file */
-					c[0] = '0';	/* Replace the v with 0 temporarily */
+					c[0] = '0';	/* Replace the z with 0 temporarily */
 					Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 					Ctrl->S.variable_radius = true;
-					c[0] = 'v';	/* Restore v */
+					c[0] = 'z';	/* Restore v */
 				}
 				else	/* Gave -S[-|=|+]<radius>[d|e|f|k|m|M|n] which means radius is fixed or 0 */ 
 					Ctrl->S.mode = GMT_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
@@ -264,7 +275,7 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
-	z_value = Ctrl->N.mask[0];	/* Starting value if running IDs */
+	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char line[GMT_BUFSIZ], *msg[2] = {"polygons", "search radius"};
@@ -273,13 +284,13 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n", msg[k]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 3) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", msg[k], lrint (z_value + 1.0));
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else if (Ctrl->N.mode == 4) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", msg[k], lrint (z_value + 1.0));
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
@@ -287,13 +298,8 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
 			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
-			if (Ctrl->S.active) {
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes at exactly the search radius distance are considered inside\n");
-			}
-			else {
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on the polygons boundary will be set to ");
-				(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
-			}
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
 
@@ -379,13 +385,13 @@ int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 							if (col < 0 || col >= nx) continue;
 							ij = GMT_IJP (Grid->header, row, col);
 							distance = GMT_distance (GMT, xtmp, S->coord[GMT_Y][k], grd_x0[col], grd_y0[row]);
-							if (distance > radius) continue;
-							Grid->data[ij] = mask_val[GMT_INSIDE];	/* The inside value */
+							if (distance > radius) continue;	/* Clearly outside */
+							Grid->data[ij] = (doubleAlmostEqualZero (distance, radius)) ? mask_val[GMT_ONEDGE] : mask_val[GMT_INSIDE];	/* The onedge or inside value */
 						}
 					}
 				}
 			}
-			else if (S->n_rows > 2) {	/* assign 'inside' to nodes if they are inside given polygon */
+			else if (S->n_rows > 2) {	/* Assign 'inside' to nodes if they are inside any of the given polygons */
 				if (GMT_polygon_is_hole (S)) continue;	/* Holes are handled within GMT_inonout */
 				if (Ctrl->N.mode == 1 || Ctrl->N.mode == 2) {	/* Look for z-values in the data headers */
 					if (S->ogr)	/* OGR data */
