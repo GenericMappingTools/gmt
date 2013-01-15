@@ -6218,6 +6218,57 @@ int gmt_decode_tinfo (struct GMT_CTRL *C, int axis, char flag, char *in, struct 
 	return (GMT_NOERROR);	
 }
 
+#ifdef GMT_COMPAT
+int gmt_B_option_style (struct GMT_CTRL *C, char *in) {
+	/* Determines if the -B option indicates old GMT4-style switches and flags
+	 * or if it follows the GMT 5 specification.  This is only called when
+	 * compatibility mode has been compiled in; otherwise we only check GMT 5
+	 * style arguments.  We return +1 for GMT5 style, -1 for GMT4 style, and
+	 * 0 if no decision could be make [meaning GMT 5 style will be assumed].
+	 * Note: Any mixing of GMT4 & 5 styles will lead to trouble in the parser. */
+	size_t k, last;
+	int gmt4 = 0, gmt5 = 0, n_colons = 0;
+	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
+	
+	last = strlen (in);
+	for (k = 0; k <= last; k++) {
+		if (in[k] == ':') {
+#ifdef _WIN32		/* Filenames under Windows may be X:\<name> which should not trigger "colon" test */
+			if (!(k && isalpha (in[k-1]) && k < last && in[k+1] == '\\'))
+#endif
+			ignore = !ignore, n_colons++;	/* Possibly stepping into a label/title */
+			if (!ignore) continue;	/* End of title or label, skip check for next character */
+			if (k < last && in[k+1] == '.') gmt4++;	/* Title */
+			if (k < last && in[k+1] == '=') gmt4++;	/* Annotation prefix */
+			if (k < last && in[k+1] == ',') gmt4++;	/* Annotation suffix */
+		}
+		if (ignore) continue;	/* Inside a title or label */
+		switch (in[k]) {
+			case '+':	/* Plus, might be GMT5 modifier switch */
+				if (k < last && in[k+1] == 'f') gmt5++;	/* Frame settings */
+				if (k < last && in[k+1] == 'g') gmt5++;	/* Paint settings */
+				if (k < last && in[k+1] == 'l') gmt5++;	/* Label */
+				if (k < last && in[k+1] == 't') gmt5++;	/* title */
+				break;
+			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
+				if (k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
+				break;
+		}
+	}
+	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
+	if (gmt5 && !gmt4)
+		GMT_report (C, GMT_MSG_DEBUG, "gmt_B_option_style: Detected GMT5 style format in -B option\n");
+	else if (gmt4 && !gmt5)
+		GMT_report (C, GMT_MSG_DEBUG, "gmt_B_option_style: Detected GMT4 style format in -B option\n");
+	else if (gmt4 && gmt5)
+		GMT_report (C, GMT_MSG_DEBUG, "gmt_B_option_style: Detected both GMT4 and GMT5 style format in -B option?\n");
+	else
+		GMT_report (C, GMT_MSG_DEBUG, "gmt_B_option_style: Assume GMT5 style format in -B option\n");
+	
+	return (0);	/* Could be either, proceed with GMT5 parsing */
+}
+#endif
+	
 int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	/* gmt_parse_B_option scans an argument string and extract parameters that
 	 * set the interval for tickmarks and annotations on the boundary.
@@ -6254,6 +6305,9 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
 	int i, j, k, ignore, g = 0, error = 0;
+#ifdef GMT_COMPAT
+	int format = 0;
+#endif
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -6265,6 +6319,9 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 		default:
 			C->current.map.frame.primary = true; k = 0; break;
 	}
+#ifdef GMT_COMPAT
+	format = gmt_B_option_style (C, in);
+#endif	
 	i = (C->current.map.frame.primary) ? 0 : 1;
 	strncpy (C->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
 
@@ -6365,6 +6422,162 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	
 	return (error);
 }
+
+#if 0
+int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
+	/* GMT5 clean version based on new syntax:
+	 * 	-B[s|p]<xinfo>[/<yinfo>/[<zinfo>]]+f<axes>][+g<fill>][+t<title>]
+	 *   where each <?info> is of the format
+	 * 	<intervals>[+l<label>][+p<prefix>][+s<suffix>]
+	 * and each <intervals> is a concatenation of one or more [t][value][m|s]
+	 *
+	 * gmt_parse_B_option scans an argument string and extract parameters that
+	 * set the interval for tickmarks and annotations on the boundary.
+	 * The string must be continuous, i.e. no whitespace must be present
+	 * The string may have 1, 2,  or 3 parts, separated by a slash '/'. All
+	 * info after the first slash are assigned to the y-axis.  Info after
+	 * the second slash are assigned to the z-axis.  If there is no
+	 * slash, x-values are copied to y-values.
+	 * A substring looks like [t][value][m|s]. The [t] and [m|s] are optional
+	 * ([ and ] are NOT part of the string and are just used to clarify)
+	 * [t] can be any of [a](annotation int), [f](frame int), or [g](gridline int).
+	 * Default is a AND f. The [m], if present, indicates value is in minutes.
+	 * The [s], if present, indicates value is in seconds.
+	 * At the top level, these modifiers are recognized once [repeats are ignored]:
+	 *    Parse +g<fill> as plot interior fill [none].
+	 *    Parse +t<title> as plot title [none].
+	 *    Parse +f<axes> as as which axes to draw/annotation. If <axes> contain
+	 *      one or more of w,e,s,n,z then only those axes will be drawn. Upper case
+	 *      letters means the chosen axes also will be annotated. Default is all 4 axes drawn/annotated.
+	 * For each axes, these modifies are recognized:
+	 *    Parse +l<label> as labels for the respective axes [none].
+	 *    Parse +s<suffix> as as annotation suffix unit [none].
+	 *    Parse +p<suffix> as as annotation prefix unit [none].
+	 * For logscale plots: l will cause log10(x) to be plotted
+	 *			p will cause 10 ^ log10(x) to be plotted
+	 *	annot/tick/grid interval can here be either:
+	 *		1.0	-> Only powers of 10 are annotated
+	 *		2.0	-> powers of 10 times (1, 2, 5) are annotated
+	 *		3.0	-> powers of 10 times (1,2,3,..9) are annotated
+	 *
+	 * Up to two -B options may be given on the command line:
+	 *	-B[p] the primary specifications
+	 *	-Bs   the secondary specifications
+	 *
+	 *	-Bs must be in addition to -B[p].
+	 */
+
+	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
+	struct GMT_PLOT_AXIS *A = NULL;
+	int i, j, k, ignore, g = 0, error = 0;
+
+	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
+
+	switch (in[0]) {
+		case 's':
+			C->current.map.frame.primary = false; k = 1; break;
+		case 'p':
+			C->current.map.frame.primary = true; k = 1; break;
+		default:
+			C->current.map.frame.primary = true; k = 0; break;
+	}
+	i = (C->current.map.frame.primary) ? 0 : 1;
+	strncpy (C->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
+
+	/* C->current.map.frame.side[] may be set already when parsing gmt.conf flags */
+
+	if (!C->current.map.frame.init) {	/* First time we initialize stuff */
+		for (i = 0; i < 3; i++) {
+			GMT_memset (&C->current.map.frame.axis[i], 1, struct GMT_PLOT_AXIS);
+			C->current.map.frame.axis[i].id = i;
+			for (j = 0; j < 6; j++) C->current.map.frame.axis[i].item[j].parent = i;
+			if (C->current.proj.xyz_projection[i] == GMT_TIME) C->current.map.frame.axis[i].type = GMT_TIME;
+		}
+		C->current.map.frame.header[0] = '\0';
+		C->current.map.frame.init = true;
+		C->current.map.frame.draw = false;
+	}
+
+	for (i = (int)strlen(in) - 1, ignore = false; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
+		if (in[i] == ':') ignore = !ignore;
+		if (ignore) continue;	/* Not look inside text items */
+		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
+			strcpy (out1, &in[i+2]);	/* Make a copy of the fill argument */
+#ifdef _WIN32
+			gmt_handle_dosfile (C, out1, 1);	/* Undo any DOS files like X;/ back to X:/ */
+#endif
+			if (GMT_getfill (C, out1, &C->current.map.frame.fill)) error++;
+			if (!error) {
+				C->current.map.frame.paint = true;
+				g = i;
+				in[g] = '\0';	/* Chop off +g for now */
+			}
+		}
+	}
+	/* Note that gmt_strip_colonitem calls gmt_handle_dosfile so that the item return has been processed for DOS path restoration */
+	error += gmt_strip_colonitem (C, 0, &in[k], ":.", C->current.map.frame.header, out1);	/* Extract header string, if any */
+	GMT_enforce_rgb_triplets (C, C->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+
+	i = gmt_decode_wesnz (C, out1, C->current.map.frame.side, &C->current.map.frame.draw_box);		/* Decode WESNZwesnz+ flags, if any */
+	out1[i] = '\0';	/* Strip the WESNZwesnz+ flags off */
+
+	gmt_split_info_strings (C, out1, info[0], info[1], info[2]);	/* Chop/copy the three axis strings */
+
+	for (i = 0; i < 3; i++) {	/* Process each axis separately */
+
+		if (!info[i][0]) continue;	 /* Skip empty format string */
+		if (info[i][0] == '0' && !info[i][1]) {	 /* Skip format '0' */
+			C->current.map.frame.draw = true;
+			continue;
+		}
+
+		gmt_handle_atcolon (C, info[i], 0);	/* Temporarily modify text escape @: to @^ to avoid : parsing trouble */
+		GMT_enforce_rgb_triplets (C, info[i], GMT_BUFSIZ);				/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+		error += gmt_strip_colonitem (C, i, info[i], ":,", C->current.map.frame.axis[i].unit, out1);	/* Pull out annotation unit, if any */
+		error += gmt_strip_colonitem (C, i, out1, ":=", C->current.map.frame.axis[i].prefix, out2);	/* Pull out annotation prefix, if any */
+		error += gmt_strip_colonitem (C, i, out2, ":", C->current.map.frame.axis[i].label, out3);	/* Pull out axis label, if any */
+		gmt_handle_atcolon (C, C->current.map.frame.axis[i].label, 1);	/* Restore any @^ to @: */
+		gmt_handle_atcolon (C, C->current.map.frame.axis[i].prefix, 1);	/* Restore any @^ to @: */
+		gmt_handle_atcolon (C, C->current.map.frame.axis[i].unit, 1);	/* Restore any @^ to @: */
+
+		/* Parse the annotation/tick info string */
+		if (out3[0] == 'c')
+			error += gmt_decode_tinfo (C, i, 'c', out3, &C->current.map.frame.axis[i]);
+		else {	/* Parse from back for 'a', 'f', 'g' chunks */
+			for (k = (int)strlen (out3) - 1; k >= 0; k--) {
+				if (out3[k] == 'a' || out3[k] == 'f' || out3[k] == 'g') {
+					error += gmt_decode_tinfo (C, i, out3[k], &out3[k+1], &C->current.map.frame.axis[i]);
+					out3[k] = '\0';	/* Replace with terminator */
+				}
+				else if (k == 0)	/* If no [a|f|g] then 'a' */
+					error += gmt_decode_tinfo (C, i, 'a', out3, &C->current.map.frame.axis[i]);
+			}
+		}
+
+		/* Make sure we have ticks to match annotation stride */
+		A = &C->current.map.frame.axis[i];
+		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
+			GMT_memcpy (&A->item[GMT_TICK_UPPER], &A->item[GMT_ANNOT_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
+		if (A->item[GMT_ANNOT_LOWER].active && !A->item[GMT_TICK_LOWER].active)	/* Set frame ticks = annot stride */
+			GMT_memcpy (&A->item[GMT_TICK_LOWER], &A->item[GMT_ANNOT_LOWER], 1, struct GMT_PLOT_AXIS_ITEM);
+		/* Note that item[].type will say 'a', 'A', 'i' or 'I' in these cases, so we know when minor ticks were not set */
+	}
+
+	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
+	if (C->current.proj.projection == GMT_LINEAR && C->current.setting.map_degree_symbol != gmt_none) {
+		for (i = 0; i < 2; i++) {
+			if (C->current.io.col_type[GMT_IN][i] & GMT_IS_GEO && C->current.map.frame.axis[i].unit[0] == 0) {
+				C->current.map.frame.axis[i].unit[0] = '-';
+				C->current.map.frame.axis[i].unit[1] = (char)C->current.setting.ps_encoding.code[C->current.setting.map_degree_symbol];
+				C->current.map.frame.axis[i].unit[2] = '\0';
+			}
+		}
+	}
+	if (g) in[g] = '+';	/* Restore + */
+	
+	return (error);
+}
+#endif
 
 int gmt_project_type (char *args, int *pos, bool *width_given)
 {
