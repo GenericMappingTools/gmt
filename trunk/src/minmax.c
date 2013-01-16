@@ -345,7 +345,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 				xyzmin[col] = Q[col].min[j];	xyzmax[col] = Q[col].max[j];
 			}
 			if (give_r_string) {	/* Return -R string */
-				if (fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
+				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
 					GMT_report (GMT, GMT_MSG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */

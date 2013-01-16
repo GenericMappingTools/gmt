@@ -820,11 +820,10 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (tid == 0) {	/* First or only thread */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Input nx,ny = (%d %d), output nx,ny = (%d %d), filter (max)nx,ny = (%d %d)\n", Gin->header->nx, Gin->header->ny, Gout->header->nx, Gout->header->ny, F.nx, F.ny);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s", filter_name[filter_type]);
 		if (Ctrl->F.quantile != 0.5)
-			GMT_report (GMT, GMT_MSG_VERBOSE, " [using %g%% quantile].\n", 100.0 * Ctrl->F.quantile);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s [using %g%% quantile].\n", filter_name[filter_type], 100.0 * Ctrl->F.quantile);
 		else
-			GMT_report (GMT, GMT_MSG_VERBOSE, ".\n");
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Filter type is %s.\n", filter_name[filter_type]);
 #ifdef _OPENMP
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Calculations will be distributed over %d threads.\n", omp_get_num_threads ());
 #endif
