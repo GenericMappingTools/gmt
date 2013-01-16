@@ -3132,7 +3132,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("IMNRVbfnr" GMT_OPT("F"), opt->option)) continue;
+		if (strchr ("IMNRVbfnr-" GMT_OPT("F"), opt->option)) continue;
 		/* if (opt->option == GMTAPI_OPT_OUTFILE) continue; */	/* We do output after the loop */
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
