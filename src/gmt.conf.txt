@@ -101,7 +101,8 @@ the desired precision.  If no floating point is indicated then the smallest spec
 will be rounded off to nearest integer.  For 12-hour clocks, append am, AM, a.m., or A.M. (BD(GMT)
 will replace a|A with p|P for pm).  If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
 printed without leading zeros (default uses fixed width formats).  As examples, try
-hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc. [hh:mm:ss].
+hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc. [hh:mm:ss].  If the format is simply - then
+no clock is output and the ISO T divider between date and clock is omitted.
 .TP
 .B FORMAT_DATE_IN
 Formatting template that indicates how an input date string is formatted.  This template
@@ -135,6 +136,7 @@ ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and 
 day.  Either template must be consistent, e.g., you cannot specify months if you do not specify
 years.  As examples, try yyyyWww, yy-W-ww-d, etc. If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
 printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
+If the format is simply - then no date is output and the ISO T divider between date and clock is omitted.
 .TP
 .B FORMAT_GEO_MAP
 Formatting template that indicates how an output geographical coordinate is to be plotted.  This template

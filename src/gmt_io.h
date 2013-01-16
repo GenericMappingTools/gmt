@@ -294,6 +294,7 @@ struct GMT_QUAD {	/* Counting parameters needed to determine proper longitude mi
 };
 
 struct GMT_CLOCK_IO {
+	bool skip;			/* Only true if a format string was pass as NULL */
 	double f_sec_to_int;		/* Scale to convert 0.xxx seconds to integer xxx (used for formatting) */
 	int order[3];		/* The relative order of hour, mn, sec in input clock string (-ve if unused) */
 	unsigned int n_sec_decimals;	/* Number of digits in decimal seconds (0 for whole seconds) */
@@ -305,6 +306,7 @@ struct GMT_CLOCK_IO {
 };
 
 struct GMT_DATE_IO {
+	bool skip;			/* Only true if a format string was pass as NULL */
 	int item_order[4];		/* The sequence year, month, day, day-of-year in input calendar string (-ve if unused) */
 	int item_pos[4];		/* Which position year, month, day, day-of-year has in calendar string (-ve if unused) */
 	bool Y2K_year;		/* true if we have 2-digit years */
