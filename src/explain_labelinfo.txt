@@ -86,7 +86,7 @@ BD(+u)IT(unit)
 Appends IT(unit) to all line labels. If IT(unit) starts with a leading hyphen (-) then there will be no space
 between label value and the unit.
 #ifdef GRID
-If no IT(unit) is appended we use the units listed in the grid file.
+If IT(z) is appended we use the units specified in the grid file.
 #endif
 [Default is no unit].
 .TP

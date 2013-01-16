@@ -679,7 +679,7 @@ void GMT_label_syntax (struct GMT_CTRL *C, unsigned int indent, unsigned int kin
 	GMT_message (C, "%s   use +T to save (x y angle label) instead\n", pad);
 	GMT_message (C, "%s +u<unit> to append unit to all labels; Start unit with - for\n", pad);
 	GMT_message (C, "%s   no space between annotation and unit.\n", pad);
-	if (kind == 0) GMT_message (C, "%s  If no unit appended, use z-unit from grdfile [no unit].\n", pad);
+	if (kind == 0) GMT_message (C, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
 	GMT_message (C, "%s +v for placing curved text along path [Default is straight].\n", pad);
 	GMT_message (C, "%s +w sets how many (x,y) points to use for angle calculation [10].\n", pad);
 	GMT_message (C, "%s +=<prefix> to give all labels a prefix; Start unit with - for\n", pad);
