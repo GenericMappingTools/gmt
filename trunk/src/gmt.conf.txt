@@ -132,7 +132,7 @@ abbreviated month name in the current time language),
 and dd, with or without delimiters.  For day-of-year data, use jjj instead of mm and/or dd.
 As examples, try yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc.
 ISO Calendar:  Expected template is yyyy[-]W[-]ww[-]d, where ww is ISO week and d is ISO week
-day.  Either template must be consistant, e.g., you cannot specify months if you do not specify
+day.  Either template must be consistent, e.g., you cannot specify months if you do not specify
 years.  As examples, try yyyyWww, yy-W-ww-d, etc. If your template starts with a leading hyphen (-) then each integer item (y,m,d) will be
 printed without leading zeros (default uses fixed width formats) [yyyy-mm-dd].
 .TP
