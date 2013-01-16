@@ -1686,6 +1686,7 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 			col[GMT_Y] = GMT_IS_LAT;
 		}
 		pos = 1;
+		start = stop = 1;
 	}
 	if (copy[0] == 'p') {	/* Got -f[i|o]p[<unit>] for projected floating point map coordinates (e.g., UTM meters) */
 		if (copy[1] && strchr (GMT_LEN_UNITS2, copy[1])) {	/* Given a unit via -fp<unit>*/

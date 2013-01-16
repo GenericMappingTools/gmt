@@ -739,7 +739,7 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	int error, c;
-	bool need_proj, make_plot, two_only = false, begin, is_closed; 
+	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time, use_t_offset = false; 
 	
 	enum grdcontour_contour_type closed;
 	
@@ -753,12 +753,14 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
-	double aval, cval, small, xyz[2][3], z_range, wesn[4], rgb[4];
+	double aval, cval, small, xyz[2][3], z_range, t_offset, wesn[4], rgb[4];
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;
 
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_CLOCK_IO Clock;
+	struct GMT_DATE_IO Date;
 	struct SAVE *save = NULL;
 	struct GMT_GRID *G = NULL, *G_orig = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -827,6 +829,34 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
+	if (GMT->current.io.col_type[GMT_IN][GMT_Z] == GMT_IS_ABSTIME) {	/* Grid data is time */
+		/* To properly label contours using GMT time formatting we will rely on the machinery
+		 * for output data formatting.  Thus, we temporarily overwrite those settings with
+		 * the selected map settings, then undo the damage before GMT_basemap is called.
+		 */
+		double t_epoch_unit, t_epoch_unit_even, tmp;
+		data_is_time = true;
+		/* Save original date and clock output formatting structures */
+		GMT_memcpy (&Clock, &GMT->current.io.clock_output, 1, struct GMT_CLOCK_IO);
+		GMT_memcpy (&Date, &GMT->current.io.date_output, 1, struct GMT_DATE_IO);
+		/* Set date and clock output to the corresponding MAP versions */
+		GMT_memcpy (&GMT->current.io.clock_output, &GMT->current.plot.calclock.clock, 1, struct GMT_CLOCK_IO);
+		GMT_memcpy (&GMT->current.io.date_output,  &GMT->current.plot.calclock.date, 1, struct GMT_DATE_IO);
+		/* We want time to align on integer TIME_UNIT.  If epoch is not a multiple of TIME_UNIT
+		 * then we compute the offset and add to z */
+		tmp = GMT->current.setting.time_system.epoch_t0; GMT->current.setting.time_system.epoch_t0 = 0.0;	/* Save */
+		t_epoch_unit = GMT_rdc2dt (GMT, GMT->current.setting.time_system.rata_die, tmp * GMT_DAY2SEC_F);	/* Epoch in user units */
+		GMT->current.setting.time_system.epoch_t0 = tmp;	/* Restore */
+		t_epoch_unit_even = floor (t_epoch_unit / Ctrl->A.interval) * Ctrl->A.interval;	/* Offset to grid values in user units reuired to align contours on even epoch */
+		t_offset = t_epoch_unit - t_epoch_unit_even;	/* Offset to grid values in user units to align on even epoch */
+		use_t_offset = !doubleAlmostEqualZero (t_epoch_unit, t_epoch_unit_even);
+		if (use_t_offset) {	/* Must temporarily add t_offset to grid, quietly */
+			GMT_report (GMT, GMT_MSG_DEBUG, "Adding %g to align grid times with TIME_UNIT steps\n", t_offset);
+			GMT_scale_and_offset_f (GMT, G->data, G->header->size, 1.0, t_offset);
+			G->header->z_min += t_offset;
+			G->header->z_max += t_offset;
+		}
+	}
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {	/* Must transform z grid */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		GMT_scale_and_offset_f (GMT, G->data, G->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
@@ -1117,8 +1147,16 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (need_proj && (nn = GMT_clip_to_map (GMT, x, y, n, &xp, &yp))) {	/* Lines inside the region */
 					/* From here on, xp/yp are map inches */
 					if (cont_type[c] == 'A' || cont_type[c] == 'a') {	/* Annotated contours */
-						GMT_get_format (GMT, cval, Ctrl->contour.unit, NULL, format);
-						sprintf (cont_label, format, cval);
+						if (data_is_time) {
+							double tval = (use_t_offset) ? cval - t_offset : cval;
+							char *c = NULL;
+							GMT_ascii_format_col (GMT, cont_label, tval, GMT_Z);
+							if ((c = strchr (cont_label, 'T'))) c[0] = ' ';	/* Replace ISO T with space for plots */
+						}
+						else {
+							GMT_get_format (GMT, cval, Ctrl->contour.unit, NULL, format);
+							sprintf (cont_label, format, cval);
+						}
 					}
 					else
 						cont_label[0] = '\0';
@@ -1146,6 +1184,12 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		GMT_free (GMT, n_seg_alloc);
 		GMT_free (GMT, n_seg);
+	}
+
+	if (data_is_time) {	/* Undo earlier swapparoo */
+		/* Restore original date and clock output formatting structures */
+		GMT_memcpy (&GMT->current.io.clock_output, &Clock, 1, struct GMT_CLOCK_IO);
+		GMT_memcpy (&GMT->current.io.date_output, &Date, 1, struct GMT_DATE_IO);
 	}
 
 	if (make_plot) label_mode |= 1;		/* Would want to plot ticks and labels if -T is set */

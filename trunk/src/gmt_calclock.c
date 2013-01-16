@@ -835,7 +835,8 @@ void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GM
 
 	GMT_gcal_from_dt (C, dt + step, &calendar);			/* Convert dt to a complete calendar structure */
 	
-	if (date) {	/* Not NULL, want to format this string */
+	if (date) date[0] = 0;
+	if (date && !D->skip) {	/* Not NULL, want to format this string */
 		/* Now undo Y2K fix to make a 2-digit year here if necessary */
 	
 		if (D->day_of_year) {		/* Using the year and day-of-year as date entries */
@@ -870,7 +871,8 @@ void GMT_format_calendar (struct GMT_CTRL *C, char *date, char *clock, struct GM
 			sprintf (date, D->format, ival[0], ival[1], ival[2]);	/* Write date in correct order for this format */
 	}
 
-	if (!clock) return;	/* Do not want a formatted clock string - return here */
+	if (clock) clock[0] = 0;
+	if (!clock || W->skip) return;	/* Do not want a formatted clock string - return here */
 	
 	GMT_memset (clock, GMT_CALSTRING_LENGTH, char);			/* To set all to zero */
 	i_sec = lrint (floor (calendar.sec));

@@ -1728,10 +1728,15 @@ void gmt_format_geo_output (struct GMT_CTRL *C, bool is_lat, double geo, char *t
 
 void gmt_format_abstime_output (struct GMT_CTRL *C, double dt, char *text)
 {
-	char date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
+	char date[GMT_CALSTRING_LENGTH], tclock[GMT_CALSTRING_LENGTH];
 
-	GMT_format_calendar (C, date, clock, &C->current.io.date_output, &C->current.io.clock_output, false, 1, dt);
-	sprintf (text, "%sT%s", date, clock);
+	GMT_format_calendar (C, date, tclock, &C->current.io.date_output, &C->current.io.clock_output, false, 1, dt);
+	if (date[0] == '\0')	/* No date wanted hence dont use T */
+		sprintf (text, "%s", tclock);
+	else if (tclock[0] == '\0')	/* No clock wanted hence dont use T */
+		sprintf (text, "%s", date);
+	else	/* ISO format */
+		sprintf (text, "%sT%s", date, tclock);
 }
 
 void GMT_ascii_format_col (struct GMT_CTRL *C, char *text, double x, unsigned int col)
@@ -3518,9 +3523,15 @@ void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S,
 	/* Determine the order of H, M, S in input and output clock strings,
 	 * as well as the number of decimals in output seconds (if any), and
 	 * if a 12- or 24-hour clock is used.
-	 * mode is 0 for input and 1 for output format
+	 * mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
 
+	S->skip = false;
+	if (mode && strlen (form) == 1 && form[0] == '-') {	/* Do not want clock output or plotted */
+		S->skip = true; 
+		return;
+	}
+	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
 	gmt_get_hms_order (C, form, S);
@@ -3563,13 +3574,19 @@ void gmt_clock_C_format (struct GMT_CTRL *C, char *form, struct GMT_CLOCK_IO *S,
 void gmt_date_C_format (struct GMT_CTRL *C, char *form, struct GMT_DATE_IO *S, unsigned int mode)
 {
 	/* Determine the order of Y, M, D, J in input and output date strings.
-	* mode is 0 for input, 1 for output, and 2 for plot output.
+	 * mode is 0 for input, 1 for output, and 2 for plot output.
 	 */
 
 	int k, ywidth;
 	bool no_delim;
 	char fmt[GMT_TEXT_LEN256];
 
+	S->skip = false;
+	if (mode && strlen (form) == 1 && form[0] == '-') {	/* Do not want date output or plotted */
+		S->skip = true; 
+		return;
+	}
+	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
 	gmt_get_ymdj_order (C, form, S);
