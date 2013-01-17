@@ -9,7 +9,7 @@ BD(mgd77list) IT(NGDC-ids) OPT(F)IT(columns)[,IT(logic)][:IT(bittests)]
 [ OPT(I)IT(ignore) ] [ OPT(L)[IT(corrtable)] ] 
 [ OPT(Nd)|BD(s)IT(unit) ] [ OPT(Q)BD(a)|BD(c)|BD(v)IT(min)/IT(max) ] [ GMT_Rgeo_OPT ] [ OPT(Sa)IT(startdist)[unit] ] 
 [ OPT(Sb)IT(stopdist)[unit] ] [ OPT(T)[BD(m)|BD(e)] ]  [ GMT_V_OPT ] 
-[ OPT(W)IT(weight) ] [ OPT(Z)IT(+)|BD(-) ] [ GMT_bo_OPT ] [ GMT_h_OPT ]
+[ OPT(W)IT(weight) ] [ OPT(Z)IT(+)|BD(-) ] [ GMT_bo_OPT ] [ OPT(h) ]
 .SH DESCRIPTION
 BD(mgd77list) reads <NGDC-id>.[mgd77|nc] files and produces an ASCII [or binary] table.
 The <NGDC-id>.[mgd77|nc] files contain track information such as leg-id, time and position,
@@ -17,12 +17,13 @@ geophysical observables such as gravity, magnetics, and bathymetry, and control 
 corrections such as Eotvos and diurnal corrections.  The MGD77+ extended netCDF files may
 also contain additional user columns (for a listing of available columns, use BD(mgd77info)
 OPT(C), and to learn how to add your own custom columns, see BD(mgd77manage)).  The
-user may extract any combination of these parameters, any of six computed quantities (distance,
-heading, velocity, Carter correction, and gravity and magnetic global reference fields),
+user may extract any combination of these parameters, any of 8 computed quantities (distance,
+heading, course-change, velocity, Carter correction, Eotvos correction and gravity and magnetic global reference fields),
 calendar sub-units of time (year, month, day, hour, min, sec), the NGDC id, and finally a
 preset weight (see OPT(W)).  A sub-section can be specified by passing time- or
 distance-intervals along track or by selecting a geographical region.  Finally, each output
 record may be required to pass any number of logical tests involving data values or bit flags.
+If multiple cruises are requested then they are separated by segment headers.
 #include "mgd77_IGF_coeffs.h"
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
@@ -32,7 +33,11 @@ OPT(F)IT(columns)[,IT(logic)][:IT(bittests)]
 The required IT(columns) string must be a comma-separated list of parameter abbreviations
 given in the desired output order.  Any parameters given in UPPER case must not be NaN in
 a record for output to occur.  Unless specified separately, the output format (if ASCII) is
-controlled by the GMT parameter BD(FORMAT_FLOAT_OUT).  The available abbreviations are:
+controlled by the GMT parameter BD(FORMAT_FLOAT_OUT).  The available column abbreviations
+for information stored in the files (some columns may be NaN) are:
+.TP
+.B recno
+The record number counter.
 .TP
 .B drt
 The digital record type, usually 3 or 5 (for Y2K-compliant cruises).
@@ -113,7 +118,8 @@ Seismic Shot Point Number string.
 Navigation Quality Code (5 = suspected, by source institution, 6 = suspected, by NGDC, 9 = no problems identified).
 .br
 .sp
-In addition, the following derived quantities can be requested:
+In addition, the following derived navigational quantities can be requested:
+.sp
 .TP
 .B year
 The year of each record.
@@ -145,13 +151,17 @@ Ship course change (change in heading) measured clockwise from north (in degrees
 .TP
 .B vel
 Ship speed; see OPT(N) for units [m/s]. 
+.br
+.sp
+Finally, the following computed quantities can be requested:
+.sp
 .TP
 .B weight
 Weight assigned to this data set (see OPT(W)).
 .TP
 .B carter
 Carter depth correction, if BD(twt) is present in file (in m).  Sign: Correction
-is to be subtracted from uncorrected depths to yield a corrected depth.
+is to be added to uncorrected depths to yield a corrected depth.
 .TP
 .B igrf
 International geomagnetic reference field (total field) (in nTesla).
@@ -163,10 +173,12 @@ Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we 
 Alternatively, specify the field directly using OPT(Af) (see that option for more details).
 .TP
 .B ceot
-Calculated Eotvos correction from navigation (in mGal).
+Calculated Eotvos correction from navigation, using E = 7.5038*V*cos(lat)*sin(az) + 0.004154*V^2 (in mGal).
+Sign: Correction is to be added to uncorrected faa to yield a corrected faa.
 .br
 .sp
 The following short-hand flags are also recognized:
+.sp
 .TP
 .B all
 This returns all data columns in the file.

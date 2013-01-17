@@ -301,9 +301,9 @@ struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init 
  * structures are used to facilitate this process. */
 
 #ifdef USE_CM4
-#define N_MGD77_AUX	21		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
+#define N_MGD77_AUX	22		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
 #else
-#define N_MGD77_AUX	20		/* Number of auxilliary derived columns for MGD77 data */
+#define N_MGD77_AUX	21		/* Number of auxilliary derived columns for MGD77 data */
 #endif
 #define N_GENERIC_AUX	4		/* Number of auxilliary derived columns for general files (dist, azim, cc, vel) */
 
@@ -326,9 +326,10 @@ struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init 
 #define MGD77_AUX_CT	16	/* Carter correction */
 #define MGD77_AUX_GR	17	/* Gravity reference field */
 #define MGD77_AUX_ET	18	/* Calculated Eotvos correction */
-#define MGD77_AUX_ID	19	/* Cruise ID */
+#define MGD77_AUX_RN	19	/* Record number */
+#define MGD77_AUX_ID	20	/* Cruise ID */
 #ifdef USE_CM4
-#define MGD77_AUX_CM	20	/* CM4 reference field */
+#define MGD77_AUX_CM	21	/* CM4 reference field */
 #endif
 
 struct MGD77_AUXLIST {
