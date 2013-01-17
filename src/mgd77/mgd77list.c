@@ -1000,7 +1000,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				MGD77_Free_Dataset (GMT, &D);
 				Return (EXIT_FAILURE);
 			}
-			first_cruise = false;
 			if (!string_output) out = GMT_memory (GMT, NULL, n_out_columns, double);
 
 		}
@@ -1057,6 +1056,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}
+		first_cruise = false;
 
 		if (n_paths > 1) {	/* Write segment header between each cruise */
 			sprintf (GMT->current.io.segment_header, "%s\n", list[argno]);

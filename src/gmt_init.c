@@ -853,6 +853,17 @@ void GMT_vector_syntax (struct GMT_CTRL *C, unsigned int mode)
 	if (mode & 2) GMT_message (C, "\t     +s if (x,y) coordinates of tip is given instead of (angle,length) on input.\n");
 }
 
+void GMT_img_syntax (struct GMT_CTRL *C)
+{	/* For programs that can read *.img grids */
+	GMT_message (C, "\t      Give filename and append comma-separated scale, mode, and optionally max latitude [%g].\n", GMT_IMG_MAXLAT_80);
+	GMT_message (C, "\t      The scale (0.1 or 1) is used to multiply after read; give mode as follows:\n");
+	GMT_message (C, "\t        0 = img file with no constraint code, interpolate to get data at track.\n");
+	GMT_message (C, "\t        1 = img file with constraints coded, interpolate to get data at track.\n");
+	GMT_message (C, "\t        2 = img file with constraints coded, gets data only at constrained points, NaN elsewhere.\n");
+	GMT_message (C, "\t        3 = img file with constraints coded, gets 1 at constraints, 0 elsewhere.\n");
+	GMT_message (C, "\t        For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
+}
+
 void GMT_syntax (struct GMT_CTRL *C, char option)
 {
 	/* The function print to stderr the syntax for the option indicated by

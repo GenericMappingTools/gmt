@@ -6,6 +6,7 @@
 	* grdcontour.c:		Enabled time-annotations for grids with z = time.
 	* mgd77/mgd77list.c:	Added course change (cc) as new auxiliary field.
 				Added -Qc to set limits on cc for output.
+				Added recno (recordn number) as new auxiliary field.
 				Added ceot (calculated Eotvos) as new auxiliary field
 				and -Af8 to recompute faa based on gobs, ceot, and ngrav.
 
