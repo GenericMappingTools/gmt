@@ -210,6 +210,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     diur:    Magnetic diurnal correction (gamma, nTesla).\n");
 	GMT_message (GMT, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
 	GMT_message (GMT, "\t     eot:     Eotvos correction (mGal).\n");
+	GMT_message (GMT, "\t     ceot:    Calculated Eotvos correction (mGal).\n");
 	GMT_message (GMT, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
 	GMT_message (GMT, "\t     sln:     Seismic line number string [TEXTSTRING].\n");
 	GMT_message (GMT, "\t     sspn:    Seismic shot point number string [TEXTSTRING].\n");
@@ -264,6 +265,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t       f1 return faa as stored in file [Default].\n");
 	GMT_message (GMT, "\t       f2 return difference gobs - ngrav.\n");
 	GMT_message (GMT, "\t       f4 return difference gobs + eot - ngrav.\n");
+	GMT_message (GMT, "\t       f8 return difference gobs + ceot - ngrav.\n");
 	GMT_message (GMT, "\t   m<code> Adjust field mag.\n");
 	GMT_message (GMT, "\t       m1 return mag as stored in file [Default].\n");
 	GMT_message (GMT, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
@@ -379,8 +381,8 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						break;
 					case 'f':	/* faa adjustment */
 						code = opt->arg[k+1] - '0';
-						if (code < 1 || code > 3) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Af<code>.  <code> must be 1-3.\n");
+						if (code < 1 || code > 15) {
+							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Af<code>.  <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
@@ -404,7 +406,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						}
 						else {
 							code = atoi (&opt->arg[k+1]);
-							if (code < 1 || code > 31) {
+							if (code < 1 || code > 7) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
 								n_errors++;
 							}
@@ -759,6 +761,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 		{ "igrf",    MGD77_AUX_MG, false, false, "IGRF"},
 		{ "carter",  MGD77_AUX_CT, false, false, "Carter"},
 		{ "ngrav",   MGD77_AUX_GR, false, false, "IGF"},
+		{ "ceot",    MGD77_AUX_ET, false, false, "ceot"},
 		{ "ngdcid",  MGD77_AUX_ID, true,  false, "NGDC-ID"}
 	};
 	struct MGD77LIST_CTRL *Ctrl = NULL;
@@ -847,10 +850,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
 	 
+	if (Ctrl->A.code[ADJ_GR] & 8 || auxlist[MGD77_AUX_ET].requested) auxlist[MGD77_AUX_AZ].requested = true;	/* Eotvos needs heading */
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested || auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested);
-
 	n_sub = 0;	/* This value will hold the number of columns that we will NOT printout (they are only needed to calculate auxillary values) */
 	if (need_distances || need_lonlat) {	/* Must make sure we get lon,lat if they are not already requested */
 		 if (MGD77_Get_Column (GMT, "lat", &M) == MGD77_NOT_SET) strcat (fx_setting, ",lat"), n_sub++;	/* Append lat to requested list */
@@ -1175,6 +1178,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				if (lonlat_not_NaN) prevrec = rec;	/* This was a record with OK lon,lat; make it the previous point for distance calculations */
 			}
+			if (auxlist[MGD77_AUX_ET].requested) aux_dvalue[MGD77_AUX_ET] = MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]);
 			
 			/* Check if rec no, time or distance falls outside specified ranges */
 		
@@ -1298,12 +1302,14 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			/* --------------------------------------------------------------------------------------------------- */
 			if (f_col != MGD77_NOT_SET && Ctrl->A.code[ADJ_GR]) {
 				g = GMT->session.d_NaN;
-				if (Ctrl->A.code[ADJ_GR] == 1)	/* Try faa */
+				if (Ctrl->A.code[ADJ_GR] & 1)	/* Try faa */
 					g = dvalue[f_col][rec];
-				if (Ctrl->A.code[ADJ_GR] == 2 && GMT_is_dnan (g))	/* Try gobs - ngrav */
+				if (Ctrl->A.code[ADJ_GR] & 2 && GMT_is_dnan (g))	/* Try gobs - ngrav */
 					g = dvalue[g_col][rec] - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
-				if (Ctrl->A.code[ADJ_GR] == 3 && GMT_is_dnan (g))	/* Try gobs + eot - ngrav */
+				if (Ctrl->A.code[ADJ_GR] & 4 && GMT_is_dnan (g))	/* Try gobs + eot - ngrav */
 					g = dvalue[g_col][rec] + dvalue[e_col][rec] - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
+				if (Ctrl->A.code[ADJ_GR] & 8 && GMT_is_dnan (g))	/* Try gobs + pred_eot - ngrav */
+					g = dvalue[g_col][rec] + MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]) - MGD77_Theoretical_Gravity (GMT, dvalue[x_col][rec], dvalue[y_col][rec], (int)Ctrl->A.GF_version);
 				if (Ctrl->A.force || !GMT_is_dnan(dvalue[f_col][rec])) dvalue[f_col][rec] = g;
 			}
 			
