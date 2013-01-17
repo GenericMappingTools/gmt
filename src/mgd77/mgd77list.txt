@@ -7,7 +7,7 @@ BD(mgd77list) IT(NGDC-ids) OPT(F)IT(columns)[,IT(logic)][:IT(bittests)]
 [ OPT(A)[BD(+)]BD(c)|BD(d)|BD(f)|BD(m)|BD(t)IT(code) ] [ OPT(C)BD(f)|BD(g)|BD(e) ] 
 [ OPT(D)BD(A)|BD(a)IT(startdate) ] [ OPT(D)BD(B)|BD(b)IT(stopdate) ] [ OPT(E) ] [ OPT(Ga)IT(startrec) ] [ OPT(Gb)IT(stoprec) ] 
 [ OPT(I)IT(ignore) ] [ OPT(L)[IT(corrtable)] ] 
-[ OPT(Nd)|BD(s)IT(unit) ] [ OPT(Q)BD(a)|BD(v)IT(min)/IT(max) ] [ GMT_Rgeo_OPT ] [ OPT(Sa)IT(startdist)[unit] ] 
+[ OPT(Nd)|BD(s)IT(unit) ] [ OPT(Q)BD(a)|BD(c)|BD(v)IT(min)/IT(max) ] [ GMT_Rgeo_OPT ] [ OPT(Sa)IT(startdist)[unit] ] 
 [ OPT(Sb)IT(stopdist)[unit] ] [ OPT(T)[BD(m)|BD(e)] ]  [ GMT_V_OPT ] 
 [ OPT(W)IT(weight) ] [ OPT(Z)IT(+)|BD(-) ] [ GMT_bo_OPT ] [ GMT_h_OPT ]
 .SH DESCRIPTION
@@ -140,6 +140,9 @@ for distance units, see OPT(N) [km].
 .B az
 Ship azimuth (heading) measured clockwise from north (in degrees).
 .TP
+.B cc
+Ship course change (change in heading) measured clockwise from north (in degrees).
+.TP
 .B vel
 Ship speed; see OPT(N) for units [m/s]. 
 .TP
@@ -171,7 +174,7 @@ This results in all 27 MGD77 fields being written out in the offical MGD77 order
 .B geo
 This limits the output to 10 fields (BD(time), BD(lon), BD(lat) plus the seven geophysical observations
 BD(twt), BD(depth), BD(mtf1), BD(mtf2), BD(mag), BD(gobs), and BD(faa)).
-By appending BD(+) to either of these set we will also append BD(dist), BD(azim), BD(vel), and
+By appending BD(+) to either of these set we will also append BD(dist), BD(azim), BD(cc), BD(vel), and
 BD(weight) as listed above.
 .br
 .sp
@@ -345,11 +348,16 @@ BD(n) (nautical miles or knots), or BD(u) (survey feet or sfeet/s).  [Default is
 .TP
 OPT(Qa)IT(min)/IT(max)
 Specify an accepted range (IT(min)/IT(max)) of azimuths.  Records whose track azimuth falls
-outside this range are ignored [0-360].
+outside this range are ignored [0/360].
+.TP
+OPT(Qc)IT(min)/IT(max)
+Specify an accepted range (IT(min)/IT(max)) of course changes.  Records whose track course change falls
+outside this range are ignored [-360/+360].  Use OPT(QC) to take the absolute value of the course change
+before the test [Default uses signed course changes].
 .TP
 OPT(Qv)IT(min)/IT(max)
 Specify an accepted range (IT(min)/IT(max); or just IT(min) if there is no upper limit)
-of velocities.  Records whose track speed falls outside this range are ignored [0-infinity].
+of velocities.  Records whose track speed falls outside this range are ignored [0/infinity].
 #include "explain_-Rgeo.txt"
 .TP
 OPT(Sa)IT(startdist)[unit]

@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *    Copyright (c) 2004-2012 by P. Wessel
+ *    Copyright (c) 2004-2013 by P. Wessel
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /*
@@ -42,7 +42,7 @@
 #define MGD77T_FMT "id,tz,date,hhmm,lat,lon,ptc,nqc,twt,depth,bcc,btc,bqc,mtf1,mtf2,mag,msens,diur,msd,mqc,gobs,eot,faa,gqc,sln,sspn"
 #define MGD77T_ALL "id,time,lat,lon,ptc,nqc,twt,depth,bcc,btc,bqc,mtf1,mtf2,mag,msens,diur,msd,mqc,gobs,eot,faa,gqc,sln,sspn"
 #define MGD77_GEO  "time,lat,lon,twt,depth,mtf1,mtf2,mag,gobs,faa"
-#define MGD77_AUX  "dist,azim,vel,weight"
+#define MGD77_AUX  "dist,azim,cc,vel,weight"
 
 #define ADJ_CT	0
 #define ADJ_DP	1
@@ -52,7 +52,8 @@
 #define N_D	0	/* These are indices for -N subsets */
 #define N_S	1
 #define Q_A	0	/* These are indices for -Q subsets */
-#define Q_V	1
+#define Q_C	1
+#define Q_V	2
 
 struct MGD77LIST_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -102,10 +103,10 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		bool active[2];
 		char unit[2][2];
 	} N;
-	struct MGD77LIST_Q {	/* -Q */
-		bool active[2];
-		double min[2];
-		double max[2];
+	struct MGD77LIST_Q {	/* -Qa|c|v */
+		bool active[3], c_abs;
+		double min[3];
+		double max[3];
 	} Q;
 	struct MGD77LIST_S {	/* -S */
 		bool active;
@@ -139,8 +140,9 @@ void *New_mgd77list_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C->G.stop = UINTMAX_MAX;		/* No limit on stop record */
 	C->N.unit[N_D][0] = 'k';	/* Default is -Ndk */
 	C->N.unit[N_S][0] = GMT_MAP_DIST_UNIT;	/* Default is -Nse */
-	C->Q.max[Q_V] = DBL_MAX;	/* No upper speed limit */
 	C->Q.max[Q_A] = 360.0;		/* Max azimuth limit */
+	C->Q.min[Q_A] = -360.0;	C->Q.max[Q_A] = 360.0;		/* Min/max course change limits */
+	C->Q.max[Q_V] = DBL_MAX;	/* No upper speed limit */
 	C->T.mode = MGD77_NOT_SET;
 	C->W.value = 1.0;	/* Default weight */	
 	return (C);
@@ -187,6 +189,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
 	GMT_message (GMT, "\t     dist:    Along-track distances (see -C for method and -N for units).\n");
 	GMT_message (GMT, "\t     azim:    Track azimuth (Degrees east from north).\n");
+	GMT_message (GMT, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
 	GMT_message (GMT, "\t     vel:     Ship velocity (m/s).\n");
 	GMT_message (GMT, "\t   >Geophysical Observations:\n");
 	GMT_message (GMT, "\t     twt:     Two-way traveltime (s).\n");
@@ -219,7 +222,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     geo:     time,lon,lat + the 7 geophysical observations.\n");
 	GMT_message (GMT, "\t     all:     As mgd77 but with time items written as a date-time string.\n");
 	GMT_message (GMT, "\t     allt:     As mgd77t but with time items written as a date-time string.\n");
-	GMT_message (GMT, "\t    Append + to include the 4 derived quantities dist, azim, vel, and weight [see -W]\n");
+	GMT_message (GMT, "\t    Append + to include the 5 derived quantities dist, azim, cc, vel, and weight [see -W]\n");
 	GMT_message (GMT, "\t    [Default is all].\n");
 	GMT_message (GMT, "\t  Abbreviations in UPPER CASE will suppress records where any such column is NaN.\n");
 	GMT_message (GMT, "\t  (Note that -E is a shorthand to set all abbreviations to upper case).\n");
@@ -294,6 +297,8 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
 	GMT_message (GMT, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
 	GMT_message (GMT, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e., 0/360].\n");
+	GMT_message (GMT, "\t   -Qc<min_cc>/<max_cc>, where <min_cc> < <max_cc> [all course changes, i.e., -360/360].\n");
+	GMT_message (GMT, "\t      Use -QC to use abs value |cc| in the test [0/360].\n");
 	GMT_message (GMT, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity].\n");
 	GMT_message (GMT, "\t      Velocities are given in m/s unless changed by -Ns.\n");
 	GMT_message (GMT, "\t-R Return data inside the specified region only [0/360/-90/90].\n");
@@ -569,6 +574,15 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						}
 						Ctrl->Q.active[Q_A] = true;
 						break;
+					case 'C':	/* Course change min/max using absolute value of cc */
+						Ctrl->Q.c_abs = true;
+					case 'c':	/* Course change min/max */
+						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_C], &Ctrl->Q.max[Q_C]) != 2) {
+							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Qc: append min/max course change limits [-360/+360]\n");
+							n_errors++;
+						}
+						Ctrl->Q.active[Q_C] = true;
+						break;
 					case 'v':	/* Velocity min/max */
 						code = sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_V], &Ctrl->Q.max[Q_V]);
 						if (code == 1)
@@ -580,7 +594,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Q: Syntax is -Qa|v<min>/<max>\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Q: Syntax is -Qa|c|v<min>/<max>\n");
 						n_errors++;
 						break;
 				}
@@ -638,6 +652,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 	n_errors += GMT_check_condition (GMT, Ctrl->W.value <= 0.0, "Syntax error: -W weight must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.start > Ctrl->S.stop, "Syntax error -S: Start distance exceeds stop distance!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_A] && Ctrl->Q.min[Q_A] >= Ctrl->Q.max[Q_A], "Syntax error -Qa: Minimum azimuth equals or exceeds maximum azimuth!\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_C] && Ctrl->Q.min[Q_C] >= Ctrl->Q.max[Q_C], "Syntax error -Qc: Minimum course change equals or exceeds maximum course change!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active[Q_V] && (Ctrl->Q.min[Q_V] >= Ctrl->Q.max[Q_V] || Ctrl->Q.min[Q_V] < 0.0), "Syntax error -Qv: Minimum velocity equals or exceeds maximum velocity or is negative!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.start > Ctrl->D.stop, "Syntax error ERROR -D: Start time exceeds stop time!\n");
 
@@ -713,10 +728,11 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
 	
-	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, *out = NULL;
+	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, this_cc;
 	double dist_scale, vel_scale, ds, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
-	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, *dvalue[MGD77_MAX_COLS];
+	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, prev_az, next_az;
 	double *cumdist = NULL, *cumdist_off = NULL, *mtf_bak = NULL, *mtf_int = NULL;
+	double *dvalue[MGD77_MAX_COLS], *out = NULL;
 	
 	struct MGD77_CONTROL M;
 	struct MGD77_DATASET *D = NULL;
@@ -727,6 +743,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct MGD77_AUXLIST auxlist[N_MGD77_AUX] = {
 		{ "dist",    MGD77_AUX_DS, false, false, "d(km)"},
 		{ "azim",    MGD77_AUX_AZ, false, false, "azimuth"},
+		{ "cc",      MGD77_AUX_CC, false, false, "ccourse"},
 		{ "vel",     MGD77_AUX_SP, false, false, "v(m/s)"},
 		{ "year",    MGD77_AUX_YR, false, false, "year"},
 		{ "month",   MGD77_AUX_MO, false, false, "month"},
@@ -830,7 +847,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
 	 
-	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested);	/* Distance is requested */
+	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested || auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested);
 
@@ -1119,17 +1136,31 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][rec]) || GMT_is_dnan (dvalue[y_col][rec]));
 				if (rec == 0) {	/* Azimuth at 1st point set to azimuth of 2nd point since there is no previous point */
 					if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], false);
+					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous azimuth but none is avaiable yet */
+						aux_dvalue[MGD77_AUX_CC] = GMT->session.d_NaN;
+						prev_az = (auxlist[MGD77_AUX_AZ].requested) ? aux_dvalue[MGD77_AUX_AZ] : GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], false);
+					}
 				}
 				else {		/* Need a previous point to calculate distance and heading */
 					if (lonlat_not_NaN && prevrec != UINTMAX_MAX) {	/* We have to records with OK lon,lat and can compute a distance from the previous OK point */
 						ds = dist_scale * GMT_distance (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec]);
-						if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec], false);
+						if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = (auxlist[MGD77_AUX_CC].requested) ? prev_az : GMT_az_backaz (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec], false);
 						cumulative_dist += ds;
 						aux_dvalue[MGD77_AUX_DS] = cumulative_dist;
 					}
 					else {
 						aux_dvalue[MGD77_AUX_DS] = GMT->session.d_NaN;
 						if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT->session.d_NaN;
+					}
+					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous and next azimuth */
+						if (rec < (D->H.n_records - 1)) {
+							next_az = GMT_az_backaz (GMT, dvalue[x_col][rec+1], dvalue[y_col][rec+1], dvalue[x_col][rec], dvalue[y_col][rec], false);
+							aux_dvalue[MGD77_AUX_CC] = next_az - prev_az;
+							if (fabs (aux_dvalue[MGD77_AUX_CC]) > 180.0) aux_dvalue[MGD77_AUX_CC] = copysign (360.0 - fabs (aux_dvalue[MGD77_AUX_CC]), -aux_dvalue[MGD77_AUX_CC]);
+							prev_az = next_az;
+						}
+						else	/* No next azimuth possible */
+							aux_dvalue[MGD77_AUX_CC] = GMT->session.d_NaN;
 					}
 				}
 				if (auxlist[MGD77_AUX_SP].requested) {
@@ -1166,6 +1197,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				while (aux_dvalue[MGD77_AUX_AZ] > Ctrl->Q.min[Q_A]) aux_dvalue[MGD77_AUX_AZ] -= 360.0;	/* Wind down to be sure az < min azimuth */
 				while (aux_dvalue[MGD77_AUX_AZ] < Ctrl->Q.min[Q_A]) aux_dvalue[MGD77_AUX_AZ] += 360.0;	/* Now add 360 until we pass min azimuth */	
 				if (aux_dvalue[MGD77_AUX_AZ] > Ctrl->Q.max[Q_A]) continue;				/* Outside azimuth range */
+			}
+			if (Ctrl->Q.active[Q_C]) {	/* Check if we are outside course change range */
+				this_cc = (Ctrl->Q.c_abs) ? fabs (aux_dvalue[MGD77_AUX_CC]) : aux_dvalue[MGD77_AUX_CC];
+				if (this_cc < Ctrl->Q.min[Q_C] || this_cc > Ctrl->Q.max[Q_C]) continue;
 			}
 			/* Check if it passes any given column data constraints */
 			

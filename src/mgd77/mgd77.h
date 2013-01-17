@@ -301,32 +301,33 @@ struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init 
  * structures are used to facilitate this process. */
 
 #ifdef USE_CM4
-#define N_MGD77_AUX	19		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
+#define N_MGD77_AUX	20		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
 #else
-#define N_MGD77_AUX	18		/* Number of auxilliary derived columns for MGD77 data */
+#define N_MGD77_AUX	19		/* Number of auxilliary derived columns for MGD77 data */
 #endif
-#define N_GENERIC_AUX	3		/* Number of auxilliary derived columns for general files (dist, azim, vel) */
+#define N_GENERIC_AUX	4		/* Number of auxilliary derived columns for general files (dist, azim, vel) */
 
-#define MGD77_AUX_DS	0
-#define MGD77_AUX_AZ	1
-#define MGD77_AUX_SP	2
-#define MGD77_AUX_YR	3
-#define MGD77_AUX_MO	4
-#define MGD77_AUX_DY	5
-#define MGD77_AUX_HR	6
-#define MGD77_AUX_MI	7
-#define MGD77_AUX_DM	8
-#define MGD77_AUX_SC	9
-#define MGD77_AUX_DA	10
-#define MGD77_AUX_HM	11
-#define MGD77_AUX_WT	12
-#define MGD77_AUX_RT	13
-#define MGD77_AUX_MG	14
-#define MGD77_AUX_CT	15
-#define MGD77_AUX_GR	16
-#define MGD77_AUX_ID	17
+#define MGD77_AUX_DS	0	/* Distance */
+#define MGD77_AUX_AZ	1	/* Azimuth */
+#define MGD77_AUX_CC	2	/* Course change */
+#define MGD77_AUX_SP	3	/* Speed */
+#define MGD77_AUX_YR	4	/* Year */
+#define MGD77_AUX_MO	5	/* Month */
+#define MGD77_AUX_DY	6	/* Day */
+#define MGD77_AUX_HR	7	/* Hour */
+#define MGD77_AUX_MI	8	/* Minute */
+#define MGD77_AUX_DM	9	/* Decimal minute */
+#define MGD77_AUX_SC	10	/* Seconds */
+#define MGD77_AUX_DA	11	/* Date */
+#define MGD77_AUX_HM	12	/* hhmm.xxx */
+#define MGD77_AUX_WT	13	/* Weight */
+#define MGD77_AUX_RT	14	/* Record type */
+#define MGD77_AUX_MG	15	/* Mag reference field */
+#define MGD77_AUX_CT	16	/* Carter correction */
+#define MGD77_AUX_GR	17	/* Gravity reference field */
+#define MGD77_AUX_ID	18	/* Cruise ID */
 #ifdef USE_CM4
-#define MGD77_AUX_CM	18
+#define MGD77_AUX_CM	19	/* CM4 reference field */
 #endif
 
 struct MGD77_AUXLIST {
