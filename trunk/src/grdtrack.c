@@ -129,13 +129,8 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 
 	GMT_message (GMT, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns.\n");
 	GMT_message (GMT, "\t-G Set the name of a more 2-D binary data set to sample.\n");
-	GMT_message (GMT, "\t   If the file is a Sandwell/Smith Mercator grid (IMG format) instead,\n");
-	GMT_message (GMT, "\t   append comma-separated scale (0.1 or 1), mode, and optionally max latitude [%g].  Modes are\n", GMT_IMG_MAXLAT_80);
-	GMT_message (GMT, "\t     0 = img file w/ no constraint code, interpolate to get data at track.\n");
-	GMT_message (GMT, "\t     1 = img file w/ constraints coded, interpolate to get data at track.\n");
-	GMT_message (GMT, "\t     2 = img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.\n");
-	GMT_message (GMT, "\t     3 = img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
-	GMT_message (GMT, "\t   For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
+	GMT_message (GMT, "\t   See below if the file is a Sandwell/Smith Mercator grid (IMG format).\n");
+	GMT_img_syntax (GMT);
 	GMT_message (GMT, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A For spherical surface sampling we follow great circle paths.\n");

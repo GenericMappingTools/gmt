@@ -1639,6 +1639,16 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 		for (col = 0; col < n_cols; col++)
 			u2[col] = bswap16 (u2[col]);
 #endif
+#ifdef DEBUG
+		if (row == 0) {
+			uint16_t step, max_step = 0;
+			for (col = 1; col < n_cols; col++) {
+				step = abs (i2[col] - i2[col-1]);
+				if (step > max_step) max_step = step;
+			}
+			if (max_step > 32768) GMT_report (C, GMT_MSG_NORMAL, "File %s probably needs to byteswapped (max change = %u)\n", file, max_step);
+		}
+#endif
 		ij = GMT_IJP (Grid->header, row, 0);
 		for (col = 0, actual_col = first_i; col < Grid->header->nx; col++) {	/* Process this row's values */
 			switch (mode) {

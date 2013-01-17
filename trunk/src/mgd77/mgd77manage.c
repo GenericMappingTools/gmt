@@ -131,7 +131,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n");
 	GMT_message (GMT, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
-	GMT_message (GMT, "\t[-N%s[+|-]] [-V] [%s] [%s]\n\n", GMT_LEN_UNITS2_DISPLAY, GMT_bi_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[-N%s[+|-]] [%s] [-V] [%s] [%s]\n\n", GMT_LEN_UNITS2_DISPLAY, GMT_bi_OPT, GMT_Rgeo_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -165,16 +165,10 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t        s = Ignore data record bitflags pertaining to data slopes (gradients).\n");
 	GMT_message (GMT, "\t      Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y].\n");
 	GMT_message (GMT, "\t      Note: Previous E77 information will be removed prior to processing this E77 information.\n");
-	GMT_message (GMT, "\t   g: Sample a GMT grid along track. (also see -n).\n");
+	GMT_message (GMT, "\t   g: Sample a GMT grid along track. (also see -n; use -R to select a sub-region).\n");
 	GMT_message (GMT, "\t      Append filename of the GMT grid.\n");
-	GMT_message (GMT, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n).\n");
-	GMT_message (GMT, "\t      Give filename and append comma-separated scale, mode, and optionally max latitude [%g].\n", GMT_IMG_MAXLAT_80);
-	GMT_message (GMT, "\t      The scale (0.1 or 1) is used to multiply after read; give mode as follows:\n");
-	GMT_message (GMT, "\t        0 = img file w/ no constraint code, interpolate to get data at track.\n");
-	GMT_message (GMT, "\t        1 = img file w/ constraints coded, interpolate to get data at track.\n");
-	GMT_message (GMT, "\t        2 = img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.\n");
-	GMT_message (GMT, "\t        3 = img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
-	GMT_message (GMT, "\t        For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
+	GMT_message (GMT, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n; use -R to select a sub-region).\n");
+	GMT_img_syntax (GMT);
 	GMT_message (GMT, "\t   n: Give filename with (rec_no, data) for a new column.  We expect a two-column file\n");
 	GMT_message (GMT, "\t      with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_message (GMT, "\t      If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.\n");
@@ -204,7 +198,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
 	GMT_message (GMT, "\t   m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [Default is -Nk].\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
-	GMT_explain_options (GMT, "VC0n" GMT_OPT("Q"));
+	GMT_explain_options (GMT, "RVC0n" GMT_OPT("Q"));
 	
 	return (EXIT_FAILURE);
 }
@@ -547,7 +541,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
 	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return (error);
 	
@@ -609,15 +603,20 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		In.use_corrections[MGD77_M77_SET] = In.use_corrections[MGD77_CDF_SET] = false;	/* Turn use of systematic corrections OFF */
 	}
 	else if (Ctrl->A.mode == MODE_g) {	/* Read regular GMT grid */
-
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
+		double wesn[4];
+		GMT_memset (wesn, 4, double);
+		if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->A.file, NULL)) == NULL) {	/* Get data */
 			Return (API->error);
 		}
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (Ctrl->A.mode == MODE_i) {	/* Read Sandwell/Smith IMG file */
+		double wesn[4];
+		GMT_memset (wesn, 4, double);
+		if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
 		if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_read_img (GMT, Ctrl->A.file, G, NULL, Ctrl->A.parameters[IMG_SCALE], lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], true);
+		GMT_read_img (GMT, Ctrl->A.file, G, wesn, Ctrl->A.parameters[IMG_SCALE], lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], true);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */

@@ -6,7 +6,7 @@ mgd77manage \- Manage the content of MGD77+ files
 BD(mgd77manage) IT(NGDC-ids) [ OPT(A)[BD(+)]BD(a)|BD(c)|BD(d)|BD(D)|BD(e)|BD(E)|BD(g)|BD(i)|BD(n)|BD(t)|BD(T)IT(fileinfo) ] 
 [ OPT(C)BD(f)|BD(g)|BD(e) ] [ OPT(D)IT(abbrev1),IT(abbrev2),...) ] [ OPT(E)IT(empty) ] [ OPT(F) ] 
 [ OPT(I)IT(abbrev)/IT(name)/IT(unit)/BD(t)/IT(scale)/IT(offset)/IT(comment) ] [ OPT(N)IT(unit) ] 
-[ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_n_OPT ]
+[ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_n_OPT ]
 .SH DESCRIPTION
 BD(mgd77manage) deals with maintaining extra custom columns in MGD77+ netCDF files.
 You can either delete one or more columns, add a new column, update an existing
@@ -131,6 +131,8 @@ one word (e.g., "Corrected Depth").
 .TP
 OPT(N)IT(unit)
 Append the distance unit (see UNITS). [Default is OPT(Nk) (km)].
+Only relevant when OPT(Ag)|BD(i) is selected.  
+#include "explain_-R.txt"
 Only relevant when OPT(Ag)|BD(i) is selected.  
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
