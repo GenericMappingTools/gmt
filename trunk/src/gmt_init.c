@@ -134,7 +134,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 	 * the variable <options>.  Only the common parameter options are covered
 	 */
 
-	char u, *GMT_choice[2] = {"OFF", "ON"};
+	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qncvld";
 	double s;
 	unsigned int k;
 
@@ -464,7 +464,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'V':	/* Verbose */
 
-			GMT_message (C, "\t-V Change the verbosity level (currently %d).\n", C->current.setting.verbose);
+			GMT_message (C, "\t-V Change the verbosity level (currently %c).\n", V_code[C->current.setting.verbose]);
 			GMT_message (C, "\t   Choose among 6 levels; each level adds more messages:\n");
 			GMT_message (C, "\t     q - Quiet, not even fatal error messages.\n");
 			GMT_message (C, "\t     n - Normal verbosity: only error messages.\n");
