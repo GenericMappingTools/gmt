@@ -5585,6 +5585,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 	static char *aux_names[N_MGD77_AUX] = {
 		"dist",
 		"azim",
+		"cc",
 		"vel",
 		"year",
 		"month",

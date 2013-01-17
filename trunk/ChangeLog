@@ -4,6 +4,8 @@
 
 2013-01-16	pwessel
 	* grdcontour.c:		Enabled time-annotations for grids with z = time.
+	* mgd77/mgd77list.c:	Added course change (cc) as new auxiliary field.
+				Added -Qc to set limits on cc for output.
 
 2013-01-15	pwessel
 	* gmtmath.c:		The MIN and MAX operators ignored NaNs, but result should
