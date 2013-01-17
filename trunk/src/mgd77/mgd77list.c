@@ -161,7 +161,7 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
 	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-H] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]] [-T[m|e]] [-V] [-W<Weight>] [-Z[+|-] [%s]\n\n", GMT_bo_OPT);
+	GMT_message (GMT, "\t[-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]] [-T[m|e]] [-V] [-W<Weight>] [-Z[+|-] [%s] -h\n\n", GMT_bo_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -187,6 +187,8 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     lat:     Latitude (formatted according to FORMAT_GEO_OUT).\n");
 	GMT_message (GMT, "\t     id:      Survey leg ID [TEXTSTRING].\n");
 	GMT_message (GMT, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
+	GMT_message (GMT, "\t     recno:   Record number.\n");
+	GMT_message (GMT, "\t   >Derived navigational information:\n");
 	GMT_message (GMT, "\t     dist:    Along-track distances (see -C for method and -N for units).\n");
 	GMT_message (GMT, "\t     azim:    Track azimuth (Degrees east from north).\n");
 	GMT_message (GMT, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
@@ -204,18 +206,19 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     ptc:     Position type code.\n");
 	GMT_message (GMT, "\t     bcc:     Bathymetric correction code.\n");
 	GMT_message (GMT, "\t     btc:     Bathymetric type code.\n");
-	GMT_message (GMT, "\t     carter:  Carter correction from twt.\n");
 	GMT_message (GMT, "\t     msens:   Magnetic sensor for residual field.\n");
 	GMT_message (GMT, "\t     msd:     Magnetic sensor depth/altitude (m).\n");
 	GMT_message (GMT, "\t     diur:    Magnetic diurnal correction (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     eot:     Eotvos correction (mGal).\n");
-	GMT_message (GMT, "\t     ceot:    Calculated Eotvos correction (mGal).\n");
-	GMT_message (GMT, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
+	GMT_message (GMT, "\t     eot:     Stored Eotvos correction (mGal).\n");
 	GMT_message (GMT, "\t     sln:     Seismic line number string [TEXTSTRING].\n");
 	GMT_message (GMT, "\t     sspn:    Seismic shot point number string [TEXTSTRING].\n");
-	GMT_message (GMT, "\t     weight:  Give weight specified in -W.\n");
 	GMT_message (GMT, "\t     nqc:     Navigation quality code.\n");
+	GMT_message (GMT, "\t   >Computed Information:\n");
+	GMT_message (GMT, "\t     carter:  Carter correction from twt (m).\n");
+	GMT_message (GMT, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
+	GMT_message (GMT, "\t     ceot:    Calculated Eotvos correction (mGal).\n");
+	GMT_message (GMT, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
+	GMT_message (GMT, "\t     weight:  Report weight as specified in -W [1].\n");
 	GMT_message (GMT, "\t  The data are written in the order specified in <dataflags>.\n");
 	GMT_message (GMT, "\t  Shortcut flags are:\n");
 	GMT_message (GMT, "\t     mgd77:   The full set of all 27 fields in the MGD77 specification.\n");
@@ -312,7 +315,9 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Set weight for these data [1].\n");
 	GMT_message (GMT, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
-	GMT_explain_options (GMT, "D0.");
+	GMT_explain_options (GMT, "D");
+	GMT_message (GMT, "\t-h Write header record with column information [Default is no header].\n");
+	GMT_explain_options (GMT, "0.");
 	
 	return (EXIT_FAILURE);
 }
@@ -731,7 +736,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
 	
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, this_cc;
-	double dist_scale, vel_scale, ds, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
+	double dist_scale, vel_scale, ds, ds0, dt, cumulative_dist, aux_dvalue[N_MGD77_AUX];
 	double i_sound_speed = 0.0, date = 0.0, g, m, z, v, twt, prev_az, next_az;
 	double *cumdist = NULL, *cumdist_off = NULL, *mtf_bak = NULL, *mtf_int = NULL;
 	double *dvalue[MGD77_MAX_COLS], *out = NULL;
@@ -762,6 +767,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 		{ "carter",  MGD77_AUX_CT, false, false, "Carter"},
 		{ "ngrav",   MGD77_AUX_GR, false, false, "IGF"},
 		{ "ceot",    MGD77_AUX_ET, false, false, "ceot"},
+		{ "recno",   MGD77_AUX_RN, true,  false, "recno"},
 		{ "ngdcid",  MGD77_AUX_ID, true,  false, "NGDC-ID"}
 	};
 	struct MGD77LIST_CTRL *Ctrl = NULL;
@@ -779,7 +785,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRb", "hm", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VRb", "h", options)) Return (API->error);
 	Ctrl = New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return (error);
 	
@@ -850,7 +856,10 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 	   or time) also implies the need for certain data columns such as time, lon, and lat.
 	 */
 	 
-	if (Ctrl->A.code[ADJ_GR] & 8 || auxlist[MGD77_AUX_ET].requested) auxlist[MGD77_AUX_AZ].requested = true;	/* Eotvos needs heading */
+	if (Ctrl->A.code[ADJ_GR] & 8 || auxlist[MGD77_AUX_ET].requested) {	/* Eotvos needs heading and speed */
+		auxlist[MGD77_AUX_AZ].requested = true;
+		auxlist[MGD77_AUX_SP].requested = true;
+	}
 	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > 1 || Ctrl->A.code[ADJ_DP] & 4 || Ctrl->A.code[ADJ_CT] >= 2 || Ctrl->A.code[ADJ_GR] > 1 || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested || auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested || auxlist[MGD77_AUX_DM].requested || auxlist[MGD77_AUX_HM].requested || auxlist[MGD77_AUX_DA].requested || auxlist[MGD77_AUX_MG].requested);
@@ -1032,7 +1041,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 		}
 		
-		if (!GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */
+		if (first_cruise && !GMT->common.b.active[GMT_OUT] && GMT->current.setting.io_header[GMT_OUT]) {	/* Write out header record */
 			fprintf (GMT->session.std[GMT_OUT], "# ");
 			for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
 				while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
@@ -1049,7 +1058,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			fprintf (GMT->session.std[GMT_OUT], "\n");
 		}
 
-		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Write segment header between each cruise */
+		if (n_paths > 1) {	/* Write segment header between each cruise */
 			sprintf (GMT->current.io.segment_header, "%s\n", list[argno]);
 			GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
 		}
@@ -1143,6 +1152,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 						aux_dvalue[MGD77_AUX_CC] = GMT->session.d_NaN;
 						prev_az = (auxlist[MGD77_AUX_AZ].requested) ? aux_dvalue[MGD77_AUX_AZ] : GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], false);
 					}
+					ds0 = dist_scale * GMT_distance (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0]);
 				}
 				else {		/* Need a previous point to calculate distance and heading */
 					if (lonlat_not_NaN && prevrec != UINTMAX_MAX) {	/* We have to records with OK lon,lat and can compute a distance from the previous OK point */
@@ -1169,16 +1179,17 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (auxlist[MGD77_AUX_SP].requested) {
 					if (rec == 0 || prevrec == UINTMAX_MAX) {	/* Initialize various counters */
 						dt = dvalue[t_col][1] - dvalue[t_col][0];
-						if (auxlist[MGD77_AUX_SP].requested) aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
+						aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds0 / dt;
 					}
 					else {		/* Need a previous point to calculate speed */
 						dt = dvalue[t_col][rec] - dvalue[t_col][prevrec];
-						if (auxlist[MGD77_AUX_SP].requested) aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
+						aux_dvalue[MGD77_AUX_SP] = (GMT_is_dnan (dt) || dt == 0.0) ? GMT->session.d_NaN : vel_scale * ds / dt;
 					}
 				}
 				if (lonlat_not_NaN) prevrec = rec;	/* This was a record with OK lon,lat; make it the previous point for distance calculations */
 			}
 			if (auxlist[MGD77_AUX_ET].requested) aux_dvalue[MGD77_AUX_ET] = MGD77_Eotvos (GMT, dvalue[y_col][rec], aux_dvalue[MGD77_AUX_SP], aux_dvalue[MGD77_AUX_AZ]);
+			if (auxlist[MGD77_AUX_RN].requested) aux_dvalue[MGD77_AUX_RN] = (double)rec;
 			
 			/* Check if rec no, time or distance falls outside specified ranges */
 		
@@ -1265,7 +1276,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					twt = 1000.0 * dvalue[twt_col][rec];
 					aux_dvalue[MGD77_AUX_CT] = MGD77_carter_correction (GMT, dvalue[x_col][rec], dvalue[y_col][rec], twt, &Carter);
 				}
-				if (negative_depth) aux_dvalue[MGD77_AUX_CT] = -aux_dvalue[MGD77_AUX_CT];
+				if (!negative_depth) aux_dvalue[MGD77_AUX_CT] = -aux_dvalue[MGD77_AUX_CT];	/* Since we report correction to be ADDED */
 			}
 
 			/* --------------------------------------------------------------------------------------------------- */
