@@ -161,6 +161,9 @@ International Gravity reference Field ("normal gravity") (in mGal).
 Field is selected based on the parameter Gravity Theoretical
 Formula Code in the cruise's MGD77 header.  If this is not set or is invalid we default to the IGF 1980.\"'
 Alternatively, specify the field directly using OPT(Af) (see that option for more details).
+.TP
+.B ceot
+Calculated Eotvos correction from navigation (in mGal).
 .br
 .sp
 The following short-hand flags are also recognized:
@@ -268,8 +271,11 @@ to use if you also have requested BD(ngrav) as an output column in OPT(F).
 OPT(Af2)[,IT(field)]
 returns the difference between BD(gobs) and BD(ngrav) (with optional IT(field) directive).
 .sp
-OPT(Af3)[,IT(field)]
+OPT(Af4)[,IT(field)]
 returns the combination of BD(gobs) + BD(eot) - BD(ngrav) (with optional IT(field) directive).
+.sp
+OPT(Af8)[,IT(field)]
+returns the combination of BD(gobs) + BD(pred_eot) - BD(ngrav) (with optional IT(field) directive).
 .TP
 OPT(Am)
 Determines how the BD(mag) column output is obtained.  There may be one or two

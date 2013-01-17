@@ -301,11 +301,11 @@ struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init 
  * structures are used to facilitate this process. */
 
 #ifdef USE_CM4
-#define N_MGD77_AUX	20		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
+#define N_MGD77_AUX	21		/* Number of auxilliary derived columns for MGD77 data, including optional CM4 */
 #else
-#define N_MGD77_AUX	19		/* Number of auxilliary derived columns for MGD77 data */
+#define N_MGD77_AUX	20		/* Number of auxilliary derived columns for MGD77 data */
 #endif
-#define N_GENERIC_AUX	4		/* Number of auxilliary derived columns for general files (dist, azim, vel) */
+#define N_GENERIC_AUX	4		/* Number of auxilliary derived columns for general files (dist, azim, cc, vel) */
 
 #define MGD77_AUX_DS	0	/* Distance */
 #define MGD77_AUX_AZ	1	/* Azimuth */
@@ -325,9 +325,10 @@ struct MGD77_CM4 {	/* For use with cm4field.c and initialized by MGD77_CM4_init 
 #define MGD77_AUX_MG	15	/* Mag reference field */
 #define MGD77_AUX_CT	16	/* Carter correction */
 #define MGD77_AUX_GR	17	/* Gravity reference field */
-#define MGD77_AUX_ID	18	/* Cruise ID */
+#define MGD77_AUX_ET	18	/* Calculated Eotvos correction */
+#define MGD77_AUX_ID	19	/* Cruise ID */
 #ifdef USE_CM4
-#define MGD77_AUX_CM	19	/* CM4 reference field */
+#define MGD77_AUX_CM	20	/* CM4 reference field */
 #endif
 
 struct MGD77_AUXLIST {
@@ -551,6 +552,7 @@ EXTERN_MSC double MGD77_utime2time (struct GMT_CTRL *C, struct MGD77_CONTROL *F,
 EXTERN_MSC double MGD77_time2utime (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double gmt_time);
 EXTERN_MSC double MGD77_rdc2dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, int64_t rd, double secs);
 EXTERN_MSC void MGD77_gcal_from_dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal);
+EXTERN_MSC double MGD77_Eotvos (struct GMT_CTRL *C, double lat, double velocity, double heading);
 
 #ifdef USE_CM4 
 EXTERN_MSC double MGD77_Calc_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, bool calc_date, struct MGD77_CM4 *CM4);

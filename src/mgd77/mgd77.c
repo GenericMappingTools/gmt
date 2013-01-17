@@ -5601,6 +5601,7 @@ void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises,
 		"igrf",
 		"carter",
 		"ngrav",
+		"ceot",
 		"ngdcid",
 	};
 
@@ -5875,4 +5876,12 @@ void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_C
 	CM4->CM4_S.nhmf[1] = 65;
 	CM4->CM4_DATA.pred[0] = CM4->CM4_DATA.pred[1] = CM4->CM4_DATA.pred[2] = CM4->CM4_DATA.pred[3] = true;
 	CM4->CM4_DATA.pred[4] = CM4->CM4_DATA.pred[5] = false;
+}
+
+double MGD77_Eotvos (struct GMT_CTRL *C, double lat, double velocity, double heading)
+{
+	/*	Given latitude *degree), velocity (m/s), and heading (degree), return Eotvos correction  */
+	double E;
+	E = (14.584247034 *cosd (lat) * sind (heading) + 0.0156960194805 * velocity) * velocity;
+	return (E);
 }
