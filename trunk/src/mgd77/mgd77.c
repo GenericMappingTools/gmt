@@ -2787,6 +2787,13 @@ int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int
      			return (MGD77_FILE_NOT_FOUND);
   		}
 	}
+	else if (rw == MGD77_UPDATE_MODE) {	/* Updating a file */
+		mode[0] = 'a';
+		if (MGD77_Get_Path (C, F->path, leg, F)) {
+   			GMT_report (C, GMT_MSG_NORMAL, "Cannot find leg %s\n", leg);
+     			return (MGD77_FILE_NOT_FOUND);
+  		}
+	}
 	else if (rw == MGD77_WRITE_MODE) {		/* Writing to a new file; leg is assumed to be complete name */
 		int k, has_suffix = MGD77_NOT_SET;
 		if (F->format == MGD77_FORMAT_ANY || F->format == MGD77_NOT_SET) {
@@ -4129,6 +4136,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		}
 		else {
 			if (!(opt->option == GMTAPI_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
+			if (opt->arg[0] == '=') continue;	/* Already dealt with file list */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
 			for (i = (int)strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
 			if (i == -1) {	/* No extension present */
@@ -4193,7 +4201,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_O
 		qsort (L, n, sizeof (char *), compare_L);
 		for (k = j = 1; j < n; j++) {
 			if (k != j) L[k] = L[j];
-			if (strcmp (L[k], L[k-1])) i++;
+			if (strcmp (L[k], L[k-1])) k++;
 		}
 		n = k;
 	}

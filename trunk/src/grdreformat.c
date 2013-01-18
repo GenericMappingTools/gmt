@@ -68,11 +68,11 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t<outgrid> is the new converted grid file.\n");
 	GMT_message (GMT, "\tscale and offset, if given, will multiply data by scale and add offset.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-N  Do NOT write the header (for native grids only - ignored otherwise).\n");
-	GMT_message (GMT, "\t\t  Useful when creating files to be used by grdraster.\n");
+	GMT_message (GMT, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
+	GMT_message (GMT, "\t   Useful when creating files to be used by grdraster.\n");
 	GMT_explain_options (GMT, "rfV.");
 
-	GMT_message (GMT, "\n	The following grid file formats are supported:\n");
+	GMT_message (GMT, "\nThe following grid file formats are supported:\n");
 	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {
 		if (!strstr (grdformats[i], "not supported"))
 			GMT_message (GMT, "\t%s\n", grdformats[i]);

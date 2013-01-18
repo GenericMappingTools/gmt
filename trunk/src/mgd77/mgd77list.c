@@ -1025,7 +1025,8 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 				pos++, kx++;
 			}
-			if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
+			// if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
+			if (kk > n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
 			c  = M.order[kk].set;
 			id = M.order[kk].item;
 			if (id == time_column)	{/* Special time formatting */
