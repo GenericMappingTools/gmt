@@ -3207,7 +3207,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("AINQSTVbfghios" GMT_OPT("FHMm"), opt->option)) continue;
+		if (strchr ("AINQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			decode_columns (GMT, opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol);
 			continue;
