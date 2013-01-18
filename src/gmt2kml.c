@@ -876,7 +876,11 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 			T = Din->table[tbl];	/* Current table */
 			if (T->file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
 				tabs (N++); printf ("<Folder>\n");
-				tabs (N); printf ("<name>%s</name>\n", T->file[GMT_IN]);
+				tabs (N); 
+				if (!strcmp (T->file[GMT_IN], "<stdin>"))
+					printf ("<name>stdin</name>\n");
+				else
+					printf ("<name>%s</name>\n", T->file[GMT_IN]);
 			}
 			for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
 				pnt_nr = 0;
