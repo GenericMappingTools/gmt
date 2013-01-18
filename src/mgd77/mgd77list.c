@@ -1025,17 +1025,16 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
 				pos++, kx++;
 			}
-			// if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
-			if (kk > n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
+			if (kk >= n_cols_to_process) continue;	/* Dont worry about helper columns that wont be printed */
 			c  = M.order[kk].set;
 			id = M.order[kk].item;
-			if (id == time_column)	{/* Special time formatting */
+			if (c == MGD77_M77_SET && id == time_column)	{/* Special time formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? M.time_format : GMT_IS_FLOAT;
 				t_pos = pos;	/* Output order of time */
 			}
-			else if (id == lon_column)	/* Special lon formatting */
+			else if (c == MGD77_M77_SET && id == lon_column)	/* Special lon formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? GMT_IS_LON : GMT_IS_FLOAT;
-			else if (id == lat_column)	/* Special lat formatting */
+			else if (c == MGD77_M77_SET && id == lat_column)	/* Special lat formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? GMT_IS_LAT : GMT_IS_FLOAT;
 			else 		/* Everything else is float (not true for the 3 strings though) */
 				GMT->current.io.col_type[GMT_OUT][pos] = GMT_IS_FLOAT;
@@ -1451,7 +1450,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					id = M.order[kk].item;
 					if (D->H.info[c].col[id].text)
 						for (ku = 0; ku < D->H.info[c].col[id].text && tvalue[kk][rec*D->H.info[c].col[id].text+ku]; ku++) fputc ((int)tvalue[kk][rec*D->H.info[c].col[id].text+ku], GMT->session.std[GMT_OUT]);
-					else if (id == time_column) {	/* Time */
+					else if (c == MGD77_M77_SET && id == time_column) {	/* Time */
 						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
 								date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
@@ -1473,14 +1472,15 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 				fprintf (GMT->session.std[GMT_OUT], "\n");
 			}
 			else {	/* Use GMT output machinery which can handle binary output, if requested */
-				unsigned int u_t_pos = t_pos;
 				for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {
 					while (kx < n_aux && aux[kx].pos == kk) {	/* Insert auxillary column */
 						out[pos] = aux_dvalue[aux[kx].type];
 						pos++, kx++;
 					}
 					if (kk >= n_cols_to_process) continue;
-					if (pos == u_t_pos) {	/* This is the time column */
+					c  = M.order[kk].set;
+					id = M.order[kk].item;
+					if (c == MGD77_M77_SET && id == time_column) {	/* This is the time column */
 						if (GMT->current.io.col_type[GMT_OUT][pos] == GMT_IS_FLOAT) {	/* fractional year */
 							if (need_date) {	/* Did not get computed already */
 								date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
