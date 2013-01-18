@@ -35,6 +35,10 @@
 #define GMT_IMG_MAXLAT_72	+72.0059773539
 #define GMT_IMG_MINLAT_80	-80.7380086280
 #define GMT_IMG_MAXLAT_80	+80.7380086280
+#define GMT_IMG_MINLAT_85	-85.0511287798
+#define GMT_IMG_MAXLAT_85	+85.0511287798
+
+NLAT 21600
 
 enum GMT_enum_img {
 	GMT_IMG_NLON_1M    = 21600U, /* At 1 min resolution */
@@ -43,6 +47,8 @@ enum GMT_enum_img {
 	GMT_IMG_NLAT_2M_72 = 6336U,  /* At 2 min resolution */
 	GMT_IMG_NLAT_1M_80 = 17280U, /* At 1 min resolution */
 	GMT_IMG_NLAT_2M_80 = 8640U,  /* At 2 min resolution */
+	GMT_IMG_NLAT_1M_85 = 21600U, /* At 1 min resolution */
+	GMT_IMG_NLAT_2M_85 = 10800U, /* At 2 min resolution */
 	GMT_IMG_ITEMSIZE   = 2U      /* Size of 2 byte short ints */
 };
 
