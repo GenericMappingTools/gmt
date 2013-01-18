@@ -1147,17 +1147,17 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (need_distances) {
 				lonlat_not_NaN = !( GMT_is_dnan (dvalue[x_col][rec]) || GMT_is_dnan (dvalue[y_col][rec]));
 				if (rec == 0) {	/* Azimuth at 1st point set to azimuth of 2nd point since there is no previous point */
-					if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], false);
+					if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], true);
 					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous azimuth but none is avaiable yet */
 						aux_dvalue[MGD77_AUX_CC] = GMT->session.d_NaN;
-						prev_az = (auxlist[MGD77_AUX_AZ].requested) ? aux_dvalue[MGD77_AUX_AZ] : GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], false);
+						prev_az = (auxlist[MGD77_AUX_AZ].requested) ? aux_dvalue[MGD77_AUX_AZ] : GMT_az_backaz (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0], true);
 					}
 					ds0 = dist_scale * GMT_distance (GMT, dvalue[x_col][1], dvalue[y_col][1], dvalue[x_col][0], dvalue[y_col][0]);
 				}
 				else {		/* Need a previous point to calculate distance and heading */
 					if (lonlat_not_NaN && prevrec != UINTMAX_MAX) {	/* We have to records with OK lon,lat and can compute a distance from the previous OK point */
 						ds = dist_scale * GMT_distance (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec]);
-						if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = (auxlist[MGD77_AUX_CC].requested) ? prev_az : GMT_az_backaz (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec], false);
+						if (auxlist[MGD77_AUX_AZ].requested) aux_dvalue[MGD77_AUX_AZ] = (auxlist[MGD77_AUX_CC].requested) ? prev_az : GMT_az_backaz (GMT, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[x_col][prevrec], dvalue[y_col][prevrec], true);
 						cumulative_dist += ds;
 						aux_dvalue[MGD77_AUX_DS] = cumulative_dist;
 					}
@@ -1167,7 +1167,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					}
 					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous and next azimuth */
 						if (rec < (D->H.n_records - 1)) {
-							next_az = GMT_az_backaz (GMT, dvalue[x_col][rec+1], dvalue[y_col][rec+1], dvalue[x_col][rec], dvalue[y_col][rec], false);
+							next_az = GMT_az_backaz (GMT, dvalue[x_col][rec+1], dvalue[y_col][rec+1], dvalue[x_col][rec], dvalue[y_col][rec], true);
 							aux_dvalue[MGD77_AUX_CC] = next_az - prev_az;
 							if (fabs (aux_dvalue[MGD77_AUX_CC]) > 180.0) aux_dvalue[MGD77_AUX_CC] = copysign (360.0 - fabs (aux_dvalue[MGD77_AUX_CC]), -aux_dvalue[MGD77_AUX_CC]);
 							prev_az = next_az;
