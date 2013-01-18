@@ -5894,5 +5894,5 @@ double MGD77_Eotvos (struct GMT_CTRL *C, double lat, double velocity, double hea
 	 * Since our v is in m/s and m/s / (1852/3600) gives knots we get the constants below. */
 	double E;
 	E = (14.584247034 *cosd (lat) * sind (heading) + 0.0156960194805 * velocity) * velocity;
-	return (-E);	/* Because MGD77 docs says their eot is to be ADDED */
+	return (E);
 }

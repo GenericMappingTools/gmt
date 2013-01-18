@@ -859,7 +859,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {	/* Must transform z grid */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting %g and multiplying grid by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
-		GMT_scale_and_offset_f (GMT, G->data, G->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
+		GMT_scale_and_offset_f (GMT, G->data, G->header->size, Ctrl->Z.scale, -Ctrl->Z.offset);
 		G->header->z_min = (G->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		G->header->z_max = (G->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
 		if (Ctrl->Z.scale < 0.0) double_swap (G->header->z_min, G->header->z_max);
