@@ -95,6 +95,7 @@
 
 #define MGD77_READ_MODE		0
 #define MGD77_WRITE_MODE	1
+#define MGD77_UPDATE_MODE	2
 
 #define MGD77_N_SETS		2
 #define MGD77_M77_SET		0

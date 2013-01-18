@@ -1484,7 +1484,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		/* OK, here we may either replace an exiting column or add a new one */
 		
-		if (MGD77_Open_File (GMT, list[argno], &In, MGD77_WRITE_MODE)) return (-1);	/* Only creates the full path to the new file */
+		if (MGD77_Open_File (GMT, list[argno], &In, MGD77_UPDATE_MODE)) return (-1);	/* Only creates the full path to the new file */
 	
 		MGD77_nc_status (GMT, nc_open (In.path, NC_WRITE, &In.nc_id));	/* Open the file */
 		MGD77_nc_status (GMT, nc_redef (In.nc_id));				/* Enter define mode */
