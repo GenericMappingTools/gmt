@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-18      pwessel
+        * mgd77/mgd77list.c:    The azimuth written was back-azimuth, not forward.
+
 2013-01-17	pwessel
 	* gmt_grdio.[ch]:	Add latest dimensions for Sandwell/Smith ~85N/S img files
 
