@@ -410,8 +410,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
 	GMT = GMT_begin_module (API, "dimfilter", &GMT_cpy);	/* Save current state */
+	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);
 
@@ -446,11 +446,11 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_memcpy (inc, Gin->header->inc, 2, double);
 
 		if (!full_360) {
-			if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO]) error = true;
-			if (Gout->header->wesn[XHI] > Gin->header->wesn[XHI]) error = true;
+			if (wesn[XLO] < Gin->header->wesn[XLO]) error = true;
+			if (wesn[XHI] > Gin->header->wesn[XHI]) error = true;
 		}
-		if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO]) error = true;
-		if (Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) error = true;
+		if (wesn[YLO] < Gin->header->wesn[YLO]) error = true;
+		if (wesn[YHI] > Gin->header->wesn[YHI]) error = true;
 
 		if (error) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
