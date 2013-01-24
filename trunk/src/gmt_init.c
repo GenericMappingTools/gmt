@@ -7320,7 +7320,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	return (error);
 }
 
-int gmt_get_unit (char c)
+int gmt_get_unit (struct GMT_CTRL *C, char c)
 {
 	/* Converts c, i, and p into 0,1,3 */
 
@@ -7332,6 +7332,12 @@ int gmt_get_unit (char c)
 		case 'i':	/* inch */
 			i = GMT_INCH;
 			break;
+#ifdef GMT_COMPAT
+		case 'm':	/* meter */
+			GMT_report (C, GMT_MSG_COMPAT, "Warning: Specifying a plot distance unit in meters is deprecated; use c, i, or p.\n");
+			i = GMT_M;
+			break;
+#endif
 		case 'p':	/* point */
 			i = GMT_PT;
 			break;
@@ -7393,7 +7399,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = (unsigned int)strlen (p);
-				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (p[len]) : -1;	/* Only -Sv|V takes unit */
+				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (C, p[len]) : -1;	/* Only -Sv|V takes unit */
 				if (j >= 0) { S->u = j; S->u_set = true; }
 				S->v.v_norm = (float)atof (&p[1]);
 				break;
@@ -7598,7 +7604,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((j = gmt_get_unit (text[k])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
+			if ((j = gmt_get_unit (C, text[k])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
 			col_off++;
 		}
 		else if (!text[k] || text[k] == '+') {	/* No size nor unit */
@@ -7618,7 +7624,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		j = 0;
-		if (text[1] && (j = gmt_get_unit (text[1])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
+		if (text[1] && (j = gmt_get_unit (C, text[1])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
 		col_off++;
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && (text[1] == '\n' || !text[1])) {	/* Symbol, but no size given (size assumed given on command line) */
@@ -7994,7 +8000,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 				for (j = one; text[j] && text[j] != 'n'; j++);
 				len = (int)strlen(text) - 1;
 				if (text[j] == 'n') {	/* Normalize option used */
-					k = gmt_get_unit (text[len]);
+					k = gmt_get_unit (C, text[len]);
 					if (k >= 0) { p->u = k; p->u_set = true; }
 					p->v.v_norm = (float)atof (&text[j+1]);
 					text[j] = 0;	/* Chop off the shrink part */
@@ -8009,7 +8015,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 					 */
 
 					if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
-						k = gmt_get_unit (text[len]);
+						k = gmt_get_unit (C, text[len]);
 						if (k >= 0) { p->u = k; p->u_set = true;}
 						text[len] = 0;
 					}
@@ -8133,6 +8139,12 @@ void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, 
 			*inch_to_unit = 72.0;
 			if (unit_name) strcpy (unit_name, "point");
 			break;
+#ifdef GMT_COMPAT
+		case GMT_M:
+			*inch_to_unit = 0.0254;
+			if (unit_name) strcpy (unit_name, "m");
+			break;
+#endif
 	}
 	*unit_to_inch = 1.0 / (*inch_to_unit);
 	*fwd_scale = 1.0 / C->current.proj.m_per_unit[unit];
@@ -8207,7 +8219,10 @@ int GMT_set_measure_unit (struct GMT_CTRL *C, char unit) {
 	/* Option to override the GMT measure unit default */
 	int k;
 
-	if ((k = gmt_get_unit (unit)) < 0) return (GMT_MAP_BAD_MEASURE_UNIT);
+	if ((k = gmt_get_unit (C, unit)) < 0) {
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Bad plot measure selected (%c); use c, i, or p.\n", unit);
+		return (GMT_MAP_BAD_MEASURE_UNIT);
+	}
 	C->current.setting.proj_length_unit = k;
 	return (GMT_NOERROR);
 }
