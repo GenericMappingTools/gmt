@@ -117,6 +117,13 @@ absolute value of their argument.
 #include "explain_float.txt"
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
+.SH STORE AND RECALL
+You may save intermediate results to a named variable that may be put on the stack at
+a later time.  This is useful if you need access to a computed quantity many times
+in your expression as it shortens the expression and improves readability.  To
+save a result you use the special operator BD(STO)@IT(label), where IT(label) is the
+name you choose to give the quantity. Note that BD(STO) leaves the stack unchanged.
+To put the stored result on the stack later, use BD(RCL)@IT(label).
 .SH MACROS
 Users may save their favorite operator combinations as macros via the file .grdmath
 in their current or user directory.  The file may contain any number of macros (one
@@ -154,7 +161,7 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.nc
 .sp
     grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
 .sp
-    grd2xyz z.nc -S > max.xyz
+    grd2xyz z.nc -s > max.xyz
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.

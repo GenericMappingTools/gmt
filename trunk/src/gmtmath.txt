@@ -122,6 +122,13 @@ absolute value of their argument.
 boundary conditions.
 .sp
 (7) BD(ROOTS) must be the last operator on the stack, only followed by BD(=).
+.SH STORE AND RECALL
+You may save intermediate results to a named variable that may be put on the stack at
+a later time.  This is useful if you need access to a computed quantity many times
+in your expression as it shortens the expression and improves readability.  To
+save a result you use the special operator BD(STO)@IT(label), where IT(label) is the
+name you choose to give the quantity. Note that BD(STO) leaves the stack unchanged.
+To put the stored result on the stack later, use BD(RCL)@IT(label).
 .SH MACROS
 Users may save their favorite operator combinations as macros via the file .gmtmath
 in their current or user directory.  The file may contain any number of macros (one
@@ -176,7 +183,7 @@ like to fit a the model y(t) = a + b*t + c*H(t-t0), where H is the Heaviside ste
 Then, you need a 4-column augmented table loaded with t in column 0 and your observed y(t) in column 3.
 The calculation becomes
 .sp
-    gmtmath -N4/1 -Aty.d -C0 1 ADD \-C2 1.55 STEPT ADD \-Ca LSQFIT \= solution.d
+    gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
 .sp
 Note we use the OPT(C) option to select which columns we are working on, then make active all the
 columns we need (here all of them, with OPT(Ca)) before calling BD(LSQFIT).  The second and fourth
@@ -184,7 +191,7 @@ columns (col numbers 1 and 3) are preloaded with t and y(t), respectively, the o
 a pre-calculated table with the augmented matrix [ A | b ] in a file (say lsqsys.d), the least squares
 solution is simply
 .sp
-    BD(gmtmath) OPT(T) lsqsys.d BD(LSQFIT \=) solution.d
+    gmtmath -T lsqsys.d LSQFIT = solution.d
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.

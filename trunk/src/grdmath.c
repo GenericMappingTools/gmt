@@ -54,9 +54,15 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 #define GRDMATH_ARG_IS_y_MATRIX		-17
 #define GRDMATH_ARG_IS_ASCIIFILE	-18
 #define GRDMATH_ARG_IS_SAVE		-19
+#define GRDMATH_ARG_IS_STORE		-50
+#define GRDMATH_ARG_IS_RECALL		-51
 #define GRDMATH_ARG_IS_BAD		-99
 
 #define GRDMATH_STACK_SIZE		100
+#define GRDMATH_STORE_SIZE		100
+
+#define GRDMATH_STORE_CMD		"STO@"
+#define GRDMATH_RECALL_CMD		"RCL@"
 
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -95,6 +101,11 @@ struct GRDMATH_STACK {
 	unsigned int alloc_mode;	/* 0 is not allocated, 1 is allocated in this program, 2 = allocated elsewhere */
 };
 
+struct GRDMATH_STORE {
+	char *label;	/* Name of this stored memory */
+	struct GRDMATH_STACK stored;
+};
+
 /* External math-related functions from gmt*.c not in standard gmt*.h files */
 
 void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -129,7 +140,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\tA, B, etc are grid files, constants, or symbols (see below).\n"
 		"\tThe stack can hold up to %d entries (given enough memory).\n", GRDMATH_STACK_SIZE);
 	GMT_message (GMT,
-		"\tTrigonometric operators expect radians.\n"
+		"\tTrigonometric operators expect radians unless noted otherwise.\n"
 		"\tThe operators and number of input and output arguments are:\n\n"
 		"\tName       #args   Returns\n"
 		"\t--------------------------\n");
@@ -145,7 +156,9 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\tY                      = grid with y-coordinates.\n"
 		"\tXn                     = grid with normalized [-1|+1] x-coordinates.\n"
 		"\tYn                     = grid with normalized [-1|+1] y-coordinates.\n"
-		"\n\tOPTIONS: (only used if no grid files are passed as arguments).\n\n");
+		"\n\tTo use macros for complicated expressions, see the grdmath man page.\n"
+		"\tStore stack to named variable via STO@<label> and recall via RCL@<label>.\n"
+		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t-M Handle map units in derivatives.  In this case, dx,dy of grid\n"
 		"\t   will be converted from degrees lon,lat into meters (Flat-earth approximation).\n"
@@ -233,6 +246,13 @@ struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Templ
 	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
 	New->data = GMT_memory_aligned (GMT, NULL, Template->header->size, float);
 	return (New);
+}
+
+int grdmath_find_stored_item (struct GMT_CTRL *GMT, struct GRDMATH_STORE *recall[], int n_stored, char *label)
+{
+	int k = 0;
+	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
+	return (k == n_stored ? -1 : k);
 }
 
 /* -----------------------------------------------------------------
@@ -2867,7 +2887,7 @@ void grd_ZDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, &info); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_grdmath_Ctrl (GMT, Ctrl); grdmath_free (GMT, stack, recall, &info); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *value, struct GMT_HASH *H)
 {
@@ -2883,6 +2903,8 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 
 	/* Next look for symbols with special meaning */
 
+	if (!(strncmp (opt->arg, GRDMATH_STORE_CMD, strlen(GRDMATH_STORE_CMD)))) return GRDMATH_ARG_IS_STORE;	/* store into mem location */
+	if (!(strncmp (opt->arg, GRDMATH_RECALL_CMD, strlen(GRDMATH_RECALL_CMD)))) return GRDMATH_ARG_IS_RECALL;	/* load from mem location */
 	if (!(strcmp (opt->arg, "PI") && strcmp (opt->arg, "pi"))) return GRDMATH_ARG_IS_PI;
 	if (!(strcmp (opt->arg, "E") && strcmp (opt->arg, "e"))) return GRDMATH_ARG_IS_E;
 	if (!strcmp (opt->arg, "EULER")) return GRDMATH_ARG_IS_EULER;
@@ -2928,13 +2950,17 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 	return GRDMATH_ARG_IS_BAD;
 }
 
-void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct GRDMATH_INFO *info) {
+void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct GRDMATH_STORE *recall[], struct GRDMATH_INFO *info) {
 	/* Free allocated memory before quitting */
 	unsigned int k;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
 		if (stack[k]->alloc_mode == 1) GMT_free_grid (GMT, &stack[k]->G, true);
 		GMT_free (GMT, stack[k]);
+	}
+	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
+		if (recall[k] && !recall[k]->stored.constant) GMT_free_grid (GMT, &recall[k]->stored.G, true);
+		GMT_free (GMT, recall[k]);
 	}
 	GMT_free_grid (GMT, &info->G, true);
 	GMT_free (GMT, info->grd_x);
@@ -2948,14 +2974,15 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int k, op = 0, new_stack = -1, rowx, colx, status, start;
-	unsigned int kk, nstack = 0, n_items = 0, this_stack, n_macros;
+	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, n_macros;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
 	bool error = false, subset;
-	char *in_file = NULL;
+	char *in_file = NULL, *label = NULL;
 	
 	uint64_t node, row, col;
 
 	struct GRDMATH_STACK *stack[GRDMATH_STACK_SIZE];
+	struct GRDMATH_STORE *recall[GRDMATH_STORE_SIZE];
 	struct GMT_GRID *G_in = NULL;
 
 	double value, x_noise, y_noise, off, scale;
@@ -2991,6 +3018,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
+	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
 	n_macros = gmt_load_macros (GMT, ".grdmath", &M);	/* Load in any macros */
@@ -3183,6 +3211,63 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				stack[nstack]->constant = true;
 				stack[nstack]->factor = special_symbol[GRDMATH_ARG_IS_PI-op];
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "%g ", stack[nstack]->factor);
+				nstack++;
+				continue;
+			}
+			else if (op == GRDMATH_ARG_IS_STORE) {
+				/* Duplicate stack into stored memory location associated with specified label */
+				int last = nstack - 1;
+				bool new = false;
+				if (nstack == 0) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
+					Return (EXIT_FAILURE);
+				}
+				label = &opt->arg[strlen(GRDMATH_STORE_CMD)];	/* Label name follows GRDMATH_STORE_CMD */
+				if (label[0] == '\0') {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to store or recall operator!\n");
+					Return (EXIT_FAILURE);
+				}
+				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) != -1) {
+					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell named %s is overwritten with new information\n", label);
+					if (!stack[last]->constant) GMT_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.G->header->size, float);
+				}
+				else {	/* Need new named storage place */
+					k = n_stored;
+					recall[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STORE);
+					recall[k]->label = strdup (label);
+					if (!stack[last]->constant) recall[k]->stored.G = GMT_duplicate_grid (API->GMT, stack[last]->G, true);
+					new = true;
+				}
+				recall[k]->stored.constant = stack[last]->constant;
+				recall[k]->stored.factor = stack[last]->factor;
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "[stored to %s] ", recall[n_stored]->label);
+				if (new) n_stored++;	/* We added a new item */
+				continue;	/* Just go back and process next item */
+			}
+			else if (op == GRDMATH_ARG_IS_RECALL) {
+				/* Add to stack from stored memory location */
+				label = &opt->arg[strlen(GRDMATH_RECALL_CMD)];	/* Label that follows GRDMATH_RECALL_CMD */
+				if (label[0] == '\0') {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to store or recall operator!\n");
+					Return (EXIT_FAILURE);
+				}
+				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
+					Return (EXIT_FAILURE);
+				}
+				if (recall[k]->stored.constant) {	/* Place a stored constant on the stack */
+					stack[nstack]->constant = true;
+					stack[nstack]->factor = recall[k]->stored.factor;
+				}
+				else {	/* Place the stored grid on the stack */
+					stack[nstack]->constant = false;
+					if (!stack[nstack]->G) {
+						stack[nstack]->G = alloc_stack_grid (GMT, info.G);
+						stack[nstack]->alloc_mode = 1;
+					}
+					GMT_memcpy (stack[nstack]->G->data, recall[k]->stored.G->data, info.G->header->size, float);
+				}
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "@%s ", recall[k]->label);
 				nstack++;
 				continue;
 			}
