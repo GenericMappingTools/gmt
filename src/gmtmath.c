@@ -49,9 +49,15 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 #define GMTMATH_ARG_IS_N	-9
 #define GMTMATH_ARG_IS_T_MATRIX	-10
 #define GMTMATH_ARG_IS_t_MATRIX	-11
+#define GMTMATH_ARG_IS_STORE	-50
+#define GMTMATH_ARG_IS_RECALL	-51
 #define GMTMATH_ARG_IS_BAD	-99
 
 #define GMTMATH_STACK_SIZE	100
+#define GMTMATH_STORE_SIZE	100
+
+#define GMTMATH_STORE_CMD	"STO@"
+#define GMTMATH_RECALL_CMD	"RCL@"
 
 #define COL_T	0	/* These are the first and 2nd columns in the Time structure */
 #define COL_TN	1
@@ -112,6 +118,11 @@ struct GMTMATH_STACK {
 	bool constant;			/* true if a constant (see factor) and S == NULL */
 	double factor;			/* The value if constant is true */
 	unsigned int alloc_mode;	/* 0 is not allocated, 1 is allocated in this program, 2 = allocated elsewhere */
+};
+
+struct GMTMATH_STORED {
+	char *label;	/* Name of this stored memory */
+	struct GMTMATH_STACK stored;
 };
 
 void *New_gmtmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -177,6 +188,13 @@ void decode_columns (struct GMT_CTRL *GMT, char *txt, bool *skip, unsigned int n
 			for (i = start; i <= stop; i++) skip[i] = false;
 		}
 	}
+}
+
+int gmtmath_find_stored_item (struct GMT_CTRL *GMT, struct GMTMATH_STORED *recall[], int n_stored, char *label)
+{	/* Linear search to find the named storage item */
+	int k = 0;
+	while (k < n_stored && strcmp (recall[k]->label, label)) k++;
+	return (k == n_stored ? -1 : k);
 }
 
 /* ---------------------- start convenience functions --------------------- */
@@ -341,7 +359,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\tTo read stdin give filename as STDIN (which can appear more than once).\n"
 		"\tThe stack can hold up to %d entries (given enough memory).\n", GMTMATH_STACK_SIZE);
 	GMT_message (GMT,
-		"\tTrigonometric operators expect radians.\n"
+		"\tTrigonometric operators expect radians unless noted otherwise.\n"
 		"\tThe operators and number of input and output arguments:\n\n"
 		"\tName       #args   Returns\n"
 		"\t--------------------------\n");
@@ -355,6 +373,8 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\tN                   = number of records.\n"
 		"\tT                   = table with t-coordinates.\n"
 		"\tTn                  = table with normalized [-1 to +1] t-coordinates.\n"
+		"\n\tTo use macros for complicated expressions, see the gmtmath man page.\n"
+		"\tStore stack to named variable via STO@<label> and recall via RCL@<label>.\n"
 		"\n\tOPTIONS:\n\n"
 		"\t-A Require -N and will initialize table with file <ftable> containing t and f(t) only.\n"
 		"\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1.\n"
@@ -2853,10 +2873,11 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 #include "gmtmath.h"
 
 #define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) { if (stack[i]->alloc_mode == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]->D); else if (stack[i]->alloc_mode == 1) GMT_free_dataset (GMT, &stack[i]->D); GMT_free (GMT, stack[i]); } }
+#define Free_Store { for (i = 0; i < GMTMATH_STORE_SIZE; i++) { if (recall[i] && !recall[i]->stored.constant) { GMT_free_dataset (GMT, &recall[i]->stored.D); GMT_free (GMT, recall[i]); } } }
 #define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
-#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
+#define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Store; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
 
 int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct GMT_HASH *H) {
 	unsigned int expect;
@@ -2875,6 +2896,8 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	/* Next look for symbols with special meaning */
 
 	if (!(strcmp (txt, "STDIN"))) return GMTMATH_ARG_IS_FILE;	/* read from stdin */
+	if (!(strncmp (txt, GMTMATH_STORE_CMD, strlen(GMTMATH_STORE_CMD)))) return GMTMATH_ARG_IS_STORE;	/* store into mem location */
+	if (!(strncmp (txt, GMTMATH_RECALL_CMD, strlen(GMTMATH_RECALL_CMD)))) return GMTMATH_ARG_IS_RECALL;	/* load from mem location */
 	if (!(strcmp (txt, "PI") && strcmp (txt, "pi"))) return GMTMATH_ARG_IS_PI;
 	if (!(strcmp (txt, "E") && strcmp (txt, "e"))) return GMTMATH_ARG_IS_E;
 	if (!strcmp (txt, "EULER")) return GMTMATH_ARG_IS_EULER;
@@ -2921,7 +2944,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int i, k, op = 0;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
-	unsigned int j, n_columns = 0, use_t_col = 0, nstack = 0, kk;
+	unsigned int j, n_columns = 0, use_t_col = 0, nstack = 0, n_stored = 0, kk;
 	bool error = false, set_equidistant_t = false;
 	bool read_stdin = false, t_check_required = true, got_t_from_file = false, done;
 	uint64_t row, n_records, n_rows = 0, seg;
@@ -2931,12 +2954,13 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	double t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
-	char *outfile = NULL;
+	char *outfile = NULL, *label = NULL;
 #include "gmtmath_op.h"
 
 	void (*call_operator[GMTMATH_N_OPERATORS]) (struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int);
 	
 	struct GMTMATH_STACK *stack[GMTMATH_STACK_SIZE];
+	struct GMTMATH_STORED *recall[GMTMATH_STORE_SIZE];
 	struct GMT_DATASET *A_in = NULL, *D_stdin = NULL, *D_in = NULL;
 	struct GMT_DATASET *T_in = NULL, *Template = NULL, *Time = NULL, *R = NULL;
 	struct GMT_TABLE *rhs = NULL, *D = NULL, *I = NULL;
@@ -3003,6 +3027,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	
 	GMT_memset (&info, 1, struct GMTMATH_INFO);
+	GMT_memset (recall, GMTMATH_STORE_SIZE, struct GMTMATH_STORED *);
 
 	t_check_required = !Ctrl->T.notime;	/* Turn off default GMT NaN-handling in t column */
 
@@ -3236,6 +3261,64 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				stack[nstack]->constant = true;
 				stack[nstack]->factor = special_symbol[GMTMATH_ARG_IS_PI-op];
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "%g ", stack[nstack]->factor);
+				nstack++;
+				continue;
+			}
+			else if (op == GMTMATH_ARG_IS_STORE) {
+				/* Duplicate stack into stored memory location */
+				int last = nstack - 1;
+				bool new = false;
+				if (nstack == 0) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
+					Return (EXIT_FAILURE);
+				}
+				label = &opt->arg[strlen(GMTMATH_STORE_CMD)];	/* Label that follows GMTMATH_STORE_CMD */
+				if (label[0] == '\0') {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to store or recall operator!\n");
+					Return (EXIT_FAILURE);
+				}
+				if ((k = gmtmath_find_stored_item (GMT, recall, n_stored, label)) != -1) {
+					if (!stack[last]->constant) for (j = 0; j < n_columns; j++) load_column (recall[k]->stored.D, j, stack[last]->D->table[0], j);
+					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell named %s is overwritten with new information\n", label);
+				}
+				else {	/* Need new named storage place */
+					k = n_stored;
+					recall[k] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STORED);
+					recall[k]->label = strdup (label);
+					if (!stack[last]->constant) recall[k]->stored.D = GMT_duplicate_dataset (GMT, stack[last]->D, stack[last]->D->n_columns, GMT_ALLOC_NORMAL);
+					new = true;
+				}
+				recall[k]->stored.constant = stack[last]->constant;
+				recall[k]->stored.factor = stack[last]->factor;
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "[stored to %s] ", recall[k]->label);
+				if (new) n_stored++;	/* We added a new item */
+				continue;	/* Just go back and process next item */
+			}
+			else if (op == GMTMATH_ARG_IS_RECALL) {
+				/* Add to stack from stored memory location */
+				label = &opt->arg[strlen(GMTMATH_RECALL_CMD)];	/* Label that follows GMTMATH_RECALL_CMD */
+				if (label[0] == '\0') {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to store or recall operator!\n");
+					Return (EXIT_FAILURE);
+				}
+				if ((k = gmtmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
+					Return (EXIT_FAILURE);
+				}
+				if (recall[k]->stored.constant) {	/* Place a stored constant on the stack */
+					stack[nstack]->constant = true;
+					stack[nstack]->factor = recall[k]->stored.factor;
+				}
+				else {/* Place the stored dataset on the stack */
+					stack[nstack]->constant = false;
+					if (!stack[nstack]->D) {
+						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+						stack[nstack]->alloc_mode = 1;
+					}
+					for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
+					GMT_set_tbl_minmax (GMT, stack[nstack]->D->table[0]);
+				}
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "@%s ", recall[k]->label);
 				nstack++;
 				continue;
 			}

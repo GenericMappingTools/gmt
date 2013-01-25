@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-24      pwessel
+	* gmtmath.c:		Introduced capability to store & recall intermediate
+				calculations to * from named memory locations.
+	* grdmath.c		---"---
+
 2013-01-18      pwessel
         * mgd77/mgd77list.c:    The azimuth written was back-azimuth, not forward.
 
@@ -12,7 +17,7 @@
 	* grdcontour.c:		Enabled time-annotations for grids with z = time.
 	* mgd77/mgd77list.c:	Added course change (cc) as new auxiliary field.
 				Added -Qc to set limits on cc for output.
-				Added recno (recordn number) as new auxiliary field.
+				Added recno (record number) as new auxiliary field.
 				Added ceot (calculated Eotvos) as new auxiliary field
 				and -Af8 to recompute faa based on gobs, ceot, and ngrav.
 
