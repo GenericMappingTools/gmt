@@ -4,7 +4,9 @@
 
 2013-01-24      pwessel
 	* gmtmath.c:		Introduced capability to store & recall intermediate
-				calculations to * from named memory locations.
+				calculations from named memory locations, using new
+				operators STO@<label> and [RCL]@<label>, with CLR*<label>
+				used to free up memory.
 	* grdmath.c		---"---
 
 2013-01-18      pwessel

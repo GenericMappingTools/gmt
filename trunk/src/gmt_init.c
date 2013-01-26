@@ -7956,7 +7956,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case 'v':
 			p->symbol = GMT_SYMBOL_VECTOR;
 #ifdef GMT_COMPAT
-			if (strchr (text, '+')) {	/* Check if new syntax before decoding */
+			if (strchr (text, '+') || !p->v.parsed_v4) {	/* Check if new syntax before decoding */
 #endif
 				if (GMT_parse_vector (C, text, p)) {	/* Error decoding new vector syntax */
 					GMT_report (C, GMT_MSG_NORMAL, "Syntax error -S%c option\n", symbol_type);
