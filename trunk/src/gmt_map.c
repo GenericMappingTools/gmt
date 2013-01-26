@@ -6998,7 +6998,7 @@ void GMT_init_ellipsoid (struct GMT_CTRL *C)
 	C->current.proj.half_ECC = 0.5 * C->current.proj.ECC;
 	if (C->current.proj.ECC != 0) {
 		assert ( C->current.proj.ECC != 0 ); /* or division by 0 below */
-		C->current.proj.i_half_ECC = 0.5 / C->current.proj.ECC;
+		C->current.proj.i_half_ECC = 0.5 / C->current.proj.ECC;	/* Only used in inverse Alberts when e > 0 anyway */
 	}
 	C->current.proj.EQ_RAD = C->current.setting.ref_ellipsoid[C->current.setting.proj_ellipsoid].eq_radius;
 	C->current.proj.i_EQ_RAD = 1.0 / C->current.proj.EQ_RAD;
