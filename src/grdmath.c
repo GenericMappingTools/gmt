@@ -56,6 +56,7 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 #define GRDMATH_ARG_IS_SAVE		-19
 #define GRDMATH_ARG_IS_STORE		-50
 #define GRDMATH_ARG_IS_RECALL		-51
+#define GRDMATH_ARG_IS_CLEAR		-52
 #define GRDMATH_ARG_IS_BAD		-99
 
 #define GRDMATH_STACK_SIZE		100
@@ -63,6 +64,7 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 
 #define GRDMATH_STORE_CMD		"STO@"
 #define GRDMATH_RECALL_CMD		"RCL@"
+#define GRDMATH_CLEAR_CMD		"CLR@"
 
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -156,8 +158,8 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\tY                      = grid with y-coordinates.\n"
 		"\tXn                     = grid with normalized [-1|+1] x-coordinates.\n"
 		"\tYn                     = grid with normalized [-1|+1] y-coordinates.\n"
-		"\n\tTo use macros for complicated expressions, see the grdmath man page.\n"
-		"\tStore stack to named variable via STO@<label> and recall via RCL@<label>.\n"
+		"\n\tUse macros for frequently used long expressions; see the grdmath man page.\n"
+		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
 		"\n\tOPTIONS: (only use -R|I|r|f if no grid files are passed as arguments).\n\n");
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t-M Handle map units in derivatives.  In this case, dx,dy of grid\n"
@@ -2903,8 +2905,10 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 
 	/* Next look for symbols with special meaning */
 
-	if (!(strncmp (opt->arg, GRDMATH_STORE_CMD, strlen(GRDMATH_STORE_CMD)))) return GRDMATH_ARG_IS_STORE;	/* store into mem location */
-	if (!(strncmp (opt->arg, GRDMATH_RECALL_CMD, strlen(GRDMATH_RECALL_CMD)))) return GRDMATH_ARG_IS_RECALL;	/* load from mem location */
+	if (!strncmp (opt->arg, GRDMATH_STORE_CMD, strlen(GRDMATH_STORE_CMD))) return GRDMATH_ARG_IS_STORE;	/* store into mem location @<label> */
+	if (!strncmp (opt->arg, GRDMATH_CLEAR_CMD, strlen(GRDMATH_CLEAR_CMD))) return GRDMATH_ARG_IS_CLEAR;	/* clear mem location @<label> */
+	if (!strncmp (opt->arg, GRDMATH_RECALL_CMD, strlen(GRDMATH_RECALL_CMD))) return GRDMATH_ARG_IS_RECALL;	/* load from mem location @<label> */
+	if (opt->arg[0] == '@') return GRDMATH_ARG_IS_RECALL;							/* load from mem location @<label> */
 	if (!(strcmp (opt->arg, "PI") && strcmp (opt->arg, "pi"))) return GRDMATH_ARG_IS_PI;
 	if (!(strcmp (opt->arg, "E") && strcmp (opt->arg, "e"))) return GRDMATH_ARG_IS_E;
 	if (!strcmp (opt->arg, "EULER")) return GRDMATH_ARG_IS_EULER;
@@ -2948,6 +2952,16 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 
 	GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: %s is not a number, operator or file name\n", opt->arg);
 	return GRDMATH_ARG_IS_BAD;
+}
+
+char *grdmath_setlabel (struct GMT_CTRL *GMT, char *arg)
+{
+	char *label = strchr (arg, '@') + 1;	/* Label that follows @ */
+	if (!label || label[0] == '\0') {
+		GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to STO|RCL|CLR operator!\n");
+		return (NULL);
+	}
+	return (label);
 }
 
 void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct GRDMATH_STORE *recall[], struct GRDMATH_INFO *info) {
@@ -3222,13 +3236,9 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 					GMT_report (GMT, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
 					Return (EXIT_FAILURE);
 				}
-				label = &opt->arg[strlen(GRDMATH_STORE_CMD)];	/* Label name follows GRDMATH_STORE_CMD */
-				if (label[0] == '\0') {
-					GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to store or recall operator!\n");
-					Return (EXIT_FAILURE);
-				}
+				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
 				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) != -1) {
-					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell named %s is overwritten with new information\n", label);
+					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell %d named %s is overwritten with new information\n", k, label);
 					if (!stack[last]->constant) GMT_memcpy (recall[k]->stored.G->data, stack[last]->G->data, info.G->header->size, float);
 				}
 				else {	/* Need new named storage place */
@@ -3237,20 +3247,17 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 					recall[k]->label = strdup (label);
 					if (!stack[last]->constant) recall[k]->stored.G = GMT_duplicate_grid (API->GMT, stack[last]->G, true);
 					new = true;
+					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell %d named %s is created with new information\n", k, label);
 				}
 				recall[k]->stored.constant = stack[last]->constant;
 				recall[k]->stored.factor = stack[last]->factor;
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "[stored to %s] ", recall[n_stored]->label);
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "[--> %s] ", recall[n_stored]->label);
 				if (new) n_stored++;	/* We added a new item */
 				continue;	/* Just go back and process next item */
 			}
 			else if (op == GRDMATH_ARG_IS_RECALL) {
 				/* Add to stack from stored memory location */
-				label = &opt->arg[strlen(GRDMATH_RECALL_CMD)];	/* Label that follows GRDMATH_RECALL_CMD */
-				if (label[0] == '\0') {
-					GMT_report (GMT, GMT_MSG_NORMAL, "No label appended to store or recall operator!\n");
-					Return (EXIT_FAILURE);
-				}
+				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
 				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (EXIT_FAILURE);
@@ -3270,6 +3277,17 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "@%s ", recall[k]->label);
 				nstack++;
 				continue;
+			}
+			else if (op == GRDMATH_ARG_IS_CLEAR) {
+				/* Free stored memory location */
+				if ((label = grdmath_setlabel (GMT, opt->arg)) == NULL) Return (EXIT_FAILURE);
+				if ((k = grdmath_find_stored_item (GMT, recall, n_stored, label)) == -1) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
+					Return (EXIT_FAILURE);
+				}
+				if (recall[k]->stored.G) GMT_free_grid (GMT, &recall[k]->stored.G, true);
+				GMT_free (GMT, recall[k]);
+				while (k && k == (n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 			}
 
 			/* Here we need a matrix */

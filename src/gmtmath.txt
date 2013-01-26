@@ -15,12 +15,14 @@ on one or more table data files or constants using Reverse Polish Notation (RPN)
 syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions
 may therefore be evaluated; the final result is written to an output file
 [or standard output].
-When two data tables are on the stack, each element in file A is modified by the corresponding element in file B.
-However, some operators only require one operand (see below).  If no data tables are used in the
-expression then options OPT(T), OPT(N) can be set (and optionally GMT_bo_OPT to indicate the data type).
-If STDIN is given, <stdin> will be read and placed on the stack as if a file with that content
+Data operations are element-by-element, not matrix manipulations (except where noted).
+Some operators only require one operand (see below).  If no data tables are used in the
+expression then options OPT(T), OPT(N) can be set (and optionally GMT_bo_OPT to indicate the data type for binary tables).
+If STDIN is given, the standard input will be read and placed on the stack as if a file with that content
 had been given on the command line.  By default, all columns except the
 "time" column are operated on, but this can be changed (see OPT(C)).
+Complicated or frequently occurring expressions may be coded
+as a macro for future use or stored and recalled via named memory locations.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
@@ -122,13 +124,7 @@ absolute value of their argument.
 boundary conditions.
 .sp
 (7) BD(ROOTS) must be the last operator on the stack, only followed by BD(=).
-.SH STORE AND RECALL
-You may save intermediate results to a named variable that may be put on the stack at
-a later time.  This is useful if you need access to a computed quantity many times
-in your expression as it shortens the expression and improves readability.  To
-save a result you use the special operator BD(STO)@IT(label), where IT(label) is the
-name you choose to give the quantity. Note that BD(STO) leaves the stack unchanged.
-To put the stored result on the stack later, use BD(RCL)@IT(label).
+#include "explain_sto_rcl_clr.txt"
 .SH MACROS
 Users may save their favorite operator combinations as macros via the file .gmtmath
 in their current or user directory.  The file may contain any number of macros (one
@@ -167,6 +163,12 @@ To take the 1-column data set ages.d and calculate the modal value and assign it
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 .sp
     gmtmath -Tt.d T DILOG = dilog.d
+.sp
+.sp
+To demonstrate the use of stored variables, consider this sum of the first 3 cosine harmonics where
+we store and repeatedly recall the trigonometric argument (2*pi*T/360):
+.sp
+    gmtmath -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD @kT 3 MUL COS ADD = harmonics.d
 .sp
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no input
 files) and calculate arbitrary expressions, use the OPT(Q) option.

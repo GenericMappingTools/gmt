@@ -11,10 +11,12 @@ BD(grdmath) will perform operations like add, subtract, multiply, and divide
 on one or more grid files or constants using Reverse Polish Notation (RPN)
 syntax (e.g., Hewlett-Packard calculator-style).  Arbitrarily complicated expressions
 may therefore be evaluated; the final result is written to an output grid file.
-When two grids are on the stack, each element in file A is modified by the corresponding element in file B.
-However, some operators only require one operand (see below).  If no grid files are used in the
+Grid operations are element-by-element, not matrix manipulations.
+Some operators only require one operand (see below).  If no grid files are used in the
 expression then options OPT(R), OPT(I) must be set (and optionally GMT_r_OPT).  The expression
-BD(=) IT(outgrdfile) can occur as many times as the depth of the stack allows.
+BD(=) IT(outgrdfile) can occur as many times as the depth of the stack allows in order to
+save intermediate results.  Complicated or frequently occurring expressions may be coded
+as a macro for future use or stored and recalled via named memory locations.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
@@ -117,13 +119,7 @@ absolute value of their argument.
 #include "explain_float.txt"
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"
-.SH STORE AND RECALL
-You may save intermediate results to a named variable that may be put on the stack at
-a later time.  This is useful if you need access to a computed quantity many times
-in your expression as it shortens the expression and improves readability.  To
-save a result you use the special operator BD(STO)@IT(label), where IT(label) is the
-name you choose to give the quantity. Note that BD(STO) leaves the stack unchanged.
-To put the stored result on the stack later, use BD(RCL)@IT(label).
+#include "explain_sto_rcl_clr.txt"
 .SH MACROS
 Users may save their favorite operator combinations as macros via the file .grdmath
 in their current or user directory.  The file may contain any number of macros (one
@@ -162,6 +158,11 @@ To extract the locations of local maxima that exceed 100 mGal in the file faa.nc
     grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
 .sp
     grd2xyz z.nc -s > max.xyz
+.sp
+To demonstrate the use of named variables, consider this radial wave where we store
+and recall the normalized radial arguments in radians:
+.sp
+    grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 .SH REFERENCES
 Abramowitz, M., and I. A. Stegun, 1964, IT(Handbook of Mathematical
 Functions), Applied Mathematics Series, vol. 55, Dover, New York.

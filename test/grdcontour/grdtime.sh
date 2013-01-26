@@ -15,5 +15,5 @@ grdcontour tsu_chile60.nc -J -A1+f9p -C0.5 -L5.25/50 -GlZ-/LT -O -K -Wc0.25p,- -
 grdcontour tsu_chile60.nc -J -A1+f10p+v -L4.75/5.25 -GlZ-/LT -O -K -fg,T \
 	--TIME_EPOCH=1960-05-22T19:11:17.0 --TIME_UNIT=hh:mm \
 	--FORMAT_DATE_MAP=yyyy/mm/dd --FORMAT_CLOCK_MAP=hh:mm >> $ps
-echo 74:30W 39:30S | psxy -R -J -O -K -Sa0.1i -Gblack >> $ps
-pscoast -Rtsu_chile60.nc -J -O -Ggray -Baf --FORMAT_GEO_MAP=dddF >> $ps
+echo 74:30W 39:30S | psxy -Rtsu_chile60.nc -J -O -K -Sa0.1i -Gblack >> $ps
+pscoast -R -J -O -Ggray -Baf --FORMAT_GEO_MAP=dddF >> $ps
