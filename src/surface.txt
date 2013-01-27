@@ -6,7 +6,7 @@ surface \- Grid table data using adjustable tension continuous curvature splines
 BD(surface) [ IT(table) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)IT(aspect_ratio) ] 
 [ OPT(C)IT(convergence_limit) ] [ OPT(Ll)IT(lower) ] [ OPT(Lu)IT(upper) ] [ OPT(N)IT(max_iterations) ] [ OPT(Q) ] 
 [ OPT(S)IT(search_radius)[BD(m)|BD(s)] ] [ OPT(T)IT(tension_factor)[BD(i)|BD(b)] ] [ GMT_V_OPT ] 
-[ OPT(Z)IT(over-relaxation_factor) ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
+[ OPT(Z)IT(over-relaxation_factor) ] [ GMT_a_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(surface) reads randomly-spaced (x,y,z) triples from standard input [or IT(table)] and produces
 a binary grid file of gridded values z(x,y) by solving:
@@ -83,6 +83,7 @@ Over-relaxation factor.  This parameter is used to accelerate the convergence; i
 values overestimate the incremental changes during convergence, and will reach a solution more rapidly but may
 become unstable.  If you use a large value for this factor, it is a good idea to monitor each iteration
 with the OPT(Vl) option.  [Default = 1.4 converges quickly and is almost always stable.]
+#include "explain_-aspatial.txt"
 #include "explain_-bi.txt"
 [Default is 3 input columns].
 #include "explain_-f.txt"
