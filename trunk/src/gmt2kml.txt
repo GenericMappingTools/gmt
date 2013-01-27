@@ -81,12 +81,12 @@ To turn off icons entirely (e.g., when just wanting a text label), use OPT(I)-.
 OPT(K)
 Allow more KML code to be appended to the output later [finalize the KML file].
 .TP
-OPT(L)IT(col1:name1),IT(col2:name2),...
-Extended data given.  Append one or more strings of the form IT(col):IT(name) separated by commas.
-We will expect the listed data columns to exist in the input and they will be encoded in the KML file as
+OPT(L)IT(name1),IT(name2),...
+Extended data given.  Append one or more column names separated by commas.
+We will expect the listed data columns to exist in the input immediately following the data coordinates and they will be encoded in the KML file as
 Extended Data sets, whose attributes will be available in the Google Earth balloon when the item is selected.
 .TP
-OPT(N)[+|IT(name_template)|IT(name)]
+OPT(N)[-|+|IT(name_template)|IT(name)]
 By default, if segment headers contain a OPT(L)"label string" then we use that for the name of
 the KML feature (polygon, line segment or set of symbols). Default names for these segments are "Line %d" and
 "Point Set %d", depending on the feature, where %d is a sequence number of line segments within a file.
@@ -94,10 +94,12 @@ Each point within a line segment will be named after the line segment plus a seq
 Default is simply "Point %d".
 .sp
 Alternatively, select one of these options:
-(1) append BD(+) to supply individual symbol labels directly at the end of the data record,
-(2) append a string that may include %d or a similar integer format to assign unique name IDs for each feature,
+(1) append BD(-) to supply individual symbol labels (single word) via the field immediately following the data coordinates,
+(2) append BD(+) to supply individual symbol labels as the rest the end of the data record following the data coordinates,
+(3) append a string that may include %d or a similar integer format to assign unique name IDs for each feature,
 with the segment number (for lines and polygons) or point number (symbols) appearing where %d is placed,
-(3) give no arguments to turn symbol labeling off; line segments will still be named.
+(4) give no arguments to turn symbol labeling off; line segments will still be named.
+Note: if OPT(N-) is used with OPT(L) then the label must appear before the extended data columns.
 .TP
 OPT(O)
 Appended KML code to an existing KML file [initialize a new KML file].
