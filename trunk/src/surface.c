@@ -1653,7 +1653,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Z Set <over_relaxation parameter>.  Default = 1.4\n");
 	GMT_message (GMT, "\t   Use a value between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_message (GMT, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n\n");
-	GMT_explain_options (GMT, "C3fhiF:.");
+	GMT_explain_options (GMT, "aC3fhiF:.");
 	GMT_message (GMT, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
 	
 	return (EXIT_FAILURE);
@@ -1824,7 +1824,7 @@ int GMT_surface (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "hirs" GMT_OPT("FH"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfRb:", "ahirs" GMT_OPT("FH"), options)) Return (API->error);
 	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_surface_parse (API, Ctrl, options))) Return (error);
 	
