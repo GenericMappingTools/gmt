@@ -46,17 +46,13 @@ void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, d
 #define KML_DOCUMENT		0
 #define KML_FOLDER		1
 
-#define GET_LABEL		1
-#define NO_LABEL		2
-#define FMT_LABEL		3
+#define GET_COL_LABEL		1
+#define GET_LABEL		2
+#define NO_LABEL		3
+#define FMT_LABEL		4
 
 /* Need unsigned int BGR triplets */
 #define GMT_3u255(t) GMT_u255(t[2]),GMT_u255(t[1]),GMT_u255(t[0])
-
-struct EXT_COL {
-	int col;			/* Column in input record */
-	char name[GMT_TEXT_LEN64];	/* Name of this column */
-};
 
 #define F_ID	0	/* Indices into arrays */
 #define N_ID	1
@@ -87,6 +83,7 @@ struct GMT2KML_CTRL {
 	struct F {	/* -F */
 		bool active;
 		unsigned int mode;
+		unsigned int geometry;
 	} F;
 	struct G {	/* -G<fill> */
 		bool active[2];
@@ -99,7 +96,7 @@ struct GMT2KML_CTRL {
 	struct L {	/* -L */
 		bool active;
 		unsigned int n_cols;
-		struct EXT_COL *ext;
+		char **name;
 	} L;
 	struct N {	/* -N */
 		bool active;
@@ -142,6 +139,7 @@ void *New_gmt2kml_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->A.mode = KML_GROUND;
 	C->A.scale = 1.0;
 	C->F.mode = POINT;
+	C->F.geometry = GMT_IS_POINT;
 	GMT_init_fill (GMT, &C->G.fill[F_ID], 1.0, 192.0 / 255.0, 128.0 / 255.0);	/* Default fill color */
 	GMT_init_fill (GMT, &C->G.fill[N_ID], 1.0, 1.0, 1.0);				/* Default text color */
 	C->G.fill[N_ID].rgb[3] = 0.25;	/* Default text transparency */
@@ -161,7 +159,11 @@ void Free_gmt2kml_Ctrl (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *C) {	/* Deall
 	if (C->N.fmt) free (C->N.fmt);
 	if (C->T.title) free (C->T.title);
 	if (C->T.folder) free (C->T.folder);
-	if (C->L.ext) GMT_free (GMT, C->L.ext);
+	if (C->L.active) {
+		unsigned int col;
+		for (col = 0; col < C->L.n_cols; col++) free ((void *)C->L.name[col]);
+		GMT_free (GMT, C->L.name);
+	}
 	GMT_free (GMT, C);
 }
 
@@ -173,8 +175,8 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
-	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<col:name>,<col:name>,...]\n");
-	GMT_message (GMT, "\t[-N+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
+	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
+	GMT_message (GMT, "\t[-N-|+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_message (GMT, "\t[-T<title>[/<foldername>] [%s] [-W-|<pen>] [-Z<opts>]\n", GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
@@ -206,12 +208,13 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Give -I- to not place any icons.\n");
 	GMT_message (GMT, "\t   [Default is a local icon with no directory path].\n");
 	GMT_message (GMT, "\t-K Allow for more KML code to be appended later [OFF].\n");
-	GMT_message (GMT, "\t-L Supply extended data informat via <col>:<name> strings [none].\n");
+	GMT_message (GMT, "\t-L Supply extended named data columns via <name1>,<name2>,... [none].\n");
 	GMT_message (GMT, "\t-N Control the feature labels.\n");
 	GMT_message (GMT, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
-	GMT_message (GMT, "\t   1. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
-	GMT_message (GMT, "\t   2. Append a string that may contain the format %%d for a running feature count.\n");
-	GMT_message (GMT, "\t   3. Give no argument to indicate no labels.\n");
+	GMT_message (GMT, "\t   1. Specify -N- if the first non-coordinate column of the data record should be used as single-word label (-Fe|s|t only).\n");
+	GMT_message (GMT, "\t   2. Specify -N+ if the rest of the data record should be used as label (-Fe|s|t only).\n");
+	GMT_message (GMT, "\t   3. Append a string that may contain the format %%d for a running feature count.\n");
+	GMT_message (GMT, "\t   4. Give no argument to indicate no labels.\n");
 	GMT_message (GMT, "\t-O Append the KML code to an existing document [OFF].\n");
 	GMT_message (GMT, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or append a to use the\n");
 	GMT_message (GMT, "\t   actual domain of the data (single file only) [no region specified].\n");
@@ -317,9 +320,11 @@ int GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, struct 
 						break;
 					case 'l':
 						Ctrl->F.mode = LINE;
+						Ctrl->F.geometry = GMT_IS_LINE;
 						break;
 					case 'p':
 						Ctrl->F.mode = POLYGON;
+						Ctrl->F.geometry = GMT_IS_POLY;
 						break;
 					default:
 						GMT_message (GMT, "Bad feature type. Use s, e, t, l or p.\n");
@@ -365,16 +370,16 @@ int GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, struct 
  				Ctrl->L.active = true;
 				pos = Ctrl->L.n_cols = 0;
 				while ((GMT_strtok (opt->arg, ",", &pos, p))) {
-					for (k = 0; p[k] && p[k] != ':'; k++);	/* Find position of colon */
-					p[k] = ' ';
-					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.ext = GMT_memory (GMT, Ctrl->L.ext, n_alloc += GMT_TINY_CHUNK, struct EXT_COL);
-					sscanf (p, "%d %[^:]", &Ctrl->L.ext[Ctrl->L.n_cols].col, Ctrl->L.ext[Ctrl->L.n_cols].name);
-					Ctrl->L.n_cols++;
+					if (Ctrl->L.n_cols == n_alloc) Ctrl->L.name = GMT_memory (GMT, Ctrl->L.name, n_alloc += GMT_TINY_CHUNK, char *);
+					Ctrl->L.name[Ctrl->L.n_cols++] = strdup (p);
 				}
 				break;
 			case 'N':	/* Feature label */
 				Ctrl->N.active = true;
-				if (opt->arg[0] == '+') {	/* Special ASCII labelled input file */
+				if (opt->arg[0] == '-') {	/* First non-coordinate field as label */
+					Ctrl->N.mode = GET_COL_LABEL;
+				}
+				else if (opt->arg[0] == '+') {	/* Everything following coordinates is a label */
 					Ctrl->N.mode = GET_LABEL;
 				}
 				else if (!opt->arg[0]) {	/* Want no label */
@@ -473,6 +478,7 @@ int GMT_gmt2kml_parse (struct GMTAPI_CTRL *C, struct GMT2KML_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && !Ctrl->C.file, "Syntax error -C option: Need to supply color palette name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && access (Ctrl->D.file, R_OK), "Syntax error -D: Cannot open HTML description file %s\n", Ctrl->D.file);
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
+	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_OUT], "Syntax error: Cannot produce binary KML output\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->R2.automatic && n_files > 1, "Syntax error: -Ra without arguments only accepted for single table\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale[F_ID] < 0.0 || Ctrl->S.scale[N_ID] < 0.0, "Syntax error: -S takes scales > 0.0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->t_transp < 0.0 || Ctrl->t_transp > 1.0, "Syntax error: -Q takes transparencies in range 0-1\n");
@@ -514,15 +520,15 @@ int ascii_output_one (struct GMT_CTRL *GMT, double x, int col)
 	return (printf ("%s", text));
 }
 
-void place_region_tag (struct GMT_CTRL *GMT, double west, double east, double south, double north, double min[], double max[], int N)
+void place_region_tag (struct GMT_CTRL *GMT, double wesn[], double min[], double max[], int N)
 {
-	if (GMT_360_RANGE (west, east)) { west = -180.0; east = +180.0;}
+	if (GMT_360_RANGE (wesn[XLO], wesn[XHI])) { wesn[XLO] = -180.0; wesn[XHI] = +180.0;}
 	tabs (N++); printf ("<Region>\n");
 	tabs (N++); printf ("<LatLonAltBox>\n");
-	tabs (N);	printf ("<north>");	ascii_output_one (GMT, north, GMT_Y);	printf ("</north>\n");
-	tabs (N);	printf ("<south>");	ascii_output_one (GMT, south, GMT_Y);	printf ("</south>\n");
-	tabs (N);	printf ("<east>");	ascii_output_one (GMT, east, GMT_X);	printf ("</east>\n");
-	tabs (N);	printf ("<west>");	ascii_output_one (GMT, west, GMT_X);	printf ("</west>\n");
+	tabs (N);	printf ("<north>");	ascii_output_one (GMT, wesn[YHI], GMT_Y);	printf ("</north>\n");
+	tabs (N);	printf ("<south>");	ascii_output_one (GMT, wesn[YLO], GMT_Y);	printf ("</south>\n");
+	tabs (N);	printf ("<east>");	ascii_output_one (GMT, wesn[XHI], GMT_X);	printf ("</east>\n");
+	tabs (N);	printf ("<west>");	ascii_output_one (GMT, wesn[XLO], GMT_X);	printf ("</west>\n");
 	if (max[ALT] > min[ALT]) {
 		tabs (N); printf ("<minAltitude>%g</minAltitude>\n", min[ALT]);
 		tabs (N); printf ("<maxAltitude>%g</maxAltitude>\n", max[ALT]);
@@ -588,24 +594,71 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, doubl
 	}
 }
 
+int get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
+{
+	/* Because we read as textset we must determine the data extent the hard way */
+	unsigned int tbl, ix, iy, way;
+	uint64_t row, seg;
+	char T[2][GMT_TEXT_LEN64];
+	double x, y, y_min = 90.0, y_max = -90.0;
+	struct GMT_QUAD *Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
+	ix = C->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
+
+	for (tbl = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+			for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
+				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
+				if (GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (C, T[GMT_X], C->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
+					GMT_message (C, "Error: Could not decode longitude from %s\n", T[GMT_X]);
+					return (EXIT_FAILURE);
+				}
+				if (GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (C, T[GMT_Y], C->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
+					return (EXIT_FAILURE);
+				}
+				GMT_quad_add (C, Q, x);
+				if (y < y_min) y_min = y;
+				if (y > y_max) y_max = y;
+			}
+		}
+	}
+	way = GMT_quad_finalize (C, Q);
+	wesn[XLO] = Q->min[way];	wesn[XHI] = Q->max[way];
+	wesn[YLO] = y_min;		wesn[YHI] = y_max;
+	GMT_free (C, Q);
+}
+
+bool crossed_dateline (double this_x, double last_x)
+{
+	if (this_x > 90.0 && this_x <= 180.0 && last_x > +180.0 && last_x < 270.0) return (true);	/* Positive lons 0-360 */
+	if (last_x > 90.0 && last_x <= 180.0 && this_x > +180.0 && this_x < 270.0) return (true);	/* Positive lons 0-360 */
+	if (this_x > 90.0 && this_x <= 180.0 && last_x > -180.0 && last_x < -90.0) return (true);	/* Lons in -180/+180 range */
+	if (last_x > 90.0 && last_x <= 180.0 && this_x > -180.0 && this_x < -90.0) return (true);	/* Lons in -180/+180 range */
+	return (false);
+}
+
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmt2kml_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool first = true, get_z = false, error = false, use_folder = false, do_description;
-	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0;
+	bool first = true, get_z = false, error = false, use_folder = false, do_description, no_dateline = false;
+	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
+	
+	uint64_t row, seg;
 	int set_nr = 0, index = -4, N = 1;
 	
-	char buffer[GMT_BUFSIZ], description[GMT_BUFSIZ], *Document[2] = {"Document", "Folder"};
-	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"};
-	char label[GMT_BUFSIZ], *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
+	char extra[GMT_BUFSIZ], buffer[GMT_BUFSIZ], description[GMT_BUFSIZ], item[GMT_TEXT_LEN128], C[5][GMT_TEXT_LEN64];
+	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
+	char *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
 
-	double rgb[4], out[5];
+	double rgb[4], out[5], last_x;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_PALETTE *P = NULL;
+	struct GMT_TEXTSET *Din = NULL;
+	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 
@@ -626,10 +679,16 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
+	if (GMT->common.b.active[GMT_IN]) {	/* Probably also when user uses the -i option to select columns */
+		GMT_message (GMT, "Cannot yet use binary data files; pipe in via gmtconvert for now\n");
+		Return (EXIT_FAILURE);
+	}
+	
 	/* gmt2kml only applies to geographic data so we do a -fg implicitly here */
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-	label[0] = '\0';
+	extra[0] = '\0';
+	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 	
 	if (Ctrl->C.active) {	/* Process CPT file */
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -644,7 +703,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Now we are ready to take on some input values */
 
 	out[GMT_Z] = Ctrl->A.altitude;
-	strcpy (GMT->current.setting.io_col_separator, ",");	/* Specify comma-separated output */
+	strcpy (GMT->current.setting.io_col_separator, ",");		/* Specify comma-separated output */
 	GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;		/* Want -180/+180 longitude output format */
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Make sure we use enough decimals */
 	n_coord = (Ctrl->F.mode < LINE) ? Ctrl->F.mode + 2 : 2;
@@ -738,297 +797,248 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 		tabs (--N); printf ("</description>\n");
 	}
 
-	if (Ctrl->N.mode == GET_LABEL) { /* Special ASCII table processing */
-		unsigned int ix, iy;
-		uint64_t n_rec = 0;
-		char *record = NULL, C[5][GMT_TEXT_LEN64];
-
-		ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
-		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-			Return (API->error);
-		}
-		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
-			Return (API->error);
-		}
-		
-		do {	/* Keep returning records until we reach EOF */
-			if ((record = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
-					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
-					continue;
-				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
-					break;
-			}
-
-			switch (n_coord) {
-				case 2:	/* Just lon, lat, label */
-					sscanf (record, "%s %s %[^\n]", C[ix], C[iy], label);
-					break;
-				case 3:	/* Just lon, lat, a, label */
-					sscanf (record, "%s %s %s %[^\n]", C[ix], C[iy], C[2], label);
-					break;
-				case 4:	/* Just lon, lat, a, b, label */
-					sscanf (record, "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], label);
-					break;
-				case 5:	/* Just lon, lat, z, t1, t2, label */
-					sscanf (record, "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], label);
-					break;
-			}
-			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
-				GMT_message (GMT, "Error: Could not decode longitude from %s\n", C[GMT_X]);
-				Return (EXIT_FAILURE);
-			}
-			if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
-				Return (EXIT_FAILURE);
-			}
-			if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
-			if (get_z) {
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
-					Return (EXIT_FAILURE);
-				}
-				if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
-				out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
-			}
-			if (Ctrl->F.mode == EVENT) {
-				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
-					Return (EXIT_FAILURE);
-				}
-			}
-			else if (Ctrl->F.mode == SPAN) {
-				if (!(strcmp (C[t1_col], "NaN")))
-					out[t1_col] = GMT->session.d_NaN;
-				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
-					Return (EXIT_FAILURE);
-				}
-				if (!(strcmp (C[t2_col], "NaN")))
-					out[t2_col] = GMT->session.d_NaN;
-				else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
-					Return (EXIT_FAILURE);
-				}
-			}
-			if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
-				place_region_tag (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->Z.min, Ctrl->Z.max, N);
-				first = false;
-			}
-			tabs (N++); printf ("<Placemark>\n");
-			tabs (N); printf ("<name>%s</name>\n", label);
-			if (Ctrl->F.mode == SPAN) {
-				tabs (N++); printf ("<TimeSpan>\n");
-				if (!GMT_is_dnan(out[t1_col])) tabs (N), printf ("<begin>%s</begin>\n", C[t1_col]);
-				if (!GMT_is_dnan(out[t2_col])) tabs (N), printf ("<end>%s</end>\n", C[t2_col]);
-				tabs (--N); printf ("</TimeSpan>\n");
-			}
-			else if (Ctrl->F.mode == EVENT) {
-				tabs (N++); printf ("<TimeStamp>\n");
-				tabs (N); printf ("<when>%s</when>\n", C[t1_col]);
-				tabs (--N); printf ("</TimeStamp>\n");
-			}
-			tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
-			tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-			print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
-			tabs (N); printf ("<coordinates>");
-			ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
-			ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
-			ascii_output_one (GMT, out[GMT_Z], GMT_Z);
-			printf ("</coordinates>\n");
-			tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
-			tabs (--N); printf ("</Placemark>\n");
-			n_rec++;
-			if (!(n_rec%10000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed %ld points\n", n_rec);
-		} while (true);
-		
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-			Return (API->error);
-		}
+	/* If binary input then call GMT_gmtconvert to handle that and read in as ascii, else do as below.
+	   Or open as GMT_IS_DATASET if binary and TEXTSET otherwise, then handle the differenes below
+	   by setting n_tables = (binary) ? D->n_tables : T->n_tables; same for nsegments, then
+	   final ifs on parsing text record or using coord as is. */
+	
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, Ctrl->F.geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
 	}
-	else {	/* Read regular data table */
-		unsigned int tbl, col;
-		uint64_t row, seg;
-		struct GMT_DATASET *Din = NULL;
-		struct GMT_TABLE *T = NULL;
-#ifdef GMT_COMPAT
-		char *t_opt = "-D";
-#else
-		char *t_opt = "-T";
-#endif
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-			Return (API->error);
-		}
-		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-			Return (API->error);
-		}
-		if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
-			place_region_tag (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->Z.min, Ctrl->Z.max, N);
-			first = false;
-		}
-		else if (Ctrl->R2.automatic) {	/* Issue Region tag */
-			place_region_tag (GMT, Din->min[GMT_X], Din->max[GMT_X], Din->min[GMT_Y], Din->max[GMT_Y], Ctrl->Z.min, Ctrl->Z.max, N);
-		}
-		set_nr = pnt_nr = 0;
+	if ((Din = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
+	if (GMT->common.R.active && first) {	/* Issue Region tag as given on commmand line*/
+		place_region_tag (GMT, GMT->common.R.wesn, Ctrl->Z.min, Ctrl->Z.max, N);
+		first = false;
+	}
+	else if (Ctrl->R2.automatic) {	/* Issue Region tag */
+		double wesn[4];
+		get_data_region (GMT, Din, wesn);
+		place_region_tag (GMT, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
+	}
+	set_nr = pnt_nr = 0;
 
-		for (tbl = 0; tbl < Din->n_tables; tbl++) {
-			T = Din->table[tbl];	/* Current table */
-			if (T->file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
+	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		T = Din->table[tbl];	/* Current table */
+		if (T->file[GMT_IN]) {	/* Place all of this file's content in its own named folder */
+			tabs (N++); printf ("<Folder>\n");
+			tabs (N); 
+			if (!strcmp (T->file[GMT_IN], "<stdin>"))
+				printf ("<name>stdin</name>\n");
+			else
+				printf ("<name>%s</name>\n", T->file[GMT_IN]);
+		}
+		for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
+			pnt_nr = 0;
+			
+			/* Only point sets will be organized in folders as lines/polygons are single entities */
+			if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
 				tabs (N++); printf ("<Folder>\n");
-				tabs (N); 
-				if (!strcmp (T->file[GMT_IN], "<stdin>"))
-					printf ("<name>stdin</name>\n");
+				tabs (N);
+				if (T->segment[seg]->label)
+					printf ("<name>%s</name>\n", T->segment[seg]->label);
 				else
-					printf ("<name>%s</name>\n", T->file[GMT_IN]);
-			}
-			for (seg = 0; seg < T->n_segments; seg++) {	/* Process each segment in this table */
-				pnt_nr = 0;
-				/* Only point sets will be organized in folders as lines/polygons are single entities */
-				if (Ctrl->F.mode < LINE) {	/* Meaning point-types, not lines or polygons */
-					tabs (N++); printf ("<Folder>\n");
-					tabs (N);
-					if (T->segment[seg]->label)
-						printf ("<name>%s</name>\n", T->segment[seg]->label);
-					else
-						printf ("<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
-					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, description)) { tabs (N); printf ("<description>%s</description>\n", description); }
+					printf ("<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
+#ifdef GMT_COMPAT
+				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", description) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", description)) {
+#else
+				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", description)) {
+#endif
+					tabs (N); printf ("<description>%s</description>\n", description);
 				}
-				else {	/* Line or polygon means we lay down the placemark first*/
-					if (Ctrl->C.active && GMT_parse_segment_item (GMT, T->segment[seg]->header, "-Z", description)) {
-						double z_val = atof (description);
-						index = GMT_get_index (GMT, P, z_val);
+			}
+			else {	/* Line or polygon means we lay down the placemark first*/
+				if (Ctrl->C.active && GMT_parse_segment_item (GMT, T->segment[seg]->header, "-Z", description)) {
+					double z_val = atof (description);
+					index = GMT_get_index (GMT, P, z_val);
+				}
+				tabs (N++); printf ("<Placemark>\n");
+				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
+				else if (Ctrl->N.mode == FMT_LABEL) {
+					tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, (int)set_nr); printf ("</name>\n");
+				}
+				else if (T->segment[seg]->label)
+					tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
+				else
+					tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
+				description[0] = 0;
+				do_description = false;
+				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
+					do_description = true;
+					strcat (description, buffer);
+				}
+#ifdef GMT_COMPAT
+				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer)) {
+#else
+				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer)) {
+#endif
+					if (do_description) strcat (description, " ");
+					strcat (description, buffer);
+					do_description = true;
+				}
+				if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
+				tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
+				tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
+				print_altmode (Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
+				if (Ctrl->F.mode == POLYGON) {
+					tabs (N++); printf ("<outerBoundaryIs>\n");
+					tabs (N++); printf ("<LinearRing>\n");
+				}
+				tabs (N++); printf ("<coordinates>\n");
+			}
+			for (row = 0; row < T->segment[seg]->n_rows; row++) {
+				switch (n_coord) {	/* Sort out input coordinates from remaining items which may be text */
+					case 2:	/* Just lon, lat, label */
+						sscanf (T->segment[seg]->record[row], "%s %s %[^\n]", C[ix], C[iy], extra);
+						break;
+					case 3:	/* Just lon, lat, a, extra */
+						sscanf (T->segment[seg]->record[row], "%s %s %s %[^\n]", C[ix], C[iy], C[2], extra);
+						break;
+					case 4:	/* Just lon, lat, a, b, extra */
+						sscanf (T->segment[seg]->record[row], "%s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], extra);
+						break;
+					case 5:	/* Just lon, lat, z, t1, t2, extra */
+						sscanf (T->segment[seg]->record[row], "%s %s %s %s %s %[^\n]", C[ix], C[iy], C[2], C[3], C[4], extra);
+						break;
+				}
+				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, C[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &out[GMT_X]), C[GMT_X])) {
+					GMT_message (GMT, "Error: Could not decode longitude from %s\n", C[GMT_X]);
+					Return (EXIT_FAILURE);
+				}
+				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, C[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &out[GMT_Y]), C[GMT_Y])) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", C[GMT_Y]);
+					Return (EXIT_FAILURE);
+				}
+				if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
+				pos = 0;
+				if (get_z) {
+					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, C[GMT_Z], GMT->current.io.col_type[GMT_IN][GMT_Z], &out[GMT_Z]), C[GMT_Z])) {
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode altitude from %s\n", C[GMT_Z]);
+						Return (EXIT_FAILURE);
 					}
+					if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
+					out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
+				}
+				if (Ctrl->F.mode == EVENT) {
+					if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time event from %s\n", C[t1_col]);
+						Return (EXIT_FAILURE);
+					}
+				}
+				else if (Ctrl->F.mode == SPAN) {
+					if (!(strcmp (C[t1_col], "NaN")))
+						out[t1_col] = GMT->session.d_NaN;
+					else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t1_col], GMT_scanf_arg (GMT, C[t1_col], GMT->current.io.col_type[GMT_IN][t1_col], &out[t1_col]), C[t1_col])) {
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time span beginning from %s\n", C[t1_col]);
+						Return (EXIT_FAILURE);
+					}
+					if (!(strcmp (C[t2_col], "NaN")))
+						out[t2_col] = GMT->session.d_NaN;
+					else if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][t2_col], GMT_scanf_arg (GMT, C[t2_col], GMT->current.io.col_type[GMT_IN][t2_col], &out[t2_col]), C[t2_col])) {
+						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Could not decode time span end from %s\n", C[t2_col]);
+						Return (EXIT_FAILURE);
+					}
+				}
+				if (Ctrl->F.mode < LINE && GMT_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
+
+				if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
 					tabs (N++); printf ("<Placemark>\n");
 					if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
-					else if (Ctrl->N.mode == FMT_LABEL) {
-						tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, (int)set_nr); printf ("</name>\n");
+					else if (Ctrl->N.mode == GET_COL_LABEL) {
+						GMT_strtok (extra, " \t,", &pos, item);	
+						tabs (N), printf ("<name>%s</name>\n", item);
 					}
+					else if (Ctrl->N.mode == GET_LABEL) 
+						tabs (N), printf ("<name>%s</name>\n", extra);
+					else if (Ctrl->N.mode == FMT_LABEL) {
+						tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, pnt_nr); printf ("</name>\n");
+					}
+					else if (T->segment[seg]->label && T->segment[seg]->n_rows > 1)
+						tabs (N), printf ("<name>%s %" PRIu64 "</name>\n", T->segment[seg]->label, row);
 					else if (T->segment[seg]->label)
 						tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
 					else
-						tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], set_nr);
-					description[0] = 0;
-					do_description = false;
-					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-I", buffer)) { 
-						do_description = true;
-						strcat (description, buffer);
+						tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], pnt_nr);
+					if (Ctrl->L.n_cols) {
+						tabs (N++); printf ("<ExtendedData>\n");
+						for (col = 0; col < Ctrl->L.n_cols; col++) {
+							tabs (N++); printf ("<Data name = \"%s\">\n", Ctrl->L.name[col]);
+							tabs (N--); printf ("<value>");
+							GMT_strtok (extra, " \t,", &pos, item);	
+							printf ("%s", item);
+							printf ("</value>\n");
+							tabs (N--); printf ("</Data>\n");
+						}
+						tabs (N); printf ("</ExtendedData>\n");
 					}
-					if (GMT_parse_segment_item (GMT, T->segment[seg]->header, t_opt, buffer)) { 
-						if (do_description) strcat (description, " ");
-						strcat (description, buffer);
-						do_description = true;
+					if (Ctrl->F.mode == SPAN) {
+						tabs (N++); printf ("<TimeSpan>\n");
+						if (!GMT_is_dnan (out[t1_col])) {
+							tabs (N); printf ("<begin>");
+							ascii_output_one (GMT, out[t1_col], t1_col);
+							printf ("</begin>\n");
+						}
+						if (!GMT_is_dnan (out[t2_col])) {
+							tabs (N); printf ("<end>");
+							ascii_output_one (GMT, out[t2_col], t2_col);
+							printf ("</end>\n");
+						}
+						tabs (--N); printf ("</TimeSpan>\n");
 					}
-					if (do_description) { tabs (N); printf ("<description>%s</description>\n", description); }
+					else if (Ctrl->F.mode == EVENT) {
+						tabs (N++); printf ("<TimeStamp>\n");
+						tabs (N); printf ("<when>");
+						ascii_output_one (GMT, out[t1_col], t1_col);
+						printf ("</when>\n");
+						tabs (--N); printf ("</TimeStamp>\n");
+					}
 					tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
 					tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-					print_altmode (Ctrl->E.active, Ctrl->F.mode, Ctrl->A.mode, N);
-					if (Ctrl->F.mode == POLYGON) {
-						tabs (N++); printf ("<outerBoundaryIs>\n");
-						tabs (N++); printf ("<LinearRing>\n");
-						if (T->segment[seg]->min[GMT_X] < 180.0 && T->segment[seg]->max[GMT_X] > 180.0) {
-							/* GE cannot handle polygons crossing the dateline; warn for now */
-							GMT_report (GMT, GMT_MSG_NORMAL, "Warning: A polygon is straddling the Dateline.  Google Earth will wrap this the wrong way\n");
-							GMT_report (GMT, GMT_MSG_NORMAL, "Split the polygon into an East and West part and plot them as separate polygons.\n");
-							GMT_report (GMT, GMT_MSG_NORMAL, "gmtconvert can be used to help in this conversion.\n");
-						}
-					}
-					tabs (N++); printf ("<coordinates>\n");
-				}
-				for (row = 0; row < T->segment[seg]->n_rows; row++) {
-					out[GMT_X] = T->segment[seg]->coord[GMT_X][row];
-					out[GMT_Y] = T->segment[seg]->coord[GMT_Y][row];
-					if (GMT->common.R.active && check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
-					if (get_z && T->n_columns > 2) {
-						out[GMT_Z] = T->segment[seg]->coord[GMT_Z][row];
-						if (Ctrl->C.active) index = GMT_get_index (GMT, P, out[GMT_Z]);
-						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
-					}
-					if (Ctrl->F.mode < LINE && GMT_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
-
-					if (Ctrl->F.mode < LINE) {	/* Print the information for this point */
-						tabs (N++); printf ("<Placemark>\n");
-						if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
-						else if (Ctrl->N.mode == FMT_LABEL) {
-							tabs (N); printf ("<name>"); printf (Ctrl->N.fmt, pnt_nr); printf ("</name>\n");
-						}
-						else if (T->segment[seg]->label && T->segment[seg]->n_rows > 1)
-							tabs (N), printf ("<name>%s %" PRIu64 "</name>\n", T->segment[seg]->label, row);
-						else if (T->segment[seg]->label)
-							tabs (N), printf ("<name>%s</name>\n", T->segment[seg]->label);
-						else
-							tabs (N), printf ("<name>%s %d</name>\n", name[Ctrl->F.mode], pnt_nr);
-						if (Ctrl->L.n_cols) {
-							tabs (N++); printf ("<ExtendedData>\n");
-							for (col = 0; col < Ctrl->L.n_cols; col++) {
-								tabs (N++); printf ("<Data name = \"%s\">\n", Ctrl->L.ext[col].name);
-								tabs (N--); printf ("<value>");
-								ascii_output_one (GMT, T->segment[seg]->coord[Ctrl->L.ext[col].col][row], Ctrl->L.ext[col].col);
-								printf ("</value>\n");
-								tabs (N--); printf ("</Data>\n");
-							}
-							tabs (N); printf ("</ExtendedData>\n");
-						}
-						if (Ctrl->F.mode == SPAN) {
-							tabs (N++); printf ("<TimeSpan>\n");
-							if (!GMT_is_dnan(T->segment[seg]->coord[t1_col][row])) {
-								tabs (N); printf ("<begin>");
-								ascii_output_one (GMT, T->segment[seg]->coord[t1_col][row], t1_col);
-								printf ("</begin>\n");
-							}
-							if (!GMT_is_dnan(T->segment[seg]->coord[t2_col][row])) {
-								tabs (N); printf ("<end>");
-								ascii_output_one (GMT, T->segment[seg]->coord[t2_col][row], t2_col);
-								printf ("</end>\n");
-							}
-							tabs (--N); printf ("</TimeSpan>\n");
-						}
-						else if (Ctrl->F.mode == EVENT) {
-							tabs (N++); printf ("<TimeStamp>\n");
-							tabs (N); printf ("<when>");
-							ascii_output_one (GMT, T->segment[seg]->coord[t1_col][row], t1_col);
-							printf ("</when>\n");
-							tabs (--N); printf ("</TimeStamp>\n");
-						}
-						tabs (N); printf ("<styleUrl>#GMT%d</styleUrl>\n", index);
-						tabs (N++); printf ("<%s>\n", feature[Ctrl->F.mode]);
-						print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
-						tabs (N); printf ("<coordinates>");
-						ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
-						ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
-						ascii_output_one (GMT, out[GMT_Z], GMT_Z);
-						printf ("</coordinates>\n");
-						tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
-						tabs (--N); printf ("</Placemark>\n");
-					}
-					else {	/* For lines and polygons we just output the coordinates */
-						if (GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
-						tabs (N);
-						ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
-						ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
-						ascii_output_one (GMT, out[GMT_Z], GMT_Z);	printf ("\n");
-					}
-					pnt_nr++;
-				}
-
-				/* End of segment */
-				if (pnt_nr == 0)
-					set_nr--;
-				else if (Ctrl->F.mode < LINE)
-					tabs (--N), printf ("</Folder>\n");
-				else {
-					tabs (--N); printf ("</coordinates>\n");
-					if (Ctrl->F.mode == POLYGON) {
-						tabs (--N); printf ("</LinearRing>\n");
-						tabs (--N); printf ("</outerBoundaryIs>\n");
-					}
+					print_altmode (Ctrl->E.active, false, Ctrl->A.mode, N);
+					tabs (N); printf ("<coordinates>");
+					ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
+					ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
+					ascii_output_one (GMT, out[GMT_Z], GMT_Z);
+					printf ("</coordinates>\n");
 					tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
 					tabs (--N); printf ("</Placemark>\n");
 				}
-				set_nr++;
+				else {	/* For lines and polygons we just output the coordinates */
+					if (GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = 0.0;	/* Google Earth can not handle lines at NaN altitude */
+					tabs (N);
+					ascii_output_one (GMT, out[GMT_X], GMT_X);	printf (",");
+					ascii_output_one (GMT, out[GMT_Y], GMT_Y);	printf (",");
+					ascii_output_one (GMT, out[GMT_Z], GMT_Z);	printf ("\n");
+					if (row > 0 && no_dateline && crossed_dateline (out[GMT_X], last_x)) {
+						/* GE cannot handle polygons crossing the dateline; warn for now */
+						GMT_report (GMT, GMT_MSG_NORMAL, "Warning: At least on polygon is straddling the Dateline.  Google Earth will wrap these the wrong way\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Split such polygons into East and West parts and plot them as separate polygons.\n");
+						GMT_report (GMT, GMT_MSG_NORMAL, "Use gmtconvert to help in this conversion.\n");
+						no_dateline = true;
+					}
+					last_x = out[GMT_X];
+				}
+				pnt_nr++;
 			}
-			if (T->file[GMT_IN]) tabs (--N), printf ("</Folder>\n");
+
+			/* End of segment */
+			if (pnt_nr == 0)
+				set_nr--;
+			else if (Ctrl->F.mode < LINE)
+				tabs (--N), printf ("</Folder>\n");
+			else {
+				tabs (--N); printf ("</coordinates>\n");
+				if (Ctrl->F.mode == POLYGON) {
+					tabs (--N); printf ("</LinearRing>\n");
+					tabs (--N); printf ("</outerBoundaryIs>\n");
+				}
+				tabs (--N); printf ("</%s>\n", feature[Ctrl->F.mode]);
+				tabs (--N); printf ("</Placemark>\n");
+			}
+			set_nr++;
 		}
+		if (T->file[GMT_IN]) tabs (--N), printf ("</Folder>\n");
 	}
 	if (use_folder) tabs (--N), printf ("</%s>\n", Document[KML_FOLDER]);
 	if (!GMT->common.K.active) {
