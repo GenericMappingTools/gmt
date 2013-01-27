@@ -1705,6 +1705,7 @@ int gmt_parse_f_option (struct GMT_CTRL *C, char *arg)
 				GMT_report (C, GMT_MSG_NORMAL, "Error: Malformed -f argument [%s] - bad projected unit\n", arg);
 				return 1;
 			}
+			pos++;
 		}
 		C->current.proj.inv_coordinates = true;
 		C->current.proj.inv_coord_unit = unit;
