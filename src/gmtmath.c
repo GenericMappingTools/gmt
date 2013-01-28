@@ -1283,6 +1283,31 @@ void table_I1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : GMT_i1 (GMT, T->segment[s]->coord[col][row]);
 }
 
+void table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: IFELSE 3 1 B if A == 1, else C.  */
+{
+	uint64_t s, row;
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	double a = 0.0, b = 0.0, c = 0.0;
+	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	/* last is C, prev1 is B, prev2 is A */
+
+	/* Set to 1 where B <= A <= C, 0 elsewhere, except where
+	 * A, B, or C = NaN, in which case we set answer to NaN */
+
+	if (S[prev2]->constant) a = (double)S[prev2]->factor;
+	if (S[prev1]->constant) b = (double)S[prev1]->factor;
+	if (S[last]->constant)  c = (double)S[last]->factor;
+
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (!S[prev2]->constant) a = T_prev2->segment[s]->coord[col][row];
+		if (!S[prev1]->constant) b = T_prev1->segment[s]->coord[col][row];
+		if (!S[last]->constant)  c = T->segment[s]->coord[col][row];
+		T_prev2->segment[s]->coord[col][row] = (doubleAlmostEqual (a, 1.0)) ? b : c;
+	}
+}
+
 void table_IN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: IN 2 1 Modified Bessel function of A (1st kind, order B).  */
 {
