@@ -354,9 +354,9 @@ struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
 };
 
 struct GMT_COL_INFO {	/* Used by -i and input parsing */
-	unsigned int col;		/* The column number in the order requested via -i */
-	unsigned int order;		/* The initial order (0,1,...) but this will be sorted on col */
-	bool convert;	/* true if we must convert the data by log10, scale, offset */
+	unsigned int col;	/* The column number in the order requested via -i */
+	unsigned int order;	/* The initial order (0,1,...) but this will be sorted on col */
+	unsigned int convert;	/* 2 if we must convert the data by log10, 1 if scale, offset */
 	double scale;		/* Multiplier for raw in value */
 	double offset;		/* Offset applied after multiplier */ 
 };
