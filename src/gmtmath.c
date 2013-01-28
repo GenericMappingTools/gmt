@@ -1284,7 +1284,7 @@ void table_I1 (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_S
 }
 
 void table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: IFELSE 3 1 B if A == 1, else C.  */
+/*OPERATOR: IFELSE 3 1 B if A != 0, else C.  */
 {
 	uint64_t s, row;
 	unsigned int prev1 = last - 1, prev2 = last - 2;
@@ -1304,7 +1304,7 @@ void table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 		if (!S[prev2]->constant) a = T_prev2->segment[s]->coord[col][row];
 		if (!S[prev1]->constant) b = T_prev1->segment[s]->coord[col][row];
 		if (!S[last]->constant)  c = T->segment[s]->coord[col][row];
-		T_prev2->segment[s]->coord[col][row] = (doubleAlmostEqual (a, 1.0)) ? b : c;
+		T_prev2->segment[s]->coord[col][row] = (fabs (a) < GMT_CONV_LIMIT) ? b : c;
 	}
 }
 
