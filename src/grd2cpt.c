@@ -481,16 +481,16 @@ int GMT_grd2cpt (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		switch (Ctrl->T.kind) {
 			case -1:
-				start = -fabs ((double)G[0]->header->z_min);
+				start = -fabs (G[0]->header->z_min);
 				break;
 			case 1:
-				start = -fabs ((double)G[0]->header->z_max);
+				start = -fabs (G[0]->header->z_max);
 				break;
 			case -2:
-				start = -MIN (fabs ((double)G[0]->header->z_min), fabs ((double)G[0]->header->z_max));
+				start = -MIN (fabs (G[0]->header->z_min), fabs (G[0]->header->z_max));
 				break;
 			case 2:
-				start = -MAX (fabs ((double)G[0]->header->z_min), fabs ((double)G[0]->header->z_max));
+				start = -MAX (fabs (G[0]->header->z_min), fabs (G[0]->header->z_max));
 				break;
 			default:
 				start = G[0]->header->z_min;

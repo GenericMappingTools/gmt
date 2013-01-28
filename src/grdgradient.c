@@ -571,7 +571,7 @@ int GMT_grdgradient (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (!sigma_set) {
 					Ctrl->N.sigma = 0.0;
 					GMT_grd_loop (GMT, Out, row, col, ij) {
-						if (!GMT_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabs((double)Out->data[ij]);
+						if (!GMT_is_fnan (Out->data[ij])) Ctrl->N.sigma += fabsf (Out->data[ij]);
 					}
 					Ctrl->N.sigma = M_SQRT2 * Ctrl->N.sigma / n_used;
 				}

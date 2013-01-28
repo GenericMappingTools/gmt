@@ -165,16 +165,34 @@
 
 /* Math related */
 
+#cmakedefine HAVE_ACOSF
 #cmakedefine HAVE_ACOSH
+#cmakedefine HAVE_ACOSHF
+#cmakedefine HAVE_ASINF
 #cmakedefine HAVE_ASINH
+#cmakedefine HAVE_ASINHF
+#cmakedefine HAVE_ATANF
 #cmakedefine HAVE_ATANH
+#cmakedefine HAVE_ATANHF
+#cmakedefine HAVE_ATAN2F
+#cmakedefine HAVE_COPYSIGNF
 #cmakedefine HAVE_COPYSIGN
 #cmakedefine HAVE__COPYSIGN
+#cmakedefine HAVE_CEILF
+#cmakedefine HAVE_COSF
+#cmakedefine HAVE_COSHF
 #cmakedefine HAVE_ERF
+#cmakedefine HAVE_ERFF
 #cmakedefine HAVE_ERFC
+#cmakedefine HAVE_ERFCF
+#cmakedefine HAVE_EXPF
+#cmakedefine HAVE_FABSF
+#cmakedefine HAVE_FLOORF
+#cmakedefine HAVE_FMODF
 #cmakedefine HAVE__FINITE
 #cmakedefine HAVE__FPCLASS
 #cmakedefine HAVE_HYPOT
+#cmakedefine HAVE_HYPOTF
 #cmakedefine HAVE_ISFINITE
 #cmakedefine HAVE_ISINF
 #cmakedefine HAVE_ISNAN
@@ -186,10 +204,22 @@
 #cmakedefine HAVE_J1
 #cmakedefine HAVE_JN
 #cmakedefine HAVE_LRINT
+#cmakedefine HAVE_LRINTF
+#cmakedefine HAVE_LOGF
+#cmakedefine HAVE_LOG10F
 #cmakedefine HAVE_LOG1P
+#cmakedefine HAVE_LOG1PF
 #cmakedefine HAVE_LOG2
+#cmakedefine HAVE_LOG2F
+#cmakedefine HAVE_POWF
 #cmakedefine HAVE_RINT
+#cmakedefine HAVE_RINTF
+#cmakedefine HAVE_SINF
+#cmakedefine HAVE_SINHF
 #cmakedefine HAVE_SINCOS
+#cmakedefine HAVE_SQRTF
+#cmakedefine HAVE_TANF
+#cmakedefine HAVE_TANHF
 #cmakedefine HAVE_Y0
 #cmakedefine HAVE_Y1
 #cmakedefine HAVE_YN

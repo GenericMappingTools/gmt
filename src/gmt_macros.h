@@ -56,24 +56,36 @@
 /* Safe math macros that check arguments */
 
 #define d_log10(C,x) ((x) <= 0.0 ? C->session.d_NaN : log10 (x))
+#define d_log10f(C,x) ((x) <= 0.0f ? C->session.f_NaN : log10f (x))
 #define d_log101p(C,x) ((x) <= -1.0 ? C->session.d_NaN : log10 (1.0+(x)))
+#define d_log101pf(C,x) ((x) <= -1.0f ? C->session.f_NaN : log10f (1.0f+(x)))
 #define d_sqrt(x) ((x) < 0.0 ? 0.0 : sqrt (x))
 #define d_acos(x) (fabs(x) >= 1.0 ? ((x) < 0.0 ? M_PI : 0.0) : acos(x))
-#define d_asin(x) (fabs(x) >= 1.0 ? copysign (M_PI_2, (x)) : asin(x))
+#define d_acosf(x) (fabsf(x) >= 1.0 ? ((x) < 0.0f ? M_PI : 0.0f) : acosf(x))
+#define d_asin(x) (fabs(x) >= 1.0 ? copysign (M_PI_2, x) : asin(x))
+#define d_asinf(x) (fabsf(x) >= 1.0 ? copysignf (M_PI_2, x) : asinf(x))
 #define d_atan2(y,x) ((x) == 0.0 && (y) == 0.0 ? 0.0 : atan2(y, x))
+#define d_atan2f(y,x) ((x) == 0.0f && (y) == 0.0f ? 0.0f : atan2f(y, x))
 #define d_log(C,x) ((x) <= 0.0 ? C->session.d_NaN : log (x))
+#define d_log2(C,x) ((x) <= 0.0f ? C->session.f_NaN : logf (x))
+#define d_logf(C,x) ((x) <= 0.0f ? C->session.f_NaN : logf (x))
 #define d_log1p(C,x) ((x) <= -1.0 ? C->session.d_NaN : log1p (x))
+#define d_log1pf(C,x) ((x) <= -1.0f ? C->session.f_NaN : log1pf (x))
 
 /* Macros for degree-based trig */
 
 #define sind(x) sin((x) * D2R)
+#define sindf(x) sinf((x) * D2R)
 #define cosd(x) cos((x) * D2R)
+#define cosdf(x) cosf((x) * D2R)
 #define tand(x) tan((x) * D2R)
+#define tandf(x) tanf((x) * D2R)
 #define sincosd(x,s,c) sincos((x) * D2R,s,c)
 #define asind(x) (asin(x) * R2D)
 #define acosd(x) (acos(x) * R2D)
 #define atand(x) (atan(x) * R2D)
 #define atan2d(y,x) (atan2(y,x) * R2D)
+#define atan2df(y,x) (atan2f(y,x) * R2D)
 
 /* Safe versions of the degree-based trig */
 
