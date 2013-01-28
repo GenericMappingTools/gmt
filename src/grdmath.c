@@ -2479,7 +2479,7 @@ void grd_SIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 /*OPERATOR: SIN 1 1 sin (A) (A in radians).  */
 {
 	uint64_t node;
-	float a = 0.0;
+	float a = 0.0f;
 
 	if (stack[last]->constant) a = sinf (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : sinf (stack[last]->G->data[node]);
@@ -2489,10 +2489,10 @@ void grd_SINC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 /*OPERATOR: SINC 1 1 sinc (A) (sin (pi*A)/(pi*A)).  */
 {
 	uint64_t node;
-	double a = 0.0;
+	float a = 0.0f;
 
-	if (stack[last]->constant) a = GMT_sinc (GMT, stack[last]->factor);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_sinc (GMT, (double)stack[last]->G->data[node]));
+	if (stack[last]->constant) a = (float)GMT_sinc (GMT, (double)stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)GMT_sinc (GMT, (double)stack[last]->G->data[node]);
 }
 
 void grd_SIND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2802,7 +2802,7 @@ void grd_Y0 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = (float)y0 (fabsf ((double)stack[last]->factor));
+	if (stack[last]->constant) a = (float)y0 ((double)fabsf (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)y0 ((double)fabsf (stack[last]->G->data[node]));
 }
 
@@ -2812,7 +2812,7 @@ void grd_Y1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = (float)y1 (fabsf ((double)stack[last]->factor));
+	if (stack[last]->constant) a = (float)y1 ((double)fabsf (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)y1 ((double)fabsf (stack[last]->G->data[node]));
 }
 

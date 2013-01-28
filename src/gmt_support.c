@@ -4250,22 +4250,22 @@ void gmt_setcontjump (float *z, uint64_t nz)
 
 	uint64_t i;
 	bool jump = false;
-	double dz;
+	float dz;
 
 	for (i = 1; !jump && i < nz; i++) {
 		dz = z[i] - z[0];
-		if (fabs (dz) > 180.0) jump = true;
+		if (fabsf (dz) > 180.0f) jump = true;
 	}
 
 	if (!jump) return;
 
-	z[0] = (float)fmod (z[0], 360.0);
-	if (z[0] > 180.0) z[0] -= 360.0;
+	z[0] = fmodf (z[0], 360.0f);
+	if (z[0] > 180.0f) z[0] -= 360.0f;
 	for (i = 1; i < nz; i++) {
-		if (z[i] > 180.0) z[i] -= 360.0;
+		if (z[i] > 180.0f) z[i] -= 360.0f;
 		dz = z[i] - z[0];
-		if (fabs (dz) > 180.0) z[i] -= (float)copysign (360.0, dz);
-		z[i] = (float)fmod (z[i], 360.0);
+		if (fabsf (dz) > 180.0f) z[i] -= copysignf (360.0f, dz);
+		z[i] = fmodf (z[i], 360.0f);
 	}
 }
 
@@ -4302,7 +4302,7 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 	z[1] = G->data[ij_in+p[side+1]];
 	if (C->current.map.z_periodic) gmt_setcontjump (z, 2);
 
-	if (!(z[0] * z[1] < 0.0)) return (0);	/* This formulation will also return if one of the z's is NaN */
+	if (!(z[0] * z[1] < 0.0f)) return (0);	/* This formulation will also return if one of the z's is NaN */
 
 	n_alloc = GMT_CHUNK;
 	m = n_alloc - 2;
@@ -4341,7 +4341,7 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 
 			/* Skip if no zero-crossing on this edge */
 
-			if (z[this_side+1] * z[this_side] > 0.0) continue;
+			if (z[this_side+1] * z[this_side] > 0.0f) continue;
 
 			/* Save normalized distance along edge from corner this_side to crossing of edge this_side */
 
