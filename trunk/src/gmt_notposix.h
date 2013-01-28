@@ -216,16 +216,35 @@
  * seek to use them.  If not available then we compile in
  * replacements from gmt_notposix.c */
 
+#ifndef HAVE_ACOSF
+#	define acosf(x) acos((double)(x))
+#endif
 #ifndef HAVE_ACOSH
 #	define acosh(x) log((x) + (d_sqrt((x) + 1.0)) * (d_sqrt((x) - 1.0)))
 #endif
-
+#ifndef HAVE_ACOSHF
+#	define acoshf(x) acosh((double)(x))
+#endif
+#ifndef HAVE_ASINF
+#	define asinf(x) asin((double)(x))
+#endif
 #ifndef HAVE_ASINH
 #	define asinh(x) log((x) + (hypot((x), 1.0)))
 #endif
-
+#ifndef HAVE_ASINHF
+#	define asinhf(x) asinh((double)(x))
+#endif
+#ifndef HAVE_ATANF
+#	define atanf(x) atan((double)(x))
+#endif
+#ifndef HAVE_ATAN2F
+#	define atan2f(y,x) atan2((double)(y),(double)(x))
+#endif
 #ifndef HAVE_ATANH
 	EXTERN_MSC double atanh(double x);
+#endif
+#ifndef HAVE_ATANHF
+#	define atanhf(x) atanh((double)(x))
 #endif
 
 #if defined HAVE__COPYSIGN && !defined HAVE_COPYSIGN
@@ -233,21 +252,63 @@
 #elif !defined HAVE_COPYSIGN
 #	define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #endif
+#if defined HAVE_COPYSIGNF
+#	define copysignf(x,y) copysign((double)(x),(double)(y))
+#endif
 
+#ifndef HAVE_CEILF
+#	define ceilf(x) ceil((double)(x))
+#endif
+#ifndef HAVE_COSF
+#	define cosf(x) cos((double)(x))
+#endif
+#ifndef HAVE_COSHF
+#	define coshf(x) cosh((double)(x))
+#endif
 #ifndef HAVE_ERF
 	EXTERN_MSC double erf(double x);
 #endif
-
 #ifndef HAVE_ERFC
 	EXTERN_MSC double erfc(double x);
 #endif
-
+#ifndef HAVE_EXPF
+#	define expf(x) exp((double)(x))
+#endif
+#ifndef HAVE_FLOORF
+#	define floorf(x) floor((double)(x))
+#endif
+#ifndef HAVE_FMODF
+#	define fmodf(x,y) fmod((double)(x),(double)(y))
+#endif
 #ifndef HAVE_HYPOT
 	EXTERN_MSC double hypot(double x, double y);
 #endif
-
+#ifndef HAVE_HYPOTF
+#	define hypotf(x,y) hypot((double)(x),(double)(y))
+#endif
+#ifndef HAVE_LOGF
+#	define logf(x) log((double)(x))
+#endif
+#ifndef HAVE_LOG2F
+#	define log2f(x) log2((double)(x))
+#endif
+#ifndef HAVE_LOG10F
+#	define log10f(x) log10((double)(x))
+#endif
+#ifndef HAVE_LOG1PF
+#	define log1pf(x) log1p((double)(x))
+#endif
 #ifndef HAVE_LRINT
 #	define lrint (long)rint
+#endif
+#ifndef HAVE_LRINTF
+#	define lrintf(x) lrint((double)(x))
+#endif
+#ifndef HAVE_POWF
+#	define powf(x) pow((double)(x))
+#endif
+#ifndef HAVE_SINF
+#	define sinf(x) sin((double)(x))
 #endif
 
 /* Handle IEEE NaNs */

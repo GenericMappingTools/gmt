@@ -1751,7 +1751,7 @@ void GMT_getmad_f (struct GMT_CTRL *C, float *x, uint64_t n, double location, do
 	float *dev = GMT_memory (C, NULL, n, float);
 	double med;
 
-	for (i = 0; i < n; i++) dev[i] = (float) fabs ((double)(x[i] - location));
+	for (i = 0; i < n; i++) dev[i] = (float) fabs (x[i] - location);
 	GMT_sort_array (C, dev, n, GMTAPI_FLOAT);
 	for (i = n; i > 1 && GMT_is_fnan (dev[i-1]); i--);
 	if (i)

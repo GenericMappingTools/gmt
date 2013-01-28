@@ -352,21 +352,21 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 {	/* Find weights from residuals  */
 	unsigned int row, col;
 	uint64_t j = 0, j2, ij;
-	double r, mad, scale;
+	float r, mad, scale;
 
 	GMT_grd_loop (GMT, R, row, col, ij) {
 		if (GMT_is_fnan (R->data[ij])) continue;
-		W->data[j++] = (float)fabs((double)R->data[ij]);
+		W->data[j++] = fabsf (R->data[ij]);
 	}
 
 	GMT_sort_array (GMT, R->data, j, GMTAPI_FLOAT);
 
 	j2 = j / 2;
-	mad = (j%2) ? W->data[j2] : 0.5 *(W->data[j2] + W->data[j2 - 1]);
+	mad = (j%2) ? W->data[j2] : 0.5f *(W->data[j2] + W->data[j2 - 1]);
 
 	/* Adjust mad to equal Gaussian sigma */
 
-	scale = 1.4826 * mad;
+	scale = 1.4826f * mad;
 
 	/* Use weight according to Huber (1981), but squared */
 
@@ -375,9 +375,9 @@ double compute_robust_weight (struct GMT_CTRL *GMT, struct GMT_GRID *R, struct G
 			W->data[ij] = R->data[ij];
 			continue;
 		}
-		r = fabs (R->data[ij]) / scale;
+		r = fabsf (R->data[ij]) / scale;
 
-		W->data[ij] = (float)((r <= 1.5) ? 1.0 : (3.0 - 2.25/r) / r);
+		W->data[ij] = (r <= 1.5f) ? 1.0f : (3.0f - 2.25f/r) / r;
 	}
 	return (scale);
 }

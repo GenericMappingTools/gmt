@@ -451,7 +451,7 @@ int GMT_pssegy (struct GMTAPI_CTRL *API, int mode, void *args)
 	uint32_t n_samp = 0, n_tracelist = 0;
 	int check, bm_nx, bm_ny;
 
-	float scale = 1.0, toffset = 0.0, *data = NULL;
+	float scale = 1.0f, toffset = 0.0f, *data = NULL;
 	double xlen, ylen, xpix, ypix, x0, test, *tracelist = NULL, trans[3] = {-1.0, -1.0, -1.0};
 
 	unsigned char *bitmap = NULL;

@@ -299,7 +299,7 @@ int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm
 
 	dnxy = 1.0 / (nxy + 1);
 
-	if (norm != 0.0) norm /= fabs (GMT_zcrit (GMT, (double)dnxy));	/* Normalize by abs(max score) */
+	if (norm != 0.0) norm /= fabs (GMT_zcrit (GMT, dnxy));	/* Normalize by abs(max score) */
 
 	for (i = 0; i < nxy; i++) {
 		indexed_data[i].x = (float)GMT_zcrit (GMT, (i + 1.0) * dnxy);

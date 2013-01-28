@@ -2948,6 +2948,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	if (!strcmp (txt, "N")) return GMTMATH_ARG_IS_N;
 	if (!(strcmp (txt, "T") && strcmp (txt, "t"))) return GMTMATH_ARG_IS_T_MATRIX;
 	if (!(strcmp (txt, "Tn") && strcmp (txt, "tn"))) return GMTMATH_ARG_IS_t_MATRIX;
+	if (!strcmp (txt, "NaN")) {*value = GMT->session.d_NaN; return GMTMATH_ARG_IS_NUMBER;}
 
 	/* Preliminary test-conversion to a number */
 
@@ -3375,7 +3376,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 				if (recall[k]->stored.D) GMT_free_dataset (GMT, &recall[k]->stored.D);
 				GMT_free (GMT, recall[k]);
-				while (k && k == (n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
+				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 			}
 
 			/* Here we need a matrix */

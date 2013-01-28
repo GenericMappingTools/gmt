@@ -316,7 +316,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 				  /* of unused portion of matrix*/
 			for (l1=0; l1<n; l1++) {
 				if (line[l1]==0) {
-					testa = fabs ((double)(*(a+l1*nstore+j)));
+					testa = fabs ((*(a+l1*nstore+j)));
 					if (testa>big) {
 						i=l1;
 						big=testa;
@@ -364,7 +364,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 	}
  
 	b = *(a+l1*nstore+(n-1));   /* apex of triangle */
-	if (fabs((double)b)<=DBL_EPSILON) ieb=2; /* check for div by zero in backsolving */
+	if (fabs(b)<=DBL_EPSILON) ieb=2; /* check for div by zero in backsolving */
 	vec[isub[n-1]]=vec[isub[n-1]]/b;
  
 	for (j1=n-1; j1>0; j1--) { /* backsolve rest of triangle*/
@@ -372,7 +372,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 		sum=vec[isub[j]];
 		for (j2=j+1; j2<n; j2++) sum -= (vec[isub[j2]] * (*(a+isub[j]*nstore+j2)));
 		b = *(a+isub[j]*nstore+j);
-		if (fabs((double)b)<=DBL_EPSILON) ieb=2; /* test for div by 0 in backsolving */
+		if (fabs(b)<=DBL_EPSILON) ieb=2; /* test for div by 0 in backsolving */
 		vec[isub[j]]=sum/b;   /* solution returned in vec */
 	}
 
