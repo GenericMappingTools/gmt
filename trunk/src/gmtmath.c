@@ -1392,6 +1392,17 @@ void table_INV (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : 1.0 / T->segment[s]->coord[col][row];
 }
 
+void table_ISFINITE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: ISFINITE 1 1 1 if A is finite, else 0.  */
+{
+	uint64_t s, row;
+	double a = 0.0;
+	struct GMT_TABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) a = isfinite (S[last]->factor);
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : isfinite (T->segment[s]->coord[col][row]);
+}
+
 void table_ISNAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: ISNAN 1 1 1 if A == NaN, else 0.  */
 {

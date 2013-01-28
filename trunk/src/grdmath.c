@@ -1406,6 +1406,16 @@ void grd_INV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	}
 }
 
+void grd_ISFINITE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: ISFINITE 1 1 1 if A is finite, else 0.  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = isfinite (stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : isfinite (stack[last]->G->data[node]));
+}
+
 void grd_ISNAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: ISNAN 1 1 1 if A == NaN, else 0.  */
 {
@@ -2638,7 +2648,7 @@ void grd_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 		uint64_t row, col;
 		GMT_grd_loop (GMT, info->G, row, col, node) {
 			if (GMT_is_fnan (stack[last]->G->data[node])) continue;
-			sum += (double)stack[last]->G->data[node];
+			sum += stack[last]->G->data[node];
 			n_used++;
 		}
 		if (n_used == 0) sum = GMT->session.d_NaN;
