@@ -1295,6 +1295,33 @@ void grd_I1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_i1 (GMT, (double)stack[last]->G->data[node]));
 }
 
+void grd_IFELSE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: IFELSE 3 1 B if A == 1, else C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2;
+	float a = 0.0, b = 0.0, c = 0.0;
+
+	/* last is C */
+	prev1 = last - 1;	/* This is B */
+	prev2 = last - 2;	/* This is A */
+
+	/* Set to B if A == 1 else set to C
+	 * A, B, or C = NaN, in which case we set answer to NaN */
+
+	if (stack[prev2]->constant) a = (float)stack[prev2]->factor;
+	if (stack[prev1]->constant) b = (float)stack[prev1]->factor;
+	if (stack[last]->constant)  c = (float)stack[last]->factor;
+
+	for (node = 0; node < info->size; node++) {
+		if (!stack[prev2]->constant) a = stack[prev2]->G->data[node];
+		if (!stack[prev1]->constant) b = stack[prev1]->G->data[node];
+		if (!stack[last]->constant)  c = stack[last]->G->data[node];
+
+		stack[prev2]->G->data[node] = (doubleAlmostEqual (a, 1.0)) ? b : c;
+	}
+}
+
 void grd_IN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: IN 2 1 Modified Bessel function of A (1st kind, order B).  */
 {
