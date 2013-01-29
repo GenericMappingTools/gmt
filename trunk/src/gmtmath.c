@@ -1304,7 +1304,7 @@ void table_IFELSE (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 		if (!S[prev2]->constant) a = T_prev2->segment[s]->coord[col][row];
 		if (!S[prev1]->constant) b = T_prev1->segment[s]->coord[col][row];
 		if (!S[last]->constant)  c = T->segment[s]->coord[col][row];
-		T_prev2->segment[s]->coord[col][row] = (fabs (a) < GMT_CONV_LIMIT) ? b : c;
+		T_prev2->segment[s]->coord[col][row] = (fabs (a) < GMT_CONV_LIMIT) ? c : b;
 	}
 }
 
