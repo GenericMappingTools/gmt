@@ -2780,7 +2780,7 @@ void grd_UPPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 }
 
 void grd_XOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: 0 if A == NaN and B == NaN, NaN if B == NaN, else A.  */
+/*OPERATOR: XOR 2 1 0 if A == NaN and B == NaN, NaN if B == NaN, else A.  */
 {
 	uint64_t node;
 	unsigned int prev;
