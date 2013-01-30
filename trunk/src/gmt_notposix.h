@@ -252,7 +252,7 @@
 #elif !defined HAVE_COPYSIGN
 #	define copysign(x,y) ((y) < 0.0 ? -fabs(x) : fabs(x))
 #endif
-#if defined HAVE_COPYSIGNF
+#ifndef HAVE_COPYSIGNF
 #	define copysignf(x,y) (float)copysign((double)(x),(double)(y))
 #endif
 
@@ -268,8 +268,14 @@
 #ifndef HAVE_ERF
 	EXTERN_MSC double erf(double x);
 #endif
+#ifndef HAVE_ERFF
+#	define erff(x) (float)erf((double)(x))
+#endif
 #ifndef HAVE_ERFC
 	EXTERN_MSC double erfc(double x);
+#endif
+#ifndef HAVE_ERFCF
+#	define erfcf(x) (float)erfc((double)(x))
 #endif
 #ifndef HAVE_EXPF
 #	define expf(x) (float)exp((double)(x))
@@ -303,6 +309,9 @@
 #endif
 #ifndef HAVE_LRINTF
 #	define lrintf(x) lrint((double)(x))
+#endif
+#ifndef HAVE_RINTF
+#	define rintf(x) (float)rint((double)(x))
 #endif
 #ifndef HAVE_POWF
 #	define powf(x) (float)pow((double)(x))
