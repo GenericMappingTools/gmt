@@ -599,7 +599,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
 			int ibox, n_boxes;
-			uint64_t dim[4] = {1, 1, 2, 0};
+			uint64_t dim[4] = {1, 1, 2, 0}, row;
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_LINE_SEGMENT *S = NULL;
