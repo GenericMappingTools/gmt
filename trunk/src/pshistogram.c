@@ -598,13 +598,22 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			int ibox;
+			int ibox, n_boxes;
 			uint64_t dim[4] = {1, 1, 2, 0};
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_LINE_SEGMENT *S = NULL;
 			
-			dim[3] = F.n_boxes;
+			if (Ctrl->I.mode == 1) {
+				for (ibox = 0; ibox < F.n_boxes; ibox++) {
+					if (Ctrl->I.mode == 1 && F.boxh[ibox] == 0) continue;
+					n_boxes++;
+				}
+			}
+			else
+				n_boxes = F.n_boxes;
+			
+			dim[3] = n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
 				Return (API->error);
