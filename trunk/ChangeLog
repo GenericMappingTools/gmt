@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-01-30	pwessel
+	* xyz2grd.c:		For -E, must read data as double so can properly compare
+				with the nodata_value read as double.
+
 2013-01-24      pwessel
 	* gmtmath.c:		Introduced capability to store & recall intermediate
 				calculations from named memory locations, using new

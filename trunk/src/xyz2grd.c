@@ -413,7 +413,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
 		uint64_t n_left;
-		float value;
+		double value;
 		char line[GMT_BUFSIZ];
 		FILE *fp = GMT->session.std[GMT_IN];
 		
@@ -465,7 +465,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		row = col = 0;
 		fscanf (fp, "%s", line);	GMT_str_tolower (line);
 		if (!strcmp (line, "nodata_value")) {	/* Found the optional nodata word */
-			fscanf (fp, "%f", &value);
+			fscanf (fp, "%lf", &value);
 			if (Ctrl->E.set && !doubleAlmostEqualZero (value, Ctrl->E.nodata)) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Your -E%g overrides the nodata_value of %g found in the ESRI file\n", Ctrl->E.nodata, value);
 			}
@@ -474,12 +474,12 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		else {	/* Instead got the very first data value */
 			ij = GMT_IJP (Grid->header, row, col);
-			value = (float)atof (line);
+			value = atof (line);
 			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
 			if (++col == Grid->header->nx) col = 0, row++;
 			n_left--;
 		}
-		while (fscanf (fp, "%f", &value) == 1 && n_left) {
+		while (fscanf (fp, "%lf", &value) == 1 && n_left) {
 			ij = GMT_IJP (Grid->header, row, col);
 			Grid->data[ij] = (value == Ctrl->E.nodata) ? GMT->session.f_NaN : (float) value;
 			if (++col == Grid->header->nx) col = 0, row++;
