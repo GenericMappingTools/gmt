@@ -526,7 +526,7 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 	}
-  	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
 

@@ -499,7 +499,6 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 	F.box_width = Ctrl->W.inc;
 	F.cumulative = Ctrl->Q.active;
 	F.center_box = Ctrl->F.active;
-	if (Ctrl->I.active) GMT->current.setting.verbose = GMT_MSG_VERBOSE;
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
 	if (GMT->common.R.active) GMT_memcpy (F.wesn, GMT->common.R.wesn, 4, double);
 
@@ -648,6 +647,31 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
 				Return (API->error);
 			}
+		}
+		else {	/* Report the min/max values as the data result */
+			double out[4];
+			int col_type[4];
+			GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4, int);	/* Save first 4 current output col types */
+			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
+			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+				Return (error);
+			}
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+				Return (API->error);
+			}
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {
+				Return (API->error);	/* Enables data output and sets access mode */
+			}
+			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -W%g -Z%u", Ctrl->W.inc, Ctrl->Z.mode);
+			if (Ctrl->F.active) strcat (format, " -F");
+			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;
+			GMT_Put_Record (API, GMT_WRITE_TBLHEADER, format);	/* Write this to output if -ho */
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+				Return (API->error);
+			}
+			GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4, int);	/* Restore 4 current output col types */
 		}
 		GMT_free (GMT, data);
 		GMT_free (GMT, F.boxh);

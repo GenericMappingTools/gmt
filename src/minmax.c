@@ -244,7 +244,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	bool error = false, got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
-	int i, j;
+	int i, j, col_type[GMT_MAX_COLUMNS];
 	unsigned int col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
 	uint64_t n = 0;
 
@@ -311,10 +311,9 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active) {	/* Must set output column types since each input col will take up two output cols. */
-		int col_type[GMT_MAX_COLUMNS];
-		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_IN], GMT_MAX_COLUMNS, int);	/* Duplicate input col types */
-		for (col = 0; col < GMT_MAX_COLUMNS/2; col++) GMT->current.io.col_type[GMT_OUT][2*col] = GMT->current.io.col_type[GMT_OUT][2*col+1] = col_type[col];
+	if (Ctrl->C.active) {	/* Must set output column types since each input col will produce two output cols. */
+		GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], GMT_MAX_COLUMNS, int);	/* Save previous output col types */
+		for (col = 0; col < GMT_MAX_COLUMNS/2; col++) GMT->current.io.col_type[GMT_OUT][2*col] = GMT->current.io.col_type[GMT_OUT][2*col+1] = GMT->current.io.col_type[GMT_IN][col];
 	}
 		
 	save_range = GMT->current.io.geo.range;
@@ -528,6 +527,9 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (!got_stuff) GMT_report (GMT, GMT_MSG_NORMAL, "No input data found!\n");
 
 	GMT->current.io.geo.range = save_range;	/* Restore what we changed */
+	if (Ctrl->C.active) {	/* Restore previous output col types */
+		GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, GMT_MAX_COLUMNS, int);
+	}
 
 	Return (GMT_OK);
 }
