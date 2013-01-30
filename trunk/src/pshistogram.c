@@ -622,7 +622,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 				Return (error);
 			}
 			S = D->table[0]->segment[0];	/* Only one table with one segment here, with 2 cols and F.n_boxes rows */
-			for (ibox = 0; ibox < F.n_boxes; ibox++) {
+			for (ibox = row = 0; ibox < F.n_boxes; ibox++) {
 				if (Ctrl->I.mode == 1 && F.boxh[ibox] == 0) continue;
 				xx = F.wesn[XLO] + ibox * F.box_width;
 				if (F.center_box) xx -= (0.5 * F.box_width);
@@ -638,8 +638,9 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 					yy = d_log101p (GMT, 100.0 * F.boxh[ibox] / F.n_counted );
 				else
 					yy = (double)F.boxh[ibox];
-				S->coord[GMT_X][ibox] = xx;
-				S->coord[GMT_Y][ibox] = yy;
+				S->coord[GMT_X][row] = xx;
+				S->coord[GMT_Y][row] = yy;
+				row++;
 			}
 			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
