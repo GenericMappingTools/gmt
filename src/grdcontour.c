@@ -555,7 +555,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		if (save[pol].high && !tick_high) continue;	/* Do not tick highs */
 		if (!save[pol].high && !tick_low) continue;	/* Do not tick lows */
 
-		np = GMT_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
+		np = (int)GMT_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
 		
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
@@ -610,7 +610,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			for (pol2 = 0, k = -1; pol2 < n && k == -1; pol2++) {	/* Finally, do labels */
 				if (save[pol2].kind != -save[pol].kind) continue;
 				if (save[pol2].cval != save[pol].cval) continue;
-				k = pol2;	/* Found its counterpart */
+				k = (int)pol2;	/* Found its counterpart */
 			}
 			if (k == -1) continue;
 			x_lbl = 0.5 * (save[pol].xlabel + save[k].xlabel);
@@ -739,7 +739,7 @@ enum grdcontour_contour_type gmt_is_closed (struct GMT_CTRL *GMT, struct GMT_GRI
 int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* High-level function that implements the grdcontour task */
 	int error, c;
-	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time, use_t_offset = false; 
+	bool need_proj, make_plot, two_only = false, begin, is_closed, data_is_time = false, use_t_offset = false; 
 	
 	enum grdcontour_contour_type closed;
 	
