@@ -1159,32 +1159,52 @@ int GMT_default_error (struct GMT_CTRL *C, char option)
 }
 
 int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
-	int i, j, k = 0, error = 0;
+	int i, k = 1, error = 0, col = -1;
 
-	/* Parse the -h option.  Full syntax: -h[i][o][<nrecs>] */
+	/* Parse the -h option.  Full syntax: -h[i][<nrecs>] | -ho */
 
+	/* Note: This forces the io to skip the first <nrecs> records, regardless of what they are.
+	 * In addition, any record starting with # will be considered a comment.
+	 * For output (-ho) no <nrecs> is allowed since either (a) we output the same number of
+	 * input records we found or (b) the program writes a specific number of records built from scratch.
+	 */
 	if (!item || !item[0]) {	/* Nothing further to parse; just set defaults */
 		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = true;
 		C->current.setting.io_n_header_items = 1;
 		return (GMT_NOERROR);
 	}
-	j = 0;
-	if (item[j] == 'i') k = j++;	/* -hi[nrecs] given */
-	if (item[j]) {
-		i = atoi (&item[j]);
-		if (i < 0)
-			error++;
-		else
-			C->current.setting.io_n_header_items = i;
+	if (item[0] == 'i')	/* Apply to input only */
+		col = GMT_IN;
+	else if (item[0] == 'o')	/* Apply to output only */
+		col = GMT_OUT;
+	else			/* Apply to both input and output columns */
+		k = 0;
+	if (item[k]) {	/* Specified how many records for input */
+		if (col == GMT_OUT) {
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: Can only set the number of input header records; %s ignored\n", &item[k]);
+		}
+		else {
+			i = atoi (&item[k]);
+			if (i < 0)
+				error++;
+			else
+				C->current.setting.io_n_header_items = i;
+		}
 	}
 	else C->current.setting.io_n_header_items = 1;
 
-	if (j == 0)	/* Both in and out may have header records */
-		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = (C->current.setting.io_n_header_items > 0);
-	else if (item[k] == 'i')		/* Only input should have header records */
+	if (col == GMT_IN) {		/* Only input should have header records, set to true unless we gave -h[i]0 */
 		C->current.setting.io_header[GMT_IN] = (C->current.setting.io_n_header_items > 0);
-	else		/* Only output should have header records */
-		C->current.setting.io_header[GMT_OUT] = (C->current.setting.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_OUT] = false;
+	}
+	else if (col == GMT_OUT) {	/* Only output should have header records */
+		C->current.setting.io_header[GMT_OUT] = true;
+		C->current.setting.io_header[GMT_IN] = false;
+	}
+	else {	/* Both in and out may have header records */
+		C->current.setting.io_header[GMT_IN] = (C->current.setting.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_OUT] = true;
+	}
 	return (error);
 }
 

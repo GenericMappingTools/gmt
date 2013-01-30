@@ -41,9 +41,9 @@ OPT(G)IT(fill)
 Select filling of bars [Default is no fill].
 .TP
 OPT(I)[BD(o)|BD(O)]
-Inquire about min/max x and y after binning.  No plotting is done.  Append BD(o)
-to output an ASCII table of the resulting x,y data to stdout.  Alternatively, append
-BD(O) to output all x,y bin data even when y == 0.
+Inquire about min/max x and y after binning.  The IT(xmin xmax ymin ymax) is output; no plotting is done.  Append BD(o)
+to output an ASCII table of the resulting x,y data instead.  Upper case
+BD(O) will output all x,y bin data even when y == 0.
 #include "explain_-Jz.txt"
 #include "explain_-K.txt"
 .TP

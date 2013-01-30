@@ -1311,7 +1311,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 			C->current.io.status = GMT_IO_TBL_HEADER;
-			C->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
+			//C->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output PW: No! If we get here via -hi then no header output is requested */
 			*status = 0;
 			return (NULL);
 		}
