@@ -9638,6 +9638,8 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	
 	uint64_t row, left, right, seg, seg_no;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
+	
+	bool skip_seg_no;
 
 	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
 
@@ -9667,7 +9669,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
 	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
-
+	skip_seg_no = (Din->n_tables == 1 && Din->table[0]->n_segments == 1);
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
 		Tin  = Din->table[tbl];
 		Tout = Xout->table[tbl];
@@ -9735,7 +9737,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 					if (seg_name[0]) sprintf (ID, "%s-%*.*" PRIu64, seg_name, ndig, ndig, row);
 				}
 				if (!ID[0]) {	/* Must assign a label from running numbers */
-					if (Tin->n_segments == 1 && Din->n_tables == 1)	/* Single track, just list cross-profile no */
+					if (skip_seg_no)	/* Single track, just list cross-profile no */
 						sprintf (ID, "%*.*" PRIu64, ndig, ndig, row);
 					else	/* Segment number and cross-profile no */
 						sprintf (ID, "%*.*" PRIu64 "-%*.*" PRIu64, sdig, sdig, seg_no, ndig, ndig, row);
