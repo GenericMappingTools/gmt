@@ -638,6 +638,7 @@ int GMT_psxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			   dist[1] is higher when objects are further above a place viewed from above or below a plane viewed from below */
 			data[n].dist[0] = GMT->current.proj.z_project.sin_az * data[n].x + GMT->current.proj.z_project.cos_az * data[n].y;
 			data[n].dist[1] = GMT->current.proj.z_project.sin_el * data[n].z;
+			GMT_report (GMT, GMT_MSG_DEBUG, "dist[0] = %g dist[1] = %g\n", data[n].dist[0], data[n].dist[1]);
 
 			switch (S.symbol) {
 				case GMT_SYMBOL_BARX:
