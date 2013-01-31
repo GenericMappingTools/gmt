@@ -545,8 +545,10 @@ int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	strncpy (t_head.name, header->name, GMT_TEXT_LEN256);
 	if ((status = GMT_native_read_grd_info (C, &t_head)))
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
-	if (t_head.nx <= 0 || t_head.ny <= 0)
+	if (t_head.nx <= 0 || t_head.ny <= 0 || !(t_head.registration == GMT_GRIDLINE_REG || t_head.registration == GMT_PIXEL_REG))
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
+	if (t_head.wesn[XLO] >= t_head.wesn[XHI] || t_head.wesn[YLO] >= t_head.wesn[YHI])
+		return (GMT_GRDIO_BAD_VAL);		/* Garbage for wesn */
 	nm = GMT_get_nm (C, t_head.nx, t_head.ny);
 	if (nm <= 0)
 		return (GMT_GRDIO_BAD_VAL);			/* Overflow for nx * ny? */
