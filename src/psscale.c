@@ -411,7 +411,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
-	double z, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], xp[4], yp[4], prev_del_z, this_del_z = 0.0;
+	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], xp[4], yp[4], prev_del_z, this_del_z = 0.0;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A;
 

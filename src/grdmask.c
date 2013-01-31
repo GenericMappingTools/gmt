@@ -231,7 +231,7 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 int GMT_grdmask (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	bool error = false, periodic = false, periodic_grid = false, do_test = true;
-	unsigned int side, *d_col = NULL, d_row = 0, col_0, row_0;
+	unsigned int side = 0, *d_col = NULL, d_row = 0, col_0, row_0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
 	int row, col, nx, ny;
 	

@@ -6252,7 +6252,7 @@ int gmt_decode_tinfo (struct GMT_CTRL *C, int axis, char flag, char *in, struct 
 }
 
 #ifdef GMT_COMPAT
-int gmt_B_option_style (struct GMT_CTRL *C, char *in) {
+void gmt_B_option_style (struct GMT_CTRL *C, char *in) {
 	/* Determines if the -B option indicates old GMT4-style switches and flags
 	 * or if it follows the GMT 5 specification.  This is only called when
 	 * compatibility mode has been compiled in; otherwise we only check GMT 5
@@ -6297,8 +6297,6 @@ int gmt_B_option_style (struct GMT_CTRL *C, char *in) {
 		GMT_report (C, GMT_MSG_DEBUG, "gmt_B_option_style: Detected both GMT4 and GMT5 style format in -B option?\n");
 	else
 		GMT_report (C, GMT_MSG_DEBUG, "gmt_B_option_style: Assume GMT5 style format in -B option\n");
-	
-	return (0);	/* Could be either, proceed with GMT5 parsing */
 }
 #endif
 	
@@ -6338,9 +6336,6 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
 	int i, j, k, ignore, g = 0, error = 0;
-#ifdef GMT_COMPAT
-	int format = 0;
-#endif
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -6353,7 +6348,7 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 			C->current.map.frame.primary = true; k = 0; break;
 	}
 #ifdef GMT_COMPAT
-	format = gmt_B_option_style (C, in);
+	gmt_B_option_style (C, in);
 #endif	
 	i = (C->current.map.frame.primary) ? 0 : 1;
 	strncpy (C->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */

@@ -716,9 +716,8 @@ int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *a
 
 int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	int i, c, id, k, t_pos = MGD77_NOT_SET;
+	int i, c, id, k, time_column, lon_column, lat_column;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
-	int time_column, lon_column, lat_column;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	
 	unsigned int select_option, n_out = 0, argno, n_cruises = 0, n_paths, kx, n_items = 0;
@@ -1030,7 +1029,6 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 			id = M.order[kk].item;
 			if (c == MGD77_M77_SET && id == time_column)	{/* Special time formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? M.time_format : GMT_IS_FLOAT;
-				t_pos = pos;	/* Output order of time */
 			}
 			else if (c == MGD77_M77_SET && id == lon_column)	/* Special lon formatting */
 				GMT->current.io.col_type[GMT_OUT][pos] = (c == 0) ? GMT_IS_LON : GMT_IS_FLOAT;

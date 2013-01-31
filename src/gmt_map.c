@@ -5484,7 +5484,7 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct 
 {	/* Since Cartesian we use a GMT_distance set to return distances^2 (avoiding hypot) */
 	bool each_point_has_distance;
 	uint64_t row, seg;
-	double d, x0, y0, xn, d0, d02, dn;
+	double d, x0, y0, xn, d0, d02 = 0.0, dn;
 
 	each_point_has_distance = (dist <= 0.0 && T->segment[0]->n_columns > 2);
 
