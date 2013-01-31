@@ -150,6 +150,10 @@
 #	include <floatingpoint.h>
 #endif
 
+#ifdef HAVE_AMP_MATH_H_
+#	include <amp_math.h>
+#endif
+
 /*
  * Make sure Cygwin does not use Windows related tweaks
  */
