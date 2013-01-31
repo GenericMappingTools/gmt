@@ -790,7 +790,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	bool allocate = false, update = false, all_D, use_GMT_io, poly;
 	size_t n_alloc;
 	uint64_t row, seg, ij;
-	unsigned int n_cols = 0, col;
+	unsigned int col;
 	p_func_size_t GMT_2D_to_index = NULL;
 	
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
@@ -2748,7 +2748,7 @@ int GMT_Init_IO (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geom
 	 * Returns:	false if successfull, true if error.
 	 */
 #ifdef DEBUG
-	int object_ID;	/* ID of first object [only for debug purposes - not used in this function] */
+	int object_ID;	/* ID of first object [only for debug purposes - not used in this function; ignore -Wunused-but-set-variable warning */
 	#define ASSIGN_OR_VOID object_ID =
 #else
 	#define ASSIGN_OR_VOID (void)

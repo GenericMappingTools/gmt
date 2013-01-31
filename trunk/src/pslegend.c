@@ -316,7 +316,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	unsigned char *dummy = NULL;
 
-	double x_orig, y_orig, x_off, x, y, x0, y0, y0_orig, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
+	double x_orig, y_orig, x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height;
 
 	struct imageinfo header;
@@ -595,7 +595,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
 
 	x0 = Ctrl->D.lon + Ctrl->C.dx;			/* Left justification edge of items inside legend box */
-	y0_orig = y0 = Ctrl->D.lat + Ctrl->D.height - Ctrl->C.dy;	/* Top justification edge of items inside legend box  */
+	y0 = Ctrl->D.lat + Ctrl->D.height - Ctrl->C.dy;	/* Top justification edge of items inside legend box  */
 	column_number = 0;
 	txtcolor[0] = 0;
 

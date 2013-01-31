@@ -753,7 +753,7 @@ int GMT_grdcontour (struct GMTAPI_CTRL *API, int mode, void *args)
 	char *cont_type = NULL, *cont_do_tick = NULL;
 	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
 
-	double aval, cval, small, xyz[2][3], z_range, t_offset, wesn[4], rgb[4];
+	double aval, cval, small, xyz[2][3], z_range, t_offset = 0.0, wesn[4], rgb[4];
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;
 
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;

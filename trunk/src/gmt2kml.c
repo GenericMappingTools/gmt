@@ -594,7 +594,7 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, doubl
 	}
 }
 
-int get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
+void get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
 {
 	/* Because we read as textset we must determine the data extent the hard way */
 	unsigned int tbl, ix, iy, way;
