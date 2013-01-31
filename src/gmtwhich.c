@@ -33,9 +33,8 @@ struct GMTWHICH_CTRL {	/* All control options for this program (except common ar
 	struct C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D[f] */
+	struct D {	/* -D */
 		bool active;
-		bool full_path_of_cwd;
 	} D;
 };
 
@@ -58,13 +57,12 @@ int GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtwhich [files] [-C] [-D[f]] [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: gmtwhich [files] [-C] [-D] [%s]\n", GMT_V_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_message (GMT, "\t-D Print the directory where a file is found [full path to file].\n");
-	GMT_message (GMT, "\t   Append f to give full path if file is in current directory [.].\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
@@ -96,7 +94,6 @@ int GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, struc
 				break;
 			case 'D':	/* Want directory instead */
 				Ctrl->D.active = true;
-				if (opt->arg[0] == 'f') Ctrl->D.full_path_of_cwd = true;
 				break;
 
 			default:	/* Report bad options */
@@ -149,10 +146,8 @@ int GMT_gmtwhich (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	if (Ctrl->D.active) {	/* Want full paths, even for current dir */
-		strcpy (cwd, ".");
-		if (Ctrl->D.full_path_of_cwd) getcwd (cwd, GMT_BUFSIZ);
-	}
+	if (Ctrl->D.active) getcwd (cwd, GMT_BUFSIZ);	/* Get full path, even for current dir */
+		
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
