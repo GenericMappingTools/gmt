@@ -102,6 +102,12 @@ enum GMT_enum_pol {
 	GMT_IS_PERIMETER = 0,
 	GMT_IS_HOLE};
 
+/* THere are three GMT/OGR status values */
+enum GMT_ogr_status {
+	GMT_OGR_UNKNOWN = -1,	/* We have not parsed enough records to know yet */
+	GMT_OGR_FALSE,		/* This is NOT a GMT/OGR file */
+	GMT_OGR_TRUE};		/* This is a GMT/OGR file */
+
 #define GMT_polygon_is_hole(S) (S->pol_mode == GMT_IS_HOLE || (S->ogr && S->ogr->pol_mode == GMT_IS_HOLE))
 
 /* Specific feature geometries as obtained from OGR */
@@ -385,14 +391,15 @@ struct GMT_IO {				/* Used to process input data records */
 	bool give_report;		/* true if functions should report how many bad records were skipped */
 	bool skip_duplicates;	/* true if we should ignore duplicate x,y records */
 	bool read_mixed;		/* true if we are reading ascii x y [z] [variable numbers of text] */
+	bool need_previous;		/* true if when parsing a record we need access to previous record values (e.g., for gap or duplicate checking) */
 
 	uint64_t seg_no;		/* Number of current multi-segment in entire data set */
 	uint64_t seg_in_tbl_no;		/* Number of current multi-segment in current table */
 	uint64_t n_clean_rec;		/* Number of clean records read (not including skipped records or comments or blanks) */
 	uint64_t n_bad_records;		/* Number of bad records encountered during i/o */
 	unsigned int tbl_no;		/* Number of current table in entire data set */
-	unsigned int io_nan_ncols;		/* Number of columns to consider for -s option */
-	int ogr;			/* Tells us if current input source has OGR/GMT metadata (1) or not (0) or not set (-1) */
+	unsigned int io_nan_ncols;	/* Number of columns to consider for -s option */
+	enum GMT_ogr_status ogr;	/* Tells us if current input source has OGR/GMT metadata (GMT_OGR_TRUE) or not (GMT_OGR_FALSE) or not set (GMT_OGR_UNKNOWN) */
 	unsigned int status;		/* 0	All is ok
 					   1	Current record is segment header
 					   2	Mismatch between actual and expected fields

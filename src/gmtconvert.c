@@ -345,7 +345,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (error);
 	}
 	
-	if (Ctrl->S.active && GMT->current.io.ogr == 1 && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
+	if (Ctrl->S.active && GMT->current.io.ogr == GMT_OGR_TRUE && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
 		*p = 0;	/* Skip the = sign */
 		if ((ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMTAPI_NOTSET) {
 			ogr_match = true;
