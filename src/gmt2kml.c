@@ -594,7 +594,7 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, doubl
 	}
 }
 
-void get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
+int get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
 {
 	/* Because we read as textset we must determine the data extent the hard way */
 	unsigned int tbl, ix, iy, way;
@@ -626,6 +626,7 @@ void get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
 	wesn[XLO] = Q->min[way];	wesn[XHI] = Q->max[way];
 	wesn[YLO] = y_min;		wesn[YHI] = y_max;
 	GMT_free (C, Q);
+	return (GMT_NOERROR);
 }
 
 bool crossed_dateline (double this_x, double last_x)
@@ -814,7 +815,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	else if (Ctrl->R2.automatic) {	/* Issue Region tag */
 		double wesn[4];
-		get_data_region (GMT, Din, wesn);
+		if (get_data_region (GMT, Din, wesn)) Return (EXIT_FAILURE);
 		place_region_tag (GMT, wesn, Ctrl->Z.min, Ctrl->Z.max, N);
 	}
 	set_nr = pnt_nr = 0;
