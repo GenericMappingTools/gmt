@@ -3,11 +3,12 @@
 .SH NAME
 gmtwhich \- Find full path to specified files
 .SH SYNOPSIS
-BD(gmtwhich) IT(files) [ OPT(C) ] [ GMT_V_OPT ]
+BD(gmtwhich) IT(files) [ OPT(C) ] [ OPT(D)[BD(f)] ] [ GMT_V_OPT ]
 .SH DESCRIPTION
 BD(gmtwhich) reports the full paths to the files given on the command line.
 We look for the file in (1) the current directory, (2) in $GMT_USERDIR (if defined),
 (3) in $GMT_DATADIR (if defined).  If found we print the full path name to the file,
+just the directory (see OPT(D)),
 or a confirmation (see OPT(C)).  The $GMT_USERDIR and $GMT_DATADIR environment variables
 can be colon-separated list of directories, and we search recursively down any directory that ends
 with / (i.e., /export/data is a single directory whereas /export/data/ will be searched
@@ -21,6 +22,10 @@ One or more file names of any data type (grids, tables, etc.).
 .TP
 .B -C
 Instead of reporting the paths, print the confirmation Y if the file is found and N if it is not.
+.TP
+.B -D[BD(f)]
+Instead of reporting the paths, print the directory that contains the file.
+Append BD(f) to report the full path if the file is in the current directory [Default returns .]
 #include "explain_-V.txt"
 #include "explain_help.txt"
 .SH "SEE ALSO"
