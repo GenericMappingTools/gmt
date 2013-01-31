@@ -1610,6 +1610,39 @@ void grd_KURT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = f_kurt;
 }
 
+/* Helper functions ASCII_read and ASCII_free are used in LDIST[2] and PDIST[2] */
+
+struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, int geometry, char *op)
+{
+	struct GMT_DATASET *D = NULL;
+	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical (in degrees) */
+		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
+#ifdef GMT_COMPAT
+		if (!strcmp (op, "LDIST") || !strcmp (op, "PDIST")) GMT_report (GMT, GMT_MSG_COMPAT, "Warning: %s returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n", op);
+#endif
+	}
+	else
+		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
+
+	GMT_set_cols (GMT, GMT_IN,  2);
+	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, geometry, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error in operator %s reading file %s!\n", op, info->ASCII_file);
+		info->error = GMT->parent->error;
+		return NULL;
+	}
+	return (D);
+}
+
+int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATASET **D, char *op)
+{
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, D) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error in operator %s destroying allocated data from %s!\n", op, info->ASCII_file);
+		info->error = GMT->parent->error;
+		return 1;
+	}
+	return 0;
+}
+
 void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: LDIST 1 1 Compute distance (in degrees if -fg) from lines in multi-segment ASCII file A.  */
 {
@@ -1618,21 +1651,7 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	struct GMT_TABLE *line = NULL;
 	struct GMT_DATASET *D = NULL;
 
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical (in degrees) */
-		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
-#ifdef GMT_COMPAT
-		GMT_report (GMT, GMT_MSG_COMPAT, "Warning: LDIST returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n");
-#endif
-	}
-	else
-		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
-
-	GMT_set_cols (GMT, GMT_IN,  2);
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error in operator LDIST reading file %s!\n", info->ASCII_file);
-		info->error = GMT->parent->error;
-		return;
-	}
+	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST")) == NULL) return;
 	line = D->table[0];	/* Only one table in a single file */
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
@@ -1641,13 +1660,33 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		if (col == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 	}
 
-	/* Free memory used for line */
+	ASCII_free (GMT, info, &D, "LDIST");	/* Free memory used for line */
+}
 
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error in operator LDIST destroying allocated data from %s!\n", info->ASCII_file);
-		info->error = GMT->parent->error;
-		return;
+void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: LDIST2 2 1 As LDIST, from lines in ASCII file B but only to nodes where A != 0.  */
+{
+	uint64_t node, row, col;
+	unsigned int prev;
+	double d;
+	struct GMT_TABLE *line = NULL;
+	struct GMT_DATASET *D = NULL;
+
+	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST2")) == NULL) return;
+	line = D->table[0];	/* Only one table in a single file */
+	prev = last - 1;
+
+	GMT_grd_padloop (GMT, info->G, row, col, node) {	/* Visit each node */
+		if (stack[prev]->G->data[node] == 0.0)
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			(void) GMT_near_lines (GMT, (double)info->grd_x[col], (double)info->grd_y[row], line, true, &d, NULL, NULL);
+			stack[prev]->G->data[node] = (float)d;
+		}
+		if (col == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Row %d\n", row);
 	}
+
+	ASCII_free (GMT, info, &D, "LDIST2");	/* Free memory used for line */
 }
 
 void grd_LE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2082,32 +2121,36 @@ void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical, in degrees */
-		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
-#ifdef GMT_COMPAT
-		GMT_report (GMT, GMT_MSG_COMPAT, "Warning: PDIST returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n");
-#endif
-	}
-	else
-		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */
+	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "PDIST")) == NULL) return;
 
-	GMT_set_cols (GMT, GMT_IN,  2);
-	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, info->ASCII_file, NULL)) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error in operator grd_PDIST reading file %s!\n", info->ASCII_file);
-		info->error = GMT->parent->error;
-		return;
-	}
 	T = D->table[0];	/* Only one table in a single file */
 
 	GMT_grd_padloop (GMT, info->G, row, col, node) stack[last]->G->data[node] = (float)GMT_mindist_to_point (GMT, (double)info->grd_x[col], (double)info->grd_y[row], T, dummy);
 
-	/* Free memory used for points */
+	ASCII_free (GMT, info, &D, "PDIST");	/* Free memory used for points */
+}
 
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error in operator PDIST destroying allocated data from %s!\n", info->ASCII_file);
-		info->error = GMT->parent->error;
-		return;
+void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: PDIST2 2 1 As PDIST, from points in ASCII file B but only to nodes where A != 0.  */
+{
+	uint64_t dummy[2], node, row, col;
+	unsigned int prev;
+	struct GMT_TABLE *T = NULL;
+	struct GMT_DATASET *D = NULL;
+
+	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "PDIST")) == NULL) return;
+
+	T = D->table[0];	/* Only one table in a single file */
+	prev = last - 1;
+
+	GMT_grd_padloop (GMT, info->G, row, col, node) {
+		if (stack[prev]->G->data[node] == 0.0)
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else
+			stack[prev]->G->data[node] = (float)GMT_mindist_to_point (GMT, (double)info->grd_x[col], (double)info->grd_y[row], T, dummy);
 	}
+
+	ASCII_free (GMT, info, &D, "PDIST2");	/* Free memory used for points */
 }
 
 void grd_POP (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
