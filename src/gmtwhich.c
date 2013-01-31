@@ -33,6 +33,10 @@ struct GMTWHICH_CTRL {	/* All control options for this program (except common ar
 	struct C {	/* -C */
 		bool active;
 	} C;
+	struct D {	/* -D[f] */
+		bool active;
+		bool full_path_of_cwd;
+	} D;
 };
 
 void *New_gmtwhich_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -59,6 +63,7 @@ int GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-C Print Y if found and N if not found.  No path is returned.\n");
+	GMT_message (GMT, "\t-D Print the directory where a file is found [full path to file].\n");
 	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
@@ -88,6 +93,10 @@ int GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, struc
 			case 'C':	/* Want Yes/No response instead */
 				Ctrl->C.active = true;
 				break;
+			case 'D':	/* Want directory instead */
+				Ctrl->D.active = true;
+				if (opt->arg[0] == 'f') Ctrl->D.full_path_of_cwd = true;
+				break;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
@@ -96,6 +105,7 @@ int GMT_gmtwhich_parse (struct GMTAPI_CTRL *C, struct GMTWHICH_CTRL *Ctrl, struc
 	}
 	
 	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: No files specified\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->D.active, "Syntax error: Cannot use -D if -C is set\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -107,7 +117,7 @@ int GMT_gmtwhich (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	int error = 0;
 	
-	char path[GMT_BUFSIZ], *Yes = "Y", *No = "N";
+	char path[GMT_BUFSIZ], *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ], *p = NULL;
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -138,12 +148,27 @@ int GMT_gmtwhich (struct GMTAPI_CTRL *API, int mode, void *args)
 		Return (API->error);
 	}
 	
+	if (Ctrl->D.active) {	/* Want full paths, even for current dir */
+		strcpy (cwd, ".");
+		if (Ctrl->D.full_path_of_cwd) getcwd (cwd, GMT_BUFSIZ);
+	}
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '<') continue;	/* Skip anything but filenames */
 		if (!opt->arg[0]) continue;		/* Skip empty arguments */
 
-		if (GMT_getdatapath (GMT, opt->arg, path))	/* Found the file */
-			GMT_Put_Record (API, GMT_WRITE_TEXT, ((Ctrl->C.active) ? Yes : path));
+		if (GMT_getdatapath (GMT, opt->arg, path)) {	/* Found the file */
+			if (Ctrl->D.active) {
+				p = strstr (path, opt->arg);	/* Start of filename */
+				if (!strcmp (p, path)) /* Current directory */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, cwd);
+				else {
+					*(--p) = 0;	/* Chop off file, report directory */
+					GMT_Put_Record (API, GMT_WRITE_TEXT, path);
+				}
+			}
+			else
+				GMT_Put_Record (API, GMT_WRITE_TEXT, ((Ctrl->C.active) ? Yes : path));
+		}
 		else {
 			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
 			GMT_report (GMT, GMT_MSG_VERBOSE, "File %s not found!\n", opt->arg);
