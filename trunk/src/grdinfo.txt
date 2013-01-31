@@ -4,7 +4,7 @@
 grdinfo \- Extract information from grids
 .SH SYNOPSIS
 BD(grdinfo) IT(grdfiles) [ OPT(C) ] [ OPT(F) ] 
-[ OPT(I)[IT(dx)[/IT(dy)]] ] [ OPT(L)[BD(0)|BD(1)|)2)] ] 
+[ OPT(I)[IT(dx)[/IT(dy)]] ] [ OPT(L)[BD(0)|BD(1)|BD(2)] ] 
 [ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)[BD(s)IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdinfo) reads a 2-D binary grid file and reports metadata and various statistics for
