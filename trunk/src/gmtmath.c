@@ -3377,6 +3377,7 @@ int GMT_gmtmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (recall[k]->stored.D) GMT_free_dataset (GMT, &recall[k]->stored.D);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
+				continue;	/* Just go back and process next item */
 			}
 
 			/* Here we need a matrix */
