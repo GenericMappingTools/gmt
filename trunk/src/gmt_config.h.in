@@ -162,7 +162,6 @@
 
 #cmakedefine HAVE_FLOATINGPOINT_H_
 #cmakedefine HAVE_IEEEFP_H_
-#cmakedefine HAVE_AMP_MATH_H_
 
 /* Math related */
 

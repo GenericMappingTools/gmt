@@ -257,9 +257,6 @@ endif (WIN32)
 
 check_include_file (floatingpoint.h     HAVE_FLOATINGPOINT_H_)
 check_include_file (ieeefp.h            HAVE_IEEEFP_H_)
-if (WIN32)
-	check_include_file (amp_math.h        HAVE_AMP_MATH_H_)
-endif (WIN32)
 
 set (_math_h math.h float.h)
 if (HAVE_FLOATINGPOINT_H_)
@@ -268,9 +265,6 @@ endif (HAVE_FLOATINGPOINT_H_)
 if (HAVE_IEEEFP_H_)
 	list (APPEND _math_h ieeefp.h)
 endif (HAVE_IEEEFP_H_)
-if (WIN32 AND HAVE_AMP_MATH_H_)
-	list (APPEND _math_h amp_math.h)
-endif (WIN32 AND HAVE_AMP_MATH_H_)
 
 # Check if -lm is needed
 check_function_exists (cos HAVE_M_FUNCTIONS)
