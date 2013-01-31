@@ -5,7 +5,7 @@
 .SH NAME
 sphdistance \- Make grid of distances to nearest points on a sphere
 .SH SYNOPSIS
-BD(sphdistance) [ IT(table) ] OPT(G)IT(grdfile) [ OPT(C) ] [ OPT(D) ] 
+BD(sphdistance) [ IT(table) ] OPT(G)IT(grdfile) [ OPT(C) ] 
 [ OPT(E) ] [ GMT_I_OPT ] [ OPT(L)IT(unit) ] [ OPT(Q)IT(voronoi.d) ] 
 [ GMT_Rgeo_OPT ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -26,10 +26,6 @@ OPT(C)
 For large data set you can save some memory (at the expense of more processing) by only storing one form of
 location coordinates (geographic or Cartesian 3-D vectors) at any given time, translating from one form to
 the other when necessary [Default keeps both arrays in memory]. Not applicable with OPT(Q).
-.TP
-OPT(D)
-Used with OPT(m) to skip the last (repeated) input vertex at the end of a closed segment if it
-equals the first point in the segment.  Requires OPT(m) [Default uses all points].
 .TP
 OPT(E)
 Instead of computing distances, return the ID numbers of the Voronoi polygons that each grid node is inside

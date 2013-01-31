@@ -44,9 +44,6 @@ struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
 		bool active;
 	} C;
-	struct D {	/* -D */
-		bool active;
-	} D;
 	struct E {	/* -E */
 		bool active;
 	} E;
@@ -126,7 +123,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphdistance [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-C] [-D] [-E] [-L<unit>] [-N<nodetable>] [-Q<voronoitable>]\n");
+	GMT_message (GMT, "\t[-C] [-E] [-L<unit>] [-N<nodetable>] [-Q<voronoitable>]\n");
 	GMT_message (GMT, "\t[-V] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_colon_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -139,7 +136,6 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read (but see -Q).\n");
 	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
-	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
 	GMT_message (GMT, "\t-E Assign to grid nodes the Voronoi polygon ID [Calculate distances].\n");
 	GMT_message (GMT, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].\n");
 	GMT_message (GMT, "\t   PROJ_ELLIPSOID determines if geodesic or gerat-circle distances are used.\n");
@@ -176,9 +172,11 @@ int GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *Ctrl,
 			case 'C':
 				Ctrl->C.active = true;
 				break;
+#ifdef GMT_COMPAT
 			case 'D':
-				Ctrl->D.active = true;
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -D option is deprecated; duplicates are automatically removed.\n");
 				break;
+#endif
 			case 'E':
 				Ctrl->E.active = true;
 				break;
@@ -242,7 +240,8 @@ int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	size_t n_alloc, p_alloc = 0;
 
-	double first_x = 0.0, first_y = 0.0, X[3], *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
+	double first_x = 0.0, first_y = 0.0, prev_x = 0.0, prev_y = 0.0, X[3];
+	double *grid_lon = NULL, *grid_lat = NULL, *in = NULL;
 	double *xx = NULL, *yy = NULL, *zz = NULL, *lon = NULL, *lat = NULL;
 
 	struct GMT_GRID *Grid = NULL;
@@ -357,24 +356,26 @@ int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 			}
 
-			/* Data record to process */
+			/* Data record to process - avoid duplicate points as stripack_lists cannot handle that */
 
 			if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
-				first_x = in[GMT_X];	first_y = in[GMT_Y];
+				first_x = prev_x = in[GMT_X];	first_y = prev_y = in[GMT_Y];
 			}
-			else if (Ctrl->D.active) {	/* Look for duplicate point at end of segments that replicate start point */
+			else {	/* Look for duplicate point at end of segments that replicate start point */
 				if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
 					n_dup++;
 					continue;
 				}
-				if (n && in[GMT_X] == xx[n-1] && in[GMT_Y] == yy[n-1]) {	/* Identical neighbors */
+				if (n && in[GMT_X] == prev_x && in[GMT_Y] == prev_y) {	/* Identical neighbors */
 					n_dup++;
 					continue;
 				}
+				prev_x = in[GMT_X];	prev_y = in[GMT_Y];
 			}
 			
 			/* Convert lon,lat in degrees to Cartesian x,y,z triplets */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], X, true);
+	
 			xx[n] = X[GMT_X];	yy[n] = X[GMT_Y];	zz[n] = X[GMT_Z];
 			if (!Ctrl->C.active) {
 				lon[n] = in[GMT_X];	lat[n] = in[GMT_Y];
@@ -391,7 +392,7 @@ int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 		GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-		if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
+		if (n_dup) GMT_report (GMT, GMT_MSG_VERBOSE, "Skipped %" PRIu64 " duplicate points in segments\n", n_dup);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Do Voronoi construction using %" PRIu64 " points\n", n);
 
 		T.mode = VORONOI;
