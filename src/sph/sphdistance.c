@@ -359,11 +359,15 @@ int GMT_sphdistance (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			/* Data record to process */
 
-			if (first) {	/* Beginning of new segment; kep track of the very first coordinate in case of duplicates */
+			if (first) {	/* Beginning of new segment; keep track of the very first coordinate in case of duplicates */
 				first_x = in[GMT_X];	first_y = in[GMT_Y];
 			}
 			else if (Ctrl->D.active) {	/* Look for duplicate point at end of segments that replicate start point */
 				if (in[GMT_X] == first_x && in[GMT_Y] == first_y) {	/* If any point after the first matches the first */
+					n_dup++;
+					continue;
+				}
+				if (n && in[GMT_X] == xx[n-1] && in[GMT_Y] == yy[n-1]) {	/* Identical neighbors */
 					n_dup++;
 					continue;
 				}
