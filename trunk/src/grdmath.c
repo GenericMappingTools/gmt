@@ -3241,6 +3241,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YMAX] = info.G->header->wesn[YHI];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_YINC] = info.G->header->inc[GMT_Y];
 	special_symbol[GRDMATH_ARG_IS_PI-GRDMATH_ARG_IS_NY] = info.G->header->ny;
+	
 	GMT_report (GMT, GMT_MSG_VERBOSE, " ");
 
 	nstack = 0;
@@ -3363,6 +3364,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 				if (recall[k]->stored.G) GMT_free_grid (GMT, &recall[k]->stored.G, true);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
+				continue;
 			}
 
 			/* Here we need a matrix */
@@ -3371,8 +3373,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			if (op == GRDMATH_ARG_IS_X_MATRIX) {		/* Need to set up matrix of x-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "X ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-				stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				GMT_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
 					GMT_memcpy (&stack[nstack]->G->data[node], info.grd_x, info.G->header->mx, float);
@@ -3380,8 +3381,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			else if (op == GRDMATH_ARG_IS_x_MATRIX) {		/* Need to set up matrix of normalized x-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Xn ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-				stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				GMT_row_padloop (GMT, info.G, row, node) {
 					node = row * info.G->header->mx;
 					GMT_memcpy (&stack[nstack]->G->data[node], info.grd_xn, info.G->header->mx, float);
@@ -3389,20 +3389,17 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			else if (op == GRDMATH_ARG_IS_Y_MATRIX) {	/* Need to set up matrix of y-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Y ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-				stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = info.grd_y[row];
 			}
 			else if (op == GRDMATH_ARG_IS_y_MATRIX) {	/* Need to set up matrix of normalized y-values */
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Yn ");
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-				stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				GMT_grd_padloop (GMT, info.G, row, col, node) stack[nstack]->G->data[node] = info.grd_yn[row];
 			}
 			else if (op == GRDMATH_ARG_IS_ASCIIFILE) {
 				if (info.ASCII_file) free (info.ASCII_file);
-				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G);
-				stack[nstack]->alloc_mode = 1;
+				if (!stack[nstack]->G) stack[nstack]->G = alloc_stack_grid (GMT, info.G), stack[nstack]->alloc_mode = 1;
 				info.ASCII_file = strdup (opt->arg);
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "(%s) ", opt->arg);
 			}
