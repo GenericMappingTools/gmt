@@ -345,7 +345,24 @@ int dist_compare (const void *a, const void *b)
 	if (((struct PSXYZ_DATA *)a)->dist[0] > ((struct PSXYZ_DATA *)b)->dist[0]) return (1);
 	if (((struct PSXYZ_DATA *)a)->dist[1] < ((struct PSXYZ_DATA *)b)->dist[1]) return (-1);
 	if (((struct PSXYZ_DATA *)a)->dist[1] > ((struct PSXYZ_DATA *)b)->dist[1]) return (1);
+#ifdef WIN32
+	/* MSVC qsort call a quick sorting function when number of elements to sort is small. e.g.
+
+	    * below a certain size, it is faster to use a O(n^2) sorting method *
+		if (size <= CUTOFF) {
+			__SHORTSORT(lo, hi, width, comp, context);
+		}
+		and that function damn looks bugged as it imposes
+
+		if (__COMPARE(context, p, max) > 0) { ...
+
+		as condition to NOT change order (instead of >= 0). Se we force the hand here and
+		return 1 to circumvent that bad behavior
+	*/
+	return (1);
+#else
 	return (0);
+#endif
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
