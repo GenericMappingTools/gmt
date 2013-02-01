@@ -304,7 +304,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 	char txt_f[GMT_TEXT_LEN256], key[GMT_TEXT_LEN256], sub[GMT_TEXT_LEN256], tmp[GMT_TEXT_LEN256], just;
 	char symbol[GMT_TEXT_LEN256], text[GMT_BUFSIZ], image[GMT_BUFSIZ], xx[GMT_TEXT_LEN256], yy[GMT_TEXT_LEN256];
 	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], mapscale[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], lspace[GMT_TEXT_LEN256];
-	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256], buffer[GMT_BUFSIZ];
+	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ];
 	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[GMT_BUFSIZ], *opt = NULL;
 	char *line = NULL, string[GMTAPI_STRLEN];
 #ifdef GMT_COMPAT
