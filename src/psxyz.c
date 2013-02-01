@@ -359,7 +359,7 @@ int dist_compare (const void *a, const void *b)
 		as condition to NOT change order (instead of >= 0). Se we force the hand here and
 		return 1 to circumvent that bad behavior
 
-		Note: MinGW GCC (at least vertsion 4.6) suffers from the same bug
+		Note: Since it uses MSVCRT.DLL MinGW GCC suffers from the same bug
 	*/
 	return (1);
 #else
