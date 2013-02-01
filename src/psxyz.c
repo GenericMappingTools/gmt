@@ -345,7 +345,7 @@ int dist_compare (const void *a, const void *b)
 	if (((struct PSXYZ_DATA *)a)->dist[0] > ((struct PSXYZ_DATA *)b)->dist[0]) return (1);
 	if (((struct PSXYZ_DATA *)a)->dist[1] < ((struct PSXYZ_DATA *)b)->dist[1]) return (-1);
 	if (((struct PSXYZ_DATA *)a)->dist[1] > ((struct PSXYZ_DATA *)b)->dist[1]) return (1);
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
 	/* MSVC qsort call a quick sorting function when number of elements to sort is small. e.g.
 
 	    * below a certain size, it is faster to use a O(n^2) sorting method *
@@ -358,6 +358,8 @@ int dist_compare (const void *a, const void *b)
 
 		as condition to NOT change order (instead of >= 0). Se we force the hand here and
 		return 1 to circumvent that bad behavior
+
+		Note: MinGW GCC (at least vertsion 4.6) suffers from the same bug
 	*/
 	return (1);
 #else
