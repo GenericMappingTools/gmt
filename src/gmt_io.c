@@ -1737,7 +1737,7 @@ void gmt_format_geo_output (struct GMT_CTRL *C, bool is_lat, double geo, char *t
 
 void gmt_format_abstime_output (struct GMT_CTRL *C, double dt, char *text)
 {
-	char date[GMT_CALSTRING_LENGTH], tclock[GMT_CALSTRING_LENGTH];
+	char date[GMT_TEXT_LEN16], tclock[GMT_TEXT_LEN16];
 
 	GMT_format_calendar (C, date, tclock, &C->current.io.date_output, &C->current.io.clock_output, false, 1, dt);
 	if (date[0] == '\0')	/* No date wanted hence dont use T */

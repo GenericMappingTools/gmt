@@ -31,8 +31,6 @@
 #ifndef _GMT_CALCLOCK_H
 #define _GMT_CALCLOCK_H
 
-#define GMT_CALSTRING_LENGTH	16	/* All strings used to format date/clock output must be this length */
-
 struct GMT_gcal {	/* (proleptic) Gregorian calendar  */
 	int year;		/* signed; negative and 0 allowed  */
 	unsigned int month;	/* Always between 1 and 12  */

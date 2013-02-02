@@ -1015,7 +1015,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 	n_alloc = n_tmp;
 	GMT_malloc2 (C, lon_tmp, lat_tmp, 0, &n_alloc, double);
 
-	/* Destroy old alocated memory and put the new none in place */
+	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (C, lon);
 	GMT_free (C, lat);
 	*a_lon = lon_tmp;
@@ -1100,11 +1100,187 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 	n_alloc = n_tmp;
 	GMT_malloc2 (C, x_tmp, y_tmp, 0, &n_alloc, double);
 
-	/* Destroy old alocated memory and put the knew none in place */
+	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (C, x);	GMT_free (C, y);
 	*a_x = x_tmp;	*a_y = y_tmp;
 	
 	return (n_tmp);
+}
+
+uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode)
+{
+	/* See GMT_resample_path below for details. */
+
+	bool meridian;
+	uint64_t row_in, row_out, n_out;
+	unsigned int k;
+	double dist_out, gap, L, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
+	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
+
+	if (step_out <= 0.0) {	/* Safety valve */
+		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given zero or negative step-size\n");
+		return (EXIT_FAILURE);
+	}
+	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
+		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given bad mode %d\n", mode);
+		return (EXIT_FAILURE);
+	}
+	
+	if (mode < GMT_TRACK_SAMPLE_FIX) {
+		step_out = (step_out / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get degrees */
+		return (GMT_fix_up_path (C, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
+	}
+	
+	dist_in = GMT_dist_array (C, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
+	
+	/* Determine n_out, the number of output points */
+	if (mode == GMT_TRACK_SAMPLE_ADJ) {	/* Round to nearest multiple of step_out, then adjust step to match exactly */
+		n_out = lrint (dist_in[n_in-1] / step_out);
+		step_out = dist_in[n_in-1] / n_out;	/* Ensure exact fit */
+	}
+	else {	/* Stop when last multiple is reached */
+		n_out = lrint (floor (dist_in[n_in-1] / step_out));
+	}
+	n_out++;	/* Since number of points = number of segments + 1 */
+	
+	lon_out = GMT_memory (C, NULL, n_out, double);
+	lat_out = GMT_memory (C, NULL, n_out, double);
+	
+	lon_out[0] = lon_in[0];	lat_out[0] = lat_in[0];	/* Start at same origin */
+	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
+		dist_out = row_out * step_out;	/* Rhe desired output distance */
+		while (row_in < n_in && dist_in[row_in] < dist_out) row_in++;	/* Wind so row points to the next input point with a distance >= dist_out */
+		gap = dist_in[row_in] - dist_out;	/* Distance to next input datapoint */
+		if (GMT_IS_ZERO (gap)) {	/* Use the input point as is */
+			lon_out[row_out] = lon_in[row_in];	lat_out[row_out] = lat_in[row_in];
+		}
+		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
+			L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
+			frac_to_a = gap / L;
+			frac_to_b = 1.0 - frac_to_a;
+			if (C->current.map.loxodrome) {
+				double ya, yb;
+				if (C->current.proj.GMT_convert_latitudes) {
+					ya = GMT_latc_to_latg (C, lat_in[row_in-1]);	yb = GMT_latc_to_latg (C, lat_in[row_in]);
+				}
+				else {
+					ya = lat_in[row_in-1];	yb = lat_in[row_in];
+				}
+				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (C, tand (45.0 + 0.5 * ya));
+				b[0] = D2R * lon_in[row_in];	b[1] = d_log (C, tand (45.0 + 0.5 * yb));
+				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
+				lon_out[row_out] = c[0] * R2D;
+				lat_out[row_out] = atand (sinh (c[1]));
+				if (C->current.proj.GMT_convert_latitudes) lat_out[row_out] = GMT_latc_to_latg (C, lat_out[row_out]);
+			}
+			else {
+				GMT_geo_to_cart (C, lat_in[row_in-1], lon_in[row_in-1], a, true);
+				GMT_geo_to_cart (C, lat_in[row_in],   lon_in[row_in],   b, true);
+				for (k = 0; k < 3; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
+				GMT_normalize3v (C, c);
+				GMT_cart_to_geo (C, &lat_out[row_out], &lon_out[row_out], c, true);
+			}
+			minlon = MIN (lon_in[row_in-1], lon_in[row_in]);
+			maxlon = MAX (lon_in[row_in-1], lon_in[row_in]);
+			meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make sure we get right lon value */
+			if (meridian)
+				lon_out[row_out] = minlon;
+			else if (lon_out[row_out] < minlon)
+				lon_out[row_out] += 360.0;
+			else if (lon_out[row_out] > maxlon)
+				lon_out[row_out] -= 360.0;
+		}
+	}
+	
+	/* Destroy old allocated memory and put the new one in place */
+	
+	GMT_free (C, lon_in);
+	GMT_free (C, lat_in);
+	*lon = lon_out;
+	*lat = lat_out;
+	return (n_out);
+}
+
+uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode)
+{
+	/* See GMT_resample_path below for details. */
+
+	uint64_t row_in, row_out, n_out;
+	double dist_out, gap, L, frac_to_a, frac_to_b;
+	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
+
+	if (step_out <= 0.0) {	/* Safety valve */
+		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given zero or negative step-size\n");
+		return (EXIT_FAILURE);
+	}
+	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
+		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given bad mode %d\n", mode);
+		return (EXIT_FAILURE);
+	}
+	
+	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path (C, x, y, n_in, step_out, mode));	/* Insert extra points only */
+	
+	dist_in = GMT_dist_array (C, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
+	
+	/* Determine n_out, the number of output points */
+	if (mode == GMT_TRACK_SAMPLE_ADJ) {	/* Round to nearest multiples, then adjust step to match exactly */
+		n_out = lrint (dist_in[n_in-1] / step_out);
+		step_out = dist_in[n_in-1] / n_out;
+	}
+	else {	/* Stop when last multiple is reached */
+		n_out = lrint (floor (dist_in[n_in-1] / step_out));
+	}
+	n_out++;	/* Since number of points = number of segments + 1 */
+	
+	x_out = GMT_memory (C, NULL, n_out, double);
+	y_out = GMT_memory (C, NULL, n_out, double);
+	
+	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
+	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
+		dist_out = row_out * step_out;	/* Rhe desired output distance */
+		while (row_in < n_in && dist_in[row_in] < dist_out) row_in++;	/* Wind so row points to the next input point with a distance >= dist_out */
+		gap = dist_in[row_in] - dist_out;	/* Distance to next input datapoint */
+		if (GMT_IS_ZERO (gap)) {	/* Use the input point as is */
+			x_out[row_out] = x_in[row_in];	y_out[row_out] = y_in[row_in];
+		}
+		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
+			L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
+			frac_to_a = gap / L;
+			frac_to_b = 1.0 - frac_to_a;
+			x_out[row_out] = x_in[row_in-1] * frac_to_a + x_in[row_in] * frac_to_b;	/* Linear interpolation to find output point */
+			y_out[row_out] = y_in[row_in-1] * frac_to_a + y_in[row_in] * frac_to_b;	/* Linear interpolation to find output point */
+		}
+	}
+	
+	/* Destroy old allocated memory and put the new one in place */
+	
+	GMT_free (C, x_in);
+	GMT_free (C, y_in);
+	*x = x_out;
+	*y = y_out;
+	return (n_out);
+}
+
+uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode)
+{
+	/* Takes pointers to a list of <n_in> x/y pairs (in degrees or Cartesian units) and computes
+	 * the distance along that path.  We then determine new coordinates at new distances that are
+	 * multiples of the desired step <step_out> which are in the unit set via GMT_init_distaz (geo)
+	 * or user Cartesian.  The new path will always contain the first input point, but anything
+	 * beyond that start depends on the mode:
+	 * mode = GMT_TRACK_FILL	: Keep input points; add intermediates if any gap exceeds step_out.
+	 * mode = GMT_TRACK_FILL_M	: Same, but traverse along meridians, then parallels between points.
+	 * mode = GMT_TRACK_FILL_P	: Same, but traverse along parallels, then meridians between points.
+	 * mode = GMT_TRACK_SAMPLE_FIX	: Resample track equidistantly; old points may be lost. Use given spacing.
+	 * mode = GMT_TRACK_SAMPLE_ADJ	: Resample track equidistantly; old points may be lost. Adjust spacing to fit tracklength exactly.
+	 * Returns the new number of points.
+	 */
+	uint64_t n_out;
+	if (GMT_is_geographic (GMT, GMT_IN))
+		n_out = gmt_resample_path_spherical (GMT, x, y, n_in, step_out, mode);
+	else
+		n_out = gmt_resample_path_cartesian (GMT, x, y, n_in, step_out, mode);
+	return (n_out);
 }
 
 int GMT_chol_dcmp (struct GMT_CTRL *C, double *a, double *d, double *cond, int nr, int n) {

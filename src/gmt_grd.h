@@ -45,7 +45,12 @@ enum GMT_enum_grdlen {
 	GRD_TITLE_LEN80    = 80U,
 	GRD_VARNAME_LEN80  = 80U,
 	GRD_COMMAND_LEN320 = 320U,
-	GRD_REMARK_LEN160  = 160U};
+	GRD_REMARK_LEN160  = 160U,
+	GRD_HEADER_SIZE	   = 892U};
+	
+/* Note: GRD_HEADER_SIZE is 4 less than sizeof (struct GRD_HEADER) for 64 bit systems due to alignment.
+   Since the GRD_HEADER was designed during 32-bit era its sizeof was 892.  Bof backwards compatibility
+   we continue to enforce this header size by not writing the structure components separately. */
 
 enum GMT_enum_grdtype {
 	/* Special cases of geographic grids with periodicity */

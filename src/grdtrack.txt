@@ -3,7 +3,7 @@
 .SH NAME
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
-BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(m)|BD(p) ] 
+BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(f)|BD(p)BD(m)|BD(r)|BD(R)[BD(+l)] ] 
 [ OPT(C)IT(length)/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(N) ] 
 [ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
@@ -37,11 +37,14 @@ IT(xyfile)
 This is an ASCII (or binary, see GMT_bi_OPT) file where the first 2 columns hold the (x,y) positions where the user wants to sample
 the 2-D data set.
 .TP
-OPT(A)BD(m)|BD(p)
-For spherical surface resampling we resample along great circle arcs.
-Alternatively, use OPT(Am) to resample by first following a meridian,
-then a parallel. Or use OPT(Ap) to start following a parallel, then a meridian.
-(This can be practical for resampling lines along parallels, for example).
+OPT(A)BD(f)|BD(p)BD(m)|BD(r)|BD(R)
+For track resampling (if OPT(C) is set) we can select how this is to be performed. Append
+BD(f) to keep original points, but add intermediate points if needed [Default],
+BD(m) as BD(f), but first follow meridian (along y) then parallel (along x),
+BD(p) as BD(f), but first follow parallel (along y) then meridian (along x),
+BD(r) to resample at equidistant locations; input points are not necessarily included in the output, and
+BD(R) as BD(r), but adjust given spacing to fit the track length exactly.
+Finally, append BD(+l) if distances should be measured along rhumb lines (loxodromes).
 Ignored unless OPT(C) is used.
 .TP
 OPT(C)IT(length)BD(/)IT(ds)[BD(/)IT(spacing)]
@@ -129,7 +132,7 @@ grid) along 100-km-long cross-profiles that are orthogonal to the line segment g
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 .br
 .sp
-grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3k/25k > xprofiles.d
+grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3k/25k -Ar > xprofiles.d
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR surface (1),

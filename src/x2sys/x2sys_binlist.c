@@ -281,7 +281,7 @@ int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 		if (Ctrl->D.active) {
 			int signed_flag = s->dist_flag;
 			GMT_memset (dist_bin, B.nm_bin, double);
-			if ((dist_km = GMT_dist_array (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
+			if ((dist_km = GMT_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) GMT_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 		}
 
 		last_bin_index = UINT_MAX;
