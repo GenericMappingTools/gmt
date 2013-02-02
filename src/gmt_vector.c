@@ -1159,7 +1159,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
 			if (C->current.map.loxodrome) {
-				double ya, yb, xa, xb;
+				double ya, yb;
 				if (C->current.proj.GMT_convert_latitudes) {
 					ya = GMT_latc_to_latg (C, lat_in[row_in-1]);	yb = GMT_latc_to_latg (C, lat_in[row_in]);
 				}
