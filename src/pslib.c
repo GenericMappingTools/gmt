@@ -3549,7 +3549,7 @@ psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char *buffe
 	colormap = psl_memory (PSL, NULL, 1U, sizeof (*colormap));
 	colormap->ncolors = 0;
 	image = psl_memory (PSL, NULL, 1U, sizeof (*image));
-	image->buffer = psl_memory (PSL, NULL, npixels, sizeof (*image->buffer));
+	image->buffer = psl_memory (PSL, NULL, npixels+8, sizeof (*image->buffer));	/* Add 8 to avoid overflow access in psl_bitreduce() */
 	image->colormap = colormap;
 
 	if (nx < 0) {
@@ -4462,7 +4462,8 @@ int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, 
 	else
 		return (8);
 
-	/* "Compress" bytes line-by-line. The number of bits per line should be multiple of 8 */
+	/* "Compress" bytes line-by-line. The number of bits per line should be multiple of 8
+	   But when it isn't overflow is prevent by extra size allocation done in psl_makecolormap */
 	out = 0;
 	nx = abs (nx);
 	nout = (nx * nbits + 7) / 8;
@@ -4487,6 +4488,7 @@ int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, 
 			}
 		}
 	}
+
 	PSL_message (PSL, PSL_MSG_NORMAL, "Image depth reduced to %d bits\n", nbits);
 	return (nbits);
 }
