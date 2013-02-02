@@ -32,7 +32,7 @@ int main (int argc, char *argv[]) {
 
 	if (argc < 2) {
 		fprintf (stderr, "gmt - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
-		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, and J. Luis\n\n", GMT_VERSION_YEAR);
+		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
