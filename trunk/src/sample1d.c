@@ -297,6 +297,10 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	if (Ctrl->I.mode) {
 		if (Ctrl->I.unit != 'X' && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
+			Ctrl->A.loxo = false;
+		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
 		GMT_init_distaz (GMT, Ctrl->I.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 		spatial = true;	/* Resample (x,y) track according to -I and -A */

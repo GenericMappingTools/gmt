@@ -458,6 +458,10 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 			Return (API->error);
 		}
 
+		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
+			Ctrl->A.loxo = false;
+		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
 		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
