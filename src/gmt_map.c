@@ -5446,7 +5446,8 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 
 double gmt_loxodrome_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
 {	/* Calculates the distance along the loxodrome, in meter */
-	double dist, d_lon = fmod (lon2 - lon1, 360.0);
+	double dist, d_lon = lon2 - lon1;
+	if (fabs (d_lon) > 180.0) d_lon = copysign (360.0 - fabs (d_lon), -d_lon);
 	if (doubleAlmostEqualZero (lat1, lat2)) {	/* Along parallel */
 		if (C->current.proj.GMT_convert_latitudes) lat1 = GMT_latg_to_latc (C, lat1);
 		dist = fabs (d_lon) * cosd (lat1);
@@ -5484,6 +5485,7 @@ double gmt_az_backaz_loxodrome (struct GMT_CTRL *C, double lonE, double latE, do
 		double_swap (latS, latE);
 	}
 	d_lon = fmod (lonS - lonE, 360.0);
+	if (fabs (d_lon) > 180.0) d_lon = copysign (360.0 - fabs (d_lon), -d_lon);
 	if (doubleAlmostEqualZero (latS, latE))	/* Along parallel */
 		az = (d_lon > 0.0) ? 90 : -90.0;
 	else { /* General case */

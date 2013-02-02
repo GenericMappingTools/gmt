@@ -1114,7 +1114,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 	bool meridian;
 	uint64_t row_in, row_out, n_out;
 	unsigned int k;
-	double dist_out, gap, L, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
+	double dist_out, d_lon, gap, L, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
 	if (step_out <= 0.0) {	/* Safety valve */
@@ -1159,15 +1159,17 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
 			if (C->current.map.loxodrome) {
-				double ya, yb;
+				double ya, yb, xa, xb;
 				if (C->current.proj.GMT_convert_latitudes) {
 					ya = GMT_latc_to_latg (C, lat_in[row_in-1]);	yb = GMT_latc_to_latg (C, lat_in[row_in]);
 				}
 				else {
 					ya = lat_in[row_in-1];	yb = lat_in[row_in];
 				}
+				d_lon = lon_in[row_in] - lon_in[row_in-1];
+				if (fabs (d_lon) > 180.0) d_lon = copysign (360.0 - fabs (d_lon), -d_lon);
 				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (C, tand (45.0 + 0.5 * ya));
-				b[0] = D2R * lon_in[row_in];	b[1] = d_log (C, tand (45.0 + 0.5 * yb));
+				b[0] = D2R * (lon_in[row_in-1] + d_lon);	b[1] = d_log (C, tand (45.0 + 0.5 * yb));
 				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
 				lon_out[row_out] = c[0] * R2D;
 				lat_out[row_out] = atand (sinh (c[1]));
