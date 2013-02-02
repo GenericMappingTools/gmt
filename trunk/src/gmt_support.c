@@ -9479,30 +9479,20 @@ void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3])
 #define SEG_DIST 2
 #define SEG_AZIM 3
 
-struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, unsigned int smode)
+struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, enum GMT_enum_track smode)
 {
-	/* Din is a data set with at least two columns (x,y or lon/lat);
-	 * it can contain any number of tables and segments with lines.
-	 * along_ds is the resampling interval along the traces in Din.
-	 * It is in the current distance units (set via GMT_init_distaz).
-	 * mode is either 0 (just lon,lat), 1 (lon,lat,dist) or 2 (lon,lat,dist,azim)
-	 * ex_cols makes space for this many extra empty data columns [0]
-	 * smode sets the sampling mode for GMT_fix_up_path
-	 * Dout is the new data set with all the resampled lines;
-	 */
-
+	/* Spherical version; see GMT_resample_data for details */
 	int ndig;
 	bool resample;
 	unsigned int tbl, col, n_cols;
 	uint64_t row, seg, seg_no;
 	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
-	double along_dist, azimuth, dist_inc, along_ds_degree;
+	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TABLE *Tin = NULL, *Tout = NULL;
 
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
-	along_ds_degree = (along_ds / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;
 	D = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
 	ndig = lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
@@ -9512,9 +9502,9 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 		for (seg = Tout->n_records = 0; seg < Tin->n_segments; seg++, seg_no++) {	/* For each segment to resample */
 			GMT_memcpy (Tout->segment[seg]->coord[GMT_X], Tin->segment[seg]->coord[GMT_X], Tin->segment[seg]->n_rows, double);	/* Duplicate longitudes */
 			GMT_memcpy (Tout->segment[seg]->coord[GMT_Y], Tin->segment[seg]->coord[GMT_Y], Tin->segment[seg]->n_rows, double);	/* Duplicate latitudes */
-			/* Resample lines along great circles (or parallels/meridians as per -A) */
+			/* Resample lines as per smode */
 			if (resample) {	/* Resample lon/lat path and also reallocate more space for all other columns */
-				Tout->segment[seg]->n_rows = GMT_fix_up_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds_degree, smode);
+				Tout->segment[seg]->n_rows = GMT_resample_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
 				for (col = 2; col < n_cols; col++)	/* Also realloc the other columns */
 					Tout->segment[seg]->coord[col] = GMT_memory (GMT, Tout->segment[seg]->coord[col], Tout->segment[seg]->n_rows, double);
 			}
@@ -9544,17 +9534,9 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 	return (D);
 }
 
-struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, unsigned int smode)
+struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, enum GMT_enum_track smode)
 {
-	/* Din is a data set with at least two columns (x,y or lon/lat);
-	 * it can contain any number of tables and segments with lines.
-	 * along_ds is the resampling interval along the traces in Din.
-	 * It is in user distance units; it is assumed that x and y have the same units!
-	 * mode is either 0 (just x,y), 1 (x,y,dist) or 2 (x,y,dist,azim)
-	 * ex_cols makes space for this many extra empty data columns [0]
-	 * smode sets the sampling mode for GMT_fix_up_path
-	 * Dout is the new data set with all the resampled lines;
-	 */
+	/* Cartesian version; see GMT_resample_data for details */
 
 	int ndig;
 	bool resample;
@@ -9576,9 +9558,9 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 		for (seg = Tout->n_records = 0; seg < Tin->n_segments; seg++, seg_no++) {	/* For each segment to resample */
 			GMT_memcpy (Tout->segment[seg]->coord[GMT_X], Tin->segment[seg]->coord[GMT_X], Tin->segment[seg]->n_rows, double);	/* Duplicate x */
 			GMT_memcpy (Tout->segment[seg]->coord[GMT_Y], Tin->segment[seg]->coord[GMT_Y], Tin->segment[seg]->n_rows, double);	/* Duplicate y */
-			/* Resample lines along straight lines (or along x/y as per -A) */
+			/* Resample lines as per smode */
 			if (resample) {	/* Resample x/y path and also reallocate more space for all other columns */
-				Tout->segment[seg]->n_rows = GMT_fix_up_path_cartesian (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
+				Tout->segment[seg]->n_rows = GMT_resample_path (GMT, &Tout->segment[seg]->coord[GMT_X], &Tout->segment[seg]->coord[GMT_Y], Tout->segment[seg]->n_rows, along_ds, smode);
 				for (col = 2; col < n_cols; col++)	/* Also realloc the other columns */
 					Tout->segment[seg]->coord[col] = GMT_memory (GMT, Tout->segment[seg]->coord[col], Tout->segment[seg]->n_rows, double);
 			}
@@ -9609,8 +9591,23 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 
 }
 
-struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds, unsigned int mode, unsigned int ex_cols, unsigned int smode)
+struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double along_ds,  unsigned int mode, unsigned int ex_cols, enum GMT_enum_track smode)
 {
+	/* Din is a data set with at least two columns (x,y or lon/lat);
+	 * it can contain any number of tables and segments with lines.
+	 * along_ds is the resampling interval along the traces in Din.
+	 * It is in the current distance units (set via GMT_init_distaz).
+	 * mode is either 0 (just lon,lat), 1 (lon,lat,dist) or 2 (lon,lat,dist,azim)
+	 * ex_cols makes space for this many extra empty data columns [0].
+	 * smode sets the sampling mode for the track:
+	 * smode = GMT_TRACK_FILL	: Keep input points; add intermediates if any gap exceeds step_out.
+	 * smode = GMT_TRACK_FILL_M	: Same, but traverse along meridians, then parallels between points.
+	 * smode = GMT_TRACK_FILL_P	: Same, but traverse along parallels, then meridians between points.
+	 * smode = GMT_TRACK_SAMPLE_FIX	: Resample track equidistantly; old points may be lost. Use given spacing.
+	 * smode = GMT_TRACK_SAMPLE_ADJ	: Resample track equidistantly; old points may be lost. Adjust spacing to fit tracklength exactly.
+	 *
+	 * Dout is the new data set with all the resampled lines;
+	 */
 	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN))
 		D = gmt_resample_data_spherical (GMT, Din, along_ds, mode, ex_cols, smode);

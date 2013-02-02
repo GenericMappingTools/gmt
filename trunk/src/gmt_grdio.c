@@ -379,7 +379,7 @@ void gmt_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	   output data types for columns 0, 1, and 2.
 	*/
 	unsigned int i;
-	char *string[3] = {NULL, NULL, NULL}, unit[GRD_UNIT_LEN80], date[GMT_CALSTRING_LENGTH], clock[GMT_CALSTRING_LENGTH];
+	char *string[3] = {NULL, NULL, NULL}, unit[GRD_UNIT_LEN80], date[GMT_TEXT_LEN16], clock[GMT_TEXT_LEN16];
 
 	/* Copy pointers to unit strings */
 	string[0] = header->x_units;

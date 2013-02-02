@@ -5444,6 +5444,62 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 }
 #endif
 
+double gmt_loxodrome_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
+{	/* Calculates the distance along the loxodrome, in meter */
+	double dist, d_lon = fmod (lon2 - lon1, 360.0);
+	if (doubleAlmostEqualZero (lat1, lat2)) {	/* Along parallel */
+		if (C->current.proj.GMT_convert_latitudes) lat1 = GMT_latg_to_latc (C, lat1);
+		dist = fabs (d_lon) * cosd (lat1);
+	}
+	else { /* General case */
+		double dx, dy, Az;
+		if (C->current.proj.GMT_convert_latitudes) {
+			lat1 = GMT_latg_to_latc (C, lat1);
+			lat2 = GMT_latg_to_latc (C, lat2);
+		}
+		dx = D2R * d_lon;
+		dy = d_log (C, tand (45.0 + 0.5 * lat2)) - d_log (C, tand (45.0 + 0.5 * lat1));
+		Az = atan2 (dx, dy);
+		dist = fabs (dx / cos (Az));
+	}
+	return (dist);
+}
+
+double gmt_loxodrome_dist_meter (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
+{	/* Calculates the loxodrome distance in meter */
+	return (gmt_loxodrome_dist_degree (C, lon1, lat1, lon2, lat2) * C->current.proj.DIST_M_PR_DEG);
+}
+
+double gmt_az_backaz_loxodrome (struct GMT_CTRL *C, double lonE, double latE, double lonS, double latS, bool baz)
+{
+	/* Calculate azimuths or backazimuths.  Loxodrome mode.
+	 * First point is considered "Event" and second "Station".
+	 * Azimuth is direction from Station to Event.
+	 * BackAzimuth is direction from Event to Station */
+
+	double az, d_lon;
+
+	if (baz) {	/* exchange point one and two */
+		double_swap (lonS, lonE);
+		double_swap (latS, latE);
+	}
+	d_lon = fmod (lonS - lonE, 360.0);
+	if (doubleAlmostEqualZero (latS, latE))	/* Along parallel */
+		az = (d_lon > 0.0) ? 90 : -90.0;
+	else { /* General case */
+		double dx, dy;
+		if (C->current.proj.GMT_convert_latitudes) {
+			latS = GMT_latg_to_latc (C, latS);
+			latE = GMT_latg_to_latc (C, latE);
+		}
+		dx = D2R * d_lon;
+		dy = d_log (C, tand (45.0 + 0.5 * latS)) - d_log (C, tand (45.0 + 0.5 * latE));
+		az = atan2d (dx, dy);
+		if (az < 0.0) az += 360.0;
+	}
+	return (az);
+}
+
 /* Functions dealing with distance between points */
 
 double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, uint64_t *id)
@@ -7166,7 +7222,36 @@ void GMT_ECEF_inverse (struct GMT_CTRL *C, double in[], double out[])
 	out[GMT_Z] = (p / cos_lat) - N;
 }
 
-double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], uint64_t n, double scale, int dist_flag)
+double * GMT_dist_array (struct GMT_CTRL *C, double x[], double y[], uint64_t n, bool cumulative)
+{	/* Returns distances in units set by GMT_distaz. It bypassed points where x and/or y are NaN.
+	 * If cumulative is false we just return the increments; otherwise we add up distances */
+	uint64_t this, prev;
+	bool xy_not_NaN;
+	double *d = NULL, cum_dist = 0.0, inc = 0.0;
+
+	if (n == 0) return (NULL);
+	d = GMT_memory (C, NULL, n, double);
+	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = C->session.d_NaN;
+	for (this = 1, prev = 0; this < n; this++) {
+		xy_not_NaN = !(GMT_is_dnan (x[this]) || GMT_is_dnan (y[this]));
+		if (xy_not_NaN) {	/* safe to calculate inc */
+			inc = GMT_distance (C, x[this], y[this], x[prev], y[prev]);
+			if (cumulative) {
+				cum_dist += inc;
+				d[this] = cum_dist;
+			}
+			else
+				d[this] = inc;
+		}
+		else
+			d[this] = C->session.d_NaN;
+
+		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
+	}
+	return (d);
+}
+
+double * GMT_dist_array_2 (struct GMT_CTRL *C, double x[], double y[], uint64_t n, double scale, int dist_flag)
 {	/* Returns distances in meter; use scale to get other units */
 	uint64_t this, prev;
 	bool cumulative = true, do_scale, xy_not_NaN;
@@ -7872,6 +7957,17 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
 			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
 			break;
+		case GMT_DIST_M+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in meter */
+			C->current.map.dist[type].func = &gmt_loxodrome_dist_meter;
+			C->current.map.azimuth_func  = &gmt_az_backaz_loxodrome;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be along loxodromes in meters\n", type_name[type]);
+			break;
+		case GMT_DIST_DEG+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in degrees */
+			C->current.map.dist[type].func = &gmt_loxodrome_dist_degree;
+			C->current.map.azimuth_func = &gmt_az_backaz_loxodrome;
+			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be along loxodromes with %s auxiliary latitudes and return lengths in degrees.\n",
+				type_name[type], aux[choice]);
+			break;
 		default:	/* Cannot happen unless we make a bug */
 			GMT_report (C, GMT_MSG_NORMAL, "Mode (=%d) for distance function is unknown. Must be bug.\n", mode);
 			exit (EXIT_FAILURE);
@@ -7892,14 +7988,14 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 	}
 }
 
-unsigned int GMT_init_distaz (struct GMT_CTRL *C, char c, unsigned int mode, unsigned int type)
+unsigned int GMT_init_distaz (struct GMT_CTRL *C, char unit, unsigned int mode, unsigned int type)
 {
 	/* Initializes distance calcuation given the selected values for:
-	 * Distance unit c: must be on of the following:
+	 * Distance unit: must be on of the following:
 	 *  1) d|e|f|k|m|M|n|s
 	 *  2) C (Cartesian distance after projecting with -J) | X (Cartesian)
 	 *  3) S (cosine distance) | P (cosine after first inverse projecting with -J)
-	 * distance-calculation modifer mode: 0 (Cartesian), 1 (flat Earth), 2 (great-circle, 3 (geodesic)
+	 * distance-calculation modifier mode: 0 (Cartesian), 1 (flat Earth), 2 (great-circle, 3 (geodesic), 4 (loxodrome)
 	 * type: 0 = map distances, 1 = contour distances, 2 = contour annotation distances
 	 * We set distance and azimuth functions and scales for this type.
 	 * At the moment there is only one azimuth function pointer for all.
@@ -7907,12 +8003,12 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char c, unsigned int mode, uns
 
 	unsigned int proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */
 
-	if (strchr (GMT_LEN_UNITS, c) && !GMT_is_geographic (C, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
+	if (strchr (GMT_LEN_UNITS, unit) && !GMT_is_geographic (C, GMT_IN)) {	/* Want geographic distance units but -fg (or -J) not set */
 		GMT_parse_common_options (C, "f", 'f', "g");
-		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", c);
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Your distance unit (%c) implies geographic data; -fg has been set.\n", unit);
 	}
 
-	switch (c) {
+	switch (unit) {
 			/* First the three arc angular distance units */
 			
 		case 'd':	/* Arc degrees on spherical body using desired metric mode */

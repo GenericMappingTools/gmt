@@ -40,9 +40,9 @@ struct GMT_TIME_SYSTEM {
 };
 
 struct GMT_TIME_LANGUAGE {		/* Language-specific text strings for calendars */
-	char month_name[4][12][16];	/* Full, short, 1-char, and short (upper case) month names */
-	char day_name[3][7][16];	/* Full, short, and 1-char weekday names */
-	char week_name[3][16];		/* Full, short, and 1-char versions of the word Week */
+	char month_name[4][12][GMT_TEXT_LEN16];	/* Full, short, 1-char, and short (upper case) month names */
+	char day_name[3][7][GMT_TEXT_LEN16];	/* Full, short, and 1-char weekday names */
+	char week_name[3][GMT_TEXT_LEN16];	/* Full, short, and 1-char versions of the word Week */
 };
 
 #endif  /* _GMT_TIME_H */

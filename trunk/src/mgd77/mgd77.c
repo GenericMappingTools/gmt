@@ -5854,7 +5854,7 @@ bool MGD77_fake_times (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77
 		t[i] = MGD77_rdc2dt (C, F, rata_die, 0.0);
 	}
 	if (t[1] <= t[0]) return (false);	/* Bad times */
-	if ((dist = GMT_dist_array (C, lon, lat, nrec, 1.0, 1)) == NULL)	/* Get flat-earth distance in meters */
+	if ((dist = GMT_dist_array_2 (C, lon, lat, nrec, 1.0, 1)) == NULL)	/* Get flat-earth distance in meters */
 		GMT_err_fail (C, GMT_MAP_BAD_DIST_FLAG, "");
 	slowness = (t[1] - t[0]) / dist[nrec-1];				/* Inverse average speed */
 	for (i = 0; i < nrec; i++) times[i] = t[0] + slowness * dist[i];	/* Fake time prediction */

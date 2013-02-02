@@ -28,8 +28,6 @@
 #ifndef GMT_CUSTOMIO_H
 #define GMT_CUSTOMIO_H
 
-#define GRD_HEADER_SIZE	892
-
 /* Definition for Sun rasterfiles [THESE MUST REMAIN int32_t]  */
 struct rasterfile {
 	int32_t magic;     /* magic number */

@@ -27,8 +27,11 @@
 #ifndef _GMT_CONTOUR_H
 #define _GMT_CONTOUR_H
 
-#define GMT_CONTOUR_XLINE	1
-#define GMT_CONTOUR_XCURVE	2
+/* Various settings for contour label placements at crossing lines */
+enum GMT_enum_contline {
+	GMT_CONTOUR_NONE = 0,	/* No contour/line crossing  */
+	GMT_CONTOUR_XLINE,	/* Contour labels where crossing straight lines (via key points) */
+	GMT_CONTOUR_XCURVE};	/* Contour labels where crossing arbitrary lines (via file) */
 
 struct GMT_XOVER {		/* Structure with info on all track cross-over */
 	double *x;		/* x or Longitude */
@@ -87,7 +90,7 @@ struct GMT_CONTOUR {
 	unsigned int L_proj_type;	/* type of scaling for label content only */
 	unsigned int half_width;	/* Number of points to use in smoothing the angle [10/2] */
 	unsigned int n_cont;		/* Number of labels per segment */
-	unsigned int crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
+	enum GMT_enum_contline crossing;	/* 1 for crossing simple lines, 2 for file with crossing lines */
 	unsigned int nx;		/* Number of crossovers at any time */
 	unsigned int f_n;			/* Number of such points */
 	unsigned int clearance_flag;	/* 1 if spacing given in % of labelfont size, 0 otherwise */

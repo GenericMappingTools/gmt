@@ -52,7 +52,8 @@ enum GMT_enum_cdist {GMT_CARTESIAN_DIST	 = 0,	/* Cartesian 2-D x,y data, r = hyp
 	GMT_CARTESIAN_DIST_PROJ_INV};	/* Project Cartesian 2-D x,y data to lon,lat, then get distance */
 enum GMT_enum_mdist {GMT_FLATEARTH = 1,	/* Compute Flat Earth distances */
 	GMT_GREATCIRCLE,	/* Compute great circle distances */
-	GMT_GEODESIC};		/* Compute geodesic distances */
+	GMT_GEODESIC,		/* Compute geodesic distances */
+	GMT_LOXODROME};		/* Compute loxodrome distances */
 enum GMT_enum_sph {GMT_DIST_M = 10,	/* 2-D lon, lat data, convert distance to meter */
 	GMT_DIST_DEG = 20,	/* 2-D lon, lat data, convert distance to spherical degree */
 	GMT_DIST_COS = 30};	/* 2-D lon, lat data, convert distance to cos of spherical degree */

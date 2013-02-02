@@ -59,9 +59,9 @@ struct GRDTRACK_CTRL {
 		bool active;
 		char *file;
 	} Out;
-	struct A {	/* -A[m|p] */
-		bool active;
-		int mode;
+	struct A {	/* -A[f|m|p|r|R][+l] */
+		bool active, loxo;
+		enum GMT_enum_track mode;
 	} A;
 	struct C {	/* -C<length>/<ds>[/<spacing>][+a] */
 		bool active, alternate;
@@ -121,7 +121,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[m|p]] [-C<length>[u]/<ds>[u][/<spacing>[u]][+a]]\n"); 
+	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[u][/<spacing>[u]][+a]]\n"); 
 	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -133,9 +133,13 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_img_syntax (GMT);
 	GMT_message (GMT, "\t   Repeat -G for as many grids as you wish to sample.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A For spherical surface sampling we follow great circle paths.\n");
-	GMT_message (GMT, "\t   Append m or p to first follow meridian then parallel, or vice versa.\n");
-	GMT_message (GMT, "\t   Ignored unless -C is used.\n");
+	GMT_message (GMT, "\t-A Controls how the input track in <table> is resampled when -C is selected:\n");
+	GMT_message (GMT, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
+	GMT_message (GMT, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
+	GMT_message (GMT, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
+	GMT_message (GMT, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
+	GMT_message (GMT, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
+	GMT_message (GMT, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_message (GMT, "\t-C Create equidistant cross-profiles from input line segments.  Append\n");
 	GMT_message (GMT, "\t   <length>: Full-length of each cross profile.  Append desired distance unit [%s].\n", GMT_LEN_UNITS);
 	GMT_message (GMT, "\t   <dz>: Distance interval along the cross-profiles.\n");
@@ -191,18 +195,23 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Change spherical sampling mode */
+			case 'A':	/* Change track resampling mode */
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
-					case 'm': Ctrl->A.mode = 1; break;
-					case 'p': Ctrl->A.mode = 2; break;
+					case 'f': Ctrl->A.mode = GMT_TRACK_FILL;   break;
+					case 'm': Ctrl->A.mode = GMT_TRACK_FILL_M; break;
+					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
+					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
+					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
+					default: GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
+				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
 			case 'C':	/* Create cross profiles */
 				Ctrl->C.active = true;
-				if ((c = strstr (opt->arg, "+a"))) {	/* Select alternating direction of cross-profiles */
-					Ctrl->C.alternate = true;
-					*c = 0;	/* Truncate option at +a */
+				if ((c = strstr (opt->arg, "+a"))) {	/* Gave modifiers */
+					Ctrl->C.alternate = true;	/* Select alternating direction of cross-profiles */
+					*c = 0;	/* Truncate option at start of modifiers */
 				}
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
 				Ctrl->C.mode = GMT_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
@@ -449,6 +458,7 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 			Return (API->error);
 		}
 
+		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
 		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
 		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);

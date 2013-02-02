@@ -70,6 +70,7 @@ enum GMT_enum_length {
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
+	GMT_TEXT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
 	GMT_TEXT_LEN64  = 64U,          /* Intermediate length of texts */
 	GMT_TEXT_LEN128 = 128U,         /* Double of 64 */
 	GMT_TEXT_LEN256 = 256U,         /* Max size of some text items */
@@ -165,7 +166,14 @@ enum GMT_enum_extrap {
 	GMT_EXTRAPOLATE_SPLINE,     /* Let spline extrapolate beyond bounds */
 	GMT_EXTRAPOLATE_CONSTANT};  /* Set extrapolation beyond bound to specifiec constant */
 
-/* Various grid/image interpolation modes */
+/* Various line/grid/image interpolation modes */
+enum GMT_enum_track {
+	GMT_TRACK_FILL = 0,	/* Normal fix_up_path behavior: Keep all (x,y) points but add intermediate if gap > cutoff */
+	GMT_TRACK_FILL_M,	/* Fill in, but navigate via meridians (y), then parallels (x) */
+	GMT_TRACK_FILL_P,	/* Fill in, but navigate via parallels (x), then meridians (y) */
+	GMT_TRACK_SAMPLE_FIX,	/* Resample the track at equidistant points; old points may be lost. Use given spacing */
+	GMT_TRACK_SAMPLE_ADJ};	/* Resample the track at equidistant points; old points may be lost. Adjust spacing to fit length of track exactly */
+
 enum GMT_enum_bcr {
 	BCR_NEARNEIGHBOR = 0, /* Nearest neighbor algorithm */
 	BCR_BILINEAR,         /* Bilinear spline */

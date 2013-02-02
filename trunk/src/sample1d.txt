@@ -3,7 +3,7 @@
 .SH NAME
 sample1d \- Resample 1-D table data using splines
 .SH SYNOPSIS
-BD(sample1d) [ IT(table) ] [ OPT(A)BD(m)|BD(p) ] [ OPT(Fl)|BD(a)|BD(c)|BD(n) ] [ OPT(I)IT(inc)[IT(unit)] ] 
+BD(sample1d) [ IT(table) ] [ OPT(A)BD(f)|BD(p)BD(m)|BD(r)|BD(R)[BD(+l)] ] [ OPT(Fl)|BD(a)|BD(c)|BD(n) ] [ OPT(I)IT(inc)[IT(unit)] ] 
 [ OPT(N)IT(knotfile) ] [ OPT(S)IT(start)[/IT(stop)] ] [ OPT(T)IT(col) ] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]
 .SH DESCRIPTION
@@ -22,11 +22,14 @@ This is one or more ASCII [of binary, see GMT_bi_OPT] files with one column cont
 be monotonically in/de-creasing) and the remaining columns holding other data values.
 If no file is provided, BD(sample1d) reads from standard input.
 .TP
-OPT(A)BD(m)|BD(p)
-For spherical surface resampling (see OPT(I)) we resample along great circle arcs.
-Alternatively, use OPT(Am) to resample by first following a meridian,
-then a parallel. Or use OPT(Ap) to start following a parallel, then a meridian.
-(This can be practical for resampling lines along parallels, for example).
+OPT(A)BD(f)|BD(p)BD(m)|BD(r)|BD(R)
+For track resampling (if OPT(T)...IT(unit) is set) we can select how this is to be performed. Append
+BD(f) to keep original points, but add intermediate points if needed [Default],
+BD(m) as BD(f), but first follow meridian (along y) then parallel (along x),
+BD(p) as BD(f), but first follow parallel (along y) then meridian (along x),
+BD(r) to resample at equidistant locations; input points are not necessarily included in the output, and
+BD(R) as BD(r), but adjust given spacing to fit the track length exactly.
+Finally, append BD(+l) if distances should be measured along rhumb lines (loxodromes).
 .TP
 OPT(Fl)|BD(a)|BD(c)|BD(n)
 Choose from BD(l) (Linear), BD(a) (Akima spline), BD(c) (natural cubic spline),
@@ -37,8 +40,9 @@ OPT(I)IT(inc)[IT(unit)]
 IT(inc) defines the sampling interval [Default is the separation between the first and
 second abscissa point in the IT(infile)].
 Append a distance unit (see UNITS) to indicate that the first two columns contain
-longitude, latitude and you wish to resample this path using spherical segments with a nominal spacing of
-IT(inc) in the chosen units.  See OPT(Am)|BD(p) to only sample along meridians and parallels.
+longitude, latitude and you wish to resample this path with a spacing of
+IT(inc) in the chosen units.  For sampling of (x, y) Cartesian tracks, specify the
+unit as X. Use OPT(A) to control how the resampling is performed.
 .TP
 OPT(N)IT(knotfile)
 IT(knotfile) is an optional ASCII file with the x locations where the data set will be resampled in the first column.
@@ -84,7 +88,15 @@ for the interpolation, use
 .sp
 To resample the file track.txt which contains lon, lat, depth every 2 nautical miles, use
 .sp
-    sample1d track.txt -I2n > new_track.dt
+    sample1d track.txt -I2n -AR > new_track.dt
+.sp
+To do approximately the same, but make sure the original points are included, use
+.sp
+    sample1d track.txt -I2n -Af > new_track.dt
+.sp
+To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
+.sp
+    sample1d track.txt -I5k -AR+l > new_track.dt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR gmt.conf (5),

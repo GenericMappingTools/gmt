@@ -40,52 +40,52 @@
 
 enum GMT_enum_fmt {
 	GMT_COLUMN_FORMAT	= 1,	/* 2-D grid is Fortran-style with columns */
-	GMT_ROW_FORMAT			= 2};	/* 2-D grid is C-style with rows */
+	GMT_ROW_FORMAT		= 2};	/* 2-D grid is C-style with rows */
 
 /* Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
-	GMT_BY_SET = 0,	/* Default is to read the entire set */
-	GMT_BY_REC		 = 1};	/* Means we will access the registere files on a record-by-record basis */
+	GMT_BY_SET 	= 0,	/* Default is to read the entire set */
+	GMT_BY_REC	= 1};	/* Means we will access the registere files on a record-by-record basis */
 
 /* Three different i/o status: unused, actively using, or used */
 enum GMT_enum_status {
 	GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
-	GMT_IS_USING,				/* Means we have started reading from/writing to this file */
-	GMT_IS_USED};				/* Means we are done reading from/writing to this file */
+	GMT_IS_USING,		/* Means we have started reading from/writing to this file */
+	GMT_IS_USED};		/* Means we are done reading from/writing to this file */
 
 /* These are the 6 methods for i/o */
 
 enum GMT_enum_methods {
-	GMT_IS_FILE = 0, /* Entity is a filename */
-	GMT_IS_STREAM,		   /* Entity is an open stream */
-	GMT_IS_FDESC,              /* Entity is an open file descriptor */
-	GMT_IS_COPY,               /* Entity is a memory location that should be duplicated */
-	GMT_IS_REF,                /* Entity is a memory location and we just pass the ref (no copying) */
-	GMT_IS_READONLY,           /* As GMT_IS_REF, but we are not allowed to change the data in any way. */
-	GMT_N_METHODS};            /* Number of methods we recognize */
+	GMT_IS_FILE = 0, 	/* Entity is a filename */
+	GMT_IS_STREAM,		/* Entity is an open stream */
+	GMT_IS_FDESC,           /* Entity is an open file descriptor */
+	GMT_IS_COPY,            /* Entity is a memory location that should be duplicated */
+	GMT_IS_REF,             /* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_READONLY,        /* As GMT_IS_REF, but we are not allowed to change the data in any way. */
+	GMT_N_METHODS};         /* Number of methods we recognize */
 
 /* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
-	GMT_VIA_MATRIX = 200};		/* Data passed via user vectors */
+	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 
 /* These are the 5 families of data types */
 enum GMT_enum_families {
-	GMT_IS_DATASET = 0,  /* Entity is data table */
-	GMT_IS_TEXTSET,             	/* Entity is a Text table */
-	GMT_IS_GRID,                	/* Entity is a GMT grid */
-	GMT_IS_CPT,                 	/* Entity is a CPT table */
-	GMT_IS_IMAGE,               	/* Entity is a 1- or 3-layer unsigned char image */
-	GMT_IS_VECTOR,              	/* to hande interfacing with user data types: */
-	GMT_IS_MATRIX,              	/* Entity is user vectors */
-	GMT_N_FAMILIES};            	/* Entity is user matrix */
+	GMT_IS_DATASET = 0,	/* Entity is data table */
+	GMT_IS_TEXTSET,		/* Entity is a Text table */
+	GMT_IS_GRID,		/* Entity is a GMT grid */
+	GMT_IS_CPT,		/* Entity is a CPT table */
+	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
+	GMT_IS_VECTOR,		/* to hande interfacing with user data types: */
+	GMT_IS_MATRIX,		/* Entity is user vectors */
+	GMT_N_FAMILIES};	/* Entity is user matrix */
 
 /* There are 3 named columns */
 enum GMT_enum_dimensions {
-	GMT_X,  /* x or lon is in 0th column */
-	GMT_Y,               /* y or lat is in 1st column */
-	GMT_Z};              /* z is in 2nd column */
+	GMT_X,		/* x or lon is in 0th column */
+	GMT_Y,		/* y or lat is in 1st column */
+	GMT_Z};		/* z is in 2nd column */
 
 /* GIS geometries, with GMT_IS_TEXT as 0 for no such thing */
 enum GMT_enum_geometries {
@@ -214,8 +214,8 @@ enum GMT_enum_ascii_input_return {
 
 enum GMT_io_enum {
 	GMT_IN = 0,	/* stdin */
-	GMT_OUT,		/* stdout */
-	GMT_ERR};		/* stderr */
+	GMT_OUT,	/* stdout */
+	GMT_ERR};	/* stderr */
 
 /* Get current setting for in/out columns */
 
