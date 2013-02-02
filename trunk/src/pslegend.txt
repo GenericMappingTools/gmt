@@ -26,8 +26,7 @@ This file contains instruction for the layout of items in the legend.  Each lege
 a unique record.  All records begin with a unique character that is common to all records of the same
 kind.  The order of the legend items is implied by the order of the records.  Ten different record types
 are recognized, and the syntax for each of these records are presented below:
-.sp
-.RS
+.TP
 BD(#) IT(comment)
 Records starting with # and blank lines are skipped.
 .TP
@@ -105,8 +104,6 @@ BD(pslegend) knows what all those values should be, so normally you can leave th
 leave it out all together.
 If you need to set at least one of the parameters directly, you must specify all and set the ones you want to leave
 at their default value to BD(-).
-.RE
-.br
 .TP
 OPT(D)[BD(x)]IT(lon)/IT(lat)/IT(width)[/IT(height)]/IT(just)[/IT(dx)/IT(dy)] 
 Positions the legend and specifies its size.  The IT(just) is a 2-char justification string (see BD(pstext))
