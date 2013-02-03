@@ -1166,8 +1166,7 @@ int GMT_mgd77list (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (auxlist[MGD77_AUX_CC].requested) {	/* Course change requires previous and next azimuth */
 						if (rec < (D->H.n_records - 1)) {
 							next_az = GMT_az_backaz (GMT, dvalue[x_col][rec+1], dvalue[y_col][rec+1], dvalue[x_col][rec], dvalue[y_col][rec], true);
-							aux_dvalue[MGD77_AUX_CC] = next_az - prev_az;
-							if (fabs (aux_dvalue[MGD77_AUX_CC]) > 180.0) aux_dvalue[MGD77_AUX_CC] = copysign (360.0 - fabs (aux_dvalue[MGD77_AUX_CC]), -aux_dvalue[MGD77_AUX_CC]);
+							GMT_set_delta_lon (prev_az, next_az, aux_dvalue[MGD77_AUX_CC]);
 							prev_az = next_az;
 						}
 						else	/* No next azimuth possible */

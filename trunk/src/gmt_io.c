@@ -1951,8 +1951,7 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 		return;
 	}
 	for (row = 0; row < S->n_rows - 1; row++) {
-		dlon = S->coord[GMT_X][row+1] - S->coord[GMT_X][row];
-		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);	/* Crossed Greenwich or Dateline, pick the shortest distance */
+		GMT_set_delta_lon (S->coord[GMT_X][row], S->coord[GMT_X][row+1], dlon);
 		lon_sum += dlon;
 		lat_sum += S->coord[GMT_Y][row];
 	}

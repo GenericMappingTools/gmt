@@ -364,8 +364,7 @@ int GMT_x2sys_binlist (struct GMTAPI_CTRL *API, int mode, void *args)
 				for (bcol = start_col; bcol <= end_col; bcol++) {	/* If we go in here we think dx is non-zero (we do a last-ditch dx check just in case) */
 					x = B.wesn[XLO] + bcol * B.inc[GMT_X];
 					if (s->geographic && x >= 360.0) x -= 360.0;
-					del_x = x - data[s->x_col][row-1];
-					if (fabs (del_x) > 180.0) del_x = copysign (360.0 - fabs (del_x), -del_x);
+					GMT_set_delta_lon (data[s->x_col][row-1], x, del_x);
 					del_y = (dx == 0.0) ? 0.5 * (data[s->y_col][row] - data[s->y_col][row-1]) : del_x * (data[s->y_col][row] - data[s->y_col][row-1]) / dx;
 					y = data[s->y_col][row-1] + del_y;
 					if (s->geographic && fabs (y) > y_max) {

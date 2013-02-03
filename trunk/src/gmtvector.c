@@ -414,8 +414,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	if (n_components == 3) {	/* Recover lon,lat */
 		GMT_cart_to_geo (GMT, &lat2, &lon2, B, true);
 		if (lon2 < 0.0) lon2 += 360.0;
-		L = lon2 - lon;
-		if (fabs (L) > 180.0) L = copysign (360.0 - fabs (L), L);
+		GMT_set_delta_lon (lon, lon2, L);
 		scl = cosd (lat);	/* Local flat-Earth approximation */
 	}
 	else {
