@@ -415,6 +415,26 @@ void grd_ATANH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : atanhf (stack[last]->G->data[node]);
 }
 
+void grd_BEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BEI 1 1 bei (A).  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = GMT_bei (GMT, (double)fabsf (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_bei (GMT, fabs((double)stack[last]->G->data[node])));
+}
+
+void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BER 1 1 ber (A).  */
+{
+	uint64_t node;
+	double a = 0.0;
+
+	if (stack[last]->constant) a = GMT_ber (GMT, (double)fabsf (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_ber (GMT, fabs ((double)stack[last]->G->data[node])));
+}
+
 void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
@@ -435,26 +455,6 @@ void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			stack[prev]->G->data[node] = (float)(a & b);
 		}
 	}
-}
-
-void grd_BEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BEI 1 1 bei (A).  */
-{
-	uint64_t node;
-	double a = 0.0;
-
-	if (stack[last]->constant) a = GMT_bei (GMT, (double)fabsf (stack[last]->factor));
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_bei (GMT, fabs((double)stack[last]->G->data[node])));
-}
-
-void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BER 1 1 ber (A).  */
-{
-	uint64_t node;
-	double a = 0.0;
-
-	if (stack[last]->constant) a = GMT_ber (GMT, (double)fabsf (stack[last]->factor));
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_ber (GMT, fabs ((double)stack[last]->G->data[node])));
 }
 
 void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
