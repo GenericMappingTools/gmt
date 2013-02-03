@@ -116,6 +116,9 @@ identified by prepending the current directory (i.e., ./LOG).
 .sp
 (8) All functions expecting a positive radius (e.g., BD(LOG), BD(KEI), etc.) are passed the
 absolute value of their argument.
+(9) The bitwise operators (BD(BAND), BD(BNOT), BD(BOR), and BD(BXOR)) convert a grid's float
+values to unsigned 32-bit ints and perform the bitwise operations.  Consequently, the largest
+whole integer value that can be stored in a float grid is 2^23 or 8,388,608.
 #include "explain_float.txt"
 #include "explain_grd_inout.txt"
 #include "explain_grd_coord.txt"

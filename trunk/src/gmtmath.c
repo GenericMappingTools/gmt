@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -678,6 +678,22 @@ void table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atanh (T->segment[s]->coord[col][row]);
 }
 
+void table_BAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BAND 2 1 1 if A & B, else 0 (bitwise operation).  */
+{
+	uint64_t s, row;
+	unsigned int prev = last - 1, a = 0, b = 0;
+	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
+
+	if (S[prev]->constant) a = (unsigned int)S[prev]->factor;
+	if (S[last]->constant) b = (unsigned int)S[last]->factor;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (!S[prev]->constant) a = (unsigned int)T_prev->segment[s]->coord[col][row];
+		if (!S[last]->constant) b = (unsigned int)T->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = (a & b) ? 1.0 : 0.0;
+	}
+}
+
 void table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BEI 1 1 bei (A).  */
 {
@@ -698,6 +714,53 @@ void table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 
 	if (S[last]->constant) a = GMT_ber (GMT, fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : GMT_ber (GMT, fabs (T->segment[s]->coord[col][row]));
+}
+
+void table_BNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BNOT 1 1  ~A (bitwise operation).  */
+{
+	uint64_t s, row;
+	unsigned int a = 0;
+	struct GMT_TABLE *T = S[last]->D->table[0];
+
+	if (S[last]->constant) a = (unsigned int)S[last]->factor;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (!S[last]->constant) a = (unsigned int)T->segment[s]->coord[col][row];
+		a = ~a;
+		T->segment[s]->coord[col][row] = (double)a;
+	}
+}
+
+void table_BOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BOR 2 1 1 if A | B, else 0 (bitwise operation).  */
+{
+	uint64_t s, row;
+	unsigned int prev = last - 1, a = 0, b = 0;
+	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
+
+	if (S[prev]->constant) a = (unsigned int)S[prev]->factor;
+	if (S[last]->constant) b = (unsigned int)S[last]->factor;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (!S[prev]->constant) a = (unsigned int)T_prev->segment[s]->coord[col][row];
+		if (!S[last]->constant) b = (unsigned int)T->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = (a | b) ? 1.0 : 0.0;
+	}
+}
+
+void table_BXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BXOR 2 1 1 if A ^ B, else 0 (bitwise operation).  */
+{
+	uint64_t s, row;
+	unsigned int prev = last - 1, a = 0, b = 0;
+	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
+
+	if (S[prev]->constant) a = (unsigned int)S[prev]->factor;
+	if (S[last]->constant) b = (unsigned int)S[last]->factor;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (!S[prev]->constant) a = (unsigned int)T_prev->segment[s]->coord[col][row];
+		if (!S[last]->constant) b = (unsigned int)T->segment[s]->coord[col][row];
+		T_prev->segment[s]->coord[col][row] = (a ^ b) ? 1.0 : 0.0;
+	}
 }
 
 void table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)

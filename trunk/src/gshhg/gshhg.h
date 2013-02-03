@@ -2,9 +2,7 @@
  *
  * Include file defining structures used in gshhg.c
  *
- * Paul Wessel, SOEST
- *
- *	Copyright (c) 1996-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+ *	Copyright (c) 1996-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
