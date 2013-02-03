@@ -1449,7 +1449,7 @@ int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
 						GMT_memcpy (fix, fxr, n_coef, double);
 
 					if (Ctrl->Z.active && !wrote_one && l == 0 && k == 0) {
-						for (i2 = jj = 0; i2 < Ctrl->F.ncoef_row; i2++)		/* Remember, filter is columnwise */
+						for (jj = i2 = 0; i2 < Ctrl->F.ncoef_row; i2++)		/* Remember, filter is columnwise */
 							for (j2 = 0; j2 < Ctrl->F.ncoef_col; j2++, jj++)
 								Gfilt->data[jj] = (float)fix[ij_mn(Ctrl,i2,j2)];
 
