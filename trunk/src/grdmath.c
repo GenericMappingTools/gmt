@@ -416,18 +416,24 @@ void grd_ATANH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 }
 
 void grd_BAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BAND 2 1 1 if A & B, else 0 (bitwise operation).  */
+/*OPERATOR: BAND 2 1 A & B (bitwise AND operator).  */
 {
-	uint64_t node, a = 0, b = 0;
-	unsigned int prev;
+	uint64_t node;
+	float af = 0.0, bf = 0.0;
+	unsigned int prev, a = 0, b = 0;
 
 	prev = last - 1;
-	if (stack[prev]->constant) a = (uint64_t)stack[prev]->factor;
-	if (stack[last]->constant) b = (uint64_t)stack[last]->factor;
+	if (stack[prev]->constant) af = stack[prev]->factor;
+	if (stack[last]->constant) bf = stack[last]->factor;
 	for (node = 0; node < info->size; node++) {
-		if (!stack[prev]->constant) a = (uint64_t)stack[prev]->G->data[node];
-		if (!stack[last]->constant) b = (uint64_t)stack[last]->G->data[node];
-		stack[prev]->G->data[node] = (a & b) ? 1.0f : 0.0f;
+		if (!stack[prev]->constant) af = stack[prev]->G->data[node];
+		if (!stack[last]->constant) bf = stack[last]->G->data[node];
+		if (GMT_is_fnan (af) || GMT_is_fnan (bf))	/* Any NaN in bitwise operations results in NaN output */
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;	b = (unsigned int)bf;
+			stack[prev]->G->data[node] = (float)(a & b);
+		}
 	}
 }
 
@@ -451,48 +457,164 @@ void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_ber (GMT, fabs ((double)stack[last]->G->data[node])));
 }
 
-void grd_BNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BNOT 1 1  ~A (bitwise operation).  */
+void grd_BLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BLEFT 2 1 A << B (bitwise left-shift operator).  */
 {
-	uint64_t node, a = 0;
+	uint64_t node;
+	unsigned int prev, a = 0, b = 0;
+	int b_signed;
+	bool first = true;
+	float af = 0.0, bf = 0.0;
 
-	if (stack[last]->constant) a = (uint64_t)stack[last]->factor;
+	prev = last - 1;
+	if (stack[prev]->constant) af = stack[prev]->factor;
+	if (stack[last]->constant) bf = stack[last]->factor;
 	for (node = 0; node < info->size; node++) {
-		if (!stack[last]->constant) a = (uint64_t)stack[last]->G->data[node];
-		a = ~a;
-		stack[last]->G->data[node] = (float)a;
+		if (!stack[prev]->constant) af = stack[prev]->G->data[node];
+		if (!stack[last]->constant) bf = stack[last]->G->data[node];
+		if (GMT_is_fnan (af) || GMT_is_fnan (bf))	/* Any NaN in bitwise operations results in NaN output */
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;	b_signed = (int)bf;
+			if (b_signed < 0) {	/* Bad bitshift */
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit shift must be >= 0; other values yield NaN\n");
+				stack[prev]->G->data[node] = GMT->session.f_NaN;
+				first = false;
+			}
+			else {		
+				b = (unsigned int)b_signed;
+				stack[prev]->G->data[node] = (float) (a << b);
+			}
+		}
+	}
+}
+
+void grd_BNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BNOT 1 1  ~A (bitwise NOT operator, i.e., return two's complement).  */
+{
+	uint64_t node;
+	unsigned int a = 0;
+	float af = 0.0;
+
+	if (stack[last]->constant) af = stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[last]->constant) af = stack[last]->G->data[node];
+		if (GMT_is_fnan (af))	/* Any NaN in bitwise operations results in NaN output */
+			stack[last]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;
+			a = ~a;
+			stack[last]->G->data[node] = (float)a;
+		}
 	}
 }
 
 void grd_BOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BOR 2 1 1 if A | B, else 0 (bitwise operation).  */
+/*OPERATOR: BOR 2 1 A | B (bitwise OR operator).  */
 {
-	uint64_t node, a = 0, b = 0;
-	unsigned int prev;
+	uint64_t node;
+	unsigned int prev, a = 0, b = 0;
+	float af = 0.0, bf = 0.0;
 
 	prev = last - 1;
-	if (stack[prev]->constant) a = (uint64_t)stack[prev]->factor;
-	if (stack[last]->constant) b = (uint64_t)stack[last]->factor;
+	if (stack[prev]->constant) af = stack[prev]->factor;
+	if (stack[last]->constant) bf = stack[last]->factor;
 	for (node = 0; node < info->size; node++) {
-		if (!stack[prev]->constant) a = (uint64_t)stack[prev]->G->data[node];
-		if (!stack[last]->constant) b = (uint64_t)stack[last]->G->data[node];
-		stack[prev]->G->data[node] = (a | b) ? 1.0f : 0.0f;
+		if (!stack[prev]->constant) af = stack[prev]->G->data[node];
+		if (!stack[last]->constant) bf = stack[last]->G->data[node];
+		if (GMT_is_fnan (af) || GMT_is_fnan (bf))	/* Any NaN in bitwise operations results in NaN output */
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;	b = (unsigned int)bf;
+			stack[prev]->G->data[node] = (float)(a | b);
+		}
+	}
+}
+
+void grd_BRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BRIGHT 2 1 A >> B (bitwise right-shift operator).  */
+{
+	uint64_t node;
+	unsigned int prev, a = 0, b = 0;
+	int b_signed;
+	bool first = true;
+	float af = 0.0, bf = 0.0;
+
+	prev = last - 1;
+	if (stack[prev]->constant) af = stack[prev]->factor;
+	if (stack[last]->constant) bf = stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[prev]->constant) af = stack[prev]->G->data[node];
+		if (!stack[last]->constant) bf = stack[last]->G->data[node];
+		if (GMT_is_fnan (af) || GMT_is_fnan (bf))	/* Any NaN in bitwise operations results in NaN output */
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;	b_signed = (int)bf;
+			if (b_signed < 0) {	/* Bad bitshift */
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit shift must be >= 0; other values yield NaN\n");
+				stack[prev]->G->data[node] = GMT->session.f_NaN;
+				first = false;
+			}
+			else {		
+				b = (unsigned int)b_signed;
+				stack[prev]->G->data[node] = (float) (a >> b);
+			}
+		}
+	}
+}
+
+void grd_BTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
+{
+	uint64_t node;
+	unsigned int prev, a = 0, b = 0;
+	int b_signed;
+	bool first = true;
+	float af = 0.0, bf = 0.0;
+
+	prev = last - 1;
+	if (stack[prev]->constant) af = stack[prev]->factor;
+	if (stack[last]->constant) bf = stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[prev]->constant) af = stack[prev]->G->data[node];
+		if (!stack[last]->constant) bf = stack[last]->G->data[node];
+		if (GMT_is_fnan (af) || GMT_is_fnan (bf))	/* Any NaN in bitwise operations results in NaN output */
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;	b_signed = (int)bf;
+			if (b_signed <= 0) {	/* Bad bit */
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BTEST is 1-32; other values yield NaN\n");
+				stack[prev]->G->data[node] = GMT->session.f_NaN;
+				first = false;
+			}
+			else {
+				b = (unsigned int)b_signed;
+				b = 1 << (b-1);
+				stack[prev]->G->data[node] = (a & b) ? 1.0f : 0.0f;
+			}
+		}
 	}
 }
 
 void grd_BXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BXOR 2 1 1 if A ^ B, else 0 (bitwise operation).  */
+/*OPERATOR: BXOR 2 1 1 A ^ B (bitwise XOR operator).  */
 {
-	uint64_t node, a = 0, b = 0;
-	unsigned int prev;
+	uint64_t node;
+	unsigned int prev, a = 0, b = 0;
+	float af = 0.0, bf = 0.0;
 
 	prev = last - 1;
-	if (stack[prev]->constant) a = (uint64_t)stack[prev]->factor;
-	if (stack[last]->constant) b = (uint64_t)stack[last]->factor;
+	if (stack[prev]->constant) af = stack[prev]->factor;
+	if (stack[last]->constant) bf = stack[last]->factor;
 	for (node = 0; node < info->size; node++) {
-		if (!stack[prev]->constant) a = (uint64_t)stack[prev]->G->data[node];
-		if (!stack[last]->constant) b = (uint64_t)stack[last]->G->data[node];
-		stack[prev]->G->data[node] = (a ^ b) ? 1.0f : 0.0f;
+		if (!stack[prev]->constant) af = stack[prev]->G->data[node];
+		if (!stack[last]->constant) bf = stack[last]->G->data[node];
+		if (GMT_is_fnan (af) || GMT_is_fnan (bf))	/* Any NaN in bitwise operations results in NaN output */
+			stack[prev]->G->data[node] = GMT->session.f_NaN;
+		else {
+			a = (unsigned int)af;	b = (unsigned int)bf;
+			stack[prev]->G->data[node] = (float)(a ^ b);
+		}
 	}
 }
 
