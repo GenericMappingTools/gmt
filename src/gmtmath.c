@@ -678,8 +678,8 @@ void table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atanh (T->segment[s]->coord[col][row]);
 }
 
-void table_BAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BAND 2 1 A & B (bitwise AND operator).  */
+void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	unsigned int prev = last - 1;
@@ -722,8 +722,8 @@ void table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : GMT_ber (GMT, fabs (T->segment[s]->coord[col][row]));
 }
 
-void table_BLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BLEFT 2 1 A << B (bitwise left-shift operator).  */
+void table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITLEFT 2 1 A << B (bitwise left-shift operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	int64_t b_signed;
@@ -754,8 +754,8 @@ void table_BLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	}
 }
 
-void table_BNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BNOT 1 1 ~A (bitwise NOT operator, i.e., return two's complement).  */
+void table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITNOT 1 1 ~A (bitwise NOT operator, i.e., return two's complement).  */
 {
 	uint64_t s, row, a = 0;
 	double ad = 0.0;
@@ -774,8 +774,8 @@ void table_BNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	}
 }
 
-void table_BOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BOR 2 1 A | B (bitwise OR operator).  */
+void table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITOR 2 1 A | B (bitwise OR operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	unsigned int prev = last - 1;
@@ -796,8 +796,8 @@ void table_BOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	}
 }
 
-void table_BRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BRIGHT 2 1 A >> B (bitwise right-shift operator).  */
+void table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITRIGHT 2 1 A >> B (bitwise right-shift operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	int64_t b_signed;
@@ -828,8 +828,8 @@ void table_BRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 	}
 }
 
-void table_BTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
+void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	int64_t b_signed;
@@ -848,7 +848,7 @@ void table_BTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
 			if (b_signed <= 0) {	/* Bad bit */
-				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BTEST is 1-64; other values yield NaN\n");
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 1-64; other values yield NaN\n");
 				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
@@ -861,8 +861,8 @@ void table_BTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	}
 }
 
-void table_BXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BXOR 2 1 1 if A ^ B, else 0 (bitwise XOR operator).  */
+void table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITXOR 2 1 1 if A ^ B, else 0 (bitwise XOR operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	unsigned int prev = last - 1;

@@ -415,8 +415,8 @@ void grd_ATANH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : atanhf (stack[last]->G->data[node]);
 }
 
-void grd_BAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BAND 2 1 A & B (bitwise AND operator).  */
+void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
 	uint64_t node;
 	float af = 0.0, bf = 0.0;
@@ -457,8 +457,8 @@ void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_ber (GMT, fabs ((double)stack[last]->G->data[node])));
 }
 
-void grd_BLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BLEFT 2 1 A << B (bitwise left-shift operator).  */
+void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITLEFT 2 1 A << B (bitwise left-shift operator).  */
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
@@ -489,8 +489,8 @@ void grd_BLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	}
 }
 
-void grd_BNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BNOT 1 1  ~A (bitwise NOT operator, i.e., return two's complement).  */
+void grd_BITNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITNOT 1 1  ~A (bitwise NOT operator, i.e., return two's complement).  */
 {
 	uint64_t node;
 	unsigned int a = 0;
@@ -509,8 +509,8 @@ void grd_BNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	}
 }
 
-void grd_BOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BOR 2 1 A | B (bitwise OR operator).  */
+void grd_BITOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITOR 2 1 A | B (bitwise OR operator).  */
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
@@ -531,8 +531,8 @@ void grd_BOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	}
 }
 
-void grd_BRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BRIGHT 2 1 A >> B (bitwise right-shift operator).  */
+void grd_BITRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITRIGHT 2 1 A >> B (bitwise right-shift operator).  */
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
@@ -563,8 +563,8 @@ void grd_BRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	}
 }
 
-void grd_BTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
+void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
@@ -583,7 +583,7 @@ void grd_BTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		else {
 			a = (unsigned int)af;	b_signed = (int)bf;
 			if (b_signed <= 0) {	/* Bad bit */
-				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BTEST is 1-32; other values yield NaN\n");
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 1-32; other values yield NaN\n");
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
 				first = false;
 			}
@@ -596,8 +596,8 @@ void grd_BTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	}
 }
 
-void grd_BXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BXOR 2 1 1 A ^ B (bitwise XOR operator).  */
+void grd_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BITXOR 2 1 1 A ^ B (bitwise XOR operator).  */
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
