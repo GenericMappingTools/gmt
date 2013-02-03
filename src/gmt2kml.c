@@ -689,6 +689,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	extra[0] = '\0';
+	GMT_memset (out, 5, double);	/* Set to zero */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 	
 	if (Ctrl->C.active) {	/* Process CPT file */
@@ -964,14 +965,14 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 					if (Ctrl->L.n_cols) {
 						tabs (N++); printf ("<ExtendedData>\n");
 						for (col = 0; col < Ctrl->L.n_cols; col++) {
-							tabs (N++); printf ("<Data name = \"%s\">\n", Ctrl->L.name[col]);
-							tabs (N--); printf ("<value>");
+							tabs (N); printf ("<Data name = \"%s\">\n", Ctrl->L.name[col]);
+							tabs (++N); printf ("<value>");
 							GMT_strtok (extra, " \t,", &pos, item);	
 							printf ("%s", item);
 							printf ("</value>\n");
-							tabs (N--); printf ("</Data>\n");
+							tabs (--N); printf ("</Data>\n");
 						}
-						tabs (N); printf ("</ExtendedData>\n");
+						tabs (--N); printf ("</ExtendedData>\n");
 					}
 					if (Ctrl->F.mode == SPAN) {
 						tabs (N++); printf ("<TimeSpan>\n");
