@@ -125,6 +125,9 @@ boundary conditions.
 .sp
 (7) BD(ROOTS) must be the last operator on the stack, only followed by BD(=).
 #include "explain_sto_rcl_clr.txt"
+(8) The bitwise operators (BD(BAND), BD(BNOT), BD(BOR), and BD(BXOR)) convert a tables's double precision
+values to unsigned 64-bit ints and perform the bitwise operations.  Consequently, the largest
+whole integer value that can be stored in a double precision value is 2^53 or 9,007,199,254,740,992.
 .SH MACROS
 Users may save their favorite operator combinations as macros via the file .gmtmath
 in their current or user directory.  The file may contain any number of macros (one

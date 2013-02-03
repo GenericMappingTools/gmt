@@ -1,7 +1,7 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -415,6 +415,22 @@ void grd_ATANH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : atanhf (stack[last]->G->data[node]);
 }
 
+void grd_BAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BAND 2 1 1 if A & B, else 0 (bitwise operation).  */
+{
+	uint64_t node, a = 0, b = 0;
+	unsigned int prev;
+
+	prev = last - 1;
+	if (stack[prev]->constant) a = (uint64_t)stack[prev]->factor;
+	if (stack[last]->constant) b = (uint64_t)stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[prev]->constant) a = (uint64_t)stack[prev]->G->data[node];
+		if (!stack[last]->constant) b = (uint64_t)stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (a & b) ? 1.0f : 0.0f;
+	}
+}
+
 void grd_BEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BEI 1 1 bei (A).  */
 {
@@ -433,6 +449,51 @@ void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 
 	if (stack[last]->constant) a = GMT_ber (GMT, (double)fabsf (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : GMT_ber (GMT, fabs ((double)stack[last]->G->data[node])));
+}
+
+void grd_BNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BNOT 1 1  ~A (bitwise operation).  */
+{
+	uint64_t node, a = 0;
+
+	if (stack[last]->constant) a = (uint64_t)stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[last]->constant) a = (uint64_t)stack[last]->G->data[node];
+		a = ~a;
+		stack[last]->G->data[node] = (float)a;
+	}
+}
+
+void grd_BOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BOR 2 1 1 if A | B, else 0 (bitwise operation).  */
+{
+	uint64_t node, a = 0, b = 0;
+	unsigned int prev;
+
+	prev = last - 1;
+	if (stack[prev]->constant) a = (uint64_t)stack[prev]->factor;
+	if (stack[last]->constant) b = (uint64_t)stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[prev]->constant) a = (uint64_t)stack[prev]->G->data[node];
+		if (!stack[last]->constant) b = (uint64_t)stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (a | b) ? 1.0f : 0.0f;
+	}
+}
+
+void grd_BXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: BXOR 2 1 1 if A ^ B, else 0 (bitwise operation).  */
+{
+	uint64_t node, a = 0, b = 0;
+	unsigned int prev;
+
+	prev = last - 1;
+	if (stack[prev]->constant) a = (uint64_t)stack[prev]->factor;
+	if (stack[last]->constant) b = (uint64_t)stack[last]->factor;
+	for (node = 0; node < info->size; node++) {
+		if (!stack[prev]->constant) a = (uint64_t)stack[prev]->G->data[node];
+		if (!stack[last]->constant) b = (uint64_t)stack[last]->G->data[node];
+		stack[prev]->G->data[node] = (a ^ b) ? 1.0f : 0.0f;
+	}
 }
 
 void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)

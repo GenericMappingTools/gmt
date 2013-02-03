@@ -2,7 +2,7 @@
 REM  
 REM	$Id$
 REM
-REM	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, and J. Luis
+REM	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 REM	See LICENSE.TXT file for copying and redistribution conditions.
 REM
 REM	This program is free software; you can redistribute it and/or modify
