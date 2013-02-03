@@ -678,28 +678,6 @@ void table_ATANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : atanh (T->segment[s]->coord[col][row]);
 }
 
-void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
-{
-	uint64_t s, row, a = 0, b = 0;
-	unsigned int prev = last - 1;
-	double ad = 0.0, bd = 0.0;
-	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
-
-	if (S[prev]->constant) ad = S[prev]->factor;
-	if (S[last]->constant) bd = S[last]->factor;
-	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
-		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
-		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
-		if (GMT_is_dnan (ad) || GMT_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
-			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
-		else {
-			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)(a & b);
-		}
-	}
-}
-
 void table_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BEI 1 1 bei (A).  */
 {
@@ -720,6 +698,28 @@ void table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 
 	if (S[last]->constant) a = GMT_ber (GMT, fabs (S[last]->factor));
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : GMT_ber (GMT, fabs (T->segment[s]->coord[col][row]));
+}
+
+void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
+{
+	uint64_t s, row, a = 0, b = 0;
+	unsigned int prev = last - 1;
+	double ad = 0.0, bd = 0.0;
+	struct GMT_TABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
+
+	if (S[prev]->constant) ad = S[prev]->factor;
+	if (S[last]->constant) bd = S[last]->factor;
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		if (!S[prev]->constant) ad = T_prev->segment[s]->coord[col][row];
+		if (!S[last]->constant) bd = T->segment[s]->coord[col][row];
+		if (GMT_is_dnan (ad) || GMT_is_dnan (bd))	/* Any NaN in bitwise operations results in NaN output */
+			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
+		else {
+			a = (uint64_t)ad;	b = (uint64_t)bd;
+			T_prev->segment[s]->coord[col][row] = (double)(a & b);
+		}
+	}
 }
 
 void table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
