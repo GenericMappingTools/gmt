@@ -868,8 +868,7 @@ unsigned int gmt_radial_crossing (struct GMT_CTRL *C, double lon1, double lat1, 
 	dist2 = GMT_great_circle_dist_degree (C, C->current.proj.central_meridian, C->current.proj.pole, lon2, lat2);
 	delta = dist2 - dist1;
 	eps = (doubleAlmostEqualZero (dist1, dist2)) ? 0.0 : (C->current.proj.f_horizon - dist1) / delta;
-	dlon = lon2 - lon1;
-	if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+	GMT_set_delta_lon (lon1, lon2, dlon);
 	clon[0] = lon1 + dlon * eps;
 	clat[0] = lat1 + (lat2 - lat1) * eps;
 
@@ -1722,8 +1721,7 @@ uint64_t gmt_radial_boundary_arc (struct GMT_CTRL *C, int this, double end_x[], 
 	da_try = (C->current.setting.map_line_step * 360.0) / (TWO_PI * C->current.proj.r);	/* Angular step in degrees */
 	az1 = d_atan2d (end_y[0], end_x[0]);	/* azimuth from map center to 1st crossing */
 	az2 = d_atan2d (end_y[1], end_x[1]);	/* azimuth from map center to 2nd crossing */
-	d_az = az2 - az1;							/* Arc length in degrees */
-	if (fabs (d_az) > 180.0) d_az = copysign (360.0 - fabs (d_az), -d_az);	/* Insist we take the short arc for now */
+	GMT_set_delta_lon (az1, az2, d_az);	/* Insist we take the short arc for now */
 	n_arc = lrint (ceil (fabs (d_az) / da_try));	/* Get number of integer increments of da_try degree... */
 	if (n_arc < 2) n_arc = 2;	/* ...but minimum 2 */
 	da = d_az / (n_arc - 1);	/* Reset da to get exact steps */
@@ -2161,8 +2159,7 @@ double gmt_az_backaz_flatearth (struct GMT_CTRL *C, double lonE, double latE, do
 		double_swap (lonS, lonE);
 		double_swap (latS, latE);
 	}
-	dlon = lonE - lonS;
-	if (fabs (dlon) > 180.0) dlon = copysign ((360.0 - fabs (dlon)), dlon);
+	GMT_set_delta_lon (lonS, lonE, dlon);
 	dx = dlon * cosd (0.5 * (latE + latS));
 	dy = latE - latS;
 	az = (dx == 0.0 && dy == 0.0) ? C->session.d_NaN : 90.0 - atan2d (dy, dx);
@@ -5200,10 +5197,9 @@ double gmt_flatearth_dist_degree (struct GMT_CTRL *C, double x0, double y0, doub
 	   If difference in longitudes exceeds 180 we pick the other
 	   offset (360 - offset)
 	 */
-	double dlon = x1 - x0;
+	double dlon;
 	
-	if (fabs (dlon) > 180.0) dlon = copysign ((360.0 - fabs (dlon)), dlon);
-
+	GMT_set_delta_lon (x0, x1, dlon);
 	return (hypot ( dlon * cosd (0.5 * (y1 + y0)), (y1 - y0)));
 }
 
@@ -5446,8 +5442,8 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 
 double gmt_loxodrome_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2)
 {	/* Calculates the distance along the loxodrome, in meter */
-	double dist, d_lon = lon2 - lon1;
-	if (fabs (d_lon) > 180.0) d_lon = copysign (360.0 - fabs (d_lon), -d_lon);
+	double dist, d_lon;
+	GMT_set_delta_lon (lon1, lon2, d_lon);
 	if (doubleAlmostEqualZero (lat1, lat2)) {	/* Along parallel */
 		if (C->current.proj.GMT_convert_latitudes) lat1 = GMT_latg_to_latc (C, lat1);
 		dist = fabs (d_lon) * cosd (lat1);
@@ -5484,8 +5480,7 @@ double gmt_az_backaz_loxodrome (struct GMT_CTRL *C, double lonE, double latE, do
 		double_swap (lonS, lonE);
 		double_swap (latS, latE);
 	}
-	d_lon = fmod (lonS - lonE, 360.0);
-	if (fabs (d_lon) > 180.0) d_lon = copysign (360.0 - fabs (d_lon), -d_lon);
+	GMT_set_delta_lon (lonE, lonS, d_lon);
 	if (doubleAlmostEqualZero (latS, latE))	/* Along parallel */
 		az = (d_lon > 0.0) ? 90 : -90.0;
 	else { /* General case */

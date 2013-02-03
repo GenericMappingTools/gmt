@@ -1166,8 +1166,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 				else {
 					ya = lat_in[row_in-1];	yb = lat_in[row_in];
 				}
-				d_lon = lon_in[row_in] - lon_in[row_in-1];
-				if (fabs (d_lon) > 180.0) d_lon = copysign (360.0 - fabs (d_lon), -d_lon);
+				GMT_set_delta_lon (lon_in[row_in-1], lon_in[row_in], d_lon);
 				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (C, tand (45.0 + 0.5 * ya));
 				b[0] = D2R * (lon_in[row_in-1] + d_lon);	b[1] = d_log (C, tand (45.0 + 0.5 * yb));
 				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */

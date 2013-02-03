@@ -597,8 +597,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 			 * x-axis and y-axis is normal to that, flowlines whose closest approach point's longitude is
 			 * further east are said to have negative distance. */
 			 
-			dlon = fmod (lon - hot[spot].np_lon, 360.0);
-			if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
+			GMT_set_delta_lon (hot[spot].np_lon, lon, dlon);
 			hot[spot].np_sign = copysign (1.0, dlon);
 			 
 			/* Assign stage id for this point on the flowline */

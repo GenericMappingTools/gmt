@@ -102,6 +102,9 @@
 #define double_swap(x, y) {double double_tmp; double_tmp = x, x = y, y = double_tmp;}
 #define float_swap(x, y) {float float_tmp; float_tmp = x, x = y, y = float_tmp;}
 
+/* Macro to ensure proper value and sign of a change in longitude from lon1 to lon2 */
+#define GMT_set_delta_lon(lon1,lon2,delta) {delta = lon2 - lon1; if (fabs (delta) > 180.0) delta = copysign (360.0 - fabs (delta), -delta);}
+
 /* Macro to simplify call to memcpy when duplicating values and memset when zeroing out */
 #define GMT_memcpy(to,from,n,type) memcpy(to, from, (n)*sizeof(type))
 #define GMT_memset(array,n,type) memset(array, 0, (n)*sizeof(type))

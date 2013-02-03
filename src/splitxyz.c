@@ -445,13 +445,14 @@ int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (Ctrl->S.active) S->coord[h_col][0] = D2R * (90.0 - S->coord[h_col][0]);	/* Angles are stored as CCW angles in radians */
 			for (row = 1; row < S->n_rows; row++) {
 				if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
-					dx = (S->coord[GMT_X][row] - S->coord[GMT_X][row-1]);
-					dy = (S->coord[GMT_Y][row] - S->coord[GMT_Y][row-1]);
+					dy = S->coord[GMT_Y][row] - S->coord[GMT_Y][row-1];
 					if (GMT_is_geographic (GMT, GMT_IN)) {
-						if (fabs (dx) > 180.0) dx = copysign (360.0 - fabs (dx), -dx);
+						GMT_set_delta_lon (S->coord[GMT_X][row-1], S->coord[GMT_X][row], dx);
 						dy *= GMT->current.proj.DIST_KM_PR_DEG;
 						dx *= (GMT->current.proj.DIST_KM_PR_DEG * cosd (0.5 * (S->coord[GMT_Y][row] + S->coord[GMT_Y][row-1])));
 					}
+					else
+						dx = S->coord[GMT_X][row] - S->coord[GMT_X][row-1];
 					if (dy == 0.0 && dx == 0.0) {
 						S->coord[d_col][row] = S->coord[d_col][row-1];
 						S->coord[h_col][row] = S->coord[h_col][row-1];

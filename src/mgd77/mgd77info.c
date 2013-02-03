@@ -454,10 +454,7 @@ int GMT_mgd77info (struct GMTAPI_CTRL *API, int mode, void *args)
 			xmin2 = MIN (this_lon, xmin2);
 			xmax2 = MAX (this_lon, xmax2);
 			if (rec > 0) {	/* Need a previous point to calculate distance, speed, and heading */
-				dlon = this_lon - last_lon;
-				if (fabs (dlon) > 180.0) {
-					dlon = copysign ((360.0 - fabs (dlon)), dlon);
-				}
+				GMT_set_delta_lon (last_lon, this_lon, dlon);
 				dx = dlon * cosd (0.5 * (this_lat + last_lat));
 				dy = this_lat - last_lat;
 				ds = GMT->current.proj.DIST_KM_PR_DEG * hypot (dx, dy);
