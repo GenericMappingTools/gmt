@@ -862,7 +862,7 @@ void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 }
 
 void table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: BITXOR 2 1 1 if A ^ B, else 0 (bitwise XOR operator).  */
+/*OPERATOR: BITXOR 2 1 A ^ B (bitwise XOR operator).  */
 {
 	uint64_t s, row, a = 0, b = 0;
 	unsigned int prev = last - 1;
