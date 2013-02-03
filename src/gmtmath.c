@@ -847,14 +847,14 @@ void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b_signed = (int64_t)bd;
-			if (b_signed <= 0) {	/* Bad bit */
-				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 1-64; other values yield NaN\n");
+			if (b_signed < 0) {	/* Bad bit */
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 0-63; other values yield NaN\n");
 				T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 				first = false;
 			}
 			else {
 				b = (uint64_t)b_signed;
-				b = 1 << (b-1);
+				b = 1 << b;
 				T_prev->segment[s]->coord[col][row] = (a & b) ? 1.0 : 0.0;
 			}
 		}

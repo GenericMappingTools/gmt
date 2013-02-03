@@ -582,14 +582,14 @@ void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b_signed = (int)bf;
-			if (b_signed <= 0) {	/* Bad bit */
-				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 1-32; other values yield NaN\n");
+			if (b_signed < 0) {	/* Bad bit */
+				if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "ERROR: Bit position range for BITTEST is 0-31; other values yield NaN\n");
 				stack[prev]->G->data[node] = GMT->session.f_NaN;
 				first = false;
 			}
 			else {
 				b = (unsigned int)b_signed;
-				b = 1 << (b-1);
+				b = 1 << b;
 				stack[prev]->G->data[node] = (a & b) ? 1.0f : 0.0f;
 			}
 		}
