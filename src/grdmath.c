@@ -589,7 +589,7 @@ void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			}
 			else {
 				b = (unsigned int)b_signed;
-				b = 1 << b;
+				b = 1U << b;
 				stack[prev]->G->data[node] = (a & b) ? 1.0f : 0.0f;
 			}
 		}
