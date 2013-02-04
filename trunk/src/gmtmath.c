@@ -854,7 +854,7 @@ void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 			}
 			else {
 				b = (uint64_t)b_signed;
-				b = 1 << b;
+				b = 1ULL << b;
 				T_prev->segment[s]->coord[col][row] = (a & b) ? 1.0 : 0.0;
 			}
 		}
