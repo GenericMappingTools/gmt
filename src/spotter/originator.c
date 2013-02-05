@@ -385,8 +385,6 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*---------------------------- This is the originator main code ----------------------------*/
 
-	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
-
 	n_hotspots = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (Ctrl->S.n > n_hotspots) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);

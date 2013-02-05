@@ -202,7 +202,7 @@ void gmt_set_polar (struct GMT_CTRL *C)
 	}
 }
 
-void GMT_lat_swap_init (struct GMT_CTRL *C)
+void gmt_lat_swap_init (struct GMT_CTRL *C)
 {
 	/* Initialize values in C->current.proj.GMT_lat_swap_vals based on C->current.proj.
 
@@ -282,6 +282,13 @@ void GMT_lat_swap_init (struct GMT_CTRL *C)
 	lat conversions without plotting maps.
 
 	W H F Smith, 10--13 May 1999.   */
+	
+	/* PW notes: Projections only convert latitudes if C->current.proj.GMT_convert_latitudes is true.
+	 *       This is set by GMT_mapsetup if the ellipsoid is not a sphere.  Calling gmt_lat_swap_init by itself
+	 *	 does not affect the mapping machinery.  Since various situations call for the use
+	 *	 of auxilliary latitudes we initialize gmt_lat_swap_init in GMT_begin.  This means
+	 *	 programs can use functions like GMT_lat_swap whenever needed.
+	 */
 
 	unsigned int i;
 	double x, xx[4], a, f, e2, e4, e6, e8;
@@ -292,8 +299,10 @@ void GMT_lat_swap_init (struct GMT_CTRL *C)
 	if (GMT_IS_ZERO (f)) {
 		GMT_memset (C->current.proj.GMT_lat_swap_vals.c, GMT_LATSWAP_N * 4, double);
 		C->current.proj.GMT_lat_swap_vals.ra = C->current.proj.GMT_lat_swap_vals.rm = a;
+		C->current.proj.GMT_lat_swap_vals.spherical = true;
 		return;
 	}
+	C->current.proj.GMT_lat_swap_vals.spherical = false;
 
 	/* Below are two sums for x to get the two radii.  I have nested the
 	parentheses to add the terms in the order that would minimize roundoff
@@ -2017,6 +2026,17 @@ void GMT_set_spherical (struct GMT_CTRL *C, bool notify)
 
 	GMT_init_ellipsoid (C);
 }
+
+#if 0
+void GMT_set_geocentric (struct GMT_CTRL *C, bool notify)
+{	/* The idea is to call this from sample1d/grdtrack */
+	/* Set up ellipsoid parameters for spherical approximation with geocentric parameters */
+
+	C->current.setting.proj_aux_latitude = GMT_LATSWAP_G2O;	/* Geocentric/Geodetic conversion */
+	C->current.setting.proj_mean_radius = GMT_RADIUS_MERIDIONAL;
+	GMT_init_ellipsoid (C);
+}
+#endif
 
 double GMT_left_boundary (struct GMT_CTRL *C, double y)
 {
@@ -7061,6 +7081,8 @@ void GMT_init_ellipsoid (struct GMT_CTRL *C)
 	C->current.proj.KM_PR_DEG = C->current.proj.M_PR_DEG / METERS_IN_A_KM;
 	C->current.proj.DIST_M_PR_DEG = C->current.proj.M_PR_DEG;
 	C->current.proj.DIST_KM_PR_DEG = C->current.proj.KM_PR_DEG;
+	
+	gmt_lat_swap_init (C);		/* Compute coefficients needed for auxilliary latitude conversions */
 }
 
 /* Datum conversion routines */
@@ -7699,7 +7721,6 @@ int GMT_map_setup (struct GMT_CTRL *C, double wesn[])
 	C->current.map.get_crossings = &gmt_get_crossings_x;
 
 	C->current.map.lon_wrap = true;
-	GMT_lat_swap_init (C);
 
 	switch (C->current.proj.projection) {
 
@@ -7996,6 +8017,8 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char unit, unsigned int mode, 
 	 * type: 0 = map distances, 1 = contour distances, 2 = contour annotation distances
 	 * We set distance and azimuth functions and scales for this type.
 	 * At the moment there is only one azimuth function pointer for all.
+	 *
+	 * The input args for GMT_init_distaz normally comes from calling GMT_get_distance.
 	 */
 
 	unsigned int proj_type = GMT_GEOGRAPHIC;	/* Default is to just use the geographic coordinates as they are */

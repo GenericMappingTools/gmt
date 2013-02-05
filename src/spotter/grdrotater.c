@@ -353,8 +353,6 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/*---------------------------- This is the grdrotater main code ----------------------------*/
 
-	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
-
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {

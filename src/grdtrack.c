@@ -121,7 +121,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[u][/<spacing>[u]][+a]]\n"); 
+	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a]]\n"); 
 	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -141,7 +141,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
 	GMT_message (GMT, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
 	GMT_message (GMT, "\t-C Create equidistant cross-profiles from input line segments.  Append\n");
-	GMT_message (GMT, "\t   <length>: Full-length of each cross profile.  Append desired distance unit [%s].\n", GMT_LEN_UNITS);
+	GMT_message (GMT, "\t   <length>: Full-length of each cross profile.  Append distance unit [%s]; it also applies to <ds>, <spacing>.\n", GMT_LEN_UNITS);
 	GMT_message (GMT, "\t   <dz>: Distance interval along the cross-profiles.\n");
 	GMT_message (GMT, "\t   Optionally, append /<spacing> to set the spacing between cross-profiles [Default use input locations].\n");
 	GMT_message (GMT, "\t   Append +a to alternate direction of cross-profiles [Default orients all the same way].\n");
@@ -176,9 +176,9 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int j;
-	unsigned int pos, n_errors = 0, ng = 0, n_files = 0;
-	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256], *c = NULL;
+	int j, mode;
+	unsigned int pos, n_errors = 0, ng = 0, n_files = 0, n_units = 0, n_modes = 0;
+	char line[GMT_BUFSIZ], ta[GMT_TEXT_LEN64], tb[GMT_TEXT_LEN64], tc[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256], *c = NULL, X;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -215,9 +215,23 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 				}
 				j = sscanf (opt->arg, "%[^/]/%[^/]/%s", ta, tb, tc);
 				Ctrl->C.mode = GMT_get_distance (GMT, ta, &(Ctrl->C.length), &(Ctrl->C.unit));
-				Ctrl->C.mode = GMT_get_distance (GMT, tb, &(Ctrl->C.ds), &(Ctrl->C.unit));
-				if (j == 3) Ctrl->C.mode = GMT_get_distance (GMT, tc, &(Ctrl->C.spacing), &(Ctrl->C.unit));
+				mode = GMT_get_distance (GMT, tb, &(Ctrl->C.ds), &X);
+				if (X != Ctrl->C.unit) n_units++;
+				if (mode != Ctrl->C.mode) n_modes++;
+				if (j == 3) {
+					mode = GMT_get_distance (GMT, tc, &(Ctrl->C.spacing), &X);
+					if (X != Ctrl->C.unit) n_units++;
+					if (mode != Ctrl->C.mode) n_modes++;
+				}
 				if (Ctrl->C.alternate) *c = '+';	/* Undo truncation */
+				if (n_units) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Only <length> takes a unit which is shared with <ds> [and <spacing>]\n");
+					n_errors++;
+				}
+				if (n_modes) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Cannot imply different distance modes for <length> and <ds> [and/or <spacing>]\n");
+					n_errors++;
+				}
 				break;
 			case 'D':	/* Dump resampled lines */
 				Ctrl->D.active = true;
@@ -463,6 +477,10 @@ int GMT_grdtrack (struct GMTAPI_CTRL *API, int mode, void *args) {
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
+		if (Ctrl->C.mode == GMT_GEODESIC) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
+			Ctrl->C.mode = GMT_GREATCIRCLE;
+		}
 		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
 		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);

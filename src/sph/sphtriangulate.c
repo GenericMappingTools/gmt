@@ -520,7 +520,6 @@ int GMT_sphtriangulate (struct GMTAPI_CTRL *API, int mode, void *args)
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 	do_authalic = (Ctrl->A.active && !Ctrl->T.active && !GMT_IS_ZERO (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening));
 	if (do_authalic) {
-		GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery to improve area calculations */
 		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Will convert to authalic latitudes for area calculations\n");
 	}
 	steradians = (Ctrl->L.unit == 'd' && !Ctrl->T.active);	/* Flag so we can do steradians */

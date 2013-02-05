@@ -8896,7 +8896,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 	GMT_io_init (C);		/* Init the table i/o structure before parsing GMT defaults */
 
 	gmt_init_unit_conversion (C);	/* Set conversion factors from various units to meters */
-
+	
 	GMT_hash_init (C, keys_hashnode, GMT_keywords, GMT_N_KEYS, GMT_N_KEYS);	/* Initialize hash table for GMT defaults */
 
 	/* Set up hash table for colornames (used to convert <colorname> to <r/g/b>) */
