@@ -32,8 +32,9 @@
 
 #include "gmt.h"
 
-#define INT_1D	0	/* Regular 1-D interpolation */
-#define INT_2D	1	/* Spatial 2-D path interpolation */
+#define INT_1D_CART	0	/* Regular 1-D interpolation */
+#define INT_2D_CART	1	/* Cartesian 2-D path interpolation */
+#define INT_2D_GEO	2	/* Spherical 2-D path interpolation */
 
 struct SAMPLE1D_CTRL {
 	struct Out {	/* -> */
@@ -48,9 +49,10 @@ struct SAMPLE1D_CTRL {
 		bool active;
 		unsigned int mode;
 	} F;
-	struct I {	/* -I<inc>[d|e|k||M|n|c|C] */
+	struct I {	/* -I<inc>[d|m|s|e|f|k|M|n|u|c] (c means x/y Cartesian path) */
 		bool active;
 		unsigned int mode;
+		int smode;
 		double inc;
 		char unit;
 	} I;
@@ -118,7 +120,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-I Set equidistant grid interval <inc> [t1 - t0].\n");
 	GMT_message (GMT, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
 	GMT_message (GMT, "\t   longitude, latitude and you wish to resample this path with a nominal spacing of <inc>\n");
-	GMT_message (GMT, "\t   in the chosen units.  For Cartesian paths specify unit as X.\n");
+	GMT_message (GMT, "\t   in the chosen units.  For Cartesian paths specify unit as c.\n");
 	GMT_message (GMT, "\t   See -A to control how the resampling is done.\n");
 	GMT_message (GMT, "\t-N The <knottable> is an ASCII table with the desired time positions in column 0.\n");
 	GMT_message (GMT, "\t   Overrides the -I and -S settings.  If none of -I, -S, and -N is set\n");
@@ -142,7 +144,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 	unsigned int n_errors = 0, n_files = 0;
 	int col;
 	size_t len;
-	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
+	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -191,12 +193,10 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				Ctrl->I.inc = atof (opt->arg);
-				len = strlen (opt->arg) - 1;
-				if (strchr (GMT_LEN_UNITS "X", opt->arg[len])) {
-					Ctrl->I.unit = opt->arg[len];
-					Ctrl->I.mode = INT_2D;
-				}
+				if ((c = strchr (opt->arg, 'c'))) Ctrl->I.mode = INT_2D_CART, *c = 0;	/* Chop off unit c as not understood by GMT_get_distance */
+				Ctrl->I.smode = GMT_get_distance (GMT, opt->arg, &(Ctrl->I.inc), &(Ctrl->I.unit));
+				if (strchr (GMT_LEN_UNITS, Ctrl->I.unit)) Ctrl->I.mode = INT_2D_GEO;
+				if (Ctrl->I.mode == INT_2D_CART) *c = 'c';	/* Restore the c */
 				break;
 			case 'N':
 				Ctrl->N.file = strdup (opt->arg);
@@ -242,7 +242,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 {
 	unsigned int tbl, col;
-	bool error = false, spatial = false;
+	bool error = false, resample_path = false;
 	int result;
 	
 	unsigned char *nan_flag = NULL;
@@ -296,14 +296,18 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 	
 	if (Ctrl->I.mode) {
-		if (Ctrl->I.unit != 'X' && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+		if (Ctrl->I.smode == GMT_GEODESIC) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
+			Ctrl->I.smode = GMT_GREATCIRCLE;
+		}
+		if (Ctrl->I.mode == INT_2D_GEO && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
-		GMT_init_distaz (GMT, Ctrl->I.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
-		spatial = true;	/* Resample (x,y) track according to -I and -A */
+		GMT_init_distaz (GMT, Ctrl->I.unit, Ctrl->I.smode, GMT_MAP_DIST);		
+		resample_path = true;	/* Resample (x,y) track according to -I and -A */
 	}
 
 	if (Ctrl->N.active) {	/* read file with abscissae */
@@ -338,7 +342,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 			GMT_memset (nan_flag, Din->n_columns, unsigned char);
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = true;
-			if (spatial) {	/* Need distances for spatial interpolation */
+			if (resample_path) {	/* Need distances for path interpolation */
 				dist_in = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
 				lon = GMT_memory (GMT, NULL, S->n_rows, double);
 				lat = GMT_memory (GMT, NULL, S->n_rows, double);
@@ -394,7 +398,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			Sout = Tout->segment[seg];	/* Current output segment */
 			GMT_alloc_segment (GMT, Sout, m, Din->n_columns, false);	/* Readjust the row allocation */
-			if (spatial) {	/* Use resampled path coordinates */
+			if (resample_path) {	/* Use resampled path coordinates */
 				GMT_memcpy (Sout->coord[GMT_X], lon, m, double);
 				GMT_memcpy (Sout->coord[GMT_Y], lat, m, double);
 			}
@@ -405,8 +409,8 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 				
 			for (col = 0; m && col < Din->n_columns; col++) {
 
-				if (col == Ctrl->T.col && !spatial) continue;	/* Skip the time column */
-				if (spatial && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
+				if (col == Ctrl->T.col && !resample_path) continue;	/* Skip the time column */
+				if (resample_path && col <= GMT_Y) continue;		/* Skip the lon,lat columns */
 				
 				if (nan_flag[col] && !GMT->current.setting.io_nan_records) {	/* NaN's present, need "clean" time and data columns */
 
@@ -414,7 +418,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 					data = GMT_memory (GMT, NULL, S->n_rows, double);
 					for (row = k = 0; row < S->n_rows; row++) {
 						if (GMT_is_dnan (S->coord[col][row])) continue;
-						ttime[k] = (spatial) ? dist_in[row] : S->coord[Ctrl->T.col][row];
+						ttime[k] = (resample_path) ? dist_in[row] : S->coord[Ctrl->T.col][row];
 						data[k++] = S->coord[col][row];
 					}
 					result = GMT_intpol (GMT, ttime, data, k, m, t_out, Sout->coord[col], Ctrl->F.mode);
@@ -422,7 +426,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 					GMT_free (GMT, data);
 				}
 				else {
-					ttime = (spatial) ? dist_in : S->coord[Ctrl->T.col];
+					ttime = (resample_path) ? dist_in : S->coord[Ctrl->T.col];
 					result = GMT_intpol (GMT, ttime, S->coord[col], S->n_rows, m, t_out, Sout->coord[col], Ctrl->F.mode);
 				}
 
@@ -431,7 +435,7 @@ int GMT_sample1d (struct GMTAPI_CTRL *API, int mode, void *args)
 					return (result);
 				}
 			}
-			if (spatial) {	/* Free up memory used */
+			if (resample_path) {	/* Free up memory used */
 				GMT_free (GMT, dist_in);	GMT_free (GMT, t_out);
 				GMT_free (GMT, lon);		GMT_free (GMT, lat);
 			}

@@ -42,7 +42,7 @@ second abscissa point in the IT(infile)].
 Append a distance unit (see UNITS) to indicate that the first two columns contain
 longitude, latitude and you wish to resample this path with a spacing of
 IT(inc) in the chosen units.  For sampling of (x, y) Cartesian tracks, specify the
-unit as X. Use OPT(A) to control how the resampling is performed.
+unit as c. Use OPT(A) to control how path resampling is performed.
 .TP
 OPT(N)IT(knotfile)
 IT(knotfile) is an optional ASCII file with the x locations where the data set will be resampled in the first column.

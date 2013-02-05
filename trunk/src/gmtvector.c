@@ -469,8 +469,6 @@ int GMT_gmtvector (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
 	
-	if (Ctrl->E.active) GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
-	
 	if (Ctrl->T.mode == DO_ROT3D)	/* Spherical 3-D rotation */
 		make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D) {	/* Cartesian 2-D rotation */

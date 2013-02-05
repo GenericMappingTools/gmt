@@ -348,8 +348,6 @@ int GMT_hotspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*---------------------------- This is the hotspotter main code ----------------------------*/
 
-	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
-
 	/* Load in the Euler stage poles */
 
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);

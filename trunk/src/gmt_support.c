@@ -9433,16 +9433,11 @@ void gmt_init_rot_matrix (double R[3][3], double E[])
 	 */
 
 	R[0][0] = E[0] * E[0];
-	R[0][1] = E[0] * E[1];
-	R[0][2] = E[0] * E[2];
-
-	R[1][0] = E[0] * E[1];
 	R[1][1] = E[1] * E[1];
-	R[1][2] = E[1] * E[2];
-
-	R[2][0] = E[0] * E[2];
-	R[2][1] = E[1] * E[2];
 	R[2][2] = E[2] * E[2];
+	R[0][1] = R[1][0] = E[0] * E[1];
+	R[0][2] = R[2][0] = E[0] * E[2];
+	R[1][2] = R[2][1] = E[1] * E[2];
 }
 
 void gmt_load_rot_matrix (double w, double R[3][3], double E[])

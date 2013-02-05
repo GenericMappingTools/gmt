@@ -568,8 +568,6 @@ int GMT_grdspotter (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
 
-	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
-
 	/* Load in the Euler stage poles */
 
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, true, false, Ctrl->E.mode, &Ctrl->N.t_upper);

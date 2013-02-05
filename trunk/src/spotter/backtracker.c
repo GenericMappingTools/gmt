@@ -418,8 +418,6 @@ int GMT_backtracker (struct GMTAPI_CTRL *API, int mode, void *args)
 	if ((error = GMT_backtracker_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the backtracker main code ----------------------------*/
-
-	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
 	
 	if (Ctrl->e.active) {	/* Get rotation matrix R */
 		spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);

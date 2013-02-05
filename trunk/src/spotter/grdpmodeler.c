@@ -264,8 +264,6 @@ int GMT_grdpmodeler (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	/*---------------------------- This is the grdpmodeler main code ----------------------------*/
 
-	GMT_lat_swap_init (GMT);	/* Initialize auxiliary latitude machinery */
-
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {	/* Gave an age grid */

@@ -1111,10 +1111,11 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 {
 	/* See GMT_resample_path below for details. */
 
-	bool meridian;
-	uint64_t row_in, row_out, n_out;
+	bool meridian, new_pair;
+	uint64_t last_row_in = 0, row_in, row_out, n_out;
 	unsigned int k;
 	double dist_out, d_lon, gap, L, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
+	double P[3], Rot0[3][3], Rot[3][3], total_angle_rad, angle_rad, ya, yb;
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
 	if (step_out <= 0.0) {	/* Safety valve */
@@ -1130,7 +1131,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 		step_out = (step_out / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get degrees */
 		return (GMT_fix_up_path (C, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
 	}
-	
+		
 	dist_in = GMT_dist_array (C, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
 	
 	/* Determine n_out, the number of output points */
@@ -1151,35 +1152,44 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 		dist_out = row_out * step_out;	/* Rhe desired output distance */
 		while (row_in < n_in && dist_in[row_in] < dist_out) row_in++;	/* Wind so row points to the next input point with a distance >= dist_out */
 		gap = dist_in[row_in] - dist_out;	/* Distance to next input datapoint */
+		new_pair = (row_in > last_row_in);
 		if (GMT_IS_ZERO (gap)) {	/* Use the input point as is */
 			lon_out[row_out] = lon_in[row_in];	lat_out[row_out] = lat_in[row_in];
 		}
 		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
-			L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
+			if (new_pair) {	/* Must perform calculations on the two points */
+				L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
+				ya = GMT_lat_swap (C, lat_in[row_in-1], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				yb = GMT_lat_swap (C, lat_in[row_in],   GMT_LATSWAP_G2O);	/* Convert to geocentric */
+			}
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
-			if (C->current.map.loxodrome) {
-				double ya, yb;
-				if (C->current.proj.GMT_convert_latitudes) {
-					ya = GMT_latc_to_latg (C, lat_in[row_in-1]);	yb = GMT_latc_to_latg (C, lat_in[row_in]);
-				}
-				else {
-					ya = lat_in[row_in-1];	yb = lat_in[row_in];
-				}
-				GMT_set_delta_lon (lon_in[row_in-1], lon_in[row_in], d_lon);
+			if (C->current.map.loxodrome) {	/* Linear resampling along Mercator straight line */
+				if (new_pair) GMT_set_delta_lon (lon_in[row_in-1], lon_in[row_in], d_lon);
 				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (C, tand (45.0 + 0.5 * ya));
 				b[0] = D2R * (lon_in[row_in-1] + d_lon);	b[1] = d_log (C, tand (45.0 + 0.5 * yb));
 				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
 				lon_out[row_out] = c[0] * R2D;
 				lat_out[row_out] = atand (sinh (c[1]));
-				if (C->current.proj.GMT_convert_latitudes) lat_out[row_out] = GMT_latc_to_latg (C, lat_out[row_out]);
+				lat_out[row_out] = GMT_lat_swap (C, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
-			else {
-				GMT_geo_to_cart (C, lat_in[row_in-1], lon_in[row_in-1], a, true);
-				GMT_geo_to_cart (C, lat_in[row_in],   lon_in[row_in],   b, true);
-				for (k = 0; k < 3; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
-				GMT_normalize3v (C, c);
+			else {	/* Spherical resampling along segment */
+				if (new_pair) {	/* Must perform calculations on the two points */
+					GMT_geo_to_cart (C, ya, lon_in[row_in-1], a, true);
+					GMT_geo_to_cart (C, yb, lon_in[row_in],   b, true);
+					total_angle_rad = d_acos (GMT_dot3v (C, a, b));	/* Get spherical angle from a to b in radians; this is same distance as L */
+					GMT_cross3v (C, a, b, P);	/* Get pole P of plane trough a and b (and center of Earth) */
+					GMT_normalize3v (C, P);		/* Make sure P has unit length */
+					gmt_init_rot_matrix (Rot0, P);	/* Get partial rotation matrix since no actual angle is applied yet */
+				}
+				GMT_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
+				angle_rad = total_angle_rad * frac_to_b;		/* Angle we need to rotate from a to c */
+				gmt_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
+				gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
+				//for (k = 0; k < 3; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
+				//GMT_normalize3v (C, c);
 				GMT_cart_to_geo (C, &lat_out[row_out], &lon_out[row_out], c, true);
+				lat_out[row_out] = GMT_lat_swap (C, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			minlon = MIN (lon_in[row_in-1], lon_in[row_in]);
 			maxlon = MAX (lon_in[row_in-1], lon_in[row_in]);
@@ -1191,6 +1201,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 			else if (lon_out[row_out] > maxlon)
 				lon_out[row_out] -= 360.0;
 		}
+		last_row_in = row_in;
 	}
 	
 	/* Destroy old allocated memory and put the new one in place */
@@ -1206,7 +1217,8 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 {
 	/* See GMT_resample_path below for details. */
 
-	uint64_t row_in, row_out, n_out;
+	uint64_t last_row_in = 0, row_in, row_out, n_out;
+	bool new_pair;
 	double dist_out, gap, L, frac_to_a, frac_to_b;
 	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
 
@@ -1238,19 +1250,21 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 	
 	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
-		dist_out = row_out * step_out;	/* Rhe desired output distance */
+		dist_out = row_out * step_out;	/* The desired output distance */
 		while (row_in < n_in && dist_in[row_in] < dist_out) row_in++;	/* Wind so row points to the next input point with a distance >= dist_out */
 		gap = dist_in[row_in] - dist_out;	/* Distance to next input datapoint */
+		new_pair = (row_in > last_row_in);
 		if (GMT_IS_ZERO (gap)) {	/* Use the input point as is */
 			x_out[row_out] = x_in[row_in];	y_out[row_out] = y_in[row_in];
 		}
 		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
-			L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
+			if (new_pair) L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
 			x_out[row_out] = x_in[row_in-1] * frac_to_a + x_in[row_in] * frac_to_b;	/* Linear interpolation to find output point */
 			y_out[row_out] = y_in[row_in-1] * frac_to_a + y_in[row_in] * frac_to_b;	/* Linear interpolation to find output point */
 		}
+		last_row_in = row_in;
 	}
 	
 	/* Destroy old allocated memory and put the new one in place */
