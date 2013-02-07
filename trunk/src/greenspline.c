@@ -1094,7 +1094,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct ZGRID Z;
 	struct GMT_TABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
-	struct GMT_GRD_INFO info;
+	struct GMT_GRID_INFO info;
 	struct GREENSPLINE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1119,7 +1119,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	GMT_memset (par,   7, double);
 	GMT_memset (norm,  7, double);
-	GMT_memset (&info, 1, struct GMT_GRD_INFO);
+	GMT_memset (&info, 1, struct GMT_GRID_INFO);
 	GMT_memset (&Z,    1, struct ZGRID);
 	
 	if (Ctrl->S.mode == SANDWELL_1987_1D || Ctrl->S.mode == WESSEL_BERCOVICI_1998_1D) Ctrl->S.mode += (dimension - 1);	
@@ -1560,7 +1560,7 @@ int GMT_greenspline (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 			sprintf (format, "%%d%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 			/* Sort eigenvalues into ascending order */
-			GMT_sort_array (GMT, eig, nm, GMTAPI_DOUBLE);
+			GMT_sort_array (GMT, eig, nm, GMT_DOUBLE);
 			eig_max = eig[nm-1];
 			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
 			GMT_fclose (GMT, fp);

@@ -1952,7 +1952,7 @@ void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMTAPI_FLOAT);
+	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n) {
 		GMT_mode_f (GMT, stack[last]->G->data, n, n/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -2038,7 +2038,7 @@ void grd_MAD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMTAPI_FLOAT);
+	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n) {
 		med = (n%2) ? stack[last]->G->data[n/2] : 0.5f * (stack[last]->G->data[(n-1)/2] + stack[last]->G->data[n/2]);
@@ -2102,7 +2102,7 @@ void grd_MED (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last], info->nm, GMTAPI_FLOAT);
+	GMT_sort_array (GMT, stack[last], info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1  &&GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
 		med = (n%2) ? stack[last]->G->data[n/2] : 0.5f * (stack[last]->G->data[(n-1)/2] + stack[last]->G->data[n/2]);
@@ -2158,7 +2158,7 @@ void grd_MODE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 	GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMTAPI_FLOAT);
+	GMT_sort_array (GMT, stack[last]->G->data, info->nm, GMT_FLOAT);
 	for (n = info->nm; n > 1 && GMT_is_fnan (stack[last]->G->data[n-1]); n--);
 	if (n)
 		GMT_mode_f (GMT, stack[last]->G->data, n, n/2, 0, GMT_mode_selection, &GMT_n_multiples, &mode);
@@ -2426,7 +2426,7 @@ void grd_PQUANT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	else {
 		GMT_memcpy (pad, stack[last]->G->header->pad, 4, unsigned int);	/* Save original pad */
 		GMT_grd_pad_off (GMT, stack[last]->G);				/* Undo pad if one existed so we can sort */
-		GMT_sort_array (GMT, stack[prev]->G->data, info->nm, GMTAPI_FLOAT);
+		GMT_sort_array (GMT, stack[prev]->G->data, info->nm, GMT_FLOAT);
 		p = (float) GMT_quantile_f (GMT, stack[prev]->G->data, stack[last]->factor, info->nm);
 		GMT_memset (stack[last]->G->data, info->size, float);	/* Wipes everything */
 		GMT_grd_pad_on (GMT, stack[last]->G, pad);			/* Reinstate the original pad */

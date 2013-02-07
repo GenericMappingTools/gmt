@@ -243,7 +243,7 @@ void recompute_weights_2d (struct GMT_CTRL *GMT, struct TREND2D_DATA *data, uint
 	   and compute chisq based on this.  */ 
 
 	for (i = 0; i < n_data; i++) work[i] = fabs(data[i].r);
-	GMT_sort_array (GMT, work, n_data, GMTAPI_DOUBLE);
+	GMT_sort_array (GMT, work, n_data, GMT_DOUBLE);
 
 	if (n_data%2)
 		*scale = 1.4826 * work[n_data/2];

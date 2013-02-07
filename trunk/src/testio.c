@@ -43,14 +43,14 @@ int main (int argc, char *argv[]) {
 	if ((API = GMT_Create_Session ("TEST", k_mode_gmt)) == NULL) exit (EXIT_FAILURE);
 
 	Vi = GMT_create_vector (API->GMT, 3);
-	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMTAPI_FLOAT;
+	Vi->type[0] = Vi->type[1] = Vi->type[2] = GMT_FLOAT;
 	Vi->n_rows = 4;
 	Vi->data[0].f4 = x;	Vi->data[1].f4 = y;	Vi->data[2].f4 = z;
 	Vo = GMT_create_vector (API->GMT, 3);
 
 	if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, Vi)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
-	Vo->type[0] = Vo->type[1] = Vo->type[2] = GMTAPI_DOUBLE;
+	Vo->type[0] = Vo->type[1] = Vo->type[2] = GMT_DOUBLE;
 	Vo->alloc_mode = GMT_REFERENCE;	/* To tell mapproject to allocate as needed */
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_COPY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 

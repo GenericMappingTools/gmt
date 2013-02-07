@@ -175,9 +175,9 @@ int GMT_grdreformat (struct GMTAPI_CTRL *API, int mode, void *args)
 	type[1] = Grid->header->type;
 	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
 
-	if (type[1] == GMT_GRD_IS_SD) {
+	if (type[1] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRD_IS_SD]);
+		GMT_report (GMT, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
 		Return (EXIT_FAILURE);
 	}
 

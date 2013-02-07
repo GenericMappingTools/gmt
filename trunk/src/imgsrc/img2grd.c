@@ -290,7 +290,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	uint16_t *u2 = NULL;
 
 	char infile[GMT_BUFSIZ], cmd[GMT_BUFSIZ], s_in_ID[GMTAPI_STRLEN], s_out_ID[GMT_TEXT_LEN256];
-	char z_units[GRD_UNIT_LEN80];
+	char z_units[GMT_GRID_UNIT_LEN80];
 
 	FILE *fp = NULL;
 
@@ -508,7 +508,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 		sprintf (Merc->header->x_units, "longitude [degrees_east]");
 		sprintf (Merc->header->y_units, "latitude [degrees_north]");
 	}
-	strncpy (Merc->header->z_units, z_units, GRD_UNIT_LEN80);
+	strncpy (Merc->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
 	strcpy (Merc->header->title, "Data from Altimetry");
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
 
@@ -663,7 +663,7 @@ int GMT_img2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 			Return (API->error);
 		}
 		strcpy (Geo->header->title, "Data from Altimetry");
-		strncpy (Geo->header->z_units, z_units, GRD_UNIT_LEN80);
+		strncpy (Geo->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
 		sprintf (Geo->header->x_units, "longitude [degrees_east]");
 		sprintf (Geo->header->y_units, "latitude [degrees_north]");
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_IN, NULL, Geo)) == GMTAPI_NOTSET) {

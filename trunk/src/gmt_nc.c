@@ -94,10 +94,10 @@ int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	/* Returns GMT_NOERROR if NetCDF grid */
 	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = false;
 	nc_type z_type;
-	char varname[GRD_VARNAME_LEN80];
+	char varname[GMT_GRID_VARNAME_LEN80];
 
 	/* Extract levels name from variable name */
-	strncpy (varname, header->varname, GRD_VARNAME_LEN80);
+	strncpy (varname, header->varname, GMT_GRID_VARNAME_LEN80);
 	if (varname[0]) {
 		j = 0;
 		while (varname[j] && varname[j] != '[' && varname[j] != '(') j++;
@@ -137,11 +137,11 @@ int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 
 	GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 	switch (z_type) {
-		case NC_BYTE:   header->type = old ? GMT_GRD_IS_CB : GMT_GRD_IS_NB; break;
-		case NC_SHORT:  header->type = old ? GMT_GRD_IS_CS : GMT_GRD_IS_NS; break;
-		case NC_INT:    header->type = old ? GMT_GRD_IS_CI : GMT_GRD_IS_NI; break;
-		case NC_FLOAT:  header->type = old ? GMT_GRD_IS_CF : GMT_GRD_IS_NF; break;
-		case NC_DOUBLE: header->type = old ? GMT_GRD_IS_CD : GMT_GRD_IS_ND; break;
+		case NC_BYTE:   header->type = old ? GMT_GRID_IS_CB : GMT_GRID_IS_NB; break;
+		case NC_SHORT:  header->type = old ? GMT_GRID_IS_CS : GMT_GRID_IS_NS; break;
+		case NC_INT:    header->type = old ? GMT_GRID_IS_CI : GMT_GRID_IS_NI; break;
+		case NC_FLOAT:  header->type = old ? GMT_GRID_IS_CF : GMT_GRID_IS_NF; break;
+		case NC_DOUBLE: header->type = old ? GMT_GRID_IS_CD : GMT_GRID_IS_ND; break;
 		default:        header->type = k_grd_unknown_fmt; break;
 	}
 	nc_close (ncid);
@@ -154,10 +154,10 @@ void gmt_nc_get_units (struct GMT_CTRL *C, int ncid, int varid, char *name_units
 	 * ncid, varid		: as in nc_get_att_text
 	 * nameunit		: long_name and units in form "long_name [units]"
 	 */
-	char name[GRD_UNIT_LEN80], units[GRD_UNIT_LEN80];
-	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name, GRD_UNIT_LEN80))
+	char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
+	if (GMT_nc_get_att_text (C, ncid, varid, "long_name", name, GMT_GRID_UNIT_LEN80))
 		nc_inq_varname (ncid, varid, name);
-	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, GRD_UNIT_LEN80) && units[0])
+	if (!GMT_nc_get_att_text (C, ncid, varid, "units", units, GMT_GRID_UNIT_LEN80) && units[0])
 		sprintf (name_units, "%s [%s]", name, units);
 	else
 		strcpy (name_units, name);
@@ -170,9 +170,9 @@ void gmt_nc_put_units (int ncid, int varid, char *name_units)
 	 * name_units		: string in form "long_name [units]"
 	 */
 	int i = 0;
-	char name[GRD_UNIT_LEN80], units[GRD_UNIT_LEN80];
+	char name[GMT_GRID_UNIT_LEN80], units[GMT_GRID_UNIT_LEN80];
 
-	strncpy (name, name_units,  GRD_UNIT_LEN80);
+	strncpy (name, name_units,  GMT_GRID_UNIT_LEN80);
 	units[0] = '\0';
 	while (name[i] && name[i] != '[') i++;
 	if (name[i]) {
@@ -257,7 +257,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	int j, err;
 	int old_fill_mode;
 	double dummy[2], *xy = NULL;
-	char dimname[GRD_UNIT_LEN80], coord[8];
+	char dimname[GMT_GRID_UNIT_LEN80], coord[8];
 	nc_type z_type;
 
 	/* Dimension ids, variable ids, etc.. */
@@ -341,11 +341,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		GMT_err_trap (nc_inq_vardimid (ncid, z_id, dims));
 		switch (z_type) {
-			case NC_BYTE:   header->type = GMT_GRD_IS_NB; break;
-			case NC_SHORT:  header->type = GMT_GRD_IS_NS; break;
-			case NC_INT:    header->type = GMT_GRD_IS_NI; break;
-			case NC_FLOAT:  header->type = GMT_GRD_IS_NF; break;
-			case NC_DOUBLE: header->type = GMT_GRD_IS_ND; break;
+			case NC_BYTE:   header->type = GMT_GRID_IS_NB; break;
+			case NC_SHORT:  header->type = GMT_GRID_IS_NS; break;
+			case NC_INT:    header->type = GMT_GRID_IS_NI; break;
+			case NC_FLOAT:  header->type = GMT_GRID_IS_NF; break;
+			case NC_DOUBLE: header->type = GMT_GRID_IS_ND; break;
 			default:        header->type = k_grd_unknown_fmt; break;
 		}
 
@@ -377,11 +377,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_def_var (ncid, coord, NC_DOUBLE, 1, &dims[0], &ids[0]));
 
 		switch (header->type) {
-			case GMT_GRD_IS_NB: z_type = NC_BYTE; break;
-			case GMT_GRD_IS_NS: z_type = NC_SHORT; break;
-			case GMT_GRD_IS_NI: z_type = NC_INT; break;
-			case GMT_GRD_IS_NF: z_type = NC_FLOAT; break;
-			case GMT_GRD_IS_ND: z_type = NC_DOUBLE; break;
+			case GMT_GRID_IS_NB: z_type = NC_BYTE; break;
+			case GMT_GRID_IS_NS: z_type = NC_SHORT; break;
+			case GMT_GRID_IS_NI: z_type = NC_INT; break;
+			case GMT_GRID_IS_NF: z_type = NC_FLOAT; break;
+			case GMT_GRID_IS_ND: z_type = NC_DOUBLE; break;
 			default: z_type = NC_NAT;
 		}
 
@@ -408,11 +408,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 
 	if (job == 'r') {
 		/* Get global information */
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, GRD_TITLE_LEN80))
-		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, GRD_TITLE_LEN80);
-		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, GRD_COMMAND_LEN320))
-		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, GRD_COMMAND_LEN320);
-		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, GRD_REMARK_LEN160);
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
+		    GMT_nc_get_att_text (C, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
+		if (GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
+		    GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
+		GMT_nc_get_att_text (C, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
 
 		/* Create enough memory to store the x- and y-coordinate values */
 		xy = GMT_memory (C, NULL, MAX(header->nx,header->ny), double);
@@ -513,7 +513,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	GMT_report (C, GMT_MSG_NORMAL, "head->t-index %d,%d,%d\n", header->t_index[0], header->t_index[1], header->t_index[2]);
 	GMT_report (C, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
 	GMT_report (C, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
-	GMT_report (C, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT);
+	GMT_report (C, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 #endif
 	}
 	else {
@@ -553,7 +553,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 		GMT_err_trap (nc_put_att_double (ncid, ids[header->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
-		if (header->varname[0] && !strcmp (header->z_units, "z")) strncpy (header->z_units, header->varname, GRD_UNIT_LEN80);
+		if (header->varname[0] && !strcmp (header->z_units, "z")) strncpy (header->z_units, header->varname, GMT_GRID_UNIT_LEN80);
 
 		/* Define z variable. Attempt to remove "scale_factor" or "add_offset" when no longer needed */
 		gmt_nc_put_units (ncid, z_id, header->z_units);
@@ -1084,7 +1084,7 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 	memset (dim2, 0, 2 * sizeof(unsigned));
 
 	is_global = GMT_grd_is_global (C, header);
-	is_global_repeat = header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT;
+	is_global_repeat = header->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT;
 	is_gridline_reg = header->registration != GMT_PIXEL_REG;
 
 #ifdef NC4_DEBUG
@@ -1222,7 +1222,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	GMT_report (C, GMT_MSG_NORMAL, "      pad xlo:%u xhi:%u ylo:%u yhi:%u\n", pad[XLO], pad[XHI], pad[YLO], pad[YHI]);
 	GMT_report (C, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
 	GMT_report (C, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
-	GMT_report (C, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT);
+	GMT_report (C, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
 	GMT_report (C, GMT_MSG_NORMAL, "increment: %u offset: %u\n", inc, off);
 #endif
 
@@ -1348,19 +1348,19 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 	switch (header->type) {
-		case GMT_GRD_IS_NB:
+		case GMT_GRID_IS_NB:
 			if (isnan (header->nan_value))
 				header->nan_value = NC_MIN_BYTE;
 			break;
-		case GMT_GRD_IS_NS:
+		case GMT_GRID_IS_NS:
 			if (isnan (header->nan_value))
 				header->nan_value = NC_MIN_SHORT;
 			break;
-		case GMT_GRD_IS_NI:
+		case GMT_GRID_IS_NI:
 			if (isnan (header->nan_value))
 				header->nan_value = NC_MIN_INT;
 			break;
-		case GMT_GRD_IS_ND:
+		case GMT_GRID_IS_ND:
 			GMT_report (C, GMT_MSG_NORMAL, "Warning: Precision loss! GMT's internal grid representation is 32-bit float.\n");
 			/* no break! */
 		default: /* don't round float */
@@ -1392,7 +1392,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	unpad_grid (grid, width, height, pad, sizeof(grid[0]) * inc);
 
 	/* Check that repeating columns do not contain conflicting information */
-	if (header->grdtype == GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT)
+	if (header->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
 		grid_fix_repeat_col (C, grid, width, height, sizeof(grid[0]) * inc);
 
 	/* flip grid upside down */

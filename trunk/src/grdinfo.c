@@ -305,10 +305,10 @@ int GMT_grdinfo (struct GMTAPI_CTRL *API, int mode, void *args)
 			 * the grid in the calling program is no longer the original values */
 			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* true if input is a read-only array */
 			GMT_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
-			GMT_sort_array (GMT, G2->data, G2->header->nm, GMTAPI_FLOAT);
+			GMT_sort_array (GMT, G2->data, G2->header->nm, GMT_FLOAT);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);
 			for (ij = 0; ij < n; ij++) G2->data[ij] = (float)fabs (G2->data[ij] - median);
-			GMT_sort_array (GMT, G2->data, n, GMTAPI_FLOAT);
+			GMT_sort_array (GMT, G2->data, n, GMT_FLOAT);
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */

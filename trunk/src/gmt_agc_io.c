@@ -61,7 +61,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 # define RECORDLENGTH 	(ZBLOCKWIDTH*ZBLOCKHEIGHT + PREHEADSIZE + POSTHEADSIZE)
 
 # define AGCHEADINDICATOR	"agchd:"
-# define PARAMSIZE		((GRD_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
+# define PARAMSIZE		((GMT_GRID_REMARK_LEN160 - HEADINDSIZE) / BUFFHEADSIZE)
 
 int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 {	/* Reads one block of data, including pre- and post-headers */
@@ -147,7 +147,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	predicted_size = lrint (ceil ((double)ny /ZBLOCKHEIGHT) * ceil ((double)nx / ZBLOCKWIDTH)) * (ZBLOCKHEIGHT * ZBLOCKWIDTH + PREHEADSIZE + POSTHEADSIZE) * sizeof (float);
 	if (predicted_size == buf.st_size) {
 		/* Yes, appears to be an AGC grid */
-		header->type = GMT_GRD_IS_AF;
+		header->type = GMT_GRID_IS_AF;
 		header->nan_value = 0.0; /* NaN value for AGC format */
 		return GMT_NOERROR;
 	}

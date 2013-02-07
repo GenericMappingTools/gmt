@@ -47,7 +47,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 	int err;	/* Implicity by GMT_err_trap */
 	int i, nm[2];
 	double dummy[2];
-	char text[GRD_COMMAND_LEN320+GRD_REMARK_LEN160];
+	char text[GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160];
 	nc_type z_type;
 
 	/* Dimension ids, varibale ids, etc. */
@@ -69,11 +69,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 		GMT_err_trap (nc_def_var (ncid, "dimension", NC_LONG, 1, dims, &nm_id));
 
 		switch (header->type) {
-			case GMT_GRD_IS_CB: z_type = NC_BYTE; break;
-			case GMT_GRD_IS_CS: z_type = NC_SHORT; break;
-			case GMT_GRD_IS_CI: z_type = NC_INT; break;
-			case GMT_GRD_IS_CF: z_type = NC_FLOAT; break;
-			case GMT_GRD_IS_CD: z_type = NC_DOUBLE; break;
+			case GMT_GRID_IS_CB: z_type = NC_BYTE; break;
+			case GMT_GRID_IS_CS: z_type = NC_SHORT; break;
+			case GMT_GRID_IS_CI: z_type = NC_INT; break;
+			case GMT_GRID_IS_CF: z_type = NC_FLOAT; break;
+			case GMT_GRID_IS_CD: z_type = NC_DOUBLE; break;
 			default:			z_type = NC_NAT;
 		}
 
@@ -89,11 +89,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 		GMT_err_trap (nc_inq_varid (ncid, "z", &z_id));
 		GMT_err_trap (nc_inq_vartype (ncid, z_id, &z_type));
 		switch (z_type) {
-			case NC_BYTE:   header->type = GMT_GRD_IS_CB; break;
-			case NC_SHORT:  header->type = GMT_GRD_IS_CS; break;
-			case NC_INT:    header->type = GMT_GRD_IS_CI; break;
-			case NC_FLOAT:  header->type = GMT_GRD_IS_CF; break;
-			case NC_DOUBLE: header->type = GMT_GRD_IS_CD; break;
+			case NC_BYTE:   header->type = GMT_GRID_IS_CB; break;
+			case NC_SHORT:  header->type = GMT_GRID_IS_CS; break;
+			case NC_INT:    header->type = GMT_GRID_IS_CI; break;
+			case NC_FLOAT:  header->type = GMT_GRID_IS_CF; break;
+			case NC_DOUBLE: header->type = GMT_GRID_IS_CD; break;
 			default:        header->type = k_grd_unknown_fmt; break;
 		}
 	}
@@ -101,7 +101,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 
 	/* Get or assign attributes */
 
-	GMT_memset (text, GRD_COMMAND_LEN320+GRD_REMARK_LEN160, char);
+	GMT_memset (text, GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160, char);
 
 	if (job == 'u') GMT_err_trap (nc_redef (ncid));
 
@@ -117,8 +117,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 		nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
-		strncpy (header->command, text, GRD_COMMAND_LEN320);
-		strncpy (header->remark, &text[GRD_COMMAND_LEN320], GRD_REMARK_LEN160);
+		strncpy (header->command, text, GMT_GRID_COMMAND_LEN320);
+		strncpy (header->remark, &text[GMT_GRID_COMMAND_LEN320], GMT_GRID_REMARK_LEN160);
 
 		GMT_err_trap (nc_get_var_double (ncid, x_range_id, dummy));
 		header->wesn[XLO] = dummy[0];
@@ -139,11 +139,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 	}
 	else {
 		int reg;
-		strncpy (text, header->command, GRD_COMMAND_LEN320);
-		strncpy (&text[GRD_COMMAND_LEN320], header->remark, GRD_REMARK_LEN160);
-		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GRD_UNIT_LEN80, header->x_units));
-		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", GRD_UNIT_LEN80, header->y_units));
-		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GRD_UNIT_LEN80, header->z_units));
+		strncpy (text, header->command, GMT_GRID_COMMAND_LEN320);
+		strncpy (&text[GMT_GRID_COMMAND_LEN320], header->remark, GMT_GRID_REMARK_LEN160);
+		GMT_err_trap (nc_put_att_text (ncid, x_range_id, "units", GMT_GRID_UNIT_LEN80, header->x_units));
+		GMT_err_trap (nc_put_att_text (ncid, y_range_id, "units", GMT_GRID_UNIT_LEN80, header->y_units));
+		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GMT_GRID_UNIT_LEN80, header->z_units));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
@@ -155,8 +155,8 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 		}
 		reg = header->registration;
 		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1U, &reg));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GRD_TITLE_LEN80, header->title));
-		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", GRD_COMMAND_LEN320+GRD_REMARK_LEN160, text));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GMT_GRID_TITLE_LEN80, header->title));
+		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "source", GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160, text));
 
 		GMT_err_trap (nc_enddef (ncid));
 
@@ -313,21 +313,21 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	/* Determine the value to be assigned to missing data, if not already done so */
 
 	switch (header->type) {
-		case GMT_GRD_IS_CB:
+		case GMT_GRID_IS_CB:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
 			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
-		case GMT_GRD_IS_CS:
+		case GMT_GRID_IS_CS:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
 			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
-		case GMT_GRD_IS_CI:
+		case GMT_GRID_IS_CI:
 			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
 			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
-		case GMT_GRD_IS_CF:
+		case GMT_GRID_IS_CF:
 			z_type = NC_FLOAT; break;
-		case GMT_GRD_IS_CD:
+		case GMT_GRID_IS_CD:
 			z_type = NC_DOUBLE; break;
 		default:
 			z_type = NC_NAT;

@@ -42,7 +42,7 @@ int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 		return (GMT_GRDIO_BAD_VAL);
 	GMT_report (C, GMT_MSG_VERBOSE, "File %s reads with GDAL driver %s\n", header->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
-	header->type = GMT_GRD_IS_GD;
+	header->type = GMT_GRID_IS_GD;
 
 	return GMT_NOERROR;
 }

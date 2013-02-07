@@ -61,7 +61,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if (nrhs >= 4) {	/* Load the title into a char string */
 		k = (nrhs >= 5) ? 4 : 3;
 		title = mxArrayToString (prhs[k]);	/* Load the file name into a char string */
-		strncpy (G->header->title, title, GRD_TITLE_LEN80);
+		strncpy (G->header->title, title, GMT_GRID_TITLE_LEN80);
 	}
 
 	/*  4. Get the Z array and fill in the header info */

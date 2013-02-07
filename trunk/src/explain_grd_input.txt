@@ -1,6 +1,6 @@
 .SH GRID FILE FORMATS
 BD(GMT) is able to recognize many of the commonly used grid file formats, as well as the precision, scale and offset of the values
-contained in the grid file. When BD(GMT) needs a little help with that, you can add the suffix GMT_GRD_SUFFIX,
+contained in the grid file. When BD(GMT) needs a little help with that, you can add the suffix GMT_GRID_SUFFIX,
 where IT(id) is a two-letter identifier of the grid type and precision, and IT(scale) and IT(offset) are optional scale factor
 and offset to be applied to all grid values, and IT(nan) is the value used to indicate missing data.
 See BD(grdreformat)(1) and Section 4.17 of the GMT Technical Reference and Cookbook for more information.

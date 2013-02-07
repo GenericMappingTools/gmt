@@ -1491,7 +1491,7 @@ int gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 			c[0] = '\0';	/* Truncate off the type */
 		}
 		else
-			C->common.a.type[C->common.a.n_aspatial] = GMTAPI_DOUBLE;
+			C->common.a.type[C->common.a.n_aspatial] = GMT_DOUBLE;
 		if (sscanf (p, "%[^=]=%s", A, name) != 2) return (GMT_PARSE_ERROR);	/* Did not get two items */
 		switch (A[0]) {	/* Watch for different multisegment header cases */
 			case 'D': col = GMT_IS_D; break;	/* Distance flag */
@@ -1507,7 +1507,7 @@ int gmt_parse_a_option (struct GMT_CTRL *C, char *arg)
 				break;
 		}
 		C->common.a.col[C->common.a.n_aspatial] = col;
-		if (col < 0 && col != GMT_IS_Z) C->common.a.type[C->common.a.n_aspatial] = GMTAPI_TEXT;
+		if (col < 0 && col != GMT_IS_Z) C->common.a.type[C->common.a.n_aspatial] = GMT_TEXT;
 		if (C->common.a.name[C->common.a.n_aspatial]) free (C->common.a.name[C->common.a.n_aspatial]);	/* Free any previous names */
 		C->common.a.name[C->common.a.n_aspatial] = strdup (name);
 		C->common.a.n_aspatial++;

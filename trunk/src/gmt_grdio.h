@@ -56,39 +56,39 @@ enum Gmt_grid_id {
 	/* DO NOT change the order because id values have grown historically.
 	 * Append newly introduced id's at the end. */
 	k_grd_unknown_fmt = 0, /* if grid format cannot be auto-detected */
-	GMT_GRD_IS_BF,         /* GMT native, C-binary format (32-bit float) */
-	GMT_GRD_IS_BS,         /* GMT native, C-binary format (16-bit integer) */
-	GMT_GRD_IS_RB,         /* SUN rasterfile format (8-bit standard) */
-	GMT_GRD_IS_BB,         /* GMT native, C-binary format (8-bit integer) */
-	GMT_GRD_IS_BM,         /* GMT native, C-binary format (bit-mask) */
-	GMT_GRD_IS_SF,         /* Golden Software Surfer format 6 (32-bit float) */
-	GMT_GRD_IS_CB,         /* GMT netCDF format (8-bit integer) */
-	GMT_GRD_IS_CS,         /* GMT netCDF format (16-bit integer) */
-	GMT_GRD_IS_CI,         /* GMT netCDF format (32-bit integer) */
-	GMT_GRD_IS_CF,         /* GMT netCDF format (32-bit float) */
-	GMT_GRD_IS_CD,         /* GMT netCDF format (64-bit float) */
-	GMT_GRD_IS_RF,         /* GEODAS grid format GRD98 (NGDC) */
-	GMT_GRD_IS_BI,         /* GMT native, C-binary format (32-bit integer) */
-	GMT_GRD_IS_BD,         /* GMT native, C-binary format (64-bit float) */
-	GMT_GRD_IS_NB,         /* GMT netCDF format (8-bit integer) */
-	GMT_GRD_IS_NS,         /* GMT netCDF format (16-bit integer) */
-	GMT_GRD_IS_NI,         /* GMT netCDF format (32-bit integer) */
-	GMT_GRD_IS_NF,         /* GMT netCDF format (32-bit float) */
-	GMT_GRD_IS_ND,         /* GMT netCDF format (64-bit float) */
-	GMT_GRD_IS_SD,         /* Golden Software Surfer format 7 (64-bit float, read-only) */
-	GMT_GRD_IS_AF,         /* Atlantic Geoscience Center format AGC (32-bit float) */
-	GMT_GRD_IS_GD,         /* Import through GDAL */
-	GMT_GRD_IS_EI,         /* ESRI Arc/Info ASCII Grid Interchange format (ASCII integer) */
-	GMT_GRD_IS_EF          /* ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only) */
+	GMT_GRID_IS_BF,         /* GMT native, C-binary format (32-bit float) */
+	GMT_GRID_IS_BS,         /* GMT native, C-binary format (16-bit integer) */
+	GMT_GRID_IS_RB,         /* SUN rasterfile format (8-bit standard) */
+	GMT_GRID_IS_BB,         /* GMT native, C-binary format (8-bit integer) */
+	GMT_GRID_IS_BM,         /* GMT native, C-binary format (bit-mask) */
+	GMT_GRID_IS_SF,         /* Golden Software Surfer format 6 (32-bit float) */
+	GMT_GRID_IS_CB,         /* GMT netCDF format (8-bit integer) */
+	GMT_GRID_IS_CS,         /* GMT netCDF format (16-bit integer) */
+	GMT_GRID_IS_CI,         /* GMT netCDF format (32-bit integer) */
+	GMT_GRID_IS_CF,         /* GMT netCDF format (32-bit float) */
+	GMT_GRID_IS_CD,         /* GMT netCDF format (64-bit float) */
+	GMT_GRID_IS_RF,         /* GEODAS grid format GRD98 (NGDC) */
+	GMT_GRID_IS_BI,         /* GMT native, C-binary format (32-bit integer) */
+	GMT_GRID_IS_BD,         /* GMT native, C-binary format (64-bit float) */
+	GMT_GRID_IS_NB,         /* GMT netCDF format (8-bit integer) */
+	GMT_GRID_IS_NS,         /* GMT netCDF format (16-bit integer) */
+	GMT_GRID_IS_NI,         /* GMT netCDF format (32-bit integer) */
+	GMT_GRID_IS_NF,         /* GMT netCDF format (32-bit float) */
+	GMT_GRID_IS_ND,         /* GMT netCDF format (64-bit float) */
+	GMT_GRID_IS_SD,         /* Golden Software Surfer format 7 (64-bit float, read-only) */
+	GMT_GRID_IS_AF,         /* Atlantic Geoscience Center format AGC (32-bit float) */
+	GMT_GRID_IS_GD,         /* Import through GDAL */
+	GMT_GRID_IS_EI,         /* ESRI Arc/Info ASCII Grid Interchange format (ASCII integer) */
+	GMT_GRID_IS_EF          /* ESRI Arc/Info ASCII Grid Interchange format (ASCII float, write-only) */
 };
 #define GMT_N_GRD_FORMATS 25 /* Number of formats above plus 1 */
 
-#define GMT_GRD_IS_GOLDEN7	GMT_GRD_IS_SD
-#define GMT_GRD_IS_GDAL		GMT_GRD_IS_GD
+#define GMT_GRID_IS_GOLDEN7	GMT_GRID_IS_SD
+#define GMT_GRID_IS_GDAL		GMT_GRID_IS_GD
 
 #include "gmt_customio.h"
 
-struct GMT_GRD_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
+struct GMT_GRID_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
 	struct GRD_HEADER grd;	/* Header of grid file passed via -R */
 	bool active;		/* true if initialized via -R */
 };

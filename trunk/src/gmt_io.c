@@ -114,7 +114,7 @@ int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 /* Macro to apply columns log/scale/offset conversion on the fly */
 #define gmt_convert_col(S,x) {if (S.convert) x = ((S.convert == 2) ? log10 (x) : x) * S.scale + S.offset;}
 
-static const char *GMT_type[GMTAPI_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer", "integer", "integer", "double", "double", "string", "datetime"};
+static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer", "integer", "integer", "integer", "integer", "double", "double", "string", "datetime"};
 
 /* This version of fgets will check for input record truncation, that is,
  * the input record is longer than the given size.  Since calls to GMT_fgets
@@ -885,19 +885,19 @@ double gmt_convert_aspatial_value (struct GMT_CTRL *C, unsigned int type, char *
 	double value;
 
 	switch (type) {
-		case GMTAPI_DOUBLE:
-		case GMTAPI_FLOAT:
-		case GMTAPI_ULONG:
-		case GMTAPI_LONG:
-		case GMTAPI_UINT:
-		case GMTAPI_INT:
-		case GMTAPI_USHORT:
-		case GMTAPI_SHORT:
-		case GMTAPI_CHAR:
-		case GMTAPI_UCHAR:
+		case GMT_DOUBLE:
+		case GMT_FLOAT:
+		case GMT_ULONG:
+		case GMT_LONG:
+		case GMT_UINT:
+		case GMT_INT:
+		case GMT_USHORT:
+		case GMT_SHORT:
+		case GMT_CHAR:
+		case GMT_UCHAR:
 			value = atof (V);
 			break;
-		case GMTAPI_TIME:
+		case GMT_DATETIME:
 			GMT_scanf_arg (C, V, GMT_IS_ABSTIME, &value);
 			break;
 		default:	/* Give NaN */
@@ -2976,16 +2976,16 @@ int GMT_get_io_type (struct GMT_CTRL *C, char type)
 	switch (type) {
 		/* Set read pointer depending on data format */
 		case 'a': case 'A':          break; /* ASCII */
-		case 'c': t = GMTAPI_CHAR;   break; /* Binary int8_t */
-		case 'u': t = GMTAPI_UCHAR;  break; /* Binary uint8_t */
-		case 'h': t = GMTAPI_SHORT;  break; /* Binary int16_t */
-		case 'H': t = GMTAPI_USHORT; break; /* Binary uint16_t */
-		case 'i': t = GMTAPI_INT;    break; /* Binary int32_t */
-		case 'I': t = GMTAPI_UINT;   break; /* Binary uint32_t */
-		case 'l': t = GMTAPI_LONG;   break; /* Binary int64_t */
-		case 'L': t = GMTAPI_ULONG;  break; /* Binary uint64_t */
-		case 'f': t = GMTAPI_FLOAT;  break; /* Binary 4-byte float */
-		case 'd': t = GMTAPI_DOUBLE; break; /* Binary 8-byte double */
+		case 'c': t = GMT_CHAR;   break; /* Binary int8_t */
+		case 'u': t = GMT_UCHAR;  break; /* Binary uint8_t */
+		case 'h': t = GMT_SHORT;  break; /* Binary int16_t */
+		case 'H': t = GMT_USHORT; break; /* Binary uint16_t */
+		case 'i': t = GMT_INT;    break; /* Binary int32_t */
+		case 'I': t = GMT_UINT;   break; /* Binary uint32_t */
+		case 'l': t = GMT_LONG;   break; /* Binary int64_t */
+		case 'L': t = GMT_ULONG;  break; /* Binary uint64_t */
+		case 'f': t = GMT_FLOAT;  break; /* Binary 4-byte float */
+		case 'd': t = GMT_DOUBLE; break; /* Binary 8-byte double */
 		default:
 			GMT_report (C, GMT_MSG_NORMAL, "%c not a valid data type!\n", type);
 			GMT_exit (EXIT_FAILURE);
@@ -4832,23 +4832,23 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, int col, int t
 	char text[GMT_TEXT_LEN64];
 	
 	switch (type) {
-		case GMTAPI_TEXT:
+		case GMT_TEXT:
 			fprintf (fp, "%s", G->value[col]);
 			break;
-		case GMTAPI_DOUBLE:
-		case GMTAPI_FLOAT:
+		case GMT_DOUBLE:
+		case GMT_FLOAT:
 			GMT_ascii_format_col (C, text, G->dvalue[col], GMT_Z);
 			fprintf (fp, "%s", text);
 			break;
-		case GMTAPI_CHAR:
-		case GMTAPI_UCHAR:
-		case GMTAPI_INT:
-		case GMTAPI_UINT:
-		case GMTAPI_LONG:
-		case GMTAPI_ULONG:
+		case GMT_CHAR:
+		case GMT_UCHAR:
+		case GMT_INT:
+		case GMT_UINT:
+		case GMT_LONG:
+		case GMT_ULONG:
 			fprintf (fp, "%ld", lrint (G->dvalue[col]));
 			break;
-		case GMTAPI_TIME:
+		case GMT_DATETIME:
 			gmt_format_abstime_output (C, G->dvalue[col], text);
 			fprintf (fp, "%s", text);
 			break;
@@ -6255,16 +6255,16 @@ void GMT_free_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, unsigned in
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	if (!u) return;	/* Nothing to deallocate */
 	switch (type) {
-		case GMTAPI_UCHAR:	GMT_free (C, u->uc1); break;
-		case GMTAPI_CHAR:	GMT_free (C, u->sc1); break;
-		case GMTAPI_USHORT:	GMT_free (C, u->ui2); break;
-		case GMTAPI_SHORT:	GMT_free (C, u->si2); break;
-		case GMTAPI_UINT:	GMT_free (C, u->ui4); break;
-		case GMTAPI_INT:	GMT_free (C, u->si4); break;
-		case GMTAPI_ULONG:	GMT_free (C, u->ui8); break;
-		case GMTAPI_LONG:	GMT_free (C, u->si8); break;
-		case GMTAPI_FLOAT:	GMT_free (C, u->f4);  break;
-		case GMTAPI_DOUBLE:	GMT_free (C, u->f8);  break;
+		case GMT_UCHAR:	GMT_free (C, u->uc1); break;
+		case GMT_CHAR:	GMT_free (C, u->sc1); break;
+		case GMT_USHORT:	GMT_free (C, u->ui2); break;
+		case GMT_SHORT:	GMT_free (C, u->si2); break;
+		case GMT_UINT:	GMT_free (C, u->ui4); break;
+		case GMT_INT:	GMT_free (C, u->si4); break;
+		case GMT_ULONG:	GMT_free (C, u->ui8); break;
+		case GMT_LONG:	GMT_free (C, u->si8); break;
+		case GMT_FLOAT:	GMT_free (C, u->f4);  break;
+		case GMT_DOUBLE:	GMT_free (C, u->f8);  break;
 	}
 }
 
@@ -6285,16 +6285,16 @@ int GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, unsigned in
 {
 	/* Allocate space for one univector according to data type */
 	switch (type) {
-		case GMTAPI_UCHAR:  u->uc1 = GMT_memory (C, u->uc1, n_rows, uint8_t);   break;
-		case GMTAPI_CHAR:   u->sc1 = GMT_memory (C, u->sc1, n_rows, int8_t);    break;
-		case GMTAPI_USHORT: u->ui2 = GMT_memory (C, u->ui2, n_rows, uint16_t);  break;
-		case GMTAPI_SHORT:  u->si2 = GMT_memory (C, u->si2, n_rows, int16_t);   break;
-		case GMTAPI_UINT:   u->ui4 = GMT_memory (C, u->ui4, n_rows, uint32_t);  break;
-		case GMTAPI_INT:    u->si4 = GMT_memory (C, u->si4, n_rows, int32_t);   break;
-		case GMTAPI_ULONG:  u->ui8 = GMT_memory (C, u->ui8, n_rows, uint64_t);  break;
-		case GMTAPI_LONG:   u->si8 = GMT_memory (C, u->si8, n_rows, int64_t);   break;
-		case GMTAPI_FLOAT:  u->f4  = GMT_memory (C, u->f4,  n_rows, float);     break;
-		case GMTAPI_DOUBLE: u->f8  = GMT_memory (C, u->f8,  n_rows, double);    break;
+		case GMT_UCHAR:  u->uc1 = GMT_memory (C, u->uc1, n_rows, uint8_t);   break;
+		case GMT_CHAR:   u->sc1 = GMT_memory (C, u->sc1, n_rows, int8_t);    break;
+		case GMT_USHORT: u->ui2 = GMT_memory (C, u->ui2, n_rows, uint16_t);  break;
+		case GMT_SHORT:  u->si2 = GMT_memory (C, u->si2, n_rows, int16_t);   break;
+		case GMT_UINT:   u->ui4 = GMT_memory (C, u->ui4, n_rows, uint32_t);  break;
+		case GMT_INT:    u->si4 = GMT_memory (C, u->si4, n_rows, int32_t);   break;
+		case GMT_ULONG:  u->ui8 = GMT_memory (C, u->ui8, n_rows, uint64_t);  break;
+		case GMT_LONG:   u->si8 = GMT_memory (C, u->si8, n_rows, int64_t);   break;
+		case GMT_FLOAT:  u->f4  = GMT_memory (C, u->f4,  n_rows, float);     break;
+		case GMT_DOUBLE: u->f8  = GMT_memory (C, u->f8,  n_rows, double);    break;
 	}
 	return (GMT_OK);
 }
@@ -6303,16 +6303,16 @@ int GMT_duplicate_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u_out, uni
 {
 	/* Allocate space for one univector according to data type */
 	switch (type) {
-		case GMTAPI_UCHAR:  GMT_memcpy (u_out->uc1, u_in->uc1, n_rows, uint8_t);   break;
-		case GMTAPI_CHAR:   GMT_memcpy (u_out->sc1, u_in->sc1, n_rows, int8_t);    break;
-		case GMTAPI_USHORT: GMT_memcpy (u_out->ui2, u_in->ui2, n_rows, uint16_t);  break;
-		case GMTAPI_SHORT:  GMT_memcpy (u_out->si2, u_in->si2, n_rows, int16_t);   break;
-		case GMTAPI_UINT:   GMT_memcpy (u_out->ui4, u_in->ui4, n_rows, uint32_t);  break;
-		case GMTAPI_INT:    GMT_memcpy (u_out->si4, u_in->si4, n_rows, int32_t);   break;
-		case GMTAPI_ULONG:  GMT_memcpy (u_out->ui8, u_in->ui8, n_rows, uint64_t);  break;
-		case GMTAPI_LONG:   GMT_memcpy (u_out->si8, u_in->si8, n_rows, int64_t);   break;
-		case GMTAPI_FLOAT:  GMT_memcpy (u_out->f4,  u_in->f4,  n_rows, float);     break;
-		case GMTAPI_DOUBLE: GMT_memcpy (u_out->f8,  u_in->f8,  n_rows, double);    break;
+		case GMT_UCHAR:  GMT_memcpy (u_out->uc1, u_in->uc1, n_rows, uint8_t);   break;
+		case GMT_CHAR:   GMT_memcpy (u_out->sc1, u_in->sc1, n_rows, int8_t);    break;
+		case GMT_USHORT: GMT_memcpy (u_out->ui2, u_in->ui2, n_rows, uint16_t);  break;
+		case GMT_SHORT:  GMT_memcpy (u_out->si2, u_in->si2, n_rows, int16_t);   break;
+		case GMT_UINT:   GMT_memcpy (u_out->ui4, u_in->ui4, n_rows, uint32_t);  break;
+		case GMT_INT:    GMT_memcpy (u_out->si4, u_in->si4, n_rows, int32_t);   break;
+		case GMT_ULONG:  GMT_memcpy (u_out->ui8, u_in->ui8, n_rows, uint64_t);  break;
+		case GMT_LONG:   GMT_memcpy (u_out->si8, u_in->si8, n_rows, int64_t);   break;
+		case GMT_FLOAT:  GMT_memcpy (u_out->f4,  u_in->f4,  n_rows, float);     break;
+		case GMT_DOUBLE: GMT_memcpy (u_out->f8,  u_in->f8,  n_rows, double);    break;
 	}
 	return (GMT_OK);
 }
@@ -6497,13 +6497,13 @@ int GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, unsigned int ncols)
 
 int gmt_ogr_get_type (char *item)
 {
-	if (!strcmp (item, "double") || !strcmp (item, "DOUBLE")) return (GMTAPI_DOUBLE);
-	if (!strcmp (item, "float") || !strcmp (item, "FLOAT")) return (GMTAPI_FLOAT);
-	if (!strcmp (item, "integer") || !strcmp (item, "INTEGER")) return (GMTAPI_INT);
-	if (!strcmp (item, "char") || !strcmp (item, "CHAR")) return (GMTAPI_CHAR);
-	if (!strcmp (item, "string") || !strcmp (item, "STRING")) return (GMTAPI_TEXT);
-	if (!strcmp (item, "datetime") || !strcmp (item, "DATETIME")) return (GMTAPI_TIME);
-	if (!strcmp (item, "logical") || !strcmp (item, "LOGICAL")) return (GMTAPI_UCHAR);
+	if (!strcmp (item, "double") || !strcmp (item, "DOUBLE")) return (GMT_DOUBLE);
+	if (!strcmp (item, "float") || !strcmp (item, "FLOAT")) return (GMT_FLOAT);
+	if (!strcmp (item, "integer") || !strcmp (item, "INTEGER")) return (GMT_INT);
+	if (!strcmp (item, "char") || !strcmp (item, "CHAR")) return (GMT_CHAR);
+	if (!strcmp (item, "string") || !strcmp (item, "STRING")) return (GMT_TEXT);
+	if (!strcmp (item, "datetime") || !strcmp (item, "DATETIME")) return (GMT_DATETIME);
+	if (!strcmp (item, "logical") || !strcmp (item, "LOGICAL")) return (GMT_UCHAR);
 	return (GMTAPI_NOTSET);
 }
 
@@ -6579,19 +6579,19 @@ int GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR *G)
 			GMT_exit (EXIT_FAILURE);
 		}
 		switch (G->type[id]) {
-			case GMTAPI_DOUBLE:
-			case GMTAPI_FLOAT:
-			case GMTAPI_ULONG:
-			case GMTAPI_LONG:
-			case GMTAPI_UINT:
-			case GMTAPI_INT:
-			case GMTAPI_USHORT:
-			case GMTAPI_SHORT:
-			case GMTAPI_UCHAR:
-			case GMTAPI_CHAR:
+			case GMT_DOUBLE:
+			case GMT_FLOAT:
+			case GMT_ULONG:
+			case GMT_LONG:
+			case GMT_UINT:
+			case GMT_INT:
+			case GMT_USHORT:
+			case GMT_SHORT:
+			case GMT_UCHAR:
+			case GMT_CHAR:
 				C->current.io.curr_rec[C->common.a.col[k]] = atof (G->value[id]);
 				break;
-			case GMTAPI_TIME:
+			case GMT_DATETIME:
 				GMT_scanf_arg (C, G->value[id], GMT_IS_ABSTIME, &C->current.io.curr_rec[C->common.a.col[k]]);
 				break;
 			default:	/* Do nothing (string) */
