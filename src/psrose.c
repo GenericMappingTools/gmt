@@ -338,7 +338,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psrose_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_psrose (void *V_API, int mode, void *args)
 {
 	bool error = false, find_mean = false, do_fill = false;
 	bool automatic = false, sector_plot = false, windrose = true;
@@ -365,6 +365,7 @@ int GMT_psrose (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

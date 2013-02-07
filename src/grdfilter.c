@@ -543,7 +543,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdfilter (void *V_API, int mode, void *args)
 {
 	bool error = false, fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, go_on, get_weight_sum = true;
@@ -570,6 +570,7 @@ int GMT_grdfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GRDFILTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

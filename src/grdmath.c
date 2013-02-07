@@ -3243,7 +3243,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	if (info->ASCII_file) free (info->ASCII_file);
 }
 
-int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdmath (void *V_API, int mode, void *args)
 {
 	int k, op = 0, new_stack = -1, rowx, colx, status, start;
 	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, n_macros;
@@ -3271,6 +3271,7 @@ int GMT_grdmath (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_OPTION *opt = NULL, *list = NULL, *ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

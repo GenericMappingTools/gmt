@@ -456,7 +456,7 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pshistogram_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_pshistogram (void *V_API, int mode, void *args)
 {
 	bool error = false, automatic = false;
 	
@@ -474,6 +474,7 @@ int GMT_pshistogram (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

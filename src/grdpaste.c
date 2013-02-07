@@ -135,7 +135,7 @@ static inline bool is_nc_grid (struct GMT_GRID *grid) {
 		grid->header->type == GMT_GRID_IS_ND;
 }
 
-int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdpaste (void *V_API, int mode, void *args)
 {
 	bool error = false;
 	int way;
@@ -149,6 +149,7 @@ int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GRDPASTE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

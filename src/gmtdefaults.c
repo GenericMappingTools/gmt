@@ -112,7 +112,7 @@ int GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtdefaults_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtdefaults (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gmtdefaults (void *V_API, int mode, void *args)
 {
 	int error;
 	
@@ -121,6 +121,7 @@ int GMT_gmtdefaults (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMTDEFAULTS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

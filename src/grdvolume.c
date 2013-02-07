@@ -398,7 +398,7 @@ int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, str
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdvolume_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdvolume (void *V_API, int mode, void *args)
 {
 	bool error = false, bad, cut[4];
 	int ij_inc[5];
@@ -413,6 +413,7 @@ int GMT_grdvolume (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_GRID *Grid = NULL, *Work = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

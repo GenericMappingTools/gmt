@@ -469,7 +469,7 @@ void load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, d
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdtrend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
+int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the grdcontour task */
 
 	bool trivial, weighted,iterations, set_ones = true;
@@ -493,6 +493,7 @@ int GMT_grdtrend (struct GMTAPI_CTRL *API, int mode, void *args) {
 	struct GMT_GRID *G = NULL, *R = NULL, *T = NULL, *W = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

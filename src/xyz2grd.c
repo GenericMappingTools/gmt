@@ -295,7 +295,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_xyz2grd_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_xyz2grd (void *V_API, int mode, void *args)
 {
 	bool error = false, previous_bin_i = false, previous_bin_o = false;
 	int scol, srow;
@@ -303,6 +303,8 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;
 	
+	char c, Amode;
+
 	double *in = NULL, wesn[4];
 
 	float no_data_f;
@@ -315,8 +317,7 @@ int GMT_xyz2grd (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct XYZ2GRD_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
-
-	char c, Amode;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

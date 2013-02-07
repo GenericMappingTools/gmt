@@ -345,7 +345,7 @@ int GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ctrl, s
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_originator_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_originator (void *V_API, int mode, void *args)
 {
 	unsigned int n_max_spots, n_input, n_expected_fields, n_out;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
@@ -366,6 +366,7 @@ int GMT_originator (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct ORIGINATOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

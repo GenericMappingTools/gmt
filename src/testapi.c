@@ -169,7 +169,7 @@ int GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_testapi (void *V_API, int mode, void *args)
 {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
 	int geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
@@ -195,6 +195,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 	void *In = NULL, *Out = NULL, *Intmp = NULL, *Outtmp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

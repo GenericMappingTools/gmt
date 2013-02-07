@@ -120,7 +120,7 @@ int GMT_x2sys_merge_parse (struct GMTAPI_CTRL *C, struct X2SYS_MERGE_CTRL *Ctrl,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_merge_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_merge (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_x2sys_merge (void *V_API, int mode, void *args)
 {
 	uint64_t  i, j, k, n_base, n_merge, merge_start, *map_merge_end = NULL;
 	uint64_t *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
@@ -131,6 +131,7 @@ int GMT_x2sys_merge (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_MERGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

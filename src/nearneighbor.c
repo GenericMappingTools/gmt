@@ -253,7 +253,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_nearneighbor_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_nearneighbor (void *V_API, int mode, void *args)
 {
 	int col_0, row_0, row, col, row_end, col_end, ii, jj;
 	unsigned int k, rowu, colu, d_row, sector, y_wrap, max_d_col, x_wrap, *d_col = NULL;
@@ -276,6 +276,7 @@ int GMT_nearneighbor (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct NEARNEIGHBOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

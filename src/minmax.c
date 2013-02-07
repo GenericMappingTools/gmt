@@ -240,7 +240,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_minmax_Ctrl (GMT, Ctrl); GMT_free (GMT, xyzmin); GMT_free (GMT, xyzmax); GMT_free (GMT, Q); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_minmax (void *V_API, int mode, void *args)
 {
 	bool error = false, got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
@@ -257,6 +257,7 @@ int GMT_minmax (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct MINMAX_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

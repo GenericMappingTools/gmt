@@ -514,7 +514,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gravfft_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
+int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	unsigned int i, j, k, n;
 	bool error = false, stop;
@@ -528,6 +528,7 @@ int GMT_gravfft (struct GMTAPI_CTRL *API, int mode, void *args) {
 	struct GRAVFFT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

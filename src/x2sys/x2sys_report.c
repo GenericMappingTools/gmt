@@ -217,7 +217,7 @@ int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ struct
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_report_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_x2sys_report (void *V_API, int mode, void *args)
 {
 	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ], record[GMT_BUFSIZ], word[GMT_BUFSIZ];
 	struct X2SYS_INFO *s = NULL;
@@ -236,6 +236,7 @@ int GMT_x2sys_report (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_REPORT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -495,7 +495,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77manage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_mgd77manage (void *V_API, int mode, void *args)
 {
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
@@ -529,6 +529,7 @@ int GMT_mgd77manage (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct MGD77MANAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

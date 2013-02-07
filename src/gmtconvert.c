@@ -264,7 +264,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtconvert_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gmtconvert (void *V_API, int mode, void *args)
 {
 	bool match = false, ogr_match = false;
 	int error = 0, ogr_item = 0;
@@ -280,6 +280,7 @@ int GMT_gmtconvert (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_DATASET *D[2] = {NULL, NULL};	/* Pointer to GMT multisegment table(s) in and out */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

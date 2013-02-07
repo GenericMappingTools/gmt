@@ -1130,7 +1130,7 @@ int GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct GM
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_redpol_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
+int GMT_redpol (void *V_API, int mode, void *args) {
 
 	bool error = false, wrote_one = false;
 	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
@@ -1152,6 +1152,7 @@ int GMT_redpol (struct GMTAPI_CTRL *API, int mode, void *args) {
 	struct	GMT_GRID *Gin = NULL, *Gout = NULL, *Gdip = NULL, *Gdec = NULL, *Gfilt = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

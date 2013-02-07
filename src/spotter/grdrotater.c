@@ -315,7 +315,7 @@ bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, dou
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdrotater_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdrotater (void *V_API, int mode, void *args)
 {
 	int scol, srow;	/* Signed row, col */
 	bool not_global, registered_d = false, error = false, global = false;
@@ -334,6 +334,7 @@ int GMT_grdrotater (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GRDROTATER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

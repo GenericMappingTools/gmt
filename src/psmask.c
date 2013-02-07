@@ -496,7 +496,7 @@ int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GM
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psmask_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_psmask (void *V_API, int mode, void *args)
 {
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
 	unsigned int io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
@@ -520,6 +520,7 @@ int GMT_psmask (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

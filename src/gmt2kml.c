@@ -15,7 +15,7 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
-/*
+/*void *V_API, int mode
  * API functions to support the gmt2kml application.
  *
  * Author:	Paul Wessel
@@ -642,7 +642,7 @@ bool crossed_dateline (double this_x, double last_x)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmt2kml_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
 	bool first = true, get_z = false, error = false, use_folder = false, do_description, no_dateline = false;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
@@ -662,6 +662,7 @@ int GMT_gmt2kml (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_TEXT_TABLE *T = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

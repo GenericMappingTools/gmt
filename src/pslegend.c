@@ -291,7 +291,7 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 #define PAR 2
 #define N_CMD 3
 
-int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_pslegend (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pslegend task */
 	unsigned int tbl;
 	int i, k, n = 0, justify = 0, n_columns = 1, error = 0, column_number = 0, id, n_scan;
@@ -332,6 +332,7 @@ int GMT_pslegend (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_DATASET *Front = NULL;
 	struct GMT_TEXT_SEGMENT *S[N_CMD] = {NULL, NULL, NULL};
 	struct GMT_LINE_SEGMENT *F = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

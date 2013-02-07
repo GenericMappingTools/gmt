@@ -380,7 +380,7 @@ void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **y
 	*zz = GMT_memory (GMT, *zz, *n_alloc, double);
 }
 
-int GMT_pswiggle (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_pswiggle (void *V_API, int mode, void *args)
 {
 	bool error = false, negative;
 	
@@ -398,6 +398,7 @@ int GMT_pswiggle (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -201,7 +201,7 @@ int GMT_gshhg_parse (struct GMTAPI_CTRL *C, struct GSHHG_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #endif
 
-int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gshhg (void *V_API, int mode, void *args)
 {
 	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
@@ -230,6 +230,7 @@ int GMT_gshhg (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GSHHG_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

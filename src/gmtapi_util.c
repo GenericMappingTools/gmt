@@ -133,6 +133,8 @@ void *return_address (void *data, unsigned int type) {
 	return (p);
 }
 
+struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}	/* Clean casting of void to API pointer */
+
 /* p_func_size_t is used as a pointer to functions that returns a size_t dimension */
 typedef size_t (*p_func_size_t) (int row, int col, int dim);
 

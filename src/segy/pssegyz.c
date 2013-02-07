@@ -571,7 +571,7 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_pssegyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_pssegyz (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_pssegyz (void *V_API, int mode, void *args)
 {
 	int error = false, nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
 
@@ -591,6 +591,7 @@ int GMT_pssegyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;				/* General PSL interal parameters */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

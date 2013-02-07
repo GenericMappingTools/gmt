@@ -350,7 +350,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdimage (void *V_API, int mode, void *args)
 {
 	bool error = false, done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, nothing_inside = false;
 	unsigned int k, nx = 0, ny = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
@@ -372,6 +372,7 @@ int GMT_grdimage (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
 	struct GRD_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 #ifdef HAVE_GDAL
 	bool do_indexed = false;
