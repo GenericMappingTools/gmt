@@ -560,7 +560,7 @@ int GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, struc
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {for (k = 0; k < Ctrl->In.n; k++) free (Ctrl->In.file[k]); GMT_free (GMT, Ctrl->In.file); Free_grdblend_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdblend (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdblend (void *V_API, int mode, void *args)
 {
 	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, error;
 	int status, pcol;
@@ -581,6 +581,7 @@ int GMT_grdblend (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GRDBLEND_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

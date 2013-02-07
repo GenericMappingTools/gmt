@@ -732,7 +732,7 @@ int GMT_grdraster_parse (struct GMTAPI_CTRL *C, struct GRDRASTER_CTRL *Ctrl, str
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdraster_Ctrl (GMT, Ctrl); GMT_free (GMT, rasinfo); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdraster (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
 	unsigned int ijras, jseek, jras2, iras2;
@@ -761,6 +761,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GRDRASTER_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *r_opt = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

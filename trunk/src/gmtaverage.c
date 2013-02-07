@@ -173,7 +173,7 @@ int GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ctrl, s
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtaverage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtaverage (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gmtaverage (void *V_API, int mode, void *args)
 {
 	bool error = false;
 
@@ -181,7 +181,8 @@ int GMT_gmtaverage (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *t_ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	int (*func) (struct GMTAPI_CTRL *, int, void *) = NULL;
+	int (*func) (void *, int, void *) = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

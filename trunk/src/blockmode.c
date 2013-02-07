@@ -211,7 +211,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_free_grid (GMT, &Grid, false); Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_blockmode (void *V_API, int mode, void *args)
 {
 	bool error = false, mode_xy, do_extra;
 	
@@ -233,6 +233,7 @@ int GMT_blockmode (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct BLK_DATA *data = NULL;
 	struct BLOCKMODE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -285,7 +285,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdgravmag3d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdgravmag3d (struct GMTAPI_CTRL *API, int mode, void *args) {
+int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	unsigned int nx_p, ny_p, i, j, k, ndata = 0, clockwise_type[] = {0, 5};
 	bool two_grids = false, switch_xy = false;
@@ -305,6 +305,7 @@ int GMT_grdgravmag3d (struct GMTAPI_CTRL *API, int mode, void *args) {
 	struct	GMT_GRID *Gout = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct	GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	mag_var = NULL, mag_param = NULL, data = NULL;
 	body_desc.n_v = NULL, body_desc.ind = NULL;

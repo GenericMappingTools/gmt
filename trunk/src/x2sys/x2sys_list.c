@@ -274,7 +274,7 @@ void dump_ascii_cols (struct GMT_CTRL *GMT, double *val, int col, int n, bool fi
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_list_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_x2sys_list (void *V_API, int mode, void *args)
 {
 	char **trk_name = NULL, **weight_name = NULL, *tofrom[2] = {"stdin", "stdout"}, *from = NULL;
 	struct X2SYS_INFO *s = NULL;
@@ -293,6 +293,7 @@ int GMT_x2sys_list (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_LIST_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -394,7 +394,7 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77magref_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77magref (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_mgd77magref (void *V_API, int mode, void *args)
 {
 	unsigned int j, nval = 0, nfval = 0, error = 0;
 	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
@@ -412,6 +412,7 @@ int GMT_mgd77magref (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_TABLE *T = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -413,7 +413,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mapproject_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_mapproject (void *V_API, int mode, void *args)
 {
 	int k, x, y, rmode, n_fields, n_output = 0, two, way;
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
@@ -438,6 +438,7 @@ int GMT_mapproject (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct MAPPROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

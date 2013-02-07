@@ -133,7 +133,7 @@ int GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl, str
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_mgd77path_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_mgd77path (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_mgd77path (void *V_API, int mode, void *args)
 {
 	unsigned int i, n_cruises = 0, n_paths;
 	bool error = false;
@@ -144,6 +144,7 @@ int GMT_mgd77path (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct MGD77PATH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

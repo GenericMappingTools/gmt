@@ -619,7 +619,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_project_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_project (void *V_API, int mode, void *args)
 {
 	uint64_t rec, n_total_read, n_total_used = 0;
 	unsigned int rmode, col;
@@ -640,6 +640,7 @@ int GMT_project (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct PROJECT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

@@ -303,7 +303,7 @@ int GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, struc
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_splitxyz_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_splitxyz (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
@@ -324,6 +324,7 @@ int GMT_splitxyz (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct SPLITXYZ_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

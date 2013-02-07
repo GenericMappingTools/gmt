@@ -172,7 +172,7 @@ int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GM
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_grdcut_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_grdcut (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	unsigned int nx_old, ny_old;
@@ -186,6 +186,7 @@ int GMT_grdcut (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMT_GRID *G = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

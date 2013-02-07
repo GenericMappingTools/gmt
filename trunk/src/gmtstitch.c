@@ -241,7 +241,7 @@ static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtstitch_Ctrl (GMT, Ctrl); GMT_free (GMT, segment); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gmtstitch (void *V_API, int mode, void *args)
 {
 	int error = 0;
 
@@ -270,6 +270,7 @@ int GMT_gmtstitch (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMTSTITCH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

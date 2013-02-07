@@ -317,7 +317,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_fitcircle_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_fitcircle (void *V_API, int mode, void *args)
 {
 	bool error = false, greenwich = false, allocate;
 	unsigned int imin, imax, nrots, j, k, n, np;
@@ -333,6 +333,7 @@ int GMT_fitcircle (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct FITCIRCLE_DATA *data = NULL;
 	struct FITCIRCLE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

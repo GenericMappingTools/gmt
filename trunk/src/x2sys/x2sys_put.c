@@ -181,7 +181,7 @@ struct X2SYS_BIX_TRACK_INFO * x2sys_bix_find_track (char *track, bool *found_it,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_x2sys_put_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_x2sys_put (void *V_API, int mode, void *args)
 {
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
@@ -205,6 +205,7 @@ int GMT_x2sys_put (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct X2SYS_PUT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

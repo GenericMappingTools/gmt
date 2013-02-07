@@ -392,4 +392,7 @@ EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta,
 /* This macro is called via each modules Return macro so API and options are set */
 #define GMT_Free_Options(mode) {if (mode >= 0 && GMT_Destroy_Options (API, &options) != GMT_OK) exit (EXIT_FAILURE);}
 
+/* From gmtapi_util.c */
+EXTERN_MSC struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr);
+
 #endif /* _GMT_PROTOTYPES_H */

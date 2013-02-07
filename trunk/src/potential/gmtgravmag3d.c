@@ -333,7 +333,7 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtgravmag3d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtgravmag3d (struct GMTAPI_CTRL *API, int mode, void *args) {
+int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	bool error = false, bat = true, switch_xy = false, DO = true;
 	unsigned int row, col, i, j, k, kk, ndata_r = 0;
@@ -355,6 +355,7 @@ int GMT_gmtgravmag3d (struct GMTAPI_CTRL *API, int mode, void *args) {
 	struct	GMT_GRID *Gout = NULL;
 	struct	GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct	GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	data = NULL, triang = NULL, vert = NULL, t_center = NULL, raw_mesh = NULL, mag_param = NULL;
 	mag_var = NULL, mag_var2 = NULL, mag_var3 = NULL, mag_var4 = NULL;

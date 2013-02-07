@@ -70,6 +70,7 @@ extern "C" {
 
 #include "gmtapi_define.h"
 #include "gmtapi_resources.h"
+#include "gmt_module.h"
 
 /* API mode */
 enum Api_mode {

@@ -233,7 +233,7 @@ void median_output (struct GMT_CTRL *GMT, struct GRD_HEADER *h, uint64_t first_i
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_free_grid (GMT, &Grid, false); Free_blockmedian_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_blockmedian (void *V_API, int mode, void *args)
 {
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
 	uint64_t n_read, nz, n_pitched, n_cells_filled;
@@ -253,6 +253,7 @@ int GMT_blockmedian (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct BLK_DATA *data = NULL;
 	struct BLOCKMEDIAN_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

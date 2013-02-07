@@ -800,7 +800,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 #define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_report (GMT, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_filter1d (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_filter1d (void *V_API, int mode, void *args)
 {
 	unsigned int col, tbl;
 	uint64_t row, seg;
@@ -814,6 +814,7 @@ int GMT_filter1d (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct FILTER1D_CTRL *Ctrl = NULL;
 
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 

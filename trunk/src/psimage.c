@@ -289,7 +289,7 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_psimage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_psimage (void *V_API, int mode, void *args)
 {
 	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
 	unsigned int row, col;
@@ -310,6 +310,7 @@ int GMT_psimage (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef HAVE_GDAL
 	struct GMT_IMAGE *I = NULL;		/* A GMT image datatype, if GDAL is used */
 #endif
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
