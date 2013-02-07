@@ -212,7 +212,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 	int i, j, length, stop_point, nfound = 0, ksize = 0, n_alloc, object_ID, delta;
 	uint64_t expected_size;
 	double global_lon, lon_tol;
-	char path[GMT_BUFSIZ], buf[GRD_REMARK_LEN160], dir[GRD_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
+	char path[GMT_BUFSIZ], buf[GMT_GRID_REMARK_LEN160], dir[GMT_GRID_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	struct stat F;
 
@@ -255,7 +255,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		length = strlen(record);
 		if (length == 0) continue;	/* Skip blank lines */
 
-		strncpy (rasinfo[nfound].h.command, record, GRD_COMMAND_LEN320);
+		strncpy (rasinfo[nfound].h.command, record, GMT_GRID_COMMAND_LEN320);
 
 		/* Find the integer file name first */
 		i = 0;
@@ -497,7 +497,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
 		buf[j-i] = '\0';
 
-		strncpy (rasinfo[nfound].h.remark, buf, GRD_REMARK_LEN160);
+		strncpy (rasinfo[nfound].h.remark, buf, GMT_GRID_REMARK_LEN160);
 
 		/* Decode SWAP flag or SKIP command, if present  */
 
@@ -576,7 +576,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		else
 			expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
 		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
-			strncpy (rasinfo[nfound].h.remark, path, GRD_REMARK_LEN160);
+			strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160);
 			stat (path, &F);
 		}
 		else {	/* Inquiry about file failed somehow */
@@ -585,8 +585,8 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 		}
 
 		delta = F.st_size - expected_size;
-		if (delta == GRD_HEADER_SIZE)
-			rasinfo[nfound].skip = (off_t)GRD_HEADER_SIZE;	/* Must skip GMT grd header */
+		if (delta == GMT_GRID_HEADER_SIZE)
+			rasinfo[nfound].skip = (off_t)GMT_GRID_HEADER_SIZE;	/* Must skip GMT grd header */
 		else if (delta) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Metadata conflict: Actual size of file %s [%" PRIi64 "] differs from expected [%" PRIu64 "]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (int64_t)F.st_size, expected_size);
 			continue;
@@ -744,7 +744,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 	size_t nmask = 0, n_expected;
 
-	char *buffer = NULL, *tselect = NULL, match[GRD_REMARK_LEN160];
+	char *buffer = NULL, *tselect = NULL, match[GMT_GRID_REMARK_LEN160];
 	unsigned char *ubuffer = NULL;
 	static unsigned char maskset[8] = {128, 64, 32, 16, 8, 4, 2, 1};
 
@@ -812,7 +812,7 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 			}
 		}
 		else {	/* We gave a text snippet to match in command */
-			strncpy (match, rasinfo[i].h.command, GRD_REMARK_LEN160);
+			strncpy (match, rasinfo[i].h.command, GMT_GRID_REMARK_LEN160);
 			GMT_str_toupper (match);	/* Make it upper case  */
 			if (strstr (match, tselect)) {	/* Found a matching text string */
 				if (j == UINT_MAX)
@@ -932,9 +932,9 @@ int GMT_grdraster (struct GMTAPI_CTRL *API, int mode, void *args)
 		Grid->header->nx++;
 		Grid->header->ny++;
 	}
-	strncpy (Grid->header->title, myras.h.title, GRD_TITLE_LEN80);
-	strncpy (Grid->header->z_units, myras.h.z_units, GRD_UNIT_LEN80);
-	strncpy (Grid->header->remark, myras.h.remark, GRD_REMARK_LEN160);
+	strncpy (Grid->header->title, myras.h.title, GMT_GRID_TITLE_LEN80);
+	strncpy (Grid->header->z_units, myras.h.z_units, GMT_GRID_UNIT_LEN80);
+	strncpy (Grid->header->remark, myras.h.remark, GMT_GRID_REMARK_LEN160);
 	if (myras.geo) {
 		strcpy (Grid->header->x_units, "Longitude [degrees_east]");
 		strcpy (Grid->header->y_units, "Latitude [degrees_north]");

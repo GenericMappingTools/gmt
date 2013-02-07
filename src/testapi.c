@@ -217,7 +217,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (Ctrl->I.via == GMT_VIA_MATRIX) {	/* We will use a matrix in memory as data source */
 		if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, NULL)) == NULL) Return (API->error);
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
-			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMTAPI_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
+			M->n_rows = 9;	M->n_columns = 2;	M->n_layers = 1;	M->dim = 9;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < (uint64_t)M->n_rows; k++) {
 				fdata[2*k] = (float)k;	fdata[2*k+1] = (float)k*10;
@@ -225,7 +225,7 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 			fdata[0] = fdata[1] = fdata[8] = fdata[9] = GMT->session.f_NaN;
 		}
 		else {	/* Mimic the gtest.nc grid as table */
-			M->n_rows = 6;	M->n_columns = 6;	M->n_layers = 1;	M->dim = 6;	M->type = GMTAPI_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
+			M->n_rows = 6;	M->n_columns = 6;	M->n_layers = 1;	M->dim = 6;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			M->limit[XLO] = 0.0;	M->limit[XHI] = 5.0;	M->limit[YLO] = 0.0;	M->limit[YHI] = 5.0;	M->limit[4] = 0.0;	M->limit[5] = 25.0;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->size; k++) fdata[k] = (float)((int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows));
@@ -242,8 +242,8 @@ int GMT_testapi (struct GMTAPI_CTRL *API, int mode, void *args)
 		}
 		fdata[0] = fdata[4] = GMT->session.f_NaN;
 		ddata[0] = ddata[4] = GMT->session.d_NaN;
-		V->data[GMT_X].f4 =  fdata;	V->type[GMT_X] = GMTAPI_FLOAT;
-		V->data[GMT_Y].f8 =  ddata;	V->type[GMT_Y] = GMTAPI_DOUBLE;
+		V->data[GMT_X].f4 =  fdata;	V->type[GMT_X] = GMT_FLOAT;
+		V->data[GMT_Y].f8 =  ddata;	V->type[GMT_Y] = GMT_DOUBLE;
 	}
 	
 	/* Get input and register it */

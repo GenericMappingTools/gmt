@@ -2,7 +2,7 @@
 By default BD(GMT) writes out grid as single precision floats in a COARDS-complaint netCDF file format.
 However, BD(GMT) is able to produce grid files in many other commonly used grid file formats and also facilitates so called "packing" of grids,
 writing out floating point data as 1- or 2-byte integers. To specify the precision, scale and offset, the user should add the suffix
-GMT_GRD_SUFFIX, where IT(id) is a two-letter identifier of the grid type and precision, and IT(scale) and IT(offset) are optional scale factor
+GMT_GRID_SUFFIX, where IT(id) is a two-letter identifier of the grid type and precision, and IT(scale) and IT(offset) are optional scale factor
 and offset to be applied to all grid values, and IT(nan) is the value used to indicate missing data.
 When reading grids, the format is generally automatically recognized. If not, the same suffix can be added to input grid file names.
 See BD(grdreformat)(1) and Section 4.20 of the GMT Technical Reference and Cookbook for more information.

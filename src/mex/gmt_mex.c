@@ -105,23 +105,23 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 		if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
 			if (mxIsDouble(prhs[col])) {
-				(*V)->type[col] = GMTAPI_DOUBLE;
+				(*V)->type[col] = GMT_DOUBLE;
 				(*V)->data[col].f8 = mxGetData (prhs[col]);
 			}
 			else if (mxIsSingle(prhs[col])) {
-				(*V)->type[col] = GMTAPI_FLOAT;
+				(*V)->type[col] = GMT_FLOAT;
 				(*V)->data[col].f4 = (float *)mxGetData (prhs[col]);
 			}
 			else if (mxIsInt32(prhs[col])) {
-				(*V)->type[col] = GMTAPI_INT;
+				(*V)->type[col] = GMT_INT;
 				(*V)->data[col].si4 = (int *)mxGetData (prhs[col]);
 			}
 			else if (mxIsInt16(prhs[col])) {
-				(*V)->type[col] = GMTAPI_SHORT;
+				(*V)->type[col] = GMT_SHORT;
 				(*V)->data[col].si2 = (short int *)mxGetData (prhs[col]);
 			}
 			else if (mxIsInt8(prhs[col])) {
-				(*V)->type[col] = GMTAPI_CHAR;
+				(*V)->type[col] = GMT_CHAR;
 				(*V)->data[col].sc1 = (char *)mxGetData (prhs[col]);
 			}
 			else
@@ -210,7 +210,7 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, int n_cols, struct GMT_V
 					"redirection operator nor left hand side output args.");
 	}
 	if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, dim)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
-	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMTAPI_DOUBLE;
+	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMT_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
 	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REF + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, V)) == GMTAPI_NOTSET) {
 		mexErrMsgTxt ("Failure to register GMT destination vectors\n");

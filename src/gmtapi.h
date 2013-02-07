@@ -142,38 +142,38 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
  */
 
 /* 17 Primary API functions */
-EXTERN_MSC struct GMTAPI_CTRL * GMT_Create_Session	(char *tag, unsigned int mode);
-EXTERN_MSC void * GMT_Create_Data			(struct GMTAPI_CTRL *C, unsigned int type, uint64_t par[]);
-EXTERN_MSC void * GMT_Get_Data				(struct GMTAPI_CTRL *C, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC void * GMT_Read_Data				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
-EXTERN_MSC void * GMT_Retrieve_Data			(struct GMTAPI_CTRL *C, int object_ID);
-EXTERN_MSC void * GMT_Get_Record			(struct GMTAPI_CTRL *C, unsigned int mode, int *retval);
-EXTERN_MSC int GMT_Destroy_Session			(struct GMTAPI_CTRL **C);
-EXTERN_MSC int GMT_Register_IO				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
-EXTERN_MSC int GMT_Init_IO				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
-EXTERN_MSC int GMT_Begin_IO				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int direction);
-EXTERN_MSC int GMT_End_IO				(struct GMTAPI_CTRL *C, unsigned int direction, unsigned int mode);
-EXTERN_MSC int GMT_Report_Error				(struct GMTAPI_CTRL *C, int error);
-EXTERN_MSC int GMT_Put_Data				(struct GMTAPI_CTRL *C, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC int GMT_Write_Data				(struct GMTAPI_CTRL *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
-EXTERN_MSC int GMT_Destroy_Data				(struct GMTAPI_CTRL *C, unsigned int mode, void *object);
-EXTERN_MSC int GMT_Put_Record				(struct GMTAPI_CTRL *C, unsigned int mode, void *record);
-EXTERN_MSC int GMT_Encode_ID				(struct GMTAPI_CTRL *C, char *string, int object_ID);
+EXTERN_MSC void * GMT_Create_Session			(char *tag, unsigned int mode);
+EXTERN_MSC void * GMT_Create_Data			(void *C, unsigned int type, uint64_t par[]);
+EXTERN_MSC void * GMT_Get_Data				(void *C, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC void * GMT_Read_Data				(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
+EXTERN_MSC void * GMT_Retrieve_Data			(void *C, int object_ID);
+EXTERN_MSC void * GMT_Get_Record			(void *C, unsigned int mode, int *retval);
+EXTERN_MSC int GMT_Destroy_Session			(void *C);
+EXTERN_MSC int GMT_Register_IO				(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
+EXTERN_MSC int GMT_Init_IO				(void *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
+EXTERN_MSC int GMT_Begin_IO				(void *C, unsigned int family, unsigned int direction);
+EXTERN_MSC int GMT_End_IO				(void *C, unsigned int direction, unsigned int mode);
+EXTERN_MSC int GMT_Report_Error				(void *C, int error);
+EXTERN_MSC int GMT_Put_Data				(void *C, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC int GMT_Write_Data				(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
+EXTERN_MSC int GMT_Destroy_Data				(void *C, unsigned int mode, void *object);
+EXTERN_MSC int GMT_Put_Record				(void *C, unsigned int mode, void *record);
+EXTERN_MSC int GMT_Encode_ID				(void *C, char *string, int object_ID);
 
 /* 12 secondary functions for argument and option parsing */
 
-EXTERN_MSC struct GMT_OPTION * GMT_Create_Options	(struct GMTAPI_CTRL *C, int argc, void *in);
-EXTERN_MSC struct GMT_OPTION * GMT_Prep_Options		(struct GMTAPI_CTRL *C, int mode, void *in);
-EXTERN_MSC struct GMT_OPTION * GMT_Make_Option		(struct GMTAPI_CTRL *C, char option, char *arg);
-EXTERN_MSC struct GMT_OPTION * GMT_Find_Option		(struct GMTAPI_CTRL *C, char option, struct GMT_OPTION *head);
-EXTERN_MSC struct GMT_OPTION * GMT_Append_Option	(struct GMTAPI_CTRL *C, struct GMT_OPTION *current, struct GMT_OPTION *head);
-EXTERN_MSC char ** GMT_Create_Args			(struct GMTAPI_CTRL *C, int *argc, struct GMT_OPTION *head);
-EXTERN_MSC char * GMT_Create_Cmd			(struct GMTAPI_CTRL *C, struct GMT_OPTION *head);
-EXTERN_MSC int GMT_Destroy_Options			(struct GMTAPI_CTRL *C, struct GMT_OPTION **head);
-EXTERN_MSC int GMT_Destroy_Args				(struct GMTAPI_CTRL *C, int argc, char *argv[]);
-EXTERN_MSC int GMT_Update_Option			(struct GMTAPI_CTRL *C, char option, char *arg, struct GMT_OPTION *head);
-EXTERN_MSC int GMT_Delete_Option			(struct GMTAPI_CTRL *C, struct GMT_OPTION *current);
-EXTERN_MSC int GMT_Parse_Common				(struct GMTAPI_CTRL *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
+EXTERN_MSC struct GMT_OPTION * GMT_Create_Options	(void *C, int argc, void *in);
+EXTERN_MSC struct GMT_OPTION * GMT_Prep_Options		(void *C, int mode, void *in);
+EXTERN_MSC struct GMT_OPTION * GMT_Make_Option		(void *C, char option, char *arg);
+EXTERN_MSC struct GMT_OPTION * GMT_Find_Option		(void *C, char option, struct GMT_OPTION *head);
+EXTERN_MSC struct GMT_OPTION * GMT_Append_Option	(void *C, struct GMT_OPTION *current, struct GMT_OPTION *head);
+EXTERN_MSC char ** GMT_Create_Args			(void *C, int *argc, struct GMT_OPTION *head);
+EXTERN_MSC char * GMT_Create_Cmd			(void *C, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Destroy_Options			(void *C, struct GMT_OPTION **head);
+EXTERN_MSC int GMT_Destroy_Args				(void *C, int argc, char *argv[]);
+EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
+EXTERN_MSC int GMT_Parse_Common				(void *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
 
 /* Macro to test if filename is a special name indicating memory location */
 

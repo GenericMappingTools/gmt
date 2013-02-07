@@ -128,11 +128,11 @@ int GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, struc
 /* True if grid is a COARDS/CF netCDF file */
 static inline bool is_nc_grid (struct GMT_GRID *grid) {
 	return
-		grid->header->type == GMT_GRD_IS_NB ||
-		grid->header->type == GMT_GRD_IS_NS ||
-		grid->header->type == GMT_GRD_IS_NI ||
-		grid->header->type == GMT_GRD_IS_NF ||
-		grid->header->type == GMT_GRD_IS_ND;
+		grid->header->type == GMT_GRID_IS_NB ||
+		grid->header->type == GMT_GRID_IS_NS ||
+		grid->header->type == GMT_GRID_IS_NI ||
+		grid->header->type == GMT_GRID_IS_NF ||
+		grid->header->type == GMT_GRID_IS_ND;
 }
 
 int GMT_grdpaste (struct GMTAPI_CTRL *API, int mode, void *args)

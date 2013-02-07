@@ -143,7 +143,6 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 
 	unsigned int n_errors = 0, n_files = 0;
 	int col;
-	size_t len;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;

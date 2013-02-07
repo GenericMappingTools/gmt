@@ -889,7 +889,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef OBSOLETE
 				if (Ctrl->S.active) {	/* Now assess a measure of deviation about this value */
 					if (slow) {	/* Get MAD! */
-						GMT_sort_array (GMT, work_array2, n, GMTAPI_DOUBLE);
+						GMT_sort_array (GMT, work_array2, n, GMT_DOUBLE);
 						GMT_getmad (GMT, work_array2, n, z, &scale);
 					}
 					else {		/* Get weighted stdev. */

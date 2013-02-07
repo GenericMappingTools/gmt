@@ -829,29 +829,29 @@ int gmt_comp_char_asc (const void *p_1, const void *p_2)
 
 void GMT_sort_array (struct GMT_CTRL *C, void *base, uint64_t n, unsigned int type)
 { /* Front function to call qsort on all <type> array into ascending order */
-	size_t width[GMTAPI_N_TYPES] = {
-		sizeof(uint8_t),      /* GMTAPI_UCHAR */
-		sizeof(int8_t),       /* GMTAPI_CHAR */
-		sizeof(uint16_t),     /* GMTAPI_USHORT */
-		sizeof(int16_t),      /* GMTAPI_SHORT */
-		sizeof(uint32_t),     /* GMTAPI_UINT */
-		sizeof(int32_t),      /* GMTAPI_INT */
-		sizeof(uint64_t),     /* GMTAPI_ULONG */
-		sizeof(int64_t),      /* GMTAPI_LONG */
-		sizeof(float),        /* GMTAPI_FLOAT */
-		sizeof(double)};      /* GMTAPI_DOUBLE */
-	int (*compare[GMTAPI_N_TYPES]) (const void *, const void *) = {
+	size_t width[GMT_N_TYPES] = {
+		sizeof(uint8_t),      /* GMT_UCHAR */
+		sizeof(int8_t),       /* GMT_CHAR */
+		sizeof(uint16_t),     /* GMT_USHORT */
+		sizeof(int16_t),      /* GMT_SHORT */
+		sizeof(uint32_t),     /* GMT_UINT */
+		sizeof(int32_t),      /* GMT_INT */
+		sizeof(uint64_t),     /* GMT_ULONG */
+		sizeof(int64_t),      /* GMT_LONG */
+		sizeof(float),        /* GMT_FLOAT */
+		sizeof(double)};      /* GMT_DOUBLE */
+	int (*compare[GMT_N_TYPES]) (const void *, const void *) = {
 		/* Array of function pointers */
-		gmt_comp_uchar_asc,   /* GMTAPI_CHAR */
-		gmt_comp_char_asc,    /* GMTAPI_UCHAR */
-		gmt_comp_ushort_asc,  /* GMTAPI_USHORT */
-		gmt_comp_short_asc,   /* GMTAPI_SHORT */
-		gmt_comp_uint_asc,    /* GMTAPI_UINT */
-		gmt_comp_int_asc,     /* GMTAPI_INT */
-		gmt_comp_ulong_asc,   /* GMTAPI_ULONG */
-		gmt_comp_long_asc,    /* GMTAPI_LONG */
-		gmt_comp_float_asc,   /* GMTAPI_FLOAT */
-		gmt_comp_double_asc}; /* GMTAPI_DOUBLE */
+		gmt_comp_uchar_asc,   /* GMT_CHAR */
+		gmt_comp_char_asc,    /* GMT_UCHAR */
+		gmt_comp_ushort_asc,  /* GMT_USHORT */
+		gmt_comp_short_asc,   /* GMT_SHORT */
+		gmt_comp_uint_asc,    /* GMT_UINT */
+		gmt_comp_int_asc,     /* GMT_INT */
+		gmt_comp_ulong_asc,   /* GMT_ULONG */
+		gmt_comp_long_asc,    /* GMT_LONG */
+		gmt_comp_float_asc,   /* GMT_FLOAT */
+		gmt_comp_double_asc}; /* GMT_DOUBLE */
 
 	qsort (base, n, width[type], compare[type]);
 }
@@ -7962,7 +7962,7 @@ uint64_t GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], uint64_t *
 						/* Assign as crossover the middle of the overlapping segments */
 						X->x[nx] = xa[xa_start];
 						y4[0] = ya[xa_start];	y4[1] = ya[xa_stop];	y4[2] = yb[xb_start];	y4[3] = yb[xb_stop];
-						GMT_sort_array (C, y4, 4, GMTAPI_DOUBLE);
+						GMT_sort_array (C, y4, 4, GMT_DOUBLE);
 						if (y4[1] != y4[2]) {
 							X->y[nx] = 0.5 * (y4[1] + y4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
@@ -8053,7 +8053,7 @@ uint64_t GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], uint64_t *
 						/* Assign as crossover the middle of the overlapping segments */
 						X->y[nx] = ya[xa_start];
 						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
-						GMT_sort_array (C, x4, 4, GMTAPI_DOUBLE);
+						GMT_sort_array (C, x4, 4, GMT_DOUBLE);
 						if (x4[1] != x4[2]) {
 							X->x[nx] = 0.5 * (x4[1] + x4[2]);
 							X->xnode[0][nx] = 0.5 * (xa_start + xa_stop);
@@ -8149,7 +8149,7 @@ uint64_t GMT_crossover (struct GMT_CTRL *C, double xa[], double ya[], uint64_t *
 						double x4[4];
 						/* Assign as possible crossover the middle of the overlapping segments */
 						x4[0] = xa[xa_start];	x4[1] = xa[xa_stop];	x4[2] = xb[xb_start];	x4[3] = xb[xb_stop];
-						GMT_sort_array (C, x4, 4, GMTAPI_DOUBLE);
+						GMT_sort_array (C, x4, 4, GMT_DOUBLE);
 						if (x4[1] != x4[2]) {
 							xc = 0.5 * (x4[1] + x4[2]);
 							yc = slp_a * (xc - xa[xa_start]) + ya[xa_start];

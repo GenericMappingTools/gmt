@@ -290,7 +290,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		/* parse grid format string: */
 		if ((val = parse_grd_format_scale (C, header, &header->name[i])) != GMT_NOERROR)
 			return val;
-		if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
+		if (header->type == GMT_GRID_IS_GD && header->name[i+2] && header->name[i+2] == '?') {	/* A SUBDATASET request for GDAL */
 			char *pch = strstr(&header->name[i+3], "::");
 			if (pch) {		/* The file name was omitted within the SUBDATASET. Must put it there for GDAL */
 				tmp[0] = '\0';
@@ -302,12 +302,12 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 			else
 				strncpy (header->name, &header->name[i+3], GMT_TEXT_LEN256);
 			magic = 0;	/* We don't want it to try to prepend any path */
-		} /* if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '?') */
-		else if (header->type == GMT_GRD_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b') { /* A Band request for GDAL */
+		} /* if (header->type == GMT_GRID_IS_GD && header->name[i+2] && header->name[i+2] == '?') */
+		else if (header->type == GMT_GRID_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b') { /* A Band request for GDAL */
 			header->pocket = strdup(&header->name[i+4]);
 			header->name[i-1] = '\0';
 		}
-		else if (header->type == GMT_GRD_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":")) {
+		else if (header->type == GMT_GRID_IS_GD && header->name[i+2] && strstr(&header->name[i+2], ":")) {
 			char *pch;
 			pch = strstr(&header->name[i+2], ":");
 			header->pocket = strdup(++pch);
@@ -319,7 +319,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		}
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
 		if (magic) {	/* Reading: possibly prepend a path from GMT_[GRID|DATA|IMG]DIR */
-			if (header->type != GMT_GRD_IS_GD || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
+			if (header->type != GMT_GRID_IS_GD || !GMT_check_url_name(tmp))	/* Do not try path stuff with Web files (accessed via GDAL) */
 				if (!GMT_getdatapath (C, tmp, header->name))
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
@@ -368,7 +368,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 		if ((val = parse_grd_format_scale (C, header, C->current.setting.io_gridfile_format)) != GMT_NOERROR)
 			return val;
 	}
-	if (header->type == GMT_GRD_IS_AF)
+	if (header->type == GMT_GRID_IS_AF)
 		header->nan_value = 0.0; /* NaN value for AGC format */
 	return (GMT_NOERROR);
 }
@@ -379,7 +379,7 @@ void gmt_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	   output data types for columns 0, 1, and 2.
 	*/
 	unsigned int i;
-	char *string[3] = {NULL, NULL, NULL}, unit[GRD_UNIT_LEN80], date[GMT_TEXT_LEN16], clock[GMT_TEXT_LEN16];
+	char *string[3] = {NULL, NULL, NULL}, unit[GMT_GRID_UNIT_LEN80], date[GMT_TEXT_LEN16], clock[GMT_TEXT_LEN16];
 
 	/* Copy pointers to unit strings */
 	string[0] = header->x_units;
@@ -447,9 +447,9 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	struct GMT_TIME_SYSTEM time_system;
 
 	/* Copy unit strings */
-	strncpy (string[0], header->x_units, GRD_UNIT_LEN80);
-	strncpy (string[1], header->y_units, GRD_UNIT_LEN80);
-	strncpy (string[2], header->z_units, GRD_UNIT_LEN80);
+	strncpy (string[0], header->x_units, GMT_GRID_UNIT_LEN80);
+	strncpy (string[1], header->y_units, GMT_GRID_UNIT_LEN80);
+	strncpy (string[2], header->z_units, GMT_GRID_UNIT_LEN80);
 
 	/* Parse the unit strings one by one */
 	for (i = 0; i < 3; i++) {
@@ -592,36 +592,36 @@ int gmt_get_grdtype (struct GMT_CTRL *C, struct GRD_HEADER *h)
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span exactly 360\n");
 			/* If w/e is 360 and gridline reg then we have a repeat entry for 360.  For pixel there are never repeat pixels */
-			return ((h->registration == GMT_GRIDLINE_REG) ? GMT_GRD_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRD_GEOGRAPHIC_EXACT360_NOREPEAT);
+			return ((h->registration == GMT_GRIDLINE_REG) ? GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
 		}
 		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitude cells span exactly 360\n");
 			/* If n*xinc = 360 and previous test failed then we do not have a repeat node */
-			return (GMT_GRD_GEOGRAPHIC_EXACT360_NOREPEAT);
+			return (GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
 		}
 		else if ((h->wesn[XHI] - h->wesn[XLO]) > 360.0) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span more than 360\n");
-			return (GMT_GRD_GEOGRAPHIC_MORE360);
+			return (GMT_GRID_GEOGRAPHIC_MORE360);
 		}
 		else {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span less than 360\n");
-			return (GMT_GRD_GEOGRAPHIC_LESS360);
+			return (GMT_GRID_GEOGRAPHIC_LESS360);
 		}
 	}
 	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Cartesian grid, yet x spans exactly 360 and -90 <= y <= 90.\n");
 			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
-			return (GMT_GRD_CARTESIAN);
+			return (GMT_GRID_CARTESIAN);
 		}
 		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Cartesian grid, yet x cells span exactly 360 and -90 <= y <= 90.\n");
 			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
-			return (GMT_GRD_CARTESIAN);
+			return (GMT_GRID_CARTESIAN);
 		}
 	}
 	GMT_report (C, GMT_MSG_VERBOSE, "Grid is Cartesian\n");
-	return (GMT_GRD_CARTESIAN);
+	return (GMT_GRID_CARTESIAN);
 }
 
 int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header)
@@ -961,28 +961,28 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 		if (ptr[0] != '=') {
 			switch (entry) {
 				case 0:
-					GMT_memset (h->x_units, GRD_UNIT_LEN80, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN80)
+					GMT_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(ptr) >= GMT_GRID_UNIT_LEN80)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: X unit string exceeds upper length of %d characters (truncated)\n",
-								GRD_UNIT_LEN80);
-					strncpy (h->x_units, ptr, GRD_UNIT_LEN80);
+								GMT_GRID_UNIT_LEN80);
+					strncpy (h->x_units, ptr, GMT_GRID_UNIT_LEN80);
 					break;
 				case 1:
-					GMT_memset (h->y_units, GRD_UNIT_LEN80, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN80)
+					GMT_memset (h->y_units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(ptr) >= GMT_GRID_UNIT_LEN80)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: Y unit string exceeds upper length of %d characters (truncated)\n",
-								GRD_UNIT_LEN80);
-					strncpy (h->y_units, ptr, GRD_UNIT_LEN80);
+								GMT_GRID_UNIT_LEN80);
+					strncpy (h->y_units, ptr, GMT_GRID_UNIT_LEN80);
 					break;
 				case 2:
-					GMT_memset (h->z_units, GRD_UNIT_LEN80, char);
-					if (strlen(ptr) >= GRD_UNIT_LEN80)
+					GMT_memset (h->z_units, GMT_GRID_UNIT_LEN80, char);
+					if (strlen(ptr) >= GMT_GRID_UNIT_LEN80)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: Z unit string exceeds upper length of %d characters (truncated)\n",
-								GRD_UNIT_LEN80);
-					strncpy (h->z_units, ptr, GRD_UNIT_LEN80);
+								GMT_GRID_UNIT_LEN80);
+					strncpy (h->z_units, ptr, GMT_GRID_UNIT_LEN80);
 					break;
 				case 3:
 					h->z_scale_factor = strtod (ptr, NULL);
@@ -994,18 +994,18 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *
 					h->nan_value = strtod (ptr, NULL);
 					break;
 				case 6:
-					if (strlen(ptr) >= GRD_TITLE_LEN80)
+					if (strlen(ptr) >= GMT_GRID_TITLE_LEN80)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: Title string exceeds upper length of %d characters (truncated)\n",
-								GRD_TITLE_LEN80);
-					strncpy (h->title, ptr, GRD_TITLE_LEN80);
+								GMT_GRID_TITLE_LEN80);
+					strncpy (h->title, ptr, GMT_GRID_TITLE_LEN80);
 					break;
 				case 7:
-					if (strlen(ptr) >= GRD_REMARK_LEN160)
+					if (strlen(ptr) >= GMT_GRID_REMARK_LEN160)
 						GMT_report (C, GMT_MSG_NORMAL,
 								"Warning: Remark string exceeds upper length of %d characters (truncated)\n",
-								GRD_REMARK_LEN160);
-					strncpy (h->remark, ptr, GRD_REMARK_LEN160);
+								GMT_GRID_REMARK_LEN160);
+					strncpy (h->remark, ptr, GMT_GRID_REMARK_LEN160);
 					break;
 				default:
 					break;
@@ -1062,7 +1062,7 @@ int GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, char mo
 		}
 		else if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[r_w])) == NULL)
 			return (GMT_GRDIO_CREATE_FAILED);
-		if (header && fseek (G->fp, (off_t)GRD_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+		if (header && fseek (G->fp, (off_t)GMT_GRID_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	G->size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
@@ -1122,10 +1122,10 @@ int GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, int row_no, flo
 		size_t n_items;
 		if (row_no < 0) {	/* Special seek instruction */
 			G->row = abs (row_no);
-			if (fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fseek (G->fp, (off_t)(GMT_GRID_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 			return (GMT_NOERROR);
 		}
-		if (!G->auto_advance && fseek (G->fp, (off_t)(GRD_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+		if (!G->auto_advance && fseek (G->fp, (off_t)(GMT_GRID_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
 
 		n_items = G->header.nx;
 		if (GMT_fread (G->v_row, G->size, n_items, G->fp) != n_items)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
@@ -1201,7 +1201,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 	int i;
 
 	if (update)	/* Only clean the command history */
-		GMT_memset (header->command, GRD_COMMAND_LEN320, char);
+		GMT_memset (header->command, GMT_GRID_COMMAND_LEN320, char);
 	else {		/* Wipe the slate clean */
 		GMT_memset (header, 1, struct GRD_HEADER);
 
@@ -1230,11 +1230,11 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not create argc, argv from linked structure options!\n");
 			return;
 		}
-		strncpy (header->command, gmt_module_name(C), GRD_COMMAND_LEN320);
+		strncpy (header->command, gmt_module_name(C), GMT_GRID_COMMAND_LEN320);
 		len = strlen (header->command);
-		for (i = 0; len < GRD_COMMAND_LEN320 && i < argc; i++) {
+		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
 			len += strlen (argv[i]) + 1;
-			if (len > GRD_COMMAND_LEN320) continue;
+			if (len > GMT_GRID_COMMAND_LEN320) continue;
 			strcat (header->command, " ");
 			strcat (header->command, argv[i]);
 		}

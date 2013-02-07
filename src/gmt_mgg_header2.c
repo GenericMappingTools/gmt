@@ -152,7 +152,7 @@ static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 	
 	/* Do not memset the gmt header since it has the file name set */
 	
-	gmt->type = GMT_GRD_IS_RF;
+	gmt->type = GMT_GRID_IS_RF;
 	gmt->registration = mgg->cellRegistration;
 	one_or_zero = 1 - gmt->registration;
 	gmt->nx = mgg->lonNumCells;
@@ -192,7 +192,7 @@ int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	/* Check the magic number and size of header */
 	if (ok == -1)
 		return (-1);	/* Not this kind of file */
-	header->type = GMT_GRD_IS_RF;
+	header->type = GMT_GRID_IS_RF;
 	return GMT_NOERROR;
 }
 

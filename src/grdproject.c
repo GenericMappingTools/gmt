@@ -212,7 +212,7 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 	bool error = false, set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
 
-	char format[GMT_BUFSIZ], unit_name[GRD_UNIT_LEN80], scale_unit_name[GRD_UNIT_LEN80];
+	char format[GMT_BUFSIZ], unit_name[GMT_GRID_UNIT_LEN80], scale_unit_name[GMT_GRID_UNIT_LEN80];
 
 	double wesn[4];
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, fwd_scale, inv_scale;
@@ -336,7 +336,7 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 	ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 	ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 	if (Ctrl->A.active) {	/* Convert to chosen units */
-		strncpy (unit_name, scale_unit_name, GRD_UNIT_LEN80);
+		strncpy (unit_name, scale_unit_name, GMT_GRID_UNIT_LEN80);
 		xmin /= GMT->current.proj.scale[GMT_X];
 		xmax /= GMT->current.proj.scale[GMT_X];
 		ymin /= GMT->current.proj.scale[GMT_Y];
@@ -497,8 +497,8 @@ int GMT_grdproject (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		}
 		GMT_set_grdinc (GMT, Rect->header);	/* Update inc and r_inc given changes to wesn */
-		strncpy (Rect->header->x_units, unit_name, GRD_UNIT_LEN80);
-		strncpy (Rect->header->y_units, unit_name, GRD_UNIT_LEN80);
+		strncpy (Rect->header->x_units, unit_name, GMT_GRID_UNIT_LEN80);
+		strncpy (Rect->header->y_units, unit_name, GMT_GRID_UNIT_LEN80);
 
 		/* rect xy values are here in GMT projected units chosen by user */
 

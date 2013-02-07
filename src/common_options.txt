@@ -96,7 +96,7 @@
 #define GMT_SAMP_OPT	BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)]
 
 /* Optional suffix for grids */
-#define GMT_GRD_SUFFIX	BD(=)IT(id)[BD(/)IT(scale)BD(/)IT(offset)[BD(/)IT(nan)]]
+#define GMT_GRID_SUFFIX	BD(=)IT(id)[BD(/)IT(scale)BD(/)IT(offset)[BD(/)IT(nan)]]
 
 /* Argument for distance units */
 

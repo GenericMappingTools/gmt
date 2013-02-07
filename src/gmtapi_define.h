@@ -43,19 +43,19 @@ enum GMT_enum_pars {GMTAPI_TYPE = 0,	/* ipar[0] = data type (GMTAPI_{BYTE|SHORT|
 
 /* These data primitive identifiers are as follows: */
 enum GMT_enum_type {
-	GMTAPI_CHAR = 0,  /* int8_t, 1-byte signed integer type */
-	GMTAPI_UCHAR,     /* uint8_t, 1-byte unsigned integer type */
-	GMTAPI_SHORT,     /* int16_t, 2-byte signed integer type */
-	GMTAPI_USHORT,    /* uint16_t, 2-byte unsigned integer type */
-	GMTAPI_INT,       /* int32_t, 4-byte signed integer type */
-	GMTAPI_UINT,      /* uint32_t, 4-byte unsigned integer type */
-	GMTAPI_LONG,      /* int64_t, 8-byte signed integer type */
-	GMTAPI_ULONG,     /* uint64_t, 8-byte unsigned integer type */
-	GMTAPI_FLOAT,     /* 4-byte data float type */
-	GMTAPI_DOUBLE,    /* 8-byte data float type */
-	GMTAPI_TEXT,      /* Arbitrarily long text string [OGR/GMT use only] */
-	GMTAPI_TIME,      /* string with date/time info [OGR/GMT use only] */
-	GMTAPI_N_TYPES};  /* The number of supported data types above */
+	GMT_CHAR = 0,  /* int8_t, 1-byte signed integer type */
+	GMT_UCHAR,     /* uint8_t, 1-byte unsigned integer type */
+	GMT_SHORT,     /* int16_t, 2-byte signed integer type */
+	GMT_USHORT,    /* uint16_t, 2-byte unsigned integer type */
+	GMT_INT,       /* int32_t, 4-byte signed integer type */
+	GMT_UINT,      /* uint32_t, 4-byte unsigned integer type */
+	GMT_LONG,      /* int64_t, 8-byte signed integer type */
+	GMT_ULONG,     /* uint64_t, 8-byte unsigned integer type */
+	GMT_FLOAT,     /* 4-byte data float type */
+	GMT_DOUBLE,    /* 8-byte data float type */
+	GMT_TEXT,      /* Arbitrarily long text string [OGR/GMT use only] */
+	GMT_DATETIME,  /* string with date/time info [OGR/GMT use only] */
+	GMT_N_TYPES};  /* The number of supported data types above */
 
 #define GMTAPI_OPT_USAGE	'?'
 #define GMTAPI_OPT_SYNOPSIS	'^'
