@@ -3371,7 +3371,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, info.G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->Out.file);
+		GMT_init_grdheader (GMT, info.G->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
 	}
 	else {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");

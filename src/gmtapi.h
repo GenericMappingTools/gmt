@@ -34,21 +34,6 @@
 #include <stdint.h>
 
 /*
- * Visual C++ only implements C90, which has no bool type. C99 added support
- * for bool via the <stdbool.h> header, but Visual C++ does not support this.
- */
-#ifndef __bool_true_false_are_defined
-#	if defined _MSC_VER
-#		define bool _Bool
-#		define true 1
-#		define false 0
-#		define __bool_true_false_are_defined 1
-#	else
-#		include <stdbool.h>
-#	endif /* _MSC_VER */
-#endif /* !__bool_true_false_are_defined */
-
-/*
  * When an application links to a DLL in Windows, the symbols that
  * are imported have to be identified as such.
  */
@@ -91,7 +76,7 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
  *=====================================================================================
  */
 
-/* 17 Primary API functions */
+/* 18 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
 EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
 EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
@@ -109,6 +94,7 @@ EXTERN_MSC int GMT_Write_Data		(void *C, unsigned int family, unsigned int metho
 EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
 EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
+EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, int pad, void *data);
 
 /* 12 secondary functions for argument and option parsing */
 

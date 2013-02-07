@@ -465,7 +465,6 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 		}
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = (int)GMT->common.r.active;
 		if (!Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Assign default dx = dy = 1\n");
@@ -495,12 +494,12 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, Grid->header->ny);
 			Return (EXIT_FAILURE);
 		}
-		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), "stdout");
+
+		/* Allocate space */
+		GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, Grid->header->registration);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
 		
 		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
-
-		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 
 		/* Note: While the picture array has no pads, we must assume the output grid may have one */
 		

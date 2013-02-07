@@ -512,11 +512,11 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	strncpy (Merc->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
 	strcpy (Merc->header->title, "Data from Altimetry");
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
+	GMT_init_grdheader (GMT, Merc->header, options, wesn, inc, true);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Merc))) Return (error);
 
-	/* Now malloc some space for float grd array, integer pixel index, and int16_t data buffer.  */
+	/* Now malloc some space for integer pixel index, and int16_t data buffer.  */
 
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Merc, wesn, inc, true), Ctrl->G.file);
-	Merc->data = GMT_memory_aligned (GMT, NULL, Merc->header->size, float);
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
 	ix = GMT_memory (GMT, NULL, navgsq * Merc->header->nx, unsigned int);
 

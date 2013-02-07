@@ -654,12 +654,10 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	z = GMT_memory (GMT, NULL, S.header.nx, float);	/* Memory for one output row */
 
 	if (GMT_File_Is_Memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
+		/* Create the empty grid and allocate space */
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Grid->header, options, false);
-
-		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, S.header.registration), Ctrl->G.file);
-		Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);	/* Memory for the entire padded grid */
+		GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, S.header.registration);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
 	}
 	else {
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */

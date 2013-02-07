@@ -308,12 +308,9 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	
 	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, G_mod->header, options, false);
-	
-	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G_mod, GMT->common.R.wesn, inc, registration), Ctrl->G.file);
-	
-	G_mod->data = GMT_memory_aligned (GMT, NULL, G_mod->header->size, float);
+	GMT_init_grdheader (GMT, G_mod->header, options, GMT->common.R.wesn, inc, registration);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, G_mod))) Return (error);
+
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
 	grd_yc = GMT_memory (GMT, NULL, G_mod->header->ny, double);

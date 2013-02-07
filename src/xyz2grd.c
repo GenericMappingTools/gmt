@@ -503,7 +503,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	no_data_f = (float)Ctrl->N.value;
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
+	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
@@ -516,7 +516,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
 
-	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);		/* Allow for padding to be restored later */
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);	/* Allow for padding to be restored later */
 
 	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 

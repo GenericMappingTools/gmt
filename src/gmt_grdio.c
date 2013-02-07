@@ -1826,6 +1826,26 @@ int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **O
 	return (false);
 }
 
+void GMT_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration)
+{	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
+	double wesn_dup[4], inc_dup[2];
+	/* In case user is passing header->wesn etc we must save them first as GMT_grd_init will clobber them */
+	GMT_memcpy (wesn_dup, wesn, 4, double);
+	GMT_memcpy (inc_dup,  inc,  2, double);
+	/* Clobber header and reset */
+	GMT_grd_init (C, header, options, false);	/* This is for new grids only so update is always false */
+	GMT_memcpy (header->wesn, wesn_dup, 4, double);
+	GMT_memcpy (header->inc,   inc_dup, 2, double);
+	header->registration = registration;
+	header->grdtype = gmt_get_grdtype (C, header);
+	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
+	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
+	//if ((status = GMT_grd_RI_verify (C, header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
+	GMT_grd_setpad (C, header, C->current.io.pad);	/* Assign default pad */
+	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
+}
+
+#if 0
 int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], double inc[], unsigned int registration)
 {	/* Does the dirty work of initializing the Grid header and make sure all is correct:
  	 * Make sure -R -I is compatible.
@@ -1842,6 +1862,25 @@ int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], 
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (C, Grid->header, C->current.io.pad);	/* Assign default pad */
 	GMT_set_grddim (C, Grid->header);	/* Set all dimensions before returning */
+	return (GMT_NOERROR);
+}
+#endif
+
+int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid)
+{	/* Use information in Grid header to allocate the grid data.
+	 * We assume GMT_init_grdheader has been called. */
+
+	if (Grid->data) return (GMT_PTR_NOT_NULL);
+	if ((Grid->data = GMT_memory_aligned (C, NULL, Grid->header->size, float)) == NULL) return (GMT_MEMORY_ERROR);
+	return (GMT_NOERROR);
+}
+
+int gmt_alloc_image (struct GMT_CTRL *C, struct GMT_IMAGE *Image)
+{	/* Use information in Image header to allocate the image data.
+	 * We assume GMT_init_grdheader has been called. */
+
+	if (Image->data) return (GMT_PTR_NOT_NULL);
+	if ((Image->data = GMT_memory (C, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }
 

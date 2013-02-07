@@ -356,11 +356,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	/* Initialize the CVA grid and structure */
 
 	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, G->header, options, false);	/* Initialize grid structure */
-	
-	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
-	G->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
+	GMT_init_grdheader (GMT, G->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, G))) Return (error);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 

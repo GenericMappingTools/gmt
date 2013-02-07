@@ -52,6 +52,7 @@ EXTERN_MSC void GMT_fft_cleanup (void);
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC void GMT_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration);
 EXTERN_MSC struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data);
 EXTERN_MSC struct GRD_HEADER * GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEADER *h);
@@ -79,7 +80,7 @@ EXTERN_MSC int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID 
 EXTERN_MSC int GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, unsigned int ncols);
 EXTERN_MSC bool GMT_grd_pad_status (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned int *pad);
 EXTERN_MSC int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **Out);
-EXTERN_MSC int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, double wesn[], double inc[], unsigned int node_offset);
+// EXTERN_MSC int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, double wesn[], double inc[], unsigned int node_offset);
 EXTERN_MSC int GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int registration);
 EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *Grid, double shift);
 EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc);
@@ -186,7 +187,6 @@ EXTERN_MSC void GMT_skip_xy_duplicates (struct GMT_CTRL *C, bool mode);
 EXTERN_MSC void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from);
 EXTERN_MSC void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G);
 EXTERN_MSC char * GMT_trim_segheader (struct GMT_CTRL *C, char *line);
-EXTERN_MSC int GMT_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V, uint64_t n_rows);
 EXTERN_MSC int GMT_alloc_univector (struct GMT_CTRL *C, union GMT_UNIVECTOR *u, unsigned int type, uint64_t n_rows);
 EXTERN_MSC bool gmt_byteswap_file (struct GMT_CTRL *C,
 		FILE *outfp, FILE *infp, const SwapWidth nbytes,
