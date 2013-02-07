@@ -281,12 +281,13 @@ int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struc
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
 	unsigned int row, col;
+	int error;
 	uint64_t ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	
 	/* Base the area weight grid on the input grid domain and increments. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, A, G->header->wesn, G->header->inc, G->header->registration), "");
-	A->data = GMT_memory_aligned (GMT, NULL, A->header->size, float);
+	GMT_init_grdheader (GMT, A->header, NULL, G->header->wesn, G->header->inc, G->header->registration);
+	if ((error = GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, GMTAPI_NOTSET, A))) return (error);
 	
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
@@ -619,7 +620,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	/* Check range of output area and set i,j offsets, etc.  */
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Gout->header, options, true);	/* Update command history only */
 	/* Use the -R region for output (if set); otherwise match input grid domain */
 	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 	/* Use the -I increments for output (if set); otherwise match input grid increments */
@@ -631,6 +631,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	/* Sanity checks on y-domain  */
 	if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO]) error = true;
 	if (Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) error = true;
+	Gout->header->registration = !one_or_zero;
 
 	if (error) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Output grid domain incompatible with input grid domain.\n");
@@ -638,7 +639,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No grid memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, Gout->header->wesn, Gout->header->inc, !one_or_zero), Ctrl->G.file);
+	GMT_init_grdheader (GMT, Gout->header, options, Gout->header->wesn, Gout->header->inc, !one_or_zero);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if output grid spacing is a multiple of input grid spacing */
@@ -661,7 +662,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
-	Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);	/* Allocate memory for output grid */
+	/* Allocate space for grid */
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 	col_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
 	if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
 

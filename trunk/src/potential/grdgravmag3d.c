@@ -372,14 +372,11 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		/* Completely determine the header for the new grid; croak if there are issues.
-		   No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, Gout->header->wesn,
-					Gout->header->inc, GridA->header->registration), Ctrl->G.file);
+		GMT_init_grdheader (GMT, Gout->header, options, Gout->header->wesn, Gout->header->inc, GridA->header->registration);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);
-		Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
 	}
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");

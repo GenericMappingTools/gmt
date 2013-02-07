@@ -295,13 +295,10 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, false);
-
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
-	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
 	GMT_BC_init (GMT, Grid->header);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
@@ -464,11 +461,12 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
-	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 #ifdef MEMDEBUG
 	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 	/* Compute weighted averages based on the nearest neighbors */
+
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
 
 	n_set = n_almost = n_none = 0;
 

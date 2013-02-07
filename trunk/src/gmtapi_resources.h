@@ -166,45 +166,45 @@ struct GRD_HEADER {
 	
 	/* ---- Variables "hidden" from the API ---- */
 /* This section is flexible. It is not copied to any grid header or stored in the file. It is considered private */
-	unsigned int type;              /* Grid format */
-	unsigned int bits;              /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	unsigned int complex_mode;      /* 0 = normal, GMT_GRID_COMPLEX_REAL = real part of complex grid, GMT_GRID_COMPLEX_IMAG = imag part of complex grid */
-	unsigned int mx, my;            /* Actual dimensions of the grid in memory, allowing for the padding */
-	unsigned int BB_mx, BB_my;      /* Actual dimensions of a mosaicked grid, allowing for the padding */
-	size_t nm;                      /* Number of data items in this grid (nx * ny) [padding is excluded] */
-	size_t size;                    /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
-	unsigned int n_bands;           /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
-	unsigned int pad[4];            /* Padding on west, east, south, north sides [2,2,2,2] */
-	unsigned int BC[4];             /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
-	unsigned int grdtype;           /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
+	unsigned int type;               /* Grid format */
+	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
+	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_COMPLEX_REAL = real part of complex grid, GMT_GRID_COMPLEX_IMAG = imag part of complex grid */
+	unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
+	unsigned int BB_mx, BB_my;       /* Actual dimensions of a mosaicked grid, allowing for the padding */
+	size_t nm;                       /* Number of data items in this grid (nx * ny) [padding is excluded] */
+	size_t size;                     /* Actual number of items (not bytes) required to hold this grid (= mx * my) */
+	unsigned int n_bands;            /* Number of bands [1]. Used with IMAGE containers and macros to get ij index from row,col, band */
+	unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
+	unsigned int BC[4];              /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
+	unsigned int grdtype;            /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
 	char name[GMT_GRID_NAME_LEN256];     /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
-	int row_order;                  /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
-	int z_id;                       /* NetCDF: id of z field */
-	int ncid;                       /* NetCDF: file ID */
-	int xy_dim[2];                  /* NetCDF: dimension order of x and y; normally {1, 0} */
-	size_t t_index[3];              /* NetCDF: index of higher coordinates */
-	size_t data_offset;             /* NetCDF: distance from the beginning of the in-memory grid */
-	size_t stride;                  /* NetCDF: distance between two rows in the in-memory grid */
-	double nan_value;               /* Missing value as stored in grid file */
-	double xy_off;                  /* 0.0 (registration == GMT_GRIDLINE_REG) or 0.5 ( == GMT_PIXEL_REG) */
-	double r_inc[2];                /* Reciprocal incs, i.e. 1/inc */
-	char flags[4];                  /* Flags used for ESRI grids */
-	char *pocket;                   /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
-	double bcr_threshold;           /* sum of cardinals must >= threshold in bilinear; else NaN */
-	unsigned int bcr_interpolant;   /* Interpolation function used (0, 1, 2, 3) */
-	unsigned int bcr_n;             /* Width of the interpolation function */
-	unsigned int nxp;               /* if X periodic, nxp > 0 is the period in pixels  */
-	unsigned int nyp;               /* if Y periodic, nxp > 0 is the period in pixels  */
-	bool no_BC;                     /* If true we skip BC stuff entirely */
-	bool gn;                        /* true if top    edge will be set as N pole  */
-	bool gs;                        /* true if bottom edge will be set as S pole  */
-	bool is_netcdf4;                /* true if netCDF-4/HDF5 format */
-	unsigned int z_chunksize[2];    /* chunk size (lat,lon) */
-	bool z_shuffle;                 /* if shuffle filter is turned on */
-	unsigned int z_deflate_level;   /* if deflate filter is in use */
-	bool z_scale_autoadust;         /* if z_scale_factor should be auto-detected */
-	bool z_offset_autoadust;        /* if z_add_offset should be auto-detected */
+	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
+	int z_id;                        /* NetCDF: id of z field */
+	int ncid;                        /* NetCDF: file ID */
+	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
+	size_t t_index[3];               /* NetCDF: index of higher coordinates */
+	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
+	size_t stride;                   /* NetCDF: distance between two rows in the in-memory grid */
+	double nan_value;                /* Missing value as stored in grid file */
+	double xy_off;                   /* 0.0 (registration == GMT_GRIDLINE_REG) or 0.5 ( == GMT_PIXEL_REG) */
+	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
+	char flags[4];                   /* Flags used for ESRI grids */
+	char *pocket;                    /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
+	double bcr_threshold;            /* sum of cardinals must >= threshold in bilinear; else NaN */
+	unsigned int bcr_interpolant;    /* Interpolation function used (0, 1, 2, 3) */
+	unsigned int bcr_n;              /* Width of the interpolation function */
+	unsigned int nxp;                /* if X periodic, nxp > 0 is the period in pixels  */
+	unsigned int nyp;                /* if Y periodic, nxp > 0 is the period in pixels  */
+	unsigned int no_BC;              /* If true we skip BC stuff entirely */
+	unsigned int gn;                 /* true if top    edge will be set as N pole  */
+	unsigned int gs;                 /* true if bottom edge will be set as S pole  */
+	unsigned int is_netcdf4;         /* true if netCDF-4/HDF5 format */
+	unsigned int z_chunksize[2];     /* chunk size (lat,lon) */
+	unsigned int z_shuffle;          /* if shuffle filter is turned on */
+	unsigned int z_deflate_level;    /* if deflate filter is in use */
+	unsigned int z_scale_autoadust;  /* if z_scale_factor should be auto-detected */
+	unsigned int z_offset_autoadust; /* if z_add_offset should be auto-detected */
 
 /* Variables we document for the API: */
 /* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
@@ -435,7 +435,7 @@ struct GMT_LUT {
 	double rgb_low[4], rgb_high[4], rgb_diff[4];
 	double hsv_low[4], hsv_high[4], hsv_diff[4];
 	unsigned int annot;		/* 1 for Lower, 2 for Upper, 3 for Both */
-	bool skip;		/* true means skip this slice */
+	unsigned int skip;		/* true means skip this slice */
 	struct GMT_FILL *fill;	/* Use by grdview */			/* Content not counted by sizeof (struct) */
 	char *label;		/* For non-number labels */		/* Content not counted by sizeof (struct) */
 };
@@ -443,7 +443,7 @@ struct GMT_LUT {
 struct GMT_BFN_COLOR {		/* For back-, fore-, and nan-colors */
 	double rgb[4];
 	double hsv[4];
-	bool skip;		/* true means skip this slice */
+	unsigned int skip;		/* true means skip this slice */
 	struct GMT_FILL *fill;						/* Content not counted by sizeof (struct) */
 };
 
@@ -459,12 +459,12 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int id;		/* The internal number of the data set */
 	unsigned int alloc_mode;	/* Allocation info [0] */
 	unsigned int model;		/* RGB, HSV, CMYK */
-	bool is_gray;			/* true if only grayshades are needed */
-	bool is_bw;			/* true if only black and white are needed */
-	bool is_continuous;		/* true if continuous color tables have been given */
-	bool has_pattern;		/* true if cpt file contains any patterns */
-	bool skip;			/* true if current z-slice is to be skipped */
-	bool categorical;		/* true if CPT applies to categorical data */
+	unsigned int is_gray;			/* true if only grayshades are needed */
+	unsigned int is_bw;			/* true if only black and white are needed */
+	unsigned int is_continuous;		/* true if continuous color tables have been given */
+	unsigned int has_pattern;		/* true if cpt file contains any patterns */
+	unsigned int skip;			/* true if current z-slice is to be skipped */
+	unsigned int categorical;		/* true if CPT applies to categorical data */
 };
 
 /*============================================================ */

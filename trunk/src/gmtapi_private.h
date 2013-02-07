@@ -32,6 +32,21 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+/*
+ * Visual C++ only implements C90, which has no bool type. C99 added support
+ * for bool via the <stdbool.h> header, but Visual C++ does not support this.
+ */
+#ifndef __bool_true_false_are_defined
+#	if defined _MSC_VER
+#		define bool _Bool
+#		define true 1
+#		define false 0
+#		define __bool_true_false_are_defined 1
+#	else
+#		include <stdbool.h>
+#	endif /* _MSC_VER */
+#endif /* !__bool_true_false_are_defined */
+
 #ifdef __cplusplus /* Basic C++ support */
 extern "C" {
 #endif

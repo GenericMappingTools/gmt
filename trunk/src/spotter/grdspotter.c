@@ -561,11 +561,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	/* Initialize the CVA grid and structure */
 
 	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, G->header, options, false);	/* Initialize grid structure */
-	
-	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, G, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
-	G->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
+	GMT_init_grdheader (GMT, G->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, G))) Return (error);
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
 
@@ -864,19 +861,13 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if (Ctrl->D.active || Ctrl->PA.active) {	/* Must determine max CVA along each flowline */
 		if (Ctrl->D.active) {
 			if ((DI = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_grd_init (GMT, DI->header, options, false);
-
-			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-			GMT_err_fail (GMT, GMT_init_newgrid (GMT, DI, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->D.file);
-			DI->data = GMT_memory_aligned (GMT, NULL, PA->header->size, float);
+			GMT_init_grdheader (GMT, DI->header, options, Z->header->wesn, Z->header->inc, Z->header->registration);
+			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, DI))) Return (error);
 		}
 		if (Ctrl->PA.active) {
 			if ((PA = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_grd_init (GMT, PA->header, options, false);
-
-			/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-			GMT_err_fail (GMT, GMT_init_newgrid (GMT, PA, Z->header->wesn, Z->header->inc, Z->header->registration), Ctrl->PA.file);
-			PA->data = GMT_memory_aligned (GMT, NULL, PA->header->size, float);
+			GMT_init_grdheader (GMT, PA->header, options, Z->header->wesn, Z->header->inc, Z->header->registration);
+			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, PA))) Return (error);
 		}
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Compute DI and/or PA grids\n");
 

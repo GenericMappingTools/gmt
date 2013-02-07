@@ -431,9 +431,6 @@ int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GM
 				if (n_plus >= 0) opt->arg[n_plus] = '+';	/* Restore it */
 #endif
 				break;
-			case 'F':
-				Ctrl->F.active = true;
-				break;
 			case 'G':
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -474,7 +471,7 @@ int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GM
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &Ctrl->F.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
@@ -587,7 +584,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_setnval (GMT->current.io.pad, 4, 1);		/* Change default pad to 1 only */
-		GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, Ctrl->F.active);
+		GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
 		
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);

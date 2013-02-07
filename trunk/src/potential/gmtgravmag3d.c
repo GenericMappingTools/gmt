@@ -440,12 +440,10 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Gout->header, options, false);
-		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, GMT->common.R.wesn, Ctrl->I.inc, false), Ctrl->G.file);
+		GMT_init_grdheader (GMT, Gout->header, options, GMT->common.R.wesn, Ctrl->I.inc, false);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 	
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
-		Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
 
 		/* Build observation point vectors */
 		x = GMT_memory (GMT, NULL, Gout->header->nx, double);

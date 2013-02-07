@@ -460,8 +460,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
-		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		GMT_err_fail (GMT, GMT_init_newgrid (GMT, Gout, wesn, inc, !one_or_zero), Ctrl->G.file);
+		GMT_init_grdheader (GMT, Gout->header, options, wesn, inc, !one_or_zero);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
 		   if new grid spacing is multiple of old spacing */
@@ -481,8 +481,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_err_fail (GMT, GMT_init_newgrid (GMT, Sout, wesn, inc, !one_or_zero), Ctrl->S.file);
-			Sout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
+			GMT_init_grdheader (GMT, Sout->header, options, wesn, inc, !one_or_zero);
+			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Sout))) Return (error);
 		}
 #endif
 		i_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);

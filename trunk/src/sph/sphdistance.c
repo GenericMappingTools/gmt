@@ -274,15 +274,13 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	/*---------------------------- This is the sphdistance main code ----------------------------*/
 
 	GMT_memset (&T, 1, struct STRIPACK);
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, false);
 
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 
 	if (!GMT->common.R.active) {	/* Default to a global grid */
-		Grid->header->wesn[XLO] = 0.0;	Grid->header->wesn[XHI] = 360.0;	Grid->header->wesn[YLO] = -90.0;	Grid->header->wesn[YHI] = 90.0;
+		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 	}
-	periodic = GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]);
+	periodic = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
@@ -412,12 +410,13 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	
 	/* OK, time to create and work on the distance grid */
 	
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start processing distance grid\n");
 
 	nx1 = (Grid->header->registration) ? Grid->header->nx : Grid->header->nx - 1;
-	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 	grid_lon = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	grid_lat = GMT_memory (GMT, NULL, Grid->header->ny, double);
 	for (col = 0; col < Grid->header->nx; col++) grid_lon[col] = GMT_grd_col_to_x (GMT, col, Grid->header);

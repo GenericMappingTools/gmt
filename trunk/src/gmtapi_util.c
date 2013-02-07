@@ -67,6 +67,11 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
+EXTERN_MSC int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid);
+EXTERN_MSC int gmt_alloc_image (struct GMT_CTRL *C, struct GMT_IMAGE *Image);
+EXTERN_MSC int gmt_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V);
+EXTERN_MSC int gmt_alloc_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M);
+
 #define GMTAPI_MAX_ID 100000	/* Largest integer to keep in %06d format */
 
 #ifdef FORTRAN_API
@@ -75,9 +80,9 @@ static struct GMTAPI_CTRL *GMT_FORTRAN = NULL;	/* Global structure needed for FO
 
 static int GMTAPI_session_counter = 0;	/* Keeps track of the ID of new sessions for multi-session programs */
 
-/* Macros that report error, then return a NULL pointer, true, or a value, respectively */
+/* Macros that report error, then return a NULL pointer or a value, respectively */
 #define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}
-#define return_error(API,err) { GMT_Report_Error(API,err); return (true);}
+#define return_error(API,err) { GMT_Report_Error(API,err); return (err);}
 #define return_value(API,err,val) { GMT_Report_Error(API,err); return (val);}
 
 /* Misc. local text strings needed in this file only, used when debug verbose is on (-Vd) */
@@ -442,7 +447,8 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 			if (direction == GMT_OUT && V_obj->alloc_mode == 1) {	/* Must allocate output space */
 				S_obj->n_alloc = GMT_CHUNK;
 				/* S_obj->n_rows is 0 which means we are allocating more space as we need it */
-				if ((error = GMT_alloc_vectors (API->GMT, V_obj, S_obj->n_alloc)) != GMT_OK) return (GMT_Report_Error (API, error));
+				V_obj->n_rows = S_obj->n_alloc;
+				if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (GMT_Report_Error (API, error));
 			}
 			else
 				S_obj->n_rows = V_obj->n_rows;	/* Hard-wired limit as passed in from calling program */
@@ -1110,7 +1116,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			V_obj = GMT_duplicate_vector (API->GMT, S_obj->resource, false);
 			V_obj->n_rows = D_obj->n_records;
 			if (API->GMT->current.io.multi_segments[GMT_OUT]) V_obj->n_rows += D_obj->n_segments;
-			if ((error = GMT_alloc_vectors (API->GMT, V_obj, V_obj->n_rows)) != GMT_OK) return (GMT_Report_Error (API, error));
+			if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (GMT_Report_Error (API, error));
 			for (tbl = ij = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					for (row = 0; row < D_obj->table[tbl]->segment[seg]->n_rows; row++, ij++) {
@@ -2786,7 +2792,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 		ASSIGN_OR_VOID GMTAPI_Init_Import (API, family, geometry, mode, head);
 	else
 		ASSIGN_OR_VOID GMTAPI_Init_Export (API, family, geometry, mode, head);
-	return ((API->error) ? true : false);	/* Return true if any error occured in the Init_* functions */
+	return (API->error);
 }
 
 #ifdef FORTRAN_API
@@ -3532,7 +3538,8 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 		}
 		else {
 			V_obj = S_obj->resource;
-			if ((error = GMT_alloc_vectors (API->GMT, V_obj, size)) != GMT_OK) return (error);
+			V_obj->n_rows = size;
+			if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (error);
 		}
 	}
 	S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
@@ -3611,7 +3618,7 @@ int GMT_Destroy_Data (void *V_API, unsigned int mode, void *object)
 	/* Destroy a resource that is no longer needed.
 	 * Mode GMTAPI_ALLOCATE (0) means we dont free objects whose allocation
 	 * flag == GMT_REFERENCE (1), otherwise we try to free.
-	 * Return: false if all is well, otherwise true and API->error is set.
+	 * Returns the error code.
 	 */
 	int error, item, object_ID;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -3661,7 +3668,7 @@ int GMT_Destroy_Data (void *V_API, unsigned int mode, void *object)
 		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
 	}
 	
-	return (false);	/* Returns number of items freed or an error */	
+	return (GMT_OK);	/* Returns number of items freed or an error */	
 }
 
 #ifdef FORTRAN_API
@@ -3671,3 +3678,41 @@ int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 	
 }
 #endif
+
+int GMT_Alloc_Data (void *V_API, unsigned int family, int pad, void *container)
+{
+	/* Allocate data for GMT_GRID, GMT_IMAGE, GMT_VECTOR, or GMT_MATRIX
+	 * based on information provided via their container header.
+	 * pad sets the padding for grids and images, ignored for matrix and vector.
+	 * if pad == GMTAPI_NOTSET (-1) we leave current padding alone.
+	 */
+	int error = GMT_OK;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (pad < GMTAPI_NOTSET) return_error (API, GMT_PADDING_IS_NEGATIVE);
+	
+	switch (family) {	/* grid, image, or matrix */
+		case GMT_IS_GRID:	/* GMT grid */
+			if (pad != GMTAPI_NOTSET) GMT_set_pad (API->GMT, pad);	/* Change default padding for the grid */
+			error = gmt_alloc_grid (API->GMT, container);
+			break;
+		case GMT_IS_IMAGE:	/* GMT image */
+			if (pad != GMTAPI_NOTSET) GMT_set_pad (API->GMT, pad);	/* Change default padding for the grid */
+			error = gmt_alloc_image (API->GMT, container);
+			break;
+		case GMT_IS_VECTOR:	/* GMT vector */
+			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in allocation of memory for %s\n", pad, GMT_family[family]);
+			error = gmt_alloc_vectors (API->GMT, container);
+			break;
+		case GMT_IS_MATRIX:	/* GMT matrix */
+			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in allocation of memory for %s\n", pad, GMT_family[family]);
+			error = gmt_alloc_matrix (API->GMT, container);
+			break;
+		default:
+			error = GMT_WRONG_KIND;
+			break;		
+	}
+	
+	return_error (API, error);
+}

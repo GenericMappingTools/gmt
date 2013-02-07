@@ -313,9 +313,8 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	read_cont = (Ctrl->S.mode != PLOT_CDP && Ctrl->S.mode != PLOT_OFFSET && !Ctrl->S.value);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, false);
-
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
+	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
 
 	/* Decode grd information given, if any */
 
@@ -323,7 +322,6 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
-	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 	flag = GMT_memory (GMT, NULL, Grid->header->size, unsigned int);
 
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad since algorithm does not expect on */

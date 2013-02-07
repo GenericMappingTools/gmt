@@ -230,10 +230,10 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 
 int GMT_grdmask (void *V_API, int mode, void *args)
 {
-	bool error = false, periodic = false, periodic_grid = false, do_test = true;
+	bool periodic = false, periodic_grid = false, do_test = true;
 	unsigned int side = 0, *d_col = NULL, d_row = 0, col_0, row_0;
 	unsigned int tbl, gmode, n_pol = 0, max_d_col = 0, n_cols = 2;
-	int row, col, nx, ny;
+	int row, col, nx, ny, error = 0;
 	
 	uint64_t ij, k, seg;
 	
@@ -268,13 +268,11 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
+	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, false);
-
-	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_err_fail (GMT, GMT_init_newgrid (GMT, Grid, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active), Ctrl->G.file);
-
-	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
+	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+	
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
 
