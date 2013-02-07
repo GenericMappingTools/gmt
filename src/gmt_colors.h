@@ -26,18 +26,6 @@
 #ifndef _GMT_COLORS_H
 #define _GMT_COLORS_H
 
-enum GMT_enum_color {GMT_RGB	= 0,
-	GMT_CMYK		= 1,
-	GMT_HSV			= 2,
-	GMT_COLORINT		= 4,
-	GMT_NO_COLORNAMES	= 8};
-
-enum GMT_enum_bfn {GMT_BGD, GMT_FGD, GMT_NAN};
-
-enum GMT_enum_cpt {GMT_CPT_REQUIRED, GMT_CPT_OPTIONAL};
-
-enum GMT_enum_cptflags {GMT_CPT_NO_BNF = 1, GMT_CPT_EXTEND_BNF = 2};
-
 /* Copy two RGB[T] arrays (a = b) */
 #define GMT_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
 
@@ -68,44 +56,5 @@ enum GMT_enum_cptflags {GMT_CPT_NO_BNF = 1, GMT_CPT_EXTEND_BNF = 2};
 
 /* Force component to be in 0 <= s <= 255 range */
 #define GMT_0_255_truncate(s) ((s < 0) ? 0 : ((s > 255) ? 255 : s))	/* Truncate to allowable 0-255 range */
-
-/* Here is the definition of the GMT_PALETTE structure that is used in programs
- * that deals with coloring of items as a function of z-lookup.  Note that rgb
- * arrays have 4 items as the 4th value could be a non-zero transparency (when supported).
- */
- 
-struct GMT_LUT {
-	double z_low, z_high, i_dz;
-	double rgb_low[4], rgb_high[4], rgb_diff[4];
-	double hsv_low[4], hsv_high[4], hsv_diff[4];
-	unsigned int annot;		/* 1 for Lower, 2 for Upper, 3 for Both */
-	bool skip;		/* true means skip this slice */
-	struct GMT_FILL *fill;	/* Use by grdview */			/* Content not counted by sizeof (struct) */
-	char *label;		/* For non-number labels */		/* Content not counted by sizeof (struct) */
-};
-
-struct GMT_BFN_COLOR {		/* For back-, fore-, and nan-colors */
-	double rgb[4];
-	double hsv[4];
-	bool skip;		/* true means skip this slice */
-	struct GMT_FILL *fill;						/* Content not counted by sizeof (struct) */
-};
-
-struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
-	unsigned int n_headers;		/* Number of CPT file header records (0 if no header) */
-	struct GMT_LUT *range;		/* CPT lookup table read by GMT_read_cpt */
-	struct GMT_BFN_COLOR patch[3];	/* Structures with back/fore/nan colors */
-	unsigned int n_colors;		/* Number of colors in CPT lookup table */
-	unsigned int cpt_flags;		/* Flags controling use of BFN colors */
-	unsigned int alloc_mode;	/* Allocation info [0] */
-	unsigned int model;		/* RGB, HSV, CMYK */
-	bool is_gray;			/* true if only grayshades are needed */
-	bool is_bw;			/* true if only black and white are needed */
-	bool is_continuous;		/* true if continuous color tables have been given */
-	bool has_pattern;		/* true if cpt file contains any patterns */
-	bool skip;			/* true if current z-slice is to be skipped */
-	bool categorical;		/* true if CPT applies to categorical data */
-	char **header;			/* Array with all CPT file header records, if any) */		/* Content not counted by sizeof (struct) */
-};
 
 #endif /* _GMT_COLORS_H */

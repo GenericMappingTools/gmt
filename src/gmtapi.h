@@ -69,64 +69,13 @@ extern "C" {
 #endif
 
 #include "gmtapi_define.h"
+#include "gmtapi_resources.h"
 
 /* API mode */
 enum Api_mode {
 	_Api_mode_must_promote_to_int = -1,
 	k_mode_gmt, /* Need GMT but not PSL initialized */
 	k_mode_psl  /* Need GMT and PSL initialized */
-};
-
-/*=====================================================================================
- *	GMT API STRUCTURE DEFINITIONS
- *===================================================================================*/
-
-struct GMT_CTRL; /* forward declaration of GMT_CTRL */
-
-struct GMTAPI_DATA_OBJECT {
-	/* Information for each input or output data entity, including information
-	 * needed while reading/writing from a table (file or array) */
-	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VETOR only] */
-	unsigned int ID;			/* Unique identifier which is >= 0 */
-	unsigned int n_columns;		/* Number of columns to process in this dataset [GMT_DATASET only] */
-	unsigned int n_expected_fields;	/* Number of expected columns for this dataset [GMT_DATASET only] */
-	unsigned int level;			/* Nested module level when object was allocated */
-	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
-	bool region;				/* true if wesn was passed, false otherwise */
-	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
-	unsigned int alloc_mode;		/* GMTAPI_REFERENCE or GMTAPI_ALLOCATED */
-	unsigned int direction;			/* GMT_IN or GMT_OUT */
-	unsigned int family;			/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GMTGRID} */
-	unsigned int method;			/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF|READONLY} */
-	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
-	unsigned int geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
-	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
-	void *resource;				/* Points to registered data container (if appropriate) */
-	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
-	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
-	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
-	void * (*import) (struct GMT_CTRL *, FILE *, unsigned int *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
-};
-
-struct GMTAPI_CTRL {
-	/* Master controller which holds all GMT API related information at run-time for a single session.
-	 * Users can run several GMT sessions concurrently; each session requires its own structure.
-	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
-
-	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
-	unsigned int n_objects;		/* Number of currently active input and output data objects */
-	unsigned int unique_ID;		/* Used to create unique IDs for duration of session */
-	unsigned int session_ID;		/* ID of this session */
-	unsigned int current_item[2];		/* Array number of current dataset being processed (in and out)*/
-	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
-	bool io_enabled[2];			/* true if access has been allowed (in and out) */
-	size_t n_objects_alloc;			/* Allocation counter for data objects */
-	int error;				/* Error code from latest API call [GMT_OK] */
-	int last_error;				/* Error code from previous API call [GMT_OK] */
-	unsigned int io_mode[2];		/* 1 if access as set, 0 if record-by-record */
-	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
-	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
-	char *session_tag;			/* Name tag for this session (or NULL) */
 };
 
 struct GMT_OPTION {	/* Structure for a single GMT command option */
@@ -142,23 +91,23 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
  */
 
 /* 17 Primary API functions */
-EXTERN_MSC void * GMT_Create_Session			(char *tag, unsigned int mode);
-EXTERN_MSC void * GMT_Create_Data			(void *C, unsigned int type, uint64_t par[]);
-EXTERN_MSC void * GMT_Get_Data				(void *C, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC void * GMT_Read_Data				(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
-EXTERN_MSC void * GMT_Retrieve_Data			(void *C, int object_ID);
-EXTERN_MSC void * GMT_Get_Record			(void *C, unsigned int mode, int *retval);
-EXTERN_MSC int GMT_Destroy_Session			(void *C);
-EXTERN_MSC int GMT_Register_IO				(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
-EXTERN_MSC int GMT_Init_IO				(void *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
-EXTERN_MSC int GMT_Begin_IO				(void *C, unsigned int family, unsigned int direction);
-EXTERN_MSC int GMT_End_IO				(void *C, unsigned int direction, unsigned int mode);
-EXTERN_MSC int GMT_Report_Error				(void *C, int error);
-EXTERN_MSC int GMT_Put_Data				(void *C, int object_ID, unsigned int mode, void *data);
-EXTERN_MSC int GMT_Write_Data				(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
-EXTERN_MSC int GMT_Destroy_Data				(void *C, unsigned int mode, void *object);
-EXTERN_MSC int GMT_Put_Record				(void *C, unsigned int mode, void *record);
-EXTERN_MSC int GMT_Encode_ID				(void *C, char *string, int object_ID);
+EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
+EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
+EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC void * GMT_Read_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
+EXTERN_MSC void * GMT_Retrieve_Data	(void *C, int object_ID);
+EXTERN_MSC void * GMT_Get_Record	(void *C, unsigned int mode, int *retval);
+EXTERN_MSC int GMT_Destroy_Session	(void *C);
+EXTERN_MSC int GMT_Register_IO		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
+EXTERN_MSC int GMT_Init_IO		(void *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
+EXTERN_MSC int GMT_Begin_IO		(void *C, unsigned int family, unsigned int direction);
+EXTERN_MSC int GMT_End_IO		(void *C, unsigned int direction, unsigned int mode);
+EXTERN_MSC int GMT_Report_Error		(void *C, int error);
+EXTERN_MSC int GMT_Put_Data		(void *C, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC int GMT_Write_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
+EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
+EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
+EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
 
 /* 12 secondary functions for argument and option parsing */
 

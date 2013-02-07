@@ -68,6 +68,9 @@ extern "C" {
 
 #include <time.h>
 
+#include "gmtapi.h"             /* All GMT high-level API */
+#include "gmtapi_private.h"     /* API declaration needed by libraries */
+
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 
 #include "gmt_notposix.h"       /* Non-POSIX extensions */
@@ -111,7 +114,6 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "omp.h"
 #endif
 
-#include "gmtapi.h"             /* All GMT high-level API */
 #include "gmt_prototypes.h"     /* All GMT low-level API */
 #include "gmt_init.h"           /* extern functions defined in gmt_init.c */
 #include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
