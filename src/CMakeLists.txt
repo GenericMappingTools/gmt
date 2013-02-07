@@ -496,7 +496,7 @@ install (FILES gmtapi.h gmtapi_define.h gmtapi_resources.h gmt_module.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 
-install (FILES	compat/inttypes.h compat/stdbool.h compat/qsort.h compat/stdint.h
+install (FILES	compat/inttypes.h compat/qsort.h compat/stdint.h
 	DESTINATION ${GMT_INCDIR}/compat
 	COMPONENT Runtime)
 
