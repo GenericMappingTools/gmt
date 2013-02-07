@@ -188,12 +188,6 @@ enum GMT_enum_bc {
 	GMT_BC_IS_GEO,        /* Geographic BC condition */
 	GMT_BC_IS_DATA};      /* Fill in BC with actual data */
 
-enum GMT_enum_alloc {
-	GMT_ALLOCATED = 0, /* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
-	GMT_REFERENCE,     /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
-	GMT_READONLY,      /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called . Consider read-only data */
-	GMT_CLOBBER};      /* Free item no matter what its allocation status */
-
 enum GMT_enum_radius {	/* Various "average" radii for an ellipsoid with axes a,a,b */
 	GMT_RADIUS_MEAN = 0,	/* Mean radius IUGG R_1 = (2*a+b)/3 = a (1 - f/3) */
 	GMT_RADIUS_AUTHALIC,	/* Authalic radius 4*pi*r^2 = surface area of ellipsoid, R_2 = sqrt (0.5a^2 + 0.5b^2 (tanh^-1 e)/e) */
