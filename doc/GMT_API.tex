@@ -576,9 +576,9 @@ otherwise it returns FALSE (0).
 
 \subsection{Dimension parameters for user column vectors}
 We refer to Table~\ref{tbl:vector}.  The \texttt{type} array must hold the
-data type of each data column in the user's program.  All types other than GMTAPI\_DOUBLE will need
+data type of each data column in the user's program.  All types other than GMT\_DOUBLE will need
 to be converted internally in \GMT\ to \texttt{double}, thus possibly increasing memory requirements.
-If the type is GMTAPI\_DOUBLE then \GMT\ will be able to use the column directly by reference.  The \texttt{n\_columns}
+If the type is GMT\_DOUBLE then \GMT\ will be able to use the column directly by reference.  The \texttt{n\_columns}
 and \texttt{n\_rows} parameters inform of the number of vectors and their common length.  These are known in
 the case of input but may be unknowable in the case of output; if so you may pass 0 for these values
 and set \texttt{alloc\_mode} to 1; this will make
@@ -587,9 +587,9 @@ sure \GMT\ will allocate the necessary memory at the location you specify.
 \subsection{Dimension parameters for user 2-D table arrays}
 
 We refer to Table~\ref{tbl:matrix}.  The \texttt{type} parameter specifies the
-data type used for the array in the user's program.  All types other than GMTAPI\_FLOAT will need
+data type used for the array in the user's program.  All types other than GMT\_FLOAT will need
 to be converted internally in \GMT\ to \texttt{float}, thus possibly increasing memory requirements.
-If the type is GMTAPI\_FLOAT then \GMT\ may be able to use the matrix directly by reference.  The \texttt{n\_rows}
+If the type is GMT\_FLOAT then \GMT\ may be able to use the matrix directly by reference.  The \texttt{n\_rows}
 and \texttt{n\_columns} parameters simply specify the dimensions of the matrix.  These are known in
 the case of input but may be unknowable in the case
 of output; if so you may pass 0 for these values and set \texttt{alloc\_mode} to 1; this will make
@@ -615,8 +615,7 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 \index{GMT\_Create\_Data}.
 
 \begin{verbatim}
-void * GMT_Create_Data (void *API, unsigned int family, \
-    uint64_t par[]);
+void * GMT_Create_Data (void *API, unsigned int family, uint64_t par[]);
 \end{verbatim}
 which returns a pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
@@ -680,8 +679,7 @@ function enables dataset and text set record-by-record import and prepares the r
 The prototype is
 
 \begin{verbatim}
-int GMT_Begin_IO (void *API, unsigned int family, \
-    unsigned int direction);
+int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction);
 \end{verbatim}
 where \texttt{family} specifies what kind of resources is about to be read or written (see Table \ref{tbl:family}
 for list of all families; only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are available for record-by-record handling).
