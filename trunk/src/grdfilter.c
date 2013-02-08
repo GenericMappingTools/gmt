@@ -1081,11 +1081,11 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout) != GMT_OK) {
 				Return (API->error);
 			}
-			GMT_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] -L->data[ij_out];
+			GMT_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] - L->data[ij_out];
 			GMT_grd_init (GMT, L->header, options, true);	/* Update command history only */
 		}
 		else	/* Coregistered; no need to resample */
-			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] -Gout->data[ij_out];
+			GMT_grd_loop (GMT, Gout, row_out, col_out, ij_out) Gout->data[ij_out] = Gin->data[ij_out] - Gout->data[ij_out];
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting lowpass-filtered data from input grid to obtain high-pass filtered data.\n");
 	}
 	

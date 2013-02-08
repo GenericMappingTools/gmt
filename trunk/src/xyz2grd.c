@@ -409,7 +409,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	/* Here we will need a grid */
 	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Grid->header, options, false);
 
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
@@ -423,6 +422,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		
+		GMT_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = GMT_GRIDLINE_REG;
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {

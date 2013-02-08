@@ -137,7 +137,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	int block_nx;		/* Number of nodes in x-dir for a given grid factor */
 	int block_ny;		/* Number of nodes in y-dir for a given grid factor */
 	unsigned int max_iterations;	/* Max iter per call to iterate */
-	unsigned int total_iterations;
+	uint64_t total_iterations;
 	int grid_east;
 	int offset[25][12];	/* Indices of 12 nearby points in 25 cases of edge conditions  */
 	bool constrained;		/* true if set_low or set_high is true */
@@ -753,9 +753,9 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 
 	if ((err = load_constraints (GMT, C, false))) return (err);	/* Reload constraints but this time do not transform data */
 		
-	strcpy (C->Grid->header->title, "GMT_surface");
+	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
-	v2 = GMT_memory (GMT, NULL, C->Grid->header->size, float);
+	v2 = GMT_memory_aligned (GMT, NULL, C->Grid->header->size, float);
 	index = C->ij_sw_corner;
 	if (GMT->common.r.active) {	/* Pixel registration request. Reset limits to the original extents */
 		GMT_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
@@ -772,12 +772,12 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 			if (C->set_high && !GMT_is_fnan (C->High->data[k]) && v2[k] > C->High->data[k]) v2[k] = C->High->data[k];
 		}
 	}
-	GMT_free_aligned (GMT, C->Grid->data);
-	C->Grid->data = v2;
+	GMT_free_aligned (GMT, C->Grid->data);	/* Free original column-oriented grid */
+	C->Grid->data = v2;			/* Hook in new scanline-oriented grid */
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	if (C->set_low > 0 && C->set_low < 3) GMT_free_grid (GMT, &C->Low, true);
+	if (C->set_low  > 0 && C->set_low  < 3) GMT_free_grid (GMT, &C->Low, true);
 	if (C->set_high > 0 && C->set_high < 3) GMT_free_grid (GMT, &C->High, true);
 	return (0);
 }
@@ -800,7 +800,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 	double y_0_const = 4 * C->l_epsilon * (1.0 - C->boundary_tension) / y_denom;
 	double y_1_const = (C->boundary_tension - 2 * C->l_epsilon * (1.0 - C->boundary_tension) ) / y_denom;
 
-	sprintf (C->format,"%%4ld\t%%c\t%%8ld\t%s\t%s\t%%10ld\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	sprintf (C->format,"%%4ld\t%%c\t%%8" PRIu64 "\t%s\t%s\t%%10" PRIu64 "\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
 	do {
 		briggs_index = 0;	/* Reset the constraint table stack pointer  */
@@ -1472,7 +1472,6 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 		if (Ctrl->S.unit == 's') Ctrl->S.radius /= 3600.0;
 	}
 	C->radius = Ctrl->S.radius;
-	GMT_memcpy (C->Grid->header->inc, Ctrl->I.inc, 2, double);
 	C->relax_new = Ctrl->Z.value;
 	C->max_iterations = Ctrl->N.value;
 	C->radius = Ctrl->S.radius;
@@ -1805,6 +1804,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 {
 	bool error = false;
 	int key, one = 1;
+	double wesn[4];
 	
 	struct GMT_TABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
@@ -1838,28 +1838,25 @@ int GMT_surface (void *V_API, int mode, void *args)
 	C.mode_type[0] = 'I';
 	C.mode_type[1] = 'D';	/* D means include data points when iterating */
 
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, C.Grid->header, options, false);
-	GMT_memcpy (C.Grid->header->wesn, GMT->common.R.wesn, 4, double);
+	GMT_memcpy (C.wesn_orig, GMT->common.R.wesn, 4, double);	/* Save original region in case of -r */
+	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);		/* Specified region */
 
-	load_parameters_surface (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
-
-	GMT_memcpy (C.wesn_orig, C.Grid->header->wesn, 4, double);	/* Save original region in case of -r */
 	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of offset area by x_inc(y_inc) / 2 */
-		C.Grid->header->wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	C.Grid->header->wesn[XHI] += Ctrl->I.inc[GMT_X] / 2.0;
-		C.Grid->header->wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	C.Grid->header->wesn[YHI] += Ctrl->I.inc[GMT_Y] / 2.0;
+		wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	wesn[XHI] += Ctrl->I.inc[GMT_X] / 2.0;
+		wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	wesn[YHI] += Ctrl->I.inc[GMT_Y] / 2.0;
 		one++;	/* Just so we can report correct nx,ny for the grid; internally it is the same until output */
 		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reduce nx,ny by 1 when we write result */
 	}
 	
-	GMT_RI_prepare (GMT, C.Grid->header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, C.Grid->header, 1), Ctrl->G.file);
-	GMT_set_grddim (GMT, C.Grid->header);
-
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, Ctrl->I.inc, false, C.Grid))) Return (error);
+	
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
 		Return (EXIT_FAILURE);
 	}
+
+	load_parameters_surface (&C, Ctrl);	/* Pass parameters from parsing control to surface INFO structure */
 
 	C.relax_old = 1.0 - C.relax_new;
 
@@ -1867,8 +1864,8 @@ int GMT_surface (void *V_API, int mode, void *args)
 	C.ny = C.Grid->header->ny;
 	C.nxny = C.Grid->header->nm;
 
-	C.mx = C.nx + 4;
-	C.my = C.ny + 4;
+	C.mx = C.Grid->header->mx;
+	C.my = C.Grid->header->my;
 	C.mxmy = C.Grid->header->size;
 	GMT_Surface_Global.x_min = C.Grid->header->wesn[XLO];
 	GMT_Surface_Global.y_min = C.Grid->header->wesn[YLO];
@@ -1905,7 +1902,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
-		C.Grid->data = GMT_memory_aligned (GMT, NULL, C.mxmy, float);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, C.Grid))) Return (error);
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
@@ -1931,7 +1928,8 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	C.briggs = GMT_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.iu = GMT_memory (GMT, NULL, C.mxmy, char);
-	C.Grid->data = GMT_memory_aligned (GMT, NULL, C.mxmy, float);
+	//C.Grid->data = GMT_memory_aligned (GMT, NULL, C.mxmy, float);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, C.Grid))) Return (error);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 
