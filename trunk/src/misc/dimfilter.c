@@ -460,7 +460,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
-		GMT_init_grdheader (GMT, Gout->header, options, wesn, inc, !one_or_zero);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, !one_or_zero, Gout))) Return (error);
 		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
@@ -481,7 +481,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
 			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			GMT_init_grdheader (GMT, Sout->header, options, wesn, inc, !one_or_zero);
+			if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, !one_or_zero, Sout))) Return (error);
 			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Sout))) Return (error);
 		}
 #endif

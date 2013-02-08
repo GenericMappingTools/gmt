@@ -1826,7 +1826,7 @@ int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **O
 	return (false);
 }
 
-void GMT_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration)
+void gmt_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration)
 {	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
 	double wesn_dup[4], inc_dup[2];
 	/* In case user is passing header->wesn etc we must save them first as GMT_grd_init will clobber them */
@@ -1868,7 +1868,7 @@ int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], 
 
 int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid)
 {	/* Use information in Grid header to allocate the grid data.
-	 * We assume GMT_init_grdheader has been called. */
+	 * We assume gmt_init_grdheader has been called. */
 
 	if (Grid->data) return (GMT_PTR_NOT_NULL);
 	if (Grid->header->size == 0U) return (GMT_SIZE_IS_ZERO);
@@ -1878,7 +1878,7 @@ int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid)
 
 int gmt_alloc_image (struct GMT_CTRL *C, struct GMT_IMAGE *Image)
 {	/* Use information in Image header to allocate the image data.
-	 * We assume GMT_init_grdheader has been called. */
+	 * We assume gmt_init_grdheader has been called. */
 
 	if (Image->data) return (GMT_PTR_NOT_NULL);
 	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);

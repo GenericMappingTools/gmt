@@ -356,7 +356,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	/* Initialize the CVA grid and structure */
 
 	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_init_grdheader (GMT, G->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, G))) Return (error);
 	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, G))) Return (error);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */

@@ -112,10 +112,6 @@ EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_
 EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
 EXTERN_MSC int GMT_Parse_Common				(void *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
 
-/* Macro to test if filename is a special name indicating memory location */
-
-#define GMT_File_Is_Memory(file) (file && !strncmp (file, "@GMTAPI@-", 9U))
-
 #ifdef __cplusplus
 }
 #endif

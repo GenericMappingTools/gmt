@@ -500,6 +500,9 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		left = wesn[XLO];
 		bottom = wesn[YLO];
 	}
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, true, Merc))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Merc))) Return (error);
+
 	if (Ctrl->M.active) {
 		sprintf (Merc->header->x_units, "Spherical Mercator projected Longitude, -Jm1, length from %.12g", left);
 		sprintf (Merc->header->y_units, "Spherical Mercator projected Latitude, -Jm1, length from %.12g", bottom);
@@ -512,9 +515,6 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	strncpy (Merc->header->z_units, z_units, GMT_GRID_UNIT_LEN80);
 	strcpy (Merc->header->title, "Data from Altimetry");
 	Merc->header->z_min = DBL_MAX;	Merc->header->z_max = -DBL_MAX;
-	GMT_init_grdheader (GMT, Merc->header, options, wesn, inc, true);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Merc))) Return (error);
-
 	/* Now malloc some space for integer pixel index, and int16_t data buffer.  */
 
 	row = GMT_memory (GMT, NULL, navg * imgcoord.nxcol, int16_t);
