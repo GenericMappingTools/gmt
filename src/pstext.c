@@ -227,15 +227,15 @@ bool check_for_old_format (struct GMT_CTRL *C, char *buffer, int mode)
 		if (n < 5) return (false);	/* Clearly not the old format since missing items */
 	}
 	if (GMT_not_numeric (C, angle)) return (false);	/* Since angle is not a number */
-	k = strlen (size) - 1;
+	k = (int)strlen (size) - 1;
 	if (size[k] == 'c' || size[k] == 'i' || size[k] == 'm' || size[k] == 'p') size[k] = '\0';	/* Chop of unit */
 	if (GMT_not_numeric (C, size)) return (false);	/* Since size is not a number */
 	if (GMT_just_decode (C, just, 12) == -99) return (false);	/* Since justify not in correct format */
 	if (mode) {	/* A few more checks for paragraph mode */
-		k = strlen (spacing) - 1;
+		k = (int)strlen (spacing) - 1;
 		if (spacing[k] == 'c' || spacing[k] == 'i' || spacing[k] == 'm' || spacing[k] == 'p') spacing[k] = '\0';	/* Chop of unit */
 		if (GMT_not_numeric (C, spacing)) return (false);	/* Since spacing is not a number */
-		k = strlen (width) - 1;
+		k = (int)strlen (width) - 1;
 		if (width[k] == 'c' || width[k] == 'i' || width[k] == 'm' || width[k] == 'p') width[k] = '\0';	/* Chop of unit */
 		if (GMT_not_numeric (C, width)) return (false);		/* Since width is not a number */
 		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (C, pjust, 0) == -99) return (false);
@@ -724,7 +724,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				}
 				else {
 					if (Ctrl->Q.active) GMT_str_setcase (GMT, line, Ctrl->Q.mode);
-					n_add = strlen (line) + 1;
+					n_add = (int)strlen (line) + 1;
 					while ((length + n_add) > txt_alloc) {
 						txt_alloc += GMT_BUFSIZ;
 						paragraph = GMT_memory (GMT, paragraph, txt_alloc, char);

@@ -392,8 +392,8 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 			nz = 1;
 		}
 		if (Ctrl->C.active) {	/* Use block center */
-			row = GMT_row (Grid->header, data[first_in_cell].ij);
-			col = GMT_col (Grid->header, data[first_in_cell].ij);
+			row = (unsigned int)GMT_row (Grid->header, data[first_in_cell].ij);
+			col = (unsigned int)GMT_col (Grid->header, data[first_in_cell].ij);
 			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
 			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}
@@ -488,7 +488,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 				out[3] = GMT->session.d_NaN;
 		}
 		if (Ctrl->W.weighted[GMT_OUT]) out[w_col] = weight;
-		if (emode) out[i_col] = src_id;
+		if (emode) out[i_col] = (double)src_id;
 
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 

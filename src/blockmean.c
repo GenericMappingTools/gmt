@@ -337,8 +337,8 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 			out[GMT_Y] = xy[node].a[GMT_Y] * iw;
 		}
 		else {		/* Report block center */
-			col = GMT_col (Grid->header, node);
-			row = GMT_row (Grid->header, node);
+			col = (unsigned int)GMT_col (Grid->header, node);
+			row = (unsigned int)GMT_row (Grid->header, node);
 			out[GMT_X] = GMT_grd_col_to_x (GMT, col, Grid->header);
 			out[GMT_Y] = GMT_grd_row_to_y (GMT, row, Grid->header);
 		}

@@ -892,7 +892,7 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 	low_level = GSHHS_MAX_LEVEL;
 
 	if (completely_inside && use_this_level) {	/* Must include path of this bin outline as first polygon */
-		p[0].n = GMT_graticule_path (C, &p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
+		p[0].n = (int)GMT_graticule_path (C, &p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
 		p[0].level = (c->node_level[0] == 2 && c->flag == GSHHS_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
 		p[0].fid = p[0].level;	/* Assumes no riverlake is that big to contain an entire bin */
 		p[0].interior = false;
@@ -922,7 +922,7 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 			if (id < 0) {	/* Corner */
 				cid = id + 4;
 				nid = (dir == 1) ? (cid + 1) % 4 : cid;
-				if ((add = GMT_map_path (C, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (C, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp))) {
 					n_alloc += add;
 					p[P].lon = GMT_memory (C, p[P].lon, n_alloc, double);
 					p[P].lat = GMT_memory (C, p[P].lat, n_alloc, double);
@@ -935,7 +935,7 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 			}
 			else {
 				gmt_shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);
-				if ((add = GMT_map_path (C, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (C, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp))) {
 					n_alloc += add;
 					p[P].lon = GMT_memory (C, p[P].lon, n_alloc, double);
 					p[P].lat = GMT_memory (C, p[P].lat, n_alloc, double);
@@ -1098,11 +1098,11 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 
 	for (k = 0; k < np; k++) {
 
-		if (sample) p[k].n = GMT_fix_up_path (C, &p[k].lon, &p[k].lat, p[k].n, step, 0);
+		if (sample) p[k].n = (int)GMT_fix_up_path (C, &p[k].lon, &p[k].lat, p[k].n, step, 0);
 
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 
-		if ((n = GMT_clip_to_map (C, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
+		if ((n = (unsigned int)GMT_clip_to_map (C, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
 			p[k].n = 0;	/* Note the memory in lon, lat not freed yet */
 			continue;
 		}
@@ -1114,7 +1114,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 			/* First truncate against left border */
 
 			C->current.plot.n = GMT_map_truncate (C, xtmp, ytmp, n, start, -1);
-			n_use = GMT_compact_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.n, false, 0);
 			close = GMT_polygon_is_open (C, C->current.plot.x, C->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
 			p[k].lon = GMT_memory (C, p[k].lon, n_alloc, double);
@@ -1125,12 +1125,12 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 				p[k].lon[n_use] = p[k].lon[0];
 				p[k].lat[n_use] = p[k].lat[0];
 			}
-			p[k].n = n_alloc;
+			p[k].n = (int)n_alloc;
 
 			/* Then truncate against right border */
 
 			C->current.plot.n = GMT_map_truncate (C, xtmp, ytmp, n, start, +1);
-			n_use = GMT_compact_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.n, false, 0);
 			p = GMT_memory (C, p, np_new + 1, struct GMT_GSHHS_POL);
 			close = GMT_polygon_is_open (C, C->current.plot.x, C->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
@@ -1142,14 +1142,14 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 				p[np_new].lon[n_use] = p[np_new].lon[0];
 				p[np_new].lat[n_use] = p[np_new].lat[0];
 			}
-			p[np_new].n = n_alloc;
+			p[np_new].n = (int)n_alloc;
 			p[np_new].interior = p[k].interior;
 			p[np_new].level = p[k].level;
 			p[np_new].fid = p[k].fid;
 			np_new++;
 		}
 		else {
-			n_use = GMT_compact_line (C, xtmp, ytmp, n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (C, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
 				GMT_report (C, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
 				GMT_free (C, xtmp);
@@ -1167,7 +1167,7 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 					p[k].lon[n_use] = p[k].lon[0];
 					p[k].lat[n_use] = p[k].lat[0];
 				}
-				p[k].n = n_alloc;
+				p[k].n = (int)n_alloc;
 			}
 		}
 

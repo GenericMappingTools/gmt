@@ -389,7 +389,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	if (F->equidist) F->dt = (t_1 - t_0) / (F->n_rows - 1);
 
 	if (F->filter_type == FILTER1D_CUSTOM) {	/* Use coefficients we read from file */
-		F->n_f_wts = F->Fin->n_records;
+		F->n_f_wts = (unsigned int)F->Fin->n_records;
 		while (F->n_f_wts <= F->n_work_alloc) {	/* Need more memory */
 			F->n_work_alloc <<= 1;
 			allocate_more_work_space (GMT, F);

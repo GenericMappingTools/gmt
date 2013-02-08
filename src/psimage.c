@@ -364,8 +364,8 @@ int GMT_psimage (void *V_API, int mode, void *args)
 				b_table[n] = I->ColorMap[n*4 + 2];
 			}
 			I->data = GMT_memory (GMT, I->data, 3 * I->header->nm, unsigned char);	/* Expand to reuse */
-			n = 3 * I->header->nm - 1;
-			for (j = I->header->nm - 1; j >= 0; j--) {
+			n = (int)(3 * I->header->nm - 1);
+			for (j = (int)I->header->nm - 1; j >= 0; j--) {
 				I->data[n--] = b_table[I->data[j]];
 				I->data[n--] = g_table[I->data[j]];
 				I->data[n--] = r_table[I->data[j]];	/* Now we can overwrite this value */
