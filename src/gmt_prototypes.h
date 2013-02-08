@@ -52,7 +52,6 @@ EXTERN_MSC void GMT_fft_cleanup (void);
 
 /* gmt_grdio.c: */
 
-EXTERN_MSC void GMT_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration);
 EXTERN_MSC struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data);
 EXTERN_MSC struct GRD_HEADER * GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEADER *h);

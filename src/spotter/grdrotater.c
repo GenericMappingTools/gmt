@@ -463,7 +463,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	}
 	
 	if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_init_grdheader (GMT, G_rot->header, options, GMT->common.R.wesn, G->header->inc, G->header->registration);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, G->header->inc, G->header->registration, G_rot))) Return (error);
 	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, G_rot))) Return (error);
 
 	grd_x = GMT_memory (GMT, NULL, G_rot->header->nx, double);

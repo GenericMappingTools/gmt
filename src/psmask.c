@@ -583,8 +583,8 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		info.first_dump = true;
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_setnval (GMT->current.io.pad, 4, 1);		/* Change default pad to 1 only */
-		GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+		GMT_set_pad (GMT, 1U);		/* Change default pad to 1 only */
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
 		
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
@@ -606,8 +606,8 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		/* Enlarge region by 1 row/column */
 
 		Grid->header->wesn[XLO] -= Grid->header->inc[GMT_X];	Grid->header->wesn[XHI] += Grid->header->inc[GMT_X];	Grid->header->wesn[YLO] -= Grid->header->inc[GMT_Y];	Grid->header->wesn[YHI] += Grid->header->inc[GMT_Y];
-		GMT_setnval (GMT->current.io.pad, 4, 0);		/* Change default pad to 0 only */
-		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change pad to 0 */
+		GMT_set_pad (GMT, 0U);		/* Change default pad to 0 only */
+		GMT_grd_setpad (GMT, Grid->header, GMT->current.io.pad);	/* Change header pad to 0 */
 		GMT_set_grddim (GMT, Grid->header);
 		grd = GMT_memory (GMT, NULL, Grid->header->size, char);
 
@@ -800,6 +800,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_VERBOSE, "clipping on!\n");
 	}
 
+	GMT_set_pad (GMT, 2U);		/* Reset default pad */
 	if (make_plot) GMT_plotend (GMT);
 
 	Return (GMT_OK);

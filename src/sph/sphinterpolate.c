@@ -302,7 +302,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	/* Set up output grid */
 	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate output grid\n");
 	surfd = GMT_memory (GMT, NULL, Grid->header->nm, double);

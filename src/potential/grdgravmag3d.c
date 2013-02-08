@@ -372,7 +372,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		GMT_init_grdheader (GMT, Gout->header, options, Gout->header->wesn, Gout->header->inc, GridA->header->registration);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Gout->header->wesn, Gout->header->inc, GridA->header->registration, Gout))) Return (error);
 		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",

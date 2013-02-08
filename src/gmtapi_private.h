@@ -104,6 +104,10 @@ struct GMTAPI_CTRL {
 	char *session_tag;			/* Name tag for this session (or NULL) */
 };
 
+/* Macro to test if filename is a special name indicating memory location */
+
+#define GMT_File_Is_Memory(file) (file && !strncmp (file, "@GMTAPI@-", 9U))
+
 #ifdef __cplusplus
 }
 #endif

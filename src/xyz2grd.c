@@ -503,7 +503,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	no_data_f = (float)Ctrl->N.value;
 	
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	GMT_init_grdheader (GMT, Grid->header, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 

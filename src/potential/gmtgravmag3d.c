@@ -440,7 +440,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_init_grdheader (GMT, Gout->header, options, GMT->common.R.wesn, Ctrl->I.inc, false);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, false, Gout))) Return (error);
 		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
 	
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
