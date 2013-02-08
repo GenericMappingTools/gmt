@@ -355,10 +355,9 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Gout->header, options, false);
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn :
-			GridA->header->wesn), 4,double);
+			GridA->header->wesn), 4, double);
 		GMT_memcpy (Gout->header->inc, (Ctrl->I.active ? Ctrl->I.inc :
 			GridA->header->inc), 2, double);
 		if (Gout->header->wesn[XLO] < GridA->header->wesn[XLO]) error = true;

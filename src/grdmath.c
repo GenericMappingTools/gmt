@@ -3345,7 +3345,6 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	}
 
 	if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, info.G->header, options, true);
 	subset = GMT->common.R.active;
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
