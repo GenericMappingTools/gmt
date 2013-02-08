@@ -424,6 +424,10 @@ foreach (_gmtprog ${GMT_PROGS})
 	add_executable (${_gmtprog} ${GMT_PROGRAM})
 	set_target_properties (${_gmtprog}
 		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${_gmtprog}")
+	# Do not create the manifest files
+	if (WIN32)
+		set_target_properties(${_gmtprog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
+	endif ()
 	target_link_libraries (${_gmtprog} gmtlib)
 endforeach (_gmtprog)
 
@@ -432,6 +436,9 @@ string (REPLACE ".c" "" GMT_DEMOS "${GMT_DEMOS_SRCS}")
 foreach (_gmtdemo ${GMT_DEMOS})
 	add_executable (${_gmtdemo} ${_gmtdemo}.c)
 	target_link_libraries (${_gmtdemo} gmtlib)
+	if (WIN32)
+		set_target_properties(${_gmtdemo} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
+	endif ()
 endforeach (_gmtdemo)
 
 configure_file (psldemo.h.in psldemo.h @ONLY)
