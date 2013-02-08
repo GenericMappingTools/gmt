@@ -489,8 +489,8 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *C, const char *filename, const char *mode)
 		}
 		else
 			n = 1;
-		C->current.io.count[i][1] = n;
-		C->current.io.ncols += n;
+		C->current.io.count[i][1] = (int)n;
+		C->current.io.ncols += (int)n;
 
 		/* If selected by value instead of index */
 		for (j = 1; by_value && j <= in; j++) {
@@ -1916,7 +1916,7 @@ unsigned int GMT_quad_finalize (struct GMT_CTRL *C, struct GMT_QUAD *Q)
 	/* Final adjustments */
 	if (Q->min[way] > Q->max[way]) Q->min[way] -= 360.0;
 	if (Q->min[way] < 0.0 && Q->max[way] < 0.0) Q->min[way] += 360.0, Q->max[way] += 360.0;
-	return (way);
+	return ((unsigned int)way);
 }
 
 void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, uint64_t n_rows, double *min, double *max)
@@ -3825,7 +3825,7 @@ void gmt_plot_C_format (struct GMT_CTRL *C)
 		/* Finally add %s for the [leading space]W,E,S,N char (or NULL) */
 
 		for (i = 0; i < 3; i++) for (j = 0; j < 2; j++) {
-			length = MAX (1, strlen (C->current.plot.format[i][j])) - 1;
+			length = (unsigned int)MAX (1, strlen (C->current.plot.format[i][j])) - 1;
 			if (C->current.plot.format[i][j][length] == ':') C->current.plot.format[i][j][length] = '\0';	/* Chop off a trailing colon */
 			strcat (C->current.plot.format[i][j], "%s");
 		}

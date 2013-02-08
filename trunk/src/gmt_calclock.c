@@ -100,7 +100,7 @@ void GMT_dt2rdc (struct GMT_CTRL *C, double t, int64_t *rd, double *s) {
 
 int gmt_cal_imod (int64_t x, int y) {
 	assert (y != 0);
-	return (x - y * lrint (floor ((double)x / (double)y)));
+	return ( (int)(x - y * lrint (floor ((double)x / (double)y))) );
 }
 
 /* kday functions:
@@ -250,7 +250,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t date, struct GMT_gcal *gcal) 
 
 	gcal->year = gmt_gyear_from_rd (date);
 	prior_days = date - GMT_rd_from_gymd (C, gcal->year, 1, 1);
-	gcal->day_y = prior_days + 1;
+	gcal->day_y = (unsigned int)prior_days + 1;
 	
 	tempdate = GMT_rd_from_gymd (C, gcal->year, 3, 1);
 	if (date < tempdate)
@@ -262,7 +262,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *C, int64_t date, struct GMT_gcal *gcal) 
 	
 	tempdate = GMT_rd_from_gymd (C, gcal->year, gcal->month, 1);
 	
-	gcal->day_m = date - tempdate + 1;
+	gcal->day_m = (unsigned int)(date - tempdate + 1);
 	
 	/* ISO operations:  */
 	
@@ -359,7 +359,7 @@ void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal) {
 	GMT_gcal_from_rd (C, rd, cal);
 	/* split double seconds and integer time */
 	i = GMT_splitinteger (x, 60, &cal->sec);
-	cal->hour = i / GMT_MIN2SEC_I;
+	cal->hour = (unsigned int)(i / GMT_MIN2SEC_I);
 	cal->min  = i % GMT_MIN2SEC_I;
 }
 

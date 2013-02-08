@@ -257,7 +257,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 	bfit = circle_misfit (GMT, data, ndata, b, norm, work, &circle_distance);
 	j = 1;
 	do {
-		angle = j;
+		angle = (double)j;
 		sincosd (angle, &afactor, &bfactor);
 		for (i = 0; i < 3; i++) temppole[i] = (afactor * a[i] + bfactor * b[i]);
 		GMT_normalize3v (GMT, temppole);
