@@ -6370,11 +6370,12 @@ struct GMT_VECTOR * GMT_duplicate_vector (struct GMT_CTRL *C, struct GMT_VECTOR 
 	return (V);
 }
 
-struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C)
+struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C, unsigned int layers)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (C, NULL, 1, struct GMT_MATRIX);
 	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	M->n_layers = (layers) ? layers : 1;
 	return (M);
 }
 

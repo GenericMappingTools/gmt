@@ -175,7 +175,7 @@ EXTERN_MSC void GMT_free_palette (struct GMT_CTRL *C, struct GMT_PALETTE **P);
 EXTERN_MSC struct GMT_IMAGE * GMT_create_image (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_free_image (struct GMT_CTRL *C, struct GMT_IMAGE **I, bool free_image);
 #endif
-EXTERN_MSC struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C);
+EXTERN_MSC struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *C, unsigned int n_layers);
 EXTERN_MSC void GMT_free_matrix (struct GMT_CTRL *C, struct GMT_MATRIX **M, bool free_matrix);
 EXTERN_MSC struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *C, unsigned int n_columns);
 EXTERN_MSC void GMT_free_vector (struct GMT_CTRL *C, struct GMT_VECTOR **V, bool free_vector);
