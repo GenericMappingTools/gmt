@@ -1871,6 +1871,7 @@ int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid)
 	 * We assume GMT_init_grdheader has been called. */
 
 	if (Grid->data) return (GMT_PTR_NOT_NULL);
+	if (Grid->header->size == 0U) return (GMT_SIZE_IS_ZERO);
 	if ((Grid->data = GMT_memory_aligned (C, NULL, Grid->header->size, float)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }
@@ -1880,6 +1881,7 @@ int gmt_alloc_image (struct GMT_CTRL *C, struct GMT_IMAGE *Image)
 	 * We assume GMT_init_grdheader has been called. */
 
 	if (Image->data) return (GMT_PTR_NOT_NULL);
+	if (Image->header->size == 0U) return (GMT_SIZE_IS_ZERO);
 	if ((Image->data = GMT_memory (C, NULL, Image->header->size * Image->header->n_bands, unsigned char)) == NULL) return (GMT_MEMORY_ERROR);
 	return (GMT_NOERROR);
 }

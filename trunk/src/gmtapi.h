@@ -76,7 +76,7 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
  *=====================================================================================
  */
 
-/* 18 Primary API functions */
+/* 19 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
 EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
 EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
@@ -95,6 +95,7 @@ EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
 EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
 EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, int pad, void *data);
+EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, int registration, void *container);
 
 /* 12 secondary functions for argument and option parsing */
 
