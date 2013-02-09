@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 	/* Show share directory */
 	if (argc == 2 && !strcmp (argv[1], "--show-sharedir")) {
 		/* Initializing new GMT session */
-		if ((api_ctrl = GMT_Create_Session (argv[0], k_mode_gmt)) == NULL)
+		if ((api_ctrl = GMT_Create_Session (argv[0], 0U)) == NULL)
 			return EXIT_FAILURE;
 		fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
 		if (GMT_Destroy_Session (&api_ctrl))
@@ -65,7 +65,7 @@ int main (int argc, char *argv[]) {
 	/* Show the directory that contains the 'gmt' executable */
 	if (argc == 2 && !strcmp (argv[1], "--show-bindir")) {
 		/* Initializing new GMT session */
-		if ((api_ctrl = GMT_Create_Session (argv[0], k_mode_gmt)) == NULL)
+		if ((api_ctrl = GMT_Create_Session (argv[0], 0U)) == NULL)
 			return EXIT_FAILURE;
 		fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
 		if (GMT_Destroy_Session (&api_ctrl))
@@ -86,7 +86,7 @@ int main (int argc, char *argv[]) {
 	/* OK, here we found a recognized GMT module; do the job */
 
 	/* 1. Initializing new GMT session */
-	if ((api_ctrl = GMT_Create_Session (argv[0], g_module[module_id].api_mode)) == NULL)
+	if ((api_ctrl = GMT_Create_Session (argv[0], 0U)) == NULL)
 		return EXIT_FAILURE;
 
 	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */

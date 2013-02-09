@@ -3887,11 +3887,11 @@ int GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double xyz[2]
 		G->no_gap = ((G->just + 2)%4 != 0);	/* Don't clip contour if label is not in the way */
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
-		G->xp = GMT_memory (C, NULL, 1, struct GMT_TABLE);
-		G->xp->segment = GMT_memory (C, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
+		G->xp = GMT_memory (C, NULL, 1, struct GMT_DATATABLE);
+		G->xp->segment = GMT_memory (C, NULL, n_alloc, struct GMT_DATASEGMENT *);
 		pos = 0;
 		while ((GMT_strtok (G->option, ",", &pos, p))) {
-			G->xp->segment[G->xp->n_segments] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+			G->xp->segment[G->xp->n_segments] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 			GMT_alloc_segment (C, G->xp->segment[G->xp->n_segments], 2, 2, true);
 			G->xp->segment[G->xp->n_segments]->n_rows = G->xp->segment[G->xp->n_segments]->n_columns = 2;
 			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
@@ -3948,11 +3948,11 @@ int GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double xyz[2]
 			if (G->xp->n_segments == n_alloc) {
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
-				G->xp->segment = GMT_memory (C, G->xp->segment, n_alloc, struct GMT_LINE_SEGMENT *);
-				GMT_memset (&(G->xp->segment[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+				G->xp->segment = GMT_memory (C, G->xp->segment, n_alloc, struct GMT_DATASEGMENT *);
+				GMT_memset (&(G->xp->segment[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 			}
 		}
-		if (G->xp->n_segments < n_alloc) G->xp->segment = GMT_memory (C, G->xp->segment, G->xp->n_segments, struct GMT_LINE_SEGMENT *);
+		if (G->xp->n_segments < n_alloc) G->xp->segment = GMT_memory (C, G->xp->segment, G->xp->n_segments, struct GMT_DATASEGMENT *);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		G->xp = GMT_read_table (C, G->file, GMT_IS_FILE, false, false, false);
@@ -4781,16 +4781,16 @@ uint64_t GMT_contours (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int smoo
 	return (0);
 }
 
-struct GMT_LINE_SEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, double *y, uint64_t n, double z)
+struct GMT_DATASEGMENT * GMT_dump_contour (struct GMT_CTRL *C, double *x, double *y, uint64_t n, double z)
 {	/* Returns a segment with this contour */
 	unsigned int n_cols;
 	char header[GMT_BUFSIZ];
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	if (n < 2) return (NULL);
 
 	n_cols = (GMT_is_dnan (z)) ? 2 : 3;	/* psmask only dumps xy */
-	S = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+	S = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 	GMT_alloc_segment (C, S, n, n_cols, true);
 	if (n_cols == 3)
 		sprintf (header, "%g contour -Z%g", z, z);
@@ -5578,7 +5578,7 @@ static inline bool gmt_same_longitude (double a, double b) {
 
 #define GMT_SAME_LATITUDE(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
 
-int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SEGMENT *P, unsigned int count[])
+int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEGMENT *P, unsigned int count[])
 {	/* Case of a polar cap */
 	uint64_t i, in, ip, prev;
 	int cut;
@@ -5661,7 +5661,7 @@ int gmt_inonout_sphpol_count (double plon, double plat, const struct GMT_LINE_SE
 	return (0);	/* This means no special cases were detected that warranted an immediate return */
 }
 
-unsigned int GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const struct GMT_LINE_SEGMENT *P)
+unsigned int GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, const struct GMT_DATASEGMENT *P)
 /* This function is used to see if some point P is located inside, outside, or on the boundary of the
  * spherical polygon S read by GMT_import_table.  Note C->current.io.skip_duplicates must be true when the polygon
  * was read so there are NO duplicate (repeated) points.
@@ -5720,7 +5720,7 @@ unsigned int GMT_inonout_sphpol (struct GMT_CTRL *C, double plon, double plat, c
 	return (GMT_OUTSIDE);	/* Nothing triggered the tests; we are outside */
 }
 
-unsigned int gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
+unsigned int gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const struct GMT_DATASEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions */
 	unsigned int side;
 
@@ -5741,11 +5741,11 @@ unsigned int gmt_inonout_sub (struct GMT_CTRL *C, double x, double y, const stru
 	return (side);
 }
 
-unsigned int GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_LINE_SEGMENT *S)
+unsigned int GMT_inonout (struct GMT_CTRL *C, double x, double y, const struct GMT_DATASEGMENT *S)
 {	/* Front end for both spherical and Cartesian in-on-out functions.
  	 * Knows to check for polygons with holes as well. */
 	unsigned int side, side_h;
-	struct GMT_LINE_SEGMENT *H = NULL;
+	struct GMT_DATASEGMENT *H = NULL;
 
 	if ((side = gmt_inonout_sub (C, x, y, S)) <= GMT_ONEDGE) return (side);	/* Outside polygon or on perimeter, we are done */
 	
@@ -9484,7 +9484,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_TABLE *Tin = NULL, *Tout = NULL;
+	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
 
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
@@ -9540,7 +9540,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_TABLE *Tin = NULL, *Tout = NULL;
+	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
 
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
@@ -9640,8 +9640,8 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	double Rot[3][3], Rot0[3][3], E[3], P[3], L[3], R[3], T[3], X[3];
 
 	struct GMT_DATASET *Xout = NULL;
-	struct GMT_TABLE *Tin = NULL, *Tout = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
@@ -9698,7 +9698,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 				else
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				dist_across_seg = 0.0;
-				S = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
+				S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 				GMT_alloc_segment (GMT, S, np_cross, n_tot_cols, true);
 				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
 					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
@@ -9741,8 +9741,8 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 				if (n_x_seg == n_x_seg_alloc) {
 					size_t old_n_x_seg_alloc = n_x_seg_alloc;
-					Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
-					GMT_memset (&(Tout->segment[old_n_x_seg_alloc]), n_x_seg_alloc - old_n_x_seg_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+					Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+					GMT_memset (&(Tout->segment[old_n_x_seg_alloc]), n_x_seg_alloc - old_n_x_seg_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 				}
 				Tout->segment[n_x_seg++] = S;
 				Tout->n_segments++;	Xout->n_segments++;
@@ -9778,8 +9778,8 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	double dist_across_seg, orientation, sign, az_cross, x, y, sa, ca;
 
 	struct GMT_DATASET *Xout = NULL;
-	struct GMT_TABLE *Tin = NULL, *Tout = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	if (Din->n_columns < 2) {	/* Trouble */
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Dataset does not have at least 2 columns with coordinates\n");
@@ -9820,7 +9820,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 					sign = -sign;
 				else
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
-				S = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
+				S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 				GMT_alloc_segment (GMT, S, np_cross, n_tot_cols, true);
 				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
 				for (k = -n_half_cross, ii = 0; k <= n_half_cross; k++, ii++) {	/* For each point along normal to FZ */
@@ -9855,8 +9855,8 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 
 				if (n_x_seg == n_x_seg_alloc) {
 					size_t old_n_x_seg_alloc = n_x_seg_alloc;
-					Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
-					GMT_memset (&(Tout->segment[old_n_x_seg_alloc]), n_x_seg_alloc - old_n_x_seg_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+					Tout->segment = GMT_memory (GMT, Tout->segment, (n_x_seg_alloc += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+					GMT_memset (&(Tout->segment[old_n_x_seg_alloc]), n_x_seg_alloc - old_n_x_seg_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 				}
 				Tout->segment[n_x_seg++] = S;
 				Tout->n_segments++;	Xout->n_segments++;
@@ -9884,7 +9884,7 @@ bool gmt_straddle_dateline (double x0, double x1) {
 	return (false);
 }
 
-bool GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+bool GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 {	/* Return true if this line or polygon feature contains points on either side of the Dateline */
 	uint64_t k;
 	bool east = false, west = false, cross = false;
@@ -9896,14 +9896,14 @@ bool GMT_crossing_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	return (cross);
 }
 
-unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout)
+unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout)
 {	/* Create two or more feature segments by splitting them across the Dateline.
 	 * GMT_split_line_at_dateline should ONLY be called when we KNOW we must split. */
 	unsigned int col, seg, n_split;
 	uint64_t k, row, start, length, *pos = GMT_memory (C, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ], *txt = NULL, *feature = "Line";
 	double r;
-	struct GMT_LINE_SEGMENT **L = NULL, *Sx = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+	struct GMT_DATASEGMENT **L = NULL, *Sx = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 	
 	for (k = 0; k < S->n_rows; k++) GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 	GMT_alloc_segment (C, Sx, 2*S->n_rows, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
@@ -9927,11 +9927,11 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEG
 	}
 	pos[n_split] = Sx->n_rows - 1;
 	n_split++;	/* Now means number of segments */
-	L = GMT_memory (C, NULL, n_split, struct GMT_LINE_SEGMENT *);	/* Number of output segments needed are allocated here */
+	L = GMT_memory (C, NULL, n_split, struct GMT_DATASEGMENT *);	/* Number of output segments needed are allocated here */
 	txt = (S->label) ? S->label : feature;	/* What to label the features */
 	start = 0;
 	for (seg = 0; seg < n_split; seg++) {	/* Populate the output segment coordinate arrays */
-		L[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);		/* Allocate space for one segment */
+		L[seg] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);		/* Allocate space for one segment */
 		length = pos[seg] - start + 1;	/* Length of new segment */
 		GMT_alloc_segment (C, L[seg], length, S->n_columns, true);		/* Allocate array space for coordinates */
 		for (col = 0; col < S->n_columns; col++) GMT_memcpy (L[seg]->coord[col], &(Sx->coord[col][start]), length, double);	/* Copy coordinates */

@@ -229,7 +229,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	unsigned int np = 0, add, col, row;
 	uint64_t dim[4] = {1, 1, 2, 0};
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) return (NULL);	/* An empty table with one segment, two cols */
 
@@ -301,7 +301,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GRD_HEADER *h)
 	return (D);
 }
 
-bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_TABLE *P, double lon, double lat)
+bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon, double lat)
 {	/* Returns true if the selected point is outside the polygon */
 	uint64_t seg;
 	unsigned int inside = 0;
@@ -327,8 +327,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	double *grd_x = NULL, *grd_y = NULL, *grd_yc = NULL;
 
 	struct GMT_DATASET *D = NULL;
-	struct GMT_TABLE *pol = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATATABLE *pol = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *G = NULL, *G_rot = NULL;
 	struct GRDROTATER_CTRL *Ctrl = NULL;

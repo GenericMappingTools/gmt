@@ -1095,7 +1095,6 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options)) Return (API->error);
 	Ctrl = New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psscale_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
@@ -1167,12 +1166,12 @@ int GMT_psscale (void *V_API, int mode, void *args)
 		GMT_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.width;
 		GMT_err_fail (GMT, GMT_map_setup (GMT, wesn), "");
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->common.J.active = false;
 		GMT_parse_common_options (GMT, "J", 'J', text);

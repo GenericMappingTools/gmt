@@ -758,7 +758,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 	struct GRDCONTOUR_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_CLOCK_IO Clock;
 	struct GMT_DATE_IO Date;
 	struct SAVE *save = NULL;
@@ -783,7 +783,6 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJfRb", "BKOPUXhxYycpt" GMT_OPT("EMm"), options)) Return (API->error);
 	Ctrl = New_grdcontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdcontour_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
@@ -811,7 +810,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		/* No grid to plot; just do empty map and return */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
 		if (make_plot) {
-			GMT_plotinit (GMT, options);
+			PSL = GMT_plotinit (GMT, options);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
@@ -987,7 +986,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (n_contours == 0) {	/* No contours within range of data */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No contours found\n");
 		if (make_plot) {
-			GMT_plotinit (GMT, options);
+			PSL = GMT_plotinit (GMT, options);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 			GMT_map_basemap (GMT);
@@ -1068,7 +1067,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (!Ctrl->contour.delay) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -1116,8 +1115,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t old_n_alloc = n_seg_alloc[tbl];
-						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
-						GMT_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+						GMT_memset (&(D->table[tbl]->segment[old_n_alloc]), n_seg_alloc[tbl] - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
 					D->table[tbl]->n_segments++;	D->n_segments++;
@@ -1176,7 +1175,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
-		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
+		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}

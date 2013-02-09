@@ -422,7 +422,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
-	struct GMT_TABLE *pol = NULL, *line = NULL, *point = NULL;
+	struct GMT_DATATABLE *pol = NULL, *line = NULL, *point = NULL;
 	struct GMT_GSHHS_POL *p[2] = {NULL, NULL};
 	struct GMT_SHORE c;
 	struct GMT_DATASET *Cin = NULL, *Lin = NULL, *Fin = NULL;

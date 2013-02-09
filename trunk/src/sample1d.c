@@ -253,8 +253,8 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	double tt, low_t, high_t, last_t, *lon = NULL, *lat = NULL;
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
-	struct GMT_TABLE *T = NULL, *Tout = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL, *Sout = NULL;
+	struct GMT_DATATABLE *T = NULL, *Tout = NULL;
+	struct GMT_DATASEGMENT *S = NULL, *Sout = NULL;
 	struct SAMPLE1D_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -331,7 +331,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	}
 
 	Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
-	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_TABLE *);	/* with table array */
+	Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 	Dout->n_tables = Din->n_tables;
 
 	nan_flag = GMT_memory (GMT, NULL, Din->n_columns, unsigned char);

@@ -1934,7 +1934,7 @@ void GMT_get_lon_minmax (struct GMT_CTRL *C, double *lon, uint64_t n_rows, doubl
 	GMT_free (C, Q);
 }
 
-void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 {	/* Must check if polygon is a polar cap.  We use the idea that the sum of
  	 * the change in angle along the polygon is either -/+360 (if pole is inside)
 	 * or 0 if outside.  The sign (not used here) gives the handedness of the polygon.
@@ -4420,7 +4420,7 @@ int GMT_scanf_arg (struct GMT_CTRL *C, char *s, unsigned int expectation, double
 	return (GMT_scanf (C, s, expectation, val));
 }
 
-struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, unsigned int source_type)
+struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, unsigned int source_type)
 {
 	/* Reads an entire segment text data set into memory */
 
@@ -4431,7 +4431,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 	uint64_t row = 0, n_read = 0, seg = 0;
 	char file[GMT_BUFSIZ], *in = NULL;
 	FILE *fp = NULL;
-	struct GMT_TEXT_TABLE *T = NULL;
+	struct GMT_TEXTTABLE *T = NULL;
 
 	/* Determine input source */
 
@@ -4477,9 +4477,9 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 
 	/* Allocate the Table structure */
 
-	T = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
+	T = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE);
 	T->file[GMT_IN] = strdup (file);
-	T->segment = GMT_memory (C, NULL, n_seg_alloc, struct GMT_TEXT_SEGMENT *);
+	T->segment = GMT_memory (C, NULL, n_seg_alloc, struct GMT_TEXTSEGMENT *);
 	T->header  = GMT_memory (C, NULL, n_head_alloc, char *);
 
 	while (status >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
@@ -4510,7 +4510,7 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (first_seg || T->segment[seg]->n_rows > 0) {
 				if (!first_seg) seg++;	/* Only advance segment if last had any points */
-				T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
+				T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXTSEGMENT);
 				first_seg = false;
 			}
 			n_read++;
@@ -4560,8 +4560,8 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 		if (seg == (n_seg_alloc-1)) {
 			size_t n_old_alloc = n_seg_alloc;
 			n_seg_alloc <<= 1;
-			T->segment = GMT_memory (C, T->segment, n_seg_alloc, struct GMT_TEXT_SEGMENT *);
-			GMT_memset (&(T->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_TEXT_SEGMENT *);	/* Set to NULL */
+			T->segment = GMT_memory (C, T->segment, n_seg_alloc, struct GMT_TEXTSEGMENT *);
+			GMT_memset (&(T->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_TEXTSEGMENT *);	/* Set to NULL */
 		}
 	}
 	if (close_file) GMT_fclose (C, fp);
@@ -4570,13 +4570,13 @@ struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, un
 		GMT_free (C, T->segment[seg]);
 	else
 		seg++;
-	if (seg < n_seg_alloc) T->segment = GMT_memory (C, T->segment, seg, struct GMT_TEXT_SEGMENT *);
+	if (seg < n_seg_alloc) T->segment = GMT_memory (C, T->segment, seg, struct GMT_TEXTSEGMENT *);
 	T->n_segments = seg;
 
 	return (T);
 }
 
-void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 {	/* Determine the min/max values for each column in the segment */
 	unsigned int col;
 	uint64_t row;
@@ -4594,11 +4594,11 @@ void GMT_set_seg_minmax (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	}
 }
 
-void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_TABLE *T)
+void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_DATATABLE *T)
 {	/* Update the min/max of all segments and the entire table */
 	unsigned int col;
 	uint64_t seg;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	if (!T) return;	/* No table given */
 	if (!T->n_columns) return;	/* No columns given */
@@ -4860,7 +4860,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *C, FILE *fp, int col, int t
 	}
 }
 
-void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGMENT *S)
+void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_DATASEGMENT *S)
 {	/* Write out segment-level OGR/GMT header metadata */
 	unsigned int col, virt_col;
 	char *kind = "PH";
@@ -4896,7 +4896,7 @@ void gmt_write_ogr_segheader (struct GMT_CTRL *C, FILE *fp, struct GMT_LINE_SEGM
 	}
 }
 
-void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 {	/* Build segment-level OGR/GMT header metadata */
 	unsigned int col, virt_col, n;
 	bool space = false;
@@ -4934,7 +4934,7 @@ void gmt_build_segheader_from_ogr (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *
 	S->header = strdup (buffer);
 }
 
-void gmt_alloc_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, int n_aspatial)
+void gmt_alloc_ogr_seg (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, int n_aspatial)
 {	/* Allocates the OGR structure for a given segment and copies current values from table OGR segment */
 	if (S->ogr) return;	/* Already allocated */
 	S->ogr = GMT_memory (C, NULL, 1, struct GMT_OGR_SEG);
@@ -4945,7 +4945,7 @@ void gmt_alloc_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, int n_as
 	}
 }
 
-void gmt_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_OGR *G)
+void gmt_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_OGR *G)
 {	/* Allocates the OGR structure for a given segment and copies current values from table OGR segment */
 	unsigned int col;
 
@@ -4959,7 +4959,7 @@ void gmt_copy_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GM
 	S->ogr->pol_mode = G->pol_mode;
 }
 
-void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S_to, struct GMT_LINE_SEGMENT *S_from)
+void GMT_duplicate_ogr_seg (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S_to, struct GMT_DATASEGMENT *S_from)
 {	/* Allocates the OGR structure for a given segment and copies current values from table OGR segment */
 	unsigned int col;
 	
@@ -4977,9 +4977,9 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	int object_ID, col, stop, n_reg, item, error = 0;
 	uint64_t row, seg, seg1, seg2, k;
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMTAPI_DATA_OBJECT O;
 	
 	/* When this functions is called we have already registered the output destination.  This will normally
@@ -5097,7 +5097,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	if (T->ogr->geometry > GMT_IS_POINT && T->ogr->geometry != GMT_IS_MULTIPOINT) {	/* Must check for Dateline crossings */
 		unsigned int n_split;
 		uint64_t n_segs = T->n_segments;
-		struct GMT_LINE_SEGMENT **L = NULL;
+		struct GMT_DATASEGMENT **L = NULL;
 		
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
 			if (!GMT_crossing_dateline (C, T->segment[seg])) continue;	/* GIS-safe feature! */
@@ -5112,7 +5112,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 				/* Truncate into two or more line segments */
 				n_split = GMT_split_line_at_dateline (C, T->segment[seg], &L);
 			}
-			T->segment = GMT_memory (C, T->segment, n_segs + n_split - 1, struct GMT_LINE_SEGMENT *);	/* Allow more space for new segments */
+			T->segment = GMT_memory (C, T->segment, n_segs + n_split - 1, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
 			GMT_free_segment (C, T->segment[seg]);	/* Delete the old one */
 			T->segment[seg] = L[0];			/* Hook in the first replacement */
 			for (k = 1; k < n_split; k++) T->segment[n_segs++] = L[k];	/* Add the remaining segments to the end */
@@ -5125,7 +5125,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	return (0);
 }
 
-int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_TABLE *table, bool use_GMT_io, unsigned int io_mode)
+int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_DATATABLE *table, bool use_GMT_io, unsigned int io_mode)
 {
 	/* Writes an entire segment data set to file or wherever.
 	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
@@ -5324,7 +5324,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 	return (0);	/* OK status */
 }
 
-int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct GMT_TEXT_TABLE *table, int io_mode)
+int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct GMT_TEXTTABLE *table, int io_mode)
 {
 	/* Writes an entire segment text data set to file or wherever.
 	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
@@ -5492,7 +5492,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 	return (0);	/* OK status */
 }
 
-void gmt_adjust_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, unsigned int n_columns)
+void gmt_adjust_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, unsigned int n_columns)
 {	/* Change the number of columns in this segment to n_columns (free or allocate as needed) */
 	unsigned int col;
 	for (col = n_columns; col < S->n_columns; col++) GMT_free (C, S->coord[col]);	/* Free up if n_columns < S->columns */
@@ -5507,7 +5507,7 @@ void gmt_adjust_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, unsigne
 	S->n_columns = n_columns;
 }
 
-void gmt_adjust_table (struct GMT_CTRL *C, struct GMT_TABLE *T, unsigned int n_columns)
+void gmt_adjust_table (struct GMT_CTRL *C, struct GMT_DATATABLE *T, unsigned int n_columns)
 {
 	/* Let table have n_columns (so either deallocate or allocate columns). */
 	uint64_t seg;
@@ -5535,21 +5535,21 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, unsigned int n_tabl
 	 * IF alloc_only is true then we do NOT set the corresponding counters (i.e., n_segments).  */
 	unsigned int tbl;
 	uint64_t seg;
-	struct GMT_TEXT_TABLE *T = NULL;
+	struct GMT_TEXTTABLE *T = NULL;
 	struct GMT_TEXTSET *D = NULL;
 	
 	D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
-	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXT_TABLE *);
+	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXTTABLE *);
 	D->n_tables = D->n_alloc = n_tables;
 	if (!alloc_only) D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
-		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
+		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE);
 		T = D->table[tbl];
 		T->n_alloc = n_segments;
-		T->segment = GMT_memory (C, NULL, T->n_alloc, struct GMT_TEXT_SEGMENT *);
+		T->segment = GMT_memory (C, NULL, T->n_alloc, struct GMT_TEXTSEGMENT *);
 		if (!alloc_only) T->n_segments = n_segments;
 		for (seg = 0; seg < T->n_segments; seg++) {
-			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
+			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXTSEGMENT);
 			T->segment[seg]->record = GMT_memory (C, NULL, n_rows, char *);
 			T->segment[seg]->n_alloc = n_rows;
 		}
@@ -5559,12 +5559,12 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, unsigned int n_tabl
 	return (D);
 }
 
-struct GMT_TEXT_TABLE * gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *Tin)
+struct GMT_TEXTTABLE * gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXTTABLE *Tin)
 {
 	/* Allocate the new Text Table structure with same # of segments and rows/segment as input table. */
 	uint64_t seg;
 	unsigned int hdr;
-	struct GMT_TEXT_TABLE *T = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
+	struct GMT_TEXTTABLE *T = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE);
 	
 	T->n_segments = T->n_alloc = Tin->n_segments;	/* Same number of segments as input table */
 	T->n_records  = Tin->n_records;		/* Same number of records as input table */
@@ -5573,9 +5573,9 @@ struct GMT_TEXT_TABLE * gmt_alloc_texttable (struct GMT_CTRL *C, struct GMT_TEXT
 		T->header = GMT_memory (C, NULL, Tin->n_headers, char *);
 		for (hdr = 0; hdr < T->n_headers; hdr++) T->header[hdr] = strdup (Tin->header[hdr]);
 	}
-	T->segment = GMT_memory (C, NULL, Tin->n_segments, struct GMT_TEXT_SEGMENT *);
+	T->segment = GMT_memory (C, NULL, Tin->n_segments, struct GMT_TEXTSEGMENT *);
 	for (seg = 0; seg < T->n_segments; seg++) {
-		T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
+		T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXTSEGMENT);
 		T->segment[seg]->record = GMT_memory (C, NULL, Tin->segment[seg]->n_rows, char *);
 		T->segment[seg]->n_rows = T->segment[seg]->n_alloc = Tin->segment[seg]->n_rows;
 		if (Tin->segment[seg]->header) T->segment[seg]->header = strdup (Tin->segment[seg]->header);
@@ -5604,8 +5604,8 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 			for (tbl = n_seg = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
 		else /* mode == GMT_ALLOC_HORIZONTAL */
 			n_seg = Din->table[0]->n_segments;
-		D->table = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE *);
-		D->table[0] = GMT_memory (C, NULL, 1, struct GMT_TEXT_TABLE);
+		D->table = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE *);
+		D->table[0] = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE);
 
 		/* As for file headers we concatenate the headers from all tables */
 		D->table[0]->n_headers  = Din->table[0]->n_headers;
@@ -5623,10 +5623,10 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		}
 
 		D->n_segments = D->table[0]->n_segments = D->table[0]->n_alloc = n_seg;
-		D->table[0]->segment = GMT_memory (C, NULL, n_seg, struct GMT_TEXT_SEGMENT *);
+		D->table[0]->segment = GMT_memory (C, NULL, n_seg, struct GMT_TEXTSEGMENT *);
 		for (seg = tbl = seg_in_tbl = 0; seg < D->n_segments; seg++) {
 			if (seg == Din->table[tbl]->n_segments) { tbl++; seg_in_tbl = 0; }	/* Go to next table */
-			D->table[0]->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXT_SEGMENT);
+			D->table[0]->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_TEXTSEGMENT);
 			D->table[0]->segment[seg]->n_rows = Din->table[tbl]->segment[seg_in_tbl]->n_rows;
 			D->table[0]->segment[seg]->record = GMT_memory (C, NULL, D->table[0]->segment[seg]->n_rows, char *);
 			if (mode == GMT_ALLOC_VERTICAL && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
@@ -5637,7 +5637,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		D->n_tables = D->n_alloc = Din->n_tables;		/* Same number of tables as input dataset */
 		D->n_segments  = Din->n_segments;	/* Same number of segments as input dataset */
 		D->n_records  = Din->n_records;		/* Same number of records as input dataset */
-		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TEXT_TABLE *);
+		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TEXTTABLE *);
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl] = gmt_alloc_texttable (C, Din->table[tbl]);
 	}
 	return (D);
@@ -5655,14 +5655,14 @@ struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTS
 	return (D);
 }
 
-struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, unsigned int n_columns, uint64_t n_rows)
+struct GMT_DATATABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_DATATABLE *Tin, unsigned int n_columns, uint64_t n_rows)
 {
 	/* Allocate the new Table structure with same # of segments and rows/segment as input table.
 	 * However, n_columns is given separately and could differ.
 	 * If n_rows is > 0 we well override the Tin rows counts by using n_rows instead.  */
 	unsigned int hdr;
 	uint64_t seg, nr;
-	struct GMT_TABLE *T = GMT_memory (C, NULL, 1, struct GMT_TABLE);
+	struct GMT_DATATABLE *T = GMT_memory (C, NULL, 1, struct GMT_DATATABLE);
 	
 	T->n_segments = T->n_alloc = Tin->n_segments;	/* Same number of segments as input table */
 	T->n_headers  = Tin->n_headers;
@@ -5673,9 +5673,9 @@ struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, u
 		T->header = GMT_memory (C, NULL, Tin->n_headers, char *);
 		for (hdr = 0; hdr < T->n_headers; hdr++) T->header[hdr] = strdup (Tin->header[hdr]);
 	}
-	T->segment = GMT_memory (C, NULL, Tin->n_segments, struct GMT_LINE_SEGMENT *);
+	T->segment = GMT_memory (C, NULL, Tin->n_segments, struct GMT_DATASEGMENT *);
 	for (seg = 0; seg < T->n_segments; seg++) {
-		T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+		T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 		nr = (n_rows) ? n_rows : Tin->segment[seg]->n_rows;
 		GMT_alloc_segment (C, T->segment[seg], nr, n_columns, true);
 		T->segment[seg]->n_rows = nr;
@@ -5686,7 +5686,7 @@ struct GMT_TABLE * gmt_alloc_table (struct GMT_CTRL *C, struct GMT_TABLE *Tin, u
 	return (T);
 }
 
-int GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, uint64_t n_rows, unsigned int n_columns, bool first)
+int GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, uint64_t n_rows, unsigned int n_columns, bool first)
 {	/* (re)allocates memory for a segment of given dimensions.
  	 * If n_rows is 0 then we do not set S->n_rows.  */
 	unsigned int col;
@@ -5706,15 +5706,15 @@ int GMT_alloc_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, uint64_t 
 	return (GMT_OK);
 }
 
-struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only)
+struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *C, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only)
 {
 	/* Allocate the new Table structure given the specified dimensions.
 	 * If n_columns == 0 it means we don't know that dimension yet.
 	 * If alloc_only is true then we do NOT set the corresponding counters (i.e., n_segments).  */
 	uint64_t seg;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	
-	T = GMT_memory (C, NULL, 1, struct GMT_TABLE);
+	T = GMT_memory (C, NULL, 1, struct GMT_DATATABLE);
 	if (!alloc_only) T->n_segments = n_segments;
 	T->n_alloc = n_segments;
 	if (n_columns) {
@@ -5723,9 +5723,9 @@ struct GMT_TABLE * GMT_create_table (struct GMT_CTRL *C, uint64_t n_segments, un
 	}
 	T->n_columns = n_columns;
 	if (n_segments) {
-		T->segment = GMT_memory (C, NULL, n_segments, struct GMT_LINE_SEGMENT *);
+		T->segment = GMT_memory (C, NULL, n_segments, struct GMT_DATASEGMENT *);
 		for (seg = 0; n_columns && seg < n_segments; seg++) {
-			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+			T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 			if (GMT_alloc_segment (C, T->segment[seg], n_rows, n_columns, true)) return (NULL);
 		}
 	}
@@ -5744,7 +5744,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tabl
 		D->max = GMT_memory (C, NULL, n_columns, double);
 	}
 	D->n_columns = n_columns;
-	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TABLE *);
+	D->table = GMT_memory (C, NULL, n_tables, struct GMT_DATATABLE *);
 	D->n_tables = D->n_alloc = n_tables;
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
@@ -5754,7 +5754,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tabl
 	return (D);
 }
 
-struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned int source_type, bool greenwich, bool poly, bool use_GMT_io)
+struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned int source_type, bool greenwich, bool poly, bool use_GMT_io)
 {
 	/* Reads an entire data set into a single table memory with any number of segments */
 
@@ -5766,7 +5766,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
 	double d, *in = NULL;
 	FILE *fp = NULL;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	void * (*psave) (struct GMT_CTRL *, FILE *, unsigned int *, int *) = NULL;	/* Pointer to function reading tables */
 
 	if (use_GMT_io) {	/* Use C->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
@@ -5869,7 +5869,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (first_seg || T->segment[seg]->n_rows > 0) {
 				if (!first_seg) seg++;	/* Only advance segment if last had any points */
-				T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+				T->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 				first_seg = false;
 			}
 			n_read++;
@@ -5966,8 +5966,8 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 		if (seg == (T->n_alloc-1)) {	/* Need to allocate more segments */
 			size_t n_old_alloc = T->n_alloc;
 			T->n_alloc <<= 1;
-			T->segment = GMT_memory (C, T->segment, T->n_alloc, struct GMT_LINE_SEGMENT *);
-			GMT_memset (&(T->segment[n_old_alloc]), T->n_alloc - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+			T->segment = GMT_memory (C, T->segment, T->n_alloc, struct GMT_DATASEGMENT *);
+			GMT_memset (&(T->segment[n_old_alloc]), T->n_alloc - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 		}
 
 		/* If a gap was detected, forget about it now, so we can use the data for the next segment */
@@ -5990,7 +5990,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 	}
 	else
 		seg++;
-	T->segment = GMT_memory (C, T->segment, seg, struct GMT_LINE_SEGMENT *);
+	T->segment = GMT_memory (C, T->segment, seg, struct GMT_DATASEGMENT *);
 	T->n_segments = seg;
 	T->n_columns = T->segment[0]->n_columns;
 	/* Determine table min,max values */
@@ -6008,7 +6008,7 @@ struct GMT_TABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned in
 	return (T);
 }
 
-void GMT_copy_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sout, struct GMT_LINE_SEGMENT *Sin)
+void GMT_copy_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *Sout, struct GMT_DATASEGMENT *Sin)
 {	/* Duplicates the segment */
 	unsigned int col;
 	for (col = 0; col < Sin->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
@@ -6017,10 +6017,10 @@ void GMT_copy_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sout, struct
 	Sout->n_rows = Sin->n_rows;
 }
 
-struct GMT_LINE_SEGMENT * GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin)
+struct GMT_DATASEGMENT * GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *Sin)
 {	/* Duplicates the segment */
 	unsigned int col;
-	struct GMT_LINE_SEGMENT *Sout = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+	struct GMT_DATASEGMENT *Sout = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 	GMT_alloc_segment (C, Sout, Sin->n_rows, Sin->n_columns, true);
 	for (col = 0; col < Sin->n_columns; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
 	Sout->n_rows = Sin->n_rows;
@@ -6052,8 +6052,8 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 			for (tbl = n_seg = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
 		else	/* mode == GMT_ALLOC_HORIZONTAL */
 			n_seg = Din->table[0]->n_segments;
-		D->table = GMT_memory (C, NULL, 1, struct GMT_TABLE *);
-		D->table[0] = GMT_memory (C, NULL, 1, struct GMT_TABLE);
+		D->table = GMT_memory (C, NULL, 1, struct GMT_DATATABLE *);
+		D->table[0] = GMT_memory (C, NULL, 1, struct GMT_DATATABLE);
 
 		/* As for file headers we concatenate the headers from all tables */
 		D->table[0]->n_headers  = Din->table[0]->n_headers;
@@ -6072,10 +6072,10 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 
 		D->n_segments = D->table[0]->n_segments = D->table[0]->n_alloc = n_seg;
 		D->table[0]->n_columns = D->n_columns;
-		D->table[0]->segment = GMT_memory (C, NULL, n_seg, struct GMT_LINE_SEGMENT *);
+		D->table[0]->segment = GMT_memory (C, NULL, n_seg, struct GMT_DATASEGMENT *);
 		for (seg = tbl = seg_in_tbl = 0; seg < D->n_segments; seg++) {
 			if (seg == Din->table[tbl]->n_segments) { tbl++; seg_in_tbl = 0; }	/* Go to next table */
-			D->table[0]->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+			D->table[0]->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 			nr = (n_rows) ? n_rows : Din->table[tbl]->segment[seg_in_tbl]->n_rows;
 			D->table[0]->segment[seg]->n_rows = nr;
 			GMT_alloc_segment (C, D->table[0]->segment[seg], nr, D->n_columns, true);
@@ -6089,7 +6089,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 		D->n_tables = D->n_alloc  = Din->n_tables;		/* Same number of tables as input dataset */
 		D->n_segments  = Din->n_segments;	/* Same number of segments as input dataset */
 		D->n_records  = Din->n_records;		/* Same number of records as input dataset */
-		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TABLE *);
+		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_DATATABLE *);
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			D->table[tbl] = gmt_alloc_table (C, Din->table[tbl], D->n_columns, n_rows);
 		}
@@ -6115,7 +6115,7 @@ struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATAS
 	return (D);
 }
 
-void gmt_free_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+void gmt_free_ogr_seg (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 {	/* Frees the OGR structure for a given segment */
 	unsigned int k, n;
 	n = (C->current.io.OGR) ? C->current.io.OGR->n_aspatial : C->common.a.n_aspatial; 
@@ -6127,7 +6127,7 @@ void gmt_free_ogr_seg (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	GMT_free (C, S->ogr);
 }
 
-void GMT_free_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *segment)
+void GMT_free_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *segment)
 {
 	/* Free memory allocated by GMT_read_table */
 
@@ -6144,7 +6144,7 @@ void GMT_free_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *segment)
 	GMT_free (C, segment);
 }
 
-void GMT_free_table (struct GMT_CTRL *C, struct GMT_TABLE *table)
+void GMT_free_table (struct GMT_CTRL *C, struct GMT_DATATABLE *table)
 {
 	unsigned int k;
 	if (!table) return;		/* Do not try to free NULL pointer */
@@ -6182,7 +6182,7 @@ void GMT_free_dataset (struct GMT_CTRL *C, struct GMT_DATASET **data)
 	GMT_free (C, *data);
 }
 
-void gmt_free_textsegment (struct GMT_CTRL *C, struct GMT_TEXT_SEGMENT *segment)
+void gmt_free_textsegment (struct GMT_CTRL *C, struct GMT_TEXTSEGMENT *segment)
 {
 	/* Free memory allocated by GMT_read_texttable */
 
@@ -6197,7 +6197,7 @@ void gmt_free_textsegment (struct GMT_CTRL *C, struct GMT_TEXT_SEGMENT *segment)
 	GMT_free (C, segment);
 }
 
-void gmt_free_texttable (struct GMT_CTRL *C, struct GMT_TEXT_TABLE *table)
+void gmt_free_texttable (struct GMT_CTRL *C, struct GMT_TEXTTABLE *table)
 {
 	unsigned int k;
 	uint64_t seg;
@@ -6620,7 +6620,7 @@ int GMT_load_aspatial_values (struct GMT_CTRL *C, struct GMT_OGR *G)
 }
 #endif
 
-double GMT_get_aspatial_value (struct GMT_CTRL *C, unsigned int col, struct GMT_LINE_SEGMENT *S)
+double GMT_get_aspatial_value (struct GMT_CTRL *C, unsigned int col, struct GMT_DATASEGMENT *S)
 {
 	/* Return the value associated with the aspatial values given for this column col */
 

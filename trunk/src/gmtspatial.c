@@ -28,7 +28,7 @@
 
 #include "gmt.h"
 
-void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *Sin, struct GMT_LINE_SEGMENT *Sout);
+void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *Sin, struct GMT_DATASEGMENT *Sout);
 
 #define POL_IS_CW	1
 #define POL_IS_CCW	0
@@ -293,7 +293,7 @@ void write_record (struct GMT_CTRL *GMT, double **R, uint64_t n, uint64_t p)
 	GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 }
 
-int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L)
+int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GMT_DATASET *D, struct DUP *I, struct DUP_INFO **L)
 {
 	/* Given single line segment S and a dataset of many line segments in D, determine the closest neighbor
 	 * to S in D (call it S'), and if "really close" it might be a duplicate or slight revision to S.
@@ -327,7 +327,7 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_LINE_SEGMENT *S, struct G
 	int k_signed;
 	double dist, f_seg, f_pt, d1, d2, closest, length[2], separation[2], close[2];
 	double med_separation[2], med_close[2], high = 0, low = 0, use_length, *sep = NULL;
-	struct GMT_LINE_SEGMENT *Sp = NULL;
+	struct GMT_DATASEGMENT *Sp = NULL;
 	
 	GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Determine the segments in D closest to our segment\n");
 	I->distance = DBL_MAX;
@@ -759,7 +759,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	double out[GMT_MAX_COLUMNS];
 
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMTSPATIAL_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -962,7 +962,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		struct GMT_XOVER XC;
 		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ], fmt[GMT_BUFSIZ];
 		struct GMT_DATASET *C = NULL;
-		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
+		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
@@ -1152,7 +1152,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		char record[GMT_BUFSIZ], format[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
-		struct GMT_LINE_SEGMENT *S1 = NULL, *S2 = NULL;
+		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		struct DUP_INFO **Info = NULL, *I = NULL;
 		
 		if (Ctrl->D.file) {	/* Get trial features via a file */
@@ -1165,7 +1165,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			C = D;	/* Compare with itself */
 			same_feature = true;
 			from = in;
-			S2 = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
+			S2 = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			GMT_alloc_segment (GMT, S2, 0, C->n_columns, true);
 		}
 		Info = GMT_memory (GMT, NULL, C->n_tables, struct DUP_INFO *);
@@ -1270,8 +1270,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		int ID = -1;
 		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
-		struct GMT_TABLE *T = NULL;
-		struct GMT_LINE_SEGMENT *S = NULL, *S2 = NULL;
+		struct GMT_DATATABLE *T = NULL;
+		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
@@ -1373,8 +1373,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		bool crossing;
 		uint64_t dim[4] = {0, 1, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
-		struct GMT_TABLE *T = NULL;
-		struct GMT_LINE_SEGMENT **L = NULL;
+		struct GMT_DATATABLE *T = NULL;
+		struct GMT_DATASEGMENT **L = NULL;
 		
 		dim[0] = D->n_tables;	dim[2] = D->n_columns;
 		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);
@@ -1392,8 +1392,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				if (Dout->table[tbl]->n_segments > n_segs) {
 					uint64_t old_n_segs = n_segs;
 					n_segs = Dout->table[tbl]->n_segments;
-					T->segment = GMT_memory (GMT, T->segment, n_segs, struct GMT_LINE_SEGMENT *);	/* Allow more space for new segments */
-					GMT_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+					T->segment = GMT_memory (GMT, T->segment, n_segs, struct GMT_DATASEGMENT *);	/* Allow more space for new segments */
+					GMT_memset (&(T->segment[old_n_segs]), n_segs - old_n_segs,  struct GMT_DATASEGMENT *);	/* Set to NULL */
 				}
 				if (crossing) {
 					for (kseg = 0; kseg < n_split; kseg++) {

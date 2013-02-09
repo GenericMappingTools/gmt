@@ -84,7 +84,6 @@ struct Gmt_moduleinfo {
 	const char *name;             /* Program name */
 	const char *component;        /* Component (core or supplement) */
 	const char *purpose;          /* Program purpose */
-	int api_mode;                 /* Either k_mode_gmt or k_mode_psl*/
 	/* gmt module function pointer: */
 	int (*p_func)(void*, int, void*);
 };
@@ -200,11 +199,11 @@ gawk '
 		FS = "\t";
 	}
 	!/^[ \t]*#/ {
-		printf "\t{\"%s\", \"%s\", \"%s\", %s, &GMT_%s},\n", $1, $2, $4, $3, $1;
+		printf "\t{\"%s\", \"%s\", \"%s\", &GMT_%s},\n", $1, $2, $3, $1;
 	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_C}
 
 cat << EOF >> ${FILE_GMT_MODULE_C}
-	{NULL, NULL, NULL, -1, NULL} /* last element == NULL detects end of array */
+	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
 
 /* Pretty print all module names and their purposes */

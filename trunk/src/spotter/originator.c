@@ -123,7 +123,7 @@ struct HOTSPOT_ORIGINATOR {
 	double np_lat;		/* Latitude  of nearest point on the current flowline */
 	uint64_t nearest;	/* Point id of current flowline node points closest to hotspot */
 	unsigned int stage;	/* Stage to which seamount belongs */
-	struct GMT_LINE_SEGMENT *D;	/* Used for drifting hotspots only */
+	struct GMT_DATASEGMENT *D;	/* Used for drifting hotspots only */
 };
 
 struct ORIGINATOR_CTRL {	/* All control options for this program (except common args) */

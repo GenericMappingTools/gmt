@@ -308,7 +308,7 @@ struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
 	double *dvalue;			/* @D: Same but converted to double (assumed possible) */
 };
 
-struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
+struct GMT_DATASEGMENT {		/* For holding segment lines in memory */
 	/* Variables we document for the API: */
 	uint64_t n_rows;		/* Number of points in this segment */
 	unsigned int n_columns;		/* Number of fields in each record (>= 2) */
@@ -327,11 +327,11 @@ struct GMT_LINE_SEGMENT {		/* For holding segment lines in memory */
 	double dist;			/* Distance from a point to this feature */
 	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
 	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
-	struct GMT_LINE_SEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
+	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
 
-struct GMT_TABLE {	/* To hold an array of line segment structures and header information in one container */
+struct GMT_DATATABLE {	/* To hold an array of line segment structures and header information in one container */
 	/* Variables we document for the API: */
 	unsigned int n_headers;	/* Number of file header records (0 if no header) */
 	unsigned int n_columns;	/* Number of columns (fields) in each record */
@@ -340,7 +340,7 @@ struct GMT_TABLE {	/* To hold an array of line segment structures and header inf
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
 	char **header;			/* Array with all file header records, if any) */
-	struct GMT_LINE_SEGMENT **segment;	/* Pointer to array of segments */
+	struct GMT_DATASEGMENT **segment;	/* Pointer to array of segments */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the table */
 	unsigned int mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
@@ -359,7 +359,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	uint64_t n_records;		/* The total number of data records across all tables */
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
-	struct GMT_TABLE **table;	/* Pointer to array of tables */
+	struct GMT_DATATABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */
 	size_t n_alloc;			/* The current allocation length of tables */
@@ -376,7 +376,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 /*============== GMT_TEXTSET Public Declaration ============== */
 /*============================================================ */
 
-struct GMT_TEXT_SEGMENT {		/* For holding segment text records in memory */
+struct GMT_TEXTSEGMENT {		/* For holding segment text records in memory */
 	/* Variables we document for the API: */
 	uint64_t n_rows;		/* Number of rows in this segment */
 	char **record;			/* Array of text records */
@@ -390,13 +390,13 @@ struct GMT_TEXT_SEGMENT {		/* For holding segment text records in memory */
 	char **a_value;			/* The values of the OGR/GMT aspatial fields */	
 };
 
-struct GMT_TEXT_TABLE {	/* To hold an array of text segment structures and header information in one container */
+struct GMT_TEXTTABLE {	/* To hold an array of text segment structures and header information in one container */
 	/* Variables we document for the API: */
 	unsigned int n_headers;	/* Number of file header records (0 if no header) */
 	uint64_t n_segments;	/* Number of segments in the array */
 	uint64_t n_records;	/* Total number of data records across all segments */
 	char **header;			/* Array with all file header records, if any) */
-	struct GMT_TEXT_SEGMENT **segment;	/* Pointer to array of segments */
+	struct GMT_TEXTSEGMENT **segment;	/* Pointer to array of segments */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the table */
 	unsigned int mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
@@ -409,7 +409,7 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 	unsigned int n_tables;		/* The total number of tables (files) contained */
 	uint64_t n_segments;		/* The total number of segments across all tables */
 	uint64_t n_records;		/* The total number of data records across all tables */
-	struct GMT_TEXT_TABLE **table;	/* Pointer to array of tables */
+	struct GMT_TEXTTABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;			/* The internal number of the data set */
 	size_t n_alloc;			/* The current allocation length of tables */

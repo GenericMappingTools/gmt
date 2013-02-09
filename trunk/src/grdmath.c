@@ -1566,9 +1566,9 @@ void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 {	/* Suitable for geographic (lon, lat) data and polygons */
 	uint64_t node, seg, row, col;
 	unsigned int inside;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	GMT_set_cols (GMT, GMT_IN, 2);
 	GMT_skip_xy_duplicates (GMT, true);	/* Avoid repeating x/y points in polygons */
@@ -1831,7 +1831,7 @@ void grd_LDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 {
 	uint64_t node, row, col;
 	double d;
-	struct GMT_TABLE *line = NULL;
+	struct GMT_DATATABLE *line = NULL;
 	struct GMT_DATASET *D = NULL;
 
 	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST")) == NULL) return;
@@ -1852,7 +1852,7 @@ void grd_LDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 	uint64_t node, row, col;
 	unsigned int prev;
 	double d;
-	struct GMT_TABLE *line = NULL;
+	struct GMT_DATATABLE *line = NULL;
 	struct GMT_DATASET *D = NULL;
 
 	if ((D = ASCII_read (GMT, info, GMT_IS_LINE, "LDIST2")) == NULL) return;
@@ -2301,7 +2301,7 @@ void grd_PDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 /*OPERATOR: PDIST 1 1 Compute distance (in degrees if -fg) from points in ASCII file A.  */
 {
 	uint64_t dummy[2], node, row, col;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
 	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "PDIST")) == NULL) return;
@@ -2318,7 +2318,7 @@ void grd_PDIST2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 {
 	uint64_t dummy[2], node, row, col;
 	unsigned int prev;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *D = NULL;
 
 	if ((D = ASCII_read (GMT, info, GMT_IS_POINT, "PDIST")) == NULL) return;

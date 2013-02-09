@@ -282,7 +282,7 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 	double tolerance;
 	
 	struct GMT_DATASET *D[2] = {NULL, NULL};
-	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
 	struct GMTDP_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

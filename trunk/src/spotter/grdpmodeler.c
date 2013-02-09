@@ -238,7 +238,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		"longitude", "latitude displacement", "latitude", "distance displacement"};
 
 	struct GMT_DATASET *D = NULL;
-	struct GMT_TABLE *pol = NULL;
+	struct GMT_DATATABLE *pol = NULL;
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_GRID *G_age = NULL, *G_mod = NULL;

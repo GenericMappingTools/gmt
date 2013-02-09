@@ -591,7 +591,6 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdview_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
@@ -646,7 +645,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT->current.plot.mode_3D |= 2;	/* Ensure that foreground axis is drawn */
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -813,7 +812,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start creating PostScript plot\n");
 
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 
 	PSL_setformat (PSL, 3);
 
@@ -900,13 +899,13 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
-		struct GMT_LINE_SEGMENT S;
+		struct GMT_DATASEGMENT S;
 		GMT_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Tiling without interpolation\n");
 
 		if (Ctrl->T.outline) GMT_setpen (GMT, &Ctrl->T.pen);
-		GMT_memset (&S, 1, struct GMT_LINE_SEGMENT);
+		GMT_memset (&S, 1, struct GMT_DATASEGMENT);
 		S.coord = GMT_memory (GMT, NULL, 2, double *);
 		GMT_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;

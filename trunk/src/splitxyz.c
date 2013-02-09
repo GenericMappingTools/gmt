@@ -319,8 +319,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	char header[GMT_TEXT_LEN64];
 
 	struct GMT_DATASET *D[2] = {NULL, NULL};
-	struct GMT_TABLE *T = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL, *S_out = NULL;
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASEGMENT *S = NULL, *S_out = NULL;
 	struct SPLITXYZ_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -423,7 +423,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 		h_col = Ctrl->Z.active + 3;
 	}
 	z_cols = 2;
-	S_out = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
+	S_out = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 	
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {

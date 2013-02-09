@@ -395,7 +395,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	struct GMT_FILL default_fill, current_fill, black;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_LINE_SEGMENT *L = NULL;
+	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXYZ_DATA *data = NULL;
 	struct PSXYZ_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -426,7 +426,6 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	Ctrl = New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxyz_parse (API, Ctrl, options, &S))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 
@@ -491,7 +490,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		}
 	}
 
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

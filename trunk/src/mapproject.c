@@ -432,7 +432,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[GMT_TEXT_LEN64], scale_unit_name[GMT_TEXT_LEN64];
 	char p[GMT_BUFSIZ], record[GMT_BUFSIZ];
 
-	struct GMT_TABLE *xyline = NULL;
+	struct GMT_DATATABLE *xyline = NULL;
 	struct GMT_DATASET *Lin = NULL;
 	struct GMT_OPTION *ptr = NULL;
 	struct MAPPROJECT_CTRL *Ctrl = NULL;

@@ -490,7 +490,6 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJfRb", "BKOPUXxYychips>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_pshistogram_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pshistogram_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
@@ -602,7 +601,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			uint64_t dim[4] = {1, 1, 2, 0}, row;
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
-			struct GMT_LINE_SEGMENT *S = NULL;
+			struct GMT_DATASEGMENT *S = NULL;
 			
 			if (Ctrl->I.mode == 1) {
 				for (ibox = 0; ibox < F.n_boxes; ibox++) {
@@ -720,7 +719,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	else
 		GMT_err_fail (GMT, GMT_map_setup (GMT, F.wesn), "");
 
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */

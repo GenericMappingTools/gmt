@@ -17,8 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * The template for all GMT5 mex programs that call their GMT module.
- * The Makefile will replace FUNC with the module name and FUNC_MODE with
- * either k_mode_gmt or k_mode_psl (when PSL needs to be initialized).
+ * The Makefile will replace FUNC with the module name.
  * We also need to feed in the correct KEY and N_KEYS settings, somehow.
  * Version:	5
  * Created:	10-Jul-2011
@@ -39,7 +38,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	cmd = mxArrayToString (prhs[0]);	/* First argument is the command string, e.g., '$ -R0/5/0/5 -I1' */
 
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("GMT/MEX-API", FUNC_MODE)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", 0U)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Convert command line arguments to local linked option list */
 	if (GMT_Create_Options (API, 0, cmd, &options)) mexErrMsgTxt ("Failure to parse GMT command options\n");

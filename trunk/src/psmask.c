@@ -510,7 +510,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	double inc2[2], *x = NULL, *y = NULL, *grd_x0 = NULL, *grd_y0 = NULL;
 
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_GRID *Grid = NULL;
 	struct PSMASK_INFO info;
 	struct PSMASK_CTRL *Ctrl = NULL;
@@ -533,7 +533,6 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmask_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psmask main code ----------------------------*/
 
@@ -570,7 +569,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	else if (!Ctrl->T.active)
 		GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 
-	if (make_plot) GMT_plotinit (GMT, options);
+	if (make_plot) PSL = GMT_plotinit (GMT, options);
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
@@ -718,8 +717,8 @@ int GMT_psmask (void *V_API, int mode, void *args)
 					/* Select which table this segment should be added to */
 					if (n_seg == n_seg_alloc) {
 						size_t n_old_alloc = n_seg_alloc;
-						D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
-						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+						D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, (n_seg_alloc += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+						GMT_memset (&(D->table[0]->segment[n_old_alloc]), n_seg_alloc - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[0]->segment[n_seg++] = S;
 					D->table[0]->n_segments++;	D->n_segments++;
@@ -741,7 +740,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			GMT_free (GMT, x);
 			GMT_free (GMT, y);
 			if (Ctrl->D.active) {	/* Write the clip polygon file(s) */
-				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_LINE_SEGMENT *);
+				D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, n_seg, struct GMT_DATASEGMENT *);
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 					Return (API->error);
 				}

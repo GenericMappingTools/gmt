@@ -515,7 +515,6 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
 	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmeca_parse (API, Ctrl, options))) Return (error);
- 	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psmeca main code ----------------------------*/
 	
@@ -531,7 +530,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);

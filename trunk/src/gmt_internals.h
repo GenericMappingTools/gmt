@@ -91,7 +91,7 @@ EXTERN_MSC void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, unsign
 EXTERN_MSC int GMT_get_fill_from_z (struct GMT_CTRL *C, struct GMT_PALETTE *P, double value, struct GMT_FILL *fill);
 EXTERN_MSC struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, uint64_t n_rows, bool alloc_only);
 EXTERN_MSC struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *C, unsigned int n_colors);
-EXTERN_MSC struct GMT_TEXT_TABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, unsigned int source_type);
+EXTERN_MSC struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, unsigned int source_type);
 EXTERN_MSC int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_TEXTSET *D, int table);
 EXTERN_MSC struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, unsigned int mode);
 EXTERN_MSC bool GMT_init_complex (unsigned int complex_mode, unsigned int *inc, unsigned int *off);

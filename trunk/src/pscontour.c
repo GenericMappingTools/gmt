@@ -628,7 +628,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	struct PSCONTOUR *cont = NULL;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct SAVE *save = NULL;
 	struct PSCONTOUR_CTRL *Ctrl = NULL;
@@ -651,7 +651,6 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("EMm"), options)) Return (API->error);
 	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscontour_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
@@ -753,7 +752,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		int col;
 		uint64_t seg, row;
 		struct GMT_DATASET *Tin = NULL;
-		struct GMT_TABLE *T = NULL;
+		struct GMT_DATATABLE *T = NULL;
 
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Q.file, NULL)) == NULL) {
 			Return (API->error);
@@ -924,7 +923,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	
 	if (make_plot) {
 		if (Ctrl->contour.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (!(Ctrl->N.active  || Ctrl->contour.delay)) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
@@ -1250,8 +1249,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t n_old_alloc = n_seg_alloc[tbl];
-						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_LINE_SEGMENT *);
-						GMT_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
+						GMT_memset (&(D->table[tbl]->segment[n_old_alloc]), n_seg_alloc[tbl] - n_old_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 					}
 					D->table[tbl]->segment[n_seg[tbl]++] = S;
 					D->table[tbl]->n_segments++;	D->n_segments++;
@@ -1313,7 +1312,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->D.active) {	/* Write the contour line output file(s) */
-		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_LINE_SEGMENT *);
+		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, n_seg[tbl], struct GMT_DATASEGMENT *);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}

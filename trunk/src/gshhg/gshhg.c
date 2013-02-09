@@ -225,8 +225,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	struct GSHHG h;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_TEXTSET *X = NULL;
-	struct GMT_LINE_SEGMENT **T = NULL;
-	struct GMT_TEXT_SEGMENT *TX = NULL;
+	struct GMT_DATASEGMENT **T = NULL;
+	struct GMT_TEXTSEGMENT *TX = NULL;
 	struct GSHHG_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -297,7 +297,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		D->table[0]->header[0] = strdup (header);
 		D->table[0]->n_headers = 1;
 		n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
-		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_LINE_SEGMENT *);
+		D->table[0]->segment = GMT_memory (GMT, NULL, n_alloc, struct GMT_DATASEGMENT *);
 		T = D->table[0]->segment;	/* There is only one output table with one or many segments */
 	}
 	n_read = fread (&h, sizeof (struct GSHHG), 1U, fp);
@@ -355,8 +355,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
-				T = GMT_memory (GMT, T, n_alloc, struct GMT_LINE_SEGMENT *);
-				GMT_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_LINE_SEGMENT *);	/* Set to NULL */
+				T = GMT_memory (GMT, T, n_alloc, struct GMT_DATASEGMENT *);
+				GMT_memset (&(T[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
 			}
 		}
 
@@ -378,7 +378,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		}
 		else {	/* Return the data points also */
 			/* Place the header in the output data structure */
-			T[seg_no] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);
+			T[seg_no] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 			T[seg_no]->header = strdup (header);
 			if (h.id == 0)	/* Special longitude range for Eurasia since it crosses Greenwich and Dateline */
 				T[seg_no]->range = GMT_IS_M180_TO_P270_RANGE;
@@ -419,7 +419,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	}
 	else {
 		if (seg_no < n_alloc) {	/* Allocate to final size table */
-			D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, seg_no, struct GMT_LINE_SEGMENT *);
+			D->table[0]->segment = GMT_memory (GMT, D->table[0]->segment, seg_no, struct GMT_DATASEGMENT *);
 		}
 		D->n_segments = D->table[0]->n_segments = seg_no;
 		gmode = (is_line) ? GMT_IS_LINE : GMT_IS_POLY;

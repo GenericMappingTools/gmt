@@ -1092,7 +1092,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 	struct GMT_GRID *Grid = NULL, *Out = NULL;
 	struct ZGRID Z;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *Nin = NULL;
 	struct GMT_GRID_INFO info;
 	struct GREENSPLINE_CTRL *Ctrl = NULL;
@@ -1217,7 +1217,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 	if (Ctrl->A.active) {	/* Read gradient constraints from file */
 		struct GMT_DATASET *Din = NULL;
-		struct GMT_TABLE *S = NULL;
+		struct GMT_DATATABLE *S = NULL;
 		if (GMT->common.b.active[GMT_IN]) GMT->common.b.ncol[GMT_IN]++;	/* Must assume it is just one extra column */
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			Return (API->error);

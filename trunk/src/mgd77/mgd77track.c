@@ -580,7 +580,6 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 
 	if (GMT_Parse_Common (API, "-VJfRb", "BKOPUXYcp>", options)) Return (API->error);
 	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/
 	
@@ -612,7 +611,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 	
