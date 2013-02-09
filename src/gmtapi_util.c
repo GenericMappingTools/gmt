@@ -289,31 +289,78 @@ void GMTAPI_index_to_2D_F (int *row, int *col, size_t index, int dim, int mode)
 }
 #endif
 
-int GMTAPI_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *limits, double *incs, int registration, struct GMT_GRID *G)
+int GMTAPI_init_grid (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, struct GMT_GRID *G)
 {
-	gmt_init_grdheader (API->GMT, G->header, opt, limits, incs, registration);
+	gmt_init_grdheader (API->GMT, G->header, opt, range, inc, registration);
 	return (GMT_OK);
 }
 
-int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *limits, double *incs, int registration, struct GMT_IMAGE *I)
+int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *range, double *inc, int registration, struct GMT_IMAGE *I)
 {
-	gmt_init_grdheader (API->GMT, I->header, opt, limits, incs, registration);
+	gmt_init_grdheader (API->GMT, I->header, opt, range, inc, registration);
 	return (GMT_OK);
 }
 
-int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, double *limits, double *incs, int registration, struct GMT_MATRIX *M)
+int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, double *range, double *inc, int registration, struct GMT_MATRIX *M)
 {
 	double off = 0.5 * registration;
-	M->n_columns = GMT_get_n (API->GMT, limits[XLO], limits[XHI], incs[GMT_X], off);
-	M->n_rows = GMT_get_n (API->GMT, limits[YLO], limits[YHI], incs[GMT_Y], off);
+	int dim = (M->n_layers > 1) ? 3 : 2;
+	GMT_memcpy (M->range, range, 2 * dim, double);
+	M->n_columns = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
+	M->n_rows = GMT_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
 	return (GMT_OK);
 }
 
-int GMTAPI_init_vector (struct GMTAPI_CTRL *API, double *limits, double *incs, int registration, struct GMT_VECTOR *V)
+int GMTAPI_init_vector (struct GMTAPI_CTRL *API, double *range, double *inc, int registration, struct GMT_VECTOR *V)
 {
-	double off = 0.5 * registration;
-	V->n_rows = GMT_get_n (API->GMT, limits[XLO], limits[XHI], incs[GMT_X], off);
+	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement */
+		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
+		V->n_rows = registration;	/* If so, n_rows is passed via registration */
+		GMT_memcpy (V->range, dummy_range, 2, double);
+	}
+	else {	/* Equidistant vector */
+		double off = 0.5 * registration;
+		V->n_rows = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
+		GMT_memcpy (V->range, range, 2, double);
+	}
 	return (GMT_OK);
+}
+
+double * GMTAPI_grid_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_GRID *G)
+{
+	return (GMT_grd_coord (API->GMT, G->header, dim));
+}
+
+double * GMTAPI_image_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_IMAGE *I)
+{
+	return (GMT_grd_coord (API->GMT, I->header, dim));
+}
+
+double * GMTAPI_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRIX *M)
+{	/* Allocate and compute coordinates along one dimension of a matrix */
+	double *coord, off, inc;
+	unsigned int k, n, min, max;
+	
+	if (M->n_layers <= 1 && dim == GMT_Z) return (NULL);	/* No z-dimension */
+	n = (dim == GMT_X) ? M->n_columns : ((dim == GMT_Y) ? M->n_rows : M->n_layers);
+	min = 2*dim, max = 2*dim + 1;
+	coord = GMT_memory (API->GMT, NULL, n, double);
+	off = 0.5 * M->registration;
+	inc = GMT_get_inc (API->GMT, M->range[min], M->range[max], n, M->registration);
+	for (k = 0; k < n; k++) coord[k] = GMT_col_to_x (API->GMT, k, M->range[min], M->range[max], inc, off, n);
+	return (coord);
+}
+
+double * GMTAPI_vector_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_VECTOR *V)
+{	/* Allocate and compute coordinates for a vector, if equidistantly defined */
+	unsigned int k;
+	double *coord, off, inc;
+	if (V->range[0] == 0.0 && V->range[1]) return (NULL);	/* Not an equidistant vector */
+	coord = GMT_memory (API->GMT, NULL, V->n_rows, double);
+	off = 0.5 * V->registration;
+	inc = GMT_get_inc (API->GMT, V->range[0], V->range[1], V->n_rows, V->registration);
+	for (k = 0; k < V->n_rows; k++) coord[k] = GMT_col_to_x (API->GMT, k, V->range[0], V->range[1], inc, off, V->n_rows);
+	return (coord);
 }
 
 void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
@@ -321,7 +368,7 @@ void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
 	M_obj->n_columns = h->nx;
 	M_obj->n_rows = h->ny;
 	M_obj->registration = h->registration;
-	GMT_memcpy (M_obj->limit, h->wesn, 4, double);
+	GMT_memcpy (M_obj->range, h->wesn, 4, double);
 }
 
 void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
@@ -329,7 +376,7 @@ void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct 
 	h->nx = M_obj->n_columns;
 	h->ny = M_obj->n_rows;
 	h->registration = M_obj->registration;
-	GMT_memcpy (h->wesn, M_obj->limit, 4, double);
+	GMT_memcpy (h->wesn, M_obj->range, 4, double);
 	/* Compute xy_off and increments */
 	h->xy_off = (h->registration == GMT_GRIDLINE_REG) ? 0.0 : 0.5;
 	h->inc[GMT_X] = GMT_get_inc (C, h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
@@ -2726,7 +2773,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_PTR_IS_NULL, GMTAPI_NOTSET);	/* Matrix container must be given for both input and output */
 			}
 			if (direction == GMT_IN) {	/* For input we can check if the GMT_MATRIX structure has proper parameters. */
-				if (M_obj->n_rows <= 0 || M_obj->n_columns <= 0 || GMT_check_region (API->GMT, M_obj->limit)) {
+				if (M_obj->n_rows <= 0 || M_obj->n_columns <= 0 || GMT_check_region (API->GMT, M_obj->range)) {
 					GMT_report (API->GMT, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Matrix parameters not set.\n", GMT_direction[direction]);
 					return_value (API, GMT_NO_PARAMETERS, GMTAPI_NOTSET);
 				}
@@ -2864,7 +2911,6 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction)
 int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction));
-	
 }
 #endif
 
@@ -2930,7 +2976,41 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 int GMT_End_IO_ (unsigned int *direction, unsigned int *mode)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_End_IO (GMT_FORTRAN, *direction, *mode));
+}
+#endif
+
+int GMT_Status_IO (void *V_API, unsigned int mode)
+{
+	/* Returns nonzero (true) or 0 (false) if the current io status
+	 * associated with record-by-record reading matches the
+	 * specified mode.  The modes are:
+	 * GMT_IO_TBL_HEADER		: Is current record a table header?
+	 * GMT_IO_SEG_HEADER		: Is current record a segment header?
+	 * GMT_IO_ANY_HEADER		: Is current record a header or segment header?
+	 * GMT_IO_MISMATCH		: Did current record result in a parsing error?
+	 * GMT_IO_EOF			: Did we reach end-of-file for entire data set(EOF)?
+	 * GMT_IO_NAN			: Did we encounter any NaNs in current record?
+	 * GMT_IO_GAP			: Did current record indicate a data gap?
+	 * GMT_IO_NEW_SEGMENT		: Is current record the start of a new segment (gap or header)
+	 * GMT_IO_LINE_BREAK		: Any sort of new line break (gap, headers, nan)
+	 * GMT_IO_FILE_BREAK		: Did we reach end-of-file for a single table (EOF)?
+	 * GMT_IO_DATA			: Is current record a data record (including nans)?
+	 */
+
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	struct GMT_IO *IO;
 	
+	if (API == NULL) return_value (API, GMT_NOT_A_SESSION, GMTAPI_NOTSET);
+	
+	IO = &(API->GMT->current.io);	/* Pointer to the GMT IO structure */
+	if (mode == GMT_IO_DATA_REC) return (IO->status == 0 || IO->status == GMT_IO_NAN);
+	return (IO->status & mode);
+}
+
+#ifdef FORTRAN_API
+int GMT_Status_IO_ (unsigned int *mode)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Status_IO (GMT_FORTRAN, *mode));
 }
 #endif
 
@@ -2966,7 +3046,6 @@ void * GMT_Retrieve_Data (void *V_API, int object_ID)
 void * GMT_Retrieve_Data_ (int *object_ID)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Retrieve_Data (GMT_FORTRAN, *object_ID));
-	
 }
 #endif
 
@@ -3009,7 +3088,6 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 void * GMT_Get_Data_ (int *ID, int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Data (GMT_FORTRAN, *ID, *mode, data));
-	
 }
 #endif
 
@@ -3049,7 +3127,6 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *input, void *data, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Read_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, input, data));
-	
 }
 #endif
 
@@ -3092,7 +3169,6 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *geometry, unsigned int *mode, double *wesn, char *output, void *data, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Write_Data (GMT_FORTRAN, *family, *method, *geometry, *mode, wesn, output, data));
-	
 }
 #endif
 
@@ -3133,7 +3209,6 @@ int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 int GMT_Put_Data_ (int *object_ID, unsigned int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Data (GMT_FORTRAN, *object_ID, *mode, data));
-	
 }
 #endif
 
@@ -3356,7 +3431,6 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 void * GMT_Get_Record_ (unsigned int *mode, int *status)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Record (GMT_FORTRAN, *mode, status));
-	
 }
 #endif
 
@@ -3579,7 +3653,6 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 int GMT_Put_Record_ (unsigned int *mode, void *record)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Record (GMT_FORTRAN, *mode, record));
-	
 }
 #endif
 
@@ -3596,30 +3669,38 @@ void * GMT_Create_Data (void *V_API, unsigned int family, uint64_t par[])
 	 */
 
 	void *data = NULL;
+	unsigned int n_layers;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
-	if (family != GMT_IS_GRID && par == NULL) return_null (API, GMT_PTR_IS_NULL);
 	
 	switch (family) {	/* dataset, cpt, text, or grid */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
 		 	data = GMT_create_grid (API->GMT);
 			break;
+		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
+		 	data = GMT_create_image (API->GMT);
+			break;
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables */
+			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (par[0] > UINT_MAX || par[2] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
 			data = GMT_create_dataset (API->GMT, par[0], par[1], par[2], par[3], false);
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables */
+			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (par[0] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
 			data = GMT_create_textset (API->GMT, par[0], par[1], par[2], false);
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for par[0] color entries */
+			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
 		 	data = GMT_create_palette (API->GMT, par[0]);
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers but no contents */
-		 	data = GMT_create_matrix (API->GMT, par[0]);
+			n_layers = (par == NULL) ? 0U : par[0];
+		 	data = GMT_create_matrix (API->GMT, n_layers);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns but no contents */
+			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
 		 	data = GMT_create_vector (API->GMT, par[0]);
 			break;
 		default:
@@ -3636,7 +3717,6 @@ void * GMT_Create_Data (void *V_API, unsigned int family, uint64_t par[])
 void * GMT_Create_Data_ (unsigned int *family, uint64_t *par)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Create_Data (GMT_FORTRAN, *family, par));
-	
 }
 #endif
 
@@ -3704,13 +3784,12 @@ int GMT_Destroy_Data (void *V_API, unsigned int mode, void *object)
 int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Destroy_Data (GMT_FORTRAN, *mode, object));
-	
 }
 #endif
 
-int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, int registration, void *container)
+int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, double *range, double *inc, int registration, void *container)
 {
-	/* Convert user domain limits, increments, and registration into dimensional header settings for the container.
+	/* Convert user domain range, increments, and registration into dimensional header settings for the container.
 	 * For grids and images we fill out the GRD_HEADER; for vectors and matrix we fill out their parameters.
 	 * After this step you may call GMT_Alloc_Data to actually get data space for these resources.
 	 */
@@ -3721,16 +3800,16 @@ int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, dou
 	
 	switch (family) {	/* grid, image, or matrix */
 		case GMT_IS_GRID:	/* GMT grid */
-			error = GMTAPI_init_grid (API, opt, limits, incs, registration, container);
+			error = GMTAPI_init_grid (API, opt, range, inc, registration, container);
 			break;
 		case GMT_IS_IMAGE:	/* GMT image */
-			error = GMTAPI_init_image (API, opt, limits, incs, registration, container);
+			error = GMTAPI_init_image (API, opt, range, inc, registration, container);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector */
-			error = GMTAPI_init_vector (API, limits, incs, registration, container);
+			error = GMTAPI_init_vector (API, range, inc, registration, container);
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix */
-			error = GMTAPI_init_matrix (API, limits, incs, registration, container);
+			error = GMTAPI_init_matrix (API, range, inc, registration, container);
 			break;
 		default:
 			error = GMT_WRONG_KIND;
@@ -3741,10 +3820,9 @@ int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, dou
 }
 
 #ifdef FORTRAN_API
-int GMT_Init_Data_ (unsigned int *family, struct GMT_OPTION *opt, double *limits, double *incs, int *registration, void *container)
+int GMT_Init_Data_ (unsigned int *family, struct GMT_OPTION *opt, double *range, double *inc, int *registration, void *container)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Init_Data (GMT_FORTRAN, *family, opt, limits, incs, *registration,container));
-	
+	return (GMT_Init_Data (GMT_FORTRAN, *family, opt, range, inc, *registration,container));
 }
 #endif
 
@@ -3790,6 +3868,65 @@ int GMT_Alloc_Data (void *V_API, unsigned int family, int pad, void *container)
 int GMT_Alloc_Data_ (unsigned int *family, int *pad, void *container)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Alloc_Data (GMT_FORTRAN, *family, *pad, container));
+}
+#endif
+
+/* Convenience function to get grid or image node */
+int64_t GMT_Get_Node2D (struct GRD_HEADER *header, int row, int col)
+{
+	return (GMT_IJP (header, row, col));
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Node2D_ (void *h, int *row, int *col)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Node2D (h, *row, *col));
+}
+#endif
+
+double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void *container)
+{
+	/* Return an array of coordinates for the nodes along the specified dimension.
+	 * For GMT_GRID and GMT_IMAGE, dim is either 0 (GMT_X) or 1 (GMT_Y) while for
+	 * GMT_MATRIX it may be 2 (GMT_Z), provided the matrix has more than 1 layer.
+	 * For GMT_VECTOR that were registered as equidistant it will return coordinates
+	 * along the single dimension.
+	 * Cannot be used on other resources (GMT_DATASET, GMT_TEXTSET, GMT_PALETTE).
+	 */
 	
+	double *coord = NULL;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
+
+	switch (family) {	/* grid, image, or matrix */
+		case GMT_IS_GRID:	/* GMT grid */
+			if (dim > 1) return_null (API, GMT_DIM_TOO_LARGE);
+			coord = GMTAPI_grid_coord (API, dim, container);
+			break;
+		case GMT_IS_IMAGE:	/* GMT image */
+			if (dim > 1) return_null (API, GMT_DIM_TOO_LARGE);
+			coord = GMTAPI_image_coord (API, dim, container);
+			break;
+		case GMT_IS_VECTOR:	/* GMT vector */
+			if (dim != 1) return_null (API, GMT_DIM_TOO_LARGE);
+			coord = GMTAPI_vector_coord (API, dim, container);
+			break;
+		case GMT_IS_MATRIX:	/* GMT matrix */
+			if (dim > 2) return_null (API, GMT_DIM_TOO_LARGE);
+			coord = GMTAPI_matrix_coord (API, dim, container);
+			break;
+		default:
+			return_null (API, GMT_WRONG_KIND);
+			break;		
+	}
+
+	return (coord);
+}
+
+#ifdef FORTRAN_API
+double * GMT_Get_Coord_ (unsigned int *family, unsigned int *dim, void *container)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Coord (GMT_FORTRAN, *family, *dim, container));
 }
 #endif

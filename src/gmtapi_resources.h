@@ -132,6 +132,15 @@ enum GMT_enum_reg {	/* Public constants for grid registration */
 	GMT_GRIDLINE_REG = 0,
 	GMT_PIXEL_REG};
 
+enum GMT_enum_gridindex {
+        GMT_XLO = 0, /* Index for west or xmin value */
+        GMT_XHI,     /* Index for east or xmax value */
+        GMT_YLO,     /* Index for south or ymin value */
+        GMT_YHI,     /* Index for north or ymax value */
+        GMT_ZLO,     /* Index for zmin value */
+        GMT_ZHI      /* Index for zmax value */
+};
+
 enum GMT_enum_gridio {
 	GMT_GRID_ALL = 0,	/* Read|write both grid header and the entire grid (no subset) */
 	GMT_GRID_HEADER = 1,		/* Just read|write the grid header */
@@ -263,13 +272,17 @@ enum GMT_enum_pol {
 
 /* Return codes for GMT_ascii_input: */
 
-enum GMT_enum_ascii_input_return {
-	GMT_IO_TBL_HEADER = 1,	/* Read a table header */
+enum GMT_enum_ascii_input_return {	/* Bit flag related to record i/o */
+	GMT_IO_DATA_REC 	=  0,		/* Read a data record and had no issues */
+	GMT_IO_TBL_HEADER 	=  1,		/* Read a table header */
 	GMT_IO_SEG_HEADER	=  2,		/* Read a segment header */
+	GMT_IO_ANY_HEADER	=  3,		/* Read either table or segment header */
 	GMT_IO_MISMATCH		=  4,		/* Read incorrect number of columns */
 	GMT_IO_EOF		=  8,		/* Read end-of-file */
 	GMT_IO_NAN		= 16,		/* Read a NaN record */
+	GMT_IO_NEW_SEGMENT	= 18,		/* Read either segment header or NaN-record */
 	GMT_IO_GAP		= 32,		/* Determined a gap should occur before this record */
+	GMT_IO_LINE_BREAK	= 58,		/* Segment break caused by seg header, gap, nan, or EOF */
 	GMT_IO_NEXT_FILE	= 64};		/* Like EOF except for an individual file (with more files to follow) */
 
 /* Here are the GMT data types used for tables */
@@ -459,12 +472,12 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int id;		/* The internal number of the data set */
 	unsigned int alloc_mode;	/* Allocation info [0] */
 	unsigned int model;		/* RGB, HSV, CMYK */
-	unsigned int is_gray;			/* true if only grayshades are needed */
-	unsigned int is_bw;			/* true if only black and white are needed */
-	unsigned int is_continuous;		/* true if continuous color tables have been given */
-	unsigned int has_pattern;		/* true if cpt file contains any patterns */
-	unsigned int skip;			/* true if current z-slice is to be skipped */
-	unsigned int categorical;		/* true if CPT applies to categorical data */
+	unsigned int is_gray;		/* true if only grayshades are needed */
+	unsigned int is_bw;		/* true if only black and white are needed */
+	unsigned int is_continuous;	/* true if continuous color tables have been given */
+	unsigned int has_pattern;	/* true if cpt file contains any patterns */
+	unsigned int skip;		/* true if current z-slice is to be skipped */
+	unsigned int categorical;	/* true if CPT applies to categorical data */
 };
 
 /*============================================================ */
@@ -476,7 +489,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 struct GMT_IMAGE {	/* Single container for a user image of data */
 	/* Variables we document for the API: */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
-	int		*ColorMap;
+	int		*ColorMap;	/* Array with color lookup values */
 	struct GRD_HEADER *header;	/* Pointer to full GMT header for the image */
 	unsigned char *data;		/* Pointer to actual image */
 /* ---- Variables "hidden" from the API ---- */
@@ -513,9 +526,11 @@ union GMT_UNIVECTOR {
 struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	/* Variables we document for the API: */
 	unsigned int n_columns;		/* Number of vectors */
+	unsigned int registration;	/* 0 for gridline and 1 for pixel registration  */
 	uint64_t n_rows;		/* Number of rows in each vector */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMT_FLOAT */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
+	double range[2];		/* Contains tmin/tmax (or 0/0 if not equidistant) */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;			/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
@@ -537,7 +552,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	size_t dim;			/* Allocated length of longest C or Fortran dim */
 	size_t size;			/* Byte length of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
-	double limit[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
+	double range[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
 	union GMT_UNIVECTOR data;	/* Union with pointer to actual matrix of the chosen type */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */

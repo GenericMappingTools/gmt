@@ -76,7 +76,7 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
  *=====================================================================================
  */
 
-/* 19 Primary API functions */
+/* 20 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
 EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
 EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
@@ -87,6 +87,7 @@ EXTERN_MSC int GMT_Destroy_Session	(void *C);
 EXTERN_MSC int GMT_Register_IO		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
 EXTERN_MSC int GMT_Init_IO		(void *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
 EXTERN_MSC int GMT_Begin_IO		(void *C, unsigned int family, unsigned int direction);
+EXTERN_MSC int GMT_Status_IO		(void *C, unsigned int mode);
 EXTERN_MSC int GMT_End_IO		(void *C, unsigned int direction, unsigned int mode);
 EXTERN_MSC int GMT_Report_Error		(void *C, int error);
 EXTERN_MSC int GMT_Put_Data		(void *C, int object_ID, unsigned int mode, void *data);
@@ -96,6 +97,11 @@ EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
 EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, int pad, void *data);
 EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, int registration, void *container);
+
+/* 2 convenience functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids, images */
+
+EXTERN_MSC double * GMT_Get_Coord	(void *C, unsigned int family, unsigned int dim, void *container);
+EXTERN_MSC int64_t GMT_Get_Index	(struct GRD_HEADER *header, int row, int col);
 
 /* 12 secondary functions for argument and option parsing */
 
