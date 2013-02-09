@@ -227,7 +227,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		}
 		else {	/* Mimic the gtest.nc grid as table */
 			M->n_rows = 6;	M->n_columns = 6;	M->n_layers = 1;	M->dim = 6;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
-			M->limit[XLO] = 0.0;	M->limit[XHI] = 5.0;	M->limit[YLO] = 0.0;	M->limit[YHI] = 5.0;	M->limit[4] = 0.0;	M->limit[5] = 25.0;
+			M->range[XLO] = 0.0;	M->range[XHI] = 5.0;	M->range[YLO] = 0.0;	M->range[YHI] = 5.0;	M->range[4] = 0.0;	M->range[5] = 25.0;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < M->size; k++) fdata[k] = (float)((int)(k%M->n_columns + (M->n_columns - 1 - k/M->n_columns) * M->n_rows));
 		}

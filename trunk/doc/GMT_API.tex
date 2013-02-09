@@ -223,6 +223,7 @@ of variable.  Unlike the other objects, images can only be read and not written.
 \verb!  uint64_t n_rows;!                & /* \emph{Number of rows in each vector} */ \\
 \verb!  enum GMT_enum_alloc alloc_mode;! & /* \emph{Determines if we may free the vectors or not} */\\
 \verb!  enum GMT_enum_type *type;!       & /* \emph{Array with data type for each vector} */\\
+\verb!  double range[2];!                & /* \emph{The min and max limits on t-range (or 0,0) } */\\
 \verb!  union GMT_UNIVECTOR *data;!      & /* \emph{Array with unions for each column} */\\
 \verb!};!                                & \\
 \hline
@@ -260,7 +261,7 @@ read the data properly.
 \verb!  size_t size;!                    & /* \emph{Byte length of data} */\\
 \verb!  enum GMT_enum_alloc alloc_mode;! & /* \emph{Determines if we may free the vectors or not} */\\
 \verb!  enum GMT_enum_type type;!        & /* \emph{The matrix data type} */\\
-\verb!  double limit[6];!                & /* \emph{The min and max limits on x-, y-, and z-ranges} */\\
+\verb!  double range[6];!                & /* \emph{The min and max limits on x-, y-, and z-ranges} */\\
 \verb!union GMT_UNIVECTOR data;!       & /* \emph{Union with pointers a data matrix of any type} */\\
 \verb!};!                              & \\ \hline
 \end{tabular}
@@ -316,13 +317,13 @@ GMT\_DOUBLE	&      9	& 8-byte data float type \\ \hline
 \end{table}
 
 \chapter{Overview of the GMT C Application Program Interface}
-\index{C interface}
-\index{Interface!C}
+\index{Overview of interface}
+\index{C Interface!Overview}
 
 Users who wish to create their own \GMT\ applications based on the API
 must make sure their program goes through the steps below; details
 for each step will be revealed in the sections to follow.  We have kept the
-API simple: In addition to the \GMT\ modules, there are only 17 public functions to become familiar with.
+API simple: In addition to the \GMT\ modules, there are only 20 public functions to become familiar with.
 All functions sets the variable \texttt{API->error} to the appropriate error code (when things go wrong);
 otherwise it is set to GMT\_OK (0).
 The layout here assumes you wish to use data in memory as input sources; if the data are simply
@@ -330,7 +331,7 @@ command-line files then things simplify considerably.
 
 \begin{enumerate}
 \item Initialize a new \GMT\ session by calling \texttt{GMT\_Create\_Session}, which
-allocates a \GMT\ API control structure and returns a pointer to it.  This pointer must be used
+allocates a \GMT\ API control structure and returns an opaque pointer to it.  This pointer must be used
 as first argument to all subsequent \GMT\ API function calls within the same session.
 \item For each intended call to a \GMT\ function, several steps are involved:
 \begin{enumerate}
@@ -340,11 +341,11 @@ or standard input/output.
 The resources will typically be files, memory locations, already-opened file handles,
 and even process streams.
 \item Each resource registration will generate a unique ID number.  For memory resources, these numbers are
-then converted to unique filenames of the form ``@GMTAPI@-\#\#\#\#\#\#'' that are used with \GMT\ modules.  When
-\GMT\ i/o library functions encounter such filenames they extract the ID and make a connection
+then converted to unique filenames of the form ``@GMTAPI@-\#\#\#\#\#\#'' that can be used with \GMT\ modules.  When
+\GMT\ i/o library functions encounter such unique filenames they extract the ID and make a connection
 to the resource registered under that ID.  Any number of table data or text sources
 will be combined into a single virtual source for \GMT\ functions to operate on.
-In contrast, CPT, Grid, and image resources are operated on individually.
+In contrast, CPT, Grid, and Image resources are operated on individually.
 \item Enable data import once all registrations are complete.
 \item Read into memory all data that will be passed to \GMT\ modules via pointers.  You may choose
 	to read everything into memory at once or process the data record-by-record (tables only).
@@ -363,6 +364,10 @@ Advanced programs may be calling more than one \GMT\ session and thus run severa
 sessions, perhaps  concurrently as different threads on multi-core machines.
 We will now discuss these steps in more detail.
 
+\chapter{The GMT C Application Program Interface}
+\index{C interface}
+\index{Interface!C}
+
 \section{Initialize a new GMT\ session}
 \index{Initialize a new GMT session}
 \index{GMT session!Initialize}
@@ -372,8 +377,8 @@ the standard \GMT\ programs since they only call one \GMT\ module and then exit.
 user-developed \GMT\ applications are likely to only initialize one session even though
 they may call many \GMT\ modules.  However, the \GMT\ API supports any number of
 simultaneous sessions should the programmer wish to take advantage of it.  This
-might be useful when you have access to several CPUs and want to spread the computing load\footnote{However,
-there is no thread-support yet.}.
+might be useful when you have access to several CPUs and want to spread the computing
+load\footnote{However, there is no thread-support yet.}.
 In the following discussion we will simplify our treatment to the use
 of a single session only.
 
@@ -492,9 +497,9 @@ GMT\_IS\_READONLY	&	5	&       Pointer to memory to \emph{read} data from \\ \hli
 \begin{table}[h]
 \small
 \centering
-\begin{tabular}{|l|l|} \hline
+\begin{tabular}{|l|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{approach}} & \multicolumn{1}{c|}{\emph{value}} & \multicolumn{1}{c|}{\emph{how method is modified}} \\ \hline
-GMT\_VIA\_VECTOR	&	100	&       The user's data columns are addressed via a GMT\_VECTOR structure \\ \hline
+GMT\_VIA\_VECTOR	&all	100	&       The user's data columns are addressed via a GMT\_VECTOR structure \\ \hline
 GMT\_VIA\_MATRIX	&	200	&       The user's grid is addressed via a GMT\_MATRIX structure \\ \hline
 \end{tabular}
 \caption{Integer constants defined for use when user data forms are involved.  These are to be added
@@ -524,12 +529,15 @@ GMT\_IS\_SURFACE	&	4	&       2-D gridded surface \\ \hline
 \centering
 \begin{tabular}{|c|l|l|} \hline
 \multicolumn{2}{|c|}{\emph{Index}} & \multicolumn{1}{c|}{\emph{content}} \\ \hline
-0 & XLO	&       x\_min (west) boundary of grid subset  \\ \hline
-1 & XHI	&       x\_max (east) boundary of grid subset  \\ \hline
-2 & YLO	&       y\_min (south) boundary of grid subset  \\ \hline
-3 & YHI	&       y\_max (north) boundary of grid subset  \\ \hline
+0 & GMT\_XLO	&       x\_min (west) boundary of grid subset  \\ \hline
+1 & GMT\_XHI	&       x\_max (east) boundary of grid subset  \\ \hline
+2 & GMT\_YLO	&       y\_min (south) boundary of grid subset  \\ \hline
+3 & GMT\_YHI	&       y\_max (north) boundary of grid subset  \\ \hline
+4 & GMT\_ZLO	&       z\_min (bottom) boundary of 3-D matrix subset  \\ \hline
+5 & GMT\_ZHI	&       z\_max (top) boundary of 3-D matrix subset  \\ \hline
 \end{tabular}
-\caption{Domain boundaries (\texttt{wesn}) used when selecting subsets of grids.}
+\caption{Domain boundaries (\texttt{wesn}) used when selecting subsets of grids.  The indices for
+the 3rd dimension can be used with GMT\_MATRIX resources.}
 \label{tbl:wesn}
 \index{Resources!Parameters!Domain}
 \end{table}
@@ -595,13 +603,13 @@ the case of input but may be unknowable in the case
 of output; if so you may pass 0 for these values and set \texttt{alloc\_mode} to 1; this will make
 sure \GMT\ will allocate the necessary memory at the location you specify.  Fortran users
 will instead have to specify a size large enough to hold the anticipated output data.
-The \texttt{registration} and \texttt{limit} gives the grid registration and domain.
+The \texttt{registration} and \texttt{range} gives the grid registration and domain.
 Finally, use the \texttt{dim} entry to indicate if the memory matrix has a dimension that
 exceeds that of the leading row (or column) dimension. Note: For GMT\_IS\_TEXTSET
 the user matrix is expected to be a 2-D character array with row length by \texttt{dim]}
 but we only consider the first \texttt{n\_columns} characters.  For data grids you will
 also need to specify the \texttt{registration}  (see the \GMT\ Cookbook and Reference,
-Appendix B for description of the two forms of registration) and data domain \texttt{limits}.
+Appendix B for description of the two forms of registration) and data domain \texttt{range}.
 
 \section{Create empty resources}
 \index{Create empty resources}
@@ -618,12 +626,14 @@ This is done with the \texttt{GMT\_Create\_Data} function, whose prototype is
 void * GMT_Create_Data (void *API, unsigned int family, uint64_t par[]);
 \end{verbatim}
 which returns a pointer to the allocated resource.
-Pass \texttt{family} as one of GMT\_IS\_GMTGRID, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
+Pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
 or the special families GMT\_IS\_VECTOR or GMT\_IS\_MATRIX when handling user data.
 Depending on the data type chosen you may need to pass additional parameters via
 the \texttt{par} array, as indicated below:
 \begin{description}
-	\item [GMT\_IS\_GMTGRID]: An empty GMT\_GRID structure with a header is
+	\item [GMT\_IS\_GRID]: An empty GMT\_GRID structure with a header is
+	allocated; the image array is NULL.  The \texttt{par} argument is not used.
+	\item [GMT\_IS\_IMAGE]: An empty GMT\_GRID structure with a header is
 	allocated; the data array is NULL.  The \texttt{par} argument is not used.
 	\item [GMT\_IS\_DATASET]: An empty GMT\_DATASET structure consisting of
 	\texttt{par[0]} tables, each with \texttt{par[1]} segments, each with
@@ -636,6 +646,9 @@ the \texttt{par} array, as indicated below:
 	\item [GMT\_IS\_VECTOR]: An empty GMT\_VECTOR structure with \texttt{par[0]}
 	column entries is allocated.
 	\item [GMT\_IS\_MATRIX]: An empty GMT\_VECTOR structure is allocated.
+	\texttt{par[0]} indicates the number of layers for a 3-D matrix, or pass NULL
+	for a 2-D matrix.
+	
 \end{description}
 In all cases the data entries are initialized to zero (NULL in the case of text).
 Note: if you need to
@@ -646,6 +659,51 @@ NULL pointer and pass an error code via \texttt{API->error}.
 
 \index{Duplicate!Data}
 \index{Data!Duplicate}
+
+\subsection{Initialize and allocate resources}
+\index{Initialize and allocate resources}
+\index{Resources!Initialize}
+\index{Resources!Allocate}
+
+The \texttt{GMT\_Create\_Data} function \emph{does not} allocate memory to actually hold
+the data associated with the families GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR,
+and GMT\_IS\_MATRIX.  The dimensions of these entities typically derive from the user's
+choice of data domain and data increments.  Thus, for these resources there are two
+additional steps required: (1) Initialize the dimensions of the memory to be allocated,
+and (2) allocate said memory.  The first step is handled by 
+
+\index{GMT\_Init\_Data}.
+
+\begin{verbatim}
+void * GMT_Init_Data (void *API, unsigned int family, \
+    struct GMT_OPTIONS *opt, double *range, double *incs, \
+    int registration, void *data);
+\end{verbatim}
+
+Pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR or GMT\_IS\_MATRIX.
+If you wish to place your command line into the header of a grid, pass the pointer to the list
+of program options \texttt{opt} (or NULL).  Use \texttt{range} to pass the minimum and maximum
+value for each dimensions, up to 3 pairs (e.g., xmin xmax ymin ymax zmin zmax). Similarly, use
+\texttt{incs} to give 1, 2, or 3 increments (i.e., xinc, yinc, zinc).  Unlike the others, the
+\texttt{registration} parameters indicates gridline-registration or pixel registration of nodes.
+Finally, \texttt{data} is the pointer to your resources as allocated by \texttt{GMT\_Create\_Data}.
+Note: GMT\_IS\_VECTOR may not necessarily conform to the concept of a min and max coordinate to go
+along with the data stored in the vector(s).  If so, pass NULL for \texttt{range} and \texttt{incs}
+and let \texttt{registration} instead contain the desired number of rows.
+
+The next step is to allocate memory for the arrays that will hold your data.  This is done by
+
+\index{GMT\_Alloc\_Data}.
+
+\begin{verbatim}
+void * GMT_Alloc_Data (void *API, unsigned int family, int pad, void *data);
+\end{verbatim}
+
+Again, pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR or GMT\_IS\_MATRIX.
+The pass \texttt{pad} is only used for GMT\_IS\_GRID and GMT\_IS\_IMAGE and can change the number of
+rows and columns used to pad the grid or image.  The \GMT\ default is 2; use this option to override
+this setting.  To leave the setting alone, pass GMTAPI\_NOTSET (-1);  As before, \texttt{data}
+is the pointer to your resources as allocated by \texttt{GMT\_Create\_Data}.
 
 \section{Import Data}
 \index{Import!Data}
@@ -808,11 +866,8 @@ where the returned value is either a pointer to a double array with the current 
 or a pointer to a character string with the current row, depending on \texttt{mode}.
 In either case these pointers point to memory internal to \GMT\ and should be considered read-only.
 When we reach end-of-file, encounter conversion problems, read header comments, or identify
-segment headers we return a NULL pointer, with the status of the current record returned via
-\texttt{API->GMT->current.io.status}.  Typically, this status is examined using macros that
-return TRUE or FALSE depending on the particular check.  There are 11 macros available to
-programmers; for a list see Table~\ref{tbl:iomacros}.
-The \texttt{nfields} pointer will return the number of fields read; pass NULL if your program
+segment headers we return a NULL pointer.
+The \texttt{nfields} pointer will return the number of fields returned; pass NULL if your program
 does not need this information.
 
 Normally (\texttt{mode} == GMT\_READ\_DOUBLE or 0), we return a pointer to the double array.
@@ -846,28 +901,46 @@ hence, it is a bad record (see \GMT's IO\_NAN\_RECORD defaults).
 \item [GMT\_IO\_GAP]: A user-defined data gap has been encountered (see \GMT's \Opt{g} option)
 \index{GMT\_IO\_GAP}
 \end{description}
-Developers who need to import data on a record-by-record basis should consult the source
-code of, say, \filename{blockmean.c} or \filename{pstext.c}.
+
+\subsection{Examining record status}
+\index{Examining record status}
+\index{Data!Record status}
+\index{Resources!Examining record status}
+
+Programs that read record-by-record must be aware of what the current record represents.
+Given the presense of headers, data gaps, NaN-record, etc. the developer will want to
+check the status after reading the next record.  The internal i/o status mode can be
+interrogated with the function
+
+\begin{verbatim}
+void * GMT_Status_IO (void *API, unsigned int mode);
+\end{verbatim}
+
+which returns 0 (false) or 1 (true) if the current status is reflected by the specified \texttt{mode}.
+There are 11 different status codes available to programmers; for a list see Table~\ref{tbl:iostatus}.
+For an example of how these may be used, see the test program \filename{testgmtio.c}.
+Developers who plan to import data on a record-by-record basis may also consult the source
+code of, say, \filename{blockmean.c} or \filename{pstext.c}, to see examples of working code.
 
 \begin{table}[h]
 \small
 \centering
 \begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Macro}} & \multicolumn{1}{c|}{\emph{description}} \\ \hline
-\texttt{GMT\_REC\_IS\_TBL\_HEADER(API)}	&       TRUE if we read a table header \\ \hline
-\texttt{GMT\_REC\_IS\_SEG\_HEADER(API)}	&       TRUE if we read a segment header \\ \hline
-\texttt{GMT\_REC\_IS\_ANY\_HEADER(API)}	&       TRUE if we read either header type \\ \hline
-\texttt{GMT\_REC\_IS\_ERROR(API)}	&       TRUE if we had a read or conversion failure \\ \hline
-\texttt{GMT\_REC\_IS\_EOF(API)}		&       TRUE if we reached the end of the file (EOF) \\ \hline
-\texttt{GMT\_REC\_IS\_NAN(API)}		&       TRUE if we only read NaNs \\ \hline
-\texttt{GMT\_REC\_IS\_GAP(API)}		&       TRUE if this record implies a data gap \\ \hline
-\texttt{GMT\_REC\_IS\_NEW\_SEGMENT(API)}&       TRUE if we enter a new segment \\ \hline
-\texttt{GMT\_REC\_IS\_LINE\_BREAK(API)}	&       TRUE if we encountered a segment header, EOF, NaNs or gap \\ \hline
-\texttt{GMT\_REC\_IS\_FILE\_BREAK(API)}	&       TRUE if we finished one file but not the last \\ \hline
-\texttt{GMT\_REC\_IS\_DATA(API)}	&       TRUE if we read a data record \\ \hline
+\multicolumn{1}{|c|}{\emph{mode}} & \multicolumn{1}{c|}{\emph{description}} \\ \hline
+\texttt{GMT\_IO\_DATA\_REC}	&       1 if we read a data record \\ \hline
+\texttt{GMT\_IO\_TBL\_HEADER}	&       1 if we read a table header \\ \hline
+\texttt{GMT\_IO\_SEG\_HEADER}	&       1 if we read a segment header \\ \hline
+\texttt{GMT\_IO\_ANY\_HEADER}	&       1 if we read either header record \\ \hline
+\texttt{GMT\_IO\_MISMATCH}	&       1 if we read incorrect number of columns \\ \hline
+\texttt{GMT\_IO\_EOF}		&       1 if we reached the end of the file (EOF) \\ \hline
+\texttt{GMT\_IO\_NAN}		&       1 if we only read NaNs \\ \hline
+\texttt{GMT\_IO\_GAP}		&       1 if this record implies a data gap \\ \hline
+\texttt{GMT\_IO\_NEW\_SEGMENT}	&       1 if we enter a new segment \\ \hline
+\texttt{GMT\_IO\_LINE\_BREAK}	&       1 if we encountered a segment header, EOF, NaNs or gap \\ \hline
+\texttt{GMT\_IO\_NEXT\_FILE}	&       1 if we finished one file but not the last \\ \hline
 \end{tabular}
 \caption{Macros used to determine status of current data record.  The gap macro depends on the current \Opt{g} settings.}
-\label{tbl:iomacros}
+\label{tbl:iostatus}
 \index{Record!Status}
 \end{table}
 
@@ -889,6 +962,108 @@ and we specify \texttt{direction} = GMT\_IN.  At the moment, \texttt{mode} is no
 will also reallocate any arrays obtained into their proper lengths.
 The function returns TRUE (1) if there is an error (which is passed back with \texttt{API->error}),
 otherwise it returns FALSE (0).
+
+\section{Manipulate data}
+\index{Data!Manipulate}
+\label{sec:manipulate}
+
+Once you have created and allocated and empty resources, or read in resources from the outside, you
+will wish to manipulate their contents.  This section discusses how to set up loops and access
+the important variables for the various data families.
+
+\subsection{Manipulate grids}
+\index{Grids!Manipulate}
+
+Most applications wishing to manipulate grids will want to loop over all the nodes, typically
+in a manner organized by rows and columns.  In doing so, the coordinates at each node may also
+be required for a calculation.  Below is a snippet of code that shows how to do
+visit all nodes in a grid and assign each node the product x * y:
+
+\begin{verbatim}
+int row, col, node;
+double *x_coord = NULL, *y_coord = NULL;
+< ... create a grid G or read one ... >
+x_coord = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
+y_coord = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
+for (row = 0; row < G->header->ny) {
+    for (col = 0; col < G->header->nx; col++) {
+        node = GMT_Get_Index (G->header, row, col);
+        G->data[node] = x_coord[col] * y_coord[row];
+    }
+}
+\end{verbatim}
+
+Note the use of \texttt{GMT\_Get\_Index} to get the grid node number associated
+with the \texttt{row} and \texttt{col} we are visiting.  Because \GMT\ grids have
+padding (for boundary conditions) the relationship between rows, columns, and
+node indices is more complicated and hence we hide that complexity in \texttt{GMT\_Get\_Index}.
+Note that for trivial procedures such setting all grid nodes to a constant (e.g., -9999.0)
+where the row and column does not enter you can instead do a single loop:
+
+\begin{verbatim}
+int node;
+< ... create a grid G or read one ... >
+for (node = 0; node < G->header->size) G->data[node] = -9999.0;
+\end{verbatim}
+
+Note we must use \texttt{G->header->size} (size of allocated array) and not
+\texttt{G->header->size} (number of nodes in grid) since the latter is smaller
+due to the padding and a single loop like the above treats the pad as part of
+the ``inside'' grid.
+
+\subsection{Manipulate data tables}
+\index{Data tables!Manipulate}
+
+Another common application is to process the records in a data table.
+Because \GMT\ consider the GMT\_DATASET resources to contain one or
+more tables, each of which may contain one or more segments, all of
+which may contain one or more columns, you will need to have multiple
+loops to visit all entries.  The following code snippet will visit
+all data records and add 1 to all columns beyond x and y:
+
+\begin{verbatim}
+int tbl, seg, row, col;
+struct GMT_TABLE *T = NULL;
+struct GMT_LINE_SEGMENT *S = NULL;
+
+< ... create a dataset D or read one ... >
+for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
+  T = D->table[tbl];       /* Convenient shorthand for current table */
+  for (seg = 0; seg < T->n_segments; seg++) {	/* For all segments */
+    S = T->segment[seg];   /* Convenient shorthand for current segment */
+    for (row = 0; row < S->n_rows; row++) {
+      for (col = GMT_Z; col < T->n_columns; col++) {
+        S->coord[col][row] += 1.0;
+      }
+    }
+  }
+}
+\end{verbatim}
+
+\subsection{Manipulate text tables}
+\index{Text tables!Manipulate}
+
+When data file contain text mixed in with numbers you must open the
+file as a GMT\_TEXTSET and do your own parsing of the data records.
+The following code snippet will visit all text records and print
+them out:
+
+\begin{verbatim}
+int tbl, seg, row, col;
+struct GMT_TEXTTABLE *T = NULL;
+struct GMT_TEXT_SEGMENT *S = NULL;
+
+< ... create a textset D or read one ... >
+for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
+  T = D->table[tbl];        /* Convenient shorthand for current table */
+  for (seg = 0; seg < T->n_segments; seg++) {	/* For all segments */
+    S = T->segment[seg];    /* Convenient shorthand for current segment */
+    for (row = 0; row < S->n_rows; row++) {
+      printf ("T=%d S=%d R=%d : %s\n", tbl, seg, row, S->record[row]);
+    }
+  }
+}
+\end{verbatim}
 
 \section{Prepare program options}
 \index{Program options!Prepare}
@@ -1401,7 +1576,7 @@ the C version of the functions.
 \item The resource arguments in \texttt{GMT\_Register\_IO} are not pointers to
 items but the items themselves.
 \end{itemize}
-The list of the basic 17 FORTRAN prototype functions thus becomes
+The list of the basic 18 FORTRAN prototype functions thus becomes
 \begin{verbatim}
 function GMT_Create_Session (tag, mode)
 function GMT_Destroy_Session ()
@@ -1410,14 +1585,17 @@ function GMT_Register_IO (family, method, geometry, direction, \
 function GMT_Encode_ID (filename, ID)
 function GMT_Init_IO (family, geometry, direction, n_args, args)
 function GMT_Begin_IO (family, geometry, direction)
+function GMT_Status_IO (mode)
 function GMT_Create_Data (family, geometry, ipar)
+function GMT_Init_Data (family, options, range, inc, registration, data)
+function GMT_Alloc_Data (family, pad, data)
 function GMT_Read_Data (family, method, geometry, mode, wesn, \
-	input, data)
+    input, data)
 function GMT_Get_Data (ID, mode, data)
 function GMT_Retrieve_Data (ID)
 function GMT_Get_Record (rec, mode, nfields)
 function GMT_Write_Data (family, method, geometry, mode, wesn, \
-	output, data)
+    output, data)
 function GMT_Put_Data (ID, mode, data)
 function GMT_Put_Record (mode, rec)
 function GMT_End_IO (direction, mode)
