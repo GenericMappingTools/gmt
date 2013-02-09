@@ -606,8 +606,6 @@ int GMT_pssegyz (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options)) Return (API->error);
 	Ctrl = New_pssegyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pssegyz_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pssegyz main code ----------------------------*/
 
@@ -627,7 +625,7 @@ int GMT_pssegyz (void *V_API, int mode, void *args)
 
 	/* set up map projection and PS plotting */
 	if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 

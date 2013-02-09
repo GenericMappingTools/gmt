@@ -29,7 +29,6 @@ struct Gmt_moduleinfo {
 	const char *name;             /* Program name */
 	const char *component;        /* Component (core or supplement) */
 	const char *purpose;          /* Program purpose */
-	int api_mode;                 /* Either k_mode_gmt or k_mode_psl*/
 	/* gmt module function pointer: */
 	int (*p_func)(void*, int, void*);
 };

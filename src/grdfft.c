@@ -606,7 +606,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 
 	float *datac = Grid->data;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 
 	if (*par > 0.0) {
 		/* X spectrum desired  */

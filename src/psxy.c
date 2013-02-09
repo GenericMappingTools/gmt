@@ -517,7 +517,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	struct GMT_FILL current_fill, default_fill, black;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
-	struct GMT_LINE_SEGMENT *L = NULL;
+	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
@@ -551,7 +551,6 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	S.u = GMT->current.setting.proj_length_unit;
 	Ctrl = New_psxy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxy_parse (API, Ctrl, options, &S))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psxy main code ----------------------------*/
 
@@ -661,7 +660,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (S.G.delay) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 	
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	if (Ctrl->T.active) {
 		GMT_plotend (GMT);
 		Return (GMT_OK);

@@ -73,7 +73,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 	uint64_t dim[4] = {1, 0, 0, 0}, k;
 	double area_sphere = 0.0, area_triangle = GMT->session.d_NaN, V[3][3], R2, y, dist = GMT->session.d_NaN;
 	char segment_header[GMT_BUFSIZ];
-	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
 	if (get_area == 2) /* Return area in steradians */
 		R2 = GMT->current.map.dist[GMT_MAP_DIST].scale = 1.0;
 	else {	/* Want area in units like m^2 or km^2 */
@@ -188,7 +188,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 	double area_sphere = 0.0, area_polygon, area_triangle, area_km2 = GMT->session.d_NaN, dist = GMT->session.d_NaN, y[3], V1[3], V2[3], V3[3];
 	double *plat = NULL, *plon = NULL, R2;
 
-	struct GMT_LINE_SEGMENT *S[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT *S[2] = {NULL, NULL};
 	struct STRPACK_ARC *arc = NULL;
 
 	if (get_area == 2) /* Want areas in steradians */

@@ -1487,7 +1487,7 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 	C->converge_limit = Ctrl->C.value;
 }
 
-void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_TABLE *xyzline) {
+void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline) {
 
 	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
 	uint64_t k = 0, n, kmax = 0, kmin = 0, row, seg;
@@ -1806,7 +1806,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	int key, one = 1;
 	double wesn[4];
 	
-	struct GMT_TABLE *xyzline = NULL;
+	struct GMT_DATATABLE *xyzline = NULL;
 	struct GMT_DATASET *Lin = NULL;
 	struct SURFACE_INFO C;
 	struct SURFACE_CTRL *Ctrl = NULL;

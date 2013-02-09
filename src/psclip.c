@@ -216,7 +216,6 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJfRb:", "BKOPUXxYycghipst>" GMT_OPT("EZMm"), options)) Return (API->error);
 	Ctrl = New_psclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psclip_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psclip main code ----------------------------*/
 
@@ -226,7 +225,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 		GMT->current.ps.nclip = +1;		/* Program adds one new level of clipping */
 
 	if (Ctrl->C.active && !GMT->current.map.frame.init) {
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		GMT_plotend (GMT);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
@@ -237,7 +236,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	if (Ctrl->C.active) gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
@@ -249,7 +248,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 		uint64_t row, seg;
 		double *x = NULL, *y = NULL;
 		struct GMT_DATASET *D = NULL;
-		struct GMT_LINE_SEGMENT *S = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
 
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 

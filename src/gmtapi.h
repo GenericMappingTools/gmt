@@ -53,16 +53,11 @@
 extern "C" {
 #endif
 
+/* Include constants and GMT resources */
+
 #include "gmtapi_define.h"
 #include "gmtapi_resources.h"
 #include "gmt_module.h"
-
-/* API mode */
-enum Api_mode {
-	_Api_mode_must_promote_to_int = -1,
-	k_mode_gmt, /* Need GMT but not PSL initialized */
-	k_mode_psl  /* Need GMT and PSL initialized */
-};
 
 struct GMT_OPTION {	/* Structure for a single GMT command option */
 	char option;			/* 1-char command line -<option> (e.g. D in -D) identifying the option (* if file) */

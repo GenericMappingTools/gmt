@@ -322,7 +322,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJfR", "BKOPUXxYycpt>", options)) Return (API->error);
 	Ctrl = New_grdvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdvector_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 	
 	/*---------------------------- This is the grdvector main code ----------------------------*/
 
@@ -364,7 +363,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: No data within specified region\n");
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);
@@ -401,7 +400,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 		GMT_init_vector_param (GMT, &Ctrl->Q.S);
 	}
 	dim[6] = 0.0;
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 

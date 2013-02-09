@@ -3592,7 +3592,7 @@ char *GMT_export2proj4 (struct GMT_CTRL *C) {
 	return (pStrOut);
 }
 
-void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
+struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
@@ -3603,12 +3603,29 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	char *mode[2] = {"w","a"};
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_OPTION *Out = NULL;
-	struct PSL_CTRL *P = C->PSL;
+	struct PSL_CTRL *P = NULL;
 
-	if (!P) {
-		GMT_report (C, GMT_MSG_NORMAL, "PSL pointer not initialized!\n");
-		GMT_exit (GMT_RUNTIME_ERROR);
+#if 0
+	if (!C->PSL) {
+		//GMT_report (C, GMT_MSG_NORMAL, "PSL pointer not initialized!\n");
+		//GMT_exit (GMT_RUNTIME_ERROR);
+		C->PSL = P = New_PSL_Ctrl (C->parent->session_tag);	/* Allocate a PSL control structure */
+		if (!C->PSL) {
+			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not initialize PSL - Aborting.\n");
+			GMT_exit (EXIT_FAILURE);
+		}
+		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+		/* If we already know the share dir and user dir: */
+		if (C->session.SHAREDIR)
+			C->PSL->internal.SHAREDIR = strdup (C->session.SHAREDIR);
+		if (C->session.USERDIR)
+			C->PSL->internal.USERDIR = strdup (C->session.USERDIR);
+		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
+		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
+		PSL_setdefaults (C->PSL, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);
 	}
+#endif
+	P = C->PSL;	/* Shorthand */
 
 	P->internal.verbose = C->current.setting.verbose;		/* Inherit verbosity level from GMT */
 #ifdef GMT_COMPAT
@@ -3692,7 +3709,7 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 		PSL_command (P, "%%%%PROJ: %s %.8f %.8f %.8f %.8f %.3f %.3f %.3f %.3f %s\n", proj4name,
 			C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI],
 			Cartesian_m[3], Cartesian_m[1], Cartesian_m[0], Cartesian_m[2], pstr);
-		free(pstr);
+		free (pstr);
 	}
 
 	if (!C->common.O.active) C->current.ps.layer = 0;	/* New plot, reset layer counter */
@@ -3720,6 +3737,8 @@ void GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	k = C->PSL->internal.line_cap;	C->PSL->internal.line_cap = -1; PSL_setlinecap (P, k);
 	k = C->PSL->internal.line_join;	C->PSL->internal.line_join = -1; PSL_setlinejoin (P, k);
 	k = C->PSL->internal.miter_limit;	C->PSL->internal.miter_limit = -1; PSL_setmiterlimit (P, k);
+	
+	return (P);
 }
 
 void GMT_plotcanvas (struct GMT_CTRL *C)
@@ -3881,7 +3900,7 @@ void gmt_geo_polygon (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n)
 	}
 }
 
-void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_LINE_SEGMENT *S, bool add_pole)
+void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_DATASEGMENT *S, bool add_pole)
 {
 	/* Handles the laying down of polygons suitable for filling only; outlines are done separately later.
 	 * Polar caps need special treatment in that we must add a detour to the pole.
@@ -3908,7 +3927,7 @@ void gmt_geo_polygon_segment (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT
 	}
 }
 
-void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
+void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 {	/* Deal with plotting of one or more polygons that may wrap across the map.
  	 * Multi-polygons occur if composed of a perimeter and one or more holes.
  	 * This is marked by S->next being set to point to the next hole.
@@ -3917,7 +3936,7 @@ void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S)
 	 * we must lay down path twice (first for fill; then for line) since the
 	 * two paths are not the same.  If no fill is requested then we just draw lines.
 	 */
-	struct GMT_LINE_SEGMENT *S2 = NULL;
+	struct GMT_DATASEGMENT *S2 = NULL;
  	bool add_pole, separate;
 	int outline = 0;
 	char *type[2] = {"Perimeter", "Polar cap perimeter"};
@@ -3978,7 +3997,7 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, 
 	int i;
 	double delta_azimuth, sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c;
 	double sin_c, cos_c, center, *px = NULL, *py = NULL;
-	struct GMT_LINE_SEGMENT *S = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+	struct GMT_DATASEGMENT *S = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 
 	GMT_alloc_segment (C, S, GMT_ELLIPSE_APPROX+1, 2, true);
 	px = S->coord[GMT_X];	py = S->coord[GMT_Y];

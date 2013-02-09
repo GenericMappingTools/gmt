@@ -361,7 +361,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;
-	struct GMT_TABLE *P = NULL;
+	struct GMT_DATATABLE *P = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
@@ -381,7 +381,6 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
 	Ctrl = New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psrose_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
@@ -581,7 +580,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		GMT->current.map.frame.paint = false;	/* Turn off so GMT_plotinit wont fill */
 		do_fill = true;
 	}
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 
 	x_origin = Ctrl->S.scale;	y_origin = ((half_only) ? 0.0 : Ctrl->S.scale);
 	diameter = 2.0 * Ctrl->S.scale;

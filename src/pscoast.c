@@ -570,7 +570,6 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJRb", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
 	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = GMT_pscoast_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pscoast main code ----------------------------*/
 
@@ -661,7 +660,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		else if (clipping)
 			GMT->current.ps.nclip = +1;	/* Signal that this program initiates new clipping that will outlive this process */
 
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 
 		if (Ctrl->Q.active) {  /* Just undo previous clip-path */
 			PSL_endclipping (PSL, 1);

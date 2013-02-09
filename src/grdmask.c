@@ -245,7 +245,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	struct GRDMASK_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

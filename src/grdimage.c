@@ -396,7 +396,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJfR", "BKOPUXxYycnpt>" GMT_OPT("S"), options)) Return (API->error);
 	Ctrl = New_grdimage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdimage_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the grdimage main code ----------------------------*/
 
@@ -544,7 +543,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 	if (nothing_inside) {
 		/* No grid to plot; just do empty map and bail */
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		GMT_map_basemap (GMT);
@@ -566,7 +565,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 #endif
 
 	if (!Ctrl->A.active) {	/* Otherwise we are not writting any postscript */
-		GMT_plotinit (GMT, options);
+		PSL = GMT_plotinit (GMT, options);
 		GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 		GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);

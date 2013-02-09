@@ -70,9 +70,9 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double (*left_edge) (struct GMT_CTRL *, double);	/* Pointers to functions that return left edge of map */
 	double (*right_edge) (struct GMT_CTRL *, double);	/* Pointers to functions that return right edge of map */
 	struct GMT_DIST dist[3];		/* struct with pointers to functions/scales returning distance between two points points */
-	bool (*near_lines_func) (struct GMT_CTRL *, double, double, struct GMT_TABLE *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to nearest line among a set of lines */
-	bool (*near_a_line_func) (struct GMT_CTRL *, double, double, uint64_t, struct GMT_LINE_SEGMENT *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to line */
-	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_TABLE *, double);	/* Pointer to function returning distance to nearest point */	
+	bool (*near_lines_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to nearest line among a set of lines */
+	bool (*near_a_line_func) (struct GMT_CTRL *, double, double, uint64_t, struct GMT_DATASEGMENT *, unsigned int, double *, double *, double *);	/* Pointer to function returning distance to line */
+	bool (*near_point_func) (struct GMT_CTRL *, double, double, struct GMT_DATATABLE *, double);	/* Pointer to function returning distance to nearest point */	
 	unsigned int (*wrap_around_check) (struct GMT_CTRL *, double *, double, double, double, double, double *, double *, unsigned int *);	/* Does x or y wrap checks */
 	double (*azimuth_func) (struct GMT_CTRL *, double, double, double, double, bool);	/* Pointer to function returning azimuth between two points points */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */

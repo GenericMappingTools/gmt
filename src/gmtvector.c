@@ -363,7 +363,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	uint64_t row, n, seg, p;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
-	struct GMT_LINE_SEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL;
 	
 	GMT_memset (M, 3, double);
 	n_components = (GMT_is_geographic (GMT, GMT_IN) || D->n_columns == 3) ? 3 : 2;
@@ -447,7 +447,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	double out[3], vector_1[3], vector_2[3], vector_3[3], R[3][3], E[3];
 
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
-	struct GMT_LINE_SEGMENT *Sin = NULL,  *Sout = NULL;
+	struct GMT_DATASEGMENT *Sin = NULL,  *Sout = NULL;
 	struct GMTVECTOR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

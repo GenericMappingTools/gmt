@@ -466,8 +466,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		unsigned int tbl, col, n_cols = Ctrl->G.n_grids;
 		uint64_t row, seg;
 		struct GMT_DATASET *Din = NULL, *Dout = NULL, *Dtmp = NULL;
-		struct GMT_TABLE *T = NULL;
-		struct GMT_LINE_SEGMENT *S = NULL;
+		struct GMT_DATATABLE *T = NULL;
+		struct GMT_DATASEGMENT *S = NULL;
 		
 		if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 			Return (API->error);
@@ -535,7 +535,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		
 		if (Ctrl->S.active) {	/* Compute the stacked profiles */
 			struct GMT_DATASET *Stack = NULL;
-			struct GMT_LINE_SEGMENT *M = NULL;
+			struct GMT_DATASEGMENT *M = NULL;
 			uint64_t dim[4], n_rows;
 			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
 			unsigned int colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */

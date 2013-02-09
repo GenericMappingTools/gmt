@@ -396,7 +396,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_DATASET *F = NULL;
-	struct GMT_LINE_SEGMENT *H = NULL;
+	struct GMT_DATASEGMENT *H = NULL;
 	struct BACKTRACKER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;

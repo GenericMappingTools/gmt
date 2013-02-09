@@ -622,8 +622,8 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 
 	struct SPECTRUM1D_INFO C;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;
-	struct GMT_TABLE *Tout = NULL;
-	struct GMT_LINE_SEGMENT *S = NULL, *Sout = NULL;
+	struct GMT_DATATABLE *Tout = NULL;
+	struct GMT_DATASEGMENT *S = NULL, *Sout = NULL;
 	struct SPECTRUM1D_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -674,7 +674,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 
 	if (one_table) {
 		Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
-		Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_TABLE *);	/* with table array */
+		Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, Din->n_columns))) Return (error);
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {

@@ -330,8 +330,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	struct GMT_PEN current_pen;
 	struct GMT_TEXTSET *In = NULL, *D[N_CMD] = {NULL, NULL, NULL};
 	struct GMT_DATASET *Front = NULL;
-	struct GMT_TEXT_SEGMENT *S[N_CMD] = {NULL, NULL, NULL};
-	struct GMT_LINE_SEGMENT *F = NULL;
+	struct GMT_TEXTSEGMENT *S[N_CMD] = {NULL, NULL, NULL};
+	struct GMT_DATASEGMENT *F = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -348,7 +348,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options)) Return (API->error);
 	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pslegend_parse (API, Ctrl, options))) Return (error);
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pslegend main code ----------------------------*/
 
@@ -539,7 +538,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		j_ptr = GMT_Find_Option (API, 'J', options);
 		if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 	}
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 
 	/* Must reset any -X -Y to 0 so they are not used further in the GMT_modules we call below */

@@ -1348,26 +1348,26 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 
 /* GMT_dateline_clip simply clips a polygon agains the dateline and results in two polygons in L */
 
-unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *S, struct GMT_LINE_SEGMENT ***Lout)
+unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout)
 {
 	int side, j, np, cross = 0;
 	uint64_t row, m;
 	size_t n_alloc = 0;
 	char label[GMT_BUFSIZ], *part = "EW";
 	double xx[2], yy[2];
-	struct GMT_LINE_SEGMENT **L = NULL;
+	struct GMT_DATASEGMENT **L = NULL;
 	bool (*inside[2]) (double, double);
 	bool (*outside[2]) (double, double);
 	
 
 	inside[0] = gmt_inside_upper_boundary;	outside[0] = gmt_outside_upper_boundary;
 	inside[1] = gmt_inside_lower_boundary;	outside[1] = gmt_outside_lower_boundary;
-	L = GMT_memory (C, NULL, 2, struct GMT_LINE_SEGMENT *);	/* The two polygons */
+	L = GMT_memory (C, NULL, 2, struct GMT_DATASEGMENT *);	/* The two polygons */
 
 	for (row = 0; row < S->n_rows; row++) GMT_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->coord[GMT_X][row]);	/* First enforce 0 <= lon < 360 so we dont have to check again */
 
 	for (side = 0; side < 2; side++) {	/* Do it twice to get two truncated polygons */
-		L[side] = GMT_memory (C, NULL, 1, struct GMT_LINE_SEGMENT);
+		L[side] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
 		n_alloc = lrint (1.05*S->n_rows+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 		GMT_alloc_segment (C, L[side], n_alloc, S->n_columns, true);	/* Temp segment with twice the number of points as we will add crossings*/
 		m = 0;		/* Start with nuthin' */
@@ -5166,17 +5166,17 @@ double GMT_distance (struct GMT_CTRL *C, double lonS, double latS, double lonE, 
 	return (GMT_distance_type (C, lonS, latS, lonE, latE, 0));
 }
 
-bool GMT_near_a_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, double dist)
+bool GMT_near_a_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_DATATABLE *T, double dist)
 {	/* Compute distance to nearest point in T from (lon, lat) */
 	return (C->current.map.near_point_func (C, lon, lat, T, dist));
 }
 
-bool GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
+bool GMT_near_lines (struct GMT_CTRL *C, double lon, double lat, struct GMT_DATATABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {	/* Compute distance to nearest line in T from (lon,lat) */
 	return (C->current.map.near_lines_func (C, lon, lat, T, return_mindist, dist_min, x_near, y_near));
 }
 
-bool GMT_near_a_line (struct GMT_CTRL *C, double lon, double lat, uint64_t seg, struct GMT_LINE_SEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
+bool GMT_near_a_line (struct GMT_CTRL *C, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {	/* Compute distance to the line S from (lon,lat) */
 	return (C->current.map.near_a_line_func (C, lon, lat, seg, S, return_mindist, dist_min, x_near, y_near));
 }
@@ -5519,7 +5519,7 @@ double gmt_az_backaz_loxodrome (struct GMT_CTRL *C, double lonE, double latE, do
 
 /* Functions dealing with distance between points */
 
-double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, uint64_t *id)
+double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct GMT_DATATABLE *T, uint64_t *id)
 {
 	uint64_t row, seg;
 	double d, d_min;
@@ -5536,7 +5536,7 @@ double GMT_mindist_to_point (struct GMT_CTRL *C, double lon, double lat, struct 
 	return (d_min);
 }
 
-bool gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
+bool gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct GMT_DATATABLE *T, double dist)
 {
 	uint64_t row, seg;
 	bool each_point_has_distance;
@@ -5553,7 +5553,7 @@ bool gmt_near_a_point_spherical (struct GMT_CTRL *C, double x, double y, struct 
 	return (false);
 }
 
-bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_TABLE *T, double dist)
+bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct GMT_DATATABLE *T, double dist)
 {	/* Since Cartesian we use a GMT_distance set to return distances^2 (avoiding hypot) */
 	bool each_point_has_distance;
 	uint64_t row, seg;
@@ -5593,7 +5593,7 @@ bool gmt_near_a_point_cartesian (struct GMT_CTRL *C, double x, double y, struct 
 
 /* Functions involving distance from arbitrary points to a line */
 
-bool gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, uint64_t seg, struct GMT_LINE_SEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	bool perpendicular_only = false, interior, within;
 	uint64_t row0, row1;
@@ -5710,7 +5710,7 @@ bool gmt_near_a_line_cartesian (struct GMT_CTRL *C, double lon, double lat, uint
 	return (within);	/* All tests failed, we are not close to the line(s), or we just return distance and interior (see comments above) */
 }
 
-bool gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struct GMT_TABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struct GMT_DATATABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	uint64_t seg;
 	int mode = return_mindist, status;
@@ -5728,7 +5728,7 @@ bool gmt_near_lines_cartesian (struct GMT_CTRL *C, double lon, double lat, struc
 	return (OK);	
 }
 
-bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint64_t seg, struct GMT_LINE_SEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	bool perpendicular_only = false, interior, within;
 	uint64_t row, prev_row;
@@ -5817,7 +5817,7 @@ bool gmt_near_a_line_spherical (struct GMT_CTRL *P, double lon, double lat, uint
 	return (within);	/* All tests failed, we are not close to the line(s), or we return a mindist (see comments above) */
 }
 
-bool gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_TABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
+bool gmt_near_lines_spherical (struct GMT_CTRL *P, double lon, double lat, struct GMT_DATATABLE *T, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near)
 {
 	uint64_t seg;
 	int mode = return_mindist, status;

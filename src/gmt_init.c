@@ -8826,7 +8826,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	return (C);
 }
 
-struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
+struct GMT_CTRL *GMT_begin (char *session)
 {
 	/* GMT_begin is called once by GMT_Create_Session and does basic
 	 * one-time initialization of GMT before the GMT modules take over.
@@ -8876,22 +8876,20 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int mode)
 
 	C = New_GMT_Ctrl (session);		/* Allocate and initialize a new common control structure */
 
-	if (mode == k_mode_psl) {			/* The application will need PSL */
-		C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
-		if (!C->PSL) {
-			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not initialize PSL - Aborting.\n");
-			GMT_exit (EXIT_FAILURE);
-		}
-		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
-		/* If we already know the share dir and user dir: */
-		if (C->session.SHAREDIR)
-			C->PSL->internal.SHAREDIR = strdup (C->session.SHAREDIR);
-		if (C->session.USERDIR)
-			C->PSL->internal.USERDIR = strdup (C->session.USERDIR);
-		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
-		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
-		PSL_setdefaults (C->PSL, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);
+	C->PSL = New_PSL_Ctrl (session);	/* Allocate a PSL control structure */
+	if (!C->PSL) {
+		GMT_report (C, GMT_MSG_NORMAL, "Error: Could not initialize PSL - Aborting.\n");
+		GMT_exit (EXIT_FAILURE);
 	}
+	C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
+	/* If we already know the share dir and user dir: */
+	if (C->session.SHAREDIR)
+		C->PSL->internal.SHAREDIR = strdup (C->session.SHAREDIR);
+	if (C->session.USERDIR)
+		C->PSL->internal.USERDIR = strdup (C->session.USERDIR);
+	PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
+	/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
+	PSL_setdefaults (C->PSL, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);
 
 	GMT_io_init (C);		/* Init the table i/o structure before parsing GMT defaults */
 

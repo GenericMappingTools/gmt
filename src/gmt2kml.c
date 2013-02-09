@@ -659,7 +659,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_TEXTSET *Din = NULL;
-	struct GMT_TEXT_TABLE *T = NULL;
+	struct GMT_TEXTTABLE *T = NULL;
 	struct GMT2KML_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */

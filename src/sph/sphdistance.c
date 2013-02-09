@@ -69,7 +69,7 @@ struct SPHDISTANCE_CTRL {
 	} Q;
 };
 
-void prepare_polygon (struct GMT_CTRL *C, struct GMT_LINE_SEGMENT *P)
+void prepare_polygon (struct GMT_CTRL *C, struct GMT_DATASEGMENT *P)
 {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
@@ -247,9 +247,9 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	struct GMT_GRID *Grid = NULL;
 	struct SPHDISTANCE_CTRL *Ctrl = NULL;
 	struct STRIPACK T;
-	struct GMT_LINE_SEGMENT *P = NULL;
+	struct GMT_DATASEGMENT *P = NULL;
 	struct GMT_DATASET *Qin = NULL;
-	struct GMT_TABLE *Table = NULL;
+	struct GMT_DATATABLE *Table = NULL;
 	struct STRIPACK_VORONOI *V = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -294,7 +294,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	 	lat = GMT_memory (GMT, NULL, Table->n_segments, double);
 		if (Ctrl->N.active) {	/* Must get nodes from separate file */
 			struct GMT_DATASET *Nin = NULL;
-			struct GMT_TABLE *NTable = NULL;
+			struct GMT_DATATABLE *NTable = NULL;
 			if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 				Return (error);
 			}
@@ -426,7 +426,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		n = Table->n_segments;
 	}
 	else {	/* Need a single polygon structure that we reuse for each polygon */
-		P = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Needed as pointer below */
+		P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Needed as pointer below */
 		P->coord = GMT_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
 		P->min = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 		P->max = GMT_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */

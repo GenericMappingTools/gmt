@@ -218,7 +218,7 @@ static int connect (struct LINK *S, uint64_t id, int order, double cutoff, bool 
 	return (false);							/* Failed all tests */
 }
 
-static uint64_t Copy_This_Segment (struct GMT_LINE_SEGMENT *in, struct GMT_LINE_SEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
+static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
 {
 	uint64_t row_in, row_out;
 	unsigned int col;
@@ -265,8 +265,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	struct LINK *segment = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
 	struct GMT_TEXTSET *Q = NULL;
-	struct GMT_LINE_SEGMENT **T[2] = {NULL, NULL};
-	struct GMT_TEXT_SEGMENT *QT[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT **T[2] = {NULL, NULL};
+	struct GMT_TEXTSEGMENT *QT[2] = {NULL, NULL};
 	struct GMTSTITCH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -352,7 +352,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		return (GMT->parent->error);
 	}
 	n_seg_alloc[0] = D[GMT_IN]->n_segments;	/* Cannot end up with more segments than given on input  */
-	T[OPEN] = GMT_memory (GMT, NULL, n_seg_alloc[0], struct GMT_LINE_SEGMENT *);
+	T[OPEN] = GMT_memory (GMT, NULL, n_seg_alloc[0], struct GMT_DATASEGMENT *);
 	n_seg_alloc[1] = 0;	/* Allocate no segments for now - we will do this as needed */
 
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
@@ -363,7 +363,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (Ctrl->C.file == NULL)
 			Ctrl->C.file = strdup ("gmtstitch_closed.txt");
 		n_seg_alloc[1] = n_seg_alloc[0];	/* Cannot end up with more closed segments than given on input  */
-		T[CLOSED] = GMT_memory (GMT, NULL, n_seg_alloc[1], struct GMT_LINE_SEGMENT *);
+		T[CLOSED] = GMT_memory (GMT, NULL, n_seg_alloc[1], struct GMT_DATASEGMENT *);
 	}
 	else
 		T[CLOSED] = T[OPEN];	/* Everything returned via same dataset */
@@ -380,7 +380,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			/* Get distance between first and last point in this segment */
 			distance = GMT_distance (GMT, D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_X][0], D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_Y][0], D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_X][np-1], D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_Y][np-1]);
 			if (np > 2 && distance <= closed_dist) {	/* Already closed, just write out and forget in the rest of the program */
-				T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Allocate segment structure */
+				T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate segment structure */
 				if (Ctrl->D.active) {	/* Write closed polygons to individual files */
 					(save_type) ? sprintf (buffer, Ctrl->D.format, 'C', out_seg) : sprintf (buffer, Ctrl->D.format, out_seg);
 					T[CLOSED][out_seg]->file[GMT_OUT] = strdup (buffer);
@@ -402,7 +402,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			}
 			else if (Ctrl->C.active) {	/* Copy open segment to separate output dataset */
 				/* Allocate space for this segment */
-				T[OPEN][n_open] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Allocate segment structure */
+				T[OPEN][n_open] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate segment structure */
 				GMT_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, true);
 				if (D[GMT_IN]->table[tbl]->segment[seg]->header) T[OPEN][n_open]->header = strdup (D[GMT_IN]->table[tbl]->segment[seg]->header);
 				out_p = Copy_This_Segment (D[GMT_IN]->table[tbl]->segment[seg], T[OPEN][n_open], 0, 0, np-1);
@@ -433,7 +433,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		}
 	}
 	if (Ctrl->C.active) {
-		C->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_LINE_SEGMENT *);
+		C->table[0]->segment = GMT_memory (GMT, T[CLOSED], n_closed, struct GMT_DATASEGMENT *);
 		C->n_segments = C->table[0]->n_segments = n_closed;
 	}
 
@@ -448,7 +448,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (wrap_up) {	/* Write out results and return */
 		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C */
-			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_LINE_SEGMENT *);
+			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);
 			D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_OK) {
 				Return (API->error);
@@ -644,7 +644,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
-		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_LINE_SEGMENT);	/* Get a new segment structure */
+		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Get a new segment structure */
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);
 
 		sprintf (buffer, "Possibly a composite segment; see comments for individual segment headers");
@@ -755,7 +755,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	/* Write out the new multisegment file with polygons and segments */
 
-	D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], out_seg, struct GMT_LINE_SEGMENT *);
+	D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], out_seg, struct GMT_DATASEGMENT *);
 	D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = out_seg;
 	ofile = (Ctrl->D.active) ? Ctrl->D.format : Ctrl->Out.file;
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, io_mode, NULL, ofile, D[GMT_OUT]) != GMT_OK) {

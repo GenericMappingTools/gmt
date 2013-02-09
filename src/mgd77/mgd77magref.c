@@ -409,7 +409,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	struct MGD77_CONTROL M;
 	struct MGD77MAGREF_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Din = NULL;
-	struct GMT_TABLE *T = NULL;
+	struct GMT_DATATABLE *T = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */

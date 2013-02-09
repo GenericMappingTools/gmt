@@ -564,7 +564,6 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pstext_parse (API, Ctrl, options))) Return (error);
 	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, true));	/* Return the synopsis with font listing */
-	PSL = GMT->PSL;		/* This module also needs PSL */
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
@@ -583,7 +582,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	if (Ctrl->G.mode) GMT->current.ps.nclip = +1;	/* Signal that this program initiates clipping that will outlive this process */
 	
-	GMT_plotinit (GMT, options);
+	PSL = GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
