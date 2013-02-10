@@ -948,7 +948,7 @@ double kx__ (uint64_t k, struct K_XY *K) {
 		and k refers to the position
 		in the datac array, datac[k].  */
 
-	uint64_t ii = (k/2)%(K->nx2);
+	int64_t ii = (k/2)%(K->nx2);
 	if (ii > (K->nx2)/2) ii -= (K->nx2);
 	return (ii * K->delta_kx);
 }
@@ -959,7 +959,7 @@ double ky__ (uint64_t k, struct K_XY *K) {
 	 * and k refers to the position
 	 *in the datac array, datac[k].  */
 
-	uint64_t jj = (k/2)/(K->nx2);
+	int64_t jj = (k/2)/(K->nx2);
 	if (jj > (K->ny2)/2) jj -= (K->ny2);
 	return (jj * K->delta_ky);
 }
