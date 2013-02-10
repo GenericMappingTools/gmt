@@ -68,8 +68,9 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L[m|h] */
+	struct L {	/* -L[m|h][+s] */
 		bool active;
+		bool debug;
 		unsigned int mode;
 	} L;
 	struct N {	/* -N<stuff> */
@@ -78,6 +79,10 @@ struct GRDFFT_CTRL {
 		unsigned int nx2, ny2;
 		double value;
 	} N;
+	struct Q {	/* -Q[<prefix>] */
+		bool active;
+		char *prefix;
+	} Q;
 	struct S {	/* -S<scale> */
 		bool active;
 		double scale;
@@ -166,6 +171,7 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	if (C->In.file[0]) free (C->In.file[0]);	
 	if (C->In.file[1]) free (C->In.file[1]);	
 	if (C->G.file) free (C->G.file);	
+	if (C->Q.prefix) free (C->Q.prefix);	
 	GMT_free (GMT, C);	
 }
 
@@ -250,7 +256,7 @@ void remove_plane (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode)
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g\n", a[0], data_var, a[1], a[2]);
 }
 
-void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
+void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, bool save_tapered, char *prefix)
 {
 	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_j;
 	int i, i_data_start, j_data_start, mx;
@@ -277,8 +283,8 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
 		ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
 		for (ju = 0; ju < h->ny; ju++) {
-			datac[GMT_IJPR(h,ju,il1)] = (float)2.0*datac[GMT_IJPR(h,ju,0)] - datac[GMT_IJPR(h,ju,ir1)];
-			datac[GMT_IJPR(h,ju,ir2)] = (float)2.0*datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
+			datac[GMT_IJPR(h,ju,il1)] = 2.0f * datac[GMT_IJPR(h,ju,0)]       - datac[GMT_IJPR(h,ju,ir1)];
+			datac[GMT_IJPR(h,ju,ir2)] = 2.0f * datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
 		}
 	}
 
@@ -295,7 +301,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
 		cos_wt = 0.5 * (1.0 + cos(jm * scale) );
 		for (i = -i_data_start; i < mx - i_data_start; i++) {
-			datac[GMT_IJPR(h,jb1,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,0,i)] - datac[GMT_IJPR(h,jt1,i)]));
+			datac[GMT_IJPR(h,jb1,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,0,i)]       - datac[GMT_IJPR(h,jt1,i)]));
 			datac[GMT_IJPR(h,jt2,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]));
 		}
 	}
@@ -315,6 +321,28 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
 		}
 	}
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Data reflected and tapered\n");
+	if (save_tapered) {	/* Save the intermediate detrended, mirrored, and tapered grid for inspection */
+		int del;
+		unsigned int pad[4];
+		char file[256];
+		struct GRD_HEADER save;
+		GMT_memcpy (&save, Grid->header, 1, sizeof (struct GRD_HEADER));	/* Save what we have before messing around */
+		GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);			/* Save current pad */
+		if ((del = Grid->header->pad[XLO] - 2) > 0) Grid->header->wesn[XLO] -= del * Grid->header->inc[GMT_X], Grid->header->pad[XLO] = 2;
+		if ((del = Grid->header->pad[XHI] - 2) > 0) Grid->header->wesn[XHI] += del * Grid->header->inc[GMT_X], Grid->header->pad[XHI] = 2;
+		if ((del = Grid->header->pad[YLO] - 2) > 0) Grid->header->wesn[YLO] -= del * Grid->header->inc[GMT_Y], Grid->header->pad[YLO] = 2;
+		if ((del = Grid->header->pad[YHI] - 2) > 0) Grid->header->wesn[YHI] += del * Grid->header->inc[GMT_Y], Grid->header->pad[YHI] = 2;
+		GMT_memcpy (GMT->current.io.pad, Grid->header->pad, 4, unsigned int);			/* set tmp pad */
+		GMT_set_grddim (GMT, Grid->header);
+		sprintf (file,"%s_%s", prefix, Grid->header->name);
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, file, Grid) != GMT_OK)
+			GMT_report (GMT, GMT_MSG_NORMAL, "Detrended, mirrored, and tapered grid could not be written to %s\n", file);
+		else
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Detrended, mirrored, and tapered grid written to %s\n", file);
+		
+		GMT_memcpy (Grid->header, &save, 1, sizeof (struct GRD_HEADER));	/* Restore original */
+		GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);			/* Restore pad */
+	}
 }
 
 double kx (uint64_t k, struct K_XY *K)
@@ -1073,9 +1101,9 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdfft <ingrid> [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
-	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [-Z[w]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>]  [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
+	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w|W]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
+	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [-Z[w|W]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -1087,7 +1115,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
 	GMT_message (GMT, "\t-E Estimate spEctrum of r [x] [y].  Write f, power[f], 1 std dev(power[f]) to output file\n");
 	GMT_message (GMT, "\t   (see -G) or stdout.   Append w to write wavelength instead of frequency.\n");
-	GMT_message (GMT, "\t   Use W for geographic grids and you want wavelength in km [m].\n");
+	GMT_message (GMT, "\t   Use W if you have geographic grids and want wavelength in km [m].\n");
 	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_message (GMT, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
@@ -1105,6 +1133,8 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
 	GMT_message (GMT, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
 	GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended and tapered to zero.\n");
+	GMT_message (GMT, "\t-Q Save intermediate grid being passed to FFT after detrending/tapering.\n");
+	GMT_message (GMT, "\t   Append output file prefix [tapered_].\n");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 	GMT_message (GMT, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
@@ -1113,7 +1143,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Z Compute radial cross-spectral results between two input grids.\n");
 	GMT_message (GMT, "\t   Write f, admittance[f], 1 std dev(admittance[f]), coherence[f], 1 std dev(coherence[f]) to output file\n");
 	GMT_message (GMT, "\t   (see -G) or stdout.   Append w to write wavelength instead of frequency.\n");
-	GMT_message (GMT, "\t   Use W for geographic grids and you want wavelength in km [m].\n");
+	GMT_message (GMT, "\t   Use W if you have geographic grids and want wavelength in km [m].\n");
 	GMT_explain_options (GMT, "Vf.");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
 
@@ -1260,10 +1290,14 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				add_operation (GMT, Ctrl, ISOSTASY, 5, par);
 				break;
 #ifdef DEBUG
-			case 'Q':	/* Do nothing */
+			case '=':	/* Do nothing */
 				add_operation (GMT, Ctrl, -1, 1, par);
 				break;
 #endif
+			case 'Q':	/* Output file */
+				Ctrl->Q.active = true;
+				if (opt->arg[0]) Ctrl->Q.prefix = strdup (opt->arg);
+				break;
 			case 'Z':	/* Radial cross-spectrum */
 				Ctrl->Z.active = true;
 				if (opt->arg[0] == 'w') Ctrl->Z.give_wavelength = true; 
@@ -1347,6 +1381,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->In.file[1]) two_grids = true;
+	if (Ctrl->Q.active && !Ctrl->Q.prefix) Ctrl->Q.prefix = strdup ("tapered");	/* Default prefix */
 	if (two_grids) { 
 		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
@@ -1388,13 +1423,13 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		}
 		
 		if (!(Ctrl->L.active)) remove_plane (GMT, GridB, Ctrl->L.mode);
-		if (!(Ctrl->N.force_narray)) taper_edges (GMT, GridB);
+		if (!(Ctrl->N.force_narray)) taper_edges (GMT, GridB, Ctrl->Q.active, Ctrl->Q.prefix);
 	}
 
 	(void) GMT_set_outgrid (GMT, GridA, &Out);	/* true if input is a read-only array; otherwise Out just points to GridA */
 
 	if (!(Ctrl->L.active)) remove_plane (GMT, Out, Ctrl->L.mode);
-	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out);
+	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out, Ctrl->Q.active, Ctrl->Q.prefix);
 
 	/* Load K_XY structure with wavenumbers and dimensions */
 	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Out->header->inc[GMT_X]);
