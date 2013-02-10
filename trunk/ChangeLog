@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-02-09	pwessel
+	* grdfft.c:		Added option for radial cross-spectra (-Z), modifiers to
+				scale geographic meters to km, and option (-Q) to save
+				intermediate detrended/mirrored/tapered grid to file.
+
 2013-01-30	pwessel
 	* xyz2grd.c:		For -E, must read data as double so can properly compare
 				with the nodata_value read as double.

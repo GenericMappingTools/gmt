@@ -3,10 +3,10 @@
 .SH NAME
 grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
-BD(grdfft) IT(ingrid) OPT(G)IT(outgrid) [ OPT(A)IT(azimuth) ] 
-[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)] ] 
+BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outgrid) [ OPT(A)IT(azimuth) ] 
+[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)][BD(k)] ] 
 [ OPT(F)[BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L) ] 
-[ OPT(N)IT(stuff) ] [ OPT(S)IT(scale) ] [ OPT(T)IT(te/rl/rm/rw/ri) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+[ OPT(N)IT(stuff) ] [ OPT(S)IT(scale) ] [ OPT(T)IT(te/rl/rm/rw/ri) ] [ OPT(Z)[w][BD(k)]] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
@@ -39,11 +39,12 @@ domain (kr is radial wave number).  Append a scale to multiply by (kr * IT(scale
 append BD(g) to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
 [Default is no scale].
 .TP
-OPT(E)[BD(x|y)][BD(w)]
+OPT(E)[BD(x|y)][BD(w)][BD(k)]
 Estimate power spectrum in the radial direction.  Place BD(x) or BD(y) immediately after OPT(E) to
 compute the spectrum in the x or y direction instead.  No grid file is created; f (i.e., frequency or wave number),
 power[f], and 1 standard deviation in power[f] are written to file set by OPT(G) [stdout].
-Append BD(w) to write wavelength instead of frequency.
+Append BD(w) to write wavelength instead of frequency.  If your grid is geographic and BD(k) is appended then
+we scale wavelengths from meter [Default] to km.
 .TP
 OPT(F)[BD(x)|BD(y)]IT(params)
 Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic.
@@ -80,6 +81,11 @@ OPT(N)IT(nx/ny) will do FFT on array size IT(nx/ny) (Must be >= grid file size).
 Default chooses dimensions >= data which optimize speed, accuracy of FFT.
 If FFT dimensions > grid file dimensions, data are extended and tapered to zero.
 .TP
+OPT(Q)[IT(prefix)]
+Save the intermediate grid being passed to the forward FFT; this is likely to have been
+detrended, mirrored, and tapered.  Append a file IT(prefix) from which output file name(s)
+will be created (i.e., IT(prefix)_IT(ingrid)) [tapered].
+.TP
 OPT(S)IT(scale)
 Multiply each element by IT(scale) in the space domain (after the frequency domain operations).
 [Default is 1.0].
@@ -88,6 +94,14 @@ OPT(T)IT(te/rl/rm/rw/ri)
 Compute the isostatic compensation from the topography load (input grid file) on an elastic plate
 of thickness IT(te).  Also append densities for load, mantle, water, and infill in SI units.
 If IT(te) == 0 then the Airy response is returned.  OPT(T) implicitly sets OPT(L).
+.TP
+OPT(Z)[BD(w)][BD(k)]
+Estimate admittance and coherence spectrum in the radial direction.  Requires a second grid IT(ingrid2) to be given.
+No grid file is created; f (i.e., frequency or wave number),
+admittance[f], 1 standard deviation in admittance[f], coherence[f] and 1 standard deviation in coherence[f]
+are written to file set by OPT(G) [stdout].
+Append BD(w) to write wavelength instead of frequency.  If your grid is geographic and BD(k) is appended then
+we scale wavelengths from meter [Default] to km.
 #include "explain_-V.txt" 
 #include "explain_help.txt"
 #include "explain_grd_inout.txt"
@@ -133,6 +147,14 @@ grdfft topo.nc -T20000/2800/3330/1030/2300 -S0.022 -C4000 -Gcomp_faa.nc
 .sp
 where 0.022 is the scale needed for the first term in Parker's expansion for\"'
 computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
+.br
+.sp
+To compute the admittance and coherence between co-registered bathjymetry and gravity grids,
+and report result as function of wavelengths in km, try
+br
+.sp
+grdfft bathymetry.nc gravity.grd -Zwk -fg -V > cross_spectra.txt
+
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdedit (1),
