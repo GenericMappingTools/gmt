@@ -1836,7 +1836,9 @@ void gmt_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct G
 	GMT_grd_init (C, header, options, false);	/* This is for new grids only so update is always false */
 	GMT_memcpy (header->wesn, wesn_dup, 4, double);
 	GMT_memcpy (header->inc,   inc_dup, 2, double);
-	header->registration = registration;
+	/* registration may contain complex mode information */
+	header->registration = (registration & 1);
+	header->complex_mode = (registration & GMT_GRID_COMPLEX_MASK);
 	header->grdtype = gmt_get_grdtype (C, header);
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");

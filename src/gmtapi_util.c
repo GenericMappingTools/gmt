@@ -3790,6 +3790,7 @@ int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, dou
 	/* Convert user domain range, increments, and registration into dimensional header settings for the container.
 	 * For grids and images we fill out the GRD_HEADER; for vectors and matrix we fill out their parameters.
 	 * After this step you may call GMT_Alloc_Data to actually get data space for these resources.
+	 * For complex grids pass registration + GMT_GRID_COMPLEX_REAL,
 	 */
 	int error = GMT_OK;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);

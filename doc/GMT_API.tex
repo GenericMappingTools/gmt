@@ -689,6 +689,7 @@ of program options \texttt{opt} (or NULL).  Use \texttt{range} to specify the mi
 value for each dimensions, up to 3 pairs (e.g., xmin xmax ymin ymax zmin zmax). Similarly, use
 \texttt{inc} to give 1, 2, or 3 increments (i.e., xinc, yinc, zinc).  The
 \texttt{registration} parameter indicates gridline-registration or pixel registration of nodes.
+To initialize a grid with complex data, add \texttt{GMT\_GRID\_COMPLEX\_REAL} to the registration.
 Finally, \texttt{ptr} is the pointer to your resource as allocated by \texttt{GMT\_Create\_Data}.
 Note: GMT\_IS\_VECTOR may not necessarily conform to the concept of a min and max coordinate to go
 along with the data stored in the vector(s).  If so, pass NULL for \texttt{range} and \texttt{inc}

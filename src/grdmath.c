@@ -2933,6 +2933,50 @@ void grd_TANH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : tanhf (stack[last]->G->data[node]);
 }
 
+void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: TAPER 2 1 Unit weights cosine-tapered to zero within A and B of x and y grid margins.  */
+{
+	uint64_t node;
+	unsigned int prev = last - 1, row, col;
+	float strip, scale, start, stop, from_start, from_stop, w_y, *w_x = NULL;
+
+	if (!(stack[last]->constant && stack[prev]->constant)) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "TAPER: Arguments A and B must both be constants\n");
+		return;
+	}
+
+	/* First compute and store x taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin */
+	strip = stack[prev]->factor;
+	scale = M_PI / strip;
+	start = strip + info->G->header->wesn[XLO];
+	stop  = strip - info->G->header->wesn[XHI];
+	w_x = GMT_memory (GMT, NULL, info->G->header->nx, float);
+	GMT_col_loop (GMT, info->G, row, col, node) {
+		from_start = start - info->grd_x[col];
+		if (from_start > 0.0f) w_x[col] = 0.5f * (1.0f + cosf (from_start * scale));
+		else if ((from_stop = stop  + info->grd_x[col]) > 0.0f) w_x[col] = 0.5f * (1.0f + cosf (from_stop * scale));
+		else w_x[col] = 1.0f;	/* Inside non-tapered x-range */
+	}
+		
+	/* Now compute y taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin.
+	 * We apply these as we loop over rows and do the w_x * w_y taper */
+	strip = stack[last]->factor;
+	scale = M_PI / strip;
+	start = strip + info->G->header->wesn[YLO];
+	stop  = strip - info->G->header->wesn[YHI];
+	GMT_row_loop (GMT, info->G, row) {
+		from_start = start - info->grd_y[row];
+		if (from_start > 0.0f) w_y = 0.5f * (1.0f + cosf (from_start * scale));
+		else if ((from_stop = stop + info->grd_y[row]) > 0.0) w_y = 0.5f * (1.0f + cosf (from_stop * scale));
+		else w_y = 1.0f;	/* Inside non-tapered y-range */
+		GMT_col_loop (GMT, info->G, row, col, node) {
+			node = GMT_IJP (info->G->header, row, col);
+			stack[prev]->G->data[node] = w_y * w_x[col];
+		}
+	}
+	GMT_free (GMT, w_x);
+}
+
 void grd_TN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: TN 2 1 Chebyshev polynomial Tn(-1<t<+1,n), with t = A, and n = B.  */
 {

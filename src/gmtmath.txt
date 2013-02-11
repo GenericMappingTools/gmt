@@ -130,6 +130,9 @@ BD(BITTEST), and BD(BITXOR)) convert a tables's double precision
 values to unsigned 64-bit ints to perform the bitwise operations.  Consequently, the largest
 whole integer value that can be stored in a double precision value is 2^53-1 or 9,007,199,254,740,991.
 All bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
+.sp
+(9) TAPER will interpret its argument to be a width in the same units as the time-axis, but if no
+time is provided (i.e., plain data tables) then the width is taken to be given in number of rows.
 .SH MACROS
 Users may save their favorite operator combinations as macros via the file .gmtmath
 in their current or user directory.  The file may contain any number of macros (one
