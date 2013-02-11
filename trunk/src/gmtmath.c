@@ -108,6 +108,7 @@ struct GMTMATH_INFO {
 	bool irregular;	/* true if t_inc varies */
 	bool roots_found;	/* true if roots have been solved for */
 	bool local;		/* Per segment operation (true) or global operation (false) */
+	bool notime;		/* No time-array avaible for operators who depend on that */
 	unsigned int n_roots;	/* Number of roots found */
 	unsigned int r_col;	/* The column used to find roots */
 	unsigned int n_col;	/* Number of columns */
@@ -2873,6 +2874,35 @@ void table_TANH (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH
 	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) T->segment[s]->coord[col][row] = (S[last]->constant) ? a : tanh (T->segment[s]->coord[col][row]);
 }
 
+void table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: TAPER 1 1 Unit weights cosine-tapered to zero within A of end margins.  */
+{
+	/* If no time, then A is interpreted to mean number of nodes instead */
+	uint64_t s, row;
+	double strip, scale, start, stop, from_start, from_stop, t, w_t;
+	struct GMT_DATATABLE *T = S[last]->D->table[0];
+
+	if (!S[last]->constant) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "TAPER: Arguments A must be a constant\n");
+		return;
+	}
+	strip = S[last]->factor;
+	scale = M_PI / strip;
+	start = strip + ((info->notime) ? 0.0 : info->t_min);
+	if (!info->notime) stop = strip - info->t_max;
+	for (s = 0; s < info->T->n_segments; s++) {
+		if (info->notime) stop = strip - info->T->segment[s]->n_rows;
+		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+			t = (info->notime) ? (double)row : info->T->segment[s]->coord[COL_T][row];
+			from_start = start - t;
+			if (from_start > 0.0) w_t = 0.5 * (1.0 + cos (from_start * scale));
+			else if ((from_stop = stop + t) > 0.0) w_t = 0.5 * (1.0 + cos (from_stop * scale));
+			else w_t = 1.0;	/* Inside non-tapered t-range */
+			T->segment[s]->coord[col][row] = w_t;
+		}
+	}
+}
+
 void table_TN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TN 2 1 Chebyshev polynomial Tn(-1<A<+1) of degree B.  */
 {
@@ -3439,6 +3469,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	}
 	info.t_min = Ctrl->T.min;	info.t_max = Ctrl->T.max;	info.t_inc = Ctrl->T.inc;
 	info.n_col = n_columns;		info.local = Ctrl->L.active;
+	info.notime = Ctrl->T.notime;
 	GMT_set_tbl_minmax (GMT, info.T);
 
 	if (Ctrl->A.active) {

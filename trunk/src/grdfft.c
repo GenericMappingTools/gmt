@@ -50,7 +50,7 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} D;
-	struct E {	/* -E[x_or_y][w|W] */
+	struct E {	/* -E[r|x|y][w[k]] */
 		bool active;
 		bool give_wavelength;
 		bool km;
@@ -91,10 +91,9 @@ struct GRDFFT_CTRL {
 		bool active;
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
-	struct Z {	/* -Z[w|W] */
+	struct Z {	/* -Z[p] */
 		bool active;
-		bool give_wavelength;
-		bool km;
+		unsigned int mode;
 	} Z;
 };
 
@@ -114,7 +113,6 @@ struct GRDFFT_CTRL {
 #define FILTER_BW		6
 #define FILTER_COS		7
 #define SPECTRUM		8
-#define CROSS_SPECTRUM		9
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
@@ -305,7 +303,6 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, bool save_tapered
 			datac[GMT_IJPR(h,jt2,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]));
 		}
 	}
-
 	/* Now, cos taper the x edges */
 	scale = M_PI / (i_data_start + 1);
 	end_j = h->my - j_data_start;
@@ -320,8 +317,8 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, bool save_tapered
 			datac[GMT_IJPR(h,j,ir2)] *= (float)cos_wt;
 		}
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Data reflected and tapered\n");
-	if (save_tapered) {	/* Save the intermediate detrended, mirrored, and tapered grid for inspection */
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Data reflected via point symmetry at all edges, then tapered to zero\n");
+	if (save_tapered) {	/* Save the intermediate detrended, point-symmetrical reflected, and tapered grid for inspection */
 		int del;
 		unsigned int pad[4];
 		char file[256];
@@ -336,9 +333,9 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, bool save_tapered
 		GMT_set_grddim (GMT, Grid->header);
 		sprintf (file,"%s_%s", prefix, Grid->header->name);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, file, Grid) != GMT_OK)
-			GMT_report (GMT, GMT_MSG_NORMAL, "Detrended, mirrored, and tapered grid could not be written to %s\n", file);
+			GMT_report (GMT, GMT_MSG_NORMAL, "Detrended, point-symmetrical reflected, and tapered grid could not be written to %s\n", file);
 		else
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Detrended, mirrored, and tapered grid written to %s\n", file);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Detrended, point-symmetrical reflected, and tapered grid written to %s\n", file);
 		
 		GMT_memcpy (Grid->header, &save, 1, sizeof (struct GRD_HEADER));	/* Restore original */
 		GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);			/* Restore pad */
@@ -660,7 +657,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	 */
 
 	char format[GMT_TEXT_LEN64];
-	uint64_t dim[4] = {1, 1, 1, 0};
+	uint64_t dim[4] = {1, 1, 3, 0};	/* One table and one segment, with 1 + 2 = 3 columns and yet unknown rows */
 	uint64_t k, nk, nused, ifreq;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	double (*get_k) (uint64_t, struct K_XY *);
@@ -671,25 +668,19 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 
 	if (*par > 0.0) {
 		/* X spectrum desired  */
-		delta_k = K->delta_kx;
-		nk = K->nx2 / 2;
-		get_k = &kx;
+		delta_k = K->delta_kx;	nk = K->nx2 / 2;	get_k = &kx;
 	}
 	else if (*par < 0.0) {
 		/* Y spectrum desired  */
-		delta_k = K->delta_ky;
-		nk = K->ny2 / 2;
-		get_k = &ky;
+		delta_k = K->delta_ky;	nk = K->ny2 / 2;	get_k = &ky;
 	}
 	else {
 		/* R spectrum desired  */
 		if (K->delta_kx < K->delta_ky) {
-			delta_k = K->delta_kx;
-			nk = K->nx2 / 2;
+			delta_k = K->delta_kx;	nk = K->nx2 / 2;
 		}
 		else {
-			delta_k = K->delta_ky;
-			nk = K->ny2 / 2;
+			delta_k = K->delta_ky;	nk = K->ny2 / 2;
 		}
 		get_k = &modk;
 	}
@@ -715,7 +706,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
 	sprintf (format, "%s%s%s%s%s\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
-	dim[2] = 3;	dim[3] = nk;
+	dim[3] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
 		return (GMT->parent->error);
@@ -740,87 +731,110 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	return (1);	/* Number of parameters used */
 }
 
-int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRID *GridB, double *par, bool give_wavelength, bool km, char *file, struct K_XY *K)
+int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct K_XY *K)
 {
-	/* Cross-spectral estimates; return admittance, coherence, and their error-bars.
-	 */
+	/* Compute cross-spectral estimates from the two grids Xand Y and return frequency f and 8 quantities:
+	 * Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
+	 * Each quantity comes with its own 1-std dev error estimate, hence output is 17 columns.
+	 * Equations based on spectrum1d.c */
 
-	char format[GMT_TEXT_LEN64];
-	uint64_t dim[4] = {1, 1, 5, 0};	/* One table and one segment, with 4 columns and yet unknown rows */
+	uint64_t dim[4] = {1, 1, 17, 0};	/* One table and one segment, with 1 + 2*8 = 17 columns and yet unknown rows */
 	uint64_t k, nk, ifreq, *nused = NULL;
-	float *A = GridA->data, *B = GridB->data;	/* Short-hands */
-	double delta_k, r_delta_k, freq;
-	double *adm = NULL, *err_adm = NULL, *err_coh = NULL, *coh = NULL, *A_pow = NULL, *B_pow = NULL, *co_spec = NULL, *quad = NULL;
+	unsigned int col;
+	float *X = GridX->data, *Y = GridY->data;	/* Short-hands */
+	double delta_k, r_delta_k, freq, coh_k, sq_norm, tmp, eps_pow;
+	double *X_pow = NULL, *Y_pow = NULL, *co_spec = NULL, *quad_spec = NULL;
 	double (*get_k) (uint64_t, struct K_XY *);
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	/* R spectrum desired  */
-	if (K->delta_kx < K->delta_ky) {
-		delta_k = K->delta_kx;
-		nk = K->nx2 / 2;
+	if (*par > 0.0) {
+		/* X spectrum desired  */
+		delta_k = K->delta_kx;	nk = K->nx2 / 2;	get_k = &kx;
+	}
+	else if (*par < 0.0) {
+		/* Y spectrum desired  */
+		delta_k = K->delta_ky;	nk = K->ny2 / 2;	get_k = &ky;
 	}
 	else {
-		delta_k = K->delta_ky;
-		nk = K->ny2 / 2;
+		/* R spectrum desired  */
+		if (K->delta_kx < K->delta_ky) {
+			delta_k = K->delta_kx;	nk = K->nx2 / 2;
+		}
+		else {
+			delta_k = K->delta_ky;	nk = K->ny2 / 2;
+		}
+		get_k = &modk;
 	}
-	get_k = &modk;
 
 	/* Get arrays for summing stuff */
-	A_pow   = GMT_memory (GMT, NULL, nk, double );
-	B_pow   = GMT_memory (GMT, NULL, nk, double);
-	err_adm = GMT_memory (GMT, NULL, nk, double);
-	err_coh = GMT_memory (GMT, NULL, nk, double);
-	co_spec = GMT_memory (GMT, NULL, nk, double);
-	quad    = GMT_memory (GMT, NULL, nk, double);
-	coh     = GMT_memory (GMT, NULL, nk, double);
-	adm     = GMT_memory (GMT, NULL, nk, double);
-	nused   = GMT_memory (GMT, NULL, nk, uint64_t);
+	X_pow     = GMT_memory (GMT, NULL, nk, double );
+	Y_pow     = GMT_memory (GMT, NULL, nk, double);
+	co_spec   = GMT_memory (GMT, NULL, nk, double);
+	quad_spec = GMT_memory (GMT, NULL, nk, double);
+	nused     = GMT_memory (GMT, NULL, nk, uint64_t);
 
 	/* Loop over it all, summing and storing, checking range for r */
 
 	r_delta_k = 1.0 / delta_k;
 
-	for (k = 2; k < GridA->header->size; k += 2) {
+	for (k = 2; k < GridX->header->size; k += 2) {
 		freq = (*get_k)(k, K);
 		ifreq = lrint (fabs (freq) * r_delta_k);	/* Smallest value returned might be 0 when doing r spectrum*/
 		if (ifreq > 0) --ifreq;
 		if (ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
-		A_pow[ifreq]   += (A[k]   * A[k] + A[k+1] * A[k+1]);	/* A x A* = Power of grid A */
-		B_pow[ifreq]   += (B[k]   * B[k] + B[k+1] * B[k+1]);	/* B x B* = Power of grid B */
-		co_spec[ifreq] += (B[k]   * A[k] + B[k+1] * A[k+1]);	/* Real part of B x A* */
-		quad[ifreq]    += (A[k+1] * B[k] - B[k+1] * A[k]);	/* Imag part of B x A* */
+		X_pow[ifreq]     += (X[k]   * X[k] + X[k+1] * X[k+1]);	/* X x X* = Power of grid X */
+		Y_pow[ifreq]     += (Y[k]   * Y[k] + Y[k+1] * Y[k+1]);	/* Y x Y* = Power of grid Y */
+		co_spec[ifreq]   += (Y[k]   * X[k] + Y[k+1] * X[k+1]);	/* Real part of Y x X* */
+		quad_spec[ifreq] += (X[k+1] * Y[k] - Y[k+1] * X[k]);	/* Imag part of Y x X* */
 		nused[ifreq]++;
-	}
-
-	for (k = 0; k < nk; k++) {
-		adm[k] = co_spec[k] / A_pow[k];
-		coh[k] = (co_spec[k] * co_spec[k] + quad[k] * quad[k]) / (A_pow[k] * B_pow[k]);
-		/*err_bar[k] = adm[k] * fabs (sqrt ((1.0 - coh[k]) / 2.0 * coh[k]) * adm[k]) / sqrt(nused[k]); Versao do Smith*/
-		err_adm[k] = adm[k] * fabs (sqrt ((1.0 - coh[k]) / (2.0 * coh[k] * nused[k])));
-		err_coh[k] = coh[k] * (1.0 - coh[k]) * sqrt(2.0 / coh[k]) / sqrt(nused[k]);
 	}
 
 	/* Now get here when array is summed.  */
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* To counter-act any -fg setting */
 	
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
-	sprintf (format, "%s%s%s%s%s\n", GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 	dim[3] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for cross-spectral estimates\n");
 		return (GMT->parent->error);
 	}
-	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 5 cols and nk rows */
-	if (give_wavelength && km) delta_k *= 1000.0;
+	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
+	if (give_wavelength && km) delta_k *= 1000.0;	/* Wanted distances measured in km */
 	for (k = 0; k < nk; k++) {
+		eps_pow = 1.0 / sqrt (nused[k]);	/* Multiplicative error bars for power spectra  */
 		freq = (k + 1) * delta_k;
 		if (give_wavelength) freq = 1.0 / freq;
-		S->coord[0][k] = freq;
-		S->coord[1][k] = adm[k];
-		S->coord[2][k] = err_adm[k];
-		S->coord[3][k] = coh[k];
-		S->coord[4][k] = err_coh[k];
+		/* Compute coherence first since it is needed by many of the other estimates */
+		coh_k = (co_spec[k] * co_spec[k] + quad_spec[k] * quad_spec[k]) / (X_pow[k] * Y_pow[k]);
+		sq_norm = sqrt ((1.0 - coh_k) / (2.0 * coh_k));	/* Save repetitive expression further down */
+		col = 0;
+		/* Col 0 is the frequency (or wavelength) */
+		S->coord[col++][k] = freq;
+		/* Cols 1-2 are xpower and std.err estimate */
+		S->coord[col++][k] = X_pow[k];
+		S->coord[col++][k] = X_pow[k] * eps_pow;
+		/* Cols 3-4 are ypower and std.err estimate */
+		S->coord[col++][k] = Y_pow[k];
+		S->coord[col++][k] = Y_pow[k] * eps_pow;
+		/* Cols 5-6 are coherent power and std.err estimate */
+		S->coord[col++][k] = tmp = Y_pow[k] * coh_k;
+		S->coord[col++][k] = tmp * eps_pow * sqrt ((2.0 - coh_k) / coh_k);
+		/* Cols 7-8 are noise power and std.err estimate */
+		S->coord[col++][k] = tmp = Y_pow[k] * (1.0 - coh_k);
+		S->coord[col++][k] = tmp * eps_pow;
+		/* Cols 9-10 are phase and std.err estimate */
+		S->coord[col++][k] = tmp = d_atan2 (quad_spec[k], co_spec[k]);
+		S->coord[col++][k] = tmp * eps_pow * sq_norm;
+		/* Cols 11-12 are admittance and std.err estimate */
+		S->coord[col++][k] = tmp = co_spec[k] / X_pow[k];
+		S->coord[col++][k] = tmp * eps_pow * fabs (sq_norm);
+		/* Cols 13-14 are gain and std.err estimate */
+		S->coord[col++][k] = tmp = sqrt (quad_spec[k]) / X_pow[k];
+		S->coord[col++][k] = tmp * eps_pow * sq_norm;
+		/* Cols 15-16 are coherency and std.err estimate */
+		S->coord[col++][k] = coh_k;
+		S->coord[col++][k] = coh_k * eps_pow * (1.0 - coh_k) * sqrt (2.0 / coh_k);
 	}
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
 		return (GMT->parent->error);
@@ -828,16 +842,12 @@ int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_
 	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	GMT_free (GMT, adm);
-	GMT_free (GMT, coh);
-	GMT_free (GMT, A_pow);
-	GMT_free (GMT, B_pow);
-	GMT_free (GMT, err_adm);
-	GMT_free (GMT, err_coh);
+	GMT_free (GMT, X_pow);
+	GMT_free (GMT, Y_pow);
 	GMT_free (GMT, co_spec);
-	GMT_free (GMT, quad);
+	GMT_free (GMT, quad_spec);
 	GMT_free (GMT, nused);
-	return (0);	/* Number of parameters used */
+	return (1);	/* Number of parameters used */
 }
 
 uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
@@ -1096,14 +1106,89 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 	GMT->current.io.pad[YLO] = Ctrl->N.ny2 - Gin->header->ny - GMT->current.io.pad[YHI];
 }
 
+void save_complex_grids (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode, struct K_XY *K, char *file)
+{
+	/* Save the raw spectrum as two files (real,imag) or (mag,phase), depending on mode.
+	 * We must first do an "fftshift" operation as in Matlab, to put the 0 frequency
+	 * value in the center of the grid. */
+	uint64_t row, col, i_ij, o_ij;
+	unsigned int nx_2, ny_2, k, pad[4], wmode[2] = {GMT_GRID_COMPLEX_REAL, GMT_GRID_COMPLEX_IMAG};
+	float *save = NULL, *data = NULL;
+	double wesn[4], inc[2];
+	char outfile[GMT_BUFSIZ], *prefix[2][2] = {{"real", "imag"}, {"mag", "phase"}};
+	struct GMT_GRID *Grid = NULL;
+
+	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
+
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Write components of complex raw spectrum to files %s_%s and %s_%s\n", prefix[mode][0], file, prefix[mode][1], file);
+
+	/* Prepare wavenumber domain limits and increments */
+	nx_2 = K->nx2 / 2;	ny_2 = K->ny2 / 2;
+	wesn[XLO] = -K->delta_kx * nx_2;	wesn[XHI] =  K->delta_kx * (nx_2 - 1);
+	wesn[YLO] = -K->delta_ky * (ny_2 - 1);	wesn[YHI] =  K->delta_ky * ny_2;
+	inc[GMT_X] = K->delta_kx;		inc[GMT_Y] = K->delta_ky;
+	GMT_memcpy (pad, GMT->current.io.pad, 4, unsigned int);		/* Save current GMT pad */
+	for (k = 0; k < 4; k++) GMT->current.io.pad[k] = 0;		/* No pad is what we need for this application */
+
+	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
+	if (GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, wesn, inc, G->header->registration | GMT_GRID_COMPLEX_REAL, Grid)) return;
+	strcpy (Grid->header->x_units, "m^(-1)");	strcpy (Grid->header->y_units, "m^(-1)");
+	strcpy (Grid->header->z_units, G->header->z_units);
+	strcpy (Grid->header->remark, "Applied fftshift: kx = 0 at (nx/2 + 1) and ky = 0 at ny/2");
+
+	if (GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, GMTAPI_NOTSET, Grid)) return;
+	for (row = 0; row < ny_2; row++) {	/* Copy over values from 1/3, and 2/4 quadrant */
+		for (col = 0; col < nx_2; col++) {
+			i_ij = 2*GMT_IJ0 (Grid->header, row, col);
+			o_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col+nx_2);
+			if (mode) {	/* Want magnitude and phase */
+				Grid->data[i_ij]   = hypot (G->data[o_ij], G->data[o_ij+1]);
+				Grid->data[i_ij+1] = d_atan2 (G->data[o_ij+1], G->data[o_ij]);
+				Grid->data[o_ij]   = hypot (G->data[i_ij], G->data[i_ij+1]);
+				Grid->data[o_ij+1] = d_atan2 (G->data[i_ij+1], G->data[i_ij]);
+			}
+			else {
+				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
+				Grid->data[o_ij] = G->data[i_ij];	Grid->data[o_ij+1] = G->data[i_ij+1];
+			}
+			i_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col);
+			o_ij = 2*GMT_IJ0 (Grid->header, row, col+nx_2);
+			if (mode) {	/* Want magnitude and phase */
+				Grid->data[i_ij]   = hypot (G->data[o_ij], G->data[o_ij+1]);
+				Grid->data[i_ij+1] = d_atan2 (G->data[o_ij+1], G->data[o_ij]);
+				Grid->data[o_ij]   = hypot (G->data[i_ij], G->data[i_ij+1]);
+				Grid->data[o_ij+1] = d_atan2 (G->data[i_ij+1], G->data[i_ij]);
+			}
+			else {
+				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
+				Grid->data[o_ij] = G->data[i_ij];	Grid->data[o_ij+1] = G->data[i_ij+1];
+			}
+		}
+	}
+	for (k = 0; k < 2; k++) {	/* Write the two grids */
+		sprintf (outfile, "%s_%s", prefix[mode][k], file);
+		sprintf (Grid->header->title, "The %s part of FFT transformed input grid %s", prefix[mode][k], file);
+		if (k == 1 && mode) strcpy (Grid->header->z_units, "radians");
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | wmode[k], NULL, outfile, Grid) != GMT_OK) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s could not be written\n", outfile);
+			return;
+		}
+	}
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &Grid) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
+	}
+		
+	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
+}
+
 int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>]  [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[x_or_y][w|W]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
-	GMT_message (GMT, "\t[-N<stuff>] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [-Z[w|W]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L]\n");
+	GMT_message (GMT, "\t[-N<stuff>] [-Q[<prefix>]] [-S<scale>] [-T<te>/<rl>/<rm>/<rw>/<ri>] [-Z[p]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -1113,9 +1198,13 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_message (GMT, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
 	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
-	GMT_message (GMT, "\t-E Estimate spEctrum of r [x] [y].  Write f, power[f], 1 std dev(power[f]) to output file\n");
-	GMT_message (GMT, "\t   (see -G) or stdout.   Append w to write wavelength instead of frequency.\n");
-	GMT_message (GMT, "\t   Use W if you have geographic grids and want wavelength in km [m].\n");
+	GMT_message (GMT, "\t-E Estimate spEctrum in the radial [Default], x, or y-direction.\n");
+	GMT_message (GMT, "\t   Given one grid X, write f, Xpower[f] to output file (see -G) or stdout.\n");
+	GMT_message (GMT, "\t   Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f],\n");
+	GMT_message (GMT, "\t   noise power[f], phase[f], admittance[f], gain[f], coherency[f].\n");
+	GMT_message (GMT, "\t   Each quantity is followed by a column of 1 std dev. error estimates.\n");
+	GMT_message (GMT, "\t   Append w to write wavelength instead of frequency; append k to report\n");
+	GMT_message (GMT, "\t   wavelength in km (geographic grids only) [m].\n");
 	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
 	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
 	GMT_message (GMT, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
@@ -1132,18 +1221,16 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions.\n");
 	GMT_message (GMT, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
 	GMT_message (GMT, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
-	GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended and tapered to zero.\n");
-	GMT_message (GMT, "\t-Q Save intermediate grid being passed to FFT after detrending/tapering.\n");
-	GMT_message (GMT, "\t   Append output file prefix [tapered_].\n");
+	GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended via edge point symmetry and tapered to zero.\n");
+	GMT_message (GMT, "\t-Q Save intermediate grid passed to FFT after detrending/extention/tapering.\n");
+	GMT_message (GMT, "\t   Append output file prefix [tapered].  File name will be <prefix>_<ingrid>.\n");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 	GMT_message (GMT, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
 	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
 	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
-	GMT_message (GMT, "\t-Z Compute radial cross-spectral results between two input grids.\n");
-	GMT_message (GMT, "\t   Write f, admittance[f], 1 std dev(admittance[f]), coherence[f], 1 std dev(coherence[f]) to output file\n");
-	GMT_message (GMT, "\t   (see -G) or stdout.   Append w to write wavelength instead of frequency.\n");
-	GMT_message (GMT, "\t   Use W if you have geographic grids and want wavelength in km [m].\n");
+	GMT_message (GMT, "\t-Z Store raw complex spectrum to files real_<ingrid> and imag_<ingrid>.\n");
+	GMT_message (GMT, "\t   Append p to store polar forms instead, i.e., mag_<ingrid> and phase_<ingrid>\n");
 	GMT_explain_options (GMT, "Vf.");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
 
@@ -1219,15 +1306,16 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, DIFFERENTIATE, 1, par);
 				break;
-			case 'E':	/* x,y,or radial spectrum */ 
+			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical */ 
 				Ctrl->E.active = true;
 				j = 0;
 				while (opt->arg[j]) {
 					switch (opt->arg[j]) {
+						case 'r': Ctrl->E.mode =  0; break;
 						case 'x': Ctrl->E.mode = +1; break;
 						case 'y': Ctrl->E.mode = -1; break;
 						case 'w': Ctrl->E.give_wavelength = true; break;
-						case 'W': Ctrl->E.give_wavelength = Ctrl->E.km = true; break;
+						case 'k': if (Ctrl->E.give_wavelength) Ctrl->E.km = true; break;
 					}
 					j++;
 				}
@@ -1294,16 +1382,15 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				add_operation (GMT, Ctrl, -1, 1, par);
 				break;
 #endif
-			case 'Q':	/* Output file */
+			case 'Q':	/* Output intermediate grid file */
 				Ctrl->Q.active = true;
 				if (opt->arg[0]) Ctrl->Q.prefix = strdup (opt->arg);
 				break;
-			case 'Z':	/* Radial cross-spectrum */
+			case 'Z':	/* Output raw complex spectrum */
 				Ctrl->Z.active = true;
-				if (opt->arg[0] == 'w') Ctrl->Z.give_wavelength = true; 
-				if (opt->arg[0] == 'W') Ctrl->Z.give_wavelength = Ctrl->Z.km = true;
-				add_operation (GMT, Ctrl, CROSS_SPECTRUM, 0, par);
+				if (opt->arg[0] == 'p') Ctrl->Z.mode = 1;	/* Store mag,phase instead of real,imag */
 				break;
+					break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -1313,11 +1400,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.n_user_set && (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0), 
 			"Syntax error -N option: nx2 and/or ny2 <= 0\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && n_files < 2, "Syntax error -Z option: Requires two input grids.\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->Z.active && n_files == 2, "Syntax error: Can only specify two input grids by selecting -Z.\n");
+	n_errors += GMT_check_condition (GMT, n_files > 2, "Syntax error: Can only specify on or two input grids\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->E.active || Ctrl->Z.active) && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -1327,12 +1413,12 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 
 int GMT_grdfft (void *V_API, int mode, void *args)
 {
-	bool error = false, stop, radial, two_grids = false;
+	bool error = false, stop, two_grids = false;
 	int status;
 	unsigned int op_count = 0, par_count = 0, side;
 	uint64_t ij;
 
-	struct GMT_GRID *GridA = NULL, *GridB = NULL, *Out = NULL;
+	struct GMT_GRID *GridX = NULL, *GridY = NULL, *Out = NULL;
 	struct F_INFO f_info;
 	struct K_XY K;
 	struct GRDFFT_CTRL *Ctrl = NULL;
@@ -1357,24 +1443,24 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
+	if ((GridX = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
-	GMT_grd_init (GMT, GridA->header, options, true);
-	set_grid_radix_size (GMT, Ctrl, GridA);		/* This also sets the new pads */
+	GMT_grd_init (GMT, GridX->header, options, true);
+	set_grid_radix_size (GMT, Ctrl, GridX);		/* This also sets the new pads */
 	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-	for (side = 0; side < 4; side++) GridA->header->BC[side] = GMT_BC_IS_DATA;
+	for (side = 0; side < 4; side++) GridX->header->BC[side] = GMT_BC_IS_DATA;
 
 	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[0], GridX) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
 	/* Check that no NaNs are present */
 
 	stop = false;
-	for (ij = 0; !stop && ij < GridA->header->size; ij++) stop = GMT_is_fnan (GridA->data[ij]);
+	for (ij = 0; !stop && ij < GridX->header->size; ij++) stop = GMT_is_fnan (GridX->data[ij]);
 	if (stop) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Input grid cannot have NaNs!\n");
 		Return (EXIT_FAILURE);
@@ -1383,50 +1469,50 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	if (Ctrl->In.file[1]) two_grids = true;
 	if (Ctrl->Q.active && !Ctrl->Q.prefix) Ctrl->Q.prefix = strdup ("tapered");	/* Default prefix */
 	if (two_grids) { 
-		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+		if ((GridY = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
-		if(GridA->header->registration != GridB->header->registration) {
+		if(GridX->header->registration != GridY->header->registration) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!GMT_grd_same_shape (GMT, GridA, GridB)) {
+		if (!GMT_grd_same_shape (GMT, GridX, GridY)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!GMT_grd_same_region (GMT, GridA, GridB)) {
+		if (!GMT_grd_same_region (GMT, GridX, GridY)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different regions\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!GMT_grd_same_inc (GMT, GridA, GridB)) {
+		if (!GMT_grd_same_inc (GMT, GridX, GridY)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different intervals\n");
 			Return (EXIT_FAILURE);
 		}
 		
-		GMT_grd_init (GMT, GridB->header, options, true);
-		set_grid_radix_size (GMT, Ctrl, GridB);		/* This also sets the new pads */
+		GMT_grd_init (GMT, GridY->header, options, true);
+		set_grid_radix_size (GMT, Ctrl, GridY);		/* This also sets the new pads */
 		/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-		for (side = 0; side < 4; side++) GridB->header->BC[side] = GMT_BC_IS_DATA;
+		for (side = 0; side < 4; side++) GridY->header->BC[side] = GMT_BC_IS_DATA;
 
 		/* Now read data into the real positions in the padded complex radix grid */
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[1], GridB) == NULL) {	/* Get subset */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[1], GridY) == NULL) {	/* Get subset */
 			Return (API->error);
 		}
 
 		/* Check that no NaNs are present */
 
 		stop = false;
-		for (ij = 0; !stop && ij < GridB->header->size; ij++) stop = GMT_is_fnan (GridB->data[ij]);
+		for (ij = 0; !stop && ij < GridY->header->size; ij++) stop = GMT_is_fnan (GridY->data[ij]);
 		if (stop) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Second input grid cannot have NaNs!\n");
 			Return (EXIT_FAILURE);
 		}
 		
-		if (!(Ctrl->L.active)) remove_plane (GMT, GridB, Ctrl->L.mode);
-		if (!(Ctrl->N.force_narray)) taper_edges (GMT, GridB, Ctrl->Q.active, Ctrl->Q.prefix);
+		if (!(Ctrl->L.active)) remove_plane (GMT, GridY, Ctrl->L.mode);
+		if (!(Ctrl->N.force_narray)) taper_edges (GMT, GridY, Ctrl->Q.active, Ctrl->Q.prefix);
 	}
 
-	(void) GMT_set_outgrid (GMT, GridA, &Out);	/* true if input is a read-only array; otherwise Out just points to GridA */
+	(void) GMT_set_outgrid (GMT, GridX, &Out);	/* true if input is a read-only array; otherwise Out just points to GridX */
 
 	if (!(Ctrl->L.active)) remove_plane (GMT, Out, Ctrl->L.mode);
 	if (!(Ctrl->N.force_narray)) taper_edges (GMT, Out, Ctrl->Q.active, Ctrl->Q.prefix);
@@ -1451,14 +1537,17 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		exit (-1);
 	}
 #endif
-	radial = (Ctrl->E.active || Ctrl->Z.active);
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 
 	if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
 		Return (EXIT_FAILURE);
-	if (two_grids && GMT_fft_2d (GMT, GridB->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
-		Return (EXIT_FAILURE);
+	if (Ctrl->Z.active) save_complex_grids (GMT, Out, Ctrl->Z.mode, &K, Ctrl->In.file[0]);
+	if (two_grids) {
+		if (GMT_fft_2d (GMT, GridY->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
+		if (Ctrl->Z.active) save_complex_grids (GMT, GridY, Ctrl->Z.mode, &K, Ctrl->In.file[1]);
+	}
 
 #if 1
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
@@ -1496,21 +1585,21 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 				do_filter (Out, &f_info, &K);
 				break;
 			case SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "spectrum...\n");
-				status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, &K);
-				if (status < 0) Return (status);
-				par_count += status;
-				break;
-			case CROSS_SPECTRUM:	/* This currently writes a table to file or stdout if -G is not used */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cross-spectra...\n");
-				status = do_cross_spectrum (GMT, Out, GridB, &Ctrl->par[par_count], Ctrl->Z.give_wavelength, Ctrl->Z.km, Ctrl->G.file, &K);
+				if (two_grids) {
+					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cross-spectra...\n");
+					status = do_cross_spectrum (GMT, Out, GridY, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, &K);
+				}
+				else {	
+					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "spectrum...\n");
+					status = do_spectrum (GMT, Out, &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, &K);
+				}
 				if (status < 0) Return (status);
 				par_count += status;
 				break;
 		}
 	}
 #endif
-	if (!radial) {	/* Since -E/Z out was handled separately by do_spectrum/do_cross_spectrum */
+	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum/do_cross_spectrum */
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
 
 		if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
