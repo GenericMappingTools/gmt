@@ -2,10 +2,18 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
-2013-02-09	pwessel
-	* grdfft.c:		Added option for radial cross-spectra (-Z), modifiers to
-				scale geographic meters to km, and option (-Q) to save
-				intermediate detrended/mirrored/tapered grid to file.
+2013-02-11	pwessel
+	* grdfft.c:		Added option for radial cross-spectra (-E) when two grids
+				are supplied, modifiers to scale geographic meters to km,
+				option (-Q) to save intermediate detrended/mirrored/tapered
+				grid to file. expanded -N to allow more flexibility in how
+				data region is extended, mirrored, and tapered.  Added new
+				option -Z to save raw complex spectrum as 2 grid files.
+2013-02-10	pwessel
+	* grdmath.c:		Added operator TAPER for creating unity weights that taper
+				to zero over specified margin x and y widths.
+	* gmtmath.c:		Added operator TAPER for creating unity weights that taper
+				to zero over specified margin width.
 
 2013-01-30	pwessel
 	* xyz2grd.c:		For -E, must read data as double so can properly compare
