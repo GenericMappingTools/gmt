@@ -4,7 +4,7 @@
 grdinfo \- Extract information from grids
 .SH SYNOPSIS
 BD(grdinfo) IT(grdfiles) [ OPT(C) ] [ OPT(F) ] 
-[ OPT(I)[IT(dx)[/IT(dy)]] ] [ OPT(L)[BD(0)|BD(1)|BD(2)] ] 
+[ OPT(I)[IT(dx)[/IT(dy)]|BD(-)|BD(b)] ] [ OPT(L)[BD(0)|BD(1)|BD(2)] ] 
 [ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)[BD(s)IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdinfo) reads a 2-D binary grid file and reports metadata and various statistics for
@@ -34,11 +34,12 @@ OPT(F)
 Report grid domain and x/y-increments in world mapping format [Default is generic].
 Does not apply to the OPT(C) option.
 .TP
-OPT(I)[IT(dx)[/IT(dy)]]
+OPT(I)[IT(dx)[/IT(dy)]|BD(-)|BD(b)]
 Report the min/max of the region to the nearest multiple of IT(dx) and IT(dy),
 and output this in the form OPT(R)IT(w/e/s/n) (unless OPT(C) is set).
 To report the actual grid region, select OPT(I-).  If no argument is given
 then we report the grid increment in the form OPT(I)IT(xinc/yinc).
+If OPT(Ib) is given we write each grid's bounding box polygon instead.
 .TP
 OPT(L)[BD(0)|BD(1)|)2)]
 .TP
