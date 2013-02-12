@@ -5,7 +5,8 @@ grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) d
 .SH SYNOPSIS
 BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outgrid) [ OPT(A)IT(azimuth) ] 
 [ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)[BD(k)]] ] 
-[ OPT(F)[BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L) ] [ OPT(N)IT(stuff) ] 
+[ OPT(F)[BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
+[ OPT(N)[BD(f)|BD(q)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)] ] 
 [ OPT(Q)[IT(prefix)] ] [ OPT(S)IT(scale) ] [ OPT(T)IT(te/rl/rm/rw/ri) ] [ GMT_V_OPT ] 
 [ OPT(Z)[BD(p)] ][ GMT_f_OPT ]
 .SH DESCRIPTION
@@ -76,18 +77,24 @@ heights in meters.  [Default is no scale].
 OPT(L)
 Leave trend alone.  By default, a linear trend will be removed prior to the transform.
 .TP
-OPT(N)IT(stuff)
+OPT(N)[BD(f)|BD(q)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)]
 Choose or inquire about suitable grid dimensions for FFT.
-OPT(Nf) will force the FFT to use the dimensions of the data.
-OPT(Nq) will inQuire about more suitable dimensions.
+OPT(Nf) will force the FFT to use the actual dimensions of the data.
+OPT(Nq) will inQuire about more suitable dimensions, report those, then exit.
 OPT(N)IT(nx/ny) will do FFT on array size IT(nx/ny) (Must be >= grid file size).
 Default chooses dimensions >= data which optimize speed, accuracy of FFT.
 If FFT dimensions > grid file dimensions, data are extended and tapered to zero.
+Use modifiers to control how the extension and tapering are to be performed:
+BD(+e) extends the grid by imposing edge-point symmetry [Default], BD(+m) extends
+the grid by imposing edge mirror symmetry, while BD(+n) turns off data extension.
+Tapering is performed from the data edge to the FFT grid edge (100\%). Change
+this percentage via BD(+t)IT(width). When BD(+n) is in effect, the tapering
+is applied instead to the data margins as no extension is available.
 .TP
 OPT(Q)[IT(prefix)]
 Save the intermediate grid being passed to the forward FFT; this is likely to have been
-detrended, extended by point-symmetry along all edges, and tapered.  Append a file IT(prefix) from which output file name(s)
-will be created (i.e., IT(prefix)_IT(ingrid)) [tapered].
+detrended, extended by point-symmetry along all edges, and tapered.  Append a file
+IT(prefix) from which output file name(s) will be created (i.e., IT(prefix)_IT(ingrid)) [tapered].
 .TP
 OPT(S)IT(scale)
 Multiply each element by IT(scale) in the space domain (after the frequency domain operations).
@@ -149,8 +156,8 @@ where 0.022 is the scale needed for the first term in Parker's expansion for\"'
 computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
 .br
 .sp
-To compute the admittance and coherence between co-registered bathymetry and gravity grids,
-and report result as function of wavelengths in km, try
+To compute cross-spectral estimates for co-registered bathymetry and gravity grids,
+and report result as functions of wavelengths in km, try
 br
 .sp
 grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
