@@ -52,6 +52,7 @@ EXTERN_MSC void GMT_fft_cleanup (void);
 
 /* gmt_grdio.c: */
 
+EXTERN_MSC void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3]);
 EXTERN_MSC struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data);
 EXTERN_MSC struct GRD_HEADER * GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEADER *h);
@@ -199,7 +200,7 @@ EXTERN_MSC void GMT_init_io_columns (struct GMT_CTRL *C, unsigned int dir);
 
 /* gmt_support.c: */
 
-EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, double step, enum GMT_enum_track mode, double xyz[2][3]);
+EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3]);
 EXTERN_MSC unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC bool GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, double right);

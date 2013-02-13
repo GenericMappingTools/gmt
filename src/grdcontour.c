@@ -632,30 +632,6 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 	}
 }
 
-void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3])
-{	/* Determine the grid's global min and max locations and z values */
-	unsigned int row, col, i;
-	uint64_t ij, i_minmax[2] = {0, 0};
-	float z_extreme[2] = {FLT_MAX, -FLT_MAX};
-
-	GMT_grd_loop (GMT, Grid, row, col, ij) {
-		if (GMT_is_fnan (Grid->data[ij])) continue;
-		if (Grid->data[ij] < z_extreme[0]) {
-			z_extreme[0] = Grid->data[ij];
-			i_minmax[0]  = ij;
-		}
-		if (Grid->data[ij] > z_extreme[1]) {
-			z_extreme[1] = Grid->data[ij];
-			i_minmax[1]  = ij;
-		}
-	}
-	for (i = 0; i < 2; i++) {	/* 0 is min, 1 is max */
-		xyz[i][GMT_X] = GMT_grd_col_to_x (GMT, GMT_col (Grid->header, i_minmax[i]), Grid->header);
-		xyz[i][GMT_Y] = GMT_grd_row_to_y (GMT, GMT_row (Grid->header, i_minmax[i]), Grid->header);
-		xyz[i][GMT_Z] = z_extreme[i];
-	}
-}
-
 void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_GRID *Grid)
 {	/* Modify orientation of contours to have top of annotation facing the local hill top */
 	int col, row;

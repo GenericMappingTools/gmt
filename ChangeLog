@@ -5,6 +5,8 @@
 2013-02-13	pwessel
 	* spectrum1d.c:		Added the same -L[m|h] option for trend-removal control
 				as in grdfft.
+	* grdtrack.c:		Added -E for expeditiously creating profiles via end points
+				instead of reading input table.
 
 2013-02-12	pwessel
 		* grdinfo.c:	Added -Ib which will write the grid's bounding box polygon.

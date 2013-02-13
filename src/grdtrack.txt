@@ -4,12 +4,12 @@
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
 BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(f)|BD(p)BD(m)|BD(r)|BD(R)[BD(+l)] ] 
-[ OPT(C)IT(length)[BD(u)]/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(N) ] 
-[ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
+[ OPT(C)IT(length)[BD(u)]/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(E)IT(line)[,IT(line),...][+iIT(inc)[BD(u)]] ] 
+[ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(grdtrack) reads one or more grid files (or a Sandwell/Smith IMG files) and a table (from file or
-standard input) with (x,y) [or (lon,lat)] positions 
+standard input; but see OPT(E) for exception) with (x,y) [or (lon,lat)] positions 
 in the first two columns (more columns may be present). It interpolates the grid(s) at the positions 
 in the table and writes out the table with the interpolated values added as (one or more) new columns.
 Alternatively (OPT(C)), the input is considered to be line-segments and we create orthogonal cross-profiles
@@ -62,6 +62,15 @@ OPT(D)IT(dfile)
 In concert with OPT(C) we can save the (possibly resampled) original lines to the
 file IT(dfile) [Default only saves the cross-profiles].
 The columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
+.TP
+OPT(E)IT(line)[,IT(line),...][+iIT(inc)[BD(u)]]
+Instead of reading input track coordinates, specify profiles via their end coordinates.
+The format of each IT)line) is IT(start)/IT(stop), where IT(start) or IT(stop)
+are IT(lon)/IT(lat) (IT(x)/IT(y) for Cartesian data) or a 2-character XY key that uses the "pstext"-style justification format
+format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean
+the global minimum and maximum locations in the grid (only available if only one grid is given).  Note: No track file is read.
+Append BD(+i)BD(inc)[BD(u)] to set the sampling interval (append appropriate unit).  If no increment is given
+then we default to half the minimum grid interval.
 .TP
 OPT(N)
 Do IT(not) skip points that fall outside the domain of the grid(s) [Default only output points within grid domain].
