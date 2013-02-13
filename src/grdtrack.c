@@ -164,7 +164,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
 	GMT_message (GMT, "\t   format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean\n");
 	GMT_message (GMT, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
-	GMT_message (GMT, "\t   Append +s<step>[unit] to set the sampling space [Default is 0.5 min (x_inc, y_inc)].\n");
+	GMT_message (GMT, "\t   Append +s<step>[unit] to set the sampling space [Default is 0.5 x min of (x_inc, y_inc)].\n");
 #endif
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
