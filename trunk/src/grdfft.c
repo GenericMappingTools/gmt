@@ -751,7 +751,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 
 	char header[GMT_BUFSIZ], *name[2] = {"freq", "wlength"};
 	uint64_t dim[4] = {1, 1, 3, 0};	/* One table and one segment, with 1 + 2 = 3 columns and yet unknown rows */
-	uint64_t k, nk, nused, ifreq;
+	uint64_t k, nk, nused, ifreq;	/* *nused = NULL; */
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	double (*get_k) (uint64_t, struct K_XY *);
 
@@ -780,6 +780,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 
 	/* Get an array for summing stuff */
 	power = GMT_memory (GMT, NULL, nk, double);
+	//nused = GMT_memory (GMT, NULL, nk, uint64_t);
 
 	/* Loop over it all, summing and storing, checking range for r */
 
@@ -1606,9 +1607,9 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		}
 	}
 	
-	/* OK, the data set(s) are clean. Time to read in and set dimensions */
+	/* OK, the data set(s) are clean. Time to read the data and set FFT dimensions */
 	
-	/* If input grid(s) is read-only then we must duplicate; otherwise Grid[k] points to Orig[k] */
+	/* Note: If input grid(s) are read-only then we must duplicate; otherwise Grid[k] points to Orig[k] */
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
 		(void) GMT_set_outgrid (GMT, Orig[k], &Grid[k]);
 	}
