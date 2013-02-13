@@ -73,7 +73,7 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L[m|h][+s] */
+	struct L {	/* -L[m|h] */
 		bool active;
 		bool debug;
 		unsigned int mode;

@@ -2,7 +2,7 @@
 #	$Id$
 # Testing grdfft power spectrum values
 
-ps=power.ps
+ps=power2D.ps
 
 # Single sinusoid of unit amplitude
 grdmath -R0/256/0/256 -I1 -r X 256 DIV 360 MUL 10 MUL COSD = t.nc

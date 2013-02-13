@@ -41,4 +41,3 @@ psxy -R2/160/0/1 -JX-6il/2.5i -Ba2f3g3:,km:/afg0.5:"Coherency@+2@+":WsNe -O -K -
 psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey >> $ps
 #psxy -R -J -O -K -W0.25p,blue coh.out >> $ps
 psxy -R -J -O -T >> $ps
-gv $ps &

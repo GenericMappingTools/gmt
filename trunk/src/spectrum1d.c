@@ -51,6 +51,11 @@ struct SPECTRUM1D_CTRL {
 		bool active;
 		double inc;
 	} D;
+	struct L {	/* -L[m|h] */
+		bool active;
+		bool debug;
+		unsigned int mode;
+	} L;
 	struct N {	/* -N[+]<namestem> */
 		bool active;
 		unsigned int mode;
@@ -88,40 +93,53 @@ void alloc_arrays (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C)
 	C->datac = GMT_memory (GMT, NULL, C->window_2, float);
 }
 
-void detrend_and_hanning (struct SPECTRUM1D_INFO *C)
+void detrend_and_hanning (struct SPECTRUM1D_INFO *C, bool leave_trend, unsigned int mode)
 {
+	/* If leave_trend is true we do not remove best-fitting LS trend.  Otherwise
+	 * we do, modulated by mode: 0: remove trend, 1: remove mean, 2: remove mid-value.
+	 * In all cases we apply the Hanning windowing */
 	int i, t;
 	double sumx, sumtx, sumy, sumty, sumt2, x_slope, x_mean, y_slope, y_mean;
-	double t_factor, h_period, h_scale, hc, hw, tt;
+	double t_factor, h_period, h_scale, hc, hw, tt, x_min, x_max, y_min, y_max;
 	sumx = sumtx = sumy = sumty = sumt2 = 0.0;
+	x_slope = x_mean = y_slope = y_mean = 0.0;
+	x_min = y_min = DBL_MAX; x_max = y_max = -DBL_MAX;
 	C->x_variance = C->y_variance = 0.0;
 	t_factor = 2.0 / (C->window - 1);
 	h_period = M_PI / (double)C->window;	/* For Hanning window  */
 	h_scale = sqrt (8.0/3.0);		/* For Hanning window  */
 
-	if (C->y_given) {
-		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
-			tt = t * t_factor - 1.0;
-			sumt2 += (tt * tt);
-			sumx += C->datac[i];
-			sumtx += (tt * C->datac[i]);
-			sumy += C->datac[i+1];
-			sumty += (tt * C->datac[i+1]);
+	if (!leave_trend) {
+		if (C->y_given) {
+			for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+				tt = t * t_factor - 1.0;
+				sumt2 += (tt * tt);
+				sumx += C->datac[i];
+				sumtx += (tt * C->datac[i]);
+				sumy += C->datac[i+1];
+				sumty += (tt * C->datac[i+1]);
+				if (C->datac[i] < x_min) x_min = C->datac[i];
+				if (C->datac[i] > x_max) x_max = C->datac[i];
+				if (C->datac[i+1] < y_min) y_min = C->datac[i+1];
+				if (C->datac[i+1] > y_max) y_max = C->datac[i+1];
+			}
+			y_slope = (mode) ? 0.0 : sumty / sumt2;
+			y_mean = (mode == 2) ? 0.5 * (y_min + y_max) : sumy / C->window;
 		}
-	}
-	else {
-		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
-			tt = t * t_factor - 1.0;
-			sumt2 += (tt * tt);
-			sumx += C->datac[i];
-			sumtx += (tt * C->datac[i]);
+		else {
+			for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
+				tt = t * t_factor - 1.0;
+				sumt2 += (tt * tt);
+				sumx += C->datac[i];
+				sumtx += (tt * C->datac[i]);
+				if (C->datac[i] < x_min) x_min = C->datac[i];
+				if (C->datac[i] > x_max) x_max = C->datac[i];
+			}
 		}
+		x_slope = (mode) ? 0.0 :sumtx / sumt2;
+		x_mean = (mode == 2) ? 0.5 * (x_min + x_max) : sumx / C->window;
 	}
-	x_slope = sumtx / sumt2;
-	x_mean = sumx / C->window;
 	if (C->y_given) {
-		y_slope = sumty / sumt2;
-		y_mean = sumy / C->window;
 		for (i = 0, t = 0; i < C->window_2; i+=2, t++) {
 			hc = cos(t * h_period);
 			hw = h_scale * (1.0 - hc * hc);
@@ -149,7 +167,7 @@ void detrend_and_hanning (struct SPECTRUM1D_INFO *C)
 	}
 }
 
-void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data)
+void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x, double *y, uint64_t n_data, bool leave_trend, unsigned int mode)
 {
 	int n_windows, w, i, t_start, t_stop, t, f;
 	double dw, spec_scale, x_varp, y_varp = 1.0, one_on_nw, co_quad;
@@ -186,7 +204,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 			}
 		}
 
-		detrend_and_hanning (C);
+		detrend_and_hanning (C, leave_trend, mode);
 
 		if (GMT_fft_1d (GMT, C->datac, C->window, k_fft_fwd, k_fft_complex))
 			exit (EXIT_FAILURE);
@@ -409,7 +427,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 	return (0);
 }
 
-void write_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[])
+void assign_output_spectrum1d (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char *col, int n_outputs, int write_wavelength, double *out[])
 {	/* Fills out the 2-D table array given */
 	int i, j, k;
 	double delta_f, eps_pow, tmp, *f_or_w;
@@ -508,7 +526,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-N[+]<name_stem>]\n");
+	GMT_message (GMT, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[+]<name_stem>]\n");
 	GMT_message (GMT, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -523,6 +541,8 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   x = xpower, y = ypower, c = coherent power, n = noise power,\n");
 	GMT_message (GMT, "\t   p = phase, a = admittance, g = gain, o = squared coherency.\n\n");
 	GMT_message (GMT, "\t-D Set delta_time sampling interval of data [Default = 1.0].\n");
+	GMT_message (GMT, "\t-L Leave trend alone:  Do not remove least squares trend from data [Default removes trend].\n");
+	GMT_message (GMT, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
 	GMT_message (GMT, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
 	GMT_message (GMT, "\t   Output files will be named <name_stem>.xpower, etc.\n");
 	GMT_message (GMT, "\t   To save all selected spectra in a single table, use -N+<file>.\n");
@@ -575,6 +595,11 @@ int GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ctrl, s
 			case 'D':
 				Ctrl->D.active = true;
 				Ctrl->D.inc = atof (opt->arg);
+				break;
+			case 'L':	/* Leave trend alone */
+				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
+				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
+				else Ctrl->L.active = true;
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -673,24 +698,27 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	alloc_arrays (GMT, &C);
 
 	if (one_table) {
-		Dout = GMT_memory (GMT, NULL, 1, struct GMT_DATASET);				/* Output dataset... */
-		Dout->table = GMT_memory (GMT, NULL, Din->n_tables, struct GMT_DATATABLE *);	/* with table array */
-		if ((error = GMT_set_cols (GMT, GMT_OUT, Din->n_columns))) Return (error);
+		uint64_t dim[4];
+		dim[0] = Din->n_tables;		/* Same number of tables as input */
+		dim[1] = 0;				/* Don't know about segments yet */
+		dim[2] = 1 + 2 * n_outputs;		/* Number of columns needed output file */
+		dim[3] = C.n_spec;			/* Number of rows */
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table for stacked results */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
-			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, false);
+			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, 3, C.n_spec, false);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points.\n", S->n_rows);
 
-			compute_spectra (GMT, &C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows);
+			compute_spectra (GMT, &C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, Ctrl->L.active, Ctrl->L.mode);
 
 			if (one_table) {
 				Sout = Tout->segment[seg];	/* Current output segment */
-				GMT_alloc_segment (GMT, Sout, C.window, Din->n_columns, true);
-				write_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
+				GMT_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, true);
+				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
 			}
 			else {
 				if (write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name)) Return (EXIT_FAILURE);
