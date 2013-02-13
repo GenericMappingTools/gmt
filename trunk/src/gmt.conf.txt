@@ -203,7 +203,7 @@ been configured during installation. Choose from BD(auto) (pick the most suitabl
 for the task among available algorithms), BD(fftw)[,IT(planner_flag)] (The Fastest
 Fourier Transform in the West), BD(accelerate) (Use the Accelerate Framework under
 OS X; Note, that the number of samples to be processed must be a base 2 exponent),
-BD(kiss) (Kiss FFT) [auto].
+BD(kiss), (Kiss FFT), BD(brenner) Brenner Legacy FFT [auto].
 .sp
 FFTW can "learn" how to optimally compute Fourier transforms on the current
 hardware and OS by computing several FFTs and measuring their execution time.
