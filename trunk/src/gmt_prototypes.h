@@ -199,6 +199,7 @@ EXTERN_MSC void GMT_init_io_columns (struct GMT_CTRL *C, unsigned int dir);
 
 /* gmt_support.c: */
 
+EXTERN_MSC struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, double step, enum GMT_enum_track mode, double xyz[2][3]);
 EXTERN_MSC unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S, struct GMT_DATASEGMENT ***Lout);
 EXTERN_MSC bool GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, double right);

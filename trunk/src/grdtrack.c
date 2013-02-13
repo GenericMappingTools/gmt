@@ -84,6 +84,13 @@ struct GRDTRACK_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
+	struct Q {	/* -Q<line1>[,<line2>,...][+s<step>] */
+		bool active;
+		unsigned int mode;
+		char *lines;
+		double step;
+		char unit;
+	} Q;
 	struct S {	/* -S[<mode>][<modifiers>] */
 		bool active;
 		bool selected[STACK_N_OPT];	/* For +a +d +e +r +s */
@@ -119,7 +126,7 @@ void Free_grdtrack_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Dea
 
 int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
-
+/* [-Q<line1>[,<line2>,...][+s<step>]]  */
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a]]\n"); 
 	GMT_message (GMT, "\t[-D<dfile>] [-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
@@ -151,6 +158,14 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   Output columns are lon, lat, dist, az, z1, z2, ...\n");
 	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_explain_options (GMT, "R");
+#if 0
+	GMT_message (GMT, "\t-Q Set quick paths based on <line1>[,<line2>,...]. Give start and stop coordinates for\n");
+	GMT_message (GMT, "\t   each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
+	GMT_message (GMT, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
+	GMT_message (GMT, "\t   format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean\n");
+	GMT_message (GMT, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
+	GMT_message (GMT, "\t   Append +s<step>[unit] to set the sampling space [Default is 0.5 min (x_inc, y_inc)].\n");
+#endif
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
 	GMT_message (GMT, "\t   Append which method should be used when performing the stacking:\n");
@@ -277,6 +292,15 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 #endif
 			case 'N':
 				Ctrl->N.active = true;
+				break;
+			case 'Q':	/* Create input tracks instead of reading tracks */
+				Ctrl->Q.active = true;
+				Ctrl->Q.lines = strdup (opt->arg);
+				if ((c = strstr (Ctrl->Q.lines, "+s"))) {	/* Gave modifiers */
+					*c = 0;	/* Truncate option at start of modifiers */
+					c++;
+					Ctrl->Q.mode = GMT_get_distance (GMT, c, &(Ctrl->Q.step), &(Ctrl->Q.unit));
+				}
 				break;
 			case 'S':
 #ifdef GMT_COMPAT
