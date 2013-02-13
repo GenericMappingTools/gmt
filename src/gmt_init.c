@@ -3779,9 +3779,12 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				C->current.setting.fft = k_fft_kiss;
 #ifdef GMT_COMPAT
 			else if (!strcmp (lower_value, "brenner")) {
+#if 0
 				GMT_report (C, GMT_MSG_COMPAT, "Norman Brenner's ancient Cooley-Tukey FFT "
 						"implementation has been superseded by Kiss FFT (kissfft).\n");
 				C->current.setting.fft = k_fft_kiss;
+#endif
+				C->current.setting.fft = k_fft_brenner;
 			}
 			else if (!strcmp (lower_value, "fftpack")) {
 				GMT_report (C, GMT_MSG_COMPAT, "Support for Paul Swarztrauber's ancient "
@@ -4681,6 +4684,9 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 					break;
 				case k_fft_kiss:
 					strcpy (value, "kissfft");
+					break;
+				case k_fft_brenner:
+					strcpy (value, "brenner");
 					break;
 				case k_fft_fftw:
 					strcpy (value, "fftw");

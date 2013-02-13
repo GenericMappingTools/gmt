@@ -138,6 +138,7 @@ enum FFT_implementations {
 	k_fft_accelerate,  /* Select Accelerate Framework vDSP FFT [OS X only] */
 	k_fft_fftw,        /* Select FFTW */
 	k_fft_kiss,        /* Select Kiss FFT (always available) */
+	k_fft_brenner,     /* Select Brenner FFT (Legacy*/
 	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
 };
 
