@@ -3844,14 +3844,14 @@ int gmt_code_to_lonlat (struct GMT_CTRL *C, char *code, double *lon, double *lat
 	return (error);
 }
 
-struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, double step, enum GMT_enum_track mode, double xyz[2][3])
+struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3])
 {	/* Given a list of comma-separated start/stop coordinates, build a data table
  	 * of the profiles. xyz holds the grid min/max coordinates (or NULL if used without a grid;
 	 * in that case the special Z+, Z- coordinate shorthands are unavailable).
 	 * If resample is true then we sample the track between the end points.
 	 * If project is true then we convert to plot units.
 	 */
-	unsigned int pos = 0, xtype = C->current.io.col_type[GMT_IN][GMT_X], ytype = C->current.io.col_type[GMT_IN][GMT_Y];
+	unsigned int n_cols, pos = 0, xtype = C->current.io.col_type[GMT_IN][GMT_X], ytype = C->current.io.col_type[GMT_IN][GMT_Y];
 	int n, error = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
@@ -3862,10 +3862,12 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 	
 	T = GMT_memory (C, NULL, 1, struct GMT_DATATABLE);
 	T->segment = GMT_memory (C, NULL, n_alloc, struct GMT_DATASEGMENT *);
+	n_cols = (get_distances) ? 3 :2;
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {
 		S = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
-		GMT_alloc_segment (C, S, 2, 2, true);
-		S->n_rows = S->n_columns = 2;
+		GMT_alloc_segment (C, S, n_cols, 2, true);
+		S->n_columns = n_cols;
+		S->n_rows = 2;
 		n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 		if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
 			error += GMT_verify_expectations (C, xtype, GMT_scanf_arg (C, txt_a, xtype, &S->coord[GMT_X][0]), txt_a);
@@ -3912,6 +3914,8 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 		}
 		// if (resample) S->n_rows = GMT_fix_up_path (C, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, 0);
 		if (resample) S->n_rows = GMT_resample_path (C, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
+		if (get_distances) S->coord[GMT_Z] = GMT_dist_array (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);	/* Compute cumulative distances along line */
+		
 		if (project) {	/* Project coordinates */
 			uint64_t k;
 			double x, y;
@@ -3945,11 +3949,11 @@ int GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double xyz[2]
 
 	/* Prepares contour labeling machinery as needed */
 
-	unsigned int n, error = 0, pos;
+	unsigned int error = 0;
 	uint64_t k, i;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double x, y, step = 0.0;
-	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
+	char buffer[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (if requested) */
 	if (G->do_interpolate) step = C->current.setting.map_line_step / C->current.proj.scale[GMT_X] / C->current.proj.M_PR_DEG;
@@ -3980,75 +3984,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double xyz[2]
 		G->no_gap = ((G->just + 2)%4 != 0);	/* Don't clip contour if label is not in the way */
 
 	if (G->crossing == GMT_CONTOUR_XLINE) {
-		G->xp = GMT_make_profile (C, G->flag, G->option, G->do_interpolate, true, 0.0, GMT_TRACK_FILL, xyz);
-#if 0		
-		G->xp = GMT_memory (C, NULL, 1, struct GMT_DATATABLE);
-		G->xp->segment = GMT_memory (C, NULL, n_alloc, struct GMT_DATASEGMENT *);
-		pos = 0;
-		while ((GMT_strtok (G->option, ",", &pos, p))) {
-			G->xp->segment[G->xp->n_segments] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
-			GMT_alloc_segment (C, G->xp->segment[G->xp->n_segments], 2, 2, true);
-			G->xp->segment[G->xp->n_segments]->n_rows = G->xp->segment[G->xp->n_segments]->n_columns = 2;
-			n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-			if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
-				error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (C, txt_a, C->current.io.col_type[GMT_IN][GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0]), txt_a);
-				error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (C, txt_b, C->current.io.col_type[GMT_IN][GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0]), txt_b);
-				error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (C, txt_c, C->current.io.col_type[GMT_IN][GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1]), txt_c);
-				error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (C, txt_d, C->current.io.col_type[GMT_IN][GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]), txt_d);
-			}
-			else if (n == 2) { /* Easy, got <code>/<code> */
-				error += gmt_code_to_lonlat (C, txt_a, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0]);
-				error += gmt_code_to_lonlat (C, txt_b, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]);
-			}
-			else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
-				if (gmt_code_to_lonlat (C, txt_a, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0])) {	/* Failed, so try the other way */
-					error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (C, txt_a, C->current.io.col_type[GMT_IN][GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][0]), txt_a);
-					error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (C, txt_b, C->current.io.col_type[GMT_IN][GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][0]), txt_b);
-					error += gmt_code_to_lonlat (C, txt_c, &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]);
-				}
-				else {	/* Worked, pick up second point */
-					error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (C, txt_b, C->current.io.col_type[GMT_IN][GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_X][1]), txt_b);
-					error += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (C, txt_c, C->current.io.col_type[GMT_IN][GMT_Y], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y][1]), txt_c);
-				}
-			}
-			for (i = 0; i < 2; i++) {	/* Reset any zmin/max settings if used and applicable */
-				if (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] == DBL_MAX) {	/* Meant zmax location */
-					if (xyz) {
-						G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = xyz[1][GMT_X];
-						G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = xyz[1][GMT_Y];
-					}
-					else {
-						error++;
-						GMT_report (C, GMT_MSG_NORMAL, "syntax error -%c:  z+ option not applicable here\n", G->flag);
-					}
-				}
-				else if (G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] == -DBL_MAX) {	/* Meant zmin location */
-					if (xyz) {
-						G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = xyz[0][GMT_X];
-						G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = xyz[0][GMT_Y];
-					}
-					else {
-						error++;
-						GMT_report (C, GMT_MSG_NORMAL, "syntax error -%c:  z- option not applicable here\n", G->flag);
-					}
-				}
-			}
-			if (G->do_interpolate) G->xp->segment[G->xp->n_segments]->n_rows = GMT_fix_up_path (C, &G->xp->segment[G->xp->n_segments]->coord[GMT_X], &G->xp->segment[G->xp->n_segments]->coord[GMT_Y], G->xp->segment[G->xp->n_segments]->n_rows, step, 0);
-			for (i = 0; i < G->xp->segment[G->xp->n_segments]->n_rows; i++) {	/* Project */
-				GMT_geo_to_xy (C, G->xp->segment[G->xp->n_segments]->coord[GMT_X][i], G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i], &x, &y);
-				G->xp->segment[G->xp->n_segments]->coord[GMT_X][i] = x;
-				G->xp->segment[G->xp->n_segments]->coord[GMT_Y][i] = y;
-			}
-			G->xp->n_segments++;
-			if (G->xp->n_segments == n_alloc) {
-				size_t old_n_alloc = n_alloc;
-				n_alloc <<= 1;
-				G->xp->segment = GMT_memory (C, G->xp->segment, n_alloc, struct GMT_DATASEGMENT *);
-				GMT_memset (&(G->xp->segment[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DATASEGMENT *);	/* Set to NULL */
-			}
-		}
-		if (G->xp->n_segments < n_alloc) G->xp->segment = GMT_memory (C, G->xp->segment, G->xp->n_segments, struct GMT_DATASEGMENT *);
-#endif
+		G->xp = GMT_make_profile (C, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
 		G->xp = GMT_read_table (C, G->file, GMT_IS_FILE, false, false, false);

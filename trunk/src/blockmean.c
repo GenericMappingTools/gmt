@@ -249,7 +249,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 
 	n_read = n_pitched = 0;	/* Initialize counters */
 	weight = 1.0;		/* Set the default point weight */
-	use_weight = (Ctrl->W.weighted[GMT_IN] && !Ctrl->S.mode == 3);	/* Do not use weights if -Sn was set */
+	use_weight = (Ctrl->W.weighted[GMT_IN] && Ctrl->S.mode != 3);	/* Do not use weights if -Sn was set */
 	
 	/* Read the input data */
 
