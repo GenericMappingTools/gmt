@@ -1118,8 +1118,8 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 	double P[3], Rot0[3][3], Rot[3][3], total_angle_rad, angle_rad, ya, yb;
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
-	if (step_out <= 0.0) {	/* Safety valve */
-		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given zero or negative step-size\n");
+	if (step_out < 0.0) {	/* Safety valve */
+		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given negative step-size\n");
 		return (EXIT_FAILURE);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
@@ -1131,9 +1131,10 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 		step_out = (step_out / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get degrees */
 		return (GMT_fix_up_path (C, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
 	}
-		
+	
 	dist_in = GMT_dist_array (C, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
 	
+	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 	/* Determine n_out, the number of output points */
 	if (mode == GMT_TRACK_SAMPLE_ADJ) {	/* Round to nearest multiple of step_out, then adjust step to match exactly */
 		n_out = lrint (dist_in[n_in-1] / step_out);
@@ -1222,8 +1223,8 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 	double dist_out, gap, L, frac_to_a, frac_to_b;
 	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
 
-	if (step_out <= 0.0) {	/* Safety valve */
-		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given zero or negative step-size\n");
+	if (step_out < 0.0) {	/* Safety valve */
+		GMT_report (C, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given negative step-size\n");
 		return (EXIT_FAILURE);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
@@ -1234,6 +1235,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path (C, x, y, n_in, step_out, mode));	/* Insert extra points only */
 	
 	dist_in = GMT_dist_array (C, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
+	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 	
 	/* Determine n_out, the number of output points */
 	if (mode == GMT_TRACK_SAMPLE_ADJ) {	/* Round to nearest multiples, then adjust step to match exactly */

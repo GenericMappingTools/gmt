@@ -284,7 +284,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned int mode
 {
 	/* mode sets if and how tapering will be performed [see GRDFFT_EXTEND_* constants].
 	 * width is relative width in percent of the margin that will be tapered [100]. */
-	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_i, end_j, min_i, min_j;
+	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_i, end_j, min_i, min_j, one;
 	int i, i_data_start, j_data_start, mx, i_width, j_width, width_percent;
 	unsigned int ju;
 	char *method[2] = {"edge-point", "mirror"};
@@ -309,6 +309,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned int mode
 	i_data_start = GMT->current.io.pad[XLO];	/* Some shorthands for readability */
 	j_data_start = GMT->current.io.pad[YHI];
 	mx = h->mx;
+	one = (mode == GRDFFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
 	
 	width_percent = lrint (width);
 	if (width_percent == 0) {
@@ -353,7 +354,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned int mode
 	scale = M_PI / (j_width + 1);	/* Full 2*pi over y taper range */
 	min_i = (mode == GRDFFT_EXTEND_NONE) ? 0 : -i_width;
 	end_i = (mode == GRDFFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
-	for (jm = 1; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
+	for (jm = one; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
 		jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
 		jt1 = jm;	/* Inside ymin; top side of edge 1  */
 		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
@@ -380,7 +381,7 @@ void taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned int mode
 	scale = M_PI / (i_width + 1);	/* Full 2*pi over x taper range */
 	end_j = (mode == GRDFFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
 	min_j = (mode == GRDFFT_EXTEND_NONE) ? 0 : -j_width;
-	for (im = 1; im <= i_width; im++) {
+	for (im = one; im <= i_width; im++) {
 		il1 = -im;
 		ir1 = im;
 		il2 = il1 + h->nx - 1;
