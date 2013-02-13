@@ -76,6 +76,7 @@ heights in meters.  [Default is no scale].
 .TP
 OPT(L)
 Leave trend alone.  By default, a linear trend will be removed prior to the transform.
+Alternatively, append BD(m) to just remove the mean value or BD(h) to remove the mid-value.
 .TP
 OPT(N)[BD(f)|BD(q)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)]
 Choose or inquire about suitable grid dimensions for FFT.

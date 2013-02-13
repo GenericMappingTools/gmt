@@ -573,7 +573,7 @@ void segyz_plot_trace (struct GMT_CTRL *GMT, float *data, double dz, double x0, 
 
 int GMT_pssegyz (void *V_API, int mode, void *args)
 {
-	int error = false, nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
+	int nm, ix, iz, n_samp = 0, check, bm_nx, bm_ny;
 
 	double xlen, ylen, xpix, ypix, x0, y0, trans[3] = {-1.0,-1.0,-1.0};
 

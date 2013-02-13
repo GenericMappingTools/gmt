@@ -4,7 +4,7 @@
 spectrum1d \- Compute auto\- [and cross\- ] spectra from one [or two] time-series
 .SH SYNOPSIS
 BD(spectrum1d) [ IT(table) ] OPT(S)IT(segment_size)] 
-[ OPT(C)[BD(xycnpago)] ] [ OPT(D)IT(dt) ] 
+[ OPT(C)[BD(xycnpago)] ] [ OPT(D)IT(dt) ] [ OPT(L)[BD(h)|BD(m)] ] 
 [ OPT(N)[BD(+)]IT(name_stem) ] [ GMT_V_OPT ] [ OPT(W) ] 
 [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ]
 .SH DESCRIPTION
@@ -71,6 +71,10 @@ BD(p) = phase, BD(a) = admit, BD(g) = gain, BD(o) = coh.
 .TP
 OPT(D)IT(dt)
 IT(dt)  Set the spacing between samples in the time-series [Default = 1].
+.TP
+OPT(L)
+Leave trend alone.  By default, a linear trend will be removed prior to the transform.
+Alternatively, append BD(m) to just remove the mean value or BD(h) to remove the mid-value.
 .TP
 OPT(N)[BD(+)]IT(name_stem)
 IT(name_stem)  Supply the name stem to be used for output files [Default = "spectrum"].

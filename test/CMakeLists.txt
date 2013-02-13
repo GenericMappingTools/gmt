@@ -25,7 +25,7 @@ if (DO_TESTS)
 		grdhisteq grdimage grdlandmask grdmask grdpaste grdproject grdreformat
 		grdsample grdtrend grdview grdvolume greenspline kml mapproject meca
 		mgd77 ogr potential project psbasemap pscoast pscontour psimage pslegend
-		pslib psrose psscale pstext psxy psxyz sample1d sph splitxyz spotter time trend2d
+		pslib psrose psscale pstext psxy psxyz sample1d spectrum1d sph splitxyz spotter time trend2d
 		triangulate x2sys)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
