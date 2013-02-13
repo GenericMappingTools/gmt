@@ -29,6 +29,10 @@
 
 #include "gmt.h"
 
+#ifdef DEBUG
+bool show_n = false;
+#endif
+
 struct GRDFFT_CTRL {
 	unsigned int n_op_count, n_par;
 	int *operation;
@@ -751,7 +755,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 
 	char header[GMT_BUFSIZ], *name[2] = {"freq", "wlength"};
 	uint64_t dim[4] = {1, 1, 3, 0};	/* One table and one segment, with 1 + 2 = 3 columns and yet unknown rows */
-	uint64_t k, nk, nused, ifreq;	/* *nused = NULL; */
+	uint64_t k, nk, ifreq, *nused = NULL;
 	double delta_k, r_delta_k, freq, *power = NULL, eps_pow, powfactor;
 	double (*get_k) (uint64_t, struct K_XY *);
 
@@ -759,6 +763,9 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
+#ifdef DEBUG
+	if (show_n) dim[2] = 4;	/* Also write out n[k] */
+#endif
 	if (*par > 0.0) {
 		/* X spectrum desired  */
 		delta_k = K->delta_kx;	nk = K->nx2 / 2;	get_k = &kx;
@@ -780,25 +787,24 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 
 	/* Get an array for summing stuff */
 	power = GMT_memory (GMT, NULL, nk, double);
-	//nused = GMT_memory (GMT, NULL, nk, uint64_t);
+	nused = GMT_memory (GMT, NULL, nk, uint64_t);
 
 	/* Loop over it all, summing and storing, checking range for r */
 
 	r_delta_k = 1.0 / delta_k;
 
-	for (nused = 0, k = 2; k < Grid->header->size; k += 2) {
+	for (k = 2; k < Grid->header->size; k += 2) {
 		freq = (*get_k)(k, K);
 		ifreq = lrint (fabs (freq) * r_delta_k);	/* Smallest value returned might be 0 when doing r spectrum*/
 		if (ifreq > 0) --ifreq;
 		if (ifreq >= nk) continue;	/* Might happen when doing r spectrum  */
 		power[ifreq] += hypot (datac[k], datac[k+1]);
-		nused++;
+		nused[ifreq]++;
 	}
 
 	/* Now get here when array is summed.  */
-	eps_pow = 1.0 / sqrt ((double)nused/(double)nk);
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
-	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);
+	powfactor = 4.0 / pow ((double)Grid->header->size, 2.0);	/* Squared normalization of FFT */
 	dim[3] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
@@ -807,14 +813,21 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 3 cols and nk rows */
 	if (give_wavelength && km) delta_k *= 1000.0;
 	for (k = 0; k < nk; k++) {
+		eps_pow = 1.0 / sqrt (nused[k]);	/* Multiplicative error bars for power spectra  */
 		freq = (k + 1) * delta_k;
 		if (give_wavelength) freq = 1.0 / freq;
 		power[k] *= powfactor;
 		S->coord[GMT_X][k] = freq;
 		S->coord[GMT_Y][k] = power[k];
 		S->coord[GMT_Z][k] = eps_pow * power[k];
+#ifdef DEBUG
+		if (show_n) S->coord[3][k] = nused[k];
+#endif
 	}
 	sprintf (header, "#%s[0]\tpow[1]\tstd_pow[2]", name[give_wavelength]);
+#ifdef DEBUG
+	if (show_n) strcat (header, "\tN[3]");
+#endif
 	D->table[0]->header = GMT_memory (GMT, NULL, 1, char *);
 	D->table[0]->header[0] = strdup (header);
 	D->table[0]->n_headers = 1;
@@ -825,6 +838,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double *par, bool 
 		return (GMT->parent->error);
 	}
 	GMT_free (GMT, power);
+	GMT_free (GMT, nused);
 	return (1);	/* Number of parameters used */
 }
 
@@ -840,7 +854,7 @@ int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_
 	char header[GMT_BUFSIZ], *name[2] = {"freq", "wlength"};
 	unsigned int col;
 	float *X = GridX->data, *Y = GridY->data;	/* Short-hands */
-	double delta_k, r_delta_k, freq, coh_k, sq_norm, tmp, eps_pow;
+	double delta_k, r_delta_k, freq, coh_k, sq_norm, powfactor, tmp, eps_pow;
 	double *X_pow = NULL, *Y_pow = NULL, *co_spec = NULL, *quad_spec = NULL;
 	double (*get_k) (uint64_t, struct K_XY *);
 	struct GMT_DATASET *D = NULL;
@@ -875,6 +889,7 @@ int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_
 	/* Loop over it all, summing and storing, checking range for r */
 
 	r_delta_k = 1.0 / delta_k;
+	powfactor = 4.0 / pow ((double)GridX->header->nm, 2.0);	/* Squared normalization of FFT */
 
 	for (k = 2; k < GridX->header->size; k += 2) {
 		freq = (*get_k)(k, K);
@@ -903,6 +918,8 @@ int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_
 		eps_pow = 1.0 / sqrt (nused[k]);	/* Multiplicative error bars for power spectra  */
 		freq = (k + 1) * delta_k;
 		if (give_wavelength) freq = 1.0 / freq;
+		X_pow[k] *= powfactor;		Y_pow[k] *= powfactor;
+		co_spec[k] *= powfactor;	quad_spec[k] *= powfactor;
 		/* Compute coherence first since it is needed by many of the other estimates */
 		coh_k = (co_spec[k] * co_spec[k] + quad_spec[k] * quad_spec[k]) / (X_pow[k] * Y_pow[k]);
 		sq_norm = sqrt ((1.0 - coh_k) / (2.0 * coh_k));	/* Save repetitive expression further down */
@@ -1505,6 +1522,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #ifdef DEBUG
 			case '=':	/* Do nothing */
 				add_operation (GMT, Ctrl, -1, 1, par);
+				if (opt->arg[0] == '+') show_n = true;
 				break;
 #endif
 			case 'Q':	/* Output intermediate grid file */
@@ -1712,7 +1730,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		 * coefficient in front of the summation in the FT. In other words,
 		 * applying the forward and then the backward transform will multiply the
 		 * input by the number of elements (header->size). Here we correct this: */
-		Ctrl->S.scale *= (2.0 / Grid[0]->header->size);
+		Ctrl->S.scale *= (2.0 / Grid[0]->header->nm);
 		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 
 		/* The data are in the middle of the padded array */
