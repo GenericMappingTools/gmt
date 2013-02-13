@@ -23,6 +23,11 @@
  *         	13-SEP-2002
  * GMT5ed	17-MAR-2012
  *
+ *
+ * For details, see Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the Azores Plateau:
+ * a 3D admittance and coherence analysis. J. Geotermal Vulc. Res. Volume 156, Issues 1-2 , 
+ * Pages 10-22, http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010
+ *
  * */
 
 #define THIS_MODULE k_mod_gravfft /* I am gravfft */
@@ -101,10 +106,10 @@ struct GRAVFFT_CTRL {
 		double	rho_mc;		/* mantle-crust density contrast */
 		double	rho_mw;		/* mantle-water density contrast */
 	} T;
-	struct GRVF_t {	/* -t For saving real & imag FFT grids */
+	struct GRVF_W {	/* -t For saving real & imag FFT grids */
 		bool active;
 		bool sc_coherence, sc_admitt;
-	} t;
+	} W;
 	struct GRVF_Z {
 		double	zm;			/* mean Moho depth (given by user) */
 		double	zl;			/* mean depth of swell compensation (user given) */		
@@ -377,12 +382,12 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				Ctrl->s.active = true;
 				Ctrl->s.scale = atof (opt->arg);
 				break;
-			case 't':
-				Ctrl->t.active = true;
+			case 'W':
+				Ctrl->W.active = true;
 				if (opt->arg[0] == 'a')
-					Ctrl->t.sc_admitt = true;
+					Ctrl->W.sc_admitt = true;
 				else if (opt->arg[0] == 'c')
-					Ctrl->t.sc_coherence = true;
+					Ctrl->W.sc_coherence = true;
 				break;
 			case 'Z':
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.zm, &Ctrl->Z.zl);
@@ -415,7 +420,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 		n_errors += GMT_check_condition (GMT, Ctrl->H.active && !Ctrl->Z.zm, 
 					"Error: for computing the Moho's effect I need to know it's average depth (see -Z<zm>)\n");
 		n_errors += GMT_check_condition (GMT, !(Ctrl->D.active || Ctrl->T.active || Ctrl->S.active || 
-							Ctrl->I.active || Ctrl->t.active), "Error: must set density contrast\n");
+							Ctrl->I.active || Ctrl->W.active), "Error: must set density contrast\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->In.file[1], 
 					"Error: for admittance|coherence need a gravity or geoide grid\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->misc.from_below && Ctrl->misc.from_top, 
@@ -438,7 +443,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		gmt_module_show_name_and_purpose (THIS_MODULE);
 		GMT_message (GMT, "usage: gravfft <topo_grd> -C<n/wavelength/mean_depth/tbw> -D<density>\n");
 		GMT_message (GMT,"       -G<out_grdfile> [-E<n_terms>] [-F] [-L[-l[n]] -I<second_file>[/<wbct>]\n");
-		GMT_message (GMT,"       [-H] [-M] [-N<stuff>] [-Q] -T<te/rl/rm/rw> [-s<scale>] [-t[c|a]]\n");
+		GMT_message (GMT,"       [-H] [-N<stuff>] [-Q] -T<te/rl/rm/rw> [-fg] [-s<scale>] [-W[c|a]]\n");
 		GMT_message (GMT,"       [-V] -Z<zm>[/<zl>] [-z<cte>]\n\n");
 
 		if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -453,7 +458,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		GMT_message (GMT,"\t     w writes wavelength instead of wavenumber\n");
 		GMT_message (GMT,"\t-D Sets density contrast across surface (used when not -T)\n");
 		GMT_message (GMT,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
-		GMT_message (GMT,"\t-H writes a grid with the Moho's gravity|geoid effect from model selcted by -A\n");
+		GMT_message (GMT,"\t-H writes a grid with the Moho's gravity|geoid effect from model selcted by -T\n");
 		GMT_message (GMT,"\t-I Use <second_file> and <topo_grd> to estimate admittance|coherence and write\n");
 		GMT_message (GMT,"\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
 		GMT_message (GMT,"\t   for the same region of <topo_grd>. Default computes admittance. Output\n");
@@ -480,14 +485,11 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		GMT_message (GMT, "\n\tOPTIONS:\n");
 		GMT_message (GMT,"\t-E number of terms used in Parker expansion [Default = 1]\n");
 		GMT_message (GMT,"\t-F compute geoid rather than gravity\n");
-		GMT_message (GMT,"\t-K indicates that distances in these directions are in km [meter]\n");
-		GMT_message (GMT,"\t   -Ks multiplies the bathymetry grid by -1. Used for changing z sign\n");
 		GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 		GMT_message (GMT,"\t   It applies both to bathymetry as well as <second_file> [Default removes plane].\n");
 		GMT_message (GMT,"\t   Warning: both -D -H and -Q will implicitly set -L.\n");
 		GMT_message (GMT,"\t-l Removes half-way from bathymetry data [Default removes mean].\n");
 		GMT_message (GMT,"\t   Append n to do not remove any constant from input bathymetry data.\n");
-		GMT_message (GMT,"\t-M Map units used.  Convert grid dimensions from degrees to meters.\n");
 		GMT_message (GMT,"\t-N<stuff>  Choose or inquire about suitable grid dimensions for FFT.\n");
 		GMT_message (GMT,"\t\t-Nf will force the FFT to use the dimensions of the data.\n");
 		GMT_message (GMT,"\t\t-Nq will inQuire about more suitable dimensions.\n");
@@ -497,8 +499,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		GMT_message (GMT,"\t\t If FFT dimensions > grdfile dimensions, data are extended\n");
 		GMT_message (GMT,"\t\t and tapered to zero.\n");
 		GMT_message (GMT,"\t\t-Ns will print out a table with suitable dimensions and exits.\n");
-		GMT_message (GMT,"\t-s multiply field by scale.Used for changing z sign or km -> meters\n");
-		GMT_message (GMT,"\t-t Writes the FFT of the input grid in the form of two grids. One for\n");
+		GMT_message (GMT,"\t-s multiply field by scale. Used for changing z sign or km -> meters\n");
+		GMT_message (GMT,"\t-W Writes the FFT of the input grid in the form of two grids. One for\n");
 		GMT_message (GMT,"\t   the real part and the other for the imaginary. The grid names are\n");
 		GMT_message (GMT,"\t   built from the input grid name with _real and _imag appended. These\n");
 		GMT_message (GMT,"\t   grids have the DC at the center and coordinates are the kx,ky frequencies.\n");
@@ -699,7 +701,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	topo   = GMT_memory (GMT, NULL, GridA->header->size, float);
 	raised = GMT_memory (GMT, NULL, GridA->header->size, float);
 
-	if (Ctrl->t.active) {	/* Write the FFTed input grid as two grids; Real and Img */
+	if (Ctrl->W.active) {	/* Write the FFTed input grid as two grids; Real and Img */
 		int plus_minus;
 		char *infile_r = NULL, *infile_i = NULL;	/* File names for real and imaginary grids */
 		strncpy (line, Ctrl->G.file, 256U);
@@ -747,7 +749,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		/*strcpy (h.title, "Imaginary part of fft transformed input grid");
 		GMT_write_grd (infile_i, &h, datac, 0.0, 0.0, 0.0, 0.0, (int *)dummy, true);
 
-		if (Ctrl->t.active) write_script();*/
+		if (Ctrl->W.active) write_script();*/
 
 		Return (EXIT_SUCCESS);
 	}
