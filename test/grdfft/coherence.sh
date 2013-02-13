@@ -4,8 +4,8 @@
 
 ps=coherence.ps
 
-G=grav.V18.par.surf.1km.sq_grd
-T=mb.par.surf.1km.sq_grd
+G=grav.V18.par.surf.1km.sq.nc
+T=mb.par.surf.1km.sq.nc
 gmtset FONT_TITLE 12p
 
 makecpt -Crainbow -T-5000/-3000/100 -Z > z.cpt
