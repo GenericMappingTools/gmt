@@ -32,7 +32,7 @@ OPT(C)
 Use the center of the block as the output location [Default uses the mean location].
 .TP
 OPT(E)
-Provide Extended report which includes BD(s) (the standard deviation of the mean),
+Provide Extended report which includes BD(s) (the standard deviation about the mean),
 BD(l), the lowest value, and BD(h), the high value for each block. Output order
 becomes IT(x),IT(y),IT(z),IT(s),IT(l),IT(h)[,IT(w)]. [Default outputs IT(x),IT(y),IT(z)[,IT(w)].
 See OPT(W) for IT(w) output.
