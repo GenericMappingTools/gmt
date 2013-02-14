@@ -69,6 +69,7 @@ enum Gmt_module_id {
 	k_mod_grdcut,
 	k_mod_grdedit,
 	k_mod_grdfft,
+	k_mod_grdfft_new,
 	k_mod_grdfilter,
 	k_mod_grdgradient,
 	k_mod_grdgravmag3d,
