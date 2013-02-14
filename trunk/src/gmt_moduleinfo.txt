@@ -34,6 +34,7 @@ grdcontour	core	Make contour map using a grid
 grdcut	core	Extract subregion from a grid
 grdedit	core	Modify header or content of a grid
 grdfft	core	Do mathematical operations on grids in the wavenumber (or frequency) domain
+grdfft_new	core	Do mathematical operations on grids in the wavenumber (or frequency) domain v2
 grdfilter	core	Filter a grid in the space (or time) domain
 grdgradient	core	Compute directional gradients from a grid
 grdgravmag3d	potential	Computes the gravity effect of one (or two) grids by the method of Okabe
