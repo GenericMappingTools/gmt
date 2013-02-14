@@ -77,8 +77,9 @@ struct GRAVFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct GRVF_L {	/* -L */
+	struct GRVF_L {	/* -L[m|h] */
 		bool active;
+		unsigned int mode;
 	} L;
 	struct GRVF_M {
 		bool active;
@@ -119,7 +120,6 @@ struct GRAVFFT_CTRL {
 		bool give_wavelength;
 		bool from_below;
 		bool from_top;
-		bool rem_nothing;
 		bool mean_or_half_way;
 		float k_or_m;
 		double	z_level;	/* mean bathymetry level computed from data */
@@ -320,13 +320,12 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				}
 				break;
 			case 'L':
-				Ctrl->L.active = true;
+				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
+				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
+				else Ctrl->L.active = true;
 				break;
 			case 'l':
-				if (opt->arg[0] == 'n' || opt->arg[0] == 'N')
-					Ctrl->misc.rem_nothing = true;
-				else
-					Ctrl->misc.mean_or_half_way = false;
+				Ctrl->misc.mean_or_half_way = false;
 				break;
 			case 'N':
 				if (opt->arg[0] == 'f' || opt->arg[0] == 'F')
@@ -640,14 +639,18 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	}
 	/* ------------------------------------------------------------------------------------ */
 
-	for (j = 0; j < GridA->header->ny; j++)
+	for (j = 0; j < GridA->header->ny; j++) {
 		for (i = 0; i < GridA->header->nx; i++)
 			GridA->data[GMT_IJPR(GridA->header,j,i)] += (float)Ctrl->misc.z_offset;
-	if (Ctrl->s.active)
+	}
+
+	if (Ctrl->s.active) {
 		for (j = 0; j < GridA->header->ny; j++)
 			for (i = 0; i < GridA->header->nx; i++)
 				GridA->data[GMT_IJPR(GridA->header,j,i)] *= (float)Ctrl->s.scale;
-	if (!Ctrl->misc.rem_nothing) remove_level(GMT, Out, Ctrl);	/* removes either the mean or half-way (if any) */
+	}
+
+	remove_level(GMT, Out, Ctrl);	/* removes either the mean or half-way (if any) */
 
 	if (!Ctrl->L.active) remove_plane__ (GMT, Out);
 	if (!Ctrl->N.force_narray) taper_edges__ (GMT, Out);
