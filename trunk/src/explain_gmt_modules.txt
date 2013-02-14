@@ -28,7 +28,6 @@ l l .
 \fBgrdcut\fP	
 \fBgrdedit\fP	
 \fBgrdfft\fP	
-\fBgrdfft_new\fP	
 \fBgrdfilter\fP	
 \fBgrdgradient\fP	
 \fBgrdhisteq\fP	

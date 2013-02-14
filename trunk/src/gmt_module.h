@@ -52,7 +52,6 @@ EXTERN_MSC int GMT_grdcontour (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdcut (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdedit (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdfft (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdfft_new (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdfilter (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdgradient (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdgravmag3d (void *api_ctrl, int mode, void *args);
