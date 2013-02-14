@@ -41,6 +41,7 @@ enum GMT_FFT_DIMSET {
 	GMT_FFT_EXTEND = 0,
 	GMT_FFT_FORCE,
 	GMT_FFT_SET,
+	GMT_FFT_LIST,
 	GMT_FFT_QUERY};
 
 struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr */
