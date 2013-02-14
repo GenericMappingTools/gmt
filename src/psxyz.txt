@@ -1,7 +1,7 @@
 #include "common_options.txt"
 .TH PSXYZ 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1 1.25
-#define OPT_1	OPT(Jx)1.25BD(c) OPT(Jz)0.125BD(c) OPT(So)1.25BD(c)
+#define OPT_1 -Jx1.25c -Jz0.125c -So1.25c
 .SH NAME
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS

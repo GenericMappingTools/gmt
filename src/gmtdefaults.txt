@@ -42,7 +42,7 @@ parameters that are user-definable in BD(GMT).
 To get a copy of the BD(GMT) parameter defaults in your home directory, run
 .br
 .sp
-BD(gmtdefaults) OPT(D) > ~/gmt.conf
+gmtdefaults -D > ~/gmt.conf
 .br
 .sp
 You may now change the settings by editing this file using a text editor of your choice, or

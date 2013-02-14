@@ -68,8 +68,7 @@ Not used with binary data.
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z using a 0.5 min grid,
 a 5 km search radius, using an octant search, and set empty nodes to -9999:
 .sp
-nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m -E-9999 -Gbathymetry.nc
-OPT(S)5BD(k) OPT(N)8
+nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m -E-9999 -Gbathymetry.nc -S5k -N8
 .br
 .sp
 To make a global grid file from the data in geoid.xyz using a 1 degree grid,
