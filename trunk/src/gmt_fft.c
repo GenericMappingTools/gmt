@@ -66,6 +66,58 @@ struct GMT_FFT_SUGGESTION {
 	double rms_rel_err;
 }; /* [0] holds fastest, [1] most accurate, [2] least storage  */
 
+/* first 2 cols from table III of Singleton's paper on fft.... */
+#define N_SINGLETON_LIST	117
+int Singleton_list[N_SINGLETON_LIST] = {
+	64,72,75,80,81,90,96,100,108,120,125,128,135,144,150,160,162,180,192,200,
+	216,225,240,243,250,256,270,288,300,320,324,360,375,384,400,405,432,450,480,
+	486,500,512,540,576,600,625,640,648,675,720,729,750,768,800,810,864,900,960,
+	972,1000,1024,1080,1125,1152,1200,1215,1250,1280,1296,1350,1440,1458,1500,
+	1536,1600,1620,1728,1800,1875,1920,1944,2000,2025,2048,2160,2187,2250,2304,
+	2400,2430,2500,2560,2592,2700,2880,2916,3000,3072,3125,3200,3240,3375,3456,
+	3600,3645,3750,3840,3888,4000,4096,4320,4374,4500,4608,4800,4860,5000};
+
+void GMT_fft_Singleton_list () {
+	unsigned int k;
+	fprintf (stderr, "\t\"Good\" numbers for FFT dimensions [Singleton, 1967]:\n");
+	for (k = 0; k < N_SINGLETON_LIST; k++) {
+		fprintf (stderr, "\t%d", Singleton_list[k]);
+		if ((k+1) % 10 == 0 || k == (N_SINGLETON_LIST-1)) fprintf (stderr, "\n");
+	}
+}
+
+unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct GMT_FFT_INFO *info)
+{
+	unsigned int n_errors = 0, pos = 0;
+	char p[GMT_BUFSIZ], *c = NULL;
+	
+	GMT_memset (info, 1, struct GMT_FFT_INFO);	/* Initialize all to zero */
+	
+	if ((c = strchr (args, '+'))) {	/* Handle modifiers */
+		while ((GMT_strtok (c, "+", &pos, p))) {
+			switch (p[0]) {
+				case 'e':  info->taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY; break;
+				case 'n':  info->taper_mode = GMT_FFT_EXTEND_NONE; break;
+				case 'm':  info->taper_mode = GMT_FFT_EXTEND_MIRROR_SYMMETRY; break;
+				case 't':  info->taper_width = atof (&p[1]); break;
+				default: 
+					GMT_report (C, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
+					n_errors++;
+					break;
+			}
+		}
+	}
+	switch (args[0]) {
+		case 'f': info->info_mode = GMT_FFT_FORCE; break;
+		case 'q': info->info_mode = GMT_FFT_QUERY; break;
+		case 's': info->info_mode = GMT_FFT_LIST;  break;
+		default:
+			sscanf (args, "%d/%d", &info->nx, &info->ny);
+			info->info_mode = GMT_FFT_SET;
+	}
+	return (n_errors);
+}
+
 uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
 {
 	/* Return the product of the non-symmetric factors in f[]  */
@@ -548,7 +600,7 @@ void GMT_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *pref
 	 * File name is determined by prefix, i.e., prefix_file. */
 	int del;
 	unsigned int pad[4];
-	char file[256];
+	char file[GMT_TEXT_LEN256];
 	struct GRD_HEADER save;
 	
 	GMT_memcpy (&save, Grid->header, 1, sizeof (struct GRD_HEADER));	/* Save what we have before messing around */
@@ -559,7 +611,8 @@ void GMT_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *pref
 	if ((del = Grid->header->pad[YHI]) > 0) Grid->header->wesn[YHI] += del * Grid->header->inc[GMT_Y], Grid->header->pad[YHI] = 0;
 	GMT_memcpy (GMT->current.io.pad, Grid->header->pad, 4, unsigned int);	/* set tmp pad */
 	GMT_set_grddim (GMT, Grid->header);	/* Recompute all dimensions */
-	sprintf (file,"%s_%s", prefix, Grid->header->name);
+	GMT_memset (file, GMT_TEXT_LEN256, char);
+	sprintf (file, "%s_%s", prefix, Grid->header->name);
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, file, Grid) != GMT_OK)
 		GMT_report (GMT, GMT_MSG_NORMAL, "Intermediate detrended, extended, and tapered grid could not be written to %s\n", file);
 	else

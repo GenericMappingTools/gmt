@@ -78,10 +78,9 @@ struct GRDFFT_CTRL {
 	} I;
 	struct L {	/* -L[m|h] */
 		bool active;
-		bool debug;
 		unsigned int mode;
 	} L;
-	struct N {	/* -N[f|q|<nx>/<ny>][+e|m|n][+t<width>] */
+	struct N {	/* -N[f|q||s<nx>/<ny>][+e|m|n][+t<width>] */
 		bool active;
 		struct GMT_FFT_INFO info;
 	} N;
@@ -587,7 +586,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>]  [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
-	GMT_message (GMT, "\t[-N[f|q|<nx>/<ny>][+e|m|n][+t<width>]] [-Q[<prefix>]] [-S<scale>]\n");
+	GMT_message (GMT, "\t[-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q[<prefix>]] [-S<scale>]\n");
 	GMT_message (GMT, "\t[-Z[p]] [%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -619,7 +618,8 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
 	GMT_message (GMT, "\t-N Choose or inquire about suitable grid dimensions for FFT, and set modifiers:\n");
 	GMT_message (GMT, "\t   -Nf will force the FFT to use the dimensions of the data.\n");
-	GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions, report, then exit.\n");
+	GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions, report, then continue.\n");
+	GMT_message (GMT, "\t   -Ns will list Singleton's [1967] recommended dimensions, then exit.\n");
 	GMT_message (GMT, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
 	GMT_message (GMT, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
 	GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended via edge point symmetry\n");
@@ -765,29 +765,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #endif
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
-				if ((c = strchr (opt->arg, '+'))) {	/* Handle modifiers */
-					while ((GMT_strtok (c, "+", &pos, p))) {
-						switch (p[0]) {
-							case 'e':  Ctrl->N.info.taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY; break;
-							case 'n':  Ctrl->N.info.taper_mode = GMT_FFT_EXTEND_NONE; break;
-							case 'm':  Ctrl->N.info.taper_mode = GMT_FFT_EXTEND_MIRROR_SYMMETRY; break;
-							case 't':  Ctrl->N.info.taper_width = atof (&p[1]); break;
-							default: 
-								GMT_report (GMT, GMT_MSG_NORMAL, "Error -N: Unrecognized modifier +%s.\n", p);
-								n_errors++;
-								break;
-						}
-					}
-				}
-				switch (opt->arg[0]) {
-					case 'f': case 'F':
-						Ctrl->N.info.info_mode = GMT_FFT_FORCE; break;
-					case 'q': case 'Q':
-						Ctrl->N.info.info_mode = GMT_FFT_QUERY; break;
-					default:
-						sscanf (opt->arg, "%d/%d", &Ctrl->N.info.nx, &Ctrl->N.info.ny);
-						Ctrl->N.info.info_mode = GMT_FFT_SET;
-				}
+				n_errors += GMT_fft_parse (GMT, 'N', opt->arg, &Ctrl->N.info);
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
@@ -825,6 +803,11 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 		}
 	}
 
+	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {	/* List and exit */
+		GMT_fft_Singleton_list;
+		return (GMT_PARSE_ERROR);	/* So that we exit the program */
+	}
+	
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.info.info_mode == GMT_FFT_SET && (Ctrl->N.info.nx <= 0 || Ctrl->N.info.ny <= 0), 
 			"Syntax error -N option: nx2 and/or ny2 <= 0\n");
@@ -845,9 +828,10 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	int status;
 	unsigned int op_count = 0, par_count = 0, side, k;
 	uint64_t ij;
+	double coeff[2][3];	/* Detrend parameters returned */
 	char *spec_msg[2] = {"spectrum", "cross-spectrum"};
 
-	struct GMT_GRID *Grid[2] = {NULL,  NULL}, *Orig[2] = {NULL,  NULL};
+	struct GMT_GRID *Grid[2] = {NULL,  NULL}, *Orig[2] = {NULL, NULL};
 	struct F_INFO f_info;
 	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL;
 	struct GRDFFT_CTRL *Ctrl = NULL;
@@ -920,8 +904,9 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */
 	
-	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Detrend (if requested), extend/taper (if requested) */
-		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode);
+	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
+	for (k = 0; k < Ctrl->In.n_grids; k++) {
+		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
 		GMT_grd_taper_edges (GMT, Grid[k], &Ctrl->N.info);
 		if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.prefix);
 	}

@@ -1952,20 +1952,21 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 	}
 }
 
-void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode)
+void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *a)
 {
-	/* mode = 0: Remove the best-fitting plane by least squares.
-	   mode = 1: Remove the mean value.
-	   mode = 2: Remove the middle value.
+	/* mode = 0: Remove the best-fitting plane by least squares (returned via a[0-2])
+	   mode = 1: Remove the mean value (returned via a[0])
+	   mode = 2: Remove the middle value (returned via a[0])
+	   
 	*/
 
 	unsigned int col, row, one_or_zero;
 	uint64_t ij;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
-	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z, a[3];
+	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z;
 
+	GMT_memset (a, 3, double);
 	if (mode == 1) {	/* Remove mean */
-		a[0] = 0.0;
 		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
 			z = Grid->data[GMT_IJPR(Grid->header,row,col)];	/* Index to real part of complex array elements */
 			a[0] += z;
@@ -2019,7 +2020,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	y_half_length = 0.5 * (Grid->header->ny - one_or_zero);
 	one_on_yhl = 1.0 / y_half_length;
 
-	sumx2 = sumy2 = data_var = a[2] = a[1] = a[0] = 0.0;
+	sumx2 = sumy2 = data_var = 0.0;
 
 	for (row = 0; row < Grid->header->ny; row++) {
 		y = one_on_yhl * (row - y_half_length);

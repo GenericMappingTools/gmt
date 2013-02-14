@@ -57,10 +57,12 @@ EXTERN_MSC void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsi
 EXTERN_MSC void GMT_fft_set_wave (struct GMT_CTRL *C, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
+EXTERN_MSC void GMT_fft_Singleton_list ();
+EXTERN_MSC unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct GMT_FFT_INFO *info);
 
 /* gmt_grdio.c: */
 
-EXTERN_MSC void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode);
+EXTERN_MSC void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *a);
 EXTERN_MSC void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3]);
 EXTERN_MSC struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data);

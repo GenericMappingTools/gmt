@@ -40,6 +40,7 @@ struct GRAVFFT_CTRL {
 
 	struct GRVF_In {
 		bool active;
+		unsigned int n_grids;	/* 1 or 2 */
 		char *file[2];
 	} In;
 	struct GRVF_A {	/* -A */
@@ -61,10 +62,9 @@ struct GRAVFFT_CTRL {
 		bool active;
 		unsigned int n_terms;
 	} E;
-	struct GRVF_F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
+	struct GRVF_F {	/* -F[f|g|e|n|v] */
 		bool active;
-		int mode;
-		double lc, lp, hp, hc;
+		unsigned int mode;
 	} F;
 	struct GRVF_G {	/* -G<outfile> */
 		bool active;
@@ -81,14 +81,9 @@ struct GRAVFFT_CTRL {
 		bool active;
 		unsigned int mode;
 	} L;
-	struct GRVF_M {
+	struct GRVF_N {	/* -N[f|q||s<nx>/<ny>][+e|m|n][+t<width>]  */
 		bool active;
-	} M;
-	struct GRVF_N {	/* -N<stuff> */
-		bool active;
-		bool force_narray, suggest_narray, n_user_set;
-		unsigned int nx2, ny2;
-		double value;
+		struct GMT_FFT_INFO info;
 	} N;
 	struct GRVF_Q {
 		bool active;
@@ -120,7 +115,6 @@ struct GRAVFFT_CTRL {
 		bool give_wavelength;
 		bool from_below;
 		bool from_top;
-		bool mean_or_half_way;
 		float k_or_m;
 		double	z_level;	/* mean bathymetry level computed from data */
 		double	z_offset;	/* constant that myght be added to grid data */
@@ -140,20 +134,6 @@ struct GRAVFFT_CTRL {
 bool rem_mean = false;
 bool sphericity = false;
 
-struct FFT_SUGGESTION {
-	unsigned int nx;
-	unsigned int ny;
-	size_t worksize;	/* # single-complex elements needed in work array  */
-	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
-	double run_time;
-	double rms_rel_err;
-}; /* [0] holds fastest, [1] most accurate, [2] least storage  */
-
-struct K_XY {	/* Holds parameters needed to calculate kx, ky, kr */
-	unsigned int nx2, ny2;
-	double delta_kx, delta_ky;
-};
-
 void *New_gravfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRAVFFT_CTRL *C = NULL;
 	
@@ -165,7 +145,6 @@ void *New_gravfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C->s.scale = 1.0;
 	C->E.n_terms = 1;
 	C->misc.k_or_m = 1;
-	C->misc.mean_or_half_way = true;
 	return (C);
 }
 
@@ -182,30 +161,20 @@ double	scale_out = 1.0;
 double	earth_rad = 6371008.7714;	/* GRS-80 sphere */
 
 void set_grid_radix_size__ (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_GRID *Gin);
-void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, uint64_t n, double rho);
-void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
+void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint64_t n, double rho);
 void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl);
-void do_isostasy__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K);
-void do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K);
-void remove_plane__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
-void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_below);
-void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_top);
-void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n);
-void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n);
-void compute_only_adimtts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_top_or_bot, double delta_pt);
+void do_isostasy__(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
+void do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K);
+void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_below);
+void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top);
+void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
+void compute_only_adimtts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top_or_bot, double delta_pt);
 void write_script(void);
 
 int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	unsigned int n_errors = 0, pos, n_files = 0;
-	/* first 2 cols from table III of Singleton's paper on fft.... */
-	int nlist[117] = {64,72,75,80,81,90,96,100,108,120,125,128,135,144,150,160,162,180,192,200,
-			216,225,240,243,250,256,270,288,300,320,324,360,375,384,400,405,432,450,480,
-			486,500,512,540,576,600,625,640,648,675,720,729,750,768,800,810,864,900,960,
-			972,1000,1024,1080,1125,1152,1200,1215,1250,1280,1296,1350,1440,1458,1500,
-			1536,1600,1620,1728,1800,1875,1920,1944,2000,2025,2048,2160,2187,2250,2304,
-			2400,2430,2500,2560,2592,2700,2880,2916,3000,3072,3125,3200,3240,3375,3456,
-			3600,3645,3750,3840,3888,4000,4096,4320,4374,4500,4608,4800,4860,5000};
 
 	int j, k, n;
 	struct GMT_OPTION *opt = NULL;
@@ -217,10 +186,8 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 
 			case '<':	/* Input file */
 				Ctrl->In.active = true;
-				if (n_files == 0) 
-					Ctrl->In.file[n_files++] = strdup (opt->arg);
-				else if (n_files == 1)
-					Ctrl->In.file[n_files++] = strdup (opt->arg);
+				if (Ctrl->In.n_grids < 2) 
+					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
 				else {
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
@@ -319,35 +286,24 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					j++;
 				}
 				break;
-			case 'L':
+			case 'L':	/* Leave trend alone */
 				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
 				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
 				else Ctrl->L.active = true;
 				break;
-			case 'l':
-				Ctrl->misc.mean_or_half_way = false;
-				break;
 			case 'N':
-				if (opt->arg[0] == 'f' || opt->arg[0] == 'F')
-					Ctrl->N.force_narray = true;
-				else if (opt->arg[0] == 'q' || opt->arg[0] == 'Q')
-					Ctrl->N.suggest_narray = true;
-				else if (opt->arg[0] == 's' || opt->arg[0] == 'S') {
-					fprintf (stderr, "\t\"Good\" numbers for FFT dimensions\n");
-					for (k = 0; k < 104; k++) {
-						fprintf (stderr, "\t%d", nlist[k]);
-						if ((k+1) % 10 == 0 || k == 103) fprintf (stderr, "\n");
-					}
-					return (GMT_OK);
-				}
-				else {
-					if ((sscanf(opt->arg, "%d/%d", &Ctrl->N.nx2, &Ctrl->N.ny2)) != 2) n_errors++;
-					if (Ctrl->N.nx2 <= 0 || Ctrl->N.ny2 <= 0) n_errors++;
-					Ctrl->N.n_user_set = true;
-				}
+				Ctrl->N.active = true;
+				n_errors += GMT_fft_parse (GMT, 'N', opt->arg, &Ctrl->N.info);
 				break;
 			case 'F':
 				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 'g': Ctrl->F.mode = 1; break;
+					case 'v': Ctrl->F.mode = 2; break;
+					case 'e': Ctrl->F.mode = 3; break;
+					case 'n': Ctrl->F.mode = 3; break;
+					default:  Ctrl->F.mode = 0; break;	/* FAA */
+				}
 				break;
 			case 'G':
 				Ctrl->G.active = true;
@@ -400,6 +356,11 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 		}
 	}
 
+	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {	/* List and exit */
+		GMT_fft_Singleton_list;
+		return (GMT_PARSE_ERROR);	/* So that we exit the program */
+	}
+	
 	if (Ctrl->C.active) {
 		n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "Error: -T not set\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->misc.from_top && !Ctrl->Z.zm, 
@@ -441,8 +402,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 
 		gmt_module_show_name_and_purpose (THIS_MODULE);
 		GMT_message (GMT, "usage: gravfft <topo_grd> -C<n/wavelength/mean_depth/tbw> -D<density>\n");
-		GMT_message (GMT,"       -G<out_grdfile> [-E<n_terms>] [-F] [-L[-l[n]] -I<second_file>[/<wbct>]\n");
-		GMT_message (GMT,"       [-H] [-N<stuff>] [-Q] -T<te/rl/rm/rw> [-fg] [-s<scale>] [-W[c|a]]\n");
+		GMT_message (GMT,"       -G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<second_file>[/<wbct>]\n");
+		GMT_message (GMT,"       [-H] [-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q] -T<te/rl/rm/rw> [-fg] [-s<scale>] [-W[c|a]]\n");
 		GMT_message (GMT,"       [-V] -Z<zm>[/<zl>] [-z<cte>]\n\n");
 
 		if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -483,22 +444,31 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		GMT_message (GMT,"\t-Z zm[/zl] -> Moho [and swell] average compensation depths\n");
 		GMT_message (GMT, "\n\tOPTIONS:\n");
 		GMT_message (GMT,"\t-E number of terms used in Parker expansion [Default = 1]\n");
-		GMT_message (GMT,"\t-F compute geoid rather than gravity\n");
+		GMT_message (GMT,"\t-F Specify desired geopotential field: compute geoid rather than gravity\n");
+		GMT_message (GMT,"\t   f = Free-air anomalies (mGal) [Default].\n");
+		GMT_message (GMT,"\t   g = Geoid anomalies (m).\n");
+		GMT_message (GMT,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
+		GMT_message (GMT,"\t   e = East deflections of the vertical (micro-radian).\n");
+		GMT_message (GMT,"\t   n = North deflections of the vertical (micro-radian).\n");
 		GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 		GMT_message (GMT,"\t   It applies both to bathymetry as well as <second_file> [Default removes plane].\n");
 		GMT_message (GMT,"\t   Warning: both -D -H and -Q will implicitly set -L.\n");
 		GMT_message (GMT,"\t-l Removes half-way from bathymetry data [Default removes mean].\n");
 		GMT_message (GMT,"\t   Append n to do not remove any constant from input bathymetry data.\n");
-		GMT_message (GMT,"\t-N<stuff>  Choose or inquire about suitable grid dimensions for FFT.\n");
-		GMT_message (GMT,"\t\t-Nf will force the FFT to use the dimensions of the data.\n");
-		GMT_message (GMT,"\t\t-Nq will inQuire about more suitable dimensions.\n");
-		GMT_message (GMT,"\t\t-N<nx>/<ny> will do FFT on array size <nx>/<ny>\n");
-		GMT_message (GMT,"\t\t (Must be >= grdfile size). Default chooses dimensions >= data\n");
-		GMT_message (GMT,"\t\t which optimize speed, accuracy of FFT.\n");
-		GMT_message (GMT,"\t\t If FFT dimensions > grdfile dimensions, data are extended\n");
-		GMT_message (GMT,"\t\t and tapered to zero.\n");
-		GMT_message (GMT,"\t\t-Ns will print out a table with suitable dimensions and exits.\n");
-		GMT_message (GMT,"\t-s multiply field by scale. Used for changing z sign or km -> meters\n");
+		GMT_message (GMT, "\t-N Choose or inquire about suitable grid dimensions for FFT, and set modifiers:\n");
+		GMT_message (GMT, "\t   -Nf will force the FFT to use the dimensions of the data.\n");
+		GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions, report, then continue.\n");
+		GMT_message (GMT, "\t   -Ns will list Singleton's [1967] recommended dimensions, then exit.\n");
+		GMT_message (GMT, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
+		GMT_message (GMT, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
+		GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended via edge point symmetry\n");
+		GMT_message (GMT, "\t   and tapered to zero.  Several modifers can be set to change this behavior:\n");
+		GMT_message (GMT, "\t     +e: Extend data via edge point symmetry [Default].\n");
+		GMT_message (GMT, "\t     +m: Extend data via edge mirror symmetry.\n");
+		GMT_message (GMT, "\t     +n: Do NOT extend data.\n");
+		GMT_message (GMT, "\t     +t<w>: Limit tapering to <w> %% of the extended margin width and height [100].\n");
+		GMT_message (GMT, "\t       If +n is set then +t instead sets the boundary width of the interior\n");
+		GMT_message (GMT, "\t       grid margin to be tapered [0].\n");
 		GMT_message (GMT,"\t-W Writes the FFT of the input grid in the form of two grids. One for\n");
 		GMT_message (GMT,"\t   the real part and the other for the imaginary. The grid names are\n");
 		GMT_message (GMT,"\t   built from the input grid name with _real and _imag appended. These\n");
@@ -522,10 +492,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	uint64_t m;
 	char	line[256], line2[256], format[64], buffer[256];
 	float	*topo = NULL, *raised = NULL;
-	double	delta_pt, freq;
+	double	delta_pt, freq, coeff[2][3];
 
-	struct GMT_GRID *GridA = NULL, *GridB = NULL, *Out = NULL, *Out2 = NULL;
-	struct K_XY K;
+	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL};
+	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL;
 	struct GRAVFFT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -559,7 +529,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		Ctrl->C.theor_inc *= Ctrl->misc.k_or_m;
 		delta_pt = 2 * M_PI / (Ctrl->C.n_pt * Ctrl->C.theor_inc);	/* Times 2PI because frequency will be used later */
-		compute_only_adimtts(GMT, Ctrl, &K, z_top_or_bot, delta_pt);
+		compute_only_adimtts (GMT, Ctrl, K, z_top_or_bot, delta_pt);
 		sprintf (format, "%s%s%s\n", GMT->current.setting.format_float_out, 
 				GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		delta_pt /= (2.0 * M_PI) / Ctrl->misc.k_or_m;			/* Write out frequency, not wavenumber  */
@@ -576,12 +546,6 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	}
 	/* ---------------------------------------------------------------------------------- */
 
-	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
-		Return (API->error);
-	}
-
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
-
 	if (((Ctrl->T.active && !Ctrl->H.active) && Ctrl->E.n_terms > 1) || (Ctrl->S.active && Ctrl->E.n_terms > 1)) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Due to a bug, or a method limitation (I didn't figure that yet)\n"
 			"with the selected options, the number of terms in Parker expansion is reset to one\n"
@@ -589,121 +553,92 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		Ctrl->E.n_terms = 1;
 	}
 
-	GMT_grd_init (GMT, GridA->header, options, true);
-	set_grid_radix_size__ (GMT, Ctrl, GridA);		/* This also sets the new pads */
-	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-	for (j = 0; j < 4; j++) GridA->header->BC[j] = GMT_BC_IS_DATA;
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
-	/* Now read data into the real positions in the padded complex radix grid */
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset */
-		Return (API->error);
-	}
-
-	/* Check that no NaNs are present */
-	stop = false;
-	for (j = 0; !stop && j < GridA->header->ny; j++)
-		for (i = 0; !stop && i < GridA->header->nx; i++) 
-			stop = GMT_is_fnan (GridA->data[GMT_IJPR(GridA->header,j,i)]);
-	if (stop) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Input grid cannot have NaNs!\n");
-		Return (EXIT_FAILURE);
-	}
-
-	(void)GMT_set_outgrid (GMT, GridA, &Out);	/* true if input is a read-only array; otherwise Out just points to GridA */
-
-	/* ------------------------------------------------------------------------------------ */
-	if (Ctrl->In.file[1]) {
-		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);
-		}
-		if(GridA->header->registration != GridB->header->registration) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Gravity and bathymetry grids have different registrations!\n");
-			Return (EXIT_FAILURE);
-		}
-		if ((GridA->header->z_scale_factor != GridB->header->z_scale_factor) || 
-				(GridA->header->z_add_offset != GridB->header->z_add_offset)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
-			Return (EXIT_FAILURE);
-		}
-
-		if (fabs (GridA->header->inc[GMT_X] - GridB->header->inc[GMT_X]) < 1.0e-6 && 
-				fabs (GridA->header->inc[GMT_Y] - GridB->header->inc[GMT_Y]) < 1.0e-6) {
-			Out->header->inc[GMT_X] = GridA->header->inc[GMT_X];	/* DO I REALLY NEED THIS??? */
-			Out->header->inc[GMT_Y] = GridA->header->inc[GMT_Y];
-		}
-		else {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Gravity and bathymetry grid increments do not match!\n");
-			Return (EXIT_FAILURE);
-		}
-		/* ALMOST FOR SURE THERE ARE MEMORY CLEAN UPS TO DO HERE BEFORE RETURNING */
-	}
-	/* ------------------------------------------------------------------------------------ */
-
-	for (j = 0; j < GridA->header->ny; j++) {
-		for (i = 0; i < GridA->header->nx; i++)
-			GridA->data[GMT_IJPR(GridA->header,j,i)] += (float)Ctrl->misc.z_offset;
 	}
 
-	if (Ctrl->s.active) {
-		for (j = 0; j < GridA->header->ny; j++)
-			for (i = 0; i < GridA->header->nx; i++)
-				GridA->data[GMT_IJPR(GridA->header,j,i)] *= (float)Ctrl->s.scale;
+	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
+		if(Orig[0]->header->registration != Orig[1]->header->registration) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
+			Return (EXIT_FAILURE);
+		}
+		if (!GMT_grd_same_shape (GMT, Orig[0], Orig[1])) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
+			Return (EXIT_FAILURE);
+		}
+		if (!GMT_grd_same_region (GMT, Orig[0], Orig[1])) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different regions\n");
+			Return (EXIT_FAILURE);
+		}
+		if (!GMT_grd_same_inc (GMT, Orig[0], Orig[1])) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different intervals\n");
+			Return (EXIT_FAILURE);
+		}
 	}
 
-	remove_level(GMT, Out, Ctrl);	/* removes either the mean or half-way (if any) */
+	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
+	
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
+		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
+		FFT_info[k] = GMT_grd_fft_init (GMT, Orig[k], &Ctrl->N.info);
+		
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
+			Return (API->error);
+		for (m = 0, stop = false; !stop && m < Orig[k]->header->size; m++) stop = GMT_is_fnan (Orig[k]->data[m]);
+		if (stop) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Input grid %s contain NaNs, aborting!\n", Ctrl->In.file[k]);
+			Return (EXIT_FAILURE);
+		}
+	}
+	
+	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
+	
+	/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
+	for (k = 0; k < Ctrl->In.n_grids; k++)
+		(void) GMT_set_outgrid (GMT, Orig[k], &Grid[k]);
 
-	if (!Ctrl->L.active) remove_plane__ (GMT, Out);
-	if (!Ctrl->N.force_narray) taper_edges__ (GMT, Out);
-
-	/* Load K_XY structure with wavenumbers and dimensions */
-	K.delta_kx = 2 * M_PI / (Ctrl->N.nx2 * Out->header->inc[GMT_X]);
-	K.delta_ky = 2 * M_PI / (Ctrl->N.ny2 * Out->header->inc[GMT_Y]);
-	K.nx2 = Ctrl->N.nx2;	K.ny2 = Ctrl->N.ny2;
-
-	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Give delta_kx, delta_ky units of 2pi/meters  */
-		K.delta_kx /= (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (Out->header->wesn[YLO] + Out->header->wesn[YHI])) );
-		K.delta_ky /= GMT->current.proj.DIST_M_PR_DEG;
+	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
+	 * we are done with using the addresses Orig[k] directly. */
+	
+	/* Apply specified scaling or offsets */
+	
+	for (j = 0; j < Grid[0]->header->ny; j++)
+		for (i = 0; i < Grid[0]->header->nx; i++)
+			Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->misc.z_offset;
+	if (Ctrl->s.active)
+		for (j = 0; j < Grid[0]->header->ny; j++)
+			for (i = 0; i < Grid[0]->header->nx; i++)
+				Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] *= (float)Ctrl->s.scale;
+				
+	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
+	for (k = 0; k < Ctrl->In.n_grids; k++) {
+		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
+		GMT_grd_taper_edges (GMT, Grid[k], &Ctrl->N.info);
+		//if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.prefix);
+	}
+				
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
+		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
+			Return (EXIT_FAILURE);
+		//if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K, Ctrl->In.file[k]);
 	}
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing gravity file %s\n", Ctrl->In.file[1]);
 
-		GMT_grd_init (GMT, GridB->header, options, true);
-		set_grid_radix_size__ (GMT, Ctrl, GridB);		/* This also sets the new pads */
-		/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-		for (j = 0; j < 4; j++) GridB->header->BC[j] = GMT_BC_IS_DATA;
-
-		/* Now read data into the real positions in the padded complex radix grid */
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[1], GridB) == NULL) {	/* Get subset */
-			Return (API->error);
-		}
-
-		/* Check that no NaNs are present in gravity file */
-		stop = false;
-		for (j = 0; !stop && j < GridB->header->ny; j++)
-			for (i = 0; !stop && i < GridB->header->nx; i++) 
-				stop = GMT_is_fnan (GridB->data[GMT_IJPR(GridB->header,j,i)]);
-		if (stop) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Input grid cannot have NaNs!\n");
-			Return (EXIT_FAILURE);
-		}
-
-		(void)GMT_set_outgrid (GMT, GridB, &Out2);	/* true if input is a read-only array; otherwise Out just points to GridB */
-		if (!Ctrl->L.active) remove_plane__ (GMT, Out2);
-		if (!Ctrl->N.force_narray) taper_edges__ (GMT, Out2);
-
-		if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
-			Return (EXIT_FAILURE);
-		if (GMT_fft_2d (GMT, Out2->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
-			Return (EXIT_FAILURE);
-		do_admittance(GMT, Out, Out2, Ctrl, &K);
+		do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
 		Return (EXIT_SUCCESS);
 	}
 
-	topo   = GMT_memory (GMT, NULL, GridA->header->size, float);
-	raised = GMT_memory (GMT, NULL, GridA->header->size, float);
+	topo   = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
+	raised = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
 
+#if 0
 	if (Ctrl->W.active) {	/* Write the FFTed input grid as two grids; Real and Img */
 		int plus_minus;
 		char *infile_r = NULL, *infile_i = NULL;	/* File names for real and imaginary grids */
@@ -756,25 +691,24 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		Return (EXIT_SUCCESS);
 	}
+#endif
 
 	if (Ctrl->Q.active || Ctrl->H.active) {
-		if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
-			Return (EXIT_FAILURE);
-		do_isostasy__(GMT, Out, Ctrl, &K);
-		if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
+		double coeff[3];
+		do_isostasy__ (GMT, Grid[0], Ctrl, K);
+		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
 			Return (EXIT_FAILURE);
 
-		scale_out *= (2.0 / Out->header->size);
-		for (m = 0; m < Out->header->size; m++)
-			Out->data[m] *= (float)scale_out;
+		scale_out *= (2.0 / Grid[0]->header->size);
+		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 		if (!Ctrl->H.active) {
-			remove_level(GMT, Out, Ctrl);		/* Because average was no longer zero */
-       		for (m = 0; m < Out->header->size; m+= 2)
-       			Out->data[m] -= (float)Ctrl->Z.zm;
-			/* The data is in the middle of the padded array */
+			GMT_grd_detrend (GMT, Grid[0], Ctrl->L.mode, coeff);
+			Ctrl->misc.z_level = fabs (coeff[0]);	/* Need absolute value or level removed for uppward continuation */
+    			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Out) != GMT_OK) {
+			/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 				Return (API->error);
 			}
 			Return (EXIT_SUCCESS);
@@ -786,9 +720,9 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		}
 	}
 
-	memcpy (topo,   GridA->data, Out->header->size * sizeof (float));
-	memcpy (raised, GridA->data, Out->header->size * sizeof (float));
-	for (m = 0; m < Out->header->size; m++) Out->data[m] = 0.0;
+	GMT_memcpy (topo,   Grid[0]->data, Grid[0]->header->size, float);
+	GMT_memcpy (raised, Grid[0]->data, Grid[0]->header->size, float);
+	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Evatuating for term = 1");
 
@@ -797,186 +731,55 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		if (n > 1) GMT_report (GMT, GMT_MSG_VERBOSE, "-%d", n);
 
 		if (n > 1)
-			for (m = 0; m < Out->header->size; m++)
+			for (m = 0; m < Grid[0]->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 
-		if (GMT_fft_2d (GMT, raised,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
+		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
 
 		if (Ctrl->D.active || Ctrl->H.active)	/* "classical" anomaly */
-			do_parker (GMT, Out, Ctrl, &K, raised, n, Ctrl->misc.rho);
+			do_parker (GMT, Grid[0], Ctrl, K, raised, n, Ctrl->misc.rho);
 		else if (Ctrl->T.active && !Ctrl->S.active)		/* Compute "loading from top" grav|geoid */
-			load_from_top_grid(GMT, Out, Ctrl, &K, raised, n);
+			load_from_top_grid (GMT, Grid[0], Ctrl, K, raised, n);
 		else if (Ctrl->S.active)				/* Compute "loading from below" grav|geoid */
-			load_from_below_grid(GMT, Out, Ctrl, &K, raised, n);
+			load_from_below_grid (GMT, Grid[0], Ctrl, K, raised, n);
 		else
 			fprintf (stderr, "It SHOULDN'T pass here\n");
 	}
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, " Inverse FFT...");
 
-	if (GMT_fft_2d (GMT, Out->data,  Ctrl->N.nx2, Ctrl->N.ny2, k_fft_inv, k_fft_complex))
+	if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
 		Return (EXIT_FAILURE);
 
-	scale_out *= (2.0 / Out->header->size);
-	for (m = 0; m < Out->header->size; m+= 2)
-		Out->data[m] *= (float)scale_out;
+	scale_out *= (2.0 / Grid[0]->header->size);
+	GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 	if (Ctrl->F.active) {
-		strcpy (Out->header->title, "Geoid anomalies");
-		strcpy (Out->header->z_units, "meter");
+		strcpy (Grid[0]->header->title, "Geoid anomalies");
+		strcpy (Grid[0]->header->z_units, "meter");
 	}
 	else {
-		strcpy (Out->header->title, "Gravity anomalies");
-		strcpy (Out->header->z_units, "mGal");
+		strcpy (Grid[0]->header->title, "Gravity anomalies");
+		strcpy (Grid[0]->header->z_units, "mGal");
 	}
-	sprintf (Out->header->remark, "Parker expansion of order %d", Ctrl->E.n_terms);
+	sprintf (Grid[0]->header->remark, "Parker expansion of order %d", Ctrl->E.n_terms);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "write_output...");
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Out) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 		Return (API->error);
 	}
 
-	GMT_free(GMT, raised);
-	GMT_free(GMT, topo);
+	GMT_free (GMT, raised);
+	GMT_free (GMT, topo);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "done!\n");
 
 	Return (EXIT_SUCCESS);
 }
 
-void remove_level(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl) {
-	/* Remove the level corresponding to the mean or the half-way point.
-	   This level is used as the depth parameter in the exponential term */
-
-	unsigned int i, j;
-	uint64_t ji;
-	double z_min, z_max, sum = 0.0, half_w = 0.0;
-	float *datac = Grid->data;
-	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
-
-	z_min = 1.0e100;	 z_max = -1.0e100;
-
-	for (j = 0; j < h->ny; j++) {
-		for (i = 0; i < h->nx; i++) {
-			ji = GMT_IJPR(h,j,i);
-			if (!GMT_is_fnan(datac[ji])) {
-		  		z_min = MIN (z_min, datac[ji]);
-		  		z_max = MAX (z_max, datac[ji]);
-				sum += datac[ji];
-			}
-		}
-	}
-
-	sum /= (h->nx * h->ny);		half_w = z_min + 0.5 * (z_max - z_min);
-	Ctrl->misc.z_level = (Ctrl->misc.mean_or_half_way) ? sum : half_w;
-
-	for (j = 0; j < h->ny; j++) {
-		for (i = 0; i < h->nx; i++) {
-			ji = GMT_IJPR(h,j,i);
-			if (!GMT_is_fnan(datac[ji]))
-				datac[ji] -= (float)Ctrl->misc.z_level;
-		}
-	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "1/2-way level = %g, mean = %g : value removed --> %g\n", half_w, sum, Ctrl->misc.z_level);
-	Ctrl->misc.z_level = fabs(Ctrl->misc.z_level);	/* Need absolute value for uppward continuation */
-}
-
-void taper_edges__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
-	int im, jm, il1, ir1, il2, ir2, jb1, jb2, jt1, jt2;
-	int i, j, i_data_start, j_data_start, mx;
-	unsigned int ju;
-	float *datac = Grid->data;
-	double scale, cos_wt;
-	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
-
-	/* Note that if nx2 = nx+1 and ny2 = ny + 1, then this routine
-	 * will do nothing; thus a single row/column of zeros may be
-	 * added to the bottom/right of the input array and it cannot
-	 * be tapered.  But when (nx2 - nx)%2 == 1 or ditto for y,
-	 * this is zero anyway.  */
-
-	i_data_start = GMT->current.io.pad[XLO];	/* For readability */
-	j_data_start = GMT->current.io.pad[YHI];
-	
-	/* First reflect about xmin and xmax, point symmetric about edge point */
-
-	for (im = 1; im <= i_data_start; im++) {
-		il1 = -im;	/* Outside xmin; left of edge 1  */
-		ir1 = im;	/* Inside xmin; right of edge 1  */
-		il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
-		ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
-		for (ju = 0; ju < h->ny; ju++) {
-			datac[GMT_IJPR(h,ju,il1)] = (float)2.0*datac[GMT_IJPR(h,ju,0)] - datac[GMT_IJPR(h,ju,ir1)];
-			datac[GMT_IJPR(h,ju,ir2)] = (float)2.0*datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
-		}
-	}
-
-	/* Next, reflect about ymin and ymax.
-	 * At the same time, since x has been reflected,
-	 * we can use these vals and taper on y edges */
-
-	scale = M_PI / (j_data_start + 1);
-	mx = h->mx;
-	for (jm = 1; jm <= j_data_start; jm++) {
-		jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
-		jt1 = jm;	/* Inside ymin; top side of edge 1  */
-		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
-		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
-		cos_wt = 0.5 * (1.0 + cos(jm * scale) );
-		for (i = -i_data_start; i < mx - i_data_start; i++) {
-			datac[GMT_IJPR(h,jb1,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,0,i)] - datac[GMT_IJPR(h,jt1,i)]));
-			datac[GMT_IJPR(h,jt2,i)] = (float)(cos_wt * (2.0*datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]));
-		}
-	}
-
-	/* Now, cos taper the x edges */
-	scale = M_PI / (i_data_start + 1);
-	for (im = 1; im <= i_data_start; im++) {
-		il1 = -im;
-		ir1 = im;
-		il2 = il1 + h->nx - 1;
-		ir2 = ir1 + h->nx - 1;
-		cos_wt = 0.5 * (1.0 + cos (im * scale));
-		for (ju = 0, j = -j_data_start; ju < h->my; j++, ju++) {
-			datac[GMT_IJPR(h,j,il1)] *= (float)cos_wt;
-			datac[GMT_IJPR(h,j,ir2)] *= (float)cos_wt;
-		}
-	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Data reflected and tapered\n");
-}
-
-double kx__ (uint64_t k, struct K_XY *K) {
-	/* Return the value of kx given k,
-		where kx = 2 pi / lambda x,
-		and k refers to the position
-		in the datac array, datac[k].  */
-
-	int64_t ii = (k/2)%(K->nx2);
-	if (ii > (K->nx2)/2) ii -= (K->nx2);
-	return (ii * K->delta_kx);
-}
-
-double ky__ (uint64_t k, struct K_XY *K) {
-	/* Return the value of ky given k,
-	 * where ky = 2 pi / lambda y,
-	 * and k refers to the position
-	 *in the datac array, datac[k].  */
-
-	int64_t jj = (k/2)/(K->nx2);
-	if (jj > (K->ny2)/2) jj -= (K->ny2);
-	return (jj * K->delta_ky);
-}
-
-double modk__ (uint64_t k, struct K_XY *K) {
-	/* Return the value of sqrt(kx*kx + ky*ky),
-	 * given k, where k is array position.  */
-
-	return (hypot (kx__ (k, K), ky__ (k, K)));
-}
-
-void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K) {
+void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K) {
 	/* Do the isostatic response function convolution in the Freq domain.
 	All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	densities in kg/m**3, Te in m, etc.
@@ -1001,7 +804,7 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	}
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = modk__(k, K);
+		mk = GMT_fft_get_wave (k, K);
 		k2 = mk * mk;	k4 = k2 * k2;
 		transfer_fn = airy_ratio / ( (d_over_restoring_force * k4) + 1.0);	  
 		datac[k] *= (float)transfer_fn;
@@ -1009,7 +812,7 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	}
 }
 
-void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, uint64_t n, double rho) {
+void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint64_t n, double rho) {
 	uint64_t i, k;
 	double f, p, t, mk, v, c;
 	float *datac = Grid->data;
@@ -1022,7 +825,7 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 	if (Ctrl->F.active) c /= 980619.92;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = modk__(k, K);
+		mk = GMT_fft_get_wave (k, K);
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
@@ -1037,316 +840,7 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 	}
 }
 
-unsigned int get_non_symmetric_f__ (unsigned int *f, unsigned int n) {
-	/* Return the product of the non-symmetric factors in f[]  */
-	unsigned int i = 0, j = 1;
-	unsigned int retval = 1;
-
-	if (n == 1) return (f[0]);
-
-	while (i < n) {
-		while (j < n && f[j] == f[i]) j++;
-		if ((j-i)%2) retval *= f[i];
-		i = j;
-		j = i + 1;
-	}
-	if (retval == 1) retval = 0;	/* There are no non-sym factors  */
-	return (retval);
-}
-
-void fourt_stats__ (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t) {
-	/* Find the proportional run time, t, and rms relative error, r,
-	 * of a Fourier transform of size nx,ny.  Also gives s, the size
-	 * of the workspace that will be needed by the transform.
-	 * To use this routine for a 1-D transform, set ny = 1.
-	 *
-	 * This is all based on the comments in Norman Brenner's code
-	 * FOURT, from which our C codes are translated.
-	 * Brenner says:
-	 * r = 3 * pow(2, -FSIGNIF) * sum{ pow(prime_factors, 1.5) }
-	 * where FSIGNIF is the smallest bit in the floating point fraction.
-	 *
-	 * Let m = largest prime factor in the list of factors.
-	 * Let p = product of all primes which appear an odd number of
-	 * times in the list of prime factors.  Then the worksize needed
-	 * s = max(m,p).  However, we know that if n is radix 2, then no
-	 * work is required; yet this formula would say we need a worksize
-	 * of at least 2.  So I will return s = 0 when max(m,p) = 2.
-	 *
-	 * I have two different versions of the comments in FOURT, with
-	 * different formulae for t.  The simple formula says
-	 *      t = n * (sum of prime factors of n).
-	 * The more complicated formula gives coefficients in microsecs
-	 * on a cdc3300 (ancient history, but perhaps proportional):
-	 *      t = 3000 + n*(500 + 43*s2 + 68*sf + 320*nf),
-	 * where s2 is the sum of all factors of 2, sf is the sum of all
-	 * factors greater than 2, and nf is the number of factors != 2.
-	 * We know that factors of 2 are very good to have, and indeed,
-	 * Brenner's code calls different routines depending on whether
-	 * the transform is of size 2 or not, so I think that the second
-	 * formula is more correct, using proportions of 43:68 for 2 and
-	 * non-2 factors.  So I will use the more complicated formula.
-	 * However, I realize that the actual numbers are wrong for today's
-	 * architectures, and the relative proportions may be wrong as well.
-	 *
-	 * W. H. F. Smith, 26 February 1992.
-	 *  */
-
-	unsigned int n_factors, i, sum2, sumnot2, nnot2;
-	unsigned int nonsymx, nonsymy, nonsym, storage, ntotal;
-	double err_scale;
-
-	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
-	n_factors = GMT_get_prime_factors (C, nx, f);
-	nonsymx = get_non_symmetric_f__ (f, n_factors);
-	n_factors = GMT_get_prime_factors (C, ny, f);
-	nonsymy = get_non_symmetric_f__ (f, n_factors);
-	nonsym = MAX (nonsymx, nonsymy);
-
-	/* Now get factors of ntotal  */
-	ntotal = GMT_get_nm (C, nx, ny);
-	n_factors = GMT_get_prime_factors (C, ntotal, f);
-	storage = MAX (nonsym, f[n_factors-1]);
-	*s = (storage == 2) ? 0 : storage;
-
-	/* Now find time and error estimates */
-
-	err_scale = 0.0;
-	sum2 = sumnot2 = nnot2 = 0;
-	for(i = 0; i < n_factors; i++) {
-		if (f[i] == 2)
-			sum2 += f[i];
-		else {
-			sumnot2 += f[i];
-			nnot2++;
-		}
-		err_scale += pow ((double)f[i], 1.5);
-	}
-	*t = 1.0e-06 * (3000.0 + ntotal * (500.0 + 43.0 * sum2 + 68.0 * sumnot2 + 320.0 * nnot2));
-	*r = err_scale * 3.0 * pow (2.0, -FSIGNIF);
-	
-	return;
-}
-
-void suggest_fft__ (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct FFT_SUGGESTION *fft_sug, bool do_print) {
-	unsigned int f[32], xstop, ystop;
-	unsigned int nx_best_t, ny_best_t;
-	unsigned int nx_best_e, ny_best_e;
-	unsigned int nx_best_s, ny_best_s;
-	unsigned int nxg, nyg;       /* Guessed by this routine  */
-	unsigned int nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
-	size_t current_space, best_space, given_space, e_space, t_space;
-	double current_time, best_time, given_time, s_time, e_time;
-	double current_err, best_err, given_err, s_err, t_err;
-
-	fourt_stats__ (GMT, nx, ny, f, &given_err, &given_space, &given_time);
-	given_space += nx * ny;
-	given_space *= 8;
-	if (do_print)
-		GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
-		nx, ny, given_time, given_err, given_space);
-
-	best_err = s_err = t_err = given_err;
-	best_time = s_time = e_time = given_time;
-	best_space = t_space = e_space = given_space;
-	nx_best_e = nx_best_t = nx_best_s = nx;
-	ny_best_e = ny_best_t = ny_best_s = ny;
-
-	xstop = 2 * nx;
-	ystop = 2 * ny;
-
-	for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
-		for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
-			for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
-				nxg = nx2 * nx3 * nx5;
-				if (nxg < nx || nxg > xstop) continue;
-
-				for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
-					for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
-						for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
-							nyg = ny2 * ny3 * ny5;
-							if (nyg < ny || nyg > ystop) continue;
-
-							fourt_stats__ (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
-							current_space += nxg*nyg;
-							current_space *= 8;
-							if (current_err < best_err) {
-								best_err = current_err;
-								nx_best_e = nxg;
-								ny_best_e = nyg;
-								e_time = current_time;
-								e_space = current_space;
-							}
-							if (current_time < best_time) {
-								best_time = current_time;
-								nx_best_t = nxg;
-								ny_best_t = nyg;
-								t_err = current_err;
-								t_space = current_space;
-							}
-							if (current_space < best_space) {
-								best_space = current_space;
-								nx_best_s = nxg;
-								ny_best_s = nyg;
-								s_time = current_time;
-								s_err = current_err;
-							}
-
-						}
-					}
-				}
-
-			}
-		}
-	}
-
-	if (do_print) {
-		GMT_report (GMT, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
-			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
-			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
-			nx_best_s, ny_best_s, s_time, s_err, best_space);
-	}
-	/* Fastest solution */
-	fft_sug[0].nx = nx_best_t;
-	fft_sug[0].ny = ny_best_t;
-	fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
-	fft_sug[0].totalbytes = t_space;
-	fft_sug[0].run_time = best_time;
-	fft_sug[0].rms_rel_err = t_err;
-	/* Most accurate solution */
-	fft_sug[1].nx = nx_best_e;
-	fft_sug[1].ny = ny_best_e;
-	fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
-	fft_sug[1].totalbytes = e_space;
-	fft_sug[1].run_time = e_time;
-	fft_sug[1].rms_rel_err = best_err;
-	/* Least storage solution */
-	fft_sug[2].nx = nx_best_s;
-	fft_sug[2].ny = ny_best_s;
-	fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
-	fft_sug[2].totalbytes = best_space;
-	fft_sug[2].run_time = s_time;
-	fft_sug[2].rms_rel_err = s_err;
-
-	return;
-}
-
-void set_grid_radix_size__ (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_GRID *Gin) {
-	unsigned int k, factors[32];
-	size_t worksize;
-	double tdummy, edummy;
-	struct FFT_SUGGESTION fft_sug[3];
-		
-	/* Get dimensions as may be appropriate */
-	if (Ctrl->N.n_user_set) {
-		if (Ctrl->N.nx2 < Gin->header->nx || Ctrl->N.ny2 < Gin->header->ny) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: You specified -Nnx/ny smaller than input grid.  Ignored.\n");
-			Ctrl->N.n_user_set = false;
-		}
-	}
-	if (!(Ctrl->N.n_user_set) ) {
-		if (Ctrl->N.force_narray) {
-			Ctrl->N.nx2 = Gin->header->nx;
-			Ctrl->N.ny2 = Gin->header->ny;
-			for (k = 0; k < 4; k++) Gin->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
-		}
-		else {
-			suggest_fft__ (GMT, Gin->header->nx, Gin->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || Ctrl->N.suggest_narray));
-			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
-				/* The most accurate solution needs same or less storage
-				 * as the fastest solution; use the most accurate's dimensions */
-				Ctrl->N.nx2 = fft_sug[1].nx;
-				Ctrl->N.ny2 = fft_sug[1].ny;
-			}
-			else {
-				/* Use the sizes of the fastest solution  */
-				Ctrl->N.nx2 = fft_sug[0].nx;
-				Ctrl->N.ny2 = fft_sug[0].ny;
-			}
-		}
-	}
-
-	/* Get here when nx2 and ny2 are set to the vals we will use.  */
-
-	fourt_stats__ (GMT, Ctrl->N.nx2, Ctrl->N.ny2, factors, &edummy, &worksize, &tdummy);
-	GMT_report (GMT, GMT_MSG_VERBOSE, " Data dimension %d %d\tFFT dimension %d %d\n",
-		Gin->header->nx, Gin->header->ny, Ctrl->N.nx2, Ctrl->N.ny2);
-
-	if (worksize) {
-		if (worksize < Ctrl->N.nx2) worksize = Ctrl->N.nx2;
-		if (worksize < Ctrl->N.ny2) worksize = Ctrl->N.ny2;
-		worksize *= 2;
-	}
-	else
-		worksize = 4;
-
-
-	/* Put the data in the middle of the padded array */
-
-	GMT->current.io.pad[XLO] = (Ctrl->N.nx2 - Gin->header->nx)/2;	/* zero if nx2 < Gin->header->nx+1  */
-	GMT->current.io.pad[YHI] = (Ctrl->N.ny2 - Gin->header->ny)/2;
-	GMT->current.io.pad[XHI] = Ctrl->N.nx2 - Gin->header->nx - GMT->current.io.pad[XLO];
-	GMT->current.io.pad[YLO] = Ctrl->N.ny2 - Gin->header->ny - GMT->current.io.pad[YHI];
-}
-
-void remove_plane__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid) {
-	/* Remove the best-fitting plane by least squares.
-
-	Let plane be z = a0 + a1 * x + a2 * y.  Choose the
-	center of x,y coordinate system at the center of 
-	the array.  This will make the Normal equations 
-	matrix G'G diagonal, so solution is trivial.  Also,
-	spend some multiplications on normalizing the 
-	range of x,y into [-1,1], to avoid roundoff error.  */
-
-	unsigned int i, j, one_or_zero;
-	uint64_t ij;
-	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
-	double sumx2, sumy2, data_var, x, y, z, a[3];
-	float *datac = Grid->data;
-
-	one_or_zero = (Grid->header->registration == GMT_PIXEL_REG) ? 0 : 1;
-	x_half_length = 0.5 * (Grid->header->nx - one_or_zero);
-	one_on_xhl = 1.0 / x_half_length;
-	y_half_length = 0.5 * (Grid->header->ny - one_or_zero);
-	one_on_yhl = 1.0 / y_half_length;
-
-	sumx2 = sumy2 = data_var = a[2] = a[1] = a[0] = 0.0;
-
-	for (j = 0; j < Grid->header->ny; j++) {
-		y = one_on_yhl * (j - y_half_length);
-		for (i = 0; i < Grid->header->nx; i++) {
-			x = one_on_xhl * (i - x_half_length);
-			z = datac[GMT_IJPR(Grid->header,j,i)];
-			a[0] += z;
-			a[1] += z*x;
-			a[2] += z*y;
-			sumx2 += x*x;
-			sumy2 += y*y;
-		}
-	}
-	a[0] /= (Grid->header->nx*Grid->header->ny);
-	a[1] /= sumx2;
-	a[2] /= sumy2;
-	for (j = 0; j < Grid->header->ny; j++) {
-		y = one_on_yhl * (j - y_half_length);
-		for (i = 0; i < Grid->header->nx; i++) {
-			ij = GMT_IJPR (Grid->header, j, i);
-			x = one_on_xhl * (i - x_half_length);
-			datac[ij] -= (float)(a[0] + a[1]*x + a[2]*y);
-			data_var += (datac[ij] * datac[ij]);
-		}
-	}
-	data_var = sqrt(data_var / (Grid->header->nx*Grid->header->ny - 1));
-	/* Rescale a1,a2 into user's units, in case useful later */
-	a[1] *= (2.0/(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
-	a[2] *= (2.0/(Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g\n", a[0], data_var, a[1], a[2]);
-}
-
-void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K) {
+void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRID *GridB, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K) {
 	/*	The following are the comments of the routine do_spectrum
 	 *	of grdfft from which this code was adapted.
 	 *
@@ -1375,9 +869,9 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	double	*z_from_below = NULL, *z_from_top = NULL;
 
 	if (K->delta_kx < K->delta_ky) 
-		{delta_k = K->delta_kx;	nk = Ctrl->N.nx2/2;}
+		{delta_k = K->delta_kx;	nk = K->nx2/2;}
 	else 
-		{delta_k = K->delta_ky;	nk = Ctrl->N.ny2/2;}
+		{delta_k = K->delta_ky;	nk = K->ny2/2;}
 	n_alloc = nk;
 	/* Get an array for summing stuff */
 	b_pow   = GMT_memory (GMT, NULL, n_alloc, double );
@@ -1391,7 +885,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 		z_from_below = GMT_memory (GMT, NULL, n_alloc, double);
 	if (Ctrl->misc.from_top)
 		z_from_top = GMT_memory (GMT, NULL, n_alloc, double);
-	n_alloc   = Ctrl->N.nx2 * Ctrl->N.ny2;
+	n_alloc   = K->nx2 * K->ny2;
 	nused   = GMT_memory (GMT, NULL, n_alloc, unsigned int);
 
 	if (Ctrl->misc.coherence)
@@ -1402,7 +896,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	r_delta_k = 1.0 / delta_k;
 	
 	for (k = 2; k < GridA->header->size; k+= 2) {
-		freq = modk__(k, K);
+		freq = GMT_fft_get_wave (k, K);
 		ifreq = lrint (fabs(freq) * r_delta_k);	/* Might be zero when doing r average  */
 		if (ifreq) ifreq--;
 		if (ifreq >= nk) continue;	/* Might happen when doing r average  */
@@ -1474,21 +968,23 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	if (Ctrl->misc.from_top) GMT_free (GMT, z_from_top);
 }
 
-void compute_only_adimtts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_top_or_bot, double delta_pt) {
+void compute_only_adimtts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top_or_bot, double delta_pt) {
 
 	/* Calls the apropriate function to compute the theoretical admittance.
 	   Take profit of external variables used in other program's options */
-
+		unsigned int save[2];
+	save[0] = K->nx2;	save[1] = K->ny2;
 	K->delta_kx = K->delta_ky = delta_pt;
-	Ctrl->N.nx2 = Ctrl->N.ny2 = Ctrl->C.n_pt * 2;
+	K->nx2 = K->ny2 = Ctrl->C.n_pt * 2;
 
 	if (Ctrl->misc.from_top)
 		load_from_top_admit(GMT, Ctrl, K, z_top_or_bot);
 	else
 		load_from_below_admit(GMT, Ctrl, K, z_top_or_bot);
+	K->nx2 = save[0];	K->ny2 = save[1];	/* Restore */
 }
 
-void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_from_below) {
+void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_from_below) {
 
 	/* Compute theoretical admittance for the "loading from below" model
 	   M. McNutt & Shure (1986) in same |k| of computed data admittance
@@ -1500,9 +996,9 @@ void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, stru
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2, t3;
 
 	if (K->delta_kx < K->delta_ky)
-		{delta_k = K->delta_kx;	 nk = (int)Ctrl->N.nx2/2;}
+		{delta_k = K->delta_kx;	 nk = K->nx2/2;}
 	else 
-		{delta_k = K->delta_ky;	 nk = (int)Ctrl->N.ny2/2;}
+		{delta_k = K->delta_ky;	 nk = K->ny2/2;}
 
 	twopi = 2. * M_PI;
 	delta_k /= twopi;	/* Use frequency, not wavenumber  */
@@ -1522,7 +1018,7 @@ void load_from_below_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, stru
 	}
 }
 
-void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, double *z_from_top) {
+void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_from_top) {
 
 	/* Compute theoretical admittance for the "loading from top" model
 	   M. McNutt & Shure (1986) in same |k| of computed data admittance
@@ -1534,9 +1030,9 @@ void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct
 	double	earth_curvature, alfa, delta_k, freq, D, twopi, t1, t2;
 
 	if (K->delta_kx < K->delta_ky) 
-		{delta_k = K->delta_kx;	 nk = Ctrl->N.nx2/2;}
+		{delta_k = K->delta_kx;	 nk = K->nx2/2;}
 	else 
-		{delta_k = K->delta_ky;	 nk = Ctrl->N.ny2/2;}
+		{delta_k = K->delta_ky;	 nk = K->ny2/2;}
 
 	twopi = 2. * M_PI;
 	delta_k /= twopi;	/* Use frequency, not wavenumber  */
@@ -1554,7 +1050,7 @@ void load_from_top_admit(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct
 	}
 }
 
-void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n) {
+void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from top" model --  M. McNutt & Shure (1986)  */
@@ -1575,7 +1071,7 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 	raised[0] = 0.0;		raised[1] = 0.0;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = modk__(k, K) / twopi;
+		mk = GMT_fft_get_wave (k, K) / twopi;
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
@@ -1592,7 +1088,7 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 	}
 }
 
-void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct K_XY *K, float *raised, unsigned int n) {
+void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n) {
 
 	/* Computes the gravity|geoid grid due to the effect of the bathymetry using the theoretical
 	admittance for the "loading from below" model --  M. McNutt & Shure (1986)  */
@@ -1613,7 +1109,7 @@ void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct G
 	raised[0] = 0.0;		raised[1] = 0.0;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
-		mk = modk__(k, K) / twopi;
+		mk = GMT_fft_get_wave (k, K) / twopi;
 		if (p == 0.0)
 			t = 1.0;
 		else if (p == 1.0)
