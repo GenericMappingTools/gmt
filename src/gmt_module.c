@@ -58,7 +58,6 @@ struct Gmt_moduleinfo g_module[] = {
 	{"grdcut", "core", "Extract subregion from a grid", &GMT_grdcut},
 	{"grdedit", "core", "Modify header or content of a grid", &GMT_grdedit},
 	{"grdfft", "core", "Do mathematical operations on grids in the wavenumber (or frequency) domain", &GMT_grdfft},
-	{"grdfft_new", "core", "Do mathematical operations on grids in the wavenumber (or frequency) domain v2", &GMT_grdfft_new},
 	{"grdfilter", "core", "Filter a grid in the space (or time) domain", &GMT_grdfilter},
 	{"grdgradient", "core", "Compute directional gradients from a grid", &GMT_grdgradient},
 	{"grdgravmag3d", "potential", "Computes the gravity effect of one (or two) grids by the method of Okabe", &GMT_grdgravmag3d},
