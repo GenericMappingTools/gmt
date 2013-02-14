@@ -2951,7 +2951,7 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	start = strip + info->G->header->wesn[XLO];
 	stop  = strip - info->G->header->wesn[XHI];
 	w_x = GMT_memory (GMT, NULL, info->G->header->nx, float);
-	GMT_col_loop (GMT, info->G, row, col, node) {
+	GMT_col_loop2 (GMT, info->G, col) {
 		from_start = start - info->grd_x[col];
 		if (from_start > 0.0f) w_x[col] = 0.5f * (1.0f + cosf (from_start * scale));
 		else if ((from_stop = stop  + info->grd_x[col]) > 0.0f) w_x[col] = 0.5f * (1.0f + cosf (from_stop * scale));
