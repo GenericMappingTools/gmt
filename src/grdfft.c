@@ -93,10 +93,12 @@ struct GRDFFT_CTRL {
 		bool active;
 		double scale;
 	} S;
+#ifdef GMT_COMPAT	/* Now in gravfft in potential supplement */
 	struct T {	/* -T<te/rl/rm/rw/ri> */
 		bool active;
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
+#endif
 	struct Z {	/* -Z[p] */
 		bool active;
 		unsigned int mode;
@@ -540,6 +542,7 @@ unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struc
 	return (1);	/* Number of parameters used */
 }
 
+#ifdef GMT_COMPAT
 unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct K_XY *K)
 {
 
@@ -580,6 +583,7 @@ unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, doubl
 	}
 	return (5);	/* Number of parameters used */
 }
+#endif
 
 double gauss_weight (struct F_INFO *f_info, double freq, int j) {
 	double hi, lo;
@@ -970,7 +974,7 @@ int do_cross_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_
 	return (1);	/* Number of parameters used */
 }
 
-uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
+uint64_t get_non_symmetric_f2 (unsigned int *f, unsigned int n)
 {
 	/* Return the product of the non-symmetric factors in f[]  */
 	unsigned int i = 0, j = 1, retval = 1;
@@ -987,7 +991,7 @@ uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
 	return (retval);
 }
 
-void fourt_stats (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t)
+void fourt_stats2 (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t)
 {
 	/* Find the proportional run time, t, and rms relative error, r,
 	 * of a Fourier transform of size nx,ny.  Also gives s, the size
@@ -1032,9 +1036,9 @@ void fourt_stats (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned
 
 	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
 	n_factors = GMT_get_prime_factors (C, nx, f);
-	nonsymx = get_non_symmetric_f (f, n_factors);
+	nonsymx = get_non_symmetric_f2 (f, n_factors);
 	n_factors = GMT_get_prime_factors (C, ny, f);
-	nonsymy = get_non_symmetric_f (f, n_factors);
+	nonsymy = get_non_symmetric_f2 (f, n_factors);
 	nonsym = MAX (nonsymx, nonsymy);
 
 	/* Now get factors of ntotal  */
@@ -1074,7 +1078,7 @@ void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct
 	double current_time, best_time, given_time, s_time, e_time;
 	double current_err, best_err, given_err, s_err, t_err;
 
-	fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
+	fourt_stats2 (GMT, nx, ny, f, &given_err, &given_space, &given_time);
 	given_space += nx * ny;
 	given_space *= 8;
 	if (do_print)
@@ -1101,7 +1105,7 @@ void suggest_fft (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct
 		                nyg = ny2 * ny3 * ny5;
 		                if (nyg < ny || nyg > ystop) continue;
 
-			fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
+			fourt_stats2 (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
 			current_space += nxg*nyg;
 			current_space *= 8;
 			if (current_err < best_err) {
@@ -1205,18 +1209,9 @@ void set_grid_radix_size (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct
 
 	/* Get here when nx2 and ny2 are set to the vals we will use.  */
 
-	fourt_stats (GMT, Ctrl->N.nx2, Ctrl->N.ny2, factors, &edummy, &worksize, &tdummy);
+	fourt_stats2 (GMT, Ctrl->N.nx2, Ctrl->N.ny2, factors, &edummy, &worksize, &tdummy);
 	GMT_report (GMT, GMT_MSG_VERBOSE, " Data dimension %d %d\tFFT dimension %d %d\n",
 		Gin->header->nx, Gin->header->ny, Ctrl->N.nx2, Ctrl->N.ny2);
-
-	if (worksize) {
-		if (worksize < Ctrl->N.nx2) worksize = Ctrl->N.nx2;
-		if (worksize < Ctrl->N.ny2) worksize = Ctrl->N.ny2;
-		worksize *= 2;
-	}
-	else
-		worksize = 4;
-
 
 	/* Put the data in the middle of the padded array */
 
@@ -1511,7 +1506,9 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				Ctrl->S.active = true;
 				Ctrl->S.scale = (opt->arg[0] == 'd' || opt->arg[0] == 'D') ? 1.0e6 : atof (opt->arg);
 				break;
+#ifdef GMT_COMPAT
 			case 'T':	/* Flexural isostasy */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calcuations.\n");
 				Ctrl->T.active = Ctrl->L.active = true;
 				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
@@ -1519,6 +1516,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 					"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
 				add_operation (GMT, Ctrl, ISOSTASY, 5, par);
 				break;
+#endif
 #ifdef DEBUG
 			case '=':	/* Do nothing */
 				add_operation (GMT, Ctrl, -1, 1, par);
@@ -1689,10 +1687,12 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "integrate...\n");
 				par_count += do_integrate (Grid[0], &Ctrl->par[par_count], &K);
 				break;
+#ifdef GMT_COMPAT
 			case ISOSTASY:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "isostasy...\n");
 				par_count += do_isostasy (Grid[0], Ctrl, &Ctrl->par[par_count], &K);
 				break;
+#endif
 			case FILTER_COS:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cosine filter...\n");
 				do_filter (Grid[0], &f_info, &K);

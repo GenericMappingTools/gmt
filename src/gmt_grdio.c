@@ -1952,6 +1952,108 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 	}
 }
 
+void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode)
+{
+	/* mode = 0: Remove the best-fitting plane by least squares.
+	   mode = 1: Remove the mean value.
+	   mode = 2: Remove the middle value.
+	*/
+
+	unsigned int col, row, one_or_zero;
+	uint64_t ij;
+	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
+	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z, a[3];
+
+	if (mode == 1) {	/* Remove mean */
+		a[0] = 0.0;
+		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+			z = Grid->data[GMT_IJPR(Grid->header,row,col)];	/* Index to real part of complex array elements */
+			a[0] += z;
+			data_var_orig += z * z;
+		}
+		a[0] /= Grid->header->nm;
+		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+			ij = GMT_IJPR(Grid->header,row,col);
+			Grid->data[ij] -= a[0];
+			z = Grid->data[ij];
+			data_var += z * z;
+		}
+		var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
+		return;
+	}
+	if (mode == 2) {	/* Remove mid value */
+		double zmin = DBL_MAX, zmax = -DBL_MAX;
+		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+			ij = GMT_IJPR(Grid->header,row,col);	/* Index to real part of complex array elements */
+			z = Grid->data[ij];
+			data_var_orig += z * z;
+			if (z < zmin) zmin = z;
+			if (z > zmax) zmax = z;
+		}
+		a[0] = 0.5 * (zmin + zmax);	/* Mid value */
+		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+			ij = GMT_IJPR(Grid->header,row,col);	/* Index to real part of complex array elements */
+			Grid->data[ij] -= a[0];
+			z = Grid->data[ij];
+			data_var += z * z;
+		}
+		var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Mid value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
+		return;
+	}
+	
+	/* Here we wish to remove a LS plane */
+	
+	/* Let plane be z = a0 + a1 * x + a2 * y.  Choose the
+	   center of x,y coordinate system at the center of 
+	   the array.  This will make the Normal equations 
+	   matrix G'G diagonal, so solution is trivial.  Also,
+	   spend some multiplications on normalizing the 
+	   range of x,y into [-1,1], to avoid roundoff error.
+	 */
+	
+	one_or_zero = (Grid->header->registration == GMT_PIXEL_REG) ? 0 : 1;
+	x_half_length = 0.5 * (Grid->header->nx - one_or_zero);
+	one_on_xhl = 1.0 / x_half_length;
+	y_half_length = 0.5 * (Grid->header->ny - one_or_zero);
+	one_on_yhl = 1.0 / y_half_length;
+
+	sumx2 = sumy2 = data_var = a[2] = a[1] = a[0] = 0.0;
+
+	for (row = 0; row < Grid->header->ny; row++) {
+		y = one_on_yhl * (row - y_half_length);
+		for (col = 0; col < Grid->header->nx; col++) {
+			x = one_on_xhl * (col - x_half_length);
+			z = Grid->data[GMT_IJPR(Grid->header,row,col)];
+			data_var_orig += z * z;
+			a[0] += z;
+			a[1] += z*x;
+			a[2] += z*y;
+			sumx2 += x*x;
+			sumy2 += y*y;
+		}
+	}
+	a[0] /= Grid->header->nm;
+	a[1] /= sumx2;
+	a[2] /= sumy2;
+	for (row = 0; row < Grid->header->ny; row++) {
+		y = one_on_yhl * (row - y_half_length);
+		for (col = 0; col < Grid->header->nx; col++) {
+			ij = GMT_IJPR (Grid->header, row, col);
+			x = one_on_xhl * (col - x_half_length);
+			Grid->data[ij] -= (float)(a[0] + a[1]*x + a[2]*y);
+			data_var += (Grid->data[ij] * Grid->data[ij]);
+		}
+	}
+	var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
+	data_var = sqrt(data_var / (Grid->header->nx*Grid->header->ny - 1));
+	/* Rescale a1,a2 into user's units, in case useful later */
+	a[1] *= (2.0/(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
+	a[2] *= (2.0/(Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n", a[0], data_var, a[1], a[2], var_redux);
+}
+
 bool GMT_init_complex (unsigned int complex_mode, unsigned int *inc, unsigned int *off)
 {	/* Sets complex-related parameters based on the input complex_mode variable:
 	 * If complex_mode & GMT_GRID_NO_HEADER then we do NOT want to write a header [output only; only some formats]

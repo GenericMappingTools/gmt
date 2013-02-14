@@ -91,6 +91,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #endif
 
 #include "gmt_common.h"         /* For holding the GMT common option settings */
+#include "gmt_fft.h"            /* Structures and enums used by programs needing FFTs */
 #include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
