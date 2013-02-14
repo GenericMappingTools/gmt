@@ -142,7 +142,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	gmtconvert.c gmtdp.c gmtmath.c gmtselect.c
 	gmtspatial.c gmtstitch.c gmtvector.c gmtwhich.c
 	grd2cpt.c grd2rgb.c grd2xyz.c grdblend.c
-	grdclip.c grdcut.c grdedit.c grdfft.c
+	grdclip.c grdcut.c grdedit.c grdfft.c grdfft_new.c
 	grdfilter.c grdgradient.c grdhisteq.c grdinfo.c
 	grdlandmask.c grdmask.c grdmath.c grdpaste.c
 	grdproject.c grdsample.c grdreformat.c grdtrack.c
