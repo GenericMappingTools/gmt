@@ -356,7 +356,6 @@ struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID
 		if (F->info_mode == GMT_FFT_FORCE) {
 			F->nx = G->header->nx;
 			F->ny = G->header->ny;
-			for (k = 0; k < 4; k++) G->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
 		}
 		else {
 			GMT_suggest_fft_dim (C, G->header->nx, G->header->ny, fft_sug, (GMT_is_verbose (C, GMT_MSG_VERBOSE) || F->info_mode == GMT_FFT_QUERY));
@@ -374,6 +373,9 @@ struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID
 		}
 	}
 	
+	/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
+	for (k = 0; k < 4; k++) G->header->BC[k] = GMT_BC_IS_DATA;
+
 	/* Get here when F->nx and F->ny are set to the values we will use.  */
 
 	fourt_stats (C, F->nx, F->ny, factors, &edummy, &worksize, &tdummy);
@@ -397,7 +399,7 @@ struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID
 		K->delta_ky /= C->current.proj.DIST_M_PR_DEG;
 	}
 
-	GMT_fft_set_wave (C, GMT_FFT_K_IS_KR, K);	/* INitialize with radial wavenumbers */
+	GMT_fft_set_wave (C, GMT_FFT_K_IS_KR, K);	/* Initialize for use with radial wavenumbers */
 	
 	return (K);
 }
@@ -414,11 +416,17 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	double width;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
 
+	width_percent = lrint (K->taper_width);
+
 	if ((Grid->header->nx == K->nx && Grid->header->ny == K->ny) || K->taper_mode == GMT_FFT_EXTEND_NONE) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
 		/* But there may still be interior tapering */
 		if (K->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
+			return;
+		}
+		if (K->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
 			return;
 		}
 	}
@@ -434,12 +442,15 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	mx = h->mx;
 	one = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
 	
-	width = K->taper_width;
-	width_percent = lrint (width);
 	if (width_percent == 0) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
 	}
-	width /= 100.0;	/* Was percent, now fraction */
+	if (width_percent == 100 && K->taper_mode == GMT_FFT_EXTEND_NONE) {	/* Means user set +n but did not specify +t<taper> as 100% is unreasonable for interior */
+		width_percent = 0;
+		width = 0.0;
+	}
+	else
+		width = K->taper_width / 100.0;	/* Was percent, now fraction */
 	
 	if (K->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
 		i_width = lrint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */

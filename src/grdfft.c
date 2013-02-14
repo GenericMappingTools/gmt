@@ -22,7 +22,9 @@
  * Author:	W.H.F. Smith
  * Date:	1-JAN-2010
  * Version:	5 API
- *
+ * Note:	PW: As of 2/14/2013 the various setup and init functions for FFT use
+ *		have been generalized and made available GMT-wide via new functions
+ *		in gmt_fft.c.
  */
 
 #define THIS_MODULE k_mod_grdfft /* I am grdfft */
@@ -30,6 +32,7 @@
 #include "gmt.h"
 
 #ifdef DEBUG
+/* For debuging -E; running this in debug and setting it to true will also output the number of estimates per radial k */
 bool show_n = false;
 #endif
 
@@ -61,7 +64,7 @@ struct GRDFFT_CTRL {
 		bool km;
 		int mode;	/*-1/0/+1 */
 	} E;
-	struct F {	/* -F[x_or_y]<lc>/<lp>/<hp>/<hc> or -F[x_or_y]<lo>/<hi> */
+	struct F {	/* -F[r|x|y]<lc>/<lp>/<hp>/<hc> or -F[r|x|y]<lo>/<hi> */
 		bool active;
 		double lc, lp, hp, hc;
 	} F;
@@ -78,7 +81,7 @@ struct GRDFFT_CTRL {
 		bool debug;
 		unsigned int mode;
 	} L;
-	struct N {	/* -N<stuff> */
+	struct N {	/* -N[f|q|<nx>/<ny>][+e|m|n][+t<width>] */
 		bool active;
 		struct GMT_FFT_INFO info;
 	} N;
@@ -90,7 +93,7 @@ struct GRDFFT_CTRL {
 		bool active;
 		double scale;
 	} S;
-#ifdef GMT_COMPAT	/* Now in gravfft in potential supplement */
+#ifdef GMT_COMPAT	/* Now in gravfft in potential supplement; left for backwards compatibility */
 	struct T {	/* -T<te/rl/rm/rw/ri> */
 		bool active;
 		double te, rhol, rhom, rhow, rhoi;
@@ -102,15 +105,16 @@ struct GRDFFT_CTRL {
 	} Z;
 };
 
-#define UP_DOWN_CONTINUE	0
-#define AZIMUTHAL_DERIVATIVE	1
-#define DIFFERENTIATE		2
-#define INTEGRATE		3
-#define ISOSTASY		4
-#define FILTER_EXP		5
-#define FILTER_BW		6
-#define FILTER_COS		7
-#define SPECTRUM		8
+enum Grdfft_operators {
+	GRDFFT_UP_DOWN_CONTINUE	= 0,
+	GRDFFT_AZIMUTHAL_DERIVATIVE,
+	GRDFFT_DIFFERENTIATE	   ,
+	GRDFFT_INTEGRATE	   ,
+	GRDFFT_FILTER_EXP	   ,
+	GRDFFT_FILTER_BW	   ,
+	GRDFFT_FILTER_COS	   ,
+	GRDFFT_SPECTRUM		   ,
+	GRDFFT_ISOSTASY		   };
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 
@@ -127,8 +131,8 @@ struct F_INFO {
 	double (*filter) (struct F_INFO *, double, int);	/* Points to the correct filter function */
 
 	bool set_already;	/* true if we already filled in the structure */
-	unsigned int k_type;	/* Which of the x, y, or r wavenumbers we need */
-	unsigned int kind;	/* FILTER_EXP, FILTER_BW, FILTER_COS  */
+	unsigned int k_type;	/* Which of the r, x, or y wavenumbers we need */
+	unsigned int kind;	/* GRDFFT_FILTER_EXP, GRDFFT_FILTER_BW, GRDFFT_FILTER_COS  */
 	unsigned int arg;	/* 0 = Gaussian, 1 = Butterworth, 2 = cosine taper,  */
 };
 
@@ -142,7 +146,7 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.scale = 1.0;
 	C->N.info.taper_width = 100.0;				/* Taper over entire margin strip by default */
 	C->N.info.taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;	/* Default action is edge-point symmetry */
-	C->Q.prefix = strdup ("tapered");		/* Default prefix */
+	C->Q.prefix = strdup ("tapered");			/* Default prefix */
 	return (C);
 }
 
@@ -219,7 +223,7 @@ unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struc
 	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = (float)(sin_azim * GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K) + cos_azim * GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K));
 		tempr = -(datac[k+1] * fact);
-		tempi = (datac[k] * fact);
+		tempi =  (datac[k]   * fact);
 		datac[k]   = tempr;
 		datac[k+1] = tempi;
 	}
@@ -227,13 +231,13 @@ unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struc
 }
 
 #ifdef GMT_COMPAT
+/* Now obsolete but left for backwards compatibility.  Users are encouraged to use gravfft */
 #define	POISSONS_RATIO	0.25
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
 #define	NORMAL_GRAVITY	9.806199203	/* m/s**2  */
 
 unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, double *par, struct GMT_FFT_WAVENUMBER *K)
 {
-
 	/* Do the isostatic response function convolution in the Freq domain.
 	All units assumed to be in SI (that is kx, ky, modk wavenumbers in m**-1,
 	densities in kg/m**3, Te in m, etc.
@@ -320,117 +324,15 @@ void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAV
 	}
 }
 
-unsigned int count_slashes (char *txt)
-{
-	unsigned int i, n;
-	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
-	return (n);
-}
-
-bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
-{
-	unsigned int i, j, n_tokens, pos;
-	bool descending;
-	double fourvals[4];
-	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
-
-	/* Syntax is either -F[r|x|y]lc/hc/lp/hp (Cosine taper), -F[r|x|y]lo/hi (Gaussian), or -F[r|x|y]lo/hi/order (Butterworth) */
-
-	strncpy (line, c,  GMT_TEXT_LEN256);
-	i =  0;
-	f_info->k_type = GMT_FFT_K_IS_KR;	/* j is Filter type: r=0, x=1, y=2  */
-
-	if (line[i] == 'r') {
-		i++;
-		f_info->k_type = GMT_FFT_K_IS_KR;
-	}
-	else if (line[i] == 'x') {
-		i++;
-		f_info->k_type = GMT_FFT_K_IS_KX;
-	}
-	else if (line[i] == 'y') {
-		i++;
-		f_info->k_type = GMT_FFT_K_IS_KY;
-	}
-	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
-
-	n_tokens = pos = 0;
-	while ((GMT_strtok (&line[i], "/", &pos, p))) {
-		if (n_tokens > 3) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Too many slashes in -F.\n");
-			return (true);
-		}
-		if(p[0] == '-')
-			fourvals[n_tokens] = -1.0;
-		else {
-			if ((sscanf(p, "%lf", &fourvals[n_tokens])) != 1) {
-				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot read token %d.\n", n_tokens);
-				return (true);
-			}
-		}
-		n_tokens++;
-	}
-
-	if (!(n_tokens == 2 || n_tokens == 3 || n_tokens == 4)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
-		return (true);
-	}
-	descending = true;
-	if (f_info->kind == FILTER_BW && n_tokens == 3) n_tokens = 2;	/* So we dont check the order as a wavelength */
-
-	for (i = 1; i < n_tokens; i++) {
-		if (fourvals[i] == -1.0 || fourvals[i-1] == -1.0) continue;
-		if (fourvals[i] > fourvals[i-1]) descending = false;
-	}
-	if (!(descending)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "-F Wavelengths are not in descending order.\n");
-		return (true);
-	}
-	j = f_info->k_type;
-	if (f_info->kind == FILTER_COS) {	/* Cosine band-pass specification */
-		if ((fourvals[0] * fourvals[1]) < 0.0 || (fourvals[2] * fourvals[3]) < 0.0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "-F Pass/Cut specification error.\n");
-			return (true);
-		}
-
-		/* Now everything is OK  */
-
-		if (fourvals[0] >= 0.0 || fourvals[1] >= 0.0) {	/* Lower end values are set  */
-			f_info->lc[j] = (2.0 * M_PI)/fourvals[0];
-			f_info->lp[j] = (2.0 * M_PI)/fourvals[1];
-			if (fourvals[0] != fourvals[1]) f_info->ltaper[j] = 1.0/(f_info->lc[j] - f_info->lp[j]);
-		}
-
-		if (fourvals[2] >= 0.0 || fourvals[3] >= 0.0) {	/* Higher end values are set  */
-			f_info->hp[j] = (2.0 * M_PI)/fourvals[2];
-			f_info->hc[j] = (2.0 * M_PI)/fourvals[3];
-			if (fourvals[2] != fourvals[3]) f_info->htaper[j] = 1.0/(f_info->hc[j] - f_info->hp[j]);
-		}
-		f_info->filter = &cosine_weight_grdfft;
-	}
-	else if (f_info->kind == FILTER_BW) {	/* Butterworth specification */
-		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
-		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
-		f_info->bw_order = 2.0 * fourvals[2];
-		f_info->filter = &bw_weight;
-	}
-	else {	/* Gaussian half-amp specifications */
-		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
-		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
-		f_info->filter = &gauss_weight;
-	}
-	f_info->arg = f_info->kind - FILTER_EXP;
-	return (false);
-}
-
 int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *GridY, double *par, bool give_wavelength, bool km, char *file, struct GMT_FFT_WAVENUMBER *K)
 {
-	/* Compute cross-spectral estimates from the two grids Xand Y and return frequency f and 8 quantities:
+	/* Compute [cross-]spectral estimates from the two grids X and Y and return frequency f and 8 quantities:
 	 * Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
-	 * Each quantity comes with its own 1-std dev error estimate, hence output is 17 columns.
+	 * Each quantity comes with its own 1-std dev error estimate, hence output is 17 columns.  If GridY == NULL
+	 * then just XPower[f] and its 1-std dev error estimate are returned, hence just 3 columns.
 	 * Equations based on spectrum1d.c */
 
-	uint64_t dim[4] = {1, 1, 17, 0};	/* One table and one segment, with 1 + 2*8 = 17 columns and yet unknown rows */
+	uint64_t dim[4] = {1, 1, 17, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
 	uint64_t k, nk, ifreq, *nused = NULL;
 	char header[GMT_BUFSIZ], *name[2] = {"freq", "wlength"};
 	unsigned int col;
@@ -442,7 +344,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 
 	dim[2] = (GridY) ? 17 : 3;	/* Either 3 or 17 estimates */
 #ifdef DEBUG
-	if (show_n) dim[2]++;		/* Also write out nused[k] */
+	if (show_n) dim[2]++;		/* Also write out nused[k] so add one more column */
 #endif
 	if (*par > 0.0) {	/* X spectrum desired  */
 		delta_k = K->delta_kx;	nk = K->nx2 / 2;
@@ -516,15 +418,15 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 		S->coord[col++][k] = X_pow[k];
 		S->coord[col++][k] = X_pow[k] * eps_pow;
 		
-		if (!GridY) {
+		if (!GridY) {	/* Nothing more to do (except add nused[k] if true and debug) */
 #ifdef DEBUG
 			if (show_n) S->coord[col][k] = nused[k];
 #endif
 			continue;
 		}
 		
-		Y_pow[k] *= powfactor;
-		co_spec[k] *= powfactor;
+		Y_pow[k]     *= powfactor;
+		co_spec[k]   *= powfactor;
 		quad_spec[k] *= powfactor;
 		/* Compute coherence first since it is needed by many of the other estimates */
 		coh_k = (co_spec[k] * co_spec[k] + quad_spec[k] * quad_spec[k]) / (X_pow[k] * Y_pow[k]);
@@ -554,7 +456,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 		if (show_n) S->coord[col][k] = nused[k];
 #endif
 	}
-	if (GridY) {
+	if (GridY) {	/* Long header record - number in [] is GMT column; useful for -i option */
 		sprintf (header, "#%s[0]\txpow[1]\tstd_xpow[2]\typow[3]\tstd_ypow[4]\tcpow[5]\tstd_cpow[6]\tnpow[7]\tstd_npow[8]\t" \
 		"phase[9]\tstd_phase[10]\tadm[11]\tstd_ad[12]\tgain[13]\tstd_gain[14]\tcoh[15]\tstd_coh[16]", name[give_wavelength]);
 		GMT_free (GMT, Y_pow);
@@ -578,15 +480,115 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	return (1);	/* Number of parameters used */
 }
 
+unsigned int count_slashes (char *txt)
+{
+	unsigned int i, n;
+	for (i = n = 0; txt[i]; i++) if (txt[i] == '/') n++;
+	return (n);
+}
+
+bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
+{
+	unsigned int i, j, n_tokens, pos;
+	bool descending;
+	double fourvals[4];
+	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
+
+	/* Syntax is either -F[r|x|y]lc/hc/lp/hp (Cosine taper), -F[r|x|y]lo/hi (Gaussian), or -F[r|x|y]lo/hi/order (Butterworth) */
+
+	strncpy (line, c,  GMT_TEXT_LEN256);
+	i =  0;
+	f_info->k_type = GMT_FFT_K_IS_KR;	/* j is Filter type: r=0, x=1, y=2  [r] */
+
+	if (line[i] == 'r') {
+		i++;	f_info->k_type = GMT_FFT_K_IS_KR;
+	}
+	else if (line[i] == 'x') {
+		i++;	f_info->k_type = GMT_FFT_K_IS_KX;
+	}
+	else if (line[i] == 'y') {
+		i++;	f_info->k_type = GMT_FFT_K_IS_KY;
+	}
+	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
+
+	n_tokens = pos = 0;
+	while ((GMT_strtok (&line[i], "/", &pos, p))) {
+		if (n_tokens > 3) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Too many slashes in -F.\n");
+			return (true);
+		}
+		if(p[0] == '-')
+			fourvals[n_tokens] = -1.0;
+		else {
+			if ((sscanf(p, "%lf", &fourvals[n_tokens])) != 1) {
+				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot read token %d.\n", n_tokens);
+				return (true);
+			}
+		}
+		n_tokens++;
+	}
+
+	if (!(n_tokens == 2 || n_tokens == 3 || n_tokens == 4)) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
+		return (true);
+	}
+	descending = true;
+	if (f_info->kind == GRDFFT_FILTER_BW && n_tokens == 3) n_tokens = 2;	/* So we don't check the order as a wavelength */
+
+	for (i = 1; i < n_tokens; i++) {
+		if (fourvals[i] == -1.0 || fourvals[i-1] == -1.0) continue;
+		if (fourvals[i] > fourvals[i-1]) descending = false;
+	}
+	if (!(descending)) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "-F Wavelengths are not in descending order.\n");
+		return (true);
+	}
+	j = f_info->k_type;
+	if (f_info->kind == GRDFFT_FILTER_COS) {	/* Cosine band-pass specification */
+		if ((fourvals[0] * fourvals[1]) < 0.0 || (fourvals[2] * fourvals[3]) < 0.0) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "-F Pass/Cut specification error.\n");
+			return (true);
+		}
+
+		/* Now everything is OK  */
+
+		if (fourvals[0] >= 0.0 || fourvals[1] >= 0.0) {	/* Lower end values are set  */
+			f_info->lc[j] = (2.0 * M_PI)/fourvals[0];
+			f_info->lp[j] = (2.0 * M_PI)/fourvals[1];
+			if (fourvals[0] != fourvals[1]) f_info->ltaper[j] = 1.0/(f_info->lc[j] - f_info->lp[j]);
+		}
+
+		if (fourvals[2] >= 0.0 || fourvals[3] >= 0.0) {	/* Higher end values are set  */
+			f_info->hp[j] = (2.0 * M_PI)/fourvals[2];
+			f_info->hc[j] = (2.0 * M_PI)/fourvals[3];
+			if (fourvals[2] != fourvals[3]) f_info->htaper[j] = 1.0/(f_info->hc[j] - f_info->hp[j]);
+		}
+		f_info->filter = &cosine_weight_grdfft;
+	}
+	else if (f_info->kind == GRDFFT_FILTER_BW) {	/* Butterworth specification */
+		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
+		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
+		f_info->bw_order = 2.0 * fourvals[2];
+		f_info->filter = &bw_weight;
+	}
+	else {	/* Gaussian half-amp specifications */
+		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
+		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
+		f_info->filter = &gauss_weight;
+	}
+	f_info->arg = f_info->kind - GRDFFT_FILTER_EXP;
+	return (false);
+}
+
 int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>]  [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
+	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
 	GMT_message (GMT, "\t[-N[f|q|<nx>/<ny>][+e|m|n][+t<width>]] [-Q[<prefix>]] [-S<scale>]\n");
-	GMT_message (GMT, "\t[-T<te>/<rl>/<rm>/<rw>/<ri>] [-Z[p]] [%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[-Z[p]] [%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -596,7 +598,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_message (GMT, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
 	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
-	GMT_message (GMT, "\t-E Estimate spEctrum in the radial [Default], x, or y-direction.\n");
+	GMT_message (GMT, "\t-E Estimate spEctrum in the radial r [Default], x, or y-direction.\n");
 	GMT_message (GMT, "\t   Given one grid X, write f, Xpower[f] to output file (see -G) or stdout.\n");
 	GMT_message (GMT, "\t   Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f],\n");
 	GMT_message (GMT, "\t   noise power[f], phase[f], admittance[f], gain[f], coherency[f].\n");
@@ -632,9 +634,11 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append output file prefix [tapered].  File name will be <prefix>_<ingrid>.\n");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
+#if 0
 	GMT_message (GMT, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
 	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
 	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
+#endif
 	GMT_message (GMT, "\t-Z Store raw complex spectrum to files real_<ingrid> and imag_<ingrid>.\n");
 	GMT_message (GMT, "\t   Append p to store polar forms instead, i.e., mag_<ingrid> and phase_<ingrid>\n");
 	GMT_explain_options (GMT, "Vf.");
@@ -698,19 +702,19 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				Ctrl->A.active = true;
 				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1, 
 						"Syntax error -A option: Cannot read azimuth\n");
-				add_operation (GMT, Ctrl, AZIMUTHAL_DERIVATIVE, 1, par);
+				add_operation (GMT, Ctrl, GRDFFT_AZIMUTHAL_DERIVATIVE, 1, par);
 				break;
 			case 'C':	/* Upward/downward continuation */
 				Ctrl->C.active = true;
 				n_errors += GMT_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1, 
 						"Syntax error -C option: Cannot read zlevel\n");
-				add_operation (GMT, Ctrl, UP_DOWN_CONTINUE, 1, par);
+				add_operation (GMT, Ctrl, GRDFFT_UP_DOWN_CONTINUE, 1, par);
 				break;
 			case 'D':	/* d/dz */
 				Ctrl->D.active = true;
 				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg)) : 1.0;
 				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -D option: scale must be nonzero\n");
-				add_operation (GMT, Ctrl, DIFFERENTIATE, 1, par);
+				add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
 			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical */ 
 				Ctrl->E.active = true;
@@ -726,13 +730,13 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 					j++;
 				}
 				par[0] = Ctrl->E.mode;
-				add_operation (GMT, Ctrl, SPECTRUM, 1, par);
+				add_operation (GMT, Ctrl, GRDFFT_SPECTRUM, 1, par);
 				break;
 			case 'F':	/* Filter */
 				Ctrl->F.active = true;
 				if (!(f_info->set_already)) {
 					filter_type = count_slashes (opt->arg);
-					f_info->kind = FILTER_EXP + (filter_type - 1);
+					f_info->kind = GRDFFT_FILTER_EXP + (filter_type - 1);
 					f_info->set_already = true;
 					add_operation (GMT, Ctrl, f_info->kind, 0, NULL);
 				}
@@ -746,7 +750,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				Ctrl->I.active = true;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
 				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
-				add_operation (GMT, Ctrl, INTEGRATE, 1, par);
+				add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
 				break;
 			case 'L':	/* Leave trend alone */
 				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
@@ -791,13 +795,13 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				break;
 #ifdef GMT_COMPAT
 			case 'T':	/* Flexural isostasy */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calcuations.\n");
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
 				Ctrl->T.active = Ctrl->L.active = true;
 				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
 				n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0, 
 					"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
-				add_operation (GMT, Ctrl, ISOSTASY, 5, par);
+				add_operation (GMT, Ctrl, GRDFFT_ISOSTASY, 5, par);
 				break;
 #endif
 #ifdef DEBUG
@@ -841,6 +845,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	int status;
 	unsigned int op_count = 0, par_count = 0, side, k;
 	uint64_t ij;
+	char *spec_msg[2] = {"spectrum", "cross-spectrum"};
 
 	struct GMT_GRID *Grid[2] = {NULL,  NULL}, *Orig[2] = {NULL,  NULL};
 	struct F_INFO f_info;
@@ -861,18 +866,18 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vfh", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-Vfh", GMT_OPT("T"), options)) Return (API->error);
 	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfft_parse (API, Ctrl, &f_info, options))) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Get the grid header(s) */
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL)	/* Get header only */
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);
 	}
 
-	if (Ctrl->In.n_grids == 2) {	/* Make sure grids are co-registered and same size, registration, etc. */
+	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
 		if(Orig[0]->header->registration != Orig[1]->header->registration) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
@@ -891,12 +896,12 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		}
 	}
 
+	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
+	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
 		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
 		FFT_info[k] = GMT_grd_fft_init (GMT, Orig[k], &Ctrl->N.info);
 		
-		/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
-		for (side = 0; side < 4; side++) Orig[k]->header->BC[side] = GMT_BC_IS_DATA;
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		for (ij = 0, stop = false; !stop && ij < Orig[k]->header->size; ij++) stop = GMT_is_fnan (Orig[k]->data[ij]);
@@ -906,15 +911,14 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		}
 	}
 	
-	K = FFT_info[0];	/* We only need one of these anyway */
+	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 	
-	/* Note: If input grid(s) are read-only then we must duplicate; otherwise Grid[k] points to Orig[k] */
-	for (k = 0; k < Ctrl->In.n_grids; k++) {
+	/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
+	for (k = 0; k < Ctrl->In.n_grids; k++)
 		(void) GMT_set_outgrid (GMT, Orig[k], &Grid[k]);
-	}
 	
-	/* From here we address the first grid via Grid[0] and the 2nd grid as Grid[1];
-	 * we are done with the addresses Orig[k] although they may be the same pointers. */
+	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
+	 * we are done with using the addresses Orig[k] directly. */
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Detrend (if requested), extend/taper (if requested) */
 		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode);
@@ -934,68 +938,62 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	}
 #endif
 
-	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT */
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_fft_2d (GMT, Grid[k]->data, Ctrl->N.info.nx, Ctrl->N.info.ny, k_fft_fwd, k_fft_complex))
+		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
 		if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K, Ctrl->In.file[k]);
 	}
 
-#if 1
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
-			case UP_DOWN_CONTINUE:
+			case GRDFFT_UP_DOWN_CONTINUE:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...\n") : GMT_message (GMT,  "upward continuation...\n"));
 				par_count += do_continuation (Grid[0], &Ctrl->par[par_count], K);
 				break;
-			case AZIMUTHAL_DERIVATIVE:
+			case GRDFFT_AZIMUTHAL_DERIVATIVE:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "azimuthal derivative...\n");
 				par_count += do_azimuthal_derivative (Grid[0], &Ctrl->par[par_count], K);
 				break;
-			case DIFFERENTIATE:
+			case GRDFFT_DIFFERENTIATE:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "differentiate...\n");
 				par_count += do_differentiate (Grid[0], &Ctrl->par[par_count], K);
 				break;
-			case INTEGRATE:
+			case GRDFFT_INTEGRATE:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "integrate...\n");
 				par_count += do_integrate (Grid[0], &Ctrl->par[par_count], K);
 				break;
 #ifdef GMT_COMPAT
-			case ISOSTASY:
+			case GRDFFT_ISOSTASY:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "isostasy...\n");
 				par_count += do_isostasy (Grid[0], Ctrl, &Ctrl->par[par_count], K);
 				break;
 #endif
-			case FILTER_COS:
+			case GRDFFT_FILTER_COS:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cosine filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
-			case FILTER_EXP:
+			case GRDFFT_FILTER_EXP:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Gaussian filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
-			case FILTER_BW:
+			case GRDFFT_FILTER_BW:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Butterworth filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
-			case SPECTRUM:	/* This operator writes a table to file (or stdout if -G is not used) */
-				if (Ctrl->In.n_grids == 2) {	/* Cross-spectral calculations */
-					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cross-spectra...\n");
-				}
-				else {	/* Spectral calculations */
-					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "spectrum...\n");
-				}
+			case GRDFFT_SPECTRUM:	/* This operator writes a table to file (or stdout if -G is not used) */
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "%s...\n", spec_msg[Ctrl->In.n_grids-1]);
 				status = do_spectrum (GMT, Grid[0], Grid[1], &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, K);
 				if (status < 0) Return (status);
 				par_count += status;
 				break;
 		}
 	}
-#endif
-	if (!Ctrl->E.active) {	/* Since -E out was handled separately by do_spectrum */
+
+	if (!Ctrl->E.active) {	/* Since -E output is handled separately by do_spectrum itself */
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
 
-		if (GMT_fft_2d (GMT, Grid[0]->data, Ctrl->N.info.nx, Ctrl->N.info.ny, k_fft_inv, k_fft_complex))
+		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
 			Return (EXIT_FAILURE);
 
 		/* FFT computes an unnormalized transform, in that there is no
@@ -1005,7 +1003,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		Ctrl->S.scale *= (2.0 / Grid[0]->header->nm);
 		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 
-		/* The data are in the middle of the padded array */
+		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 			Return (API->error);
 		}
