@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-02-14	pwessel
+	* grd2xyz.c:		Added -C[f|i] for writing row,col or index instead of x,y
+
 2013-02-13	pwessel
 	* spectrum1d.c:		Added the same -L[m|h] option for trend-removal control
 				as in grdfft.

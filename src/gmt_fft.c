@@ -500,7 +500,6 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 			}
 		}
 	}
-
 	/* Now, cos taper the x edges */
 	scale = M_PI / (i_width + 1);	/* Full 2*pi over x taper range */
 	end_j = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;

@@ -30,6 +30,10 @@
 
 struct GRD2XYZ_CTRL {
 #ifdef GMT_COMPAT
+	struct C {	/* -C[f|i] */
+		bool active;
+		unsigned int mode;
+	} C;
 	struct E {	/* -E[f][<nodata>] */
 		bool active;
 		bool floating;
@@ -72,7 +76,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grd2xyz <grid> [-N<nodata>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grd2xyz <grid> [-C[f]] [-N<nodata>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[-W[<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] > xyzfile\n",
 		GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -80,6 +84,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, int level) {
 
 	GMT_message (GMT, "\n\t<grid> is one or more grid files.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
 	GMT_message (GMT, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
 	GMT_explain_options (GMT, "RV");
 	GMT_message (GMT, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
@@ -131,6 +136,12 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 				
 			/* Processes program-specific parameters */
 
+			case 'C':	/* Write row,col or index instead of x,y */
+				Ctrl->C.active = true;
+				if (opt->arg[0] == 'c') Ctrl->C.mode = 0;
+				else if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
+				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
+				break;
 #ifdef GMT_COMPAT
 			case 'E':	/* Old ESRI option */
 				Ctrl->E.active = true;
@@ -238,7 +249,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
-	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : 3);
+	n_output = (Ctrl->Z.active) ? 1 : ((Ctrl->W.active) ? 4 : ((Ctrl->C.mode == 2) ? 2 : 3));
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_output)) != GMT_OK) Return (error);
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_STD_IF_NONE, 0, options) != GMT_OK) {	/* Registers stdout, unless already set */
@@ -365,10 +376,23 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 
 			x = GMT_grd_coord (GMT, G->header, GMT_X);
 			y = GMT_grd_coord (GMT, G->header, GMT_Y);
+			if (Ctrl->C.active) {	/* Replace x,y with col,row */
+				if (Ctrl->C.mode < 2) {
+					GMT_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;
+					GMT_col_loop2 (GMT, G, col) x[col] = col + Ctrl->C.mode;
+				}
+				else
+					GMT->current.io.io_nan_col[0] = GMT_Y;	/* Since that is where z will go now */
+				GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
+			}
 
 			if (GMT->current.setting.io_header[GMT_OUT] && first) {
 				if (!G->header->x_units[0]) strcpy (G->header->x_units, "x");
 				if (!G->header->y_units[0]) strcpy (G->header->y_units, "y");
+				if (Ctrl->C.active) {
+					strcpy (G->header->x_units, "col");
+					strcpy (G->header->y_units, "row");
+				}
 				if (!G->header->z_units[0]) strcpy (G->header->z_units, "z");
 				if (GMT->current.setting.io_lonlat_toggle[GMT_IN])
 					sprintf (header, "# %s%s%s%s%s", G->header->y_units, GMT->current.setting.io_col_separator, G->header->x_units, GMT->current.setting.io_col_separator, G->header->z_units);
@@ -383,8 +407,15 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			}
 
 			GMT_grd_loop (GMT, G, row, col, ij) {
-				out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
-				if (Ctrl->N.active && GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = Ctrl->N.value;
+				if (Ctrl->C.mode == 2) {
+					out[GMT_X] = GMT_IJ0 (G->header, row, col);
+					out[GMT_Y] = G->data[ij];
+					if (Ctrl->N.active && GMT_is_dnan (out[GMT_Y])) out[GMT_Y] = Ctrl->N.value;
+				}
+				else {
+					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
+					if (Ctrl->N.active && GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = Ctrl->N.value;
+				}
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
 				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
 			}

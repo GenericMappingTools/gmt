@@ -839,7 +839,7 @@ int GMT_grdfft_new (void *V_API, int mode, void *args)
 {
 	bool error = false, stop;
 	int status;
-	unsigned int op_count = 0, par_count = 0, k;
+	unsigned int op_count = 0, par_count = 0, side, k;
 	uint64_t ij;
 
 	struct GMT_GRID *Grid[2] = {NULL,  NULL}, *Orig[2] = {NULL,  NULL};
@@ -895,6 +895,8 @@ int GMT_grdfft_new (void *V_API, int mode, void *args)
 		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
 		FFT_info[k] = GMT_grd_fft_init (GMT, Orig[k], &Ctrl->N.info);
 		
+		/* Because we taper and reflect below we DO NOT want any BCs set since that code expects 2 BC rows/cols */
+		for (side = 0; side < 4; side++) Orig[k]->header->BC[side] = GMT_BC_IS_DATA;
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		for (ij = 0, stop = false; !stop && ij < Orig[k]->header->size; ij++) stop = GMT_is_fnan (Orig[k]->data[ij]);
