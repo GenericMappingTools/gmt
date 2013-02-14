@@ -26,8 +26,8 @@
  *
  * Major overhaul, Florian Wobbe, 2012-07-09:
  *  Added free Kiss FFT (kissfft) to GMT code base.
- *  Removed Norman Brenner's ancient Cooley-Tukey FFT implementation,
- *    now superseded by Kiss FFT.
+ *  Superceeded Norman Brenner's ancient Cooley-Tukey FFT implementation
+ *    Kiss FFT. Brenner still available as a legacy/compativility choice.
  *  Support for Paul Swarztrauber's ancient FFTPACK and for Sun Performance
  *    Library (perflib) have been removed too because they are not maintained
  *    anymore.
@@ -49,6 +49,589 @@ static char *GMT_fft_algo[] = {
 	"Kiss FFT",
 	"Brenner FFT [Legacy]"
 };
+
+/* Functions that fascilitating setting up FFT operations, like determining optimal dimension,
+ * setting wavenumber functions, apply interior or exterior taper to grids, save pre-fft grid
+ * to file, save fft grid (real and imag or mag,hypot) to two files.  Programs that wish to
+ * operate on data in the wavenumber domain will need to use some of these functions; see
+ * grdfft.c and potential/gravfft.c as examples.
+ */
+
+struct GMT_FFT_SUGGESTION {
+	unsigned int nx;
+	unsigned int ny;
+	size_t worksize;	/* # single-complex elements needed in work array  */
+	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
+	double run_time;
+	double rms_rel_err;
+}; /* [0] holds fastest, [1] most accurate, [2] least storage  */
+
+uint64_t get_non_symmetric_f (unsigned int *f, unsigned int n)
+{
+	/* Return the product of the non-symmetric factors in f[]  */
+	unsigned int i = 0, j = 1, retval = 1;
+
+	if (n == 1) return (f[0]);
+
+	while (i < n) {
+		while (j < n && f[j] == f[i]) j++;
+		if ((j-i)%2) retval *= f[i];
+		i = j;
+		j = i + 1;
+	}
+	if (retval == 1) retval = 0;	/* There are no non-sym factors  */
+	return (retval);
+}
+
+#ifndef FSIGNIF
+#define FSIGNIF			24
+#endif
+
+void fourt_stats (struct GMT_CTRL *C, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t)
+{
+	/* Find the proportional run time, t, and rms relative error, r,
+	 * of a Fourier transform of size nx,ny.  Also gives s, the size
+	 * of the workspace that will be needed by the transform.
+	 * To use this routine for a 1-D transform, set ny = 1.
+	 * 
+	 * This is all based on the comments in Norman Brenner's code
+	 * FOURT, from which our C codes are translated.
+	 * Brenner says:
+	 * r = 3 * pow(2, -FSIGNIF) * sum{ pow(prime_factors, 1.5) }
+	 * where FSIGNIF is the smallest bit in the floating point fraction.
+	 * 
+	 * Let m = largest prime factor in the list of factors.
+	 * Let p = product of all primes which appear an odd number of
+	 * times in the list of prime factors.  Then the worksize needed
+	 * s = max(m,p).  However, we know that if n is radix 2, then no
+	 * work is required; yet this formula would say we need a worksize
+	 * of at least 2.  So I will return s = 0 when max(m,p) = 2.
+	 *
+	 * I have two different versions of the comments in FOURT, with
+	 * different formulae for t.  The simple formula says 
+	 * 	t = n * (sum of prime factors of n).
+	 * The more complicated formula gives coefficients in microsecs
+	 * on a cdc3300 (ancient history, but perhaps proportional):
+	 *	t = 3000 + n*(500 + 43*s2 + 68*sf + 320*nf),
+	 * where s2 is the sum of all factors of 2, sf is the sum of all
+	 * factors greater than 2, and nf is the number of factors != 2.
+	 * We know that factors of 2 are very good to have, and indeed,
+	 * Brenner's code calls different routines depending on whether
+	 * the transform is of size 2 or not, so I think that the second
+	 * formula is more correct, using proportions of 43:68 for 2 and
+	 * non-2 factors.  So I will use the more complicated formula.
+	 * However, I realize that the actual numbers are wrong for today's
+	 * architectures, and the relative proportions may be wrong as well.
+	 * 
+	 * W. H. F. Smith, 26 February 1992.
+	 *  */
+
+	unsigned int n_factors, i, sum2, sumnot2, nnot2;
+	uint64_t nonsymx, nonsymy, nonsym, storage, ntotal;
+	double err_scale;
+
+	/* Find workspace needed.  First find non_symmetric factors in nx, ny  */
+	n_factors = GMT_get_prime_factors (C, nx, f);
+	nonsymx = get_non_symmetric_f (f, n_factors);
+	n_factors = GMT_get_prime_factors (C, ny, f);
+	nonsymy = get_non_symmetric_f (f, n_factors);
+	nonsym = MAX (nonsymx, nonsymy);
+
+	/* Now get factors of ntotal  */
+	ntotal = GMT_get_nm (C, nx, ny);
+	n_factors = GMT_get_prime_factors (C, ntotal, f);
+	storage = MAX (nonsym, f[n_factors-1]);
+	*s = (storage == 2) ? 0 : storage;
+
+	/* Now find time and error estimates */
+
+	err_scale = 0.0;
+	sum2 = sumnot2 = nnot2 = 0;
+	for(i = 0; i < n_factors; i++) {
+		if (f[i] == 2)
+			sum2 += f[i];
+		else {
+			sumnot2 += f[i];
+			nnot2++;
+		}
+		err_scale += pow ((double)f[i], 1.5);
+	}
+	*t = 1.0e-06 * (3000.0 + ntotal * (500.0 + 43.0 * sum2 + 68.0 * sumnot2 + 320.0 * nnot2));
+	*r = err_scale * 3.0 * pow (2.0, -FSIGNIF);
+
+	return;
+}
+
+void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print)
+{
+	unsigned int f[32], xstop, ystop;
+	unsigned int nx_best_t, ny_best_t;
+	unsigned int nx_best_e, ny_best_e;
+	unsigned int nx_best_s, ny_best_s;
+	unsigned int nxg, nyg;       /* Guessed by this routine  */
+	unsigned int nx2, ny2, nx3, ny3, nx5, ny5;   /* For powers  */
+	size_t current_space, best_space, e_space, t_space, given_space;
+	double current_time, best_time, given_time, s_time, e_time;
+	double current_err, best_err, given_err, s_err, t_err;
+
+	fourt_stats (GMT, nx, ny, f, &given_err, &given_space, &given_time);
+	given_space += nx * ny;
+	given_space *= 8;
+	if (do_print)
+		GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", nx, ny, given_time, given_err, given_space);
+
+	best_err = s_err = t_err = given_err;
+	best_time = s_time = e_time = given_time;
+	best_space = t_space = e_space = given_space;
+	nx_best_e = nx_best_t = nx_best_s = nx;
+	ny_best_e = ny_best_t = ny_best_s = ny;
+
+	xstop = 2 * nx;
+	ystop = 2 * ny;
+
+	for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
+	  	for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
+		    for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
+		        nxg = nx2 * nx3 * nx5;
+		        if (nxg < nx || nxg > xstop) continue;
+
+		        for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
+		          for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
+		            for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
+		                nyg = ny2 * ny3 * ny5;
+		                if (nyg < ny || nyg > ystop) continue;
+
+			fourt_stats (GMT, nxg, nyg, f, &current_err, &current_space, &current_time);
+			current_space += nxg*nyg;
+			current_space *= 8;
+			if (current_err < best_err) {
+				best_err = current_err;
+				nx_best_e = nxg;
+				ny_best_e = nyg;
+				e_time = current_time;
+				e_space = current_space;
+			}
+			if (current_time < best_time) {
+				best_time = current_time;
+				nx_best_t = nxg;
+				ny_best_t = nyg;
+				t_err = current_err;
+				t_space = current_space;
+			}
+			if (current_space < best_space) {
+				best_space = current_space;
+				nx_best_s = nxg;
+				ny_best_s = nyg;
+				s_time = current_time;
+				s_err = current_err;
+			}
+
+		    }
+		  }
+		}
+
+	    }
+	  }
+	}
+
+	if (do_print) {
+		GMT_report (GMT, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+			nx_best_t, ny_best_t, best_time, t_err, t_space);
+		GMT_report (GMT, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+			nx_best_e, ny_best_e, e_time, best_err, e_space);
+		GMT_report (GMT, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+			nx_best_s, ny_best_s, s_time, s_err, best_space);
+	}
+	/* Fastest solution */
+	fft_sug[0].nx = nx_best_t;
+	fft_sug[0].ny = ny_best_t;
+	fft_sug[0].worksize = (t_space/8) - (nx_best_t * ny_best_t);
+	fft_sug[0].totalbytes = t_space;
+	fft_sug[0].run_time = best_time;
+	fft_sug[0].rms_rel_err = t_err;
+	/* Most accurate solution */
+	fft_sug[1].nx = nx_best_e;
+	fft_sug[1].ny = ny_best_e;
+	fft_sug[1].worksize = (e_space/8) - (nx_best_e * ny_best_e);
+	fft_sug[1].totalbytes = e_space;
+	fft_sug[1].run_time = e_time;
+	fft_sug[1].rms_rel_err = best_err;
+	/* Least storage solution */
+	fft_sug[2].nx = nx_best_s;
+	fft_sug[2].ny = ny_best_s;
+	fft_sug[2].worksize = (best_space/8) - (nx_best_s * ny_best_s);
+	fft_sug[2].totalbytes = best_space;
+	fft_sug[2].run_time = s_time;
+	fft_sug[2].rms_rel_err = s_err;
+
+	return;
+}
+
+double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
+{
+	/* Return the value of kx given k,
+	 * where kx = 2 pi / lambda x,
+	 * and k refers to the position
+	 * in the complex data array Grid->data[k].  */
+
+	int64_t ii = (k/2)%(K->nx2);
+	if (ii > (K->nx2)/2) ii -= (K->nx2);
+	return (ii * K->delta_kx);
+}
+
+double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
+{
+	/* Return the value of ky given k,
+	 * where ky = 2 pi / lambda y,
+	 * and k refers to the position
+	 * in the complex data array Grid->data[k].  */
+
+	int64_t jj = (k/2)/(K->nx2);
+	if (jj > (K->ny2)/2) jj -= (K->ny2);
+	return (jj * K->delta_ky);
+}
+
+double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
+{
+	/* Return the value of sqrt(kx*kx + ky*ky),
+	 * where k refers to the position
+	 * in the complex data array Grid->data[k].  */
+
+	return (hypot (GMT_fft_kx (k, K), GMT_fft_ky (k, K)));
+}
+
+double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
+{
+	/* Return the value of kx, ky. or kr,
+	 * where k refers to the position
+	 * in the complex data array Grid->data[k].
+	 * GMT_fft_init sets the pointer */
+
+	return (K->k_ptr (k, K));
+}
+
+double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
+{	/* Lets you specify which wavenumber you want */
+	double wave;
+
+	switch (mode) {	/* Select which wavenumber we need */
+		case GMT_FFT_K_IS_KX: wave = GMT_fft_kx (k, K); break;
+		case GMT_FFT_K_IS_KY: wave = GMT_fft_ky (k, K); break;
+		case GMT_FFT_K_IS_KR: wave = GMT_fft_kr (k, K); break;
+	}
+	return (wave);
+}
+
+void GMT_fft_set_wave (struct GMT_CTRL *C, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
+{
+	/* Change wavenumber selection */
+	switch (mode) {	/* Select which wavenumber we need */
+		case GMT_FFT_K_IS_KX: K->k_ptr = GMT_fft_kx; break;
+		case GMT_FFT_K_IS_KY: K->k_ptr = GMT_fft_ky; break;
+		case GMT_FFT_K_IS_KR: K->k_ptr = GMT_fft_kr; break;
+		default:
+			GMT_report (C, GMT_MSG_NORMAL, "Bad mode selected (%u) - exit\n", mode);
+			GMT_exit (GMT_RUNTIME_ERROR);
+			break;
+	}
+}
+
+struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_FFT_INFO *F)
+{
+	/* Initialize grid dimensions for FFT machinery and set up wavenumbers */
+	unsigned int k, factors[32];
+	size_t worksize;
+	double tdummy, edummy;
+	struct GMT_FFT_SUGGESTION fft_sug[3];
+	struct GMT_FFT_WAVENUMBER *K = GMT_memory (C, NULL, 1, struct GMT_FFT_WAVENUMBER);
+	/* Get dimensions as may be appropriate */
+	if (F->info_mode == GMT_FFT_SET) {	/* User specified the nx/ny dimensions */
+		if (F->nx < G->header->nx || F->ny < G->header->ny) {
+			GMT_report (C, GMT_MSG_NORMAL, "Warning: You specified a FFT nx/ny smaller than input grid.  Ignored.\n");
+			F->info_mode = GMT_FFT_EXTEND;
+		}
+	}
+	
+	if (F->info_mode != GMT_FFT_SET) {	/* Either adjust, force, inquiery */
+		if (F->info_mode == GMT_FFT_FORCE) {
+			F->nx = G->header->nx;
+			F->ny = G->header->ny;
+			for (k = 0; k < 4; k++) G->header->BC[k] = GMT_BC_IS_DATA;	/* This bypasses BC pad checking later since there is no pad */
+		}
+		else {
+			GMT_suggest_fft_dim (C, G->header->nx, G->header->ny, fft_sug, (GMT_is_verbose (C, GMT_MSG_VERBOSE) || F->info_mode == GMT_FFT_QUERY));
+			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
+				/* The most accurate solution needs same or less storage
+				 * as the fastest solution; use the most accurate's dimensions */
+				F->nx = fft_sug[1].nx;
+				F->ny = fft_sug[1].ny;
+			}
+			else {
+				/* Use the sizes of the fastest solution  */
+				F->nx = fft_sug[0].nx;
+				F->ny = fft_sug[0].ny;
+			}
+		}
+	}
+	
+	/* Get here when F->nx and F->ny are set to the values we will use.  */
+
+	fourt_stats (C, F->nx, F->ny, factors, &edummy, &worksize, &tdummy);
+	GMT_report (C, GMT_MSG_VERBOSE, " Grid dimension %d %d\tFFT dimension %d %d\n", G->header->nx, G->header->ny, F->nx, F->ny);
+
+	/* Put the data in the middle of the padded array */
+
+	C->current.io.pad[XLO] = (F->nx - G->header->nx) / 2;	/* zero if nx < G->header->nx+1  */
+	C->current.io.pad[YHI] = (F->ny - G->header->ny) / 2;
+	C->current.io.pad[XHI] = F->nx - G->header->nx - C->current.io.pad[XLO];
+	C->current.io.pad[YLO] = F->ny - G->header->ny - C->current.io.pad[YHI];
+	
+	/* Precompute wavenumber increments and initialize the GMT_FFT machinery */
+	
+	K->delta_kx = 2.0 * M_PI / (F->nx * G->header->inc[GMT_X]);
+	K->delta_ky = 2.0 * M_PI / (F->ny * G->header->inc[GMT_Y]);
+	K->nx2 = F->nx;	K->ny2 = F->ny;
+
+	if (GMT_is_geographic (C, GMT_IN)) {	/* Give delta_kx, delta_ky units of 2pi/meters via Flat Earth assumtion  */
+		K->delta_kx /= (C->current.proj.DIST_M_PR_DEG * cosd (0.5 * (G->header->wesn[YLO] + G->header->wesn[YHI])));
+		K->delta_ky /= C->current.proj.DIST_M_PR_DEG;
+	}
+
+	GMT_fft_set_wave (C, GMT_FFT_K_IS_KR, K);	/* INitialize with radial wavenumbers */
+	
+	return (K);
+}
+
+void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *K)
+{
+	/* mode sets if and how tapering will be performed [see GMT_FFT_EXTEND_* constants].
+	 * width is relative width in percent of the margin that will be tapered [100]. */
+	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_i, end_j, min_i, min_j, one;
+	int i, i_data_start, j_data_start, mx, i_width, j_width, width_percent;
+	unsigned int ju;
+	char *method[2] = {"edge-point", "mirror"};
+	float *datac = Grid->data, scale, cos_wt;
+	double width;
+	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
+
+	if ((Grid->header->nx == K->nx && Grid->header->ny == K->ny) || K->taper_mode == GMT_FFT_EXTEND_NONE) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
+		/* But there may still be interior tapering */
+		if (K->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
+			return;
+		}
+	}
+	
+	/* Note that if nx2 = nx+1 and ny2 = ny + 1, then this routine
+	 * will do nothing; thus a single row/column of zeros may be
+	 * added to the bottom/right of the input array and it cannot
+	 * be tapered.  But when (nx2 - nx)%2 == 1 or ditto for y,
+	 * this is zero anyway.  */
+
+	i_data_start = GMT->current.io.pad[XLO];	/* Some shorthands for readability */
+	j_data_start = GMT->current.io.pad[YHI];
+	mx = h->mx;
+	one = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
+	
+	width = K->taper_width;
+	width_percent = lrint (width);
+	if (width_percent == 0) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
+	}
+	width /= 100.0;	/* Was percent, now fraction */
+	
+	if (K->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
+		i_width = lrint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
+		j_width = lrint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
+	}
+	else {	/* We wish to extend data into the margin pads between FFT grid and data grid */
+		i_width = lrint (i_data_start * width);	/* Extended columns over which tapering will take place */
+		j_width = lrint (j_data_start * width);	/* Extended rows over which tapering will take place */
+	}
+
+	/* First reflect about xmin and xmax, either point symmetric about edge point OR mirror symmetric */
+
+	if (K->taper_mode != GMT_FFT_EXTEND_NONE) {
+		for (im = 1; im <= i_width; im++) {
+			il1 = -im;	/* Outside xmin; left of edge 1  */
+			ir1 = im;	/* Inside xmin; right of edge 1  */
+			il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
+			ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
+			for (ju = 0; ju < h->ny; ju++) {
+				if (K->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
+					datac[GMT_IJPR(h,ju,il1)] = 2.0f * datac[GMT_IJPR(h,ju,0)]       - datac[GMT_IJPR(h,ju,ir1)];
+					datac[GMT_IJPR(h,ju,ir2)] = 2.0f * datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
+				}
+				else {	/* Mirroring */
+					datac[GMT_IJPR(h,ju,il1)] = datac[GMT_IJPR(h,ju,ir1)];
+					datac[GMT_IJPR(h,ju,ir2)] = datac[GMT_IJPR(h,ju,il2)];
+				}
+			}
+		}
+	}
+
+	/* Next, reflect about ymin and ymax.
+	 * At the same time, since x has been reflected,
+	 * we can use these vals and taper on y edges */
+
+	scale = M_PI / (j_width + 1);	/* Full 2*pi over y taper range */
+	min_i = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -i_width;
+	end_i = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
+	for (jm = one; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
+		jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
+		jt1 = jm;	/* Inside ymin; top side of edge 1  */
+		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
+		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
+		cos_wt = 0.5f * (1.0f + cosf (jm * scale));
+		if (K->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Reverse weights for the interior */
+		for (i = min_i; i < end_i; i++) {
+			if (K->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
+				datac[GMT_IJPR(h,jb1,i)] = cos_wt * (2.0f * datac[GMT_IJPR(h,0,i)]       - datac[GMT_IJPR(h,jt1,i)]);
+				datac[GMT_IJPR(h,jt2,i)] = cos_wt * (2.0f * datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]);
+			}
+			else if (K->taper_mode == GMT_FFT_EXTEND_MIRROR_SYMMETRY) {
+				datac[GMT_IJPR(h,jb1,i)] = cos_wt * datac[GMT_IJPR(h,jt1,i)];
+				datac[GMT_IJPR(h,jt2,i)] = cos_wt * datac[GMT_IJPR(h,jb2,i)];
+			}
+			else {	/* Interior tapering only */
+				datac[GMT_IJPR(h,jt1,i)] *= cos_wt;
+				datac[GMT_IJPR(h,jb2,i)] *= cos_wt;
+			}
+		}
+	}
+
+	/* Now, cos taper the x edges */
+	scale = M_PI / (i_width + 1);	/* Full 2*pi over x taper range */
+	end_j = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
+	min_j = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -j_width;
+	for (im = one; im <= i_width; im++) {
+		il1 = -im;
+		ir1 = im;
+		il2 = il1 + h->nx - 1;
+		ir2 = ir1 + h->nx - 1;
+		cos_wt = 0.5f * (1.0f + cosf (im * scale));
+		if (K->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Switch to weights for the interior */
+		for (j = min_j; j < end_j; j++) {
+			if (K->taper_mode == GMT_FFT_EXTEND_NONE) {
+				datac[GMT_IJPR(h,j,ir1)] *= cos_wt;
+				datac[GMT_IJPR(h,j,il2)] *= cos_wt;
+			}
+			else {
+				datac[GMT_IJPR(h,j,il1)] *= cos_wt;
+				datac[GMT_IJPR(h,j,ir2)] *= cos_wt;
+			}
+		}
+	}
+
+	if (K->taper_mode == GMT_FFT_EXTEND_NONE)
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid margin tapered to zero over %d %% of data width and height\n", width_percent);
+	else
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[K->taper_mode], width_percent);
+}
+
+void GMT_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *prefix)
+{
+	/* Write the intermediate grid that will be passed to the FFT to file.
+	 * This grid may have been a mean, mid-value, or plane removed, may
+	 * have data filled into an extended margin, and may have been taperer.
+	 * File name is determined by prefix, i.e., prefix_file. */
+	int del;
+	unsigned int pad[4];
+	char file[256];
+	struct GRD_HEADER save;
+	
+	GMT_memcpy (&save, Grid->header, 1, sizeof (struct GRD_HEADER));	/* Save what we have before messing around */
+	GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);			/* Save current pad, then set pad to zero */
+	if ((del = Grid->header->pad[XLO]) > 0) Grid->header->wesn[XLO] -= del * Grid->header->inc[GMT_X], Grid->header->pad[XLO] = 0;
+	if ((del = Grid->header->pad[XHI]) > 0) Grid->header->wesn[XHI] += del * Grid->header->inc[GMT_X], Grid->header->pad[XHI] = 0;
+	if ((del = Grid->header->pad[YLO]) > 0) Grid->header->wesn[YLO] -= del * Grid->header->inc[GMT_Y], Grid->header->pad[YLO] = 0;
+	if ((del = Grid->header->pad[YHI]) > 0) Grid->header->wesn[YHI] += del * Grid->header->inc[GMT_Y], Grid->header->pad[YHI] = 0;
+	GMT_memcpy (GMT->current.io.pad, Grid->header->pad, 4, unsigned int);	/* set tmp pad */
+	GMT_set_grddim (GMT, Grid->header);	/* Recompute all dimensions */
+	sprintf (file,"%s_%s", prefix, Grid->header->name);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, file, Grid) != GMT_OK)
+		GMT_report (GMT, GMT_MSG_NORMAL, "Intermediate detrended, extended, and tapered grid could not be written to %s\n", file);
+	else
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
+	
+	GMT_memcpy (Grid->header, &save, 1, sizeof (struct GRD_HEADER));	/* Restore original */
+	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);			/* Restore GMT pad */
+}
+
+void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode, struct GMT_FFT_WAVENUMBER *K, char *file)
+{
+	/* Save the raw spectrum as two files (real,imag) or (mag,phase), depending on mode.
+	 * We must first do an "fftshift" operation as in Matlab, to put the 0 frequency
+	 * value in the center of the grid. */
+	uint64_t row, col, i_ij, o_ij;
+	unsigned int nx_2, ny_2, k, pad[4], wmode[2] = {GMT_GRID_COMPLEX_REAL, GMT_GRID_COMPLEX_IMAG};
+	double wesn[4], inc[2];
+	char outfile[GMT_BUFSIZ], *prefix[2][2] = {{"real", "imag"}, {"mag", "phase"}};
+	struct GMT_GRID *Grid = NULL;
+
+	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
+
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Write components of complex raw spectrum to files %s_%s and %s_%s\n", prefix[mode][0], file, prefix[mode][1], file);
+
+	/* Prepare wavenumber domain limits and increments */
+	nx_2 = K->nx2 / 2;	ny_2 = K->ny2 / 2;
+	wesn[XLO] = -K->delta_kx * nx_2;	wesn[XHI] =  K->delta_kx * (nx_2 - 1);
+	wesn[YLO] = -K->delta_ky * (ny_2 - 1);	wesn[YHI] =  K->delta_ky * ny_2;
+	inc[GMT_X] = K->delta_kx;		inc[GMT_Y] = K->delta_ky;
+	GMT_memcpy (pad, GMT->current.io.pad, 4, unsigned int);		/* Save current GMT pad */
+	for (k = 0; k < 4; k++) GMT->current.io.pad[k] = 0;		/* No pad is what we need for this application */
+
+	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
+	if (GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, wesn, inc, G->header->registration | GMT_GRID_COMPLEX_REAL, Grid)) return;
+	strcpy (Grid->header->x_units, "m^(-1)");	strcpy (Grid->header->y_units, "m^(-1)");
+	strcpy (Grid->header->z_units, G->header->z_units);
+	strcpy (Grid->header->remark, "Applied fftshift: kx = 0 at (nx/2 + 1) and ky = 0 at ny/2");
+
+	if (GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, GMTAPI_NOTSET, Grid)) return;
+	for (row = 0; row < ny_2; row++) {	/* Copy over values from 1/3, and 2/4 quadrant */
+		for (col = 0; col < nx_2; col++) {
+			i_ij = 2*GMT_IJ0 (Grid->header, row, col);
+			o_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col+nx_2);
+			if (mode) {	/* Want magnitude and phase */
+				Grid->data[i_ij]   = hypot (G->data[o_ij], G->data[o_ij+1]);
+				Grid->data[i_ij+1] = d_atan2 (G->data[o_ij+1], G->data[o_ij]);
+				Grid->data[o_ij]   = hypot (G->data[i_ij], G->data[i_ij+1]);
+				Grid->data[o_ij+1] = d_atan2 (G->data[i_ij+1], G->data[i_ij]);
+			}
+			else {
+				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
+				Grid->data[o_ij] = G->data[i_ij];	Grid->data[o_ij+1] = G->data[i_ij+1];
+			}
+			i_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col);
+			o_ij = 2*GMT_IJ0 (Grid->header, row, col+nx_2);
+			if (mode) {	/* Want magnitude and phase */
+				Grid->data[i_ij]   = hypot (G->data[o_ij], G->data[o_ij+1]);
+				Grid->data[i_ij+1] = d_atan2 (G->data[o_ij+1], G->data[o_ij]);
+				Grid->data[o_ij]   = hypot (G->data[i_ij], G->data[i_ij+1]);
+				Grid->data[o_ij+1] = d_atan2 (G->data[i_ij+1], G->data[i_ij]);
+			}
+			else {
+				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
+				Grid->data[o_ij] = G->data[i_ij];	Grid->data[o_ij+1] = G->data[i_ij+1];
+			}
+		}
+	}
+	for (k = 0; k < 2; k++) {	/* Write the two grids */
+		sprintf (outfile, "%s_%s", prefix[mode][k], file);
+		sprintf (Grid->header->title, "The %s part of FFT transformed input grid %s", prefix[mode][k], file);
+		if (k == 1 && mode) strcpy (Grid->header->z_units, "radians");
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | wmode[k], NULL, outfile, Grid) != GMT_OK) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "%s could not be written\n", outfile);
+			return;
+		}
+	}
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &Grid) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
+	}
+		
+	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
+}
 
 static inline unsigned int propose_radix2 (unsigned n) {
 	/* Returns the smallest base 2 exponent, log2n, that satisfies: 2^log2n >= n */
