@@ -115,12 +115,12 @@ unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct 
 		}
 	}
 	if (info->taper_mode == GMT_FFT_EXTEND_NOT_SET) {
-		info->taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;		/* Default action is edge-point symmetry */
-		if (info->taper_width < 0.0) info->taper_width = 100.0;		/* Taper over entire margin strip by default */
+		info->taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;	/* Default action is edge-point symmetry */
 	}
 	if (info->taper_mode == GMT_FFT_EXTEND_NONE) {
-		if (info->taper_width < 0.0) info->taper_width = 0.0;		/* No tapering unless specified */
+		if (info->taper_width < 0.0) info->taper_width = 0.0;	/* No tapering unless specified */
 	}
+	if (info->taper_width < 0.0) info->taper_width = 100.0;		/* Taper over entire margin strip by default */
 
 	switch (args[0]) {
 		case 'f': info->info_mode = GMT_FFT_FORCE; break;
