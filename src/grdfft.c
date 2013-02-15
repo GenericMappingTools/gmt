@@ -84,9 +84,9 @@ struct GRDFFT_CTRL {
 		bool active;
 		struct GMT_FFT_INFO info;
 	} N;
-	struct Q {	/* -Q[<prefix>] */
+	struct Q {	/* -Q[<suffix>] */
 		bool active;
-		char *prefix;
+		char *suffix;
 	} Q;
 	struct S {	/* -S<scale> */
 		bool active;
@@ -143,9 +143,7 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->S.scale = 1.0;
-	C->N.info.taper_width = 100.0;				/* Taper over entire margin strip by default */
-	C->N.info.taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;	/* Default action is edge-point symmetry */
-	C->Q.prefix = strdup ("tapered");			/* Default prefix */
+	C->Q.suffix = strdup ("tapered");			/* Default suffix */
 	return (C);
 }
 
@@ -156,7 +154,7 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	if (C->In.file[0]) free (C->In.file[0]);	
 	if (C->In.file[1]) free (C->In.file[1]);	
 	if (C->G.file) free (C->G.file);	
-	if (C->Q.prefix) free (C->Q.prefix);	
+	if (C->Q.suffix) free (C->Q.suffix);	
 	GMT_free (GMT, C);	
 }
 
@@ -586,7 +584,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>]  [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
-	GMT_message (GMT, "\t[-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q[<prefix>]] [-S<scale>]\n");
+	GMT_message (GMT, "\t[-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q[<suffix>]] [-S<scale>]\n");
 	GMT_message (GMT, "\t[-Z[p]] [%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -631,7 +629,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t       If +n is set then +t instead sets the boundary width of the interior\n");
 	GMT_message (GMT, "\t       grid margin to be tapered [0].\n");
 	GMT_message (GMT, "\t-Q Save intermediate grid passed to FFT after detrending/extention/tapering.\n");
-	GMT_message (GMT, "\t   Append output file prefix [tapered].  File name will be <prefix>_<ingrid>.\n");
+	GMT_message (GMT, "\t   File name will have _<suffix> [tapered] inserted before file extension.\n");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 #if 0
@@ -790,7 +788,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #endif
 			case 'Q':	/* Output intermediate grid file */
 				Ctrl->Q.active = true;
-				if (opt->arg[0]) { free (Ctrl->Q.prefix); Ctrl->Q.prefix = strdup (opt->arg);}
+				if (opt->arg[0]) { free (Ctrl->Q.suffix); Ctrl->Q.suffix = strdup (opt->arg);}
 				break;
 			case 'Z':	/* Output raw complex spectrum */
 				Ctrl->Z.active = true;
@@ -908,7 +906,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
 		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
 		GMT_grd_taper_edges (GMT, Grid[k], &Ctrl->N.info);
-		if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.prefix);
+		if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.suffix);
 	}
 
 #ifdef FTEST
@@ -927,7 +925,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
-		if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K, Ctrl->In.file[k]);
+		if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K);
 	}
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {

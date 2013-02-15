@@ -617,14 +617,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
 		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
 		GMT_grd_taper_edges (GMT, Grid[k], &Ctrl->N.info);
-		//if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.prefix);
+		//if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.suffix);
 	}
 				
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
-		//if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K, Ctrl->In.file[k]);
+		//if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K);
 	}
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
