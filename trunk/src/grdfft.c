@@ -392,7 +392,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* To counter-act any -fg setting */
 	
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
-	powfactor = 4.0 / pow ((double)GridX->header->nm, 2.0);	/* Squared normalization of FFT */
+	powfactor = 4.0 / pow ((double)GridX->header->size, 2.0);	/* Squared normalization of FFT */
 	dim[3] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
@@ -983,7 +983,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		 * coefficient in front of the summation in the FT. In other words,
 		 * applying the forward and then the backward transform will multiply the
 		 * input by the number of elements (header->size). Here we correct this: */
-		Ctrl->S.scale *= (2.0 / Grid[0]->header->nm);
+		Ctrl->S.scale *= (2.0 / Grid[0]->header->size);
 		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 
 		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
