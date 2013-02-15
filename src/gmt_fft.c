@@ -130,6 +130,7 @@ unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct 
 			sscanf (args, "%d/%d", &info->nx, &info->ny);
 			info->info_mode = GMT_FFT_SET;
 	}
+	info->set = true;	/* We parsed this option */
 	return (n_errors);
 }
 
@@ -411,6 +412,13 @@ struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID
 	double tdummy, edummy;
 	struct GMT_FFT_SUGGESTION fft_sug[3];
 	struct GMT_FFT_WAVENUMBER *K = GMT_memory (C, NULL, 1, struct GMT_FFT_WAVENUMBER);
+	
+	if (!F->set) {	/* User is accepting the default values of extend via edge-point symmetry over 100% of margin */
+		F->info_mode = GMT_FFT_EXTEND_POINT_SYMMETRY;
+		F->taper_width = 100.0;
+		F->set = true;
+	}
+	
 	/* Get dimensions as may be appropriate */
 	if (F->info_mode == GMT_FFT_SET) {	/* User specified the nx/ny dimensions */
 		if (F->nx < G->header->nx || F->ny < G->header->ny) {
@@ -471,7 +479,7 @@ struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID
 	return (K);
 }
 
-void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *K)
+void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F)
 {
 	/* mode sets if and how tapering will be performed [see GMT_FFT_EXTEND_* constants].
 	 * width is relative width in percent of the margin that will be tapered [100]. */
@@ -483,16 +491,16 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	double width;
 	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
 
-	width_percent = lrint (K->taper_width);
+	width_percent = lrint (F->taper_width);
 
-	if ((Grid->header->nx == K->nx && Grid->header->ny == K->ny) || K->taper_mode == GMT_FFT_EXTEND_NONE) {
+	if ((Grid->header->nx == F->nx && Grid->header->ny == F->ny) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
 		/* But there may still be interior tapering */
-		if (K->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
+		if (F->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
 			return;
 		}
-		if (K->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
+		if (F->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
 			return;
 		}
@@ -507,19 +515,19 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	i_data_start = GMT->current.io.pad[XLO];	/* Some shorthands for readability */
 	j_data_start = GMT->current.io.pad[YHI];
 	mx = h->mx;
-	one = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
+	one = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
 	
 	if (width_percent == 0) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
 	}
-	if (width_percent == 100 && K->taper_mode == GMT_FFT_EXTEND_NONE) {	/* Means user set +n but did not specify +t<taper> as 100% is unreasonable for interior */
+	if (width_percent == 100 && F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* Means user set +n but did not specify +t<taper> as 100% is unreasonable for interior */
 		width_percent = 0;
 		width = 0.0;
 	}
 	else
-		width = K->taper_width / 100.0;	/* Was percent, now fraction */
+		width = F->taper_width / 100.0;	/* Was percent, now fraction */
 	
-	if (K->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
+	if (F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
 		i_width = lrint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
 		j_width = lrint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
 	}
@@ -530,14 +538,14 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 
 	/* First reflect about xmin and xmax, either point symmetric about edge point OR mirror symmetric */
 
-	if (K->taper_mode != GMT_FFT_EXTEND_NONE) {
+	if (F->taper_mode != GMT_FFT_EXTEND_NONE) {
 		for (im = 1; im <= i_width; im++) {
 			il1 = -im;	/* Outside xmin; left of edge 1  */
 			ir1 = im;	/* Inside xmin; right of edge 1  */
 			il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
 			ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
 			for (ju = 0; ju < h->ny; ju++) {
-				if (K->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
+				if (F->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
 					datac[GMT_IJPR(h,ju,il1)] = 2.0f * datac[GMT_IJPR(h,ju,0)]       - datac[GMT_IJPR(h,ju,ir1)];
 					datac[GMT_IJPR(h,ju,ir2)] = 2.0f * datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
 				}
@@ -554,21 +562,21 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	 * we can use these vals and taper on y edges */
 
 	scale = M_PI / (j_width + 1);	/* Full 2*pi over y taper range */
-	min_i = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -i_width;
-	end_i = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
+	min_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -i_width;
+	end_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
 	for (jm = one; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
 		jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
 		jt1 = jm;	/* Inside ymin; top side of edge 1  */
 		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
 		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
 		cos_wt = 0.5f * (1.0f + cosf (jm * scale));
-		if (K->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Reverse weights for the interior */
+		if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Reverse weights for the interior */
 		for (i = min_i; i < end_i; i++) {
-			if (K->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
+			if (F->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
 				datac[GMT_IJPR(h,jb1,i)] = cos_wt * (2.0f * datac[GMT_IJPR(h,0,i)]       - datac[GMT_IJPR(h,jt1,i)]);
 				datac[GMT_IJPR(h,jt2,i)] = cos_wt * (2.0f * datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]);
 			}
-			else if (K->taper_mode == GMT_FFT_EXTEND_MIRROR_SYMMETRY) {
+			else if (F->taper_mode == GMT_FFT_EXTEND_MIRROR_SYMMETRY) {
 				datac[GMT_IJPR(h,jb1,i)] = cos_wt * datac[GMT_IJPR(h,jt1,i)];
 				datac[GMT_IJPR(h,jt2,i)] = cos_wt * datac[GMT_IJPR(h,jb2,i)];
 			}
@@ -580,17 +588,17 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	}
 	/* Now, cos taper the x edges */
 	scale = M_PI / (i_width + 1);	/* Full 2*pi over x taper range */
-	end_j = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
-	min_j = (K->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -j_width;
+	end_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
+	min_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -j_width;
 	for (im = one; im <= i_width; im++) {
 		il1 = -im;
 		ir1 = im;
 		il2 = il1 + h->nx - 1;
 		ir2 = ir1 + h->nx - 1;
 		cos_wt = 0.5f * (1.0f + cosf (im * scale));
-		if (K->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Switch to weights for the interior */
+		if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Switch to weights for the interior */
 		for (j = min_j; j < end_j; j++) {
-			if (K->taper_mode == GMT_FFT_EXTEND_NONE) {
+			if (F->taper_mode == GMT_FFT_EXTEND_NONE) {
 				datac[GMT_IJPR(h,j,ir1)] *= cos_wt;
 				datac[GMT_IJPR(h,j,il2)] *= cos_wt;
 			}
@@ -601,10 +609,10 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 		}
 	}
 
-	if (K->taper_mode == GMT_FFT_EXTEND_NONE)
+	if (F->taper_mode == GMT_FFT_EXTEND_NONE)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid margin tapered to zero over %d %% of data width and height\n", width_percent);
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[K->taper_mode], width_percent);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[F->taper_mode], width_percent);
 }
 
 char *file_name_with_suffix (char *name, char *suffix)

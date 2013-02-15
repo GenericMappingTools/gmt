@@ -249,41 +249,28 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				break;
 			case 'I':
 				Ctrl->I.active = true;
-				pos = j = 0;
-				while (GMT_strtok (opt->arg, "/", &pos, ptr)) {
-					switch (j) {
-						case 0:
-							Ctrl->In.file[1] = strdup(ptr);
+				for (n = 0; opt->arg[n]; n++) {
+					switch (opt->arg[n]) {
+						case 'w':
+							Ctrl->misc.give_wavelength = true;
 							break;
-						case 1:
-							for (n = 0; ptr[n]; n++) {
-								switch (ptr[n]) {
-									case 'w':
-										Ctrl->misc.give_wavelength = true;
-										break;
-									case 'b':
-										Ctrl->misc.from_below = true;
-										break;
-									case 'c':
-										Ctrl->misc.coherence = true;
-										break;
-									case 't':
-										Ctrl->misc.from_top = true;
-										break;
-									case 'k':
-										Ctrl->misc.k_or_m = 1000.;
-										break;
-									default:
-										GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -I : [%s] is not valid, chose from [wbct]\n", &ptr[n]);
-										n_errors++;
-										break;
-								}
-							}
+						case 'b':
+							Ctrl->misc.from_below = true;
+							break;
+						case 'c':
+							Ctrl->misc.coherence = true;
+							break;
+						case 't':
+							Ctrl->misc.from_top = true;
+							break;
+						case 'k':
+							Ctrl->misc.k_or_m = 1000.;
 							break;
 						default:
+							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -I : [%s] is not valid, chose from [wbct]\n", &ptr[n]);
+							n_errors++;
 							break;
 					}
-					j++;
 				}
 				break;
 			case 'L':	/* Leave trend alone */
@@ -382,7 +369,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 		n_errors += GMT_check_condition (GMT, !(Ctrl->D.active || Ctrl->T.active || Ctrl->S.active || 
 							Ctrl->I.active || Ctrl->W.active), "Error: must set density contrast\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->In.file[1], 
-					"Error: for admittance|coherence need a gravity or geoide grid\n");
+					"Error: for admittance|coherence need a gravity or geoid grid\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->misc.from_below && Ctrl->misc.from_top, 
 					"Error: -I, choose only one model\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->misc.from_top && 
@@ -433,7 +420,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		GMT_message (GMT,"\t       theoretical admittance\n");
 		GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
 		GMT_message (GMT,"\t   whose average depth is at the value set by the option -Z<zm>.\n");
-		GMT_message (GMT,"\t-S Computes predicted gravity|geoide grid due to a subplate load.\n");
+		GMT_message (GMT,"\t-S Computes predicted gravity|geoid grid due to a subplate load.\n");
 		GMT_message (GMT,"\t   produced by the current bathymetry and the theoretical admittance.\n");
 		GMT_message (GMT,"\t   --> The necessary parametrs are set within -T and -Z options\n");
 		GMT_message (GMT,"\t-T Computes the isostatic compensation. Input file is topo load.\n");
