@@ -52,6 +52,7 @@ struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr *
 };
 
 struct GMT_FFT_INFO {
+	bool set;			/* true if we parsed options; false we must take default settings */
 	unsigned int nx;		/* Desired hard FFT nx dimensionl or 0 if free to adjust */
 	unsigned int ny;		/* Desired hard FFT ny dimensionl or 0 if free to adjust */
 	unsigned int taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */

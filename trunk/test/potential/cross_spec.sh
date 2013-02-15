@@ -4,9 +4,9 @@
 # Compare gravfft and grdfft calculations of admittance and coherence between bathymetry and geoid over the Azores
 ps=cross_spec.ps
 
-gravfft bathy_1m.nc -Igeoid_1m.nc/wck -fg > coh.txt
-gravfft bathy_1m.nc -Igeoid_1m.nc/wk  -fg > adm.txt
-grdfft  bathy_1m.nc  geoid_1m.nc -Ewk -fg > cross.txt
+gravfft bathy_1m.nc geoid_1m.nc -Iwck -fg > coh.txt
+gravfft bathy_1m.nc geoid_1m.nc -Iwk  -fg > adm.txt
+grdfft  bathy_1m.nc geoid_1m.nc -Ewk  -fg > cross.txt
 
 # coh: gravfft in red, grdfft in green
 psxy coh.txt -R3/1000/0/1 -JX-6il/4.5i -P -Ba1g3:"Wavelength (km)":/afg:"Coherence":WSne -Sc0.05i -Gred -Ey0.2c/0.5p,red -K -X1.25i > $ps
