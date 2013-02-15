@@ -616,6 +616,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing gravity file %s\n", Ctrl->In.file[1]);
 
 		do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
+		GMT_free (GMT, FFT_info[0]);
+		GMT_free (GMT, FFT_info[1]);
 		Return (EXIT_SUCCESS);
 	}
 
@@ -695,6 +697,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 				Return (API->error);
 			}
+			GMT_free (GMT, K);
 			Return (EXIT_SUCCESS);
 		}
 		else {
@@ -766,11 +769,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "write_output...");
 
+	GMT_free (GMT, K);
+	GMT_free (GMT, raised);
+
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 		Return (API->error);
 	}
 
-	GMT_free (GMT, raised);
 	GMT_free (GMT, topo);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "done!\n");
