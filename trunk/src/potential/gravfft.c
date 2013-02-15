@@ -135,7 +135,7 @@ struct GRAVFFT_CTRL {
 
 #define GRAVITATIONAL_CONST 6.667e-11
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
-#define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude */
+#define	NORMAL_GRAVITY	9.806199203	/* Moritz's 1980 IGF value for gravity at 45 degrees latitude (m/s) */
 #define	POISSONS_RATIO	0.25
 
 bool rem_mean = false;
@@ -856,7 +856,7 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 			case GRAVFFT_DEFL_EAST: 
 				if (mk > 0.0) {
 					kx = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
-					v *= (kx / (MGAL_AT_45 * mk));
+					v *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
 				}
 				datac[k]   += (float) (-v * raised[k+1]);
 				datac[k+1] += (float) (v * raised[k]);
@@ -864,7 +864,7 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 			case GRAVFFT_DEFL_NORTH:
 				if (mk > 0.0) {
 					ky = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
-					v *= (ky / (MGAL_AT_45 * mk));
+					v *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
 				}
 				datac[k]   += (float) (-v * raised[k+1]);
 				datac[k+1] += (float) (v * raised[k]);
