@@ -34,6 +34,13 @@
 
 #include "gmt.h"
 
+enum Gravfft_fields {
+	GRAVFFT_FAA	= 0,
+	GRAVFFT_GEOID,
+	GRAVFFT_VGG,
+	GRAVFFT_DEFL_EAST,
+	GRAVFFT_DEFL_NORTH	
+};
 struct GRAVFFT_CTRL {
 	unsigned int n_par;
 	double *par;
@@ -243,6 +250,20 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					n_errors++;
 				}
 				break;
+			case 'F':
+				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 'g': Ctrl->F.mode = GRAVFFT_GEOID;      break;
+					case 'v': Ctrl->F.mode = GRAVFFT_VGG; 	     break;
+					case 'e': Ctrl->F.mode = GRAVFFT_DEFL_EAST;  break;
+					case 'n': Ctrl->F.mode = GRAVFFT_DEFL_NORTH; break;
+					default:  Ctrl->F.mode = GRAVFFT_FAA; 	     break;	/* FAA */
+				}
+				break;
+			case 'G':
+				Ctrl->G.active = true;
+				Ctrl->G.file = strdup (opt->arg);
+				break;
 			case 'H':
 				Ctrl->H.active = true;
 				Ctrl->L.active = true;
@@ -281,20 +302,6 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 			case 'N':
 				Ctrl->N.active = true;
 				n_errors += GMT_fft_parse (GMT, 'N', opt->arg, &Ctrl->N.info);
-				break;
-			case 'F':
-				Ctrl->F.active = true;
-				switch (opt->arg[0]) {
-					case 'g': Ctrl->F.mode = 1; break;
-					case 'v': Ctrl->F.mode = 2; break;
-					case 'e': Ctrl->F.mode = 3; break;
-					case 'n': Ctrl->F.mode = 3; break;
-					default:  Ctrl->F.mode = 0; break;	/* FAA */
-				}
-				break;
-			case 'G':
-				Ctrl->G.active = true;
-				Ctrl->G.file = strdup (opt->arg);
 				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
@@ -742,14 +749,29 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	scale_out *= (2.0 / Grid[0]->header->size);
 	GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
-	if (Ctrl->F.active) {
-		strcpy (Grid[0]->header->title, "Geoid anomalies");
-		strcpy (Grid[0]->header->z_units, "meter");
+	switch (Ctrl->F.mode) {
+		case GRAVFFT_FAA:
+			strcpy (Grid[0]->header->title, "Gravity anomalies");
+			strcpy (Grid[0]->header->z_units, "mGal");
+			break;
+		case GRAVFFT_GEOID:
+			strcpy (Grid[0]->header->title, "Geoid anomalies");
+			strcpy (Grid[0]->header->z_units, "meter");
+			break;
+		case GRAVFFT_VGG:
+			strcpy (Grid[0]->header->title, "Vertical Gravity Gradient anomalies");
+			strcpy (Grid[0]->header->z_units, "Eotvos");
+			break;
+		case GRAVFFT_DEFL_EAST:
+			strcpy (Grid[0]->header->title, "Deflection of the vertical - East");
+			strcpy (Grid[0]->header->z_units, "microradian");
+			break;
+		case GRAVFFT_DEFL_NORTH:
+			strcpy (Grid[0]->header->title, "Deflection of the vertical - North");
+			strcpy (Grid[0]->header->z_units, "microradian");
+			break;
 	}
-	else {
-		strcpy (Grid[0]->header->title, "Gravity anomalies");
-		strcpy (Grid[0]->header->z_units, "mGal");
-	}
+
 	sprintf (Grid[0]->header->remark, "Parker expansion of order %d", Ctrl->E.n_terms);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "write_output...");
@@ -799,9 +821,10 @@ void do_isostasy__ (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_
 	}
 }
 
+#define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, uint64_t n, double rho) {
 	uint64_t i, k;
-	double f, p, t, mk, v, c;
+	double f, p, t, mk, kx, ky, v, c;
 	float *datac = Grid->data;
 
 	f = 1.0;
@@ -809,7 +832,6 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 	p = n - 1.0;
 
 	c = 1.0e5 * 2.0 * M_PI * GRAVITATIONAL_CONST * rho / f; /* Gives mGal */
-	if (Ctrl->F.active) c /= 980619.92;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
 		mk = GMT_fft_get_wave (k, K);
@@ -821,9 +843,33 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 			t = pow (mk, p);
 
 		v = c * exp (-mk * Ctrl->misc.z_level) * t;
-		if (Ctrl->F.active && mk > 0.0) v /= mk;
-		datac[k] += (float) (v * raised[k]);
-		datac[k+1] += (float) (v * raised[k+1]);
+		switch (Ctrl->F.mode) {
+			case GRAVFFT_GEOID:
+				if (mk > 0.0) v /= (MGAL_AT_45 * mk);
+				datac[k]   += (float) (v * raised[k]);
+				datac[k+1] += (float) (v * raised[k+1]);
+				break;
+			case GRAVFFT_VGG:
+			 	v *= mk;
+				datac[k]   += (float) (v * raised[k]);
+				datac[k+1] += (float) (v * raised[k+1]);
+			case GRAVFFT_DEFL_EAST: 
+				if (mk > 0.0) {
+					kx = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
+					v *= (kx / (MGAL_AT_45 * mk));
+				}
+				datac[k]   += (float) (-v * raised[k+1]);
+				datac[k+1] += (float) (v * raised[k]);
+				break;
+			case GRAVFFT_DEFL_NORTH:
+				if (mk > 0.0) {
+					ky = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
+					v *= (ky / (MGAL_AT_45 * mk));
+				}
+				datac[k]   += (float) (-v * raised[k+1]);
+				datac[k+1] += (float) (v * raised[k]);
+				break;
+		}
 	}
 }
 
