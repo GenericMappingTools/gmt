@@ -22,7 +22,7 @@ yoff=`gmtmath -Q 200 $scl MUL 0.5 ADD =`
 yoffe=`gmtmath -Q 384 $scl MUL 0.5 ADD =`
 makecpt -Cpolar -T-1/1/0.1 -Z > t.cpt
 grdimage t.nc -Jx${scl}i -Ct.cpt -P -BaWSne -K > $ps
-grd2xyz tmp2_t.nc | awk '{if ($2 == 100) print $1, $3}' > tmp
+grd2xyz t_tmp2.nc | awk '{if ($2 == 100) print $1, $3}' > tmp
 R=`minmax tmp -I10/3`
 psxy $R -JX3.5i/1.6i -O -K -W1p,green -Baf/afg10WSne -X3i tmp >> $ps
 psxy -R -J -O -K -W0.5p,- << EOF >> $ps
@@ -34,13 +34,13 @@ psxy -R -J -O -K -W0.5p,- << EOF >> $ps
 300	3
 EOF
 # mirror and taper
-grdimage tmp1_t.nc -Jx${scl}i -Ct.cpt -BaWSne -O -K -X-3i -Y${yoff}i >> $ps
-psxy -Rtmp1_t.nc -J -O -K -L -W2p box >> $ps
+grdimage t_tmp1.nc -Jx${scl}i -Ct.cpt -BaWSne -O -K -X-3i -Y${yoff}i >> $ps
+psxy -Rt_tmp1.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 Mirror symmetry" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 50% outward taper" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
 # edge-symmetry and taper
-grdimage tmp2_t.nc -J -Ct.cpt -BaWSne -O -K -Y${yoffe}i >> $ps
-psxy -Rtmp2_t.nc -J -O -K -L -W2p box >> $ps
+grdimage t_tmp2.nc -J -Ct.cpt -BaWSne -O -K -Y${yoffe}i >> $ps
+psxy -Rt_tmp2.nc -J -O -K -L -W2p box >> $ps
 psxy -R -J -O -K -W2p,green << EOF >> $ps
 -105	100
 410	100

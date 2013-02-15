@@ -24,14 +24,14 @@ echo "350 100 Original Data" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 
 # mirror and taper
 grdfft t.nc -N512/384+n+t10 -Qtmp -L -E > /dev/null
-grdimage tmp_t.nc -J -Ct.cpt -BaWSne -O -K -Y${yoff}i -X${xoff}i >> $ps
-psxy -Rtmp_t.nc -J -O -K -L -W2p box >> $ps
+grdimage t_tmp.nc -J -Ct.cpt -BaWSne -O -K -Y${yoff}i -X${xoff}i >> $ps
+psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 Extended" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 10% inward taper" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
 # edge-symmetry and taper
 grdfft t.nc -N300/200+n+t25 -Qtmp -L -E > /dev/null
-grdimage tmp_t.nc -J -Ct.cpt -BaWSne -O -K -Y${yoffe}i >> $ps
-psxy -Rtmp_t.nc -J -O -K -L -W2p box >> $ps
+grdimage t_tmp.nc -J -Ct.cpt -BaWSne -O -K -Y${yoffe}i >> $ps
+psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 No extension" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 25% inward taper" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
 psscale -Ct.cpt -D${x}i/${yoff}i/4i/0.1ih -O -K -B0.5 >> $ps
