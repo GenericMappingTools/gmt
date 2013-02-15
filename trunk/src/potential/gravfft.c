@@ -21,7 +21,8 @@
  * Updated:	28-Feb-1999
  *         	05-SEP-2002
  *         	13-SEP-2002
- * GMT5ed	17-MAR-2012
+ * GMT5ed   17-MAR-2012
+ *          14-Feb-2013		Big rework by PW
  *
  *
  * For details, see Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the Azores Plateau:
@@ -181,9 +182,9 @@ void write_script(void);
 
 int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	unsigned int n_errors = 0, pos, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0;
 
-	int j, k, n;
+	int n;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	char   ptr[GMT_BUFSIZ], t_or_b[4];
@@ -200,19 +201,6 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					GMT_report (GMT, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
 				}
 				break;
-#ifdef GMT_COMPAT
-			case 'A':		/* Old pre-GMT way of setting this */
-				Ctrl->T.active = true;
-				sscanf (opt->arg, "%lf/%lf/%lf/%lf", &Ctrl->T.te, &Ctrl->T.rhol, &Ctrl->T.rhom, &Ctrl->T.rhow);
-				Ctrl->T.rho_cw = Ctrl->T.rhol - Ctrl->T.rhow;
-				Ctrl->T.rho_mc = Ctrl->T.rhom - Ctrl->T.rhol;
-				Ctrl->T.rho_mw = Ctrl->T.rhom - Ctrl->T.rhow;
-				if (Ctrl->T.te > 1e10) { /* Given flexural rigidity, compute Te */
-					Ctrl->T.te = pow ((12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)) * Ctrl->T.te
-					     / YOUNGS_MODULUS, 1./3.);
-				}
-				break;
-#endif
 			case 'C':	/* For theoretical curves only */
 				Ctrl->C.active = true;
 				sscanf (opt->arg, "%d/%lf/%lf/%s", &Ctrl->C.n_pt, &Ctrl->C.theor_inc, &Ctrl->misc.z_level, t_or_b);
@@ -326,6 +314,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					Ctrl->T.te = pow ((12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)) * Ctrl->T.te
 					     / YOUNGS_MODULUS, 1./3.);
 				}
+				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Weak. Need testing */
+					Ctrl->H.active = true;
+					//Ctrl->L.active = true;
+				}
 				break;
 			case 's':
 				Ctrl->s.active = true;
@@ -351,7 +343,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 	}
 
 	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {	/* List and exit */
-		GMT_fft_Singleton_list;
+		GMT_fft_Singleton_list();
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 	
@@ -366,9 +358,9 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 		n_errors += GMT_check_condition (GMT, !Ctrl->In.file[0], "Syntax error: Must specify input file\n");
 		n_errors += GMT_check_condition (GMT, !Ctrl->G.file && !Ctrl->I.active, 
 					"Syntax error -G option: Must specify output file\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->T.active, "Error: -Q implies also -A\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->H.active && !Ctrl->T.active, "Error: -H implies also -A\n");
-		n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->T.active, "Error: -S implies also -A\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->T.active, "Error: -Q implies also -T\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->H.active && !Ctrl->T.active, "Error: -H implies also -T\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->S.active && !Ctrl->T.active, "Error: -S implies also -T\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->Q.active && !Ctrl->Z.zm, 
 					"Error: for creating the flex_file I need to know it's average depth (see -Z<zm>)\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->H.active && !Ctrl->Z.zm, 
@@ -395,8 +387,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 		gmt_module_show_name_and_purpose (THIS_MODULE);
-		GMT_message (GMT, "usage: gravfft <topo_grd> -C<n/wavelength/mean_depth/tbw> -D<density>\n");
-		GMT_message (GMT,"       -G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<second_file>[/<wbct>]\n");
+		GMT_message (GMT, "usage: gravfft <topo_grd>  [<ingrid2>] -C<n/wavelength/mean_depth/tbw> -D<density>\n");
+		GMT_message (GMT,"       -G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<wbct>\n");
 		GMT_message (GMT,"       [-H] [-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q] -T<te/rl/rm/rw> [-fg] [-s<scale>] [-W[c|a]]\n");
 		GMT_message (GMT,"       [-V] -Z<zm>[/<zl>] [-z<cte>]\n\n");
 
@@ -447,8 +439,6 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 		GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 		GMT_message (GMT,"\t   It applies both to bathymetry as well as <second_file> [Default removes plane].\n");
 		GMT_message (GMT,"\t   Warning: both -D -H and -Q will implicitly set -L.\n");
-		GMT_message (GMT,"\t-l Removes half-way from bathymetry data [Default removes mean].\n");
-		GMT_message (GMT,"\t   Append n to do not remove any constant from input bathymetry data.\n");
 		GMT_message (GMT, "\t-N Choose or inquire about suitable grid dimensions for FFT, and set modifiers:\n");
 		GMT_message (GMT, "\t   -Nf will force the FFT to use the dimensions of the data.\n");
 		GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions, report, then continue.\n");
@@ -484,7 +474,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, n;
 	bool error = false, stop;
 	uint64_t m;
-	char	line[256], line2[256], format[64], buffer[256];
+	char	format[64], buffer[256];
 	float	*topo = NULL, *raised = NULL;
 	double	delta_pt, freq, coeff[2][3];
 
@@ -844,6 +834,10 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 
 		v = c * exp (-mk * Ctrl->misc.z_level) * t;
 		switch (Ctrl->F.mode) {
+			case GRAVFFT_FAA:
+				datac[k]   += (float) (v * raised[k]);
+				datac[k+1] += (float) (v * raised[k+1]);
+				break;
 			case GRAVFFT_GEOID:
 				if (mk > 0.0) v /= (MGAL_AT_45 * mk);
 				datac[k]   += (float) (v * raised[k]);
@@ -1162,5 +1156,4 @@ void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct G
 }
 
 void write_script(void) {
-
 }
