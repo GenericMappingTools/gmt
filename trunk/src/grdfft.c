@@ -402,7 +402,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	if (give_wavelength && km) delta_k *= 1000.0;	/* Wanted distances measured in km */
 	
 	for (k = 0; k < nk; k++) {
-		eps_pow = 1.0 / sqrt (nused[k]);	/* Multiplicative error bars for power spectra  */
+		eps_pow = 1.0 / sqrt ((double)nused[k]);	/* Multiplicative error bars for power spectra  */
 		freq = (k + 1) * delta_k;
 		if (give_wavelength) freq = 1.0 / freq;
 		
@@ -417,7 +417,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 		
 		if (!GridY) {	/* Nothing more to do (except add nused[k] if true and debug) */
 #ifdef DEBUG
-			if (show_n) S->coord[col][k] = nused[k];
+			if (show_n) S->coord[col][k] = (double)nused[k];
 #endif
 			continue;
 		}
@@ -450,7 +450,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 		S->coord[col++][k] = coh_k;
 		S->coord[col++][k] = coh_k * eps_pow * (1.0 - coh_k) * sqrt (2.0 / coh_k);
 #ifdef DEBUG
-		if (show_n) S->coord[col][k] = nused[k];
+		if (show_n) S->coord[col][k] = (double)nused[k];
 #endif
 	}
 	if (GridY) {	/* Long header record - number in [] is GMT column; useful for -i option */
@@ -669,7 +669,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 
 	unsigned int j, k, n_errors = 0, filter_type = 0, pos = 0;
 	int n_scan;
-	char p[GMT_BUFSIZ], *c = NULL;
+	char *c = NULL;
 	double par[5];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -802,7 +802,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	}
 
 	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {	/* List and exit */
-		GMT_fft_Singleton_list;
+		GMT_fft_Singleton_list();
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 	
@@ -824,7 +824,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 {
 	bool error = false, stop;
 	int status;
-	unsigned int op_count = 0, par_count = 0, side, k;
+	unsigned int op_count = 0, par_count = 0, k;
 	uint64_t ij;
 	double coeff[2][3];	/* Detrend parameters returned */
 	char *spec_msg[2] = {"spectrum", "cross-spectrum"};
