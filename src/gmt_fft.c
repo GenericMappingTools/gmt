@@ -77,7 +77,7 @@ int Singleton_list[N_SINGLETON_LIST] = {
 	2400,2430,2500,2560,2592,2700,2880,2916,3000,3072,3125,3200,3240,3375,3456,
 	3600,3645,3750,3840,3888,4000,4096,4320,4374,4500,4608,4800,4860,5000};
 
-void GMT_fft_Singleton_list () {
+void GMT_fft_Singleton_list (void) {
 	unsigned int k;
 	fprintf (stderr, "\t\"Good\" numbers for FFT dimensions [Singleton, 1967]:\n");
 	for (k = 0; k < N_SINGLETON_LIST; k++) {
@@ -561,7 +561,7 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 	 * At the same time, since x has been reflected,
 	 * we can use these vals and taper on y edges */
 
-	scale = M_PI / (j_width + 1);	/* Full 2*pi over y taper range */
+	scale = (float)(M_PI / (j_width + 1));	/* Full 2*pi over y taper range */
 	min_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -i_width;
 	end_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
 	for (jm = one; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
@@ -587,7 +587,7 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 		}
 	}
 	/* Now, cos taper the x edges */
-	scale = M_PI / (i_width + 1);	/* Full 2*pi over x taper range */
+	scale = (float)(M_PI / (i_width + 1));	/* Full 2*pi over x taper range */
 	end_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
 	min_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -j_width;
 	for (im = one; im <= i_width; im++) {
@@ -595,7 +595,7 @@ void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GM
 		ir1 = im;
 		il2 = il1 + h->nx - 1;
 		ir2 = ir1 + h->nx - 1;
-		cos_wt = 0.5f * (1.0f + cosf (im * scale));
+		cos_wt = (float)(0.5f * (1.0f + cosf (im * scale)));
 		if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Switch to weights for the interior */
 		for (j = min_j; j < end_j; j++) {
 			if (F->taper_mode == GMT_FFT_EXTEND_NONE) {
@@ -620,12 +620,12 @@ char *file_name_with_suffix (char *name, char *suffix)
 	static char file[GMT_BUFSIZ];
 	unsigned int len, i, j;
 	
-	if ((len = strlen (name)) == 0) return NULL;
+	if ((len = (unsigned int)strlen (name)) == 0) return NULL;
 	for (i = len; i > 0 && name[i] != '/'; i--);	/* i points to 1st char in name after slash, or 0 if no leading dirs */
 	if (i) i++;	/* Move to 1st char after / */
 	for (j = len; j > 0 && name[j] != '.'; j--);	/* j points to period before extension, or it is 0 if no extension */
 	strcpy (file, &name[i]);			/* Make a full copy of filename without leading directories */
-	len = strlen (file);
+	len = (unsigned int)strlen (file);
 	for (i = len; i > 0 && file[i] != '.'; i--);	/* i now points to period before extension in file, or it is 0 if no extension */
 	if (i) file[i] = '\0';	/* Truncate at the extension */
 	strcat (file, "_");
@@ -704,10 +704,10 @@ void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mo
 			o_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col+nx_2);
 			re = Grid->data[i_ij]; im = Grid->data[i_ij+1];
 			if (mode) {	/* Want magnitude and phase */
-				Grid->data[i_ij]   = hypot (G->data[o_ij], G->data[o_ij+1]);
-				Grid->data[i_ij+1] = d_atan2 (G->data[o_ij+1], G->data[o_ij]);
-				Grid->data[o_ij]   = hypot (re, im);
-				Grid->data[o_ij+1] = d_atan2 (im, re);
+				Grid->data[i_ij]   = (float)hypot (G->data[o_ij], G->data[o_ij+1]);
+				Grid->data[i_ij+1] = (float)d_atan2 (G->data[o_ij+1], G->data[o_ij]);
+				Grid->data[o_ij]   = (float)hypot (re, im);
+				Grid->data[o_ij+1] = (float)d_atan2 (im, re);
 			}
 			else {		/* Retain real and imag components as is */
 				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];
@@ -717,10 +717,10 @@ void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mo
 			o_ij = 2*GMT_IJ0 (Grid->header, row, col+nx_2);
 			re = Grid->data[i_ij]; im = Grid->data[i_ij+1];
 			if (mode) {	/* Want magnitude and phase */
-				Grid->data[i_ij]   = hypot (G->data[o_ij], G->data[o_ij+1]);
-				Grid->data[i_ij+1] = d_atan2 (G->data[o_ij+1], G->data[o_ij]);
-				Grid->data[o_ij]   = hypot (re, im);
-				Grid->data[o_ij+1] = d_atan2 (im, re);
+				Grid->data[i_ij]   = (float)hypot (G->data[o_ij], G->data[o_ij+1]);
+				Grid->data[i_ij+1] = (float)d_atan2 (G->data[o_ij+1], G->data[o_ij]);
+				Grid->data[o_ij]   = (float)hypot (re, im);
+				Grid->data[o_ij+1] = (float)d_atan2 (im, re);
 			}
 			else {		/* Retain real and imag components as is */
 				Grid->data[i_ij] = G->data[o_ij];	Grid->data[i_ij+1] = G->data[o_ij+1];

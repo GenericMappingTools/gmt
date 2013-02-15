@@ -281,8 +281,8 @@ void grd_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	float a = 0.0f;
 
 	if (stack[last]->constant && fabsf (stack[last]->factor) > 1.0f) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ACOS!\n");
-	if (stack[last]->constant) a = d_acosf (stack[last]->factor);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (stack[last]->G->data[node]);
+	if (stack[last]->constant) a = (float)d_acosf (stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)d_acosf (stack[last]->G->data[node]);
 }
 
 void grd_ACOSH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
