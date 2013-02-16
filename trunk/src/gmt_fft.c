@@ -697,10 +697,11 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	
 	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
 
+	mode = (F->polar) ? 1 : 0;
+
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffiz %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
 	/* Prepare wavenumber domain limits and increments */
-	mode = (F->polar) ? 1 : 0;
 	nx_2 = K->nx2 / 2;	ny_2 = K->ny2 / 2;
 	wesn[XLO] = -K->delta_kx * nx_2;	wesn[XHI] =  K->delta_kx * (nx_2 - 1);
 	wesn[YLO] = -K->delta_ky * (ny_2 - 1);	wesn[YHI] =  K->delta_ky * ny_2;
