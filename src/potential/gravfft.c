@@ -256,9 +256,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				}
 				break;
 			case 'L':	/* Leave trend alone */
-				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
-				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
-				else Ctrl->L.active = true;
+				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;	/* Remove mean */
+				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;	/* Remove mid-value */
+				else if (opt->arg[0] == 'n') Ctrl->L.mode = 3;	/* Dont touch */
+				else Ctrl->L.active = true;		/* Remove plan */
 				break;
 			case 'N':
 				Ctrl->N.active = true;
@@ -396,7 +397,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   e = East deflections of the vertical (micro-radian).\n");
 	GMT_message (GMT,"\t   n = North deflections of the vertical (micro-radian).\n");
 	GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
-	GMT_message (GMT,"\t   It applies both to bathymetry as well as <second_file> [Default removes plane].\n");
+	GMT_message (GMT,"\t   It applies both to bathymetry as well as <ingrid2> [Default removes plane].\n");
+	GMT_message (GMT, "\t  Append m to just remove mean, h to remove mid-value instead or n to not touch.\n");
 	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -L\n");
 	GMT_message (GMT,"\t-N Choose or inquire about suitable grid dimensions for FFT, and set modifiers:\n");
 	GMT_message (GMT,"\t   -Nf will force the FFT to use the dimensions of the data.\n");
@@ -539,16 +541,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 				
 	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
-		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
-		GMT_grd_taper_edges (GMT, Grid[k], &Ctrl->N.info);
-		//if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.suffix);
+		if (!(Ctrl->L.active) && Ctrl->L.mode != 3) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
+		GMT_fft_taper (GMT, Grid[k], &Ctrl->N.info);
 	}
 				
-	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
-		//if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K);
 	}
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
@@ -564,61 +564,6 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	topo   = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
 	raised = GMT_memory (GMT, NULL, Grid[0]->header->size, float);
 
-#if 0
-	if (Ctrl->W.active) {	/* Write the FFTed input grid as two grids; Real and Img */
-		int plus_minus;
-		char *infile_r = NULL, *infile_i = NULL;	/* File names for real and imaginary grids */
-		strncpy (line, Ctrl->G.file, 256U);
-		strncpy (line2, Ctrl->G.file, 256U);
-		infile_r = strtok (line, ".");
-		infile_i = strtok (line2, ".");
-		strcat (infile_r, "_real.grd");		strcat (infile_i, "_imag.grd");
-
-		for (j = 0; j < Ctrl->N.ny2; j++) {	/* Put DC at the center of the output array */
-			for (i = 0; i < Ctrl->N.nx2; i++) {
-				plus_minus = ((i+j) % 2 == 0) ? 1 : -1;
-				Out->data[GMT_IJPR(Out->header,j,i)] *= plus_minus;
-			}
-		}
-
-		if (GMT_fft_2d (GMT, Out->data, Ctrl->N.nx2, Ctrl->N.ny2, k_fft_fwd, k_fft_complex))
-			Return (EXIT_FAILURE);
-
-		/* put DC to one */
-		/*datac[ij_data_0(nx_2,ny_2)] = datac[ij_data_0(nx_2,ny_2) + 1] = 1.0;*/
-		/* put DC to average of its four neighbours */
-		/*datac[ij_data_0(nx_2,ny_2)] = (datac[ij_data_0(nx_2+1,ny_2)] + datac[ij_data_0(nx_2-1,ny_2)]
-					    + datac[ij_data_0(nx_2,ny_2+1)] + datac[ij_data_0(nx_2,ny_2-1)])/4;
-		datac[ij_data_0(nx_2,ny_2)+1] = (datac[ij_data_0(nx_2+1,ny_2) + 1] + datac[ij_data_0(nx_2-1,ny_2) + 1]
-					    + datac[ij_data_0(nx_2,ny_2+1) + 1] + datac[ij_data_0(nx_2,ny_2-1) + 1])/4;*/
-		/* Write out frequency, not wavenumber  */
-		K.delta_kx /= (2.0*M_PI);		K.delta_ky /= (2.0*M_PI);
-
-		/*h.nx = Ctrl->N.nx2;		h.ny = Ctrl->N.ny2;
-		h.x_min = -K.delta_kx * nx_2;
-		h.y_min = -K.delta_ky * (ny_2 - 1);
-		h.x_max =  K.delta_kx * (nx_2 - 1);
-		h.y_max =  K.delta_ky * ny_2;
-		h.x_inc = K.delta_kx;
-		h.y_inc = K.delta_ky;
-		strcpy (h.x_units, "m^(-1)");	strcpy (h.y_units, "m^(-1)");
-		strcpy (h.z_units, "fft-ed z_units");
-		strcpy (h.title, "Real part of fft transformed input grid");
-		strcpy (h.remark, "With origin at lower left corner, kx = 0 at (nx/2 + 1) and ky = 0 at ny/2");
-       		GMT_write_grd (infile_r, &h, datac, 0.0, 0.0, 0.0, 0.0, (int *)dummy, true);*/
-
-		//for (i = 2; i < ndatac; i+= 2)	/* move imag to real position in the array */
-			//datac[i] = datac[i+1];	/* because that's what write_grd writes to file */
-
-		/*strcpy (h.title, "Imaginary part of fft transformed input grid");
-		GMT_write_grd (infile_i, &h, datac, 0.0, 0.0, 0.0, 0.0, (int *)dummy, true);
-
-		if (Ctrl->W.active) write_script();*/
-
-		Return (EXIT_SUCCESS);
-	}
-#endif
-
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
 		do_isostasy__ (GMT, Grid[0], Ctrl, K);
@@ -629,7 +574,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 		if (!Ctrl->T.moho) {
-			GMT_grd_detrend (GMT, Grid[0], Ctrl->L.mode, coeff);
+			if (Ctrl->L.mode != 3) GMT_grd_detrend (GMT, Grid[0], Ctrl->L.mode, coeff);
 			Ctrl->misc.z_level = fabs (coeff[0]);	/* Need absolute value or level removed for uppward continuation */
     			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
