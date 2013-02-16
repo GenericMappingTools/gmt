@@ -29,7 +29,7 @@ psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 Extended" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 10% inward taper" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
 # edge-symmetry and taper
-grdfft t.nc -N300/200+n+t25+qtmp -L -E > /dev/null
+grdfft t.nc -N300/200+n+t25+wtmp -L -E > /dev/null
 grdimage t_tmp.nc -J -Ct.cpt -BaWSne -O -K -Y${yoffe}i >> $ps
 psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 No extension" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps

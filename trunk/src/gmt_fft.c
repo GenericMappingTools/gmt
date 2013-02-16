@@ -101,7 +101,7 @@ unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct 
 				case 'e':  info->taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY; break;
 				case 'n':  info->taper_mode = GMT_FFT_EXTEND_NONE; break;
 				case 'm':  info->taper_mode = GMT_FFT_EXTEND_MIRROR_SYMMETRY; break;
-				case 'q':	/* Save FFT input; optionally append file suffix */
+				case 'w':	/* Save FFT input; optionally append file suffix */
 					info->save[GMT_IN] = true;
 					if (p[1]) {
 						if (info->suffix) free (info->suffix);	/* Free previous string */
