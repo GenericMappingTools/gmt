@@ -3,12 +3,11 @@
 .SH NAME
 grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
-BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outgrid) [ OPT(A)IT(azimuth) ] 
-[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(x|y)][BD(w)[BD(k)]] ] 
-[ OPT(F)[BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
-[ OPT(N)[BD(f)|BD(q)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)] ] 
-[ OPT(Q)[IT(prefix)] ] [ OPT(S)IT(scale) ] [ OPT(T)IT(te/rl/rm/rw/ri) ] [ GMT_V_OPT ] 
-[ OPT(Z)[BD(p)] ][ GMT_f_OPT ]
+BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ OPT(A)IT(azimuth) ] 
+[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
+[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
+[ OPT(N)[BD(f)|BD(q)|BD(s)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)][BD(+q)[IT(suffix)]][BD(+z)[BD(p)]] ] 
+[ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
@@ -22,10 +21,10 @@ or scale the output with BD(grdmath).
 .TP
 IT(ingrid)
 2-D binary grid file to be operated on.
-(See GRID FILE FORMATS below).
+(See GRID FILE FORMATS below).  For cross-spectral operations, also give the second grid file IT(ingrd2).
 .TP
-OPT(G)IT(outgrid)
-Specify the name of the output grid file or the 1-D spectrum file (see OPT(E)).
+OPT(G)IT(outfile)
+Specify the name of the output grid file or the 1-D spectrum table (see OPT(E)).
 (See GRID FILE FORMATS below).
 .SH OPTIONAL ARGUMENTS
 .TP
@@ -41,8 +40,8 @@ domain (kr is radial wave number).  Append a scale to multiply by (kr * IT(scale
 append BD(g) to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
 [Default is no scale].
 .TP
-OPT(E)[BD(x|y)][BD(w)[BD(k)]]
-Estimate power spectrum in the radial direction.  Place BD(x) or BD(y) immediately after OPT(E) to
+OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]]
+Estimate power spectrum in the radial direction [BD(r)].  Place BD(x) or BD(y) immediately after OPT(E) to
 compute the spectrum in the x or y direction instead.  No grid file is created.
 If one grid is given then we write f (i.e., frequency or wave number), power[f], and 1 standard deviation
 in power[f] are written to file set by OPT(G) [stdout]. If two grids are given we write f,
@@ -50,8 +49,8 @@ admittance[f], 1 standard deviation in admittance[f], coherence[f] and 1 standar
 Append BD(w) to write wavelength instead of frequency.  If your grid is geographic you may further append BD(k)
 to scale wavelengths from meter [Default] to km.
 .TP
-OPT(F)[BD(x)|BD(y)]IT(params)
-Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic.
+OPT(F)[BD(r)|BD(x)|BD(y)]IT(params)
+Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic (BD(r)).
 Choose between a cosine-tapered band-pass, a Gaussian band-pass filter, or a Butterworth band-pass filter.
 Cosine-taper: Specify four wavelengths IT(lc)/IT(lp)/IT(hp)/IT(hc) in correct units (see OPT(fg)) to design a bandpass filter: wavelengths greater than 
 IT(lc) or less than IT(hc) will be cut, wavelengths greater than IT(lp) and less than IT(hp) will be 
@@ -68,7 +67,7 @@ Butterworth band-pass: Append IT(lo)/IT(hi)/IT(order), the two wavelengths in co
 a highpass or lowpass filter, give a hyphen (-) for the IT(hi) or IT(lo) wavelength, respectively.  E.g., OPT(F)-/30/2
 will lowpass the data using a 2nd-order Butterworth filter, with half-weight at 30, while OPT(F)400/-/2 will highpass the data.
 .TP
-OPT(I)[IT(scale)BD(|g)]
+OPT(I)[IT(scale)|BD(g)]
 Integrate the field, i.e., compute integral_over_z (field * dz).  This is equivalent to divide by kr
 in the frequency domain (kr is radial wave number).  Append a scale to divide by (kr * IT(scale)) instead.
 Alternatively, append BD(g) to indicate that your data set is gravity anomalies in mGal and output should be geoid
@@ -77,40 +76,13 @@ heights in meters.  [Default is no scale].
 OPT(L)
 Leave trend alone.  By default, a linear trend will be removed prior to the transform.
 Alternatively, append BD(m) to just remove the mean value or BD(h) to remove the mid-value.
-.TP
-OPT(N)[BD(f)|BD(q)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)]
-Choose or inquire about suitable grid dimensions for FFT.
-OPT(Nf) will force the FFT to use the actual dimensions of the data.
-OPT(Nq) will inQuire about more suitable dimensions, report those, then exit.
-OPT(N)IT(nx/ny) will do FFT on array size IT(nx/ny) (Must be >= grid file size).
-Default chooses dimensions >= data which optimize speed, accuracy of FFT.
-If FFT dimensions > grid file dimensions, data are extended and tapered to zero.
-Use modifiers to control how the extension and tapering are to be performed:
-BD(+e) extends the grid by imposing edge-point symmetry [Default], BD(+m) extends
-the grid by imposing edge mirror symmetry, while BD(+n) turns off data extension.
-Tapering is performed from the data edge to the FFT grid edge (100\%). Change
-this percentage via BD(+t)IT(width). When BD(+n) is in effect, the tapering
-is applied instead to the data margins as no extension is available.
-.TP
-OPT(Q)[IT(prefix)]
-Save the intermediate grid being passed to the forward FFT; this is likely to have been
-detrended, extended by point-symmetry along all edges, and tapered.  Append a file
-IT(prefix) from which output file name(s) will be created (i.e., IT(prefix)_IT(ingrid)) [tapered].
+#define FFT_OPT OPT(N)
+#include "explain_fft.txt" 
 .TP
 OPT(S)IT(scale)
 Multiply each element by IT(scale) in the space domain (after the frequency domain operations).
 [Default is 1.0].
-.TP
-OPT(T)IT(te/rl/rm/rw/ri)
-Compute the isostatic compensation from the topography load (input grid file) on an elastic plate
-of thickness IT(te).  Also append densities for load, mantle, water, and infill in SI units.
-If IT(te) == 0 then the Airy response is returned.  OPT(T) implicitly sets OPT(L).
 #include "explain_-V.txt" 
-.TP
-OPT(Z)[BD(p)]
-Save the complex grid produced by the forward FFT.  By default we write the real and imaginary
-components to real_IT(ingrid) and imag_IT(ingrid).  Append BD(p) to save instead the
-polar form of magnitude and phase to files mag_IT(ingrid) and phase_IT(ingrid).
 #include "explain_help.txt"
 #include "explain_grd_inout.txt"
 .SH CONSIDERATIONS
@@ -135,7 +107,7 @@ To transform gravity anomalies in mGal (faa.nc) to deflections of the vertical (
 finally scale radians to micro-radians:
 .br
 .sp
-grdfft faa.nc -Ig38 -S1e6 -V -Gdefl_38.nc
+grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 .br
 .sp
 Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
@@ -145,18 +117,6 @@ compute these as mGal/m^2 by differentiating twice:
 grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 .br
 .sp
-The first order gravity anomaly (in mGal) due to the compensating surface caused 
-by the topography load topo.nc (in m) on a 20 km thick elastic plate, assumed to 
-be 4 km beneath the observation level can be computed as
-.br
-.sp
-grdfft topo.nc -T20000/2800/3330/1030/2300 -S0.022 -C4000 -Gcomp_faa.nc
-.br
-.sp
-where 0.022 is the scale needed for the first term in Parker's expansion for\"'
-computing gravity from topography (= 2 * PI * G * (rhom - rhol)).
-.br
-.sp
 To compute cross-spectral estimates for co-registered bathymetry and gravity grids,
 and report result as functions of wavelengths in km, try
 br
@@ -164,14 +124,14 @@ br
 grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
 .br
 .sp
-To examine the pre-FFT grid after detrending, point-symmetry reflection, and tapering has been applied.
+To examine the pre-FFT grid after detrending, point-symmetry reflection, and tapering has been applied,
 as well as saving the real and imaginary components of the raw spectrum of the data in topo.nc, try
 .br
 .sp
-grdfft topo.nc -Q -Z -fg -V
+grdfft topo.nc -N+q+z -fg -V
 .br
 .sp
-You can now make plots of the data in taper_topo.nc, real_topo.nc, and imag_topo.nc.
+You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdedit (1),

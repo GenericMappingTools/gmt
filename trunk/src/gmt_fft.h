@@ -53,11 +53,16 @@ struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr *
 
 struct GMT_FFT_INFO {
 	bool set;			/* true if we parsed options; false we must take default settings */
+	bool save[2];			/* save[GMT_IN] means save the input grid just before calling the FFT */
+					/* save[GMT_OUT] means save the complex output grid just after calling the FFT */
+	bool polar;			/* true if we are to save the complex output grid in polar form */
+	char *suffix;			/* Suffix used to form output names if save[GMT_IN] is true [tapered] */
 	unsigned int nx;		/* Desired hard FFT nx dimensionl or 0 if free to adjust */
 	unsigned int ny;		/* Desired hard FFT ny dimensionl or 0 if free to adjust */
 	unsigned int taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */
 	unsigned int info_mode;		/* One of the GMT_FFT_INFO for setting nx/ny or inquire */
 	double taper_width;		/* Amount of tapering in percent */
+	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to wavenumber structure */
 };
 
 #endif
