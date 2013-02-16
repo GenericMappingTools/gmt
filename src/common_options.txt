@@ -95,6 +95,9 @@
 /* For tools needing grid resampling */
 #define GMT_SAMP_OPT	BD(b)|BD(c)|BD(l)|BD(n)][[BD(/)]IT(threshold)]
 
+/* For tools needed to set FFT parameters, prepend leading option, e.g. OPT(N) */
+#define GMT_FFT_OPT	BD(f)|BD(q)|BD(s)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)][BD(+w)[IT(suffix)]][BD(+z)[BD(p)]
+
 /* Optional suffix for grids */
 #define GMT_GRID_SUFFIX	BD(=)IT(id)[BD(/)IT(scale)BD(/)IT(offset)[BD(/)IT(nan)]]
 

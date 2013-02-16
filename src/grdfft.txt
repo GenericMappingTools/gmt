@@ -4,16 +4,15 @@
 grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) domain 
 .SH SYNOPSIS
 BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ OPT(A)IT(azimuth) ] 
-[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)BD(|g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
-[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)BD(|g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
-[ OPT(N)[BD(f)|BD(q)|BD(s)|IT(nx/ny)][BD(+e)|BD(n)|BD(m)][BD(+t)IT(width)][BD(+q)[IT(suffix)]][BD(+z)[BD(p)]] ] 
-[ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)|BD(g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
+[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)|BD(g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
+[ OPT(N)[GMT_FFT_OPT] ] [ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
 is provided to scale the data before writing the new values to an output file.  The
 horizontal dimensions of the grid are assumed to be in meters.  Geographical grids
-may be used by specifying the OPT(f) option that scales degrees to meters.  If you
+may be used by specifying the OPT(fg) option that scales degrees to meters.  If you
 have grids with dimensions in km, you could change this to meters using BD(grdedit)
 or scale the output with BD(grdmath).
 #include "explain_commonitems.txt"
@@ -34,7 +33,7 @@ Take the directional derivative in the IT(azimuth) direction measured in degrees
 OPT(C)IT(zlevel)
 Upward (for IT(zlevel) > 0) or downward (for IT(zlevel) < 0) continue the field IT(zlevel) meters.
 .TP
-OPT(D)[IT(scale)BD(|g)]
+OPT(D)[IT(scale)|BD(g)]
 Differentiate the field, i.e., take d(field)/dz.  This is equivalent to multiplying by kr in the frequency
 domain (kr is radial wave number).  Append a scale to multiply by (kr * IT(scale)) instead.  Alternatively,
 append BD(g) to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
@@ -50,7 +49,7 @@ Append BD(w) to write wavelength instead of frequency.  If your grid is geograph
 to scale wavelengths from meter [Default] to km.
 .TP
 OPT(F)[BD(r)|BD(x)|BD(y)]IT(params)
-Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic (BD(r)).
+Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic [BD(r)].
 Choose between a cosine-tapered band-pass, a Gaussian band-pass filter, or a Butterworth band-pass filter.
 Cosine-taper: Specify four wavelengths IT(lc)/IT(lp)/IT(hp)/IT(hc) in correct units (see OPT(fg)) to design a bandpass filter: wavelengths greater than 
 IT(lc) or less than IT(hc) will be cut, wavelengths greater than IT(lp) and less than IT(hp) will be 
@@ -128,7 +127,7 @@ To examine the pre-FFT grid after detrending, point-symmetry reflection, and tap
 as well as saving the real and imaginary components of the raw spectrum of the data in topo.nc, try
 .br
 .sp
-grdfft topo.nc -N+q+z -fg -V
+grdfft topo.nc -N+w+z -fg -V
 .br
 .sp
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.

@@ -864,6 +864,30 @@ void GMT_img_syntax (struct GMT_CTRL *C)
 	GMT_message (C, "\t        For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
 }
 
+void GMT_fft_syntax (struct GMT_CTRL *C, char option, char *string)
+{	/* For programs that will do FFT work */
+	if (string[0] == ' ') GMT_report (C, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	GMT_message (C, "\t-%c %s\n", option, string);
+	GMT_message (C, "\t   -Nf will force the FFT to use the dimensions of the data.\n");
+	GMT_message (C, "\t   -Nq will inQuire about more suitable dimensions, report, then continue.\n");
+	GMT_message (C, "\t   -Ns will list Singleton's [1967] recommended dimensions, then exit.\n");
+	GMT_message (C, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
+	GMT_message (C, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
+	GMT_message (C, "\t   If FFT dimensions > grid dimensions, data are extended via edge point symmetry\n");
+	GMT_message (C, "\t   and tapered to zero.  Several modifers can be set to change this behavior:\n");
+	GMT_message (C, "\t     +e: Extend data via edge point symmetry [Default].\n");
+	GMT_message (C, "\t     +m: Extend data via edge mirror symmetry.\n");
+	GMT_message (C, "\t     +n: Do NOT extend data.\n");
+	GMT_message (C, "\t     +t<w>: Limit tapering to <w> %% of the extended margin width and height [100].\n");
+	GMT_message (C, "\t       If +n is set then +t instead sets the boundary width of the interior\n");
+	GMT_message (C, "\t       grid margin to be tapered [0].\n");
+	GMT_message (C, "\t     +w[<suffix>] will write intermediate grid passed to FFT after detrending/extention/tapering.\n");
+	GMT_message (C, "\t       File name will have _<suffix> [tapered] inserted before file extension.\n");
+	GMT_message (C, "\t     +z[p] will write raw complex spectrum to two separate grid files.\n");
+	GMT_message (C, "\t       File named will have _real/_imag inserted before the file extensions.\n");
+	GMT_message (C, "\t       Append p to store polar forms instead, using _mag/_phase instead.>\n");
+}
+
 void GMT_syntax (struct GMT_CTRL *C, char option)
 {
 	/* The function print to stderr the syntax for the option indicated by
