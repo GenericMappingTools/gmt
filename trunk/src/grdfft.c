@@ -24,7 +24,7 @@
  * Version:	5 API
  * Note:	PW: As of 2/14/2013 the various setup and init functions for FFT use
  *		have been generalized and made available GMT-wide via new functions
- *		in gmt_fft.c.
+ *		in gmt_fft.c, called GMT_fft_*.
  */
 
 #define THIS_MODULE k_mod_grdfft /* I am grdfft */
@@ -80,7 +80,7 @@ struct GRDFFT_CTRL {
 		bool active;
 		unsigned int mode;
 	} L;
-	struct N {	/* -N[f|q||s<nx>/<ny>][+e|m|n][+t<width>] */
+	struct N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
 		bool active;
 		struct GMT_FFT_INFO info;
 	} N;
@@ -153,7 +153,7 @@ unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FF
 {
 	uint64_t k;
 	double scale, fact;
-	float *datac = Grid->data;
+	float *datac = Grid->data;	/* Shorthand */
 
 	/* Differentiate in frequency domain by multiplying by kr [scale optional] */
 
@@ -172,7 +172,7 @@ unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WA
 	/* Integrate in frequency domain by dividing by kr [scale optional] */
 	uint64_t k;
 	double fact, scale;
-	float *datac = Grid->data;
+	float *datac = Grid->data;	/* Shorthand */
 
 	scale = (*par != 0.0) ? *par : 1.0;
 	datac[0] = datac[1] = 0.0;
@@ -187,7 +187,7 @@ unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WA
 unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_FFT_WAVENUMBER *K)
 {
 	uint64_t k;
-	float tmp, *datac = Grid->data;
+	float tmp, *datac = Grid->data;	/* Shorthand */
 
 	/* If z is positive, the field will be upward continued using exp[- k z].  */
 
@@ -202,12 +202,12 @@ unsigned int do_continuation (struct GMT_GRID *Grid, double *zlevel, struct GMT_
 unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struct GMT_FFT_WAVENUMBER *K)
 {
 	uint64_t k;
-	float tempr, tempi, fact, *datac = Grid->data;
+	float tempr, tempi, fact, *datac = Grid->data;	/* Shorthand */
 	double cos_azim, sin_azim;
 
 	sincosd (*azim, &sin_azim, &cos_azim);
 
-	datac[0] = datac[1] = 0.0;
+	datac[0] = datac[1] = 0.0f;
 	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = (float)(sin_azim * GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K) + cos_azim * GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K));
 		tempr = -(datac[k+1] * fact);
@@ -240,7 +240,7 @@ unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, doubl
 	double rw;	/* Water density, SI units  */
 	double ri;	/* Infill density, SI units  */
 
-	float *datac = Grid->data;
+	float *datac = Grid->data;	/* Shorthand */
 
 	te = par[0];	rl = par[1];	rm = par[2];	rw = par[3];	ri = par[4];
 	airy_ratio = -(rl - rw)/(rm - ri);
@@ -303,7 +303,7 @@ double get_filter_weight (uint64_t k, struct F_INFO *f_info, struct GMT_FFT_WAVE
 void do_filter (struct GMT_GRID *Grid, struct F_INFO *f_info, struct GMT_FFT_WAVENUMBER *K)
 {
 	uint64_t k;
-	float weight, *datac = Grid->data;
+	float weight, *datac = Grid->data;	/* Shorthand */
 
 	for (k = 0; k < Grid->header->size; k += 2) {
 		weight = (float) get_filter_weight (k, f_info, K);
@@ -320,7 +320,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	 * then just XPower[f] and its 1-std dev error estimate are returned, hence just 3 columns.
 	 * Equations based on spectrum1d.c */
 
-	uint64_t dim[4] = {1, 1, 17, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
+	uint64_t dim[4] = {1, 1, 0, 0};	/* One table and one segment, with either 1 + 1*2 = 3 or 1 + 8*2 = 17 columns and yet unknown rows */
 	uint64_t k, nk, ifreq, *nused = NULL;
 	char header[GMT_BUFSIZ], *name[2] = {"freq", "wlength"};
 	unsigned int col;
@@ -353,8 +353,8 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	}
 
 	/* Get arrays for summing stuff */
-	X_pow     = GMT_memory (GMT, NULL, nk, double );
-	nused     = GMT_memory (GMT, NULL, nk, uint64_t);
+	X_pow = GMT_memory (GMT, NULL, nk, double );
+	nused = GMT_memory (GMT, NULL, nk, uint64_t);
 	if (GridY) {	/* For cross-spectral estimates */
 		Y = GridY->data;	/* Shorthand for Y data */
 		Y_pow     = GMT_memory (GMT, NULL, nk, double);
@@ -573,16 +573,15 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>]  [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
+	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
-	GMT_message (GMT, "\t[-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q[<suffix>]] [-S<scale>]\n");
-	GMT_message (GMT, "\t[-Z[p]] [%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is the input grid file.\n");
+	GMT_message (GMT, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
 	GMT_message (GMT, "\tOPTIONS:\n");
-	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D spectrum (see -E).\n");
 	GMT_message (GMT, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_message (GMT, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
 	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
@@ -602,25 +601,12 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   c) Butterworth band-pass: Append two wavelengths and order <lo>/<hi>/<order>\n");
 	GMT_message (GMT, "\t      where filter amplitudes = 0.5.  Replace wavelength by - to skip, e.g.,\n");
 	GMT_message (GMT, "\t      try -F300/-/2 for a high-pass 2nd-order Butterworth filter.\n");
+	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
+	GMT_message (GMT, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
 	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
 	GMT_message (GMT, "\t-L Leave trend alone:  Do not remove least squares plane from data [Default removes plane].\n");
 	GMT_message (GMT, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
-	GMT_message (GMT, "\t-N Choose or inquire about suitable grid dimensions for FFT, and set modifiers:\n");
-	GMT_message (GMT, "\t   -Nf will force the FFT to use the dimensions of the data.\n");
-	GMT_message (GMT, "\t   -Nq will inQuire about more suitable dimensions, report, then continue.\n");
-	GMT_message (GMT, "\t   -Ns will list Singleton's [1967] recommended dimensions, then exit.\n");
-	GMT_message (GMT, "\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
-	GMT_message (GMT, "\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
-	GMT_message (GMT, "\t   If FFT dimensions > grid dimensions, data are extended via edge point symmetry\n");
-	GMT_message (GMT, "\t   and tapered to zero.  Several modifers can be set to change this behavior:\n");
-	GMT_message (GMT, "\t     +e: Extend data via edge point symmetry [Default].\n");
-	GMT_message (GMT, "\t     +m: Extend data via edge mirror symmetry.\n");
-	GMT_message (GMT, "\t     +n: Do NOT extend data.\n");
-	GMT_message (GMT, "\t     +t<w>: Limit tapering to <w> %% of the extended margin width and height [100].\n");
-	GMT_message (GMT, "\t       If +n is set then +t instead sets the boundary width of the interior\n");
-	GMT_message (GMT, "\t       grid margin to be tapered [0].\n");
-	GMT_message (GMT, "\t-Q Save intermediate grid passed to FFT after detrending/extention/tapering.\n");
-	GMT_message (GMT, "\t   File name will have _<suffix> [tapered] inserted before file extension.\n");
+	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 #if 0
@@ -628,10 +614,9 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
 	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
 #endif
-	GMT_message (GMT, "\t-Z Store raw complex spectrum to files real_<ingrid> and imag_<ingrid>.\n");
-	GMT_message (GMT, "\t   Append p to store polar forms instead, i.e., mag_<ingrid> and phase_<ingrid>\n");
-	GMT_explain_options (GMT, "Vf.");
+	GMT_explain_options (GMT, "Vf");
 	GMT_message (GMT, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");
+	GMT_explain_options (GMT, ".");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
 
 	return (EXIT_FAILURE);
@@ -793,7 +778,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.info.taper_mode == GMT_FFT_EXTEND_NONE && Ctrl->N.info.taper_width == 100.0, "Syntax error -N option: +n requires +t with width << 100!\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -809,7 +794,6 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	uint64_t ij;
 	double coeff[2][3];	/* Detrend parameters returned */
 	char *spec_msg[2] = {"spectrum", "cross-spectrum"};
-
 	struct GMT_GRID *Grid[2] = {NULL,  NULL}, *Orig[2] = {NULL, NULL};
 	struct F_INFO f_info;
 	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL;

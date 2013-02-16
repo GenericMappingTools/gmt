@@ -71,6 +71,7 @@ EXTERN_MSC void GMT_label_syntax (struct GMT_CTRL *C, unsigned int indent, unsig
 EXTERN_MSC void GMT_dist_syntax (struct GMT_CTRL *C, char option, char *string);
 EXTERN_MSC void GMT_vector_syntax (struct GMT_CTRL *C, unsigned int mode);
 EXTERN_MSC void GMT_img_syntax (struct GMT_CTRL *C);
+EXTERN_MSC void GMT_fft_syntax (struct GMT_CTRL *C, char option, char *string);
 EXTERN_MSC void GMT_explain_options (struct GMT_CTRL *C, char *options);
 EXTERN_MSC void GMT_getdefaults (struct GMT_CTRL *C, char *this_file);
 EXTERN_MSC void GMT_putdefaults (struct GMT_CTRL *C, char *this_file);
