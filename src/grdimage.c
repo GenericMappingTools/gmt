@@ -128,7 +128,8 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
 #endif
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.\n");
+	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.  Optionally, instead give name of a master cpt\n");
+	GMT_message (GMT, "\t   to automatically assign 16 colors over the data range [rainbow].\n");
 #ifdef HAVE_GDAL
 	GMT_message (GMT, "\t-D Use to read an image via GDAL. Append r to equate image region to -R region.\n");
 #endif
@@ -473,9 +474,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 	if (!Ctrl->In.do_rgb) {
 		if (Ctrl->C.active) {		/* Read palette file */
-			//if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
-			//	Return (API->error);
-			//}
 			if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
 				Return (API->error);
 			}
