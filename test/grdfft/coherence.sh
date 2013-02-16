@@ -21,7 +21,7 @@ psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba:."Multibeam bathymetry":WSne >>
 grdimage $G.nc -I${G}_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
 psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba:."Satellite gravity":WSne >> $ps
 
-grdfft $T.nc $G.nc -Ewk -Qtmp -N192/192 > cross.txt
+grdfft $T.nc $G.nc -Ewk -N192/192+qtmp > cross.txt
 grdgradient ${G}_tmp.nc -A0 -Nt1 -G${G}_tmp_int.nc
 grdgradient ${T}_tmp.nc -A0 -Nt1 -G${T}_tmp_int.nc
 

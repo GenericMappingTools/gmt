@@ -101,11 +101,22 @@ unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct 
 				case 'e':  info->taper_mode = GMT_FFT_EXTEND_POINT_SYMMETRY; break;
 				case 'n':  info->taper_mode = GMT_FFT_EXTEND_NONE; break;
 				case 'm':  info->taper_mode = GMT_FFT_EXTEND_MIRROR_SYMMETRY; break;
-				case 't':
+				case 'q':	/* Save FFT input; optionally append file suffix */
+					info->save[GMT_IN] = true;
+					if (p[1]) {
+						if (info->suffix) free (info->suffix);	/* Free previous string */
+						info->suffix = strdup (&p[1]);
+					}
+					break;
+				case 't':	/* Set taper width */
 					if ((info->taper_width = atof (&p[1])) < 0.0) {
 						GMT_report (C, GMT_MSG_NORMAL, "Error -%c: Negative taper width given\n", option);
 						n_errors++;
 					}
+					break;
+				case 'z': 	/* Save FFT output in two files; append p for polar form */
+					info->save[GMT_OUT] = true;
+					if (p[1] == 'p') info->polar = true;
 					break;
 				default: 
 					GMT_report (C, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
@@ -476,10 +487,12 @@ struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID
 
 	GMT_fft_set_wave (C, GMT_FFT_K_IS_KR, K);	/* Initialize for use with radial wavenumbers */
 	
+	F->K = K;	/* So that F can access information in K later */
+	
 	return (K);
 }
 
-void GMT_grd_taper_edges (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F)
+void GMT_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F)
 {
 	/* mode sets if and how tapering will be performed [see GMT_FFT_EXTEND_* constants].
 	 * width is relative width in percent of the margin that will be tapered [100]. */
@@ -634,7 +647,7 @@ char *file_name_with_suffix (char *name, char *suffix)
 	return (file);
 }
 
-void GMT_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suffix)
+void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suffix)
 {
 	/* Write the intermediate grid that will be passed to the FFT to file.
 	 * This grid may have been a mean, mid-value, or plane removed, may
@@ -667,23 +680,27 @@ void GMT_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);			/* Restore GMT pad */
 }
 
-void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
+void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F)
 {
 	/* Save the raw spectrum as two files (real,imag) or (mag,phase), depending on mode.
 	 * We must first do an "fftshift" operation as in Matlab, to put the 0 frequency
 	 * value in the center of the grid. */
 	uint64_t row, col, i_ij, o_ij;
-	unsigned int nx_2, ny_2, k, pad[4], wmode[2] = {GMT_GRID_COMPLEX_REAL, GMT_GRID_COMPLEX_IMAG};
+	unsigned int nx_2, ny_2, k, pad[4], mode, wmode[2] = {GMT_GRID_COMPLEX_REAL, GMT_GRID_COMPLEX_IMAG};
 	double wesn[4], inc[2];
 	float re, im;
 	char *file = NULL, *suffix[2][2] = {{"real", "imag"}, {"mag", "phase"}};
 	struct GMT_GRID *Grid = NULL;
+	struct GMT_FFT_WAVENUMBER *K = F->K;
 
+	if (K == NULL) return;
+	
 	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return;
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffiz %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
 	/* Prepare wavenumber domain limits and increments */
+	mode = (F->polar) ? 1 : 0;
 	nx_2 = K->nx2 / 2;	ny_2 = K->ny2 / 2;
 	wesn[XLO] = -K->delta_kx * nx_2;	wesn[XHI] =  K->delta_kx * (nx_2 - 1);
 	wesn[YLO] = -K->delta_ky * (ny_2 - 1);	wesn[YHI] =  K->delta_ky * ny_2;
@@ -703,7 +720,7 @@ void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mo
 			i_ij = 2*GMT_IJ0 (Grid->header, row, col);
 			o_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col+nx_2);
 			re = Grid->data[i_ij]; im = Grid->data[i_ij+1];
-			if (mode) {	/* Want magnitude and phase */
+			if (F->polar) {	/* Want magnitude and phase */
 				Grid->data[i_ij]   = (float)hypot (G->data[o_ij], G->data[o_ij+1]);
 				Grid->data[i_ij+1] = (float)d_atan2 (G->data[o_ij+1], G->data[o_ij]);
 				Grid->data[o_ij]   = (float)hypot (re, im);
@@ -716,7 +733,7 @@ void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mo
 			i_ij = 2*GMT_IJ0 (Grid->header, row+ny_2, col);
 			o_ij = 2*GMT_IJ0 (Grid->header, row, col+nx_2);
 			re = Grid->data[i_ij]; im = Grid->data[i_ij+1];
-			if (mode) {	/* Want magnitude and phase */
+			if (F->polar) {	/* Want magnitude and phase */
 				Grid->data[i_ij]   = (float)hypot (G->data[o_ij], G->data[o_ij+1]);
 				Grid->data[i_ij+1] = (float)d_atan2 (G->data[o_ij+1], G->data[o_ij]);
 				Grid->data[o_ij]   = (float)hypot (re, im);
@@ -747,6 +764,14 @@ void GMT_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int mo
 	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
 }
 
+void GMT_fft_save (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_INFO *F)
+{
+	/* Handle the writing of the grid going into the FFT an comping out of the FFT, per F settings */
+	
+	if (G == NULL) return;
+	if (direction == GMT_IN  && F->save[GMT_IN])  gmt_grd_save_taper (GMT, G, F->suffix);
+	if (direction == GMT_OUT && F->save[GMT_OUT]) gmt_grd_save_fft (GMT, G, F);
+}
 static inline unsigned int propose_radix2 (unsigned n) {
 	/* Returns the smallest base 2 exponent, log2n, that satisfies: 2^log2n >= n */
 	unsigned log2n = 1;

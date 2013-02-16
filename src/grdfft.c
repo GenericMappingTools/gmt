@@ -84,10 +84,6 @@ struct GRDFFT_CTRL {
 		bool active;
 		struct GMT_FFT_INFO info;
 	} N;
-	struct Q {	/* -Q[<suffix>] */
-		bool active;
-		char *suffix;
-	} Q;
 	struct S {	/* -S<scale> */
 		bool active;
 		double scale;
@@ -98,10 +94,6 @@ struct GRDFFT_CTRL {
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
 #endif
-	struct Z {	/* -Z[p] */
-		bool active;
-		unsigned int mode;
-	} Z;
 };
 
 enum Grdfft_operators {
@@ -143,7 +135,6 @@ void *New_grdfft_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->S.scale = 1.0;
-	C->Q.suffix = strdup ("tapered");			/* Default suffix */
 	return (C);
 }
 
@@ -154,7 +145,7 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	if (C->In.file[0]) free (C->In.file[0]);	
 	if (C->In.file[1]) free (C->In.file[1]);	
 	if (C->G.file) free (C->G.file);	
-	if (C->Q.suffix) free (C->Q.suffix);	
+	if (C->N.info.suffix) free (C->N.info.suffix);	
 	GMT_free (GMT, C);	
 }
 
@@ -667,9 +658,8 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int j, k, n_errors = 0, filter_type = 0, pos = 0;
+	unsigned int j, k, n_errors = 0, filter_type = 0;
 	int n_scan;
-	char *c = NULL;
 	double par[5];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -786,15 +776,6 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				if (opt->arg[0] == '+') show_n = true;
 				break;
 #endif
-			case 'Q':	/* Output intermediate grid file */
-				Ctrl->Q.active = true;
-				if (opt->arg[0]) { free (Ctrl->Q.suffix); Ctrl->Q.suffix = strdup (opt->arg);}
-				break;
-			case 'Z':	/* Output raw complex spectrum */
-				Ctrl->Z.active = true;
-				if (opt->arg[0] == 'p') Ctrl->Z.mode = 1;	/* Store mag,phase instead of real,imag */
-				break;
-					break;
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;
@@ -905,8 +886,8 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
 		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
-		GMT_grd_taper_edges (GMT, Grid[k], &Ctrl->N.info);
-		if (Ctrl->Q.active) GMT_grd_save_taper (GMT, Grid[k], Ctrl->Q.suffix);
+		GMT_fft_taper (GMT, Grid[k], &Ctrl->N.info);
+		GMT_fft_save (GMT, Grid[k], GMT_IN, &Ctrl->N.info);
 	}
 
 #ifdef FTEST
@@ -925,7 +906,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
-		if (Ctrl->Z.active) GMT_grd_save_fft (GMT, Grid[k], Ctrl->Z.mode, K);
+		GMT_fft_save (GMT, Grid[k], GMT_OUT, &Ctrl->N.info);
 	}
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
