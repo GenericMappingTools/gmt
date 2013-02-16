@@ -333,7 +333,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "jZ");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "b");
-	GMT_message (GMT, "\t-C Color palette file\n");
+	GMT_message (GMT, "\t-C Color palette file.\n");
 	GMT_message (GMT, "\t-G Use <drapegrid> rather than <topogrid> for color-coding.\n");
 	GMT_message (GMT, "\t   Use <topogrid> as the relief and drape the image on top.\n");
 	GMT_message (GMT, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");

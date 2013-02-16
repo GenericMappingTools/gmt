@@ -328,10 +328,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	d_col = d_row = 1;
 	col_0 = row_0 = 0;
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
-		Return (API->error);
-	}
-
 	if (!(strcmp (Ctrl->In.file[0], "=") || strcmp (Ctrl->In.file[1], "="))) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Piping of grid files not supported!\n");
 		Return (EXIT_FAILURE);
@@ -375,6 +371,10 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	/* Read data */
 
 	for (k = 0; k < 2; k++) if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file[k], Grid[k]) == NULL) {	/* Get data */
+		Return (API->error);
+	}
+
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 

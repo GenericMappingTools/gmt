@@ -6762,7 +6762,8 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 	int i, j, k, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	int n_slashes = 0, last_pos;
-	bool width_given, error = false, skip = false;
+	unsigned int mod_flag = 0;
+	bool width_given, mod_given = false, error = false, skip = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	char txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], last_char;
@@ -6779,20 +6780,21 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 
 	last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
 	last_char = args[last_pos];
+	if (width_given) mod_flag = 1;
 	if (last_pos > 0) {	/* Avoid having -JXh|v be misinterpreted */
 		switch (last_char) {	/* Check for what kind of width is given (only used if upper case is given below */
 			case 'h':	/* Want map HEIGHT instead */
-				width_given = 2;
+				mod_flag = 2;
 				break;
 			case '+':	/* Want this to be the MAX dimension of map */
-				width_given = 3;
+				mod_flag = 3;
 				break;
 			case '-':	/* Want this to be the MIN dimension of map */
-				width_given = 4;
+				mod_flag = 4;
 				break;
 		}
 	}
-	if (width_given > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
+	if (mod_flag > 1) args[last_pos] = 0;	/* Temporarily chop off modifier */
 
 	for (j = 0; args[j]; j++) if (args[j] == '/') n_slashes++;
 
@@ -6810,7 +6812,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 		C->current.proj.units_pr_degree = (k == -1) ? true : false;
 		C->current.io.col_type[GMT_OUT][GMT_X] = C->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* This may be overridden by mapproject -I */
 		if (project != GMT_LINEAR) {
-			C->current.proj.gave_map_width = width_given;
+			C->current.proj.gave_map_width = mod_flag;
 			C->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 		}
 	}
@@ -7361,7 +7363,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	}
 
 	if (project != GMT_ZAXIS) C->current.proj.projection = project;
-	if (width_given > 1) args[last_pos] = last_char;	/* Restore modifier */
+	if (mod_flag > 1) args[last_pos] = last_char;	/* Restore modifier */
 
 	return (error);
 }
