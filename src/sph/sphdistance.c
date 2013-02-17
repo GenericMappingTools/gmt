@@ -82,7 +82,6 @@ void prepare_polygon (struct GMT_CTRL *C, struct GMT_DATASEGMENT *P)
 	
 	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
 		GMT_set_delta_lon (P->coord[GMT_X][row-1], P->coord[GMT_X][row], dlon);
-		dlon = P->coord[GMT_X][row] - P->coord[GMT_X][row-1];
 		lon_sum += dlon;
 		lat_sum += P->coord[GMT_Y][row];
 	}
