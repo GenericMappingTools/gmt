@@ -141,6 +141,7 @@ unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct 
 			sscanf (args, "%d/%d", &info->nx, &info->ny);
 			info->info_mode = GMT_FFT_SET;
 	}
+	if (info->suffix == NULL) info->suffix = strdup ("tapered");	/* Default suffix */
 	info->set = true;	/* We parsed this option */
 	return (n_errors);
 }
@@ -658,8 +659,8 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	struct GRD_HEADER save;
 	char *file = NULL;
 	
-	GMT_memcpy (&save, Grid->header, 1, sizeof (struct GRD_HEADER));	/* Save what we have before messing around */
-	GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);			/* Save current pad, then set pad to zero */
+	GMT_memcpy (&save, Grid->header, 1, struct GRD_HEADER);	/* Save what we have before messing around */
+	GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);	/* Save current pad, then set pad to zero */
 	if ((del = Grid->header->pad[XLO]) > 0) Grid->header->wesn[XLO] -= del * Grid->header->inc[GMT_X], Grid->header->pad[XLO] = 0;
 	if ((del = Grid->header->pad[XHI]) > 0) Grid->header->wesn[XHI] += del * Grid->header->inc[GMT_X], Grid->header->pad[XHI] = 0;
 	if ((del = Grid->header->pad[YLO]) > 0) Grid->header->wesn[YLO] -= del * Grid->header->inc[GMT_Y], Grid->header->pad[YLO] = 0;
@@ -676,8 +677,8 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	else
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 	
-	GMT_memcpy (Grid->header, &save, 1, sizeof (struct GRD_HEADER));	/* Restore original */
-	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);			/* Restore GMT pad */
+	GMT_memcpy (Grid->header, &save, 1, struct GRD_HEADER);	/* Restore original */
+	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
 }
 
 void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F)

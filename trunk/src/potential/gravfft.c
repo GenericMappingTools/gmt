@@ -79,7 +79,7 @@ struct GRAVFFT_CTRL {
 		bool active;
 		unsigned int mode;
 	} L;
-	struct GRVF_N {	/* -N[f|q||s<nx>/<ny>][+e|m|n][+t<width>]  */
+	struct GRVF_N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO info;
 	} N;
@@ -352,7 +352,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -C<n/wavelength/mean_depth/tbw> -D<density>\n");
 	GMT_message (GMT,"\t-G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<wbctk>\n");
-	GMT_message (GMT,"\t[-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q] -T<te/rl/rm/rw>[+m] [-fg]\n");
+	GMT_message (GMT,"\t[-N%s [-Q] -T<te/rl/rm/rw>[+m] [-fg]\n", GMT_FFT_OPT);
 	GMT_message (GMT,"\t[%s] -Z<zm>[/<zl>]\n\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -405,20 +405,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   It applies both to bathymetry as well as <ingrid2> [Default removes plane].\n");
 	GMT_message (GMT, "\t  Append m to just remove mean, h to remove mid-value instead or n to not touch.\n");
 	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -L\n");
-	GMT_message (GMT,"\t-N Choose or inquire about suitable grid dimensions for FFT, and set modifiers:\n");
-	GMT_message (GMT,"\t   -Nf will force the FFT to use the dimensions of the data.\n");
-	GMT_message (GMT,"\t   -Nq will inQuire about more suitable dimensions, report, then continue.\n");
-	GMT_message (GMT,"\t   -Ns will list Singleton's [1967] recommended dimensions, then exit.\n");
-	GMT_message (GMT,"\t   -N<nx>/<ny> will do FFT on array size <nx>/<ny> (Must be >= grid size).\n");
-	GMT_message (GMT,"\t   Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
-	GMT_message (GMT,"\t   If FFT dimensions > grid dimensions, data are extended via edge point symmetry\n");
-	GMT_message (GMT,"\t   and tapered to zero.  Several modifers can be set to change this behavior:\n");
-	GMT_message (GMT,"\t     +e: Extend data via edge point symmetry [Default].\n");
-	GMT_message (GMT,"\t     +m: Extend data via edge mirror symmetry.\n");
-	GMT_message (GMT,"\t     +n: Do NOT extend data.\n");
-	GMT_message (GMT,"\t     +t<w>: Limit tapering to <w> %% of the extended margin width and height [100].\n");
-	GMT_message (GMT,"\t       If +n is set then +t instead sets the boundary width of the interior\n");
-	GMT_message (GMT,"\t       grid margin to be tapered [0].\n");
+	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_explain_options (GMT, "Vf.");
 	GMT_message (GMT,"\t-z add a constant to the bathymetry (not to <second_file>) before doing anything else.\n");
 	return (EXIT_FAILURE);
@@ -549,12 +536,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
 		if (!(Ctrl->L.active) && Ctrl->L.mode != 3) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
 		GMT_fft_taper (GMT, Grid[k], &Ctrl->N.info);
+		GMT_fft_save (GMT, Grid[k], GMT_IN, &Ctrl->N.info);	/* If -N..w, write tapered grid to file */
 	}
 				
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
 			Return (EXIT_FAILURE);
+		GMT_fft_save (GMT, Grid[k], GMT_OUT, &Ctrl->N.info);	/* If -N..z, write FFT complex grid to files */
 	}
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
