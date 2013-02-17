@@ -103,6 +103,7 @@ struct GRAVFFT_CTRL {
 	struct GRVF_misc {	/* -T */
 		bool coherence;
 		bool give_wavelength;
+		bool give_km;
 		bool from_below;
 		bool from_top;
 		double z_level;	/* mean bathymetry level computed from data */
@@ -245,6 +246,9 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 						case 'c':
 							Ctrl->misc.coherence = true;
 							break;
+						case 'k':
+							Ctrl->misc.give_km = true;
+							break;
 						case 't':
 							Ctrl->misc.from_top = true;
 							break;
@@ -347,7 +351,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -C<n/wavelength/mean_depth/tbw> -D<density>\n");
-	GMT_message (GMT,"\t-G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<wbct>\n");
+	GMT_message (GMT,"\t-G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<wbctk>\n");
 	GMT_message (GMT,"\t[-N[f|q|s|<nx>/<ny>][+e|m|n][+t<width>]] [-Q] -T<te/rl/rm/rw>[+m] [-fg]\n");
 	GMT_message (GMT,"\t[%s] -Z<zm>[/<zl>]\n\n", GMT_V_OPT);
 
@@ -370,6 +374,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   one sigma error bar and, optionaly, a theoretical admittance.\n");
 	GMT_message (GMT,"\t   Append dataflags (one to three) of wbct.\n");
 	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber\n");
+	GMT_message (GMT,"\t     k Use km or wavelength unit [m]\n");
 	GMT_message (GMT,"\t     c computes coherence instead of admittance\" \n");
 	GMT_message (GMT,"\t     b writes a forth column with \"loading from below\" \n");
 	GMT_message (GMT,"\t       theoretical admittance\n");
@@ -469,6 +474,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		sprintf (format, "%s%s%s\n", GMT->current.setting.format_float_out, 
 				GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 		delta_pt /= (2.0 * M_PI);			/* Write out frequency, not wavenumber  */
+		if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_pt *= 1000.0;	/* Wanted wavelength in km */
 
 		for (k = 0; k < Ctrl->C.n_pt; k++) {
 			freq = (k + 1) * delta_pt;
@@ -856,6 +862,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out, 
 			GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
 
+	if (Ctrl->misc.give_wavelength && Ctrl->misc.give_km) delta_k *= 1000.0;	/* Wanted wavelength in km */
 	for (k = k_0; k < nk; k++) {
 		freq = (k + 1) * delta_k;
 		if (Ctrl->misc.give_wavelength) freq = 1.0/freq;

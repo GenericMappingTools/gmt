@@ -81,8 +81,8 @@ void prepare_polygon (struct GMT_CTRL *C, struct GMT_DATASEGMENT *P)
 	/* Then loop over points to accumulate sums */
 	
 	for (row = 1; row < P->n_rows; row++) {	/* Start at row = 1 since (a) 0'th point is repeated at end and (b) we are doing differences */
+		GMT_set_delta_lon (P->coord[GMT_X][row-1], P->coord[GMT_X][row], dlon);
 		dlon = P->coord[GMT_X][row] - P->coord[GMT_X][row-1];
-		if (fabs (dlon) > 180.0) dlon = copysign (360.0 - fabs (dlon), -dlon);
 		lon_sum += dlon;
 		lat_sum += P->coord[GMT_Y][row];
 	}
@@ -307,7 +307,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 				GMT_report (GMT, GMT_MSG_NORMAL, "File %s can only have 1 segment!\n", Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			if (Table->n_segments != (uint64_t)NTable->n_records) {
+			if (Table->n_segments != NTable->n_records) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Files %s and %s do not have same number of items!\n", Ctrl->Q.file, Ctrl->N.file);
 				Return (GMT_RUNTIME_ERROR);
 			}
