@@ -767,7 +767,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocate memory and read data file\n");
 
-	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -801,7 +801,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 	/* Read data */
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, Ctrl->In.file, G) == NULL) {
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, G) == NULL) {
 		Return (API->error);
 	}
 
@@ -1020,17 +1020,17 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			n_tables = 1;
 			if (fmt[2]) {	/* Want files with the contour level in the name */
 				if (fmt[1])	/* f+d[+c]: Write segment files named after contour level and running numbers, with or without C|O modifier */
-					io_mode = GMT_WRITE_SEGMENTS;
+					io_mode = GMT_WRITE_SEGMENT;
 				else {	/* f[+c]: Write one table with all segments for each contour level, possibly one each for C|O */
-					io_mode = GMT_WRITE_TABLES;
+					io_mode = GMT_WRITE_TABLE;
 					tbl_scl = (fmt[0]) ? 2 : 1;
 					n_tables = n_contours * tbl_scl;
 				}
 			}
 			else if (fmt[1])	/* d[+c]: Want individual files with running numbers only, with or without C|O modifier  */
-				io_mode = GMT_WRITE_SEGMENTS;
+				io_mode = GMT_WRITE_SEGMENT;
 			else if (fmt[0]) {	/* c: Want two files: one for open and one for closed contours */
-				io_mode = GMT_WRITE_TABLES;
+				io_mode = GMT_WRITE_TABLE;
 				n_tables = 2;
 				two_only = true;
 			}
@@ -1088,7 +1088,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 				if (Ctrl->D.active && n > 2) {	/* Save the contour as output data */
 					S = GMT_dump_contour (GMT, x, y, n, cval);
 					/* Select which table this segment should be added to */
-					tbl = (io_mode == GMT_WRITE_TABLES) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
+					tbl = (io_mode == GMT_WRITE_TABLE) ? ((two_only) ? is_closed : tbl_scl * c) : 0;
 					if (n_seg[tbl] == n_seg_alloc[tbl]) {
 						size_t old_n_alloc = n_seg_alloc[tbl];
 						D->table[tbl]->segment = GMT_memory (GMT, D->table[tbl]->segment, (n_seg_alloc[tbl] += GMT_SMALL_CHUNK), struct GMT_DATASEGMENT *);
@@ -1098,9 +1098,9 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 					D->table[tbl]->n_segments++;	D->n_segments++;
 					D->table[tbl]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
-					if (io_mode == GMT_WRITE_TABLES && !D->table[tbl]->file[GMT_OUT])
+					if (io_mode == GMT_WRITE_TABLE && !D->table[tbl]->file[GMT_OUT])
 						D->table[tbl]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
-					else if (io_mode == GMT_WRITE_SEGMENTS)
+					else if (io_mode == GMT_WRITE_SEGMENT)
 						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, cval, is_closed, cont_counts);
 				}
 				if (make_plot && cont_do_tick[c] && is_closed) {	/* Must store the entire contour for later processing */

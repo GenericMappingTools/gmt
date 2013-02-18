@@ -4996,13 +4996,13 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	/* Determine w/e/s/n via GMT_minmax */
 
 	/* Create option list, register D as input source via ref */
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REF, GMT_IS_POINT, GMT_IN, NULL, D)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D)) == GMTAPI_NOTSET) {
 		return (C->parent->error);
 	}
 	if (GMT_Encode_ID (C->parent, in_string, object_ID) != GMT_OK) {
 		return (C->parent->error);	/* Make filename with embedded object ID */
 	}
-	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 		return (C->parent->error);
 	}
 	if (GMT_Encode_ID (C->parent, out_string, object_ID)) {
@@ -5128,7 +5128,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_DATATABLE *table, bool use_GMT_io, unsigned int io_mode)
 {
 	/* Writes an entire segment data set to file or wherever.
-	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
+	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
 	bool ascii, close_file = false, append;
@@ -5160,7 +5160,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
 			strncpy (file, dest, GMT_BUFSIZ);
-			if (io_mode < GMT_WRITE_SEGMENTS) {	/* Only require one destination */
+			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = GMT_fopen (C, &file[append], open_mode)) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
 					GMT_exit (EXIT_FAILURE);
@@ -5193,7 +5193,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 			GMT_exit (EXIT_FAILURE);
 			break;
 	}
-	if (io_mode < GMT_WRITE_SEGMENTS) {
+	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (ascii && C->current.setting.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
 		}
@@ -5203,10 +5203,10 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 	out = GMT_memory (C, NULL, table->n_columns, double);
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
-		if (io_mode >= GMT_WRITE_SEGMENTS) {	/* Create separate file for each segment */
+		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
 			if (table->segment[seg]->file[GMT_OUT])
 				out_file = table->segment[seg]->file[GMT_OUT];
-			else if (io_mode == GMT_WRITE_TABLE_SEGMENTS)	/* Build name with table id and seg # */
+			else if (io_mode == GMT_WRITE_TABLE_SEGMENT)	/* Build name with table id and seg # */
 				sprintf (tmpfile, file, table->id, seg);
 			else					/* Build name with seg ids */
 				sprintf (tmpfile, file, table->segment[seg]->id);
@@ -5230,7 +5230,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 			C->current.io.output (C, fp, table->segment[seg]->n_columns, out);
 		}
 		if (table->segment[seg]->range) C->current.io.geo.range = save; 	/* Restore formatting */
-		if (io_mode == GMT_WRITE_SEGMENTS) GMT_fclose (C, fp);	/* Close the segment file */
+		if (io_mode == GMT_WRITE_SEGMENT) GMT_fclose (C, fp);	/* Close the segment file */
 	}
 
 	if (close_file) GMT_fclose (C, fp);	/* Close the file since we opened it */
@@ -5260,7 +5260,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
 			strncpy (file, dest, GMT_BUFSIZ);
-			if (D->io_mode < GMT_WRITE_TABLES) {	/* Only need one destination */
+			if (D->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = GMT_fopen (C, &file[append], open_mode)) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
 					return (EXIT_FAILURE);
@@ -5303,10 +5303,10 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 	}	
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMTAPI_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
-		if (D->io_mode > GMT_WRITE_TABLES) {	/* Write segments to separate files; must pass original file name in case a template */
+		if (D->io_mode > GMT_WRITE_TABLE) {	/* Write segments to separate files; must pass original file name in case a template */
 			if ((error = GMT_write_table (C, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
 		}
-		else if (D->io_mode == GMT_WRITE_TABLES) {	/* Must write this table a its own file */
+		else if (D->io_mode == GMT_WRITE_TABLE) {	/* Must write this table a its own file */
 			if (D->table[tbl]->file[GMT_OUT])
 				out_file = D->table[tbl]->file[GMT_OUT];
 			else
@@ -5327,7 +5327,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct GMT_TEXTTABLE *table, int io_mode)
 {
 	/* Writes an entire segment text data set to file or wherever.
-	 * Specify io_mode == GMT_WRITE_SEGMENTS or GMT_WRITE_TABLE_SEGMENTS to write segments to individual files.
+	 * Specify io_mode == GMT_WRITE_SEGMENT or GMT_WRITE_TABLE_SEGMENT to write segments to individual files.
 	 * If dist is NULL we choose stdout. */
 
 	bool close_file = false;
@@ -5344,7 +5344,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
 			strncpy (file, dest, GMT_BUFSIZ);
-			if (io_mode < GMT_WRITE_SEGMENTS) {	/* Only require one destination */
+			if (io_mode < GMT_WRITE_SEGMENT) {	/* Only require one destination */
 				if ((fp = GMT_fopen (C, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s in gmt_write_texttable\n", &file[append]);
 					GMT_exit (EXIT_FAILURE);
@@ -5378,17 +5378,17 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 			break;
 	}
 
-	if (io_mode < GMT_WRITE_SEGMENTS) {
+	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (C->current.setting.io_header[GMT_OUT]) {
 			for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);
 		}
 	}
 	for (seg = 0; seg < table->n_segments; seg++) {
 		if (table->segment[seg]->mode == GMT_WRITE_SKIP) continue;	/* Skip this segment */
-		if (io_mode >= GMT_WRITE_SEGMENTS) {	/* Create separate file for each segment */
+		if (io_mode >= GMT_WRITE_SEGMENT) {	/* Create separate file for each segment */
 			if (table->segment[seg]->file[GMT_OUT])
 				out_file = table->segment[seg]->file[GMT_OUT];
-			else if (io_mode == GMT_WRITE_TABLE_SEGMENTS)	/* Build name with table id and seg # */
+			else if (io_mode == GMT_WRITE_TABLE_SEGMENT)	/* Build name with table id and seg # */
 				sprintf (tmpfile, file, table->id, seg);
 			else					/* Build name with seg ids */
 				sprintf (tmpfile, file, table->segment[seg]->id);
@@ -5408,7 +5408,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 			GMT_fputs (table->segment[seg]->record[row], fp);
 			GMT_fputs ("\n", fp);
 		}
-		if (io_mode == GMT_WRITE_SEGMENTS) GMT_fclose (C, fp);	/* Close the segment file */
+		if (io_mode == GMT_WRITE_SEGMENT) GMT_fclose (C, fp);	/* Close the segment file */
 	}
 
 	if (close_file) GMT_fclose (C, fp);	/* Close the file since we opened it */
@@ -5432,7 +5432,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 	switch (dest_type) {
 		case GMT_IS_FILE:	/* dest is a file name */
 			strncpy (file, dest, GMT_BUFSIZ);
-			if (D->io_mode < GMT_WRITE_TABLES) {	/* Only need one destination */
+			if (D->io_mode < GMT_WRITE_TABLE) {	/* Only need one destination */
 				if ((fp = GMT_fopen (C, &file[append], (append) ? "a" : "w")) == NULL) {
 					GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", &file[append]);
 					return (EXIT_FAILURE);
@@ -5471,10 +5471,10 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		if (table != GMTAPI_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
-		if (D->io_mode > GMT_WRITE_TABLES) {	/* Must pass original file name in case a template */
+		if (D->io_mode > GMT_WRITE_TABLE) {	/* Must pass original file name in case a template */
 			if ((error = gmt_write_texttable (C, dest, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
 		}
-		else if (D->io_mode == GMT_WRITE_TABLES) {	/* Must write this table a its own file */
+		else if (D->io_mode == GMT_WRITE_TABLE) {	/* Must write this table a its own file */
 			if (D->table[tbl]->file[GMT_OUT])
 				out_file = D->table[tbl]->file[GMT_OUT];
 			else

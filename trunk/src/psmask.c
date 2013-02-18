@@ -559,7 +559,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 					k++;
 				}
 			}
-			if (fmt[1]) io_mode = GMT_WRITE_SEGMENTS;	/* d: Want individual files with running numbers */
+			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
@@ -725,9 +725,9 @@ int GMT_psmask (void *V_API, int mode, void *args)
 					D->table[0]->n_segments++;	D->n_segments++;
 					D->table[0]->n_records += n;	D->n_records += n;
 					/* Generate a file name and increment cont_counts, if relevant */
-					if (io_mode == GMT_WRITE_TABLES && !D->table[0]->file[GMT_OUT])
+					if (io_mode == GMT_WRITE_TABLE && !D->table[0]->file[GMT_OUT])
 						D->table[0]->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
-					else if (io_mode == GMT_WRITE_SEGMENTS)
+					else if (io_mode == GMT_WRITE_SEGMENT)
 						S->file[GMT_OUT] = GMT_make_filename (GMT, Ctrl->D.file, fmt, GMT->session.d_NaN, closed, cont_counts);
 				}
 				if (make_plot) draw_clip_contours (GMT, PSL, x, y, n, Ctrl->G.fill.rgb, section, first);

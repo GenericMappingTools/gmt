@@ -252,7 +252,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, opt->arg, NULL)) == NULL) {
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {
 			Return (API->error);
 		}
 		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
@@ -265,7 +265,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		n_grds++;
 
 		if (Ctrl->M.active || Ctrl->L.active || subset) {	/* Need to read the data (all or subset) */
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn, opt->arg, G) == NULL) {
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, opt->arg, G) == NULL) {
 				Return (API->error);
 			}
 		}

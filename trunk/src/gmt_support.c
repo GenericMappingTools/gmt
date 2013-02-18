@@ -2533,7 +2533,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_
 			return (NULL);
 		}
 		/* Here it should be safe to let makecpt create a CPT for us */
-		if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_CPT, GMT_IS_COPY, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {	/* Register output */
+		if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_CPT, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {	/* Register output */
 			return (NULL);
 		}
 		if (GMT_Encode_ID (C->parent, out_string, object_ID)) {	/* Make filename with embedded object ID */

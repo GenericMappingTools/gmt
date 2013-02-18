@@ -694,12 +694,12 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 			for (ij = 0; ij < C->mxmy; ij++) C->Low->data[ij] = (float)C->low_limit;
 		}
 		else {
-			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
+			if ((C->Low = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->low_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->Low->header->nx != C->Grid->header->nx || C->Low->header->ny != C->Grid->header->ny) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Lower limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
-			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, C->low_file, C->Low) == NULL) return (API->error);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, C->low_file, C->Low) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->Grid->header->ny; j++) {
@@ -721,12 +721,12 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 			for (ij = 0; ij < C->mxmy; ij++) C->High->data[ij] = (float)C->high_limit;
 		}
 		else {
-			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
+			if ((C->High = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, C->high_file, NULL)) == NULL) return (API->error);	/* Get header only */
 			if (C->High->header->nx != C->Grid->header->nx || C->High->header->ny != C->Grid->header->ny) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Upper limit file not of proper dimension!\n");
 				return (EXIT_FAILURE);
 			}
-			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, C->high_file, C->High) == NULL) return (API->error);
+			if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, C->high_file, C->High) == NULL) return (API->error);
 		}
 		if (transform) {
 			for (j = 0; j < C->Grid->header->ny; j++) {

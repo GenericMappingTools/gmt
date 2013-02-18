@@ -48,9 +48,9 @@ int main (int argc, char *argv[]) {
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
-	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_COPY, GMT_IS_SURFACE, GMT_IN, NULL, Gin)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_DUPLICATE, GMT_IS_SURFACE, GMT_IN, NULL, Gin)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	/* 3b. Register a grid struct Gout to be the destination allocated and written to by grdcut */
-	if ((out_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((out_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 
 	/* 4. Create linked options for GMT_grdcut equivalent to "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" */
 

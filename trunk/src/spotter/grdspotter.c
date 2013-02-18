@@ -621,26 +621,26 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
 	for (row = 0; row < G->header->ny; row++) y_cva[row] = GMT_grd_row_to_y (GMT, row, G->header);
 	if (Ctrl->A.file) {
-		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
+		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Topo grid and age grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
 			Return (API->error);
 		}
 	}
 	if (Ctrl->L.file) {
-		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
+		if ((L = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->L.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 		if (!(L->header->nx == Z->header->nx && L->header->ny == Z->header->ny && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Topo grid and ID grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
 			Return (API->error);
 		}
 		
