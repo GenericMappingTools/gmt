@@ -3496,6 +3496,8 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				GMT_grd_loop (GMT, info.G, row, col, node) stack[nstack-1]->G->data[node] = (float)stack[nstack-1]->factor;
 			}
 			this_stack = nstack - 1;
+			GMT_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
+			
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_OK) {
 				Return (API->error);
 			}
