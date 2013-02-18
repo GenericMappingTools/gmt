@@ -51,6 +51,10 @@ struct GRAVFFT_CTRL {
 		unsigned int n_grids;	/* 1 or 2 */
 		char *file[2];
 	} In;
+	struct GRVF_A {	/* -A<z_offset> */
+		bool active;
+		double z_offset;
+	} A;
 	struct GRVF_C {	/* -C<zlevel> */
 		bool active;
 		unsigned int n_pt;
@@ -177,6 +181,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					n_errors++;
 					GMT_report (GMT, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
 				}
+				break;
+			case 'A':	/* Add const to ingrid1 */
+				Ctrl->A.active = true;
+				sscanf (opt->arg, "%lf", &Ctrl->A.z_offset);
 				break;
 			case 'C':	/* For theoretical curves only */
 				Ctrl->C.active = true;
@@ -350,14 +358,17 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -C<n/wavelength/mean_depth/tbw> -D<density>\n");
-	GMT_message (GMT,"\t-G<out_grdfile> [-E<n_terms>] [-F[f|g|v|n|e]] [-L[-l[n]] -I<wbctk>\n");
-	GMT_message (GMT,"\t[-N%s [-Q] -T<te/rl/rm/rw>[+m] [-fg]\n", GMT_FFT_OPT);
-	GMT_message (GMT,"\t[%s] -Z<zm>[/<zl>]\n\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -G<out_grdfile> [-C<n/wavelength/mean_depth/tbw>]\n");
+	GMT_message (GMT,"\t[-A<z_offset>] [-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>] [-L[m|h|n]]\n");
+	GMT_message (GMT,"\t[-N%s [-Q] [-T<te/rl/rm/rw>[+m]] [-fg]\n", GMT_FFT_OPT);
+	GMT_message (GMT,"\t[%s] [-Z<zm>[/<zl>]]\n\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT,"\ttopo_grd is the input grdfile with topography values\n");
+	GMT_message (GMT,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
+	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_message (GMT,"\t-A add a constant to the bathymetry (not to <ingrid2>) before doing anything else.\n");
 	GMT_message (GMT,"\t-C n/wavelength/mean_depth/tbw Compute admittance curves based on a theoretical model.\n");
 	GMT_message (GMT,"\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
 	GMT_message (GMT,"\t   --> Rest of parametrs are set within -T AND -Z options\n");
@@ -366,12 +377,11 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t     b writes \"loading from below\" admittance \n");
 	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber\n");
 	GMT_message (GMT,"\t-D Sets density contrast across surface (used when not -T)\n");
-	GMT_message (GMT,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
 	GMT_message (GMT,"\t-I Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write\n");
 	GMT_message (GMT,"\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
 	GMT_message (GMT,"\t   for the same region of <topo_grd>. Default computes admittance. Output\n");
 	GMT_message (GMT,"\t   contains 3 or 4 columns. Frequency (wavelength), admittance (coherence)\n");
-	GMT_message (GMT,"\t   one sigma error bar and, optionaly, a theoretical admittance.\n");
+	GMT_message (GMT,"\t   one sigma error bar and, optionally, a theoretical admittance.\n");
 	GMT_message (GMT,"\t   Append dataflags (one to three) of wbct.\n");
 	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber\n");
 	GMT_message (GMT,"\t     k Use km or wavelength unit [m]\n");
@@ -393,7 +403,6 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   Optionaly append +m to write a grid with the Moho's gravity|geoid effect\n");
 	GMT_message (GMT,"\t   from model selcted by -T\n");
 	GMT_message (GMT,"\t-Z zm[/zl] -> Moho [and swell] average compensation depths\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT,"\t-E number of terms used in Parker expansion [Default = 1]\n");
 	GMT_message (GMT,"\t-F Specify desired geopotential field: compute geoid rather than gravity\n");
 	GMT_message (GMT,"\t   f = Free-air anomalies (mGal) [Default].\n");
@@ -407,7 +416,6 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -L\n");
 	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_explain_options (GMT, "Vf.");
-	GMT_message (GMT,"\t-z add a constant to the bathymetry (not to <second_file>) before doing anything else.\n");
 	return (EXIT_FAILURE);
 }
 
@@ -416,7 +424,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 
 int GMT_gravfft (void *V_API, int mode, void *args) {
 
-	unsigned int k, n;
+	unsigned int i, j, k, n;
 	bool error = false, stop;
 	uint64_t m;
 	char	format[64], buffer[256];
@@ -531,7 +539,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */
-				
+
+	/* Apply specified offset */
+	if (Ctrl->A.active) {
+		for (j = 0; j < Grid[0]->header->ny; j++)
+			for (i = 0; i < Grid[0]->header->nx; i++)
+				Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
+	}
+
 	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
 		if (!(Ctrl->L.active) && Ctrl->L.mode != 3) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
