@@ -2982,8 +2982,8 @@ int GMT_Status_IO (void *V_API, unsigned int mode)
 	/* Returns nonzero (true) or 0 (false) if the current io status
 	 * associated with record-by-record reading matches the
 	 * specified mode.  The modes are:
-	 * GMT_IO_TBL_HEADER		: Is current record a table header?
-	 * GMT_IO_SEG_HEADER		: Is current record a segment header?
+	 * GMT_IO_TABLE_HEADER		: Is current record a table header?
+	 * GMT_IO_SEGMENT_HEADER		: Is current record a segment header?
 	 * GMT_IO_ANY_HEADER		: Is current record a header or segment header?
 	 * GMT_IO_MISMATCH		: Did current record result in a parsing error?
 	 * GMT_IO_EOF			: Did we reach end-of-file for entire data set(EOF)?
@@ -3308,7 +3308,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
 				if (n_nan == S_obj->n_columns) {
-					API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+					API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
 					record = NULL;
 				}
 				else
@@ -3333,7 +3333,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
 				if (n_nan == S_obj->n_columns) {
-					API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+					API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
 					record = NULL;
 				}
 				else
@@ -3350,7 +3350,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 					status = 0;
 					if (p[2] == DS_obj->table[p[0]]->segment[p[1]]->n_rows) {	/* Reached end of current segment */
 						p[1]++, p[2] = 0;				/* Advance to next segments 1st row */
-						status = GMT_IO_SEG_HEADER;			/* Indicates a segment boundary */
+						status = GMT_IO_SEGMENT_HEADER;			/* Indicates a segment boundary */
 					}
 					if (p[1] == DS_obj->table[p[0]]->n_segments) {		/* Also the end of a table ("file") */
 						p[0]++, p[1] = 0;
@@ -3373,7 +3373,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 						p[2]++;
 						n_fields = API->GMT->common.b.ncol[GMT_IN] = DS_obj->n_columns;
 						if (n_nan == DS_obj->n_columns) {
-							API->GMT->current.io.status = GMT_IO_SEG_HEADER;	/* Flag as segment header */
+							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;	/* Flag as segment header */
 							record = NULL;
 						}
 						else
@@ -3401,7 +3401,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 							 */
 							strncpy (API->GMT->current.io.segment_header,
 											GMT_trim_segheader (API->GMT, t_record), GMT_BUFSIZ);
-							API->GMT->current.io.status = GMT_IO_SEG_HEADER;
+							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 							record = NULL;
 						}
 						else {	/* Regular record */
@@ -3435,8 +3435,8 @@ void * GMT_Get_Record_ (unsigned int *mode, int *status)
 int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 {	/* Writes a single data record to destimation.
 	 * We use mode to signal the kind of record:
-	 *   GMT_WRITE_TBLHEADER: Write an ASCII table header
-	 *   GMT_WRITE_SEGHEADER: Write an ASCII or binary segment header
+	 *   GMT_WRITE_TABLE_HEADER: Write an ASCII table header
+	 *   GMT_WRITE_SEGMENT_HEADER: Write an ASCII or binary segment header
 	 *   GMT_WRITE_DOUBLE:    Write an ASCII or binary data record
 	 *   GMT_WRITE_TEXT:      Write an ASCII data record
 	 * For text: If record == NULL use internal current record or header.
@@ -3464,11 +3464,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	 	case GMT_IS_STREAM:
 	 	case GMT_IS_FDESC:
 			switch (mode) {
-				case GMT_WRITE_TBLHEADER:	/* Export a table header record; skip if binary */
+				case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 					s = (record) ? record : API->GMT->current.io.current_record;	/* Default to last input record if NULL */
 					GMT_write_tableheader (API->GMT, S_obj->fp, s);
 					break;
-				case GMT_WRITE_SEGHEADER:	/* Export a segment header record; write NaNs if binary  */
+				case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 					if (record) strncpy (API->GMT->current.io.segment_header, record, GMT_BUFSIZ);	/* Default to last segment record if NULL */
 					GMT_write_segmentheader (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT]);
 					break;
@@ -3501,11 +3501,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table */
 				p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table, segment, row */
 				switch (mode) {
-					case GMT_WRITE_TBLHEADER:	/* Export a table header record; skip if binary */
+					case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 						s = (record) ? record : API->GMT->current.io.current_record;	/* Default to last input record if NULL */
 						/* Hook into table header list */
 						break;
-					case GMT_WRITE_SEGHEADER:	/* Export a segment header record; write NaNs if binary  */
+					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 						p[1]++, p[2] = 0;	/* Go to next segment */
 						if (p[1] > 0) GMT_alloc_segment (API->GMT, T_obj->segment[p[1]-1], T_obj->segment[p[1]-1]->n_rows, T_obj->n_columns, false);
 						if (p[1] == T_obj->n_alloc) T_obj->segment = GMT_malloc (API->GMT, T_obj->segment, p[1], &T_obj->n_alloc, struct GMT_DATASEGMENT *);	
@@ -3542,11 +3542,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				T_obj = D_obj->table[0];	/* GMT_Put_Record only writes one table */
 				p = API->GMT->current.io.curr_pos[GMT_OUT];	/* Short hand to counters for table, segment, row */
 				switch (mode) {
-					case GMT_WRITE_TBLHEADER:	/* Export a table header record; skip if binary */
+					case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 						s = (record) ? record : API->GMT->current.io.current_record;	/* Default to last input record if NULL */
 						/* Hook into table header list */
 						break;
-					case GMT_WRITE_SEGHEADER:	/* Export a segment header record; write NaNs if binary  */
+					case GMT_WRITE_SEGMENT_HEADER:	/* Export a segment header record; write NaNs if binary  */
 						p[1]++, p[2] = 0;	/* Go to next segment */
 						if (p[1] > 0) T_obj->segment[p[1]-1]->record = GMT_memory (API->GMT, T_obj->segment[p[1]-1]->record, T_obj->segment[p[1]-1]->n_rows, char *);
 						if (p[1] == T_obj->n_alloc) T_obj->segment = GMT_malloc (API->GMT, T_obj->segment, p[1], &T_obj->n_alloc, struct GMT_TEXTSEGMENT *);	
@@ -3577,7 +3577,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			if (!record) GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_COPY + GMT_VIA_MATRIX\n");
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
-			if (mode == GMT_WRITE_SEGHEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
+			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) d[col] = API->GMT->session.d_NaN;
 			}
 			M_obj = S_obj->resource;
@@ -3602,7 +3602,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			if (!record) GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DATASET_ARRAY\n");
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
-			if (mode == GMT_WRITE_SEGHEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
+			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
 				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) d[col] = API->GMT->session.d_NaN;
 			}
 			V_obj = S_obj->resource;

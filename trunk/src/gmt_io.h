@@ -84,8 +84,8 @@ enum GMT_enum_segopt {
 	GMT_IS_Z = -7};			/* -Z */
 
 /* Macros to simplify check for return status */
-#define GMT_REC_IS_TBL_HEADER(C)	(C->current.io.status & GMT_IO_TBL_HEADER)
-#define GMT_REC_IS_SEG_HEADER(C)	(C->current.io.status & GMT_IO_SEG_HEADER)
+#define GMT_REC_IS_TABLE_HEADER(C)	(C->current.io.status & GMT_IO_TABLE_HEADER)
+#define GMT_REC_IS_SEGMENT_HEADER(C)	(C->current.io.status & GMT_IO_SEGMENT_HEADER)
 #define GMT_REC_IS_ANY_HEADER(C)	(C->current.io.status & GMT_IO_ANY_HEADER)
 #define GMT_REC_IS_ERROR(C)		(C->current.io.status & GMT_IO_MISMATCH)
 #define GMT_REC_IS_EOF(C)		(C->current.io.status & GMT_IO_EOF)

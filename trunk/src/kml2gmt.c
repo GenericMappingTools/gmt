@@ -189,7 +189,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 
 	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
 	
-	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
 
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) scan = true;
@@ -208,7 +208,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			GMT_chop (name);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
 			}
 			first = false;
 		}
@@ -221,7 +221,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			GMT_chop (description);
 			if (first) {
 				sprintf (buffer, "# %s\n", &line[start]);
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, buffer);	/* Write this to output */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
 			}
 			first = false;
 		}
@@ -238,12 +238,12 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 			for (i = 0; i < length && line[i] != '>'; i++);		/* Find end of <coordinates> */
 			sscanf (&line[i+1], "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z]);
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next Point\n");
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
 		else {
 			if (!GMT->current.io.segment_header[0]) sprintf (GMT->current.io.segment_header, "Next feature\n");
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 			
 			name[0] = description[0] = 0;
 			while (fscanf (fp, "%lg,%lg,%lg", &out[GMT_X], &out[GMT_Y], &out[GMT_Z])) {

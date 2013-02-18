@@ -857,7 +857,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
 					sprintf (GMT->current.io.segment_header, "Shore Bin # %d, Level %d", bin, p[i].level);
-					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
@@ -918,7 +918,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
 					sprintf (GMT->current.io.segment_header, "River Bin # %d, Level %d", bin, p[i].level);
-					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];
@@ -979,7 +979,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 			for (i = 0; i < np; i++) {
 				if (Ctrl->M.active) {
 					sprintf (GMT->current.io.segment_header, "Border Bin # %d, Level %d", bin, p[i].level);
-					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					for (k = 0; k < p[i].n; k++) {
 						out[GMT_X] = p[i].lon[k];
 						out[GMT_Y] = p[i].lat[k];

@@ -346,7 +346,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	GMT->current.setting.io_header[GMT_OUT] = true;	/* To output header records */
 	
 	sprintf (record, " Tag: %s %s", Ctrl->T.TAG, Ctrl->C.col);
-	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, record);
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	sprintf (record, " Command: %s", gmt_module_name(GMT));
 	if (!Ctrl->In.file) strcat (record, " [stdin]");
 	for (opt = options; opt; opt = opt->next) {
@@ -358,9 +358,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 			strcat (record, word);
 		}
 	}
-	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, record);
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	sprintf (record, "track%sN%smean%sstdev%srms%sweight[%" PRIu64 "]", c, c, c, c, c, n_use);
-	GMT_Put_Record (API, GMT_WRITE_TBLHEADER, record);
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, record);
 	Tmean = (Tnx) ? Tsum / Tnx : GMT->session.d_NaN;
 	Tstdev = (Tnx > 1) ? sqrt ((Tnx * Tsum2 - Tsum * Tsum) / (Tnx * (Tnx - 1.0))) : GMT->session.d_NaN;
 	Trms = (Tnx) ? sqrt (Tsum2 / Tnx) : GMT->session.d_NaN;

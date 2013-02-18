@@ -674,7 +674,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 
 		while (ok_to_read && !GMT_REC_IS_EOF (GMT)) {	/* Not yet EOF */
 
-			while (GMT_REC_IS_SEG_HEADER (GMT) && !GMT_REC_IS_EOF(GMT)) {
+			while (GMT_REC_IS_SEGMENT_HEADER (GMT) && !GMT_REC_IS_EOF(GMT)) {
 				in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields);
 			}
 			if ((GMT->current.io.status & GMT_IO_EOF)) continue;	/* At EOF */

@@ -97,8 +97,8 @@ enum GMT_enum_read {
 enum GMT_enum_write {
 	GMT_WRITE_DOUBLE = 0,	/* Write double array to output */
 	GMT_WRITE_TEXT,		/* Write ASCII current record to output */
-	GMT_WRITE_SEGHEADER,	/* Write segment header record to output */
-	GMT_WRITE_TBLHEADER,	/* Write current record as table header to output */
+	GMT_WRITE_SEGMENT_HEADER,	/* Write segment header record to output */
+	GMT_WRITE_TABLE_HEADER,	/* Write current record as table header to output */
 	GMT_WRITE_NOLF = 16};	/* Do not write LF at end of ascii record, and not increment output rec number */
 
 enum GMT_enum_dest {
@@ -274,8 +274,8 @@ enum GMT_enum_pol {
 
 enum GMT_enum_ascii_input_return {	/* Bit flag related to record i/o */
 	GMT_IO_DATA_REC 	=  0,		/* Read a data record and had no issues */
-	GMT_IO_TBL_HEADER 	=  1,		/* Read a table header */
-	GMT_IO_SEG_HEADER	=  2,		/* Read a segment header */
+	GMT_IO_TABLE_HEADER 	=  1,		/* Read a table header */
+	GMT_IO_SEGMENT_HEADER	=  2,		/* Read a segment header */
 	GMT_IO_ANY_HEADER	=  3,		/* Read either table or segment header */
 	GMT_IO_MISMATCH		=  4,		/* Read incorrect number of columns */
 	GMT_IO_EOF		=  8,		/* Read end-of-file */

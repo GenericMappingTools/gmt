@@ -482,14 +482,14 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Skip all table headers */
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+			if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Skip all table headers */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				continue;
 			}
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 				break;
 			else if (GMT_REC_IS_NEW_SEGMENT (GMT) && !make_path) {			/* Parse segment headers */
-				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				continue;
 			}
 		}
@@ -551,7 +551,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 			}
 			else
 				sprintf (GMT->current.io.segment_header, "%s %s %g %g", type, dir, in[GMT_X], in[GMT_Y]);
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 			
 			if (Ctrl->F.active) {	/* Must generate intermediate points in time, then rotatate each adjusted location */
 				t = (Ctrl->A.mode) ? t_low : 0.0;

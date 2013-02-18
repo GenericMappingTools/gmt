@@ -928,8 +928,8 @@ code of, say, \filename{blockmean.c} or \filename{pstext.c}, to see examples of 
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{mode}} & \multicolumn{1}{c|}{\emph{description}} \\ \hline
 \texttt{GMT\_IO\_DATA\_REC}	&       1 if we read a data record \\ \hline
-\texttt{GMT\_IO\_TBL\_HEADER}	&       1 if we read a table header \\ \hline
-\texttt{GMT\_IO\_SEG\_HEADER}	&       1 if we read a segment header \\ \hline
+\texttt{GMT\_IO\_TABLE\_HEADER}	&       1 if we read a table header \\ \hline
+\texttt{GMT\_IO\_SEGMENT\_HEADER}	&       1 if we read a segment header \\ \hline
 \texttt{GMT\_IO\_ANY\_HEADER}	&       1 if we read either header record \\ \hline
 \texttt{GMT\_IO\_MISMATCH}	&       1 if we read incorrect number of columns \\ \hline
 \texttt{GMT\_IO\_EOF}		&       1 if we reached the end of the file (EOF) \\ \hline
@@ -1481,14 +1481,14 @@ the values in \texttt{rec} [0].
 If \texttt{rec} is NULL then we use the current (last imported) text record.
 If binary output mode we quietly skip writing this record [1].
 \index{GMT\_WRITE\_TEXT}
-\item [GMT\_WRITE\_TBLHEADER]: For ASCII output mode we write the text string \texttt{rec}.
+\item [GMT\_WRITE\_TABLE\_HEADER]: For ASCII output mode we write the text string \texttt{rec}.
 If \texttt{rec} is NULL then we write the last read
 header record (and ensures it starts with \#). If binary output mode we quietly skip writing this record [2].
-\index{GMT\_WRITE\_TBLHEADER}
-\item [GMT\_WRITE\_SEGHEADER]: For ASCII output mode we use the text string \texttt{rec} as the segment header.
+\index{GMT\_WRITE\_TABLE\_HEADER}
+\item [GMT\_WRITE\_SEGMENT\_HEADER]: For ASCII output mode we use the text string \texttt{rec} as the segment header.
 If \texttt{rec} is NULL then we use the current (last read) segment header record.
 If binary output mode instead we write a record composed of NaNs [1].
-\index{GMT\_WRITE\_SEGHEADER}
+\index{GMT\_WRITE\_SEGMENT\_HEADER}
 \end{description}
 The function returns TRUE (1) if there was an error associated with the writing (which is passed back with \texttt{API->error}),
 otherwise it returns FALSE (0).

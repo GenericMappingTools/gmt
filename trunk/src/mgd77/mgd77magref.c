@@ -546,7 +546,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 		T = Din->table[tbl];	/* Current table */
 
 		for (s = 0; s < T->n_segments; s++) {	/* Process each file segment separately */
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, T->segment[s]->header);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, T->segment[s]->header);
 			need = T->segment[s]->n_rows;	/* Size of output array needed in MGD77_cm4field */
 			if (need > n_alloc) {	/* Need to reallocate */
 				n_alloc = need;

@@ -624,7 +624,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 
 			if (nx && xover_locations_only) {	/* Report crossover locations only */
 				sprintf (line, "%s - %s", trk_name[A], trk_name[B]);
-				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, line);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
 				for (i = 0; i < nx; i++) {
 					out[0] = XC.x[i];
 					out[1] = XC.y[i];
@@ -793,11 +793,11 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 						char *cmd = NULL, *c = GMT->current.setting.io_col_separator;
 						t_or_i = (got_time) ? 't' : 'i';
 						sprintf (line, "# Tag: %s", Ctrl->T.TAG);
-						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
+						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						cmd = GMT_Create_Cmd (API, options);
 						sprintf (line, "# Command: %s %s", gmt_module_name(GMT), cmd);	/* Build command line argument string */
 						GMT_free (GMT, cmd);
-						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
+						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						sprintf (line, "# %s%s%s%s%c_1%s%c_2%sdist_1%sdist_2%shead_1%shead_2%svel_1%svel_2",
 							s->info[s->out_order[s->x_col]].name, c, s->info[s->out_order[s->y_col]].name, c, t_or_i, c, t_or_i, c, c, c, c, c, c);
 						for (j = 0; j < n_data_col; j++) {
@@ -808,7 +808,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 								sprintf (item, "%s%s_X%s%s_M", c, s->info[s->out_order[col]].name, c, s->info[s->out_order[col]].name);
 							strcat (line, item);
 						}
-						GMT_Put_Record (API, GMT_WRITE_TBLHEADER, line);
+						GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, line);
 						first_header = false;
 					}
 
@@ -829,7 +829,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 						}
 						sprintf (info, "%s/%s/%g %s/%s/%g", start[0], stop[0], dist[0][n_rec[0]-1], start[1], stop[1], dist[1][n_rec[1]-1]);
 						sprintf (line, x2sys_header, trk_name[A], data_set[0].year, trk_name[B], data_set[1].year, info);
-						GMT_Put_Record (API, GMT_WRITE_SEGHEADER, line);
+						GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, line);
 						first_crossover = false;
 					}
 

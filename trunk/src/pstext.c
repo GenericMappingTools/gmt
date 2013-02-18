@@ -613,7 +613,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			if (GMT_REC_IS_ERROR (GMT)) {
 				Return (EXIT_FAILURE);
 			}
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {
+			if (GMT_REC_IS_TABLE_HEADER (GMT)) {
 				continue;	/* Skip table headers */
 			}
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
@@ -623,7 +623,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 		/* Data record or segment header to process */
 
 		if (Ctrl->M.active) {	/* Paragraph mode */
-			if (GMT_REC_IS_SEG_HEADER (GMT)) {
+			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {
 				line = GMT->current.io.segment_header;
 				skip_text_records = false;
 				if (n_processed) {	/* Must output what we got */
@@ -738,7 +738,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			n_read++;
 		}
 		else {	/* Plain style pstext input */
-			if (GMT_REC_IS_SEG_HEADER (GMT)) continue;	/* Skip segment headers */
+			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) continue;	/* Skip segment headers */
 			if (GMT_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
 			if ((nscan = validate_coord_and_text (GMT, Ctrl->Z.active, n_read, line, buffer)) == -1) continue;	/* Failure */

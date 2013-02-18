@@ -859,7 +859,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 					else {
 						if (first) {
 							strncpy (GMT->current.io.segment_header, S->header, GMT_BUFSIZ);
-							GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+							GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 						}
 						write_record (GMT, S->coord, S->n_columns, row-1);
 						first = false;
@@ -1045,7 +1045,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 												strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 											else
 												sprintf (GMT->current.io.segment_header, "New segment");
-											GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+											GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 											first = false;
 										}
 										GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
@@ -1056,7 +1056,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 											strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 										else
 											sprintf (GMT->current.io.segment_header, "New segment");
-										GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+										GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 										first = false;
 									}
 									for (col = 2; col < S2->n_columns; col++) out[col] = 0.0;
@@ -1075,7 +1075,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 													strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 												else
 													sprintf (GMT->current.io.segment_header, "New segment");
-												GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+												GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 												first = false;
 											}
 											GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
@@ -1108,7 +1108,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 										strncpy (GMT->current.io.segment_header, S2->header, GMT_BUFSIZ);
 									else
 										sprintf (GMT->current.io.segment_header, "New segment");
-									GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+									GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 								}
 								for (row = 0; row < S2->n_rows; row++) {
 									for (col = 0; col < S2->n_columns; col++) out[col] = S2->coord[col][row];

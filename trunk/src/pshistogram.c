@@ -667,7 +667,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			sprintf (format, "xmin\txmax\tymin\tymax from pshistogram -I -W%g -Z%u", Ctrl->W.inc, Ctrl->Z.mode);
 			if (Ctrl->F.active) strcat (format, " -F");
 			out[0] = x_min;	out[1] = x_max;	out[2] = F.yy0;	out[3] = F.yy1;
-			GMT_Put_Record (API, GMT_WRITE_TBLHEADER, format);	/* Write this to output if -ho */
+			GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, format);	/* Write this to output if -ho */
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 				Return (API->error);
