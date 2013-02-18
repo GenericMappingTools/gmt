@@ -495,7 +495,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[k], NULL)) == NULL)
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);
 	}
 
@@ -524,7 +524,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
 		FFT_info[k] = GMT_grd_fft_init (GMT, Orig[k], &Ctrl->N.info);
 		
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
 			Return (API->error);
 		for (m = 0, stop = false; !stop && m < Orig[k]->header->size; m++) stop = GMT_is_fnan (Orig[k]->data[m]);
 		if (stop) {
@@ -591,7 +591,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
     			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
 			/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 				Return (API->error);
 			}
 			GMT_free (GMT, K);
@@ -669,7 +669,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_free (GMT, K);
 	GMT_free (GMT, raised);
 
-	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA | GMT_GRID_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
 		Return (API->error);
 	}
 

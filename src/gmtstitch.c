@@ -292,7 +292,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->D.active) {	/* We want to output to go to individual files for each segment */
-		io_mode = GMT_WRITE_SEGMENTS;
+		io_mode = GMT_WRITE_SEGMENT;
 		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtstitch_segment_%ld.txt");
 		if (strstr (Ctrl->D.format, "%c")) save_type = true;
 		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
@@ -303,7 +303,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 				return (GMT->parent->error);
 			}
 			if (dim_tscr[0] == 2) {	/* We want to build two lists (closed and open) */
-				q_mode = GMT_WRITE_TABLES;
+				q_mode = GMT_WRITE_TABLE;
 				dim_tscr[0] = 1;	/* Reset */
 				sprintf (buffer, Ctrl->Q.file, 'C');	Q->table[CLOSED]->file[GMT_OUT] = strdup (buffer);
 				sprintf (buffer, Ctrl->Q.file, 'O');	Q->table[OPEN]->file[GMT_OUT] = strdup (buffer);

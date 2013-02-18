@@ -45,9 +45,9 @@ enum GMT_enum_methods {
 	GMT_IS_FILE = 0, 	/* Entity is a filename */
 	GMT_IS_STREAM,		/* Entity is an open stream */
 	GMT_IS_FDESC,           /* Entity is an open file descriptor */
-	GMT_IS_COPY,            /* Entity is a memory location that should be duplicated */
-	GMT_IS_REF,             /* Entity is a memory location and we just pass the ref (no copying) */
-	GMT_IS_READONLY,        /* As GMT_IS_REF, but we are not allowed to change the data in any way. */
+	GMT_IS_DUPLICATE,            /* Entity is a memory location that should be duplicated */
+	GMT_IS_REFERENCE,       /* Entity is a memory location and we just pass the ref (no copying) */
+	GMT_IS_READONLY,        /* As GMT_IS_REFERENCE, but we are not allowed to change the data in any way. */
 	GMT_N_METHODS};         /* Number of methods we recognize */
 
 /* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
@@ -104,9 +104,9 @@ enum GMT_enum_write {
 enum GMT_enum_dest {
 	GMT_WRITE_OGR = -1,	/* Output OGR/GMT format [Requires proper -a setting] */
 	GMT_WRITE_SET,			/* Write all output tables and all their segments to one destination [Default] */
-	GMT_WRITE_TABLES,		/* Write each output table and all their segments to separate destinations */
-	GMT_WRITE_SEGMENTS,		/* Write all output tables' segments to separate destinations */
-	GMT_WRITE_TABLE_SEGMENTS};	/* Same as 2 but if no filenames we use both tbl and seg with format */
+	GMT_WRITE_TABLE,		/* Write each output table and all their segments to separate destinations */
+	GMT_WRITE_SEGMENT,		/* Write all output tables' segments to separate destinations */
+	GMT_WRITE_TABLE_SEGMENT};	/* Same as 2 but if no filenames we use both tbl and seg with format */
 
 enum GMT_enum_alloc {
 	GMT_ALLOCATED = 0, /* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
@@ -143,13 +143,13 @@ enum GMT_enum_gridindex {
 
 enum GMT_enum_gridio {
 	GMT_GRID_ALL = 0,	/* Read|write both grid header and the entire grid (no subset) */
-	GMT_GRID_HEADER = 1,		/* Just read|write the grid header */
-	GMT_GRID_DATA = 2,		/* Read|write the grid array given w/e/s/n set in the header */
+	GMT_GRID_HEADER_ONLY = 1,		/* Just read|write the grid header */
+	GMT_GRID_DATA_ONLY = 2,		/* Read|write the grid array given w/e/s/n set in the header */
 	GMT_GRID_ALL2 = 3,		/* The 1|2 flags together, same meaning as GMT_GRID_ALL */
-	GMT_GRID_REAL = 0,		/* Read|write a normal real-valued grid */
-	GMT_GRID_COMPLEX_REAL = 4,	/* Read|write the real component to/from a complex grid */
-	GMT_GRID_COMPLEX_IMAG = 8,	/* Read|write the imaginary component to/from a complex grid */
-	GMT_GRID_COMPLEX_MASK = 12,	/* To mask out the rea|imag flags */
+	GMT_GRID_IS_REAL = 0,		/* Read|write a normal real-valued grid */
+	GMT_GRID_IS_COMPLEX_REAL = 4,	/* Read|write the real component to/from a complex grid */
+	GMT_GRID_IS_COMPLEX_IMAG = 8,	/* Read|write the imaginary component to/from a complex grid */
+	GMT_GRID_IS_COMPLEX_MASK = 12,	/* To mask out the rea|imag flags */
 	GMT_GRID_NO_HEADER = 16};	/* Write a native grid without the leading grid header */
 
 /* These lengths (except GMT_GRID_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
@@ -177,7 +177,7 @@ struct GRD_HEADER {
 /* This section is flexible. It is not copied to any grid header or stored in the file. It is considered private */
 	unsigned int type;               /* Grid format */
 	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
-	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_COMPLEX_REAL = real part of complex grid, GMT_GRID_COMPLEX_IMAG = imag part of complex grid */
+	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
 	unsigned int mx, my;             /* Actual dimensions of the grid in memory, allowing for the padding */
 	unsigned int BB_mx, BB_my;       /* Actual dimensions of a mosaicked grid, allowing for the padding */
 	size_t nm;                       /* Number of data items in this grid (nx * ny) [padding is excluded] */
@@ -273,7 +273,7 @@ enum GMT_enum_pol {
 /* Return codes for GMT_ascii_input: */
 
 enum GMT_enum_ascii_input_return {	/* Bit flag related to record i/o */
-	GMT_IO_DATA_REC 	=  0,		/* Read a data record and had no issues */
+	GMT_IO_DATA_RECORD 	=  0,		/* Read a data record and had no issues */
 	GMT_IO_TABLE_HEADER 	=  1,		/* Read a table header */
 	GMT_IO_SEGMENT_HEADER	=  2,		/* Read a segment header */
 	GMT_IO_ANY_HEADER	=  3,		/* Read either table or segment header */

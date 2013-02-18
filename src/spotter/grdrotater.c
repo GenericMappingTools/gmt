@@ -357,7 +357,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {
-		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 
@@ -376,7 +376,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	
 	if (!Ctrl->S.active) {	/* Read the input grid */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read grid file\n");
-		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->In.file, G) == NULL) {
 			Return (API->error);
 		}
 	}

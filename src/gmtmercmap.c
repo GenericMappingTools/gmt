@@ -314,7 +314,7 @@ int main (int argc, char **argv)
 			case GMT_BASH_MODE: printf ("T_opt=`grdinfo %s_topo.nc -Ts%g`\n", prefix, TOPO_INC); break;
 			case GMT_CSH_MODE:  printf ("set T_opt = `grdinfo %s_topo.nc -Ts%g`\n", prefix, TOPO_INC); break;
 			case GMT_DOS_MODE: /* Must determine the grdinfo result directly */
-				if ((t_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_COPY, GMT_IS_TEXT, GMT_OUT, NULL, T)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+				if ((t_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_DUPLICATE, GMT_IS_TEXT, GMT_OUT, NULL, T)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 				if (GMT_Encode_ID (API, t_file, t_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 				sprintf (cmd, "%s -R%s -Ts%g ->%s", file, region, TOPO_INC, t_file);			/* The grdinfo command line */
 				if (GMT_grdinfo (API, 0, cmd) != GMT_OK) exit (EXIT_FAILURE);	/* This will return the -T<string> back via the T textset */
@@ -368,7 +368,7 @@ int main (int argc, char **argv)
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Compute artificial illumination grid from %s\n", file);
 	/* Register the topography as read-only input and register the output intensity surface to a memory location */
 	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
-	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, z_file, z_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, i_file, i_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (cmd, "%s -G%s -Nt1 -A45 -fg", z_file, i_file);			/* The grdgradient command line */
@@ -383,7 +383,7 @@ int main (int argc, char **argv)
 	z_max = floor (G->header->z_max/TOPO_INC)*TOPO_INC;
 	z = MAX (fabs (z_min), fabs (z_max));	/* Make it symmetrical about zero */
 	/* Register the output CPT file to a memory location */
-	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REF, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	sprintf (cmd, "-C%s -T%g/%g/%g -Z ->%s", Ctrl->C.file, -z, z, TOPO_INC, c_file);	/* The makecpt command line */
 	if (GMT_makecpt (API, 0, cmd) != GMT_OK) exit (EXIT_FAILURE);		/* This will write the output CPT to memory */

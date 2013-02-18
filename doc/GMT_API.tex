@@ -488,7 +488,7 @@ GMT\_IS\_IMAGE		&	4	&	A \GMT\ image \\ \hline
 GMT\_IS\_FILE		&	0	&       Pointer to name of a file \\ \hline
 GMT\_IS\_STREAM		&	1	&       Pointer to open file (or process)  \\ \hline
 GMT\_IS\_FDESC		&	2	&       Pointer to integer file descriptor \\ \hline
-GMT\_IS\_COPY		&	3	&       Pointer to memory to \emph{copy} data from \\ \hline
+GMT\_IS\_DUPLICATE	&	3	&       Pointer to memory to \emph{duplicate} data from \\ \hline
 GMT\_IS\_REF		&	4	&       Pointer to memory to \emph{reference} data from (realloc OK) \\ \hline
 GMT\_IS\_READONLY	&	5	&       Pointer to memory to \emph{read} data from \\ \hline
 \end{tabular}
@@ -502,7 +502,7 @@ GMT\_IS\_READONLY	&	5	&       Pointer to memory to \emph{read} data from \\ \hli
 \centering
 \begin{tabular}{|l|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{approach}} & \multicolumn{1}{c|}{\emph{value}} & \multicolumn{1}{c|}{\emph{how method is modified}} \\ \hline
-GMT\_VIA\_VECTOR	&all	100	&       User's data columns are accessed via a GMT\_VECTOR structure \\ \hline
+GMT\_VIA\_VECTOR	&	100	&       User's data columns are accessed via a GMT\_VECTOR structure \\ \hline
 GMT\_VIA\_MATRIX	&	200	&       User's matrix is accessed via a GMT\_MATRIX structure \\ \hline
 \end{tabular}
 \caption{Integer constants used when user data forms are involved.  These are added
@@ -688,7 +688,7 @@ of program options \texttt{opt} (or NULL).  Use \texttt{range} to specify the mi
 value for each dimensions, up to 3 pairs (e.g., xmin xmax ymin ymax zmin zmax). Similarly, use
 \texttt{inc} to give 1, 2, or 3 increments (i.e., xinc, yinc, zinc).  The
 \texttt{registration} parameter indicates gridline-registration or pixel registration of nodes.
-To initialize a grid with complex data, add \texttt{GMT\_GRID\_COMPLEX\_REAL} to the registration.
+To initialize a grid with complex data, add \texttt{GMT\_GRID\_IS\_COMPLEX\_REAL} to the registration.
 Finally, \texttt{ptr} is the pointer to your resource as allocated by \texttt{GMT\_Create\_Data}.
 Note: GMT\_IS\_VECTOR may not necessarily conform to the concept of a min and max coordinate to go
 along with the data stored in the vector(s).  If so, pass NULL for \texttt{range} and \texttt{inc}
@@ -797,8 +797,8 @@ entries for highest and lowest value.
 \index{GMT\_GRID\_ALL}
 \index{GMT\_GRID\_HEADER}
 \index{GMT\_GRID\_DATA}
-\index{GMT\_GRID\_COMPLEX\_REAL}
-\index{GMT\_GRID\_COMPLEX\_IMAG}
+\index{GMT\_GRID\_IS\_COMPLEX\_REAL}
+\index{GMT\_GRID\_IS\_COMPLEX\_IMAG}
 To read the entire grid and its header, pass GMT\_GRID\_ALL.  However, if you
 need to extract a sub-region you must first read the heade by passing
 GMT\_GRID\_HEADER, then examine the header structure range attributes and
@@ -806,7 +806,7 @@ to specify a subset via the array \texttt{wesn}, and finally call
 \texttt{GMT\_Read\_Data} a second time, now with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array
 and the grid structure returned from the first call as \texttt{ptr}.
 In the event your data array should be allocated to hold both the real and imaginary parts of a
-complex data set you must add either GMT\_GRID\_COMPLEX\_REAL or GMT\_GRID\_COMPLEX\_IMAG to \texttt{mode}
+complex data set you must add either GMT\_GRID\_IS\_COMPLEX\_REAL or GMT\_GRID\_IS\_COMPLEX\_IMAG to \texttt{mode}
 so as to allow for the extra memory needed and to stride the input values correctly.
 \end{description}
 
@@ -913,11 +913,11 @@ check the status after reading the next record.  The internal i/o status mode ca
 interrogated with the function
 
 \begin{verbatim}
-void * GMT_Status_IO (void *API, unsigned int mode);
+int GMT_Status_IO (void *API, unsigned int mode);
 \end{verbatim}
 
 which returns 0 (false) or 1 (true) if the current status is reflected by the specified \texttt{mode}.
-There are 11 different status codes available to programmers; for a list see Table~\ref{tbl:iostatus}.
+There are 11 different modes available to programmers; for a list see Table~\ref{tbl:iostatus}.
 For an example of how these may be used, see the test program \filename{testgmtio.c}.
 Developers who plan to import data on a record-by-record basis may also consult the source
 code of, say, \filename{blockmean.c} or \filename{pstext.c}, to see examples of working code.
@@ -927,7 +927,7 @@ code of, say, \filename{blockmean.c} or \filename{pstext.c}, to see examples of 
 \centering
 \begin{tabular}{|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{mode}} & \multicolumn{1}{c|}{\emph{description}} \\ \hline
-\texttt{GMT\_IO\_DATA\_REC}	&       1 if we read a data record \\ \hline
+\texttt{GMT\_IO\_DATA\_RECORD}	&       1 if we read a data record \\ \hline
 \texttt{GMT\_IO\_TABLE\_HEADER}	&       1 if we read a table header \\ \hline
 \texttt{GMT\_IO\_SEGMENT\_HEADER}	&       1 if we read a segment header \\ \hline
 \texttt{GMT\_IO\_ANY\_HEADER}	&       1 if we read either header record \\ \hline
@@ -939,7 +939,7 @@ code of, say, \filename{blockmean.c} or \filename{pstext.c}, to see examples of 
 \texttt{GMT\_IO\_LINE\_BREAK}	&       1 if we encountered a segment header, EOF, NaNs or gap \\ \hline
 \texttt{GMT\_IO\_NEXT\_FILE}	&       1 if we finished one file but not the last \\ \hline
 \end{tabular}
-\caption{Macros used to determine status of current data record.  The gap macro depends on the current \Opt{g} settings.}
+\caption{Modes used to determine status of current data record.  The \texttt{GMT\_IO\_GAP} mode depends on the current \Opt{g} settings.}
 \label{tbl:iostatus}
 \index{Record!Status}
 \end{table}
@@ -1019,7 +1019,7 @@ Because \GMT\ consider the GMT\_DATASET resources to contain one or
 more tables, each of which may contain one or more segments, all of
 which may contain one or more columns, you will need to have multiple
 loops to visit all entries.  The following code snippet will visit
-all data records and add 1 to all columns beyond x and y:
+all data records and add 1 to all columns beyond the first two (x and y):
 
 \begin{verbatim}
 int tbl, seg, row, col;
@@ -1032,7 +1032,7 @@ for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
   for (seg = 0; seg < T->n_segments; seg++) {	/* For all segments */
     S = T->segment[seg];   /* Convenient shorthand for current segment */
     for (row = 0; row < S->n_rows; row++) {
-      for (col = GMT_Z; col < T->n_columns; col++) {
+      for (col = 2; col < T->n_columns; col++) {
         S->coord[col][row] += 1.0;
       }
     }
@@ -1399,23 +1399,23 @@ should be written (1) or not (0).
 \begin{description}
 \item [GMT\_WRITE\_DATASET]: The entire data set will be written to the single file [0].
 \index{GMT\_WRITE\_DATASET}
-\item [GMT\_WRITE\_TABLES]: Each table in the data set is written to individual files [1].
+\item [GMT\_WRITE\_TABLE]: Each table in the data set is written to individual files [1].
 You can either specify an output file name that \emph{must} contain one C-style
 format specifier for a int variable (e.g., ``New\_Table\_\%06d.txt''), which will be
 replaced with the table number (a running number from 0) \emph{or} you must assign
 to each table \emph{i} a unique output file name via the \texttt{D->table[i]->file[GMT\_OUT]}
 variables prior to calling the function.
-\index{GMT\_WRITE\_TABLES}
-\item [GMT\_WRITE\_SEGMENTS]: Each segment in the data set is written to an individual file [2].
-Same setup as for GMT\_WRITE\_TABLES except we use sequential segment numbers to build the file names.
-\index{GMT\_WRITE\_SEGMENTS}
-\item [GMT\_WRITE\_TABLE\_SEGMENTS]: Each segment in the data set is written to an individual file [3].
+\index{GMT\_WRITE\_TABLE}
+\item [GMT\_WRITE\_SEGMENT]: Each segment in the data set is written to an individual file [2].
+Same setup as for GMT\_WRITE\_TABLE except we use sequential segment numbers to build the file names.
+\index{GMT\_WRITE\_SEGMENT}
+\item [GMT\_WRITE\_TABLE\_SEGMENT]: Each segment in the data set is written to an individual file [3].
 You can either specify an output file name that \emph{must} contain two C-style
 format specifiers for two int variables (e.g., ``New\_Table\_\%06d\_Segment\_\%03d.txt''),
 which will be replaced with the table and segment numbers, \emph{or}
 you must assign to each segment \emph{j} in each table \emph{i} a unique output file name
 via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to calling the function.
-\index{GMT\_WRITE\_TABLE\_SEGMENTS}
+\index{GMT\_WRITE\_TABLE\_SEGMENT}
 \index{GMT\_WRITE\_OGR}
 \item [GMT\_WRITE\_OGR]: Writes the dataset in OGR/GMT format in conjunction with the \Opt{a} setting [4].
 \end{description}
@@ -1424,13 +1424,13 @@ via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to call
 structure, but normally it is simply GMT\_GRID\_ALL (0) so the entire
 grid and its header will be exported (a subset is not allowed during export).
 However, in the event your data array holds both the real and imaginary parts of a
-complex data set you must add either GMT\_GRID\_COMPLEX\_REAL (4) or GMT\_GRID\_COMPLEX\_IMAG (16) to \texttt{mode}
+complex data set you must add either GMT\_GRID\_IS\_COMPLEX\_REAL (4) or GMT\_GRID\_IS\_COMPLEX\_IMAG (16) to \texttt{mode}
 so as to export the corresponding grid values correctly.  Finally, for native binary grids you may skip writing
 the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored for other grid formats.
 \index{GMT\_GRID\_HEADER}
 \index{GMT\_GRID\_ALL}
-\index{GMT\_GRID\_COMPLEX\_REAL}
-\index{GMT\_GRID\_COMPLEX\_IMAG}
+\index{GMT\_GRID\_IS\_COMPLEX\_REAL}
+\index{GMT\_GRID\_IS\_COMPLEX\_IMAG}
 \index{GMT\_GRID\_NO\_HEADER}
 \end{description}
 If successful the function returns FALSE (0); otherwise we return TRUE (1) and set \texttt{API->error} to reflect to cause.
@@ -1470,7 +1470,7 @@ Then, \texttt{rec} is expected to hold at least as many items as the current set
 Alternatively (b), \texttt{rec} points to a text string.
 The \texttt{mode} parameter must be set to reflect what is passed.  Using \texttt{GMT\_Put\_Record}
 requires you to first initialize the destination with \texttt{GMT\_Init\_IO}.
-Note that for families GMT\_IS\_DATASET and GMT\_IS\_TEXTSET the methods GMT\_IS\_COPY and GMT\_IS\_REF are not supported since
+Note that for families GMT\_IS\_DATASET and GMT\_IS\_TEXTSET the methods GMT\_IS\_DUPLICATE and GMT\_IS\_REF are not supported since
 you can simply populate the GMT\_DATASET structure directly.
 As mentioned, \texttt{mode} affects what is actually written:
 \begin{description}

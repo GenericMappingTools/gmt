@@ -1838,7 +1838,7 @@ void gmt_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct G
 	GMT_memcpy (header->inc,   inc_dup, 2, double);
 	/* registration may contain complex mode information */
 	header->registration = (registration & 1);
-	header->complex_mode = (registration & GMT_GRID_COMPLEX_MASK);
+	header->complex_mode = (registration & GMT_GRID_IS_COMPLEX_MASK);
 	header->grdtype = gmt_get_grdtype (C, header);
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
@@ -2058,18 +2058,18 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 bool GMT_init_complex (unsigned int complex_mode, unsigned int *inc, unsigned int *off)
 {	/* Sets complex-related parameters based on the input complex_mode variable:
 	 * If complex_mode & GMT_GRID_NO_HEADER then we do NOT want to write a header [output only; only some formats]
-	 * complex_mode & GMT_GRID_COMPLEX_REAL means get/put real component of complex array
-	 * complex_mode & GMT_GRID_COMPLEX_IMAG means get/put imag component of complex array
-	 * otherwise we have real data (GMT_GRID_REAL).
+	 * complex_mode & GMT_GRID_IS_COMPLEX_REAL means get/put real component of complex array
+	 * complex_mode & GMT_GRID_IS_COMPLEX_IMAG means get/put imag component of complex array
+	 * otherwise we have real data (GMT_GRID_IS_REAL).
 	 * true is returned if we wish to write the grid header (this is normally true).
 	 * Here, *inc is initialized to 1|2 and *off initialized to 0|1.
 	 */
 
 	bool do_header = !(complex_mode & GMT_GRID_NO_HEADER);	/* Want no header if that bit is set */
-	if (complex_mode & GMT_GRID_COMPLEX_REAL) {		/* Get/put real component of complex array */
+	if (complex_mode & GMT_GRID_IS_COMPLEX_REAL) {		/* Get/put real component of complex array */
 		*inc = 2; *off = 0;
 	}
-	else if (complex_mode & GMT_GRID_COMPLEX_IMAG) {	/* Get/put imag component of complex array */
+	else if (complex_mode & GMT_GRID_IS_COMPLEX_IMAG) {	/* Get/put imag component of complex array */
 		*inc = 2; *off = 1;
 	}
 	else {							/* Normal grid */

@@ -389,7 +389,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	if (Ctrl->N.active) {
 		int n_formats;
 		for (col = n_formats = 0; Ctrl->N.name[col]; col++) if (Ctrl->N.name[col] == '%') n_formats++;
-		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
+		io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 	}
 	else
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -568,7 +568,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 		int n_formats = 0;
 		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%ld.bin") : strdup ("splitxyz_segment_%ld.txt");
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;
-		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
+		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		/* The io_mode tells the i/o function to split segments into files */
 		if (Ctrl->Out.file) free ((void*)Ctrl->Out.file);
 		Ctrl->Out.file = strdup (Ctrl->N.name);

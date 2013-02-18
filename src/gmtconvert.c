@@ -463,7 +463,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		if (!Ctrl->D.name) {
 			Ctrl->D.name = GMT->common.b.active[GMT_OUT] ?
 					strdup ("gmtconvert_segment_%d.bin") : strdup ("gmtconvert_segment_%d.txt");
-			D[GMT_OUT]->io_mode = GMT_WRITE_SEGMENTS;
+			D[GMT_OUT]->io_mode = GMT_WRITE_SEGMENT;
 		}
 		else { /* Ctrl->D.name */
 			/* need to check correct format */
@@ -488,7 +488,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 							Ctrl->D.name);
 					exit (EXIT_FAILURE);
 			}
-			D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENTS: GMT_WRITE_SEGMENTS;
+			D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 			/* The io_mode tells the i/o function to split segments into files */
 			if (Ctrl->Out.file)
 				free (Ctrl->Out.file);

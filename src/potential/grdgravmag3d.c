@@ -348,7 +348,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* ---------------------------------------------------------------------------- */
 
-	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL,
+	if ((GridA = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL,
 				Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -418,7 +418,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	else
 		GMT_memcpy (wesn_padded, GridA->header->wesn, 4, double);
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA, wesn_padded, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset, or all */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_padded, Ctrl->In.file[0], GridA) == NULL) {	/* Get subset, or all */
 		Return (API->error);
 	}
 
@@ -455,7 +455,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* In case we have one second grid, for bottom surface */
 	if (Ctrl->In.file[1]) {
-		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
+		if ((GridB = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[1], NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 

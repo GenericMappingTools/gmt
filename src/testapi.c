@@ -122,8 +122,8 @@ int GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct 
 					case 'f': Ctrl->I.mode = GMT_IS_FILE; break;
 					case 's': Ctrl->I.mode = GMT_IS_STREAM; break;
 					case 'd': Ctrl->I.mode = GMT_IS_FDESC; break;
-					case 'c': Ctrl->I.mode = GMT_IS_COPY; break;
-					case 'r': Ctrl->I.mode = GMT_IS_REF; break;
+					case 'c': Ctrl->I.mode = GMT_IS_DUPLICATE; break;
+					case 'r': Ctrl->I.mode = GMT_IS_REFERENCE; break;
 				}
 				if (opt->arg[1] == '/' && opt->arg[2] == 'v') Ctrl->I.via = GMT_VIA_VECTOR;
 				if (opt->arg[1] == '/' && opt->arg[2] == 'm') Ctrl->I.via = GMT_VIA_MATRIX;
@@ -147,8 +147,8 @@ int GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct 
 					case 'f': Ctrl->W.mode = GMT_IS_FILE; break;
 					case 's': Ctrl->W.mode = GMT_IS_STREAM; break;
 					case 'd': Ctrl->W.mode = GMT_IS_FDESC; break;
-					case 'c': Ctrl->W.mode = GMT_IS_COPY; break;
-					case 'r': Ctrl->W.mode = GMT_IS_REF; break;
+					case 'c': Ctrl->W.mode = GMT_IS_DUPLICATE; break;
+					case 'r': Ctrl->W.mode = GMT_IS_REFERENCE; break;
 				}
 				if (opt->arg[1] == '/' && opt->arg[2] == 'v') Ctrl->W.via = GMT_VIA_VECTOR;
 				if (opt->arg[1] == '/' && opt->arg[2] == 'm') Ctrl->W.via = GMT_VIA_MATRIX;
@@ -159,10 +159,10 @@ int GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct 
 		}
 	}
 
-	if (Ctrl->I.via == GMT_VIA_VECTOR && Ctrl->T.mode != GMT_IS_DATASET && !(Ctrl->I.mode == GMT_IS_COPY || Ctrl->I.mode == GMT_IS_REF)) n_errors++;
-	if (Ctrl->I.via == GMT_VIA_MATRIX && !(Ctrl->T.mode == GMT_IS_DATASET || Ctrl->T.mode == GMT_IS_GRID) && !(Ctrl->I.mode == GMT_IS_COPY || Ctrl->I.mode == GMT_IS_REF)) n_errors++;
-	if (Ctrl->W.via == GMT_VIA_VECTOR && Ctrl->T.mode != GMT_IS_DATASET && !(Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF)) n_errors++;
-	if (Ctrl->W.via == GMT_VIA_MATRIX && !(Ctrl->T.mode == GMT_IS_DATASET || Ctrl->T.mode == GMT_IS_GRID) && !(Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF)) n_errors++;
+	if (Ctrl->I.via == GMT_VIA_VECTOR && Ctrl->T.mode != GMT_IS_DATASET && !(Ctrl->I.mode == GMT_IS_DUPLICATE || Ctrl->I.mode == GMT_IS_REFERENCE)) n_errors++;
+	if (Ctrl->I.via == GMT_VIA_MATRIX && !(Ctrl->T.mode == GMT_IS_DATASET || Ctrl->T.mode == GMT_IS_GRID) && !(Ctrl->I.mode == GMT_IS_DUPLICATE || Ctrl->I.mode == GMT_IS_REFERENCE)) n_errors++;
+	if (Ctrl->W.via == GMT_VIA_VECTOR && Ctrl->T.mode != GMT_IS_DATASET && !(Ctrl->W.mode == GMT_IS_DUPLICATE || Ctrl->W.mode == GMT_IS_REFERENCE)) n_errors++;
+	if (Ctrl->W.via == GMT_VIA_MATRIX && !(Ctrl->T.mode == GMT_IS_DATASET || Ctrl->T.mode == GMT_IS_GRID) && !(Ctrl->W.mode == GMT_IS_DUPLICATE || Ctrl->W.mode == GMT_IS_REFERENCE)) n_errors++;
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -291,10 +291,10 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					break;
 			}
 			break;
-		case GMT_IS_COPY: case GMT_IS_REF:
+		case GMT_IS_DUPLICATE: case GMT_IS_REFERENCE:
 			switch (Ctrl->I.via) {
 				case GMT_VIA_MATRIX:	/* Get the dataset|grid via a user matrix */
-					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, NULL, M)) == GMTAPI_NOTSET) {
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_DUPLICATE + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, NULL, M)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					if ((Intmp = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
@@ -302,7 +302,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					}
 					break;
 				case GMT_VIA_VECTOR:	/* Get the dataset|grid via a user vectors */
-					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, NULL, V)) == GMTAPI_NOTSET) {
+					if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_DUPLICATE + Ctrl->I.via, geometry[Ctrl->T.mode], GMT_IN, NULL, V)) == GMTAPI_NOTSET) {
 						Return (API->error);
 					}
 					if ((Intmp = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
@@ -334,7 +334,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];
-		if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REF, geometry[Ctrl->T.mode], GMT_IN, NULL, In)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, GMT_IS_REFERENCE, geometry[Ctrl->T.mode], GMT_IN, NULL, In)) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, in_ID) != GMT_OK) {
@@ -393,7 +393,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					break;
 			}
 			break;
-		case GMT_IS_COPY: case GMT_IS_REF:
+		case GMT_IS_DUPLICATE: case GMT_IS_REFERENCE:
 			switch (Ctrl->W.via) {
 				case GMT_VIA_MATRIX:	/* Put the dataset|grid via a user matrix */
 					if ((out_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->W.mode + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
@@ -427,12 +427,12 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	if (Ctrl->W.mode == GMT_IS_COPY || Ctrl->W.mode == GMT_IS_REF) {	/* Must write out what is in memory to the file */
+	if (Ctrl->W.mode == GMT_IS_DUPLICATE || Ctrl->W.mode == GMT_IS_REFERENCE) {	/* Must write out what is in memory to the file */
 		if ((Out = GMT_Retrieve_Data (API, out_ID)) == NULL) {
 			Return (API->error);
 		}
 		if (Ctrl->W.via) {	/* Must first read into proper GMT container, then write to file */
-			if ((Outtmp = GMT_Read_Data (API, Ctrl->T.mode, GMT_IS_COPY + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_READ_NORMAL, NULL, Out, NULL)) == NULL) {
+			if ((Outtmp = GMT_Read_Data (API, Ctrl->T.mode, GMT_IS_DUPLICATE + Ctrl->W.via, geometry[Ctrl->T.mode], GMT_READ_NORMAL, NULL, Out, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (GMT_Write_Data (API, Ctrl->T.mode, GMT_IS_FILE, geometry[Ctrl->T.mode], GMT_WRITE_SET, NULL, ofile[Ctrl->T.mode], Outtmp) != GMT_OK) {
@@ -455,7 +455,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	if (GMT_Destroy_Data (API, GMT_CLOBBER, &V) != GMT_OK) {
 		Return (API->error);
 	}
-	if (!(Ctrl->I.mode == GMT_IS_REF && Ctrl->W.mode == GMT_IS_REF) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out) != GMT_OK) {
+	if (!(Ctrl->I.mode == GMT_IS_REFERENCE && Ctrl->W.mode == GMT_IS_REFERENCE) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out) != GMT_OK) {
 		Return (API->error);
 	}
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
