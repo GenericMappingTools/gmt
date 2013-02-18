@@ -89,14 +89,14 @@ enum Gmt_grid_id {
 #include "gmt_customio.h"
 
 struct GMT_GRID_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<grdfile> */
-	struct GRD_HEADER grd;	/* Header of grid file passed via -R */
+	struct GMT_GRID_HEADER grd;	/* Header of grid file passed via -R */
 	bool active;		/* true if initialized via -R */
 };
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 	unsigned int id;			/* The internal number of the grid */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
-	struct GRD_HEADER *header;	/* Pointer to full GMT header for the grid */
+	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
 	float *data;			/* Pointer to the float grid */
 };
 
@@ -118,7 +118,7 @@ struct GMT_GRDFILE {
 
 	void *v_row;		/* Void Row pointer for any format */
 
-	struct GRD_HEADER header;	/* Full GMT header for the file */
+	struct GMT_GRID_HEADER header;	/* Full GMT header for the file */
 };
 
 #ifdef __APPLE__ /* Accelerate framework */
@@ -158,9 +158,9 @@ static inline void scale_and_offset_f (float *data, size_t length, float scale, 
 }
 
 EXTERN_MSC int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code, unsigned int *type_id);
-EXTERN_MSC int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, bool magic);
-EXTERN_MSC int GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
-EXTERN_MSC int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header);
+EXTERN_MSC int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header, bool magic);
+EXTERN_MSC int GMT_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
+EXTERN_MSC int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, double scale, double offset);
 
 #endif /* GMT_GRDIO_H */

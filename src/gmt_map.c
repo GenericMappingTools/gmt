@@ -6315,7 +6315,7 @@ uint64_t GMT_compact_line (struct GMT_CTRL *C, double *x, double *y, uint64_t n,
 
 /* Routines to transform grdfiles to/from map projections */
 
-int GMT_project_init (struct GMT_CTRL *C, struct GRD_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset)
+int GMT_project_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
 		header->nx = GMT_get_n (C, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);

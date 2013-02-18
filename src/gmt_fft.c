@@ -503,7 +503,7 @@ void GMT_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	char *method[2] = {"edge-point", "mirror"};
 	float *datac = Grid->data, scale, cos_wt;
 	double width;
-	struct GRD_HEADER *h = Grid->header;	/* For shorthand */
+	struct GMT_GRID_HEADER *h = Grid->header;	/* For shorthand */
 
 	width_percent = lrint (F->taper_width);
 
@@ -656,10 +656,10 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	 */
 	int del;
 	unsigned int pad[4];
-	struct GRD_HEADER save;
+	struct GMT_GRID_HEADER save;
 	char *file = NULL;
 	
-	GMT_memcpy (&save, Grid->header, 1, struct GRD_HEADER);	/* Save what we have before messing around */
+	GMT_memcpy (&save, Grid->header, 1, struct GMT_GRID_HEADER);	/* Save what we have before messing around */
 	GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);	/* Save current pad, then set pad to zero */
 	if ((del = Grid->header->pad[XLO]) > 0) Grid->header->wesn[XLO] -= del * Grid->header->inc[GMT_X], Grid->header->pad[XLO] = 0;
 	if ((del = Grid->header->pad[XHI]) > 0) Grid->header->wesn[XHI] += del * Grid->header->inc[GMT_X], Grid->header->pad[XHI] = 0;
@@ -677,7 +677,7 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	else
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 	
-	GMT_memcpy (Grid->header, &save, 1, struct GRD_HEADER);	/* Restore original */
+	GMT_memcpy (Grid->header, &save, 1, struct GMT_GRID_HEADER);	/* Restore original */
 	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
 }
 

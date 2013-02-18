@@ -57,7 +57,7 @@ struct GRDRASTER_CTRL {
 };
 
 struct GRDRASTER_INFO {
-	struct GRD_HEADER h;
+	struct GMT_GRID_HEADER h;
 	unsigned int id;	/* File number  */
 	int nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	int nanflag;

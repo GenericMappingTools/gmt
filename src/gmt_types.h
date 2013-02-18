@@ -150,11 +150,11 @@ struct GMT_SESSION {
 	bool rgb_hashnode_init;		/* true once the rgb_hashnode array has been loaded; false otherwise */
 	unsigned int n_shorthands;			/* Length of arrray with shorthand information */
 	char *grdformat[GMT_N_GRD_FORMATS];	/* Type and description of grid format */
-	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid read header functions */
-	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid update header functions */
-	int (*writeinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *);	/* Pointers to grid write header functions */
-	int (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
-	int (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GRD_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
+	int (*readinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid read header functions */
+	int (*updateinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid update header functions */
+	int (*writeinfo[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *);	/* Pointers to grid write header functions */
+	int (*readgrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
+	int (*writegrd[GMT_N_GRD_FORMATS]) (struct GMT_CTRL *, struct GMT_GRID_HEADER *, float *, double *, unsigned int *, unsigned int);	/* Pointers to grid read functions */
 	int (*fft1d[k_n_fft_algorithms]) (struct GMT_CTRL *, float *, unsigned int, int, unsigned int);	/* Pointers to available 1-D FFT functions (or NULL if not configured) */
 	int (*fft2d[k_n_fft_algorithms]) (struct GMT_CTRL *, float *, unsigned int, unsigned int, int, unsigned int);	/* Pointers to available 2-D FFT functions (or NULL if not configured) */
 	/* This part contains pointers that may point to additional memory outside this struct */

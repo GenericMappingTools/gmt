@@ -98,7 +98,7 @@ static void gmt_degrees2dms (double degrees, int *deg, int *min, int *sec)
 	*sec = (int)(degrees * SEC_PER_MIN);
 }
 
-int gmt_GMTtoMGG2 (struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
+int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 {
 	double f;
 	GMT_memset (mgg, 1, MGG_GRID_HEADER_2);
@@ -146,7 +146,7 @@ int gmt_GMTtoMGG2 (struct GRD_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	return (GMT_NOERROR);
 }
 
-static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
+static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt)
 {
 	int one_or_zero;
 	
@@ -171,7 +171,7 @@ static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GRD_HEADER *gmt)
 	gmt->z_add_offset = 0.0;
 }
 
-int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is a GRD98 file */
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
@@ -196,7 +196,7 @@ int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	return GMT_NOERROR;
 }
 
-int GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
@@ -231,7 +231,7 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
@@ -251,7 +251,7 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	FILE *fp = NULL;
@@ -358,7 +358,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *gri
 	return (GMT_NOERROR);
 }
 
-int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {
 	MGG_GRID_HEADER_2 mggHeader;
 	bool is_float = false, check;

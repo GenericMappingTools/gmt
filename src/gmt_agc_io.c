@@ -37,17 +37,17 @@
 
 /* Public Functions:
 
-int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header)
-int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
-int GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-int GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
+int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
+int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
+int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 
 Private Functions used by the public functions:
 
 int ReadRecord (FILE *fpi, float z[ZBLOCKWIDTH][ZBLOCKHEIGHT])
 int WriteRecord (FILE *file, float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec, float *postrec)
-void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
+void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header)
 void SaveAGCHeader (char *remark, float *agchead)
 
 */
@@ -84,7 +84,7 @@ int WriteRecord (FILE *file, float rec[ZBLOCKWIDTH][ZBLOCKHEIGHT], float *prerec
 	return (GMT_NOERROR);
 }
 
-void packAGCheader (float *prez, float *postz, struct GRD_HEADER *header)
+void packAGCheader (float *prez, float *postz, struct GMT_GRID_HEADER *header)
 {	/* Places grd header info in the AGC header array */
 	GMT_memset (prez,  PREHEADSIZE,  float);
 	GMT_memset (postz, POSTHEADSIZE, float);
@@ -111,7 +111,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 	}
 }
 
-int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
 	int nx, ny;
@@ -154,7 +154,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	return GMT_GRDIO_BAD_VAL;
 }
 
-int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {	/* Read header info. NOTE: All AGC files are assumed to be gridline-registered */
 	unsigned int i;
 	FILE *fp = NULL;
@@ -192,7 +192,7 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {	/* Write grd header info to file */
 	FILE *fp = NULL;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
@@ -215,7 +215,7 @@ int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:     	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -302,7 +302,7 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]

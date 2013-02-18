@@ -42,7 +42,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job)
+int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GMT_GRID_HEADER *header, char job)
 {
 	int err;	/* Implicity by GMT_err_trap */
 	int i, nm[2];
@@ -179,7 +179,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, c
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	int ncid;
 	int err;
@@ -190,7 +190,7 @@ int GMT_cdf_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	int ncid, old_fill_mode;
 	int err;
@@ -202,7 +202,7 @@ int GMT_cdf_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	int ncid, old_fill_mode;
 	int err;
@@ -214,7 +214,7 @@ int GMT_cdf_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -289,7 +289,7 @@ int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid
 	return (GMT_NOERROR);
 }
 
-int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]

@@ -162,11 +162,11 @@ enum GMT_enum_grdlen {
 	GMT_GRID_NAME_LEN256	= 256U,
 	GMT_GRID_HEADER_SIZE    = 892U};
 
-/* Note: GMT_GRID_HEADER_SIZE is 4 less than sizeof (struct GRD_HEADER) for 64 bit systems due to alignment.
-   Since the GRD_HEADER was designed during 32-bit era its sizeof was 892.  Bof backwards compatibility
+/* Note: GMT_GRID_HEADER_SIZE is 4 less than sizeof (struct GMT_GRID_HEADER) for 64 bit systems due to alignment.
+   Since the GMT_GRID_HEADER was designed during 32-bit era its sizeof was 892.  Bof backwards compatibility
    we continue to enforce this header size by not writing the structure components separately. */
 
-struct GRD_HEADER {
+struct GMT_GRID_HEADER {
 /* Variables we document for the API: */
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
 	unsigned int nx;                /* Number of columns */
@@ -490,7 +490,7 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	/* Variables we document for the API: */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
 	int		*ColorMap;	/* Array with color lookup values */
-	struct GRD_HEADER *header;	/* Pointer to full GMT header for the image */
+	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
 	unsigned char *data;		/* Pointer to actual image */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */

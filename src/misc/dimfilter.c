@@ -291,7 +291,7 @@ int GMT_dimfilter_parse (struct GMTAPI_CTRL *C, struct DIMFILTER_CTRL *Ctrl, str
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GRD_HEADER *h, double y_0, int fast)
+void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h, double y_0, int fast)
 /* Last two gives offset between output node and 'origin' input node for this window (0,0 for integral grids) */
 /* true when input/output grids are offset by integer values in dx/dy */
 

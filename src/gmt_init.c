@@ -1367,7 +1367,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		if ((G = GMT_Read_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, item, NULL)) == NULL) {	/* Read header */
 			return (C->parent->error);
 		}
-		GMT_memcpy (&(C->current.io.grd_info.grd), G->header, 1, struct GRD_HEADER);
+		GMT_memcpy (&(C->current.io.grd_info.grd), G->header, 1, struct GMT_GRID_HEADER);
 		if (GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &G) != GMT_OK) {
 			return (C->parent->error);
 		}

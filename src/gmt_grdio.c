@@ -78,17 +78,17 @@ struct GRD_PAD {
 };
 
 /* These functions live in other files and are extern'ed in here */
-int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job);
-int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
-int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-int GMT_is_native_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-int GMT_is_ras_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-int GMT_is_srf_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-int GMT_is_agc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
-int GMT_is_esri_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
+int gmt_nc_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, char job);
+int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GMT_GRID_HEADER *header, char job);
+int GMT_is_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
+int GMT_is_native_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
+int GMT_is_ras_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
+int GMT_is_srf_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
+int GMT_is_mgg2_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
+int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
+int GMT_is_esri_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
 #ifdef HAVE_GDAL
-int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header);
+int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
 #endif
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
@@ -118,7 +118,7 @@ void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
 		strcpy (fname, file);
 }
 
-double * GMT_grd_coord (struct GMT_CTRL *C, struct GRD_HEADER *header, int dir)
+double * GMT_grd_coord (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, int dir)
 {	/* Allocate, compute, and return the x- or y-coordinates for a grid */
 	unsigned int k;
 	double *coord = NULL;
@@ -140,7 +140,7 @@ enum Grid_packing_mode {
 	k_grd_unpack    /* remove scale and offset after reading packed data */
 };
 
-void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *grid, unsigned pack_mode) {
+void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *header, float *grid, unsigned pack_mode) {
 	size_t n_representations = 0; /* number of distinct values >= 0 that a signed integral type can represent */
 
 	if (pack_mode == k_grd_pack && (header->z_scale_autoadust || header->z_offset_autoadust)) {
@@ -197,7 +197,7 @@ void GMT_pack_grid (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, float *gri
 	}
 }
 
-int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, char *format) {
+int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *header, char *format) {
 	/* parses format string after =-suffix: ff/scale/offset/invalid
 	 * ff:      can be one of [abcegnrs][bsifd]
 	 * scale:   can be any non-zero normalized number or 'a' for scale and
@@ -255,7 +255,7 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GRD_HEADER *header, ch
 	return GMT_NOERROR;
 }
 
-int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, bool magic)
+int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header, bool magic)
 {
 	/* This functions does a couple of things:
 	 * 1. It tries to determine what kind of grid file this is. If a file is openeed for
@@ -373,7 +373,7 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 	return (GMT_NOERROR);
 }
 
-void gmt_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
+void gmt_grd_set_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	/* Set unit strings for grid coordinates x, y and z based on
 	   output data types for columns 0, 1, and 2.
@@ -435,7 +435,7 @@ void gmt_grd_set_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 }
 
-void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
+void gmt_grd_get_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	/* Set input data types for columns 0, 1 and 2 based on unit strings for
 	   grid coordinates x, y and z.
@@ -506,7 +506,7 @@ void gmt_grd_get_units (struct GMT_CTRL *C, struct GRD_HEADER *header)
 	}
 }
 
-bool GMT_grd_pad_status (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned int *pad)
+bool GMT_grd_pad_status (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned int *pad)
 {	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
 	 * Return codes are:
@@ -529,7 +529,7 @@ bool GMT_grd_pad_status (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned
 	}
 }
 
-int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P)
+int gmt_padspace (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P)
 {	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
@@ -585,7 +585,7 @@ int gmt_padspace (struct GMT_CTRL *C, struct GRD_HEADER *header, double *wesn, u
 	return (true);	/* Return true so the calling function can take appropriate action */
 }
 
-int gmt_get_grdtype (struct GMT_CTRL *C, struct GRD_HEADER *h)
+int gmt_get_grdtype (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {	/* Determine if grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
 	if (GMT_x_is_lon (C, GMT_IN)) {	/* Data set is geographic with x = longitudes */
 		GMT_report (C, GMT_MSG_VERBOSE, "Grid is Geographic\n");
@@ -624,7 +624,7 @@ int gmt_get_grdtype (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	return (GMT_GRID_CARTESIAN);
 }
 
-int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header)
+int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header)
 {	/* file:	File name
 	 * header:	grid structure header
 	 * Note: The header reflects what is actually in the file, and all the dimensions
@@ -666,7 +666,7 @@ int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header
 	return (GMT_NOERROR);
 }
 
-int GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header)
+int GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header)
 {	/* file:	File name
 	 * header:	grid structure header
 	 */
@@ -682,7 +682,7 @@ int GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *heade
 	return ((*C->session.writeinfo[header->type]) (C, header));
 }
 
-int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header)
+int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 */
@@ -694,7 +694,7 @@ int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GRD_HEADER *head
 	return ((*C->session.updateinfo[header->type]) (C, header));
 }
 
-int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode)
+int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode)
 {	/* file:	- IGNORED -
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -725,7 +725,7 @@ int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, flo
 	return (GMT_NOERROR);
 }
 
-int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GRD_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode)
+int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header, float *grid, double *wesn, unsigned int *pad, int complex_mode)
 {	/* file:	File name
 	 * header:	grid structure header
 	 * grid:	array with final grid
@@ -815,7 +815,7 @@ int GMT_grd_format_decoder (struct GMT_CTRL *C, const char *code, unsigned int *
  * Date:	20 April 1998
  */
 
-int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int mode)
+int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, unsigned int mode)
 {
 	/* mode - 0 means we are checking an existing grid, mode = 1 means we test a new -R -I combination */
 
@@ -860,7 +860,7 @@ int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GRD_HEADER *h, unsigned int mo
 	return (GMT_NOERROR);
 }
 
-int GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index)
+int GMT_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index)
 {
 	/* Determines which rows and columns to extract to extract from a grid, based on w,e,s,n.
 	 * This routine first rounds the w,e,s,n boundaries to the nearest gridlines or pixels,
@@ -934,7 +934,7 @@ int GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[
 	return (GMT_NOERROR);
 }
 
-void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GRD_HEADER *h) {
+void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GMT_GRID_HEADER *h) {
 	/* Given input string, copy elements into string portions of h.
 		 By default use "/" as the field separator. However, if the first and
 		 last character of the input string is the same AND that character
@@ -1172,7 +1172,7 @@ int GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *row)
 	return (GMT_NOERROR);
 }
 
-void GMT_set_grdinc (struct GMT_CTRL *C, struct GRD_HEADER *h)
+void GMT_set_grdinc (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {
 	/* Update grid increments based on w/e/s/n, nx/ny, and registration */
 	h->inc[GMT_X] = GMT_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], h->nx, h->registration);
@@ -1181,7 +1181,7 @@ void GMT_set_grdinc (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	h->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
 }
 
-void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
+void GMT_set_grddim (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {	/* Assumes pad is set and then computes nx, ny, mx, my, nm, size, xy_off based on w/e/s/n.  */
 	h->nx = GMT_grd_get_nx (C, h);		/* Set nx, ny based on w/e/s/n and offset */
 	h->ny = GMT_grd_get_ny (C, h);
@@ -1193,7 +1193,7 @@ void GMT_set_grddim (struct GMT_CTRL *C, struct GRD_HEADER *h)
 	GMT_set_grdinc (C, h);
 }
 
-void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, bool update)
+void GMT_grd_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, bool update)
 {	/* GMT_grd_init initializes a grd header to default values and copies the
 	 * options to the header variable command.
 	 * update = true if we only want to update command line */
@@ -1203,7 +1203,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPT
 	if (update)	/* Only clean the command history */
 		GMT_memset (header->command, GMT_GRID_COMMAND_LEN320, char);
 	else {		/* Wipe the slate clean */
-		GMT_memset (header, 1, struct GRD_HEADER);
+		GMT_memset (header, 1, struct GMT_GRID_HEADER);
 
 		/* Set the variables that are not initialized to 0/false/NULL */
 		header->z_scale_factor = 1.0;
@@ -1291,7 +1291,7 @@ void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *G, double shift)
 		GMT_report (C, GMT_MSG_NORMAL, "Gridline-registered global grid has inconsistent values at repeated node for %d rows\n", n_warn);
 }
 
-int GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, unsigned int interpolant)
+int GMT_grd_setregion (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant)
 {
 	/* GMT_grd_setregion determines what w,e,s,n should be passed to GMT_read_grd.
 	 * It does so by using C->common.R.wesn which have been set correctly by map_setup.
@@ -1411,7 +1411,7 @@ int GMT_grd_setregion (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn, u
 	return (grid_global ? 1 : 2);
 }
 
-int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GRD_HEADER *header)
+int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HEADER *header)
 {
 	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid.
 	 * Upon entry, the boundaries w,e,s,n are given as a rough approximation of the actual subset needed.
@@ -1709,7 +1709,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	uint64_t ijp, ij0;
 	unsigned int row;
 	size_t size;
-	struct GRD_HEADER *h = NULL;
+	struct GMT_GRID_HEADER *h = NULL;
 
 	if (GMT_grd_pad_status (C, G->header, pad)) return;	/* Already padded as requested so nothing to do */
 	/* Here the pads differ (or G has no pad at all) */
@@ -1767,18 +1767,18 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C)
 	struct GMT_GRID *G = NULL;
 
 	G = GMT_memory (C, NULL, 1, struct GMT_GRID);
-	G->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
+	G->header = GMT_memory (C, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (C, G->header, NULL, false); /* Set default values */
 	G->alloc_mode = GMT_ALLOCATED;			/* So GMT_* modules can free this memory. */
 	return (G);
 }
 
-struct GRD_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GRD_HEADER *h)
+struct GMT_GRID_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {	/* Duplicates a grid header. */
-	struct GRD_HEADER *hnew = NULL;
+	struct GMT_GRID_HEADER *hnew = NULL;
 
-	hnew = GMT_memory (C, NULL, 1, struct GRD_HEADER);
-	GMT_memcpy (hnew, h, 1, struct GRD_HEADER);
+	hnew = GMT_memory (C, NULL, 1, struct GMT_GRID_HEADER);
+	GMT_memcpy (hnew, h, 1, struct GMT_GRID_HEADER);
 	return (hnew);
 }
 
@@ -1787,7 +1787,7 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, boo
 	struct GMT_GRID *Gnew = NULL;
 
 	Gnew = GMT_create_grid (C);
-	GMT_memcpy (Gnew->header, G->header, 1, struct GRD_HEADER);
+	GMT_memcpy (Gnew->header, G->header, 1, struct GMT_GRID_HEADER);
 	if (alloc_data) {	/* ALso allocate and duplicate data array */
 		Gnew->data = GMT_memory_aligned (C, NULL, G->header->size, float);
 		GMT_memcpy (Gnew->data, G->data, G->header->size, float);
@@ -1826,7 +1826,7 @@ int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **O
 	return (false);
 }
 
-void gmt_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration)
+void gmt_init_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration)
 {	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
 	double wesn_dup[4], inc_dup[2];
 	/* In case user is passing header->wesn etc we must save them first as GMT_grd_init will clobber them */
@@ -1888,7 +1888,7 @@ int gmt_alloc_image (struct GMT_CTRL *C, struct GMT_IMAGE *Image)
 	return (GMT_NOERROR);
 }
 
-int GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned int registration)
+int GMT_change_grdreg (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned int registration)
 {
 	unsigned int old_registration;
 	double F;
@@ -1909,7 +1909,7 @@ int GMT_change_grdreg (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned i
 	return (old_registration);
 }
 
-void GMT_grd_zminmax (struct GMT_CTRL *C, struct GRD_HEADER *h, float *z)
+void GMT_grd_zminmax (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, float *z)
 {	/* Reset the xmin/zmax values in the header */
 	unsigned int row, col;
 	uint64_t node, n = 0;

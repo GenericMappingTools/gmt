@@ -65,7 +65,7 @@ int main (int argc, char **argv)
 	
 	FILE *fp;
 	
-	struct GRD_HEADER header;
+	struct GMT_GRID_HEADER header;
 	struct SPH2GRD_CTRL *Ctrl;
 
 	void *New_sph2grd_Ctrl (), Free_sph2grd_Ctrl (struct SPH2GRD_CTRL *C);

@@ -6230,7 +6230,7 @@ void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data)
 struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 {	/* Allocates space for a new image container. */
 	struct GMT_IMAGE *I = GMT_memory (C, NULL, 1, struct GMT_IMAGE);
-	I->header = GMT_memory (C, NULL, 1, struct GRD_HEADER);
+	I->header = GMT_memory (C, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (C, I->header, NULL, false); /* Set default values */
 	return (I);
 }
