@@ -200,6 +200,8 @@ int GMT_colmath (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the colmath main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input data\n");
+
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {

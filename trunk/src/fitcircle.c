@@ -326,6 +326,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	size_t n_alloc;
 
 	char format[GMT_BUFSIZ], record[GMT_BUFSIZ], item[GMT_BUFSIZ];
+	char *type[2] = {"great", "small"}, *way[3] = {"L1","L2","L1 and L2"};
 
 	double lonsum, latsum, rad, *work = NULL, *in = NULL;
 	double meanv[3], cross[3], cross_sum[3], gcpole[3], scpole[3];		/* Extra vectors  */
@@ -406,6 +407,8 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
+
 	lonsum /= n_data;	latsum /= n_data;
 	sprintf (record, "%" PRIu64 " points read, Average Position (Flat Earth): ", n_data);
 	sprintf (item, format, lonsum, latsum);	strcat (record, item);
@@ -447,7 +450,6 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 		sprintf (item, "%sL1 S Hemisphere Great Circle Pole (Cross-Averaged)", GMT->current.setting.io_col_separator);	strcat (record, item);
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 		if (Ctrl->S.active) {	/* Determine small circle pole */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Fitting small circle using L1 norm.\n");
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 1, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				GMT_cart_to_geo (GMT, &latsum, &lonsum, scpole, true);
@@ -479,7 +481,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
 			GMT_report (GMT, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
 		imax = 0;	imin = 2;
 		if (d_acos (GMT_dot3v (GMT, v, meanv)) > M_PI_2)
 			for (i = 0; i < 3; i++) meanv[i] = -v[imax*np+i];
@@ -514,7 +516,6 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 		GMT_free (GMT, lambda);
 		GMT_free (GMT, a);
 		if (Ctrl->S.active) {	/* Want small circle pole */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Fitting small circle using L2 norm.\n");
 			rad = get_small_circle (GMT, data, n_data, meanv, gcpole, scpole, 2, work, Ctrl->S.mode, Ctrl->S.lat);
 			if (rad >= 0.0) {
 				/* True when small circle fits better than great circle */

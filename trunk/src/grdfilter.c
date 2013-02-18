@@ -100,7 +100,8 @@ struct GRDFILTER_CTRL {
 #define GRDFILTER_X_DIST	5
 #define GRDFILTER_Y_DIST	6
 
-#define GRDFILTER_CHOICES	"bcgfompLlUu"
+#define GRDFILTER_FILTERS	"bcgfompLlUu"
+#define GRDFILTER_MODES		"012345p"
 
 /* Distance modes: */
 #define GRDFILTER_NOTSET		-2
@@ -433,10 +434,16 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 #endif
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
-				Ctrl->D.mode = (opt->arg[0] == 'p') ? GRDFILTER_XY_PIXEL : atoi (opt->arg);
+				if (strchr (GRDFILTER_MODES, opt->arg[0])) {	/* OK filter code */
+					Ctrl->D.mode = (opt->arg[0] == 'p') ? GRDFILTER_XY_PIXEL : atoi (opt->arg);
+				}
+				else {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -D<mode>, where mode is one of %s\n", GRDFILTER_MODES);
+					n_errors++;
+				}
 				break;
 			case 'F':	/* Filter */
-				if (strchr (GRDFILTER_CHOICES, opt->arg[0])) {	/* OK filter code */
+				if (strchr (GRDFILTER_FILTERS, opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = true;
 					Ctrl->F.filter = opt->arg[0];
 					strncpy (txt, opt->arg, GMT_TEXT_LEN256);	/* Work on a copy */
@@ -474,7 +481,7 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Fx<width>, where x is one of %s\n", GRDFILTER_CHOICES);
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Fx<width>, where x is one of %s\n", GRDFILTER_FILTERS);
 					n_errors++;
 				}
 				break;

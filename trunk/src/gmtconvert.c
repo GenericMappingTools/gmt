@@ -299,6 +299,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input data\n");
+
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data files or stdin */
 	}

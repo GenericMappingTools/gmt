@@ -681,6 +681,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input data\n");
 	if (GMT->common.b.active[GMT_IN]) {	/* Probably also when user uses the -i option to select columns */
 		GMT_message (GMT, "Cannot yet use binary data files; pipe in via gmtconvert for now\n");
 		Return (EXIT_FAILURE);
