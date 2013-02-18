@@ -3255,6 +3255,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on data tables\n");
+
 	n_macros = gmt_load_macros (GMT, ".gmtmath", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
 	

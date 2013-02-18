@@ -913,6 +913,9 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	}
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
+	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Filter the data columns\n");
+	
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
 			/* Duplicate data and set up arrays and parameters needed to filter this segment */
