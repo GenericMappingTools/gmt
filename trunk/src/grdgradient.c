@@ -393,7 +393,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	if (Ctrl->S.active) {	/* Want slope grid */
 		if ((Slope = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_memcpy (Slope->header, Surf->header, 1, struct GRD_HEADER);
+		GMT_memcpy (Slope->header, Surf->header, 1, struct GMT_GRID_HEADER);
 		Slope->data = GMT_memory_aligned (GMT, NULL, Surf->header->size, float);
 	}
 	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* true if input is a read-only array */

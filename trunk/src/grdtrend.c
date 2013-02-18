@@ -529,12 +529,12 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	/* Allocate other required arrays */
 
 	if ((T = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing fitted surface  */
-	GMT_memcpy (T->header, G->header, 1, struct GRD_HEADER);
+	GMT_memcpy (T->header, G->header, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (GMT, T->header, options, true);
 	T->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
 		if ((R = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
-		GMT_memcpy (R->header, G->header, 1, struct GRD_HEADER);
+		GMT_memcpy (R->header, G->header, 1, struct GMT_GRID_HEADER);
 		R->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
 	}
 	xval = GMT_memory (GMT, NULL, G->header->nx, double);

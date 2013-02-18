@@ -412,9 +412,9 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	if (!Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->I.inc[GMT_X] != 0.0 && Ctrl->I.inc[GMT_Y] != 0.0) {	/* Coarsen the output interval */
-		struct GRD_HEADER tmp_h;
+		struct GMT_GRID_HEADER tmp_h;
 		double val;
-		GMT_memcpy (&tmp_h, Grid[0]->header, 1, struct GRD_HEADER);
+		GMT_memcpy (&tmp_h, Grid[0]->header, 1, struct GMT_GRID_HEADER);
 		GMT_memcpy (tmp_h.inc, Ctrl->I.inc, 2, double);
 		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
 		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);

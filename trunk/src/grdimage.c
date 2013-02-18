@@ -289,7 +289,7 @@ int GMT_grdimage_parse (struct GMTAPI_CTRL *C, struct GRDIMAGE_CTRL *Ctrl, struc
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD_HEADER *g, bool projected)
+void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struct GMT_GRID_HEADER *g, bool projected)
 {
 	/* Sets the projected extent of the grid given the map projection
 	 * The extreme x/y coordinates are returned in r, and dx/dy, and
@@ -372,7 +372,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct PSL_CTRL *PSL = NULL;	/* General PSL interal parameters */
-	struct GRD_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
+	struct GMT_GRID_HEADER *header_work = NULL;	/* Pointer to a GMT header for the image or grid */
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 #ifdef HAVE_GDAL
@@ -686,9 +686,9 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		resampled = true;
 	}
 	else {	/* Simply set Grid_proj[i]/Intens_proj to point to Grid_orig[i]/Intens_orig */
-		struct GRD_HEADER tmp_header;
+		struct GMT_GRID_HEADER tmp_header;
 		for (k = 0; k < n_grids; k++) {	/* Must get a copy so we can change one without affecting the other */
-			GMT_memcpy (&tmp_header, Grid_orig[k]->header, 1, struct GRD_HEADER);
+			GMT_memcpy (&tmp_header, Grid_orig[k]->header, 1, struct GMT_GRID_HEADER);
 			Grid_proj[k] = Grid_orig[k];
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, &tmp_header, need_to_project);
 		}
@@ -697,7 +697,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			grid_registration = Grid_orig[0]->header->registration;
 #ifdef HAVE_GDAL
 		else {
-			GMT_memcpy (&tmp_header, I->header, 1, struct GRD_HEADER);
+			GMT_memcpy (&tmp_header, I->header, 1, struct GMT_GRID_HEADER);
 			Img_proj = I;
 			GMT_set_proj_limits (GMT, Img_proj->header, &tmp_header, need_to_project);
 		}

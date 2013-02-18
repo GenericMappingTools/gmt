@@ -1904,7 +1904,7 @@ int GMT_get_distance (struct GMT_CTRL *C, char *line, double *dist, char *unit)
 	return (d_flag + way);	/* Range 0-3 */
 }
 
-void GMT_RI_prepare (struct GMT_CTRL *C, struct GRD_HEADER *h)
+void GMT_RI_prepare (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {
 	/* This routine adjusts the grid header. It computes the correct nx, ny, x_inc and y_inc,
 	   based on user input of the -I option and the current settings of x_min, x_max, y_min, y_max and registration.
@@ -6205,7 +6205,7 @@ int GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, dou
  *	GMT_image_BC_set	- Sets the BCs on an image
  */
 
-int GMT_BC_init (struct GMT_CTRL *C, struct GRD_HEADER *h)
+int GMT_BC_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {	/* Initialize grid boundary conditions based on grid header and -n settings */
 	int i = 0, type;
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
@@ -7124,7 +7124,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	}
 }
 
-bool GMT_y_out_of_bounds (struct GMT_CTRL *C, int *j, struct GRD_HEADER *h, bool *wrap_180) {
+bool GMT_y_out_of_bounds (struct GMT_CTRL *C, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180) {
 	/* Adjusts the j (y-index) value if we are dealing with some sort of periodic boundary
 	* condition.  If a north or south pole condition we must "go over the pole" and access
 	* the longitude 180 degrees away - this is achieved by passing the wrap_180 flag; the
@@ -7165,7 +7165,7 @@ bool GMT_y_out_of_bounds (struct GMT_CTRL *C, int *j, struct GRD_HEADER *h, bool
 	return (false);	/* OK, we are inside grid now for sure */
 }
 
-bool GMT_x_out_of_bounds (struct GMT_CTRL *C, int *i, struct GRD_HEADER *h, bool wrap_180) {
+bool GMT_x_out_of_bounds (struct GMT_CTRL *C, int *i, struct GMT_GRID_HEADER *h, bool wrap_180) {
 	/* Adjusts the i (x-index) value if we are dealing with some sort of periodic boundary
 	* condition.  If a north or south pole condition we must "go over the pole" and access
 	* the longitude 180 degrees away - this is achieved by examining the wrap_180 flag and take action.
@@ -7194,7 +7194,7 @@ bool GMT_x_out_of_bounds (struct GMT_CTRL *C, int *i, struct GRD_HEADER *h, bool
 	return (false);	/* OK, we are inside grid now for sure */
 }
 
-bool GMT_row_col_out_of_bounds (struct GMT_CTRL *C, double *in, struct GRD_HEADER *h, unsigned int *row, unsigned int *col)
+bool GMT_row_col_out_of_bounds (struct GMT_CTRL *C, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col)
 {	/* Retirn false and pass back unsigned row,col ifinside region, or return true (outside) */
 	int signed_row, signed_col;
 	signed_row = GMT_grd_y_to_row (GMT, in[GMT_Y], h);
@@ -7208,7 +7208,7 @@ bool GMT_row_col_out_of_bounds (struct GMT_CTRL *C, double *in, struct GRD_HEADE
 	return (false);	/* Inside the node region */
 }
 
-void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GRD_HEADER *h)
+void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GMT_GRID_HEADER *h)
 {
 	double off;
 	/* Sets the domain boundaries to be used to determine if x,y coordinates

@@ -80,7 +80,7 @@
 #include "gmt.h"
 #include "gmt_internals.h"
 
-unsigned int gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
+unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)
 {
 	/* First check that xx,yy are not Nan - if so return NaN */
 
@@ -98,7 +98,7 @@ unsigned int gmt_bcr_reject (struct GRD_HEADER *h, double xx, double yy)
 	return (0);	/* Good to use */
 }
 
-uint64_t gmt_bcr_prep (struct GRD_HEADER *h, double xx, double yy, double wx[], double wy[])
+uint64_t gmt_bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double wx[], double wy[])
 {
 	int col, row;
 	uint64_t ij;

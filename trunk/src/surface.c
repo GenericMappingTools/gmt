@@ -366,7 +366,7 @@ void set_index (struct SURFACE_INFO *C) {
 	   data which are now outside the usable limits. */
 	int i, j;
 	uint64_t k, k_skipped = 0;
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	for (k = 0; k < C->npoints; k++) {
 		i = lrint (floor(((C->data[k].x-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
@@ -391,7 +391,7 @@ void find_nearest_point (struct SURFACE_INFO *C) {
 	double x0, y0, dx, dy, xys, xy1, btemp, b0, b1, b2, b3, b4, b5;
 	float z_at_node, *u = C->Grid->data;
 	char *iu = C->iu;
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	last_index = UINTMAX_MAX;
 	C->small = 0.05 * ((C->grid_xinc < C->grid_yinc) ? C->grid_xinc : C->grid_yinc);
@@ -486,7 +486,7 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	int irad, jrad, i, j, imin, imax, jmin, jmax, ki, kj;
 	double r, rfact, sum_w, sum_zw, weight, x0, y0;
 	float *u = C->Grid->data;
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	 irad = lrint (ceil(C->radius/C->grid_xinc));
 	 jrad = lrint (ceil(C->radius/C->grid_yinc));
@@ -543,7 +543,7 @@ void new_initialize_grid (struct SURFACE_INFO *C)
 	char *iu = C->iu;
 	double sum_w, sum_zw, weight, x0, y0, dx, dy, dx_scale, dy_scale;
 	float *u = C->Grid->data;
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	dx_scale = 4.0 / C->grid_xinc;
 	dy_scale = 4.0 / C->grid_yinc;
@@ -585,7 +585,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	int i, j, error;
 	uint64_t k, kmax = 0, kmin = 0;
 	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	C->data = GMT_memory (GMT, NULL, C->n_alloc, struct SURFACE_DATA);
 
@@ -1038,7 +1038,7 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
 	double	y_0_const = 4 * C->l_epsilon * (1.0 - C->boundary_tension) / y_denom;
 	double	y_1_const = (C->boundary_tension - 2 * C->l_epsilon * (1.0 - C->boundary_tension) ) / y_denom;
 	float *u = C->Grid->data;
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 	
 	move_over[0] = 2;
 	move_over[1] = 1 - C->my;
@@ -1172,7 +1172,7 @@ void remove_planar_trend (struct SURFACE_INFO *C)
 	uint64_t i;
 	double a, b, c, d, xx, yy, zz;
 	double sx, sy, sz, sxx, sxy, sxz, syy, syz;
-	struct GRD_HEADER *h = C->Grid->header;
+	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	sx = sy = sz = sxx = sxy = sxz = syy = syz = 0.0;
 

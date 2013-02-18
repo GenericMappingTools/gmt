@@ -333,7 +333,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " new data points, updated %" PRIu64 ".\n", n_data, n_use);
 	}
 	else if (Ctrl->E.active) {	/* Transpose the matrix and exchange x and y info */
-		struct GRD_HEADER *h_tr = NULL;
+		struct GMT_GRID_HEADER *h_tr = NULL;
 		uint64_t ij, ij_tr;
 		float *a_tr = NULL;
 		
@@ -341,8 +341,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		h_tr = GMT_memory (GMT, NULL, 1, struct GRD_HEADER);
-		GMT_memcpy (h_tr, G->header, 1, struct GRD_HEADER);	/* First make a copy of header */
+		h_tr = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
+		GMT_memcpy (h_tr, G->header, 1, struct GMT_GRID_HEADER);	/* First make a copy of header */
 		h_tr->nx = G->header->ny;	/* Then exchange x and y values */
 		h_tr->wesn[XLO] = G->header->wesn[YLO];
 		h_tr->wesn[XHI] = G->header->wesn[YHI];
@@ -363,7 +363,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 		GMT_free_aligned (GMT, G->data);
 		G->data = a_tr;
-		GMT_memcpy (G->header, h_tr, 1, struct GRD_HEADER);	/* Update to the new header */
+		GMT_memcpy (G->header, h_tr, 1, struct GMT_GRID_HEADER);	/* Update to the new header */
 		GMT_free (GMT, h_tr);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, G) != GMT_OK) {
 			Return (API->error);

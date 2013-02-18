@@ -72,8 +72,8 @@
 #define NC_CACHE_NELEMS     2053     /* prime > NC_CACHE_SIZE / (128*128*1byte) */
 #define NC_CACHE_PREEMPTION 0.75
 
-int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GRD_HEADER *header, char job);
-int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
+int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GMT_GRID_HEADER *header, char job);
+int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode);
 
 static int nc_libvers[] = {-1, -1, -1, -1}; /* holds the version of the netCDF library */
 
@@ -90,7 +90,7 @@ const int * netcdf_libvers (void) {
 	return nc_libvers; /* return pointer to version array */
 }
 
-int GMT_is_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+int GMT_is_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	/* Returns GMT_NOERROR if NetCDF grid */
 	int ncid, z_id = -1, j = 0, nvars, ndims, err, old = false;
 	nc_type z_type;
@@ -204,7 +204,7 @@ void gmt_nc_check_step (struct GMT_CTRL *C, int n, double *x, char *varname, cha
 	}
 }
 
-void set_optimal_chunksize (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+void set_optimal_chunksize (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	/* For optimal performance, set the number of elements in a given chunk
 	 * dimension (n) to be the ceiling of the number of elements in that
 	 * dimension of the array variable (d) divided by a natural number N>1.
@@ -252,7 +252,7 @@ void set_optimal_chunksize (struct GMT_CTRL *C, struct GRD_HEADER *header) {
 	C->current.setting.io_nc4_chunksize[1] = (size_t) ceil (header->nx / floor (header->nx / chunksize[1]));
 }
 
-int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
+int gmt_nc_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, char job)
 {
 	int j, err;
 	int old_fill_mode;
@@ -616,17 +616,17 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header, char job)
 	return (GMT_NOERROR);
 }
 
-int GMT_nc_read_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_nc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	return (gmt_nc_grd_info (C, header, 'r'));
 }
 
-int GMT_nc_update_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_nc_update_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	return (gmt_nc_grd_info (C, header, 'u'));
 }
 
-int GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GRD_HEADER *header)
+int GMT_nc_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 {
 	return (gmt_nc_grd_info (C, header, 'w'));
 }
@@ -910,7 +910,7 @@ static inline void setup_chunk_cache (void) {
 }
 
 /* Get number of chunked rows that fit into cache (32MiB) */
-int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned width, unsigned height, size_t *n_contiguous_chunk_rows, size_t *chunksize) {
+int n_chunked_rows_in_cache (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned width, unsigned height, size_t *n_contiguous_chunk_rows, size_t *chunksize) {
 	nc_type z_type;      /* type of z variable */
 	size_t z_size;       /* size of z variable */
 	unsigned yx_dim[2] = {header->xy_dim[1], header->xy_dim[0]}; /* because xy_dim not row major */
@@ -975,7 +975,7 @@ static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
 }
 
 /* Read and write classic or chunked netcdf files */
-int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], unsigned origin[], unsigned offset, unsigned increment, unsigned stride, unsigned io_mode, float* grid) {
+int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], unsigned offset, unsigned increment, unsigned stride, unsigned io_mode, float* grid) {
 	/* io_mode = k_get_netcdf: read a netcdf file to grid
 	 * io_mode = k_put_netcdf: write a grid to netcdf */
 	int status = NC_NOERR;
@@ -1070,7 +1070,7 @@ int io_nc_grid (struct GMT_CTRL *C, struct GRD_HEADER *header, unsigned dim[], u
 	return status;
 }
 
-int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4], unsigned int *width, unsigned int *height, int *n_shift, unsigned origin[2], unsigned dim[2], unsigned origin2[2], unsigned dim2[2]) {
+int nc_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double wesn[4], unsigned int *width, unsigned int *height, int *n_shift, unsigned origin[2], unsigned dim[2], unsigned origin2[2], unsigned dim2[2]) {
 	/* Determines which rows and columns to extract to extract from a grid, based on w,e,s,n.
 	 * This routine first rounds the w,e,s,n boundaries to the nearest gridlines or pixels,
 	 * then determines the first and last columns and rows, and the width and height of the subset (in cells).
@@ -1179,7 +1179,7 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[4
 	return GMT_NOERROR;
 }
 
-int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 { /* header:       grid structure header
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -1328,7 +1328,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid,
 	return GMT_NOERROR;
 }
 
-int GMT_nc_write_grd (struct GMT_CTRL *C, struct GRD_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_nc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 { /* header:       grid structure header
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]

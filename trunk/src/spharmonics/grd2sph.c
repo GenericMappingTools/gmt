@@ -49,7 +49,7 @@ int main (int argc, char **argv)
 
 	double out[4];
 
-	struct GRD_HEADER header;
+	struct GMT_GRID_HEADER header;
 	struct GRD2SPH_CTRL *Ctrl;
 
 	void *New_grd2sph_Ctrl (), Free_grd2sph_Ctrl (struct GRD2SPH_CTRL *C);

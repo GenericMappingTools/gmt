@@ -1395,10 +1395,9 @@ each data type:
 should be written (1) or not (0).
 \item [Data table]: If \texttt{method} is GMT\_IS\_FILE, then the value of
 \texttt{mode} affects how the data set is written:
-\index{GMT\_IS\_DATASET\_FILE}
 \begin{description}
-\item [GMT\_WRITE\_DATASET]: The entire data set will be written to the single file [0].
-\index{GMT\_WRITE\_DATASET}
+\item [GMT\_WRITE\_SET]: The entire data set will be written to the single file [0].
+\index{GMT\_WRITE\_SET}
 \item [GMT\_WRITE\_TABLE]: Each table in the data set is written to individual files [1].
 You can either specify an output file name that \emph{must} contain one C-style
 format specifier for a int variable (e.g., ``New\_Table\_\%06d.txt''), which will be

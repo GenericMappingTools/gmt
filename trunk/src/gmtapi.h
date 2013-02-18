@@ -96,7 +96,7 @@ EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *
 /* 2 convenience functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids, images */
 
 EXTERN_MSC double * GMT_Get_Coord	(void *C, unsigned int family, unsigned int dim, void *container);
-EXTERN_MSC int64_t GMT_Get_Index	(struct GRD_HEADER *header, int row, int col);
+EXTERN_MSC int64_t GMT_Get_Index	(struct GMT_GRID_HEADER *header, int row, int col);
 
 /* 12 secondary functions for argument and option parsing */
 

@@ -790,7 +790,7 @@ int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct
 	bool is_geog = Ctrl->box.is_geog;
 	float *z = Grid->data;
 	double cosj, cosj1;
-	struct GRD_HEADER *h = Grid->header;
+	struct GMT_GRID_HEADER *h = Grid->header;
 
 		j1 = j + inc_j;		i1 = i + inc_i;
 		cosj = cos_vec[j];		cosj1 = cos_vec[j1];

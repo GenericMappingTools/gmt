@@ -32,7 +32,7 @@ int ReportCorner (struct GMT_CTRL *C, GDALDatasetH hDataset, double x, double y,
 void ComputeRasterMinMax (struct GMT_CTRL *C, unsigned char *tmp, GDALRasterBandH hBand, double adfMinMax[2], int nXSize, int nYSize, double, double);
 int gdal_decode_columns (struct GMT_CTRL *C, char *txt, int *whichBands, unsigned int n_col);
 
-int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GRD_HEADER *header) {
+int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	GDALDatasetH hDataset;
 
 	GDALAllRegister();

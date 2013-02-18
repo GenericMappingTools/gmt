@@ -181,7 +181,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 	double wesn_new[4], wesn_old[4];
 	double lon, lat, distance, radius;
 
-	struct GRD_HEADER test_header;
+	struct GMT_GRID_HEADER test_header;
 	struct GRDCUT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

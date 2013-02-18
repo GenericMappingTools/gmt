@@ -105,7 +105,7 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
-int trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GRD_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
+int trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
 {
 	int k, k0, n_cuts, kk_opposite, first_k, more;
 	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
@@ -228,7 +228,7 @@ int trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *g
 	return (n);
 }
 
-int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GRD_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max)
+int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found

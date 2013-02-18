@@ -245,7 +245,7 @@ struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Templ
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
 	struct GMT_GRID *New = NULL;
 	if ((New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return (NULL);
-	GMT_memcpy (New->header, Template->header, 1, struct GRD_HEADER);
+	GMT_memcpy (New->header, Template->header, 1, struct GMT_GRID_HEADER);
 	New->data = GMT_memory_aligned (GMT, NULL, Template->header->size, float);
 	return (New);
 }
@@ -3406,7 +3406,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		GMT_memcpy (info.G->header, G_in->header, 1, struct GRD_HEADER);
+		GMT_memcpy (info.G->header, G_in->header, 1, struct GMT_GRID_HEADER);
 		GMT_set_grddim (GMT, info.G->header);			/* To adjust for the pad */
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_in) != GMT_OK) {
 			Return (API->error);

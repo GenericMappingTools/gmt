@@ -71,7 +71,7 @@ EXTERN_MSC int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid);
 EXTERN_MSC int gmt_alloc_image (struct GMT_CTRL *C, struct GMT_IMAGE *Image);
 EXTERN_MSC int gmt_alloc_vectors (struct GMT_CTRL *C, struct GMT_VECTOR *V);
 EXTERN_MSC int gmt_alloc_matrix (struct GMT_CTRL *C, struct GMT_MATRIX *M);
-EXTERN_MSC void gmt_init_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration);
+EXTERN_MSC void gmt_init_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration);
 
 #define GMTAPI_MAX_ID 100000	/* Largest integer to keep in %06d format */
 
@@ -363,7 +363,7 @@ double * GMTAPI_vector_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_VECTO
 	return (coord);
 }
 
-void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
+void GMTAPI_grdheader_to_info (struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
 {	/* Packs the necessary items of the grid header into the matrix parameters */
 	M_obj->n_columns = h->nx;
 	M_obj->n_rows = h->ny;
@@ -371,7 +371,7 @@ void GMTAPI_grdheader_to_info (struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
 	GMT_memcpy (M_obj->range, h->wesn, 4, double);
 }
 
-void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct GMT_MATRIX *M_obj)
+void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
 	h->nx = M_obj->n_columns;
 	h->ny = M_obj->n_rows;
@@ -383,7 +383,7 @@ void GMTAPI_info_to_grdheader (struct GMT_CTRL *C, struct GRD_HEADER *h, struct 
 	h->inc[GMT_Y] = GMT_get_inc (C, h->wesn[YLO], h->wesn[YHI], h->ny, h->registration);
 }
 
-bool GMTAPI_need_grdpadding (struct GRD_HEADER *h, unsigned int *pad)
+bool GMTAPI_need_grdpadding (struct GMT_GRID_HEADER *h, unsigned int *pad)
 {	/* Compares current grid pad status to output pad requested.  If we need
 	 * to add a pad we return true here, otherwise false. */
 	unsigned int side;
@@ -392,17 +392,17 @@ bool GMTAPI_need_grdpadding (struct GRD_HEADER *h, unsigned int *pad)
 	return (false);
 }
 
-size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GRD_HEADER *h, double *wesn)
+size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, double *wesn)
 {	/* Determines size of grid given grid spacing and grid domain in h.
  	 * However, if wesn is given and not empty we use that sub-region instead.
  	 * Finally, the current pad is used when calculating the grid size.
 	 * NOTE: This function leaves h unchanged by testing on a temporary header. */
-	struct GRD_HEADER *h_tmp = NULL;
+	struct GMT_GRID_HEADER *h_tmp = NULL;
 	size_t size;
 	
 	/* Must duplicate header and possibly reset wesn, then set pad and recalculate the dims */
-	h_tmp = GMT_memory (C, NULL, 1, struct GRD_HEADER);
-	GMT_memcpy (h_tmp, h, 1, struct GRD_HEADER);
+	h_tmp = GMT_memory (C, NULL, 1, struct GMT_GRID_HEADER);
+	GMT_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
 	
 	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
 	GMT_grd_setpad (C, h_tmp, C->current.io.pad);	/* Use the system pad setting by default */
@@ -1519,7 +1519,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 				I_obj = image;	/* We are passing in an image already */
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_GRID_DATA_ONLY)) {	/* Must init header and copy the header information from the existing grid */
-				GMT_memcpy (I_obj->header, I_orig->header, 1, struct GRD_HEADER);
+				GMT_memcpy (I_obj->header, I_orig->header, 1, struct GMT_GRID_HEADER);
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read grid data. */
@@ -1723,7 +1723,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 				G_obj = grid;	/* We are passing in a grid already */
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_GRID_DATA_ONLY)) {	/* Must init header and copy the header information from the existing grid */
-				GMT_memcpy (G_obj->header, G_orig->header, 1, struct GRD_HEADER);
+				GMT_memcpy (G_obj->header, G_orig->header, 1, struct GMT_GRID_HEADER);
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read grid data. */
@@ -1910,7 +1910,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			/* Here we need to extract subset, and possibly change padding. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			G_copy = GMT_create_grid (API->GMT);
-			GMT_memcpy (G_copy->header, G_obj->header, 1, struct GRD_HEADER);
+			GMT_memcpy (G_copy->header, G_obj->header, 1, struct GMT_GRID_HEADER);
 			GMT_memcpy (G_copy->header->wesn, S_obj->wesn, 4, double);
 			dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
 			j1 = GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YLO]+dy, G_obj->header);
@@ -3788,7 +3788,7 @@ int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, double *range, double *inc, int registration, void *container)
 {
 	/* Convert user domain range, increments, and registration into dimensional header settings for the container.
-	 * For grids and images we fill out the GRD_HEADER; for vectors and matrix we fill out their parameters.
+	 * For grids and images we fill out the GMT_GRID_HEADER; for vectors and matrix we fill out their parameters.
 	 * After this step you may call GMT_Alloc_Data to actually get data space for these resources.
 	 * For complex grids pass registration + GMT_GRID_IS_COMPLEX_REAL,
 	 */
@@ -3871,7 +3871,7 @@ int GMT_Alloc_Data_ (unsigned int *family, int *pad, void *container)
 #endif
 
 /* Convenience function to get grid or image node */
-int64_t GMT_Get_Node2D (struct GRD_HEADER *header, int row, int col)
+int64_t GMT_Get_Node2D (struct GMT_GRID_HEADER *header, int row, int col)
 {
 	return (GMT_IJP (header, row, col));
 }

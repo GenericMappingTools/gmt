@@ -10,7 +10,7 @@ typedef struct {
 	Grid		  methods;
 	/* GMT specific fields */
 	struct GMT_CTRL *GMT;
-	struct GRD_HEADER header;
+	struct GMT_GRID_HEADER header;
 	GridValue *	  value;
 	} GMTGrid;
 
