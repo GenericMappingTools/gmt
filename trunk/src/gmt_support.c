@@ -901,7 +901,7 @@ bool gmt_check_hsv (struct GMT_CTRL *C, double hsv[])
 
 bool gmt_check_cmyk (double cmyk[])
 {
-	int i;
+	unsigned int i;
 	for (i = 0; i < 4; i++) cmyk[i] *= 0.01;
 	for (i = 0; i < 4; i++) if (cmyk[i] < 0.0 || cmyk[i] > 1.0) return (true);
 	return (false);

@@ -1802,8 +1802,7 @@ int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct 
 
 int GMT_surface (void *V_API, int mode, void *args)
 {
-	bool error = false;
-	int key, one = 1;
+	int error = 0, key, one = 1;
 	double wesn[4];
 	
 	struct GMT_DATATABLE *xyzline = NULL;

@@ -272,9 +272,9 @@ int GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *Ctrl,
 
 int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 {
-	bool error = false, ok, multi_files;
+	bool ok, multi_files;
 	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
-	int val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0;
+	int val_pos = 2, key_pos = 2, m_button, type, button, sys_retval = 0, error = 0;
 	
 	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[80], this_file[GMT_BUFSIZ];
 	char *control[4] = {"first", "second", "third", "fourth"};

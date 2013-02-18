@@ -199,8 +199,9 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 
 int GMT_grd2xyz (void *V_API, int mode, void *args)
 {
-	bool error = false, first = true, write_error;
+	bool first = true;
 	unsigned int row, col, n_output;
+	int error = 0, write_error;
 	
 	uint64_t ij, gmt_ij, n_total = 0, n_suppressed = 0;
 

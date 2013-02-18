@@ -340,10 +340,10 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 
 int GMT_psrose (void *V_API, int mode, void *args)
 {
-	bool error = false, find_mean = false, do_fill = false;
+	bool find_mean = false, do_fill = false;
 	bool automatic = false, sector_plot = false, windrose = true;
 	unsigned int n_bins, n_modes, form, n_in, half_only = 0, bin;
-	int k, n_annot, n_alpha, sbin;
+	int error = 0, k, n_annot, n_alpha, sbin;
 	
 	uint64_t n = 0, i;
 	

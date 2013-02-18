@@ -398,9 +398,8 @@ void * GMT_Create_Session (char *tag, unsigned int mode);
 \end{verbatim}
 and you will typically call it thus:
 \begin{verbatim}
-unsigned int mode = k_mode_gmt;
 void *API = NULL;
-API = GMT_Create_Session ("Session name", mode);
+API = GMT_Create_Session ("Session name", 0);
 \end{verbatim}
 where \texttt{API} is an opaque pointer to the hidden \GMT\ API control structure.  You will need to
 pass this pointer to \emph{all} subsequent \GMT\ API functions; this is how essential internal information

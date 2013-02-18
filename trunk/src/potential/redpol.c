@@ -1132,9 +1132,10 @@ int GMT_redpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct GM
 
 int GMT_redpol (void *V_API, int mode, void *args) {
 
-	bool error = false, wrote_one = false;
+	bool wrote_one = false;
 	unsigned int i, j, row, col, nx_new, ny_new, one_or_zero, m21, n21, i2, j2;
         unsigned int k, l, i3, n_jlon, n_jlat, n_coef;
+	int error = 0;
 	uint64_t ij, jj;
         double	tmp_d, sloni, slati, slonf, slatf, slonm, slatm;
         double	*ftlon = NULL, *ftlat = NULL, *gxr = NULL, *gxi = NULL, *fxr = NULL;

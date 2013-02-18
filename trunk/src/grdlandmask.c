@@ -207,9 +207,9 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 
 int GMT_grdlandmask (void *V_API, int mode, void *args)
 {
-	bool error = false, temp_shift = false, wrap, used_polygons;
+	bool temp_shift = false, wrap, used_polygons;
 	unsigned int base = 3, k, bin, np, side, np_new;
-	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1;
+	int row, row_min, row_max, ii, col, col_min, col_max, i, direction, err, ind, nx1, ny1, error = 0;
 	
 	uint64_t ij;
 

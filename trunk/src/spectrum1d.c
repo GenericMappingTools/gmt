@@ -640,7 +640,8 @@ int GMT_spectrum1d_parse (struct GMTAPI_CTRL *C, struct SPECTRUM1D_CTRL *Ctrl, s
 
 int GMT_spectrum1d (void *V_API, int mode, void *args)
 {
-	bool error = false, one_table;
+	bool one_table;
+	int error = 0;
 	unsigned int tbl, k, n_outputs;
 	
 	uint64_t seg;

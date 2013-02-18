@@ -288,12 +288,12 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 	uint64_t n_duplicates, n_errors;
 	uint64_t add_chunk;
 	int scol;
+	int error = 0;				/* nonzero for invalid arguments */
 	unsigned int *ok = NULL;
 
 	bool xover_locations_only = false;	/* true if only x,y (and possible indices) to be output */
 	bool internal = true;		/* false if only external xovers are needed */
 	bool external = true;		/* false if only internal xovers are needed */
-	bool error = false;			/* true for invalid arguments */
 	bool do_project = false;		/* true if we must mapproject first */
 	bool got_time = false;		/* true if there is a time column */
 	bool first_header = true;		/* true for very first crossover */

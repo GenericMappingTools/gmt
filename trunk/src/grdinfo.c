@@ -198,7 +198,7 @@ int GMT_grdinfo_parse (struct GMTAPI_CTRL *C, struct GRDINFO_CTRL *Ctrl, struct 
 
 int GMT_grdinfo (void *V_API, int mode, void *args)
 {
-	int error;
+	int error = 0;
 	unsigned int n_grds = 0;
 	bool subset;
 

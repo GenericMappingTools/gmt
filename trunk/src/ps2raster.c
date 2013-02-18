@@ -555,10 +555,10 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 int GMT_ps2raster (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0;
-	int sys_retval = 0, r, pos_file, pos_ext;
+	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len;
 	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
-	bool excessK, setup, error = false, found_proj = false, isGMT_PS = false;
+	bool excessK, setup, found_proj = false, isGMT_PS = false;
 
 	double xt, yt, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;

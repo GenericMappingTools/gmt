@@ -211,8 +211,8 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 {
 	char **trk_name = NULL, **ignore = NULL;
 
-	int this_col, xpos = -1, ypos = -1, tpos = -1;
-	bool error = false,  cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
+	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
+	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
 	unsigned int ocol, last_col, bad, trk_no, n_tracks, n_data_col_out = 0, k, n_ignore = 0;
 	uint64_t row;
 

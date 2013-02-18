@@ -197,8 +197,8 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	struct X2SYS_BIX B;
 	struct X2SYS_BIX_TRACK *track = NULL;
 
-	bool error = false, y_ok, n_ok, first, *include = NULL;
-	int i, j, k, start_j, start_i, stop_j, stop_i;
+	bool y_ok, n_ok, first, *include = NULL;
+	int error = 0, i, j, k, start_j, start_i, stop_j, stop_i;
 	unsigned int combo = 0, n_tracks_found, n_tracks, ii;
 	unsigned int bit, missing = 0, id1, id2, item, n_flags = 0;
 

@@ -306,9 +306,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 {
 	uint64_t ij, k, ngrd = 0, nxyg, nfound, ngood;
 	unsigned int row, col, j, cpt_flags = 0;
-	int signed_levels;
+	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	bool error = false;
 
 	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
 

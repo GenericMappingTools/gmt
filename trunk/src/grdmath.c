@@ -3289,10 +3289,10 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 
 int GMT_grdmath (void *V_API, int mode, void *args)
 {
-	int k, op = 0, new_stack = -1, rowx, colx, status, start;
+	int k, op = 0, new_stack = -1, rowx, colx, status, start, error = 0;
 	unsigned int kk, nstack = 0, n_stored = 0, n_items = 0, this_stack, n_macros;
 	unsigned int consumed_operands[GRDMATH_N_OPERATORS], produced_operands[GRDMATH_N_OPERATORS];
-	bool error = false, subset;
+	bool subset;
 	char *in_file = NULL, *label = NULL;
 	
 	uint64_t node, row, col;

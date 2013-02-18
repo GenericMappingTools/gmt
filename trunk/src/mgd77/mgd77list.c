@@ -716,7 +716,7 @@ int augment_aux_columns (int n_items, char **item_name, struct MGD77_AUX_INFO *a
 
 int GMT_mgd77list (void *V_API, int mode, void *args)
 {
-	int i, c, id, k, time_column, lon_column, lat_column;
+	int i, c, id, k, time_column, lon_column, lat_column, error = 0;
 	int t_col, x_col, y_col, z_col, e_col = 0, m_col = 0, f_col = 0;
 	int ms_col = 0, twt_col = 0, g_col = 0, m1_col = 0, m2_col = 0;
 	
@@ -726,9 +726,9 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	uint64_t rec, prevrec;
 	
 	bool negative_depth = false, negative_msd = false, need_distances, need_time;
-	bool error = false, string_output = false, need_depth = false, PDR_wrap;
+	bool string_output = false, need_depth = false, PDR_wrap, has_prev_twt = false;
 	bool need_lonlat = false, first_cruise = true, need_twt = false, this_limit_on_time;
-	bool need_date, need_sound = false, lonlat_not_NaN, first_warning = true, has_prev_twt = false;
+	bool need_date, need_sound = false, lonlat_not_NaN, first_warning = true;
 	bool first_time_on_sensor_offset = true;
 	
 	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;

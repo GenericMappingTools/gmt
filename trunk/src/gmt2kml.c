@@ -644,11 +644,11 @@ bool crossed_dateline (double this_x, double last_x)
 
 int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
-	bool first = true, get_z = false, error = false, use_folder = false, do_description, no_dateline = false;
+	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 	
 	uint64_t row, seg;
-	int set_nr = 0, index = -4, N = 1;
+	int set_nr = 0, index = -4, N = 1, error = 0;
 	
 	char extra[GMT_BUFSIZ], buffer[GMT_BUFSIZ], description[GMT_BUFSIZ], item[GMT_TEXT_LEN128], C[5][GMT_TEXT_LEN64];
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};

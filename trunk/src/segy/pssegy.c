@@ -446,10 +446,10 @@ void segy_plot_trace (struct GMT_CTRL *GMT, float *data, double dy, double x0, i
 
 int GMT_pssegy (void *V_API, int mode, void *args)
 {
-	bool error = false, plot_it = false;
+	bool plot_it = false;
 	unsigned int i, nm, ix, iy;
 	uint32_t n_samp = 0, n_tracelist = 0;
-	int check, bm_nx, bm_ny;
+	int error = 0, check, bm_nx, bm_ny;
 
 	float scale = 1.0f, toffset = 0.0f, *data = NULL;
 	double xlen, ylen, xpix, ypix, x0, test, *tracelist = NULL, trans[3] = {-1.0, -1.0, -1.0};

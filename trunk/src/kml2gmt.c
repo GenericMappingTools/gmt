@@ -123,8 +123,9 @@ int GMT_kml2gmt_parse (struct GMTAPI_CTRL *C, struct KML2GMT_CTRL *Ctrl, struct 
 int GMT_kml2gmt (void *V_API, int mode, void *args)
 {
 	unsigned int i, start, fmode = POINT;
+	int error = 0;
 	size_t length;
-	bool scan = true, first = true, error = false;
+	bool scan = true, first = true;
 	
 	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
 

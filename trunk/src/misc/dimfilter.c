@@ -368,8 +368,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	unsigned int *n_in_median, wsize = 0, one_or_zero = 1, effort_level, n_sectors_2 = 0, col_in, row_in;
 	unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0, col_out, row_out, i, j, k, s;
-	bool full_360, shift = false, slow, slow2, error = false, fast_way;
-	int j_origin, *i_origin = NULL, ii, jj, scol, srow;
+	bool full_360, shift = false, slow, slow2, fast_way;
+	int j_origin, *i_origin = NULL, ii, jj, scol, srow, error = 0;
 
 	uint64_t n_nan = 0, ij_in, ij_out, ij_wt;
 

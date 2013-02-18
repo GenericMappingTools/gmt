@@ -244,7 +244,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	unsigned int n_slash, n_out = 0, n_opt = 0, n_p, n_a = 1, n_b;
 	int last_sign;
 	bool confusion = false, online_stage = false;
-	bool error = false;		/* Set to true if arguments are inconsistent */
+	int error = 0;			/* nonzero if arguments are inconsistent */
 	bool first = true;		/* true for first input file */
 	bool online_rot = false;	/* true if we gave a rotation on the commandline rather than file name */
 	bool no_time = false;	/* true if we gave a rotation on the commandline as lon/lat/angle only */

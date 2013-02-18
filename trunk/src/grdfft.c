@@ -788,8 +788,8 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 
 int GMT_grdfft (void *V_API, int mode, void *args)
 {
-	bool error = false, stop;
-	int status;
+	bool stop;
+	int error = 0, status;
 	unsigned int op_count = 0, par_count = 0, k;
 	uint64_t ij;
 	double coeff[2][3];	/* Detrend parameters returned */

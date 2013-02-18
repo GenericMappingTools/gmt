@@ -227,8 +227,7 @@ int GMT_grdpmodeler_parse (struct GMTAPI_CTRL *C, struct GRDROTATER_CTRL *Ctrl, 
 int GMT_grdpmodeler (void *V_API, int mode, void *args)
 {
 	unsigned int col, row, inside, stage, n_stages, registration;
-	int retval;
-	bool error = false;
+	int retval, error = 0;
 	
 	uint64_t node, seg;
 	

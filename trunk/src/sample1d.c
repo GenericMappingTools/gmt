@@ -241,8 +241,8 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 int GMT_sample1d (void *V_API, int mode, void *args)
 {
 	unsigned int tbl, col;
-	bool error = false, resample_path = false;
-	int result;
+	bool resample_path = false;
+	int error = 0, result;
 	
 	unsigned char *nan_flag = NULL;
 	

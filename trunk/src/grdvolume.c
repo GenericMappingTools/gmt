@@ -400,8 +400,8 @@ int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, str
 
 int GMT_grdvolume (void *V_API, int mode, void *args)
 {
-	bool error = false, bad, cut[4];
-	int ij_inc[5];
+	bool bad, cut[4];
+	int error = 0, ij_inc[5];
 	unsigned int row, col, c, k, pos, neg, nc, n_contours;
 	
 	uint64_t ij;

@@ -1953,7 +1953,7 @@ void GMT_check_lattice (struct GMT_CTRL *C, double *inc, bool *pixel, bool *acti
 		inc[GMT_Y] = C->current.io.grd_info.grd.inc[GMT_Y];
 	}
 	if (pixel) {	/* An pointer not NULL was passed that indicates grid registration */
-		/* If a -F like option was set then toggle grid setting, else use grid setting */
+		/* If a -r like option was set then toggle grid setting, else use grid setting */
 		*pixel = (*pixel) ? !C->current.io.grd_info.grd.registration : C->current.io.grd_info.grd.registration;
 	}
 	if (active) *active = true;	/* When 4th arg is not NULL it is set to true (for Ctrl->active args) */
@@ -6761,9 +6761,9 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	 */
 
 	int i, j, k, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
-	int n_slashes = 0, last_pos;
+	int n_slashes = 0, last_pos, error = 0;
 	unsigned int mod_flag = 0;
-	bool width_given, mod_given = false, error = false, skip = false;
+	bool width_given = false, skip = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	char txt_d[GMT_TEXT_LEN256], txt_e[GMT_TEXT_LEN256], last_char;
@@ -6827,7 +6827,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			/* Default is not involving geographical coordinates */
 			C->current.io.col_type[GMT_IN][GMT_X] = C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_UNKNOWN;
 
-			error = (n_slashes > 1);
+			error += (n_slashes > 1) ? 1 : 0;
 			if (!strncmp (args, "1:", 2U)) k = 1;	/* Special check for linear proj with 1:xxx scale */
 
 			/* Find occurrences of /, l, p, t, or d */
@@ -6841,8 +6841,8 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			}
 
 			if (k > 0) {	/* For 1:xxxxx  we cannot have /LlTtDdGg modifiers */
-				if (n_slashes) error = true;	/* Cannot have 1:xxx separately for x/y */
-				if (l_pos[GMT_X] || l_pos[GMT_Y] || p_pos[GMT_X] || p_pos[GMT_Y] || t_pos[GMT_X] || t_pos[GMT_Y] || d_pos[GMT_X] || d_pos[GMT_Y]) error = true;
+				if (n_slashes) error++;	/* Cannot have 1:xxx separately for x/y */
+				if (l_pos[GMT_X] || l_pos[GMT_Y] || p_pos[GMT_X] || p_pos[GMT_Y] || t_pos[GMT_X] || t_pos[GMT_Y] || d_pos[GMT_X] || d_pos[GMT_Y]) error++;
 			}
 
 			/* Distinguish between p for points and p<power> for scaling */
@@ -6916,12 +6916,12 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			}
 
 			/* Not both sizes can be zero, but if one is, we will adjust to the scale of the other */
-			if (C->current.proj.pars[GMT_X] == 0.0 && C->current.proj.pars[GMT_Y] == 0.0) error = true;
+			if (C->current.proj.pars[GMT_X] == 0.0 && C->current.proj.pars[GMT_Y] == 0.0) error++;
 			break;
 
 		case GMT_ZAXIS:	/* 3D plot */
 			C->current.proj.compute_scale[GMT_Z] = width_given;
-			error = (n_slashes > 0);
+			error += (n_slashes > 0) ? 1 : 0;
 			C->current.io.col_type[GMT_IN][GMT_Z] = GMT_IS_UNKNOWN;
 
 			/* Find occurrences of l, p, or t */
@@ -6961,7 +6961,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 				C->current.proj.xyz_projection[GMT_Z] = GMT_TIME;
 				C->current.io.col_type[GMT_IN][GMT_Z] = (args[t_pos[GMT_Z]] == 'T') ? GMT_IS_ABSTIME : GMT_IS_RELTIME;
 			}
-			if (C->current.proj.z_pars[0] == 0.0) error = true;
+			if (C->current.proj.z_pars[0] == 0.0) error++;
 			C->current.proj.JZ_set = true;
 			break;
 
@@ -6989,15 +6989,15 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 			if (n_slashes == 1) {	/* Gave optional zero-base angle [0] */
 				n = sscanf (args, "%[^/]/%lf", txt_a, &C->current.proj.pars[1]);
 				if (n == 2) C->current.proj.pars[0] = GMT_to_inch (C, &txt_a[i]);
-				error = (C->current.proj.pars[0] <= 0.0 || n != 2);
+				error += (C->current.proj.pars[0] <= 0.0 || n != 2) ? 1 : 0;
 			}
 			else if (n_slashes == 0) {
 				C->current.proj.pars[0] = GMT_to_inch (C, &args[i]);
 				n = (args) ? 1 : 0;
-				error = (C->current.proj.pars[0] <= 0.0 || n != 1);
+				error += (C->current.proj.pars[0] <= 0.0 || n != 1) ? 1 : 0;
 			}
 			else
-				error = true;
+				error++;
 			if (C->current.proj.got_elevations) args[j] = 'r';	/* Put the r back in the argument */
 			if (C->current.proj.z_down) args[j] = 'z';	/* Put the z back in the argument */
 			if (C->current.proj.got_azimuths) C->current.proj.pars[1] = -C->current.proj.pars[1];	/* Because azimuths go clockwise */
@@ -7365,7 +7365,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *C, char *args)
 	if (project != GMT_ZAXIS) C->current.proj.projection = project;
 	if (mod_flag > 1) args[last_pos] = last_char;	/* Restore modifier */
 
-	return (error);
+	return (error > 0);
 }
 
 int gmt_get_unit (struct GMT_CTRL *C, char c)

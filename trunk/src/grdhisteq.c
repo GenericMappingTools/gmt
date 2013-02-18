@@ -322,7 +322,7 @@ int do_gaussian_scores (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double norm
 
 int GMT_grdhisteq (void *V_API, int mode, void *args)
 {
-	bool error = false;
+	int error = 0;
 
 	double wesn[4];
 	

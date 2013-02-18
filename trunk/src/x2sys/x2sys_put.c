@@ -193,7 +193,8 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
 	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 
-	bool error = false, found_it, skip;
+	int error = 0;
+	bool found_it, skip;
 #ifdef MEMDEBUG
 	bool mem_track_enabled;
 #endif

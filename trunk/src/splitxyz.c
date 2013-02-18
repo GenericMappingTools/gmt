@@ -307,7 +307,8 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 {
 	unsigned int i, j, tbl, col, d_col, h_col, z_cols, xy_cols[2] = {0, 1};
 	unsigned int output_choice[SPLITXYZ_N_OUTPUT_CHOICES], n_outputs = 0, n_columns = 0;
-	bool error = false, ok, io_mode = 0, first = true;
+	int error = 0;
+	bool ok, io_mode = 0, first = true;
 	uint64_t dim[4] = {1, 0, 0, 0};
 	
 	size_t n_alloc_seg = 0, n_alloc = 0;

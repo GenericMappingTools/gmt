@@ -525,8 +525,8 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *
 int GMT_pstext (void *V_API, int mode, void *args)
 {	/* High-level function that implements the pstext task */
 
-	int k, fmode, nscan;
-	bool error = false, master_record = false, skip_text_records = false, old_is_world;
+	int  error = 0, k, fmode, nscan;
+	bool master_record = false, skip_text_records = false, old_is_world;
 	
 	unsigned int length = 0, n_paragraphs = 0, n_add, m = 0, pos, text_col;
 	unsigned int n_read = 0, n_processed = 0, txt_alloc = 0, add, n_expected_cols;

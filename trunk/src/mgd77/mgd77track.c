@@ -542,8 +542,8 @@ extern void GMT_gcal_from_dt (struct GMT_CTRL *C, double t, struct GMT_gcal *cal
 int GMT_mgd77track (void *V_API, int mode, void *args)
 {
 	uint64_t rec, first_rec, last_rec, i, n_id = 0, mrk = 0, dist_flag = 2, use, n_paths, argno, n_cruises = 0;
-	int this_julian = 0, last_julian;
-	bool error = false, first, form, both = false;
+	int this_julian = 0, last_julian, error = 0;
+	bool first, form, both = false;
 	unsigned int annot_tick[2] = {0, 0}, draw_tick[2] = {0, 0};
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;

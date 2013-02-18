@@ -500,9 +500,9 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	int cdf_var_id, n_dims = 0, dims[2];		/* netCDF variables should be declared as int */
 	size_t start[2] = {0, 0}, count[2] = {0, 0};	/* NetCDF offset variables are size_t */
 	
-	int i, k = 0, column, result, set, check;
+	int i, k = 0, column, result, set, check, error = 0;
 	int width, GF_version = MGD77_NOT_SET, n_fields = 0;
-	bool error = false, transform, verified, strings = false, got_grid, got_table;
+	bool transform, verified, strings = false, got_grid, got_table;
 	bool two_cols = false, constant, ok_to_read = true, interpolate = false;
 	
 	unsigned int MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;

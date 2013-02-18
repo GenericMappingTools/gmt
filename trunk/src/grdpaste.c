@@ -137,8 +137,7 @@ static inline bool is_nc_grid (struct GMT_GRID *grid) {
 
 int GMT_grdpaste (void *V_API, int mode, void *args)
 {
-	bool error = false;
-	int way;
+	int error = 0, way;
 	unsigned int one_or_zero;
 
 	char format[GMT_BUFSIZ];

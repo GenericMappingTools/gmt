@@ -138,7 +138,7 @@ int GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *Ctrl,
 
 int GMT_grdreformat (void *V_API, int mode, void *args)
 {
-	bool error = false;
+	int error = 0;
 	unsigned int hmode, type[2];
 
 	char fname[2][GMT_BUFSIZ];

@@ -319,8 +319,9 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 
 int GMT_fitcircle (void *V_API, int mode, void *args)
 {
-	bool error = false, greenwich = false, allocate;
+	bool greenwich = false, allocate;
 	unsigned int imin, imax, nrots, j, k, n, np;
+	int error = 0;
 	uint64_t i, n_data;
 	size_t n_alloc;
 

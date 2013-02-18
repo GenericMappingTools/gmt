@@ -365,8 +365,8 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 
 int GMT_pspolar (void *V_API, int mode, void *args)
 {
-	int n = 0;
-	bool error = false, old_is_world;
+	int n = 0, error = 0;
+	bool old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;

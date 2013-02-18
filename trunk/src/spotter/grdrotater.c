@@ -317,8 +317,8 @@ bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon,
 
 int GMT_grdrotater (void *V_API, int mode, void *args)
 {
-	int scol, srow;	/* Signed row, col */
-	bool not_global, registered_d = false, error = false, global = false;
+	int scol, srow, error = 0;	/* Signed row, col */
+	bool not_global, registered_d = false, global = false;
 	unsigned int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	
 	uint64_t ij, ij_rot, seg, rec;

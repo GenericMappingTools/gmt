@@ -291,9 +291,9 @@ int file_is_known (struct GMT_CTRL *GMT, char *file)
 
 int GMT_psimage (void *V_API, int mode, void *args)
 {
-	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0;
+	int i, j, n, justify, PS_interpolate = 1, PS_transparent = 1, known = 0, error = 0;
 	unsigned int row, col;
-	bool error = false, free_GMT = false;
+	bool free_GMT = false;
 
 	double x, y, wesn[4];
 

@@ -242,14 +242,14 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 
 int GMT_mgd77info (void *V_API, int mode, void *args)
 {
-	int i, id, id_col, t_col, x_col, y_col;
+	int i, id, id_col, t_col, x_col, y_col, error = 0;
 	
 	int64_t rata_die;
 	size_t length;
 	
 	uint64_t rec, argno, n_paths, counter[MGD77_MAX_COLS];
 	unsigned int saved_range, quad_no, n_quad, use, k;
-	bool error = false, first = true, read_file, quad[4] = {false, false, false, false};
+	bool first = true, read_file, quad[4] = {false, false, false, false};
 	
 	double this_dist, this_lon, this_lat, last_lon, last_lat, dx, dy, dlon, ds, lon_w;
 	double xmin, xmax, xmin1, xmin2, xmax1, xmax2, ymin, ymax, this_time, tmin, tmax;

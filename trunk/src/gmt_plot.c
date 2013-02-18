@@ -3605,26 +3605,6 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION *options)
 	struct GMT_OPTION *Out = NULL;
 	struct PSL_CTRL *P = NULL;
 
-#if 0
-	if (!C->PSL) {
-		//GMT_report (C, GMT_MSG_NORMAL, "PSL pointer not initialized!\n");
-		//GMT_exit (GMT_RUNTIME_ERROR);
-		C->PSL = P = New_PSL_Ctrl (C->parent->session_tag);	/* Allocate a PSL control structure */
-		if (!C->PSL) {
-			GMT_report (C, GMT_MSG_NORMAL, "Error: Could not initialize PSL - Aborting.\n");
-			GMT_exit (EXIT_FAILURE);
-		}
-		C->PSL->init.unit = PSL_INCH;					/* We use inches internally in PSL */
-		/* If we already know the share dir and user dir: */
-		if (C->session.SHAREDIR)
-			C->PSL->internal.SHAREDIR = strdup (C->session.SHAREDIR);
-		if (C->session.USERDIR)
-			C->PSL->internal.USERDIR = strdup (C->session.USERDIR);
-		PSL_beginsession (C->PSL);					/* Initializes the session and sets a few defaults */
-		/* Reset session defaults to the chosen GMT settings; these are fixed for the entire PSL session */
-		PSL_setdefaults (C->PSL, C->current.setting.ps_magnify, C->current.setting.ps_page_rgb, C->current.setting.ps_encoding.name);
-	}
-#endif
 	P = C->PSL;	/* Shorthand */
 
 	P->internal.verbose = C->current.setting.verbose;		/* Inherit verbosity level from GMT */

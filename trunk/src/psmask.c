@@ -498,7 +498,8 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	unsigned int section, k, row, col, n_edges, *d_col = NULL, d_row = 0;
 	unsigned int io_mode = 0, max_d_col = 0, ii, jj, i_start, j_start, first = 1;
 	unsigned int fmt[3] = {0, 0, 0}, cont_counts[2] = {0, 0}, *edge = NULL;
-	bool error = false, node_only, make_plot, closed;
+	int error = 0;
+	bool node_only, make_plot, closed;
 	
 	uint64_t ij, n_points, n_seg = 0, n_read, n;
 	

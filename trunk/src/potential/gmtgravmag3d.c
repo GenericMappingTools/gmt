@@ -335,11 +335,11 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 
 int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
-	bool error = false, bat = true, switch_xy = false, DO = true;
+	bool bat = true, switch_xy = false, DO = true;
 	unsigned int row, col, i, j, k, kk, ndata_r = 0;
 	unsigned int ndata_p = 0, ndata_t = 0, nx_p, ny_p, n_vert_max;
 	unsigned int z_th = 0, n_triang = 0, ndata_s = 0, n_swap = 0;
-	int retval;
+	int retval, error = 0;
 	uint64_t ij;
 	size_t nm;
 	int km, pm;		/* index of current body facet (for mag only) */

@@ -230,8 +230,8 @@ int GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *Ctrl,
 
 int GMT_sphdistance (void *V_API, int mode, void *args)
 {
-	bool error = false, first = false, periodic;
-	int s_row, south_row, north_row, w_col, e_col;
+	bool first = false, periodic;
+	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
 	unsigned int row, col, p_col, west_col, east_col;
 	uint64_t nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;

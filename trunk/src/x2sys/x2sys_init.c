@@ -259,7 +259,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
 	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
 
-	bool error = false;
+	int error = 0;
 
 	FILE *fp = NULL, *fp_def = NULL;
 
