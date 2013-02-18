@@ -29,11 +29,11 @@
 #include "gmt.h"
 
 struct GRD2XYZ_CTRL {
-#ifdef GMT_COMPAT
 	struct C {	/* -C[f|i] */
 		bool active;
 		unsigned int mode;
 	} C;
+#ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
 		bool active;
 		bool floating;
