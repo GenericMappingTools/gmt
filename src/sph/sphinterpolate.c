@@ -212,7 +212,7 @@ int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL 
 int GMT_sphinterpolate (void *V_API, int mode, void *args)
 {
 	unsigned int row, col;
-	bool error = false;
+	int error = 0;
 
 	size_t n_alloc = 0;
 	uint64_t i, n = 0, ij, ij_f;

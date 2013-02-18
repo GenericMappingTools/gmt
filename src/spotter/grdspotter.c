@@ -489,8 +489,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	unsigned int try;		/* Number of current bootstrap estimate */
 	unsigned int row, row2, col, col2, k_step;
 	unsigned int forth_flag;	/* Holds the do_time + 10 flag passed to forthtrack */
-	bool error = false;		/* true when arguments are wrong */
 	bool keep_flowlines = false;	/* true if Ctrl->D.active, Ctrl->PA.active, or bootstrap is true */
+	int error = 0;			/* nonzero when arguments are wrong */
 	int i, j;			/* Signed row,col variables */
 	int *ID = NULL;		/* Optional array with IDs for each node */
 	

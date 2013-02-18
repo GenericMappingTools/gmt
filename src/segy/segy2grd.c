@@ -266,8 +266,8 @@ int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struc
 
 int GMT_segy2grd (void *V_API, int mode, void *args)
 {
-	bool  error = false, read_cont = false, swap_bytes = !GMT_BIGENDIAN;
-	
+	bool  read_cont = false, swap_bytes = !GMT_BIGENDIAN;
+	int error = 0;
 	unsigned int n_samp = 0, ij0;
 	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
 	unsigned int n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;

@@ -458,7 +458,8 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 
 int GMT_pshistogram (void *V_API, int mode, void *args)
 {
-	bool error = false, automatic = false;
+	bool automatic = false;
+	int error = 0;
 	
 	uint64_t n;
 	

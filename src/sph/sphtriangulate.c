@@ -484,8 +484,8 @@ int GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_CTRL 
 int GMT_sphtriangulate (void *V_API, int mode, void *args)
 {
 	char *tmode[2] = {"Delaunay", "Voronoi"}, header[GMT_BUFSIZ];
-
-	bool error = false, first = false, steradians = false, do_authalic = false;
+	int error = 0;
+	bool first = false, steradians = false, do_authalic = false;
 	
 	uint64_t n = 0, n_dup = 0;
 	size_t n_alloc;

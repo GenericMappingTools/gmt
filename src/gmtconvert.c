@@ -470,7 +470,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			char *p = Ctrl->D.name;
 			while ( (p = strchr (p, '%')) ) {
 				/* found %, now check format */
-				p += strspn (++p, "0123456789"); /* span past digits */
+				++p;	/* Skip the % sign */
+				p += strspn (p, "0123456789"); /* span past digits */
 				if ( strspn (p, "diu") == 0 ) {
 					/* no valid conversion specifier */
 					GMT_report (GMT, GMT_MSG_NORMAL,

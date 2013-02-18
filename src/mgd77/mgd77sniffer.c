@@ -216,10 +216,12 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, int level)
 int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 {
 	/* THE FOLLOWING VARIABLES DO NOT VARY FOR EACH CRUISE */
-	bool error = false, nautical = false, custom_max_speed = false, simulate = false;
+	bool nautical = false, custom_max_speed = false, simulate = false;
 	bool bad_sections = false, custom_min_speed = false, do_regression = true, dist_to_coast = false;
 	bool custom_warn = false, warn[MGD77_N_WARN_TYPES], report_raw = false;
 	bool decimateData = true, forced = false, adjustData = false, flip_flags = false;
+	
+	int error = 0;
 	
 	unsigned int argno, n_cruises = 0, n_grids = 0, n_out_columns, n_paths;
 	unsigned int dtc_index = 0, pos = 0;

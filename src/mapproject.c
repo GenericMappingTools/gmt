@@ -415,9 +415,9 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 
 int GMT_mapproject (void *V_API, int mode, void *args)
 {
-	int k, x, y, rmode, n_fields, n_output = 0, two, way;
+	int k, x, y, rmode, n_fields, n_output = 0, two, way, error = 0;
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
-	bool error = false, line_start = true, do_geo_conv = false;
+	bool line_start = true, do_geo_conv = false;
 	bool geodetic_calc = false, datum_conv_only = false, double_whammy = false;
 	
 	unsigned int i = 0, pos;

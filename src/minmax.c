@@ -242,9 +242,9 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 
 int GMT_minmax (void *V_API, int mode, void *args)
 {
-	bool error = false, got_stuff = false, first_data_record, give_r_string = false;
+	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
-	int i, j, col_type[GMT_MAX_COLUMNS];
+	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
 	unsigned int col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
 	uint64_t n = 0;
 

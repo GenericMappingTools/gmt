@@ -166,7 +166,8 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 
 int GMT_grdclip (void *V_API, int mode, void *args) {
 	unsigned int row, col;
-	bool error, new_grid;
+	int error = 0;
+	bool new_grid;
 	
 	uint64_t ij, n_above = 0, n_below = 0;
 	

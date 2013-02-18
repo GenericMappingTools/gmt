@@ -351,7 +351,8 @@ int GMT_originator (void *V_API, int mode, void *args)
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
 	uint64_t k, kk, np;
 	
-	bool error = false, better;
+	int error = 0;
+	bool better;
 
 	double x_smt, y_smt, z_smt, r_smt, t_smt, t, *c = NULL, *in = NULL, dist, dlon, lon, lat, out[5];
 	double hx_dist, hx_dist_km, dist_NA, dist_NX, del_dist, dt = 0.0, A[3], H[3], N[3], X[3];

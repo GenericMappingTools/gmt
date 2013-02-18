@@ -224,8 +224,8 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	
 	uint64_t ij, ij1, ij2, ij3, np, i, j, k, n_edge, p, n = 0;
 	unsigned int n_input, n_output;
-	int row, col, col_min, col_max, row_min, row_max;
-	bool triplets[2] = {false, false}, error = false, map_them = false;
+	int row, col, col_min, col_max, row_min, row_max, error = 0;
+	bool triplets[2] = {false, false}, map_them = false;
 	
 	size_t n_alloc;
 	

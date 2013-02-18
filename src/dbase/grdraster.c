@@ -61,8 +61,8 @@ struct GRDRASTER_INFO {
 	unsigned int id;	/* File number  */
 	int nglobal;	/* If not 0, ras is global and i%nglobal makes it periodic  */
 	int nanflag;
-	bool nanset;		/* True if raster uses nanflag to signal NaN  */
 	off_t skip;		/* Skip this number of header bytes when opening file  */
+	bool nanset;		/* True if raster uses nanflag to signal NaN  */
 	bool swap_me;	/* true if data set need to be swapped */
 	bool geo;		/* true if we believe x/y is lon/lat, false otherwise */
 	char type;
@@ -737,8 +737,8 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	unsigned int i, j, k, ksize = 0, iselect, imult, jmult, nrasters, row, col;
 	unsigned int ijras, jseek, jras2, iras2;
 	uint64_t n_nan;
-	int jrasstart, irasstart, iras, jras;
-	bool error = false, firstread;
+	int jrasstart, irasstart, iras, jras, error = 0;
+	bool firstread;
 	
 	uint64_t ij;
 	

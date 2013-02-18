@@ -869,8 +869,8 @@ int GMT_grd_prep_io (struct GMT_CTRL *C, struct GRD_HEADER *header, double wesn[
 	 * All integers represented positive definite items hence unsigned variables.
 	 */
 
-	bool one_or_zero, geo = false;
-	unsigned int col, *actual_col = NULL;	/* Column numbers */
+	bool geo = false;
+	unsigned int one_or_zero, col, *actual_col = NULL;	/* Column numbers */
 	double small = 0.1, half_or_zero, x;
 	GMT_report (C, GMT_MSG_DEBUG, "region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
 

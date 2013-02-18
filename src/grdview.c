@@ -550,11 +550,11 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 
 int GMT_grdview (void *V_API, int mode, void *args)
 {
-	bool get_contours, bad, good, error = false, pen_set, begin, saddle, drape_resample = false, nothing_inside = false;
+	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false, nothing_inside = false;
 	unsigned int c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
-	int i_inc, j_inc, way, bin_inc[4], ij_inc[4];
+	int i_inc, j_inc, way, bin_inc[4], ij_inc[4], error = 0;
 		
 	uint64_t ij, sw, se, nw, ne, bin, n, pt;
 

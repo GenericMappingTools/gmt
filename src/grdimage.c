@@ -353,12 +353,12 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GRD_HEADER *r, struct GRD
 
 int GMT_grdimage (void *V_API, int mode, void *args)
 {
-	bool error = false, done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, nothing_inside = false;
+	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, nothing_inside = false;
 	unsigned int k, nx = 0, ny = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
 	unsigned int colormask_offset = 0, try;
 	uint64_t node_RGBA = 0;		/* uint64_t for the RGB(A) image array. */
 	uint64_t node, kk, nm, byte;
-	int index = 0, ks;
+	int index = 0, ks, error = 0;
 	
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL, i_rgb[3];
 

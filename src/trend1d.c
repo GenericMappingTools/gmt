@@ -597,7 +597,8 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 int GMT_trend1d (void *V_API, int mode, void *args)
 {
 	unsigned int i, n_model, rank, np;
-	bool error = false, significant;
+	int error = 0;
+	bool significant;
 	
 	uint64_t n_data;
 

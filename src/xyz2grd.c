@@ -297,8 +297,8 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 
 int GMT_xyz2grd (void *V_API, int mode, void *args)
 {
-	bool error = false, previous_bin_i = false, previous_bin_o = false;
-	int scol, srow;
+	bool previous_bin_i = false, previous_bin_o = false;
+	int error = 0, scol, srow;
 	unsigned int zcol, row, col, i, *flag = NULL;
 	uint64_t n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0;
 	uint64_t ij, gmt_ij, n_read = 0, n_filled = 0, n_used = 0;

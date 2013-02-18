@@ -382,7 +382,8 @@ void alloc_space (struct GMT_CTRL *GMT, size_t *n_alloc, double **xx, double **y
 
 int GMT_pswiggle (void *V_API, int mode, void *args)
 {
-	bool error = false, negative;
+	bool negative;
+	int error = 0;
 	
 	unsigned int tbl;
 	

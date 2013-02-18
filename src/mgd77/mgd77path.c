@@ -136,7 +136,7 @@ int GMT_mgd77path_parse (struct GMTAPI_CTRL *C, struct MGD77PATH_CTRL *Ctrl, str
 int GMT_mgd77path (void *V_API, int mode, void *args)
 {
 	unsigned int i, n_cruises = 0, n_paths;
-	bool error = false;
+	int error = 0;
 	
 	char path[GMT_BUFSIZ], **list = NULL;
 	

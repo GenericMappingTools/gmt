@@ -1062,7 +1062,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 
 int GMT_psscale (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psscale task */
-	bool error = false;
+	int error = 0;
 	unsigned int i;
 
 	char text[GMT_TEXT_LEN256];

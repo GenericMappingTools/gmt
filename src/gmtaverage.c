@@ -175,7 +175,7 @@ int GMT_gmtaverage_parse (struct GMTAPI_CTRL *C, struct GMTAVERAGE_CTRL *Ctrl, s
 
 int GMT_gmtaverage (void *V_API, int mode, void *args)
 {
-	bool error = false;
+	int error = 0;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;

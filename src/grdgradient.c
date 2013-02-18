@@ -312,8 +312,8 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 
 int GMT_grdgradient (void *V_API, int mode, void *args)
 {
-	bool error = false, sigma_set = false, offset_set = false, bad, new_grid = false;
-	int p[4], mx;
+	bool sigma_set = false, offset_set = false, bad, new_grid = false;
+	int p[4], mx, error = 0;
 	unsigned int row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
 	

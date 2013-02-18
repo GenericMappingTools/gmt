@@ -546,11 +546,11 @@ int GMT_grdfilter_parse (struct GMTAPI_CTRL *C, struct GRDFILTER_CTRL *Ctrl, str
 
 int GMT_grdfilter (void *V_API, int mode, void *args)
 {
-	bool error = false, fast_way, slow = false, slower = false, same_grid = false;
+	bool fast_way, slow = false, slower = false, same_grid = false;
 	bool spherical = false, full_360, visit_check = false, go_on, get_weight_sum = true;
 	unsigned int n_in_median, n_nan = 0, col_out, row_out, effort_level;
 	unsigned int filter_type, one_or_zero = 1, GMT_n_multiples = 0;
-	int tid = 0, col_in, row_in, ii, jj, *col_origin = NULL, row_origin, nx_wrap = 0;
+	int tid = 0, col_in, row_in, ii, jj, *col_origin = NULL, row_origin, nx_wrap = 0, error = 0;
 #ifdef DEBUG
 	unsigned int n_conv = 0;
 #endif

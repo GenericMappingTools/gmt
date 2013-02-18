@@ -203,8 +203,7 @@ int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctr
 
 int GMT_mgd77convert (void *V_API, int mode, void *args)
 {
-	int i, argno, n_cruises = 0, n_paths;
-	bool error = false;
+	int i, argno, n_cruises = 0, n_paths, error = 0;
 	
 	char file[GMT_BUFSIZ], **list = NULL, *fcode = "actm";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};

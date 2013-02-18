@@ -192,7 +192,7 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 
 int GMT_psclip (void *V_API, int mode, void *args)
 {
-	bool error = false;
+	int error = 0;
 
 	double x0, y0;
 

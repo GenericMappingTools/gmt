@@ -21,6 +21,7 @@
  * Version:	5 API
  *
  * Brief synopsis: gmtmercmap will make a nice Mercator map using etopo[1|2|5].
+ * It also serves as a demonstration of the GMT5 API.
  *
  */
 
@@ -65,7 +66,7 @@ void *New_gmtmercmap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 
 	C = GMT_memory (GMT, NULL, 1, struct GMTMERCMAP_CTRL);
 	C->C.file = strdup ("relief");
-	C->W.width = 6.0;
+	C->W.width = (GMT->current.setting.proj_length_unit == GMT_CM) ? 25.0 / 2.54 : 10.0;	/* 25cm (SI/A4) or 10i (US/Letter) */
 	return (C);
 }
 
@@ -78,7 +79,8 @@ void Free_gmtmercmap_Ctrl (struct GMT_CTRL *GMT, struct GMTMERCMAP_CTRL *C) {	/*
 int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, int level)
 {
 	struct GMT_CTRL *GMT = C->GMT;
-
+	char width[4];
+	if (GMT->current.setting.proj_length_unit == GMT_CM) strcpy (width, "25c"); else strcpy (width, "10i");
 	GMT_message (GMT, "gmtmercmap %s [API] - Make a Mercator color map from ETOPO[1|2|5] global relief grids\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtmercmap [-C<cpt>] [-D[b|c|d]] [-E1|2|5] [-K] [-O] [-P] [%s] [-S] [%s] [%s] [-W<width>]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -93,7 +95,7 @@ int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "KOP");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
-	GMT_message (GMT, "\t-W Specify the width of your map [6i].\n");
+	GMT_message (GMT, "\t-W Specify the width of your map [%s].\n", width);
 	GMT_explain_options (GMT, "UVXcnpt.");
 
 	return (EXIT_FAILURE);
@@ -117,7 +119,7 @@ int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, s
 		switch (opt->option) {
 			/* Processes program-specific parameters */
 
-			case 'C':	/* CPT file */
+			case 'C':	/* CPT master file */
 				Ctrl->C.active = true;
 				free (Ctrl->C.file);
 				Ctrl->C.file = strdup (opt->arg);
@@ -159,8 +161,8 @@ int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, s
 
 #define Return(code) {Free_gmtmercmap_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); exit (code);}
 
-#define ETOPO1M_LIMIT 100	/* Cut-offs in degrees squared */
-#define ETOPO2M_LIMIT 10000
+#define ETOPO1M_LIMIT 100	/* ETOPO1 cut-offs in degrees squared for 1 arc min */
+#define ETOPO2M_LIMIT 10000	/* ETOPO2 cut-offs in degrees squared for 2 arc min */
 
 void set_var (int mode, char *name, char *value)
 {	/* Assigns the text variable given the script mode */
@@ -197,6 +199,7 @@ int main (int argc, char **argv)
 	
 	char file[GMT_TEXT_LEN256], z_file[GMTAPI_STRLEN], i_file[GMTAPI_STRLEN];
 	char cmd[GMT_BUFSIZ], c_file[GMTAPI_STRLEN], t_file[GMTAPI_STRLEN];
+	static char unit[4] = "cimp";
 
 	struct GMT_GRID *G = NULL, *I = NULL;
 	struct GMT_PALETTE *P = NULL;
@@ -214,7 +217,7 @@ int main (int argc, char **argv)
 	if (API->error) return (API->error);	/* Set or get option list */
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
 		exit (GMT_gmtmercmap_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) 
+	if (options && options->option == GMTAPI_OPT_SYNOPSIS) 
 		exit (GMT_gmtmercmap_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
@@ -226,7 +229,7 @@ int main (int argc, char **argv)
 
 	/*---------------------------- This is the gmtmercmap main code ----------------------------*/
 
-	/* 1. If -R is not given, we set a default map region */
+	/* 1. If -R is not given, we must set a default map region, here -R-180/+180/-75/+75 */
 	
 	if (!GMT->common.R.active) {	/* Set default world region */
 		GMT->common.R.wesn[XLO] = -180.0;	GMT->common.R.wesn[XHI] = +180.0;
@@ -234,25 +237,29 @@ int main (int argc, char **argv)
 		GMT->common.R.active = true;
 	}
 	
-	/* 2. Unless -E, determine map area in degrees squared (just dlon * dlat), and use it to select which ETOPO?m.nc grid to use */
+	/* 2. Unless -E, determine approximate map area in degrees squared (just dlon * dlat), and use it to select which ETOPO?m.nc grid to use */
 	
-	if (Ctrl->E.active)	/* Specified the resolution to use */
+	if (Ctrl->E.active)	/* Specified the exact resolution to use */
 		min = Ctrl->E.mode;
-	else {
+	else {	/* Determine resolution automatically from map area */
 		area = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) * (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
 		min = (area < ETOPO1M_LIMIT) ? 1 : ((area < ETOPO2M_LIMIT) ? 2 : 5);	/* Use etopo[1,2,5]m_grd.nc depending on area */
 	}
 	
-	/* 3. Load in the subset from the selected etopo?m.nc grid */
+	sprintf (file, "etopo%dm_grd.nc", min);	/* Make the selected file name and make sure it is accessible */
+	if (GMT_access (GMT, file, R_OK)) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to locate file %s in the GMT search directories\n", file);
+		exit (EXIT_FAILURE);
+	}
 	
-	sprintf (file, "etopo%dm_grd.nc", min);	/* Make the selected file name */
-	
-	if (Ctrl->D.active) {	/* Just write equivalent GMT shell script instead */
+	if (Ctrl->D.active) {	/* Just write equivalent GMT shell script instead of making a map */
 		int step = 0;
 		char *comment[3] = {"#", "#", "REM"};	/* Comment for csh, bash and DOS [none], respectively */
+		char *proc[3] = {"C-shell", "Bash", "DOS"};	/* Name of csh, bash and DOS */
 		char prefix[GMT_TEXT_LEN64], region[GMT_TEXT_LEN256], width[GMT_TEXT_LEN256];
 		time_t now = time (NULL);
 		
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Create % script that can be run to build the map\n", proc[Ctrl->D.mode]);
 		if (Ctrl->D.mode == GMT_DOS_MODE)	/* Don't know how to get process ID in DOS */
 			sprintf (prefix, "tmp");
 		else
@@ -328,6 +335,7 @@ int main (int argc, char **argv)
 		if (GMT->common.O.active) printf (" -O");	/* Add optional user options */
 		if (GMT->common.P.active) printf (" -P");	/* Add optional user options */
 		if (Ctrl->S.active || GMT->common.K.active) printf (" -K");	/* Either gave -K or implicit via -S */
+		if (!GMT->common.X.active && !GMT->common.O.active) printf (" -Xc");	/* User gave neither -X nor -O so we center the map */
 		if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the color scale */
 			if (!GMT->common.Y.active && !GMT->common.K.active) printf (" -Y%s", get_var (Ctrl->D.mode, "map_offset"));	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
 		}
@@ -345,10 +353,19 @@ int main (int argc, char **argv)
 	
 	/* Here we actuallly make the map */
 	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Create Mercator map of area %g/%g/%g/%g with width %g%c\n",
+		GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], 
+		Ctrl->W.width * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit],
+		unit[GMT->current.setting.proj_length_unit]);
+		
+	/* 3. Load in the subset from the selected etopo?m.nc grid */
+	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Read subset from %s\n", file);
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, GMT->common.R.wesn, file, NULL)) == NULL) exit (EXIT_FAILURE);
 
 	/* 4. Compute the illumination grid via GMT_grdgradient */
 	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Compute artificial illumination grid from %s\n", file);
 	/* Register the topography as read-only input and register the output intensity surface to a memory location */
 	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REF, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
@@ -360,6 +377,7 @@ int main (int argc, char **argv)
 	
 	/* 5. Determine a reasonable color range based on TOPO_INC m intervals and retrieve a CPT */
 	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Determine suitable color range and build CPT file\n");
 	/* Round off to nearest TOPO_INC m and make a symmetric scale about zero */
 	z_min = floor (G->header->z_min/TOPO_INC)*TOPO_INC;
 	z_max = floor (G->header->z_max/TOPO_INC)*TOPO_INC;
@@ -373,6 +391,7 @@ int main (int argc, char **argv)
 	
 	/* 6. Now make the map */
 	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Generate the Mercator map\n");
 	/* Register the three input sources (2 grids and 1 CPT); output is PS that goes to stdout */
 	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, z_file, z_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
@@ -380,10 +399,11 @@ int main (int argc, char **argv)
 	if (GMT_Encode_ID (API, i_file, i_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY, GMT_IS_POINT, GMT_IN, NULL, P)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	sprintf (cmd, "%s -I%s -C%s -JM%gi -BaWSne", z_file, i_file, c_file, Ctrl->W.width);/* The grdimage command line */
+	sprintf (cmd, "%s -I%s -C%s -JM%gi -BaWSne", z_file, i_file, c_file, Ctrl->W.width);	/* The grdimage command line */
 	if (GMT->common.O.active) strcat (cmd, " -O");	/* Add optional user options */
 	if (GMT->common.P.active) strcat (cmd, " -P");	/* Add optional user options */
-	if (Ctrl->S.active || GMT->common.K.active) strcat (cmd, " -K");	/* Either gave -K or implicit via -S */
+	if (Ctrl->S.active || GMT->common.K.active) strcat (cmd, " -K");	/* Either gave -K or it is implicit via -S */
+	if (!GMT->common.X.active && !GMT->common.O.active) strcat (cmd, " -Xc");	/* User gave neither -X nor -O so we center the map */
 	if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the color scale */
 		if (!GMT->common.Y.active && !GMT->common.K.active) strcat (cmd, " -Y" MAP_OFFSET);	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
 	}
@@ -393,6 +413,7 @@ int main (int argc, char **argv)
 	
 	if (Ctrl->S.active) {
 		double x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Append color scale bar\n");
 		/* Register the CPT to be used by psscale */
 		if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY, GMT_IS_POINT, GMT_IN, NULL, P)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
 		if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
@@ -402,6 +423,7 @@ int main (int argc, char **argv)
 	}
 	
 	/* 8. Let the GMT API garbage collection free the memory used */
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Mapping completed\n");
 	
 	Return (EXIT_SUCCESS);
 }

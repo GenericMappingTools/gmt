@@ -209,8 +209,9 @@ int GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ctrl, s
 
 int GMT_grdproject (void *V_API, int mode, void *args)
 {
-	bool error = false, set_n = false, shift_xy = false;
+	bool set_n = false, shift_xy = false;
 	unsigned int use_nx = 0, use_ny = 0, offset, k, unit = 0;
+	int error = 0;
 
 	char format[GMT_BUFSIZ], unit_name[GMT_GRID_UNIT_LEN80], scale_unit_name[GMT_GRID_UNIT_LEN80];
 

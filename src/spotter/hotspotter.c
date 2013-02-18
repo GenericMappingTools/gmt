@@ -297,7 +297,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	int node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	int node_y_width;		/* Number of y-nodes covered by the seamount */
 	int d_col, d_row, col_0, row_0, nx, ny;
-	bool error = false;		/* true when arguments are wrong */
+	int error = 0;			/* nonzero when arguments are wrong */
 	
 
 	double sampling_int_in_km;	/* Sampling interval along flowline (in km) */

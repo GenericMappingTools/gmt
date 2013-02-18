@@ -213,9 +213,9 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 
 int GMT_blockmode (void *V_API, int mode, void *args)
 {
-	bool error = false, mode_xy, do_extra;
+	bool mode_xy, do_extra;
 	
-	int way;
+	int way, error = 0;
 	
 	unsigned int row, col, w_col, i_col = 0, sid_col, emode = 0, n_input, n_output;
 

@@ -163,7 +163,7 @@ void compute_only_adimtts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struc
 
 int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 
 	int n;
 	struct GMT_OPTION *opt = NULL;
@@ -425,7 +425,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	unsigned int i, j, k, n;
-	bool error = false, stop;
+	int error = 0;
+	bool stop;
 	uint64_t m;
 	char	format[64], buffer[256];
 	float	*topo = NULL, *raised = NULL;

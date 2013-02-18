@@ -273,7 +273,7 @@ int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct 
 
 int GMT_img2grd (void *V_API, int mode, void *args)
 {
-	bool error = false;
+	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
 	unsigned int iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
 	int in_ID, out_ID = GMTAPI_NOTSET, jin, iinstart, iinstop;

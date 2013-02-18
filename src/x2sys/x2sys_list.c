@@ -280,13 +280,13 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
-	bool error = false, mixed = false, check_for_NaN = false, both, first;
+	bool mixed = false, check_for_NaN = false, both, first;
 	bool internal = true;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, j, k, one, two, n_items, n_out, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
 	unsigned int n_weights = 0, coe_kind;
-	int id;
+	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;

@@ -293,7 +293,8 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 int GMT_grdvector (void *V_API, int mode, void *args)
 {
 	unsigned int row, col, col_0, row_0, d_col, d_row, k;
-	bool justify, error = false;
+	int error = 0;
+	bool justify;
 	
 	uint64_t ij;
 

@@ -606,8 +606,8 @@ int GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl, str
 
 int GMT_pscontour (void *V_API, int mode, void *args)
 {
-	int add;
-	bool two_only = false, make_plot, error = false, skip = false, is_closed;
+	int add, error = 0;
+	bool two_only = false, make_plot, skip = false, is_closed;
 	
 	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
 	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0};

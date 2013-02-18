@@ -225,7 +225,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	struct X2SYS_COE_PAIR *P = NULL;
 	struct COE_REPORT *R = NULL;
 	struct MGD77_CORRTABLE **CORR = NULL;
-	bool error = false;
+	int error = 0;
 	bool internal = false;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
 	uint64_t i, k, n, coe_kind, n_use, n_tracks;

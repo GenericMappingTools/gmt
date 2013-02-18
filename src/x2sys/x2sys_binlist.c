@@ -175,7 +175,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	int this_bin_row;	/* This row node for bin */
 	int last_bin_col;	/* Previous col node for bin */
 	int last_bin_row;	/* Previous row node for bin */
-	bool error = false, gap, cmdline_files, last_not_set;
+	int error = 0;
+	bool gap, cmdline_files, last_not_set;
 	size_t nx, nx_alloc = GMT_SMALL_CHUNK;
 	
 	unsigned int nav_flag;
