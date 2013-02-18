@@ -3,10 +3,9 @@
 .SH NAME
 gravfft \- Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain
 .SH SYNOPSIS
-BD(gravfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ OPT(A)IT(azimuth) ] 
-[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)|BD(g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
-[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)|BD(g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
-[ OPT(N)[GMT_FFT_OPT] ] [ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+BD(gravfft) IT(ingrid) [IT(ingrid2)] OPT(G)IT(outfile) [-C<n/wavelength/mean_depth/tbw>]
+[OPT(A)IT(z_offset)] [-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>] [-L[m|h|n]]
+[OPT(N)[GMT_FFT_OPT]] [-Q] [-T<te/rl/rm/rw>[+m]] [GMT_V_OPT] [-Z<zm>[/<zl>]] [GMT_f_OPT]
 .SH DESCRIPTION
 BD(gravfft) can be used into two main modes. First one computes the gravity/geoid response of a bathymetry file. It will
 take the 2-D forward FFT of a bathymetry grid and compute it’s gravity/geoid response using full Parker’s method applied
@@ -15,9 +14,9 @@ which accounts for the plate’s response to a sub-surface load (appropriate for
 In both cases, the model parameters are set with OPT(T) and OPT(Z) options. Second mode computes the admittance or 
 coherence between two grids. The output is the average in the radial direction. Optionally, the model admittance may also
 be calculated. The horizontal dimensions of the grdfiles are assumed to be in meters. Geographical grids may be used by
-specifying the OPT(fg)option that scales degrees to meters. If you have grids with dimensions in km, you could change this
-to meters using BD(grdedit) or scale the output with BD(grdmath). Given the number of choices this program offers, is
-difficult to state what are options and what are required arguments. It depends on what you are doing. 
+specifying the OPT(fg) option that scales degrees to meters. If you have grids with dimensions in km, you could change
+this to meters using BD(grdedit) or scale the output with BD(grdmath). Given the number of choices this program offers,
+is difficult to state what are options and what are required arguments. It depends on what you are doing. 
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
 .TP
@@ -45,8 +44,18 @@ OPT(E)IT(n_terms)
 Number of terms used in Parker expansion (limit is 10, otherwise terms depending on n will blow out the program)
 [Default = 1]
 .TP
-OPT(F)[BD(r)|BD(x)|BD(y)]IT(params)
-Compute geoid rather than gravity
+OPT(F)[BD(f)|BD(g)|BD(v)|BD(n)|BD(e)]
+Specify desired geopotential field: compute geoid rather than gravity
+.sp
+BD(f) = Free-air anomalies (mGal) [Default].
+.sp
+BD(g) = Geoid anomalies (m).
+.sp
+BD(v) = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
+.sp
+BD(e) = East deflections of the vertical (micro-radian).
+.sp
+BD(n) = North deflections of the vertical (micro-radian).
 .TP
 OPT(I)IT(<wbctk>)
 Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write it to stdout (-G ignored if set).
@@ -59,7 +68,7 @@ BD(c) computes coherence instead of admittance
 BD(b) writes a forth column with "loading from below" theoretical admittance
 BD(t) writes a forth column with "elastic plate" theoretical admittance
 .TP
-OPT(L)
+OPT(L)[BD(m)|BD(h)|BD(n)]
 Leave trend alone.  By default, a linear trend will be removed prior to the transform.
 Alternatively, append BD(m) to just remove the mean value, BD(h) to remove the mid-value,
 or BD(n) to not remove constant/plane from input data.
@@ -88,12 +97,12 @@ netCDF COARDS grids will automatically be recognized as geographic. For other gr
 were you want to convert degrees into meters, select OPT(fg).  If the data are close to either pole,
 you should consider projecting the grid file onto a rectangular coordinate system using BD(grdproject).
 .SH EXAMPLES
-To compute the effect of the water layer above the bat.grd bathymetry using 2600 and 1035 for the
-densities of crust and water and writing the result on water_g.grd (computing up to the sixth power of
+To compute the effect of the water layer above the bat.grd bathymetry using 2700 and 1035 for the
+densities of crust and water and writing the result on water_g.grd (computing up to the fourth power of
 bathymetry in Parker expansion):
 .br
 .sp
-gravfft bat.grd -D1565 -Gwater_g.grd -E6
+gravfft bat.grd -D1665 -Gwater_g.grd -E4
 .br
 .sp
 Now subtract it to your free-air anomaly faa.grd and you’ll get the Bouguer anomaly. You may wonder why
@@ -106,14 +115,14 @@ grdmath faa.grd water_g.grd SUB = bouguer.grd
 .br
 .sp
 Want an MBA anomaly? Well compute the crust mantle contribution and add it to the sea-bottom anomaly.
-Assuming a 6 km thick crust of density 2600 and a mantle with 3300 density we could repeat the command used
-to compute the water layer anomaly, using 700 (3300 - 2600) as the density contrast. But we now have a problem
-because we need to know the mean moho depth. That is when -z option comes in hand. Notice that we didn’t need
+Assuming a 6 km thick crust of density 2700 and a mantle with 3300 density we could repeat the command used
+to compute the water layer anomaly, using 600 (3300 - 2700) as the density contrast. But we now have a problem
+because we need to know the mean moho depth. That is when OPT(A) option comes in hand. Notice that we didn’t need
 to do that before because mean water depth was computed directly from data. (notice also the negative sign
-of the argument to -z, remember z positive up):
+of the argument to OPT(A), remember z positive up):
 .br
 .sp
-gravfft bat.grd -D700 -Gmoho_g.grd -z-6000
+gravfft bat.grd -D600 -Gmoho_g.grd -A-6000
 .br
 .sp
 Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
@@ -122,21 +131,21 @@ Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 grdmath water_g.grd moho_g.grd ADD = mba.grd
 .br
 .sp
-To compute the Moho gravity effect of an elastic plate bat.grd with Te = 7 km, density of 2600, over a
+To compute the Moho gravity effect of an elastic plate bat.grd with Te = 7 km, density of 2700, over a
 mantle of density 3300, at an averge depth of 9 km
 .br
 .sp
-gravfft bat.grd -Gelastic.grd -T7000/2600/3300/1035+m -Z9000
+gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 .br
 .sp
 If you add now the sea-bottom and Moho’s effects, you’ll get the full gravity response of your isostatic model.
 We will use here only the first term in Parker expansion (default).
 .br
 .sp
-gravfft bat.grd -D1565 -Gwater_g.grd
+gravfft bat.grd -D1665 -Gwater_g.grd
 .br
 .sp
-gravfft bat.grd -Gelastic.grd -T7000/2600/3300/1035+m -Z9000
+gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 .br
 .sp
 grdmath water_g.grd elastic.grd ADD = model.grd
@@ -148,14 +157,14 @@ following and the previous commands only give the same result if OPT(E)1 (the de
 powers of bathymetry in Parker expansion, only the above example seams to give the correct result.
 .br
 .sp
-gravfft bat.grd -Gmodel.grd -T7000/2600/3300/1035 -Z9000 -L
+gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -L
 .br
 .sp
 And what would be the geoid anomaly produced by a load at 50 km depth, below the a region whose bathymetry
 is given by bat.grd, a Moho at 9 km depth and the same densities as before?
 .br
 .sp
-gravfft topo.grd -Gswell_geoid.grd -T7000/2600/3300/1035 -F -Z9000/50000 -S
+gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -F -Z9000/50000 -S
 .br
 .sp
 To compute the admittance between the topo.grd bathymetry and faa.grd free-air anomaly grid using the
@@ -163,7 +172,7 @@ elastic plate model of a crust of 6 km mean thickness with 10 km efective elasti
 of 3 km mean water depth:
 .br
 .sp
-gravfft topo.grd faa.grd -It -T10000/2600/3300/1035 -Z9000
+gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
 .br
 .sp
 To compute the admittance between the topo.grd bathymetry and geoid.grd geoid grid with the
@@ -171,14 +180,14 @@ To compute the admittance between the topo.grd bathymetry and geoid.grd geoid gr
 the grids are in geographic and we want wavelengths instead of frequency:
 .br
 .sp
-gravfft topo.grd geoid.grd -Ibw -T10000/2600/3300/1035 -Z9000/40000 -fg
+gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
 .br
 .sp
 To compute the gravity theoretical admittance of a LFB along a 1000 km long profile using the same
  parameters as above
 .br
 .sp
-gravfft -C400/5000/3000/b -T10000/2600/3300/1035 -Z9000/40000
+gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 .SH REFERENCES
 Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the Azores Plateau:
 a 3D admittance and coherence analysis. J. Geotermal Vulc. Res. Volume 156, Issues 1-2, 
