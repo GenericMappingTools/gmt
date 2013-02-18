@@ -4951,11 +4951,11 @@ bool gmt_label_is_OK (struct GMT_CTRL *C, struct GMT_LABEL *L, char *this_label,
 			break;
 
 		case 7:
-			sprintf (this_label, "%" PRIu64, (C->current.io.status & GMT_IO_SEG_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
+			sprintf (this_label, "%" PRIu64, (C->current.io.status & GMT_IO_SEGMENT_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
 			break;
 
 		case 8:
-			sprintf (this_label, "%d/%" PRIu64, C->current.io.tbl_no, (C->current.io.status & GMT_IO_SEG_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
+			sprintf (this_label, "%d/%" PRIu64, C->current.io.tbl_no, (C->current.io.status & GMT_IO_SEGMENT_HEADER) ? C->current.io.seg_no - 1 : C->current.io.seg_no);
 			break;
 
 		default:	/* Should not happen... */

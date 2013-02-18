@@ -403,7 +403,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 					strcat (header, GMT->current.setting.io_col_separator);
 					strcat (header, "weight");
 				}
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, header);	/* Write a header record */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	/* Write a header record */
 				first = false;
 			}
 

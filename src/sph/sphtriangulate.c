@@ -548,11 +548,11 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TBL_HEADER (GMT)) 	/* Skip all table headers */
+			if (GMT_REC_IS_TABLE_HEADER (GMT)) 	/* Skip all table headers */
 				continue;
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 				break;
-			else if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Parse segment headers */
+			else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Parse segment headers */
 				first = true;
 				continue;
 			}

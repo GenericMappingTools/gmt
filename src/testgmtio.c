@@ -71,15 +71,15 @@ int main (int argc, char *argv[]) {
 				fprintf (stdout, "B: --- End of File except last one ---\n");
 				continue;	/* Since no actual data record was returned, just the intermediate "EOF" signal */
 			}
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Found a table header */
+			if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Found a table header */
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Table header found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				fprintf (stdout, "H: ");
-				mode = GMT_WRITE_TBLHEADER;	/* Special flag to report the table header */
+				mode = GMT_WRITE_TABLE_HEADER;	/* Special flag to report the table header */
 			}
-			if (GMT_REC_IS_SEG_HEADER (GMT)) {	/* Found segment header */
+			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {	/* Found segment header */
 				GMT_report (GMT, GMT_MSG_VERBOSE, "Segment header found in record %" PRIu64 "\n", GMT->current.io.rec_no);
 				fprintf (stdout, "S: ");
-				mode = GMT_WRITE_SEGHEADER;	/* Special flag to report the segment header */
+				mode = GMT_WRITE_SEGMENT_HEADER;	/* Special flag to report the segment header */
 			}
 			if (GMT_REC_IS_NAN (GMT)) {	/* Found NaN record */
 				GMT_report (GMT, GMT_MSG_VERBOSE, "NaN data found in record %" PRIu64 "\n", GMT->current.io.rec_no);

@@ -724,12 +724,12 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
-					GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+				if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 					continue;
 				}
-				if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Echo segment headers */
-					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					continue;
 				}
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */

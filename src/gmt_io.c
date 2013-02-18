@@ -294,7 +294,7 @@ int gmt_process_binary_input (struct GMT_CTRL *C, unsigned int n_read) {
 	if (!C->current.io.status) {	/* Must have n_read NaNs to qualify as segment header */
 		if (n_NaN == n_read) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Detected binary segment header near/at line # %" PRIu64 "\n", C->current.io.rec_no);
-			C->current.io.status = GMT_IO_SEG_HEADER;
+			C->current.io.status = GMT_IO_SEGMENT_HEADER;
 			C->current.io.segment_header[0] = '\0';
 			GMT_set_segmentheader (C, GMT_OUT, true);	/* Turn on "-mo" */
 			C->current.io.seg_no++;
@@ -1317,7 +1317,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
 			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
-			C->current.io.status = GMT_IO_TBL_HEADER;
+			C->current.io.status = GMT_IO_TABLE_HEADER;
 			//C->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output PW: No! If we get here via -hi then no header output was requested */
 			*status = 0;
 			return (NULL);
@@ -1343,13 +1343,13 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we must go up to top of loop and get the next record */
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
 			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
-			C->current.io.status = GMT_IO_TBL_HEADER;
+			C->current.io.status = GMT_IO_TABLE_HEADER;
 			*status = 0;
 			return (NULL);
 		}
 
 		if ((kind = gmt_is_segment_header (C, line))) {	/* Got a segment header, take action and return */
-			C->current.io.status = GMT_IO_SEG_HEADER;
+			C->current.io.status = GMT_IO_SEGMENT_HEADER;
 			GMT_set_segmentheader (C, GMT_OUT, true);	/* Turn on segment headers on output */
 			C->current.io.seg_no++;
 			if (kind == 1) {
@@ -1464,7 +1464,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 	/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
 	if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
-		C->current.io.status = GMT_IO_TBL_HEADER;
+		C->current.io.status = GMT_IO_TABLE_HEADER;
 		*status = 0;
 		return (NULL);
 	}
@@ -1476,14 +1476,14 @@ void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *
 	}
 	if (line[0] == '#') {	/* Got a file header, take action and return */
 		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
-		C->current.io.status = GMT_IO_TBL_HEADER;
+		C->current.io.status = GMT_IO_TABLE_HEADER;
 		*n = 1;
 		*status = 0;
 		return (NULL);
 	}
 
 	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
-		C->current.io.status = GMT_IO_SEG_HEADER;
+		C->current.io.status = GMT_IO_SEGMENT_HEADER;
 		GMT_set_segmentheader (C, GMT_OUT, true);	/* Turn on segment headers on output */
 		C->current.io.seg_no++;
 		/* Just save the header content, not the marker and leading whitespace */
@@ -4484,7 +4484,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, uns
 
 	while (status >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
 		if (header) {
-			while ((C->current.setting.io_header[GMT_IN] && n_read <= C->current.setting.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C)) { /* Process headers */
+			while ((C->current.setting.io_header[GMT_IN] && n_read <= C->current.setting.io_n_header_items) || GMT_REC_IS_TABLE_HEADER (C)) { /* Process headers */
 				T->header[T->n_headers] = strdup (C->current.io.current_record);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
@@ -4503,9 +4503,9 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, uns
 			header = false;	/* Done processing header block; other comments are GIS/OGR encoded comments */
 		}
 
-		no_segments = !GMT_REC_IS_SEG_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
+		no_segments = !GMT_REC_IS_SEGMENT_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
 
-		while (no_segments || (GMT_REC_IS_SEG_HEADER (C) && !GMT_REC_IS_EOF (C))) {
+		while (no_segments || (GMT_REC_IS_SEGMENT_HEADER (C) && !GMT_REC_IS_EOF (C))) {
 			/* PW: This will need to change to allow OGR comments to follow segment header */
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (first_seg || T->segment[seg]->n_rows > 0) {
@@ -4533,7 +4533,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, uns
 
 		T->segment[seg]->record = GMT_memory (C, NULL, n_row_alloc, char *);
 
-		while (!(C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
+		while (!(C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 
 			if (in) T->segment[seg]->record[row++] = strdup (in);	/* in might be NULL if comment record is found - these are skipped */
 
@@ -5842,7 +5842,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigne
 
 	while (status >= 0 && !GMT_REC_IS_EOF (C)) {	/* Not yet EOF */
 		if (header) {
-			while ((C->current.setting.io_header[GMT_IN] && n_read <= C->current.setting.io_n_header_items) || GMT_REC_IS_TBL_HEADER (C)) { /* Process headers */
+			while ((C->current.setting.io_header[GMT_IN] && n_read <= C->current.setting.io_n_header_items) || GMT_REC_IS_TABLE_HEADER (C)) { /* Process headers */
 				T->header[T->n_headers] = strdup (C->current.io.current_record);
 				T->n_headers++;
 				if (T->n_headers == n_head_alloc) {
@@ -5863,9 +5863,9 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigne
 
 		if (GMT_REC_IS_EOF (C)) continue;	/* Got EOF after headers */
 
-		no_segments = !GMT_REC_IS_SEG_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
+		no_segments = !GMT_REC_IS_SEGMENT_HEADER (C);	/* Not a multi-segment file.  We then assume file has only one segment */
 
-		while (no_segments || (GMT_REC_IS_SEG_HEADER (C) && !GMT_REC_IS_EOF (C))) {
+		while (no_segments || (GMT_REC_IS_SEGMENT_HEADER (C) && !GMT_REC_IS_EOF (C))) {
 			/* To use different line-distances for each segment, place the distance in the segment header */
 			if (first_seg || T->segment[seg]->n_rows > 0) {
 				if (!first_seg) seg++;	/* Only advance segment if last had any points */
@@ -5904,7 +5904,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigne
 		}
 		GMT_alloc_segment (C, T->segment[seg], n_row_alloc, T->segment[seg]->n_columns, true);	/* Alloc space for this segment with n_row_alloc rows */
 
-		while (! (C->current.io.status & (GMT_IO_SEG_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
+		while (! (C->current.io.status & (GMT_IO_SEGMENT_HEADER | GMT_IO_GAP | GMT_IO_EOF))) {	/* Keep going until false or find a new segment header */
 			if (C->current.io.status & GMT_IO_MISMATCH) {
 				GMT_report (C, GMT_MSG_NORMAL, "Mismatch between actual (%d) and expected (%d) fields near line %" PRIu64 "\n", status, n_expected_fields, n_read);
 				if (!use_GMT_io) C->current.io.input = psave;	/* Restore previous setting */
@@ -5927,7 +5927,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigne
 				GMT_alloc_segment (C, T->segment[seg], T->segment[seg]->n_alloc, T->segment[seg]->n_columns, false);
 			}
 			in = C->current.io.input (C, fp, &n_expected_fields, &status);
-			while (GMT_REC_IS_TBL_HEADER (C)) in = C->current.io.input (C, fp, &n_expected_fields, &status);	/* Just wind past other comments */
+			while (GMT_REC_IS_TABLE_HEADER (C)) in = C->current.io.input (C, fp, &n_expected_fields, &status);	/* Just wind past other comments */
 			n_read++;
 		}
 		T->segment[seg]->n_rows = row;	/* Number of records in this segment */

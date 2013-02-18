@@ -894,7 +894,7 @@ int GMT_project (void *V_API, int mode, void *args)
 			char *type[2] = {"Great", "Small"};
 			GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);	/* Write segment header */
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 		}
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
@@ -921,17 +921,17 @@ int GMT_project (void *V_API, int mode, void *args)
 			if ((in = GMT_Get_Record (API, rmode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 					Return (GMT_RUNTIME_ERROR);
-				if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
-					GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+				if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+					GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 					continue;
 				}
-				if (GMT_REC_IS_SEG_HEADER (GMT)) {			/* Echo segment headers */
+				if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {			/* Echo segment headers */
 					if (P.n_used) {	/* Write out previous segment */
 						if ((error = write_one_segment (GMT, Ctrl, theta, p_data, &P))) Return (error);
 						n_total_used += P.n_used;
 						P.n_used = 0;
 					}
-					GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+					GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 					continue;
 				}
 				if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */

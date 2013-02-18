@@ -685,12 +685,12 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		if ((in = GMT_Get_Record (API, rmode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+			if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				continue;
 			}
 			if (GMT_REC_IS_NEW_SEGMENT (GMT)) {			/* Echo segment headers */
-				GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 				line_start = true;
 				n_read_in_seg = 0;
 				continue;
@@ -699,7 +699,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				break;
 		}
 		if (GMT_REC_IS_GAP (GMT)) {	/* Gap detected.  Write a segment header but continue on since record is actually data */
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 			GMT->current.io.status = 0;	/* Done with gap */
 			line_start = true;
 			n_read_in_seg = 0;

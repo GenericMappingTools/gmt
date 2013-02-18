@@ -635,13 +635,13 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		if ((in = GMT_Get_Record (API, r_mode, &n_fields)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
 				Return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_TBL_HEADER (GMT)) {	/* Echo table headers */
-				GMT_Put_Record (API, GMT_WRITE_TBLHEADER, NULL);
+			if (GMT_REC_IS_TABLE_HEADER (GMT)) {	/* Echo table headers */
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, NULL);
 				continue;
 			}
 			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
 				break;
-			else if (GMT_REC_IS_SEG_HEADER (GMT)) {
+			else if (GMT_REC_IS_SEGMENT_HEADER (GMT)) {
 				output_header = true;
 				need_header = GMT->current.io.multi_segments[GMT_OUT];	/* Only need to break up segments */
 				continue;
@@ -777,7 +777,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		/* Here, we have passed all active test and the point is to be output */
 
 		if (output_header) {	/* First output point for this segment - write the header */
-			GMT_Put_Record (API, GMT_WRITE_SEGHEADER, NULL);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 			output_header = false;
 		}
 

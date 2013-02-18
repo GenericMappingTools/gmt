@@ -325,11 +325,11 @@ int GMT_minmax (void *V_API, int mode, void *args)
 		do_report = false;
 
 		if (GMT_REC_IS_ERROR (GMT)) Return (GMT_RUNTIME_ERROR);
-		if (GMT_REC_IS_TBL_HEADER (GMT)) continue;	/* Skip table headers */
-		if ((GMT_REC_IS_SEG_HEADER (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT)) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
+		if (GMT_REC_IS_TABLE_HEADER (GMT)) continue;	/* Skip table headers */
+		if ((GMT_REC_IS_SEGMENT_HEADER (GMT) && Ctrl->A.mode != REPORT_PER_SEGMENT)) continue;	/* Since we are not reporting per segment they are just headers as far as we are concerned */
 		
-		if (GMT_REC_IS_SEG_HEADER (GMT) || (GMT_REC_IS_FILE_BREAK (GMT) && Ctrl->A.mode == REPORT_PER_TABLE) || GMT_REC_IS_EOF (GMT)) {	/* Time to report */
-			if (GMT_REC_IS_SEG_HEADER (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
+		if (GMT_REC_IS_SEGMENT_HEADER (GMT) || (GMT_REC_IS_FILE_BREAK (GMT) && Ctrl->A.mode == REPORT_PER_TABLE) || GMT_REC_IS_EOF (GMT)) {	/* Time to report */
+			if (GMT_REC_IS_SEGMENT_HEADER (GMT) && GMT->current.io.seg_no == 0) continue;	/* Very first segment header means there is no prior segment to report on yet */
 			if (GMT_REC_IS_EOF (GMT)) {	/* We are done after this since we hit EOF */
 				done = true;
 				GMT->current.io.seg_no++;	/* Must manually increment since we are not reading any futher */

@@ -962,7 +962,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 
 			if (set_up_filter (GMT, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
 
-			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGHEADER, D->table[tbl]->segment[seg]->header);
+			if (GMT->current.io.multi_segments[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, D->table[tbl]->segment[seg]->header);
 			
 			if (do_the_filter (API, &F)) Return (GMT_RUNTIME_ERROR, "Fatal error in filtering routine.\n");
 		}
