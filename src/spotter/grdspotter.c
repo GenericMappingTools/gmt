@@ -561,8 +561,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	/* Initialize the CVA grid and structure */
 
 	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, G))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, G))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, G))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, G))) Return (error);
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
 
@@ -861,13 +861,13 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if (Ctrl->D.active || Ctrl->PA.active) {	/* Must determine max CVA along each flowline */
 		if (Ctrl->D.active) {
 			if ((DI = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Z->header->wesn, Z->header->inc, Z->header->registration, DI))) Return (error);
-			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, DI))) Return (error);
+			if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Z->header->wesn, Z->header->inc, Z->header->registration, GMTAPI_NOTSET, DI))) Return (error);
+			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, DI))) Return (error);
 		}
 		if (Ctrl->PA.active) {
 			if ((PA = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Z->header->wesn, Z->header->inc, Z->header->registration, PA))) Return (error);
-			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, PA))) Return (error);
+			if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Z->header->wesn, Z->header->inc, Z->header->registration, GMTAPI_NOTSET, PA))) Return (error);
+			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, PA))) Return (error);
 		}
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Compute DI and/or PA grids\n");
 

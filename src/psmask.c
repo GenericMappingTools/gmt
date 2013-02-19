@@ -584,7 +584,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		GMT_set_pad (GMT, 1U);		/* Change default pad to 1 only */
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
 		
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);

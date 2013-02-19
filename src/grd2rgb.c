@@ -498,8 +498,8 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 		}
 
 		/* Allocate space */
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, Grid->header->registration, Grid))) Return (error);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, Grid->header->registration, GMTAPI_NOTSET, Grid))) Return (error);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
 		
 		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 

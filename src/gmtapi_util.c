@@ -3785,17 +3785,19 @@ int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 }
 #endif
 
-int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, double *range, double *inc, int registration, void *container)
+int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, double *range, double *inc, unsigned int registration, int pad, void *container)
 {
 	/* Convert user domain range, increments, and registration into dimensional header settings for the container.
 	 * For grids and images we fill out the GMT_GRID_HEADER; for vectors and matrix we fill out their parameters.
 	 * After this step you may call GMT_Alloc_Data to actually get data space for these resources.
 	 * For complex grids pass registration + GMT_GRID_IS_COMPLEX_REAL,
+	 * pad sets the padding for grids and images, ignored for matrix and vector. Give -1 (GMTAPI_NOTSET) to accept GMT default padding.
 	 */
 	int error = GMT_OK;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+	if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 	
 	switch (family) {	/* grid, image, or matrix */
 		case GMT_IS_GRID:	/* GMT grid */
@@ -3805,9 +3807,11 @@ int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, dou
 			error = GMTAPI_init_image (API, opt, range, inc, registration, container);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector */
+			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			error = GMTAPI_init_vector (API, range, inc, registration, container);
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix */
+			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			error = GMTAPI_init_matrix (API, range, inc, registration, container);
 			break;
 		default:
@@ -3819,40 +3823,33 @@ int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, dou
 }
 
 #ifdef FORTRAN_API
-int GMT_Init_Data_ (unsigned int *family, struct GMT_OPTION *opt, double *range, double *inc, int *registration, void *container)
+int GMT_Init_Data_ (unsigned int *family, struct GMT_OPTION *opt, double *range, double *inc, unsigned int *registration, int *pad, void *container)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Init_Data (GMT_FORTRAN, *family, opt, range, inc, *registration,container));
+	return (GMT_Init_Data (GMT_FORTRAN, *family, opt, range, inc, *registration, *pad, container));
 }
 #endif
 
-int GMT_Alloc_Data (void *V_API, unsigned int family, int pad, void *container)
+int GMT_Alloc_Data (void *V_API, unsigned int family, void *container)
 {
 	/* Allocate data for GMT_GRID, GMT_IMAGE, GMT_VECTOR, or GMT_MATRIX
 	 * based on information provided via their container header.
-	 * pad sets the padding for grids and images, ignored for matrix and vector.
-	 * if pad == GMTAPI_NOTSET (-1) we leave current padding alone.
 	 */
 	int error = GMT_OK;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (pad < GMTAPI_NOTSET) return_error (API, GMT_PADDING_IS_NEGATIVE);
 	
 	switch (family) {	/* grid, image, or matrix */
 		case GMT_IS_GRID:	/* GMT grid */
-			if (pad != GMTAPI_NOTSET) GMT_set_pad (API->GMT, pad);	/* Change default padding for the grid */
 			error = gmt_alloc_grid (API->GMT, container);
 			break;
 		case GMT_IS_IMAGE:	/* GMT image */
-			if (pad != GMTAPI_NOTSET) GMT_set_pad (API->GMT, pad);	/* Change default padding for the grid */
 			error = gmt_alloc_image (API->GMT, container);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector */
-			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in allocation of memory for %s\n", pad, GMT_family[family]);
 			error = gmt_alloc_vectors (API->GMT, container);
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix */
-			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in allocation of memory for %s\n", pad, GMT_family[family]);
 			error = gmt_alloc_matrix (API->GMT, container);
 			break;
 		default:
@@ -3864,9 +3861,9 @@ int GMT_Alloc_Data (void *V_API, unsigned int family, int pad, void *container)
 }
 
 #ifdef FORTRAN_API
-int GMT_Alloc_Data_ (unsigned int *family, int *pad, void *container)
+int GMT_Alloc_Data_ (unsigned int *family, void *container)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Alloc_Data (GMT_FORTRAN, *family, *pad, container));
+	return (GMT_Alloc_Data (GMT_FORTRAN, *family, container));
 }
 #endif
 

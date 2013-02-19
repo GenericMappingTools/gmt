@@ -711,12 +711,12 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	for (k = 0; k < 4; k++) GMT->current.io.pad[k] = 0;		/* No pad is what we need for this application */
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	if (GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, wesn, inc, G->header->registration | GMT_GRID_IS_COMPLEX_REAL, Grid)) return;
+	if (GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, wesn, inc, G->header->registration | GMT_GRID_IS_COMPLEX_REAL, GMTAPI_NOTSET, Grid)) return;
 	strcpy (Grid->header->x_units, "m^(-1)");	strcpy (Grid->header->y_units, "m^(-1)");
 	strcpy (Grid->header->z_units, G->header->z_units);
 	strcpy (Grid->header->remark, "Applied fftshift: kx = 0 at (nx/2 + 1) and ky = 0 at ny/2");
 
-	if (GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, GMTAPI_NOTSET, Grid)) return;
+	if (GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, Grid)) return;
 	for (row = 0; row < ny_2; row++) {	/* Swap values from 1/3 and 2/4 quadrants */
 		for (col = 0; col < nx_2; col++) {
 			i_ij = 2*GMT_IJ0 (Grid->header, row, col);

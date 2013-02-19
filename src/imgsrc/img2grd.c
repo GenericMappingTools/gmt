@@ -500,8 +500,8 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		left = wesn[XLO];
 		bottom = wesn[YLO];
 	}
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, true, Merc))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Merc))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, GMT_PIXEL_REG, GMTAPI_NOTSET, Merc))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Merc))) Return (error);
 
 	if (Ctrl->M.active) {
 		sprintf (Merc->header->x_units, "Spherical Mercator projected Longitude, -Jm1, length from %.12g", left);
