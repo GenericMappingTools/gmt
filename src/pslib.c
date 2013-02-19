@@ -322,7 +322,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
 	 */
 	int i;
-	char *this = NULL, path[PATH_MAX+1];
+	char *this = NULL;
 
 	/* Initialize the PSL structure to default values unless already set */
 
