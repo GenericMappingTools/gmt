@@ -104,7 +104,7 @@
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
-#include "gmt_config.h" /* must be first */
+//#include "gmt_config.h" /* must be first */
 
 #include <float.h>
 #include <limits.h>
@@ -116,8 +116,14 @@
 #include <stdarg.h>
 #include "gmt_notposix.h"
 #include "common_string.h"
-#include "common_runpath.h"
 #include "pslib.h"
+
+#if ! defined PATH_MAX && defined _MAX_PATH
+#	define PATH_MAX _MAX_PATH
+#endif
+#ifndef PATH_MAX
+#	define PATH_MAX 1024
+#endif
 
 /* Macro for exit since this should be returned when called from Matlab */
 #ifdef DO_NOT_EXIT
@@ -304,7 +310,7 @@ struct PSL_CTRL *New_PSL_Ctrl (char *session)
 	return (PSL);
 }
 
-int PSL_beginsession (struct PSL_CTRL *PSL)
+int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir, char *userdir)
 {	/* Allocate a new common control structure and initialize PSL session
 	 * err:		Stream pointer to send error messages to (usually stderr = NULL).
 	 * unit:	The unit used for lengths (0 = cm, 1 = inch, 2 = m, 3 = points).
@@ -312,6 +318,8 @@ int PSL_beginsession (struct PSL_CTRL *PSL)
 	 * comments:	Whether PS comments should be written (1) or not (0).
 	 * compression:	Compression level (0 = none, 1 = RLE, 2 = LZW)
 	 * encoding:	The character encoding used
+	 * If sharedir, userdir are NULL and search == 1 then we look for environmental parameters
+	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
 	 */
 	int i;
 	char *this = NULL, path[PATH_MAX+1];
@@ -329,60 +337,28 @@ int PSL_beginsession (struct PSL_CTRL *PSL)
 	if (PSL->init.page_rgb[0] < 0.0) for (i = 0; i < 3; i++) PSL->init.page_rgb[i] = 1.0;		/* Default paper color */
 
 	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories)
-	 * but only if not already initialized */
-	if ( PSL->internal.SHAREDIR == NULL ) {
-		if ((this = getenv ("PSL_SHAREDIR")) != NULL)
-			/* PSL_SHAREDIR was set */
-			PSL->internal.SHAREDIR = strdup (this);
-		else {
-			/* Default is GMT_SHARE_PATH */
-			PSL->internal.SHAREDIR = strdup (GMT_SHARE_PATH);
+	 * but only if not passed via argument list */
+	if ((this = sharedir) == NULL) {
+	 	if (search && (this = getenv ("PSL_SHAREDIR")) == NULL) {
+			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not locate PSL_SHAREDIR.\n");
+			PSL_exit (EXIT_FAILURE);
 		}
-
-		/* test if PSL->internal.SHAREDIR exists */
-		if ( access (PSL->internal.SHAREDIR, R_OK|X_OK) ) {
-			/* PSL->internal.SHAREDIR is not accessible */
-			/* Make a smart guess based on runtime library location */
-			if ( GMT_guess_sharedir (path, NULL) ) {
-				free (PSL->internal.SHAREDIR);
-				PSL->internal.SHAREDIR = strdup (path);
-			}
-			else {
-				/* Still not found */
-				free (PSL->internal.SHAREDIR);
-				PSL->internal.SHAREDIR = NULL;
-				PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not locate PSL_SHAREDIR.\n");
-			}
-		}
-		else
-			DOS_path_fix (PSL->internal.SHAREDIR);
 	}
-
+	PSL->internal.SHAREDIR = strdup (this);
+	DOS_path_fix (PSL->internal.SHAREDIR);
+	if (access (PSL->internal.SHAREDIR, R_OK)) {
+		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
+		PSL_exit (EXIT_FAILURE);
+	}
+	
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
-	if ( PSL->internal.USERDIR == NULL ) {
-		if ((this = getenv ("PSL_USERDIR")) != NULL)
-			/* PSL_USERDIR was set */
-			PSL->internal.USERDIR = strdup (this);
-		else if ((this = getenv ("HOME")) != NULL) {
-			/* HOME was set: try $HOME/.gmt */
-			sprintf (path, "%s/%s", this, ".gmt");
-			PSL->internal.USERDIR = strdup (path);
-		}
-#ifdef WIN32
-		else if ((this = getenv ("HOMEPATH")) != NULL) {
-			/* HOMEPATH was set */
-			sprintf (path, "%s/%s", this, ".gmt");
-			PSL->internal.USERDIR = strdup (path);
-		}
-#endif
-		else
-			PSL_message (PSL, PSL_MSG_FATAL, "Could not determine home directory!\n");
-
+	if ((this = userdir) == NULL && search) this = getenv ("PSL_USERDIR");
+	if (this) {	/* Did find a user dir */
+		PSL->internal.USERDIR = strdup (this);
 		DOS_path_fix (PSL->internal.USERDIR);
-
-		/* If we cannot read it we might as well not try */
-		if (PSL->internal.USERDIR && access (PSL->internal.USERDIR, R_OK)) {
+		if (access (PSL->internal.USERDIR, R_OK)) {
+			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);
 			free (PSL->internal.USERDIR);
 			PSL->internal.USERDIR = NULL;
 		}
@@ -846,7 +822,7 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline)
 int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[])
 {
 	/* Set up pattern fill, either by using image number or imagefile name
-	 * image_no:	Number of the standard GMT fill pattern (use negative when file name used instead)
+	 * image_no:	Number of the standard PSL fill pattern (use negative when file name used instead)
 	 * imagefile:	Name of image file
 	 * image_dpi:	Resolution of image on the page
 	 * f_rgb:	Foreground color used for set bits (1) (1-bit only)
@@ -1144,7 +1120,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%HiResBoundingBox: 0 0 %g %g\n", PSL->internal.p_width, PSL->internal.p_height);
 		if (title) {
 			PSL_command (PSL, "%%%%Title: %s\n", title);
-			PSL_command (PSL, "%%%%Creator: GMT\n");
+			PSL_command (PSL, "%%%%Creator: %s\n", PSL->init.session);
 		}
 		else {
 			PSL_command (PSL, "%%%%Title: PSL v%s document\n", PSL_Version);
@@ -3169,7 +3145,7 @@ char *psl_prepare_text (struct PSL_CTRL *PSL, char *text)
 	};
 	char *string = NULL;
 	int i=0, j=0, font;
-	int he = 0;		/* GMT Historical Encoding (if any) */
+	int he = 0;		/* PSL Historical Encoding (if any) */
 
 	if (!text) return NULL;
 
@@ -4172,7 +4148,7 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *fname)
 static void psl_init_fonts (struct PSL_CTRL *PSL)
 {
 	FILE *in = NULL;
-	int n_GMT_fonts;
+	int n_PSL_fonts;
 	unsigned int i = 0;
 	size_t n_alloc = 64;
 	char buf[PSL_BUFSIZ];
@@ -4206,7 +4182,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 		}
 	}
 	fclose (in);
-	PSL->internal.N_FONTS = n_GMT_fonts = i;
+	PSL->internal.N_FONTS = n_PSL_fonts = i;
 
 	/* Then any custom fonts */
 
@@ -4224,7 +4200,7 @@ static void psl_init_fonts (struct PSL_CTRL *PSL)
 			if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r') continue;
 			PSL->internal.font[i].name = PSL_memory (PSL, NULL, strlen (buf), char);
 			if (sscanf (buf, "%s %lf %d", PSL->internal.font[i].name, &PSL->internal.font[i].height, &PSL->internal.font[i].encoded) != 3) {
-				PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_GMT_fonts);
+				PSL_message (PSL, PSL_MSG_FATAL, "Fatal Error: Trouble decoding custom font info for font %d\n", i - n_PSL_fonts);
 				PSL_exit (EXIT_FAILURE);
 			}
 			i++;
