@@ -33,6 +33,9 @@ foreach (prog ${SUPPL_PROGSPS})
 	add_executable (${prog} ${GMT_PROGRAM})
 	set_target_properties (${prog}
 		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${prog}")
+	if (WIN32)
+		set_target_properties(${prog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
+	endif ()
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
