@@ -298,7 +298,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
 	GMT_BC_init (GMT, Grid->header);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
@@ -467,7 +467,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 #endif
 	/* Compute weighted averages based on the nearest neighbors */
 
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
 
 	n_set = n_almost = n_none = 0;
 

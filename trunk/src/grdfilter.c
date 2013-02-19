@@ -287,8 +287,8 @@ int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struc
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
 	
 	/* Base the area weight grid on the input grid domain and increments. */
-	if ((error = GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, G->header->wesn, G->header->inc, G->header->registration, A))) return (error);
-	if ((error = GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, GMTAPI_NOTSET, A))) return (error);
+	if ((error = GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, G->header->wesn, G->header->inc, G->header->registration, GMTAPI_NOTSET, A))) return (error);
+	if ((error = GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, A))) return (error);
 	
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
@@ -647,7 +647,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	/* Completely determine the header for the new grid; croak if there are issues.  No grid memory is allocated here. */
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Gout->header->wesn, Gout->header->inc, !one_or_zero, Gout))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Gout->header->wesn, Gout->header->inc, !one_or_zero, GMTAPI_NOTSET, Gout))) Return (error);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if output grid spacing is a multiple of input grid spacing */
@@ -671,7 +671,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 	
 	/* Allocate space for grid */
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Gout))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Gout))) Return (error);
 	col_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
 	if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
 

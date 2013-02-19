@@ -302,7 +302,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	/* Set up output grid */
 	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate output grid\n");
 	surfd = GMT_memory (GMT, NULL, Grid->header->nm, double);
@@ -317,7 +317,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	/* Convert the doubles to float and unto the Fortran transpose order */
 	
 	sf = (w_max - w_min);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
 	GMT_grd_loop (GMT, Grid, row, col, ij) {
 		ij_f = (uint64_t)col * (uint64_t)Grid->header->ny + (uint64_t)row;	/* Fortran index */
 		Grid->data[ij] = (float)surfd[ij_f];	/* ij is GMT C index */

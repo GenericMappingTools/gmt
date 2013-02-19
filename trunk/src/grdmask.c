@@ -271,8 +271,8 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
 	
 	for (k = 0; k < 3; k++) mask_val[k] = (float)Ctrl->N.mask[k];	/* Copy over the mask values for perimeter polygons */
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */

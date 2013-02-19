@@ -1842,30 +1842,9 @@ void gmt_init_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, str
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
 	//if ((status = GMT_grd_RI_verify (C, header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
-	GMT_grd_setpad (C, header, C->current.io.pad);	/* Assign default pad */
+	GMT_grd_setpad (C, header, C->current.io.pad);	/* Assign default GMT pad */
 	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
 }
-
-#if 0
-int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *Grid, double wesn[], double inc[], unsigned int registration)
-{	/* Does the dirty work of initializing the Grid header and make sure all is correct:
- 	 * Make sure -R -I is compatible.
-	 * Set all the dimension parameters and pad info. Programs that need to set up a grid from
-	 * scratch should use this function to simplify the procedure. */
-	int status;
-
-	GMT_memcpy (Grid->header->wesn, wesn, 4, double);
-	GMT_memcpy (Grid->header->inc, inc, 2, double);
-	Grid->header->registration = registration;
-	Grid->header->grdtype = gmt_get_grdtype (C, Grid->header);
-
-	GMT_RI_prepare (C, Grid->header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
-	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
-	GMT_grd_setpad (C, Grid->header, C->current.io.pad);	/* Assign default pad */
-	GMT_set_grddim (C, Grid->header);	/* Set all dimensions before returning */
-	return (GMT_NOERROR);
-}
-#endif
 
 int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid)
 {	/* Use information in Grid header to allocate the grid data.

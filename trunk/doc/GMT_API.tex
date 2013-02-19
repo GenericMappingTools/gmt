@@ -680,7 +680,7 @@ to be allocated, and (2) actually allocate said memory.  The first step is handl
 \begin{verbatim}
 void * GMT_Init_Data (void *API, unsigned int family, \
     struct GMT_OPTIONS *opt, double *range, double *inc, \
-    int registration, void *ptr);
+    unsigned int registration, int pad, void *ptr);
 \end{verbatim}
 Pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR or GMT\_IS\_MATRIX.
 If you wish to place your command line into the header of a grid you may pass the pointer to the list
@@ -689,6 +689,9 @@ value for each dimensions, up to 3 pairs (e.g., xmin xmax ymin ymax zmin zmax). 
 \texttt{inc} to give 1, 2, or 3 increments (i.e., xinc, yinc, zinc).  The
 \texttt{registration} parameter indicates gridline-registration or pixel registration of nodes.
 To initialize a grid with complex data, add \texttt{GMT\_GRID\_IS\_COMPLEX\_REAL} to the registration.
+The \texttt{pad} is only used for GMT\_IS\_GRID and GMT\_IS\_IMAGE and sets the number of
+rows and columns used to pad the grid or image.  The \GMT\ default is 2; to accept the default,
+pass GMTAPI\_NOTSET (-1), else we change the pad to match your argument.
 Finally, \texttt{ptr} is the pointer to your resource as allocated by \texttt{GMT\_Create\_Data}.
 Note: GMT\_IS\_VECTOR may not necessarily conform to the concept of a min and max coordinate to go
 along with the data stored in the vector(s).  If so, pass NULL for \texttt{range} and \texttt{inc}
@@ -699,12 +702,10 @@ If you wish to allocate memory for the arrays whose dimensions you just specifie
 \index{GMT\_Alloc\_Data}
 
 \begin{verbatim}
-void * GMT_Alloc_Data (void *API, unsigned int family, int pad, void *ptr);
+void * GMT_Alloc_Data (void *API, unsigned int family, void *ptr);
 \end{verbatim}
 Again, pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR or GMT\_IS\_MATRIX.
-The \texttt{pad} is only used for GMT\_IS\_GRID and GMT\_IS\_IMAGE and sets the number of
-rows and columns used to pad the grid or image.  The \GMT\ default is 2; to accept the default,
-pass GMTAPI\_NOTSET (-1);  As before, \texttt{ptr} is the pointer to your resource allocated earlier.
+As before, \texttt{ptr} is the pointer to your resource allocated earlier.
 
 \section{Import Data}
 \index{Import!Data}
@@ -1586,8 +1587,9 @@ function GMT_Init_IO (family, geometry, direction, n_args, args)
 function GMT_Begin_IO (family, geometry, direction)
 function GMT_Status_IO (mode)
 function GMT_Create_Data (family, geometry, ipar)
-function GMT_Init_Data (family, options, range, inc, registration, data)
-function GMT_Alloc_Data (family, pad, data)
+function GMT_Init_Data (family, options, range, inc, registration, \
+    pad data)
+function GMT_Alloc_Data (family, data)
 function GMT_Read_Data (family, method, geometry, mode, wesn, \
     input, data)
 function GMT_Get_Data (ID, mode, data)

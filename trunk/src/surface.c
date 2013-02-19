@@ -1849,7 +1849,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	}
 	
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, Ctrl->I.inc, false, C.Grid))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, Ctrl->I.inc, GMT_GRIDLINE_REG, GMTAPI_NOTSET, C.Grid))) Return (error);
 	
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
@@ -1902,7 +1902,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, C.Grid))) Return (error);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, C.Grid))) Return (error);
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
@@ -1928,8 +1928,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	C.briggs = GMT_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.iu = GMT_memory (GMT, NULL, C.mxmy, char);
-	//C.Grid->data = GMT_memory_aligned (GMT, NULL, C.mxmy, float);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, C.Grid))) Return (error);
+	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, C.Grid))) Return (error);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 

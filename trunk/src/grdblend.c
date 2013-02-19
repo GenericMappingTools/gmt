@@ -658,8 +658,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	if (GMT_File_Is_Memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
 		/* Create the empty grid and allocate space */
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, S.header.registration, Grid))) Return (error);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, S.header.registration, GMTAPI_NOTSET, Grid))) Return (error);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
 	}
 	else {
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */

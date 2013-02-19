@@ -277,7 +277,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 
 	GMT_set_pad (GMT, 0);	/* We are using grid indexing but have no actual grid so no padding is needed */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
+	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, -1, Grid))) Return (error);
 
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
 	if (Ctrl->C.active && go_quickly == 1) {

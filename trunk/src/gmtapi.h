@@ -90,8 +90,8 @@ EXTERN_MSC int GMT_Write_Data		(void *C, unsigned int family, unsigned int metho
 EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
 EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
-EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, int pad, void *data);
-EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, int registration, void *container);
+EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, unsigned int registration, int pad, void *data);
+EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, void *data);
 
 /* 2 convenience functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids, images */
 

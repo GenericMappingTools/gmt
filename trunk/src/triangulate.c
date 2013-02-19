@@ -266,7 +266,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	
 	if (Ctrl->G.active) {
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, Grid))) Return (error);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
 	}
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;
@@ -379,7 +379,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 
 	if (Ctrl->G.active) {	/* Grid via planar triangle segments */
 		int nx = Grid->header->nx, ny = Grid->header->ny;	/* Signed versions */
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, GMTAPI_NOTSET, Grid))) Return (error);
+		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
 		if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 		for (p = 0; p < Grid->header->size; p++) Grid->data[p] = (float)Ctrl->E.value;	/* initialize grid */
 
