@@ -762,6 +762,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdcontour main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if (Ctrl->D.active && Ctrl->D.file[0] == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Contours will be written to standard output\n");
 
 	GMT->current.map.z_periodic = Ctrl->Z.periodic;	/* Phase data */

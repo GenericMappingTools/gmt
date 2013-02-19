@@ -601,6 +601,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grids\n");
+
 	/* Formats other than netcdf (both v3 and new) and native binary must be reformatted at the end */
 	reformat = found_unsupported_format (GMT, &S.header, Ctrl->G.file);
 	type = GMT->session.grdformat[S.header.type][0];

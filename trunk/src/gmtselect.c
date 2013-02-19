@@ -448,6 +448,8 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+
 	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
 
 	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
@@ -651,7 +653,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		/* Data record to process */
 
 		n_read++;
-		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Read %ld records, passed %ld records\r", n_read, n_pass);
+		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Read %ld records, passed %ld records\r", n_read, n_pass);
 
 		if (n_fields < n_minimum) {	/* Bad number of columns */
 			if (Ctrl->Z.active)

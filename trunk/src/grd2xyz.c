@@ -234,6 +234,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
+	
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if (GMT->common.b.active[GMT_OUT]) {

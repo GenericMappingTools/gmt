@@ -2541,7 +2541,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_
 		}
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		sprintf (buffer, "-C%s -T%g/%g/16+ -Z ->%s", master, zmin, zmax, out_string);	/* Build actual makecpt command */
-		GMT_report (C, GMT_MSG_VERBOSE, "No CPT given, providing default CPT via makecpt -C%s -T%g/%g/16+ -Z\n", master, zmin, zmax);
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "No CPT given, providing default CPT via makecpt -C%s -T%g/%g/16+ -Z\n", master, zmin, zmax);
 		if (GMT_makecpt (C->parent, 0, buffer) != GMT_OK) {	/* Build a CPT via makecpt */
 			return (NULL);
 		}
@@ -6208,6 +6208,7 @@ int GMT_voronoi (struct GMT_CTRL *C, double *x_in, double *y_in, uint64_t n, dou
 int GMT_BC_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {	/* Initialize grid boundary conditions based on grid header and -n settings */
 	int i = 0, type;
+	bool same;
 	char *kind[5] = {"not set", "natural", "periodic", "geographic", "extended data"};
 	
 	if (h->no_BC) return (GMT_NOERROR);	/* Told not to deal with BC stuff */
@@ -6277,11 +6278,25 @@ int GMT_BC_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 		if (h->nxp != 0) h->nxp = (h->registration == GMT_PIXEL_REG) ? h->nx : h->nx - 1;
 		if (h->nyp != 0) h->nyp = (h->registration == GMT_PIXEL_REG) ? h->ny : h->ny - 1;
 	}
-	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left   edge: %s\n", kind[h->BC[0]]);
-	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for right  edge: %s\n", kind[h->BC[1]]);
-	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom edge: %s\n", kind[h->BC[2]]);
-	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for top    edge: %s\n", kind[h->BC[3]]);
-
+	
+	for (i = 1, same = true; same && i < 4; i++) if (h->BC[i] == h->BC[i-1]) same = false;
+	
+	if (same)
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for all edges: %s\n", kind[h->BC[XLO]]);
+	else {
+		if (h->BC[XLO] == h->BC[XHI])
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left and right edges: %s\n", kind[h->BC[XLO]]);
+		else {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for left   edge: %s\n", kind[h->BC[XLO]]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for right  edge: %s\n", kind[h->BC[XHI]]);
+		}
+		if (h->BC[YLO] == h->BC[YHI])
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom and top edges: %s\n", kind[h->BC[YLO]]);
+		else {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for bottom edge: %s\n", kind[h->BC[YLO]]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for top    edge: %s\n", kind[h->BC[YHI]]);
+		}
+	}
 	/* Set this grid's interpolation parameters */
 
 	h->bcr_interpolant = C->common.n.interpolant;
@@ -6317,7 +6332,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	uint64_t jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
 	uint64_t jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	uint64_t j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
-	unsigned int n_skip;
+	unsigned int n_skip, n_set;
 	unsigned int bok;		/* bok used to test that things are OK  */
 	bool set[4] = {true, true, true, true};
 	 
@@ -6405,7 +6420,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[jn + i] != G->data[jn + iw]) bok++;
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at North pole.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_LONG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at North pole.\n", bok, G->header->nx);
 		}
 
 		if (G->header->gs) {	/* South pole case */
@@ -6416,7 +6431,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[js + i] != G->data[js + iw]) bok++;
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at South pole.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_LONG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at South pole.\n", bok, G->header->nx);
 		}
 	}
 
@@ -6438,7 +6453,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_LONG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
 
 			/* periodic Y rows copied.  Now do X naturals.
 				This is easy since y's are done; no corner problems.
@@ -6481,11 +6496,15 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
-			if (set[YLO]) {
+			if (set[YLO] && set[YHI]) {
+				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edges: %s\n", kind[G->header->BC[YLO]]);
+			}
+			else if (set[YLO]) {
 				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
 			}
-			if (set[YHI]) {
+			else if (set[YHI]) {
 				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
 			}
@@ -6540,8 +6559,14 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
-			for (i = 0; i < 4; i++) if (set[i]) {
+			for (i = n_set = 0; i < 4; i++) if (set[i]) {
+				n_set++;
 				G->header->BC[i] = GMT_BC_IS_NATURAL;
+			}
+			if (n_set == 4) {
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for all edges: %s\n", kind[G->header->BC[XLO]]);
+			}
+			for (i = 0; i < 4; i++) if (set[i]) {
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
 			}
 			return (GMT_NOERROR);
@@ -6563,7 +6588,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 			}
 		}
-		if (bok > 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->ny);
+		if (bok > 0) GMT_report (C, GMT_MSG_LONG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->ny);
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
@@ -6578,14 +6603,18 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_report (C, GMT_MSG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
+			if (bok > 0) GMT_report (C, GMT_MSG_LONG_VERBOSE, "Warning: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->nx);
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
-			if (set[YLO]) {
+			if (set[YLO] && set[YHI]) {
+				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edges: %s\n", kind[G->header->BC[YLO]]);
+			}
+			else if (set[YLO]) {
 				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
 			}
-			if (set[YHI]) {
+			else if (set[YHI]) {
 				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
 			}
@@ -6725,7 +6754,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 	uint64_t jn, jno1, jno2, jni1, js, jso1, jso2, jsi1;  /* see below  */
 	uint64_t jno1k, jno2k, jso1k, jso2k, iwo1k, iwo2k, ieo1k, ieo2k;
 	uint64_t j1p, j2p;	/* j_o1 and j_o2 pole constraint rows  */
-	unsigned int n_skip;
+	unsigned int n_skip, n_set;
 	unsigned int b, nb = G->header->n_bands;
 	unsigned int bok;		/* bok used to test that things are OK  */
 	bool set[4] = {true, true, true, true};
@@ -6879,11 +6908,15 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
-			if (set[YLO]) {
+			if (set[YLO] && set[YHI]) {
+				G->header->BC[YLO] = G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[G->header->BC[YLO]]);
+			}
+			else if (set[YLO]) {
 				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
 			}
-			if (set[YHI]) {
+			else if (set[YHI]) {
 				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
 			}
@@ -6948,9 +6981,16 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
 
-			for (i = 0; i < 4; i++) if (set[i]) {
+			for (i = n_set = 0; i < 4; i++) if (set[i]) {
 				G->header->BC[i] = GMT_BC_IS_NATURAL;
-				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
+				n_set++;
+			}
+			if (n_set == 4)
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for all edges: %s\n", kind[G->header->BC[XLO]]);
+			else {
+				for (i = 0; i < 4; i++) if (set[i]) {
+					GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[i], kind[G->header->BC[i]]);
+				}
 			}
 			return (GMT_NOERROR);
 		}
@@ -6988,11 +7028,15 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			}
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
-			if (set[YLO]) {
+			if (set[YLO] && set[YHI]) {
+				G->header->BC[YLO] = G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[G->header->BC[YLO]]);
+			}
+			else if (set[YLO]) {
 				G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[G->header->BC[YLO]]);
 			}
-			if (set[YHI]) {
+			else if (set[YHI]) {
 				G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[G->header->BC[YHI]]);
 			}
@@ -9701,7 +9745,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 			ndig = lrint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
 
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
 
 			/* Resample control point track along great circle paths using specified sampling interval */
 
@@ -9709,7 +9753,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 				/* Compute segment line orientation (-90/90) from azimuths */
 				orientation = 0.5 * fmod (2.0 * Tin->segment[seg]->coord[SEG_AZIM][row], 360.0);
 				if (orientation > 90.0) orientation -= 180.0;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Working on cross profile %ld [local line orientation = %06.1f]\n", row, orientation);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Working on cross profile %ld [local line orientation = %06.1f]\n", row, orientation);
 
 				x = Tin->segment[seg]->coord[GMT_X][row];	y = Tin->segment[seg]->coord[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				GMT_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
@@ -9838,13 +9882,13 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 
 			ndig = lrint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
 
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
+			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
 
 			for (row = 0; row < Tin->segment[seg]->n_rows; row++) {	/* Process each point along segment */
 				/* Compute segment line orientation (-90/90) from azimuths */
 				orientation = 0.5 * fmod (2.0 * Tin->segment[seg]->coord[SEG_AZIM][row], 360.0);
 				if (orientation > 90.0) orientation -= 180.0;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Working on cross profile %ld [local line orientation = %06.1f]\n", row, orientation);
+				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Working on cross profile %ld [local line orientation = %06.1f]\n", row, orientation);
 
 				x = Tin->segment[seg]->coord[GMT_X][row];	y = Tin->segment[seg]->coord[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				az_cross = fmod (Tin->segment[seg]->coord[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
@@ -9952,7 +9996,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *C, struct GMT_DATASEGM
 	}
 	Sx->n_rows = row;	/* Number of points in extended feature with explicit crossings */
 	if (n_split == 0) {	/* No crossings, should not have been called in the first place */
-		GMT_report (C, GMT_MSG_VERBOSE, "no straddling detected (bug?)\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "No straddling detected (bug?)\n");
 		GMT_free_segment (C, Sx);
 		GMT_free (C, pos);
 		return 0;
@@ -10012,7 +10056,7 @@ int GMT_detrend (struct GMT_CTRL *C, double *x, double *y, uint64_t n, double in
 			*slope = (m*sum_xy - sum_x*sum_y) / (m*sum_xx - sum_x*sum_x);
 		}
 		else {
-			GMT_report (C, GMT_MSG_VERBOSE, "called with less than 2 points, return NaNs\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "called with less than 2 points, return NaNs\n");
 			*intercept = (m) ? sum_y : C->session.d_NaN;	/* Value of single y-point or NaN */
 			*slope = C->session.d_NaN;
 		}
@@ -10020,11 +10064,11 @@ int GMT_detrend (struct GMT_CTRL *C, double *x, double *y, uint64_t n, double in
 
 	if (mode) {	/* Either remove or restore trend from/to the data */
 		if (GMT_is_dnan (*slope)) {
-			GMT_report (C, GMT_MSG_VERBOSE, "called with slope = NaN - skipped\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "called with slope = NaN - skipped\n");
 			return (-1);
 		}
 		if (GMT_is_dnan (*intercept)) {
-			GMT_report (C, GMT_MSG_VERBOSE, "called with intercept = NaN - skipped\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "called with intercept = NaN - skipped\n");
 			return (-1);
 		}
 		for (i = 0; i < n; i++) {

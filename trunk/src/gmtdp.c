@@ -305,7 +305,7 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the gmtdp main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input data\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->T.mode > 1) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */

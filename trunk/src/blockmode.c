@@ -251,7 +251,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the blockmode main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input data\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->C.active && Ctrl->Q.active) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");

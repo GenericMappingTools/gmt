@@ -819,6 +819,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);

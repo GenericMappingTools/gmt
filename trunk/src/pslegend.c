@@ -351,6 +351,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pslegend main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input text table data\n");
 #ifdef GMT_COMPAT
 	/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segmentheaders by *
 	 * temporarily setting # as segment header flag since all headers are skipped anyway */

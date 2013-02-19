@@ -250,6 +250,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		if (!Ctrl->T.active) {

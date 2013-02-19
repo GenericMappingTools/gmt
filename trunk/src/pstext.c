@@ -567,6 +567,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input text table data\n");
 	load_parameters_pstext (&T, Ctrl);	/* Pass info from Ctrl to T */
 
 #if 0

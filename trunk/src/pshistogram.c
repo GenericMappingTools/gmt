@@ -494,6 +494,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (&F, 1, struct PSHISTOGRAM_INFO);
 	F.hist_type = PSHISTOGRAM_COUNTS;
 	F.hist_type = Ctrl->Z.mode;

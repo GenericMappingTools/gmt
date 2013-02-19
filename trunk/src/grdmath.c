@@ -3334,6 +3334,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on grids\n");
 	GMT_memset (&info, 1, struct GRDMATH_INFO);		/* Initialize here to not crash when Return gets called */
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);

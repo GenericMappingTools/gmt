@@ -808,7 +808,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Read Input tables\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}

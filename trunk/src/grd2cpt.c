@@ -343,6 +343,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
+
 	if (Ctrl->C.active) {
 		if ((l = strstr (Ctrl->C.file, ".cpt"))) *l = 0;	/* Strip off .cpt if used */
 	}
@@ -524,7 +526,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 
 	/* Get here when we are ready to go.  cdf_cpt[].z contains the sample points.  */
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+	if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) sprintf (format, "z = %s and CDF(z) = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 	for (j = 0; j < Ctrl->E.levels; j++) {
 		if (cdf_cpt[j].z <= G[0]->header->z_min)
 			cdf_cpt[j].f = 0.0;
@@ -539,7 +541,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 			}
 			cdf_cpt[j].f = (double)(nfound-1)/(double)(ngood-1);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, cdf_cpt[j].z, cdf_cpt[j].f);
+		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, format, cdf_cpt[j].z, cdf_cpt[j].f);
 	}
 
 	/* Now the cdf function has been found.  We now resample the chosen cptfile  */

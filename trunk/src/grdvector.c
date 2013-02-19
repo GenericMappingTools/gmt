@@ -326,6 +326,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the grdvector main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grids\n");
 	d_col = d_row = 1;
 	col_0 = row_0 = 0;
 

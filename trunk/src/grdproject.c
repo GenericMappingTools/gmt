@@ -241,6 +241,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if ((Ctrl->D.active + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);

@@ -95,10 +95,9 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		int mode;	/* -1 or +1 */
 	} S;
-	struct T {	/* -T[<tmin/tmax/t_inc>] | -T<file> */
+	struct T {	/* -T[<tmin/tmax/t_inc>[+]] | -T<file> */
 		bool active;
 		bool notime;
-		unsigned int mode;	/* = 1 if t_inc really is number of desired nodes */
 		double min, max, inc;
 		char *file;
 	} T;
@@ -353,7 +352,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtmath [-A<ftable>] [-C<cols>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q]\n");
-	GMT_message (GMT, "\t[-S[f|l]] [-T[<tmin>/<tmax>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
+	GMT_message (GMT, "\t[-S[f|l]] [-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -486,7 +485,9 @@ int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct 
 						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Unable to decode arguments for -T\n");
 						n_errors++;
 					}
-					if (opt->arg[strlen(opt->arg)-1] == '+') Ctrl->T.mode = 1;
+					if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
+						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
+					}
 				}
 				break;
 
@@ -3387,9 +3388,6 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	}
 
 	if (set_equidistant_t && !Ctrl->Q.active) {
-		if (Ctrl->T.mode == 1) {	/* Got n instead of t_inc, use it to reset t_inc */
-			Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
-		}
 		/* Make sure the min/man/inc values harmonize */
 		switch (GMT_minmaxinc_verify (GMT, Ctrl->T.min, Ctrl->T.max, Ctrl->T.inc, GMT_SMALL)) {
 			case 1:

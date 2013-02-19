@@ -510,6 +510,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrend main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
 	weighted = (Ctrl->N.robust || Ctrl->W.active);
 	trivial = (Ctrl->N.value < 5 && !weighted);
 

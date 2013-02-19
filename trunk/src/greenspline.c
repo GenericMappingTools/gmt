@@ -1117,6 +1117,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	GMT_memset (par,   7, double);
 	GMT_memset (norm,  7, double);

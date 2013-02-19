@@ -236,7 +236,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Editing parameters for file %s\n", Ctrl->In.file);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Editing parameters for grid %s\n", Ctrl->In.file);
 
 	/* Decode grd information given, if any */
 

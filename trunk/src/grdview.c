@@ -657,7 +657,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	/* Read data */
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing shape file\n");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing shape grid\n");
 
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
 		Return (API->error);
@@ -666,7 +666,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	if (Ctrl->G.active) {	/* Draping wanted */
 		for (k = 0; k < n_drape; k++) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing drape file %s\n", Ctrl->G.file[k]);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing drape grid %s\n", Ctrl->G.file[k]);
 
 			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->G.file[k], Drape[k]) == NULL) {	/* Get drape data */
 				Return (API->error);
@@ -780,13 +780,13 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Illumination wanted */
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing illumination file\n");
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing illumination grid\n");
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens) == NULL) {	/* Get intensity grid */
 			Return (API->error);
 		}
 		if (Intens->header->nx != Topo->header->nx || Intens->header->ny != Topo->header->ny) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Intensity file has improper dimensions!\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Intensity grid has improper dimensions!\n");
 			Return (EXIT_FAILURE);
 		}
 		i_reg = GMT_change_grdreg (GMT, Intens->header, GMT_GRIDLINE_REG);	/* Ensure gridline registration */

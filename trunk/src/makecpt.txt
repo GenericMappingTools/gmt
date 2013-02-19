@@ -5,7 +5,7 @@ makecpt \- Make GMT color palette tables
 .SH SYNOPSIS
 BD(makecpt) [ OPT(A)[BD(+)]IT(transparency) ] [ OPT(C)IT(table) ] [ OPT(D)[BD(i)|BD(o)] ]
 [ OPT(F)[BD(R)|BD(r)|BD(h)|BD(c) ] [ OPT(I) ] [ OPT(M) ] [ OPT(N) ]
-[ OPT(Q)[BD(i)|BD(o)] ] [ OPT(T)IT(z0)/IT(z1)[/IT(dz)[+]] | OPT(T)IT(ztable) ] [ GMT_V_OPT ]
+[ OPT(Q)[BD(i)|BD(o)] ] [ OPT(T)IT(z_min)/IT(z_max)[/IT(z_inc)[+]] | OPT(T)IT(ztable) ] [ GMT_V_OPT ]
 [ OPT(W) ] [ OPT(Z) ]
 .SH DESCRIPTION
 BD(makecpt) is a utility that will help you make color palette tables (cpt files).  You define
@@ -70,10 +70,10 @@ Selects a logarithmic interpolation scheme [Default is linear].  OPT(Qi)
 expects input z-values to be log10(z), assigns colors, and writes out z
 [Default].  OPT(Qo) takes log10(z) first, assigns colors, and writes out z.
 .TP
-OPT(T)IT(z0)/IT(z1)[/IT(dz)[+]] | OPT(T)IT(ztable)
+OPT(T)IT(z_min)/IT(z_max)[/IT(z_inc)[+]] | OPT(T)IT(ztable)
 Defines the range of the new cpt file by giving the lowest and highest z-value and interval.
-When used with OPT(C) and IT(dz) is not specified, the number of intervals remains the same as in the input palette.
-If IT(dz) is specified with a trailing '+' we interpret IT(dz) as the number of desired intervals instead. 
+When used with OPT(C) and IT(z_inc) is not specified, the number of intervals remains the same as in the input palette.
+If IT(z_inc) is specified with a trailing '+' we interpret IT(z_inc) as the number of desired intervals instead. 
 Alternatively, give the name of a ASCII file that has one z-value per record.
 If OPT(T) is not given, the existing range in the master cpt file will be used intact.
 #include "explain_-V.txt"

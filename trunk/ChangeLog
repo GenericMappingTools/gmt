@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-02-18	pwessel
+	* filter1d.c:		Allow -T<t_min>/<t_max>/<t_inc>[+] as for other table makers.
+
 2013-02-14	pwessel
 	* grd2xyz.c:		Added -C[f|i] for writing row,col or index instead of x,y
 

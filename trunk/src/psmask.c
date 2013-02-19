@@ -628,6 +628,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 		n_read = 0;
 		do {	/* Keep returning records until we reach EOF */
 			n_read++;

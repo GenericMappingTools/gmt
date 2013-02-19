@@ -497,6 +497,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[4] = {1, 1, 3, 1};
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 				Return (API->error);
@@ -528,6 +529,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 		single = true;
 	}
 	else {	/* Read input files or stdin */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
