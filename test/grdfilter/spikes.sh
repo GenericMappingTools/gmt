@@ -16,7 +16,7 @@ image () {	# First 3 args for grdimage; $4 is text for pstext
 echo 25 25 100 | xyz2grd -R0/50/0/50 -I0.5 -N0 -Gt.nc
 makecpt -Crainbow -T0/1/0.1 -Z > t.cpt
 psscale -D3.25i/-0.35i/6i/0.1ih -P -K -Ct.cpt -Y1.2i > $ps
-image t.nc -X0i -Y0i "spike" >> $ps
+image t.nc -X0i -Y0i "Spike" >> $ps
 filter -D0 -Fg30
 image f.nc -X3.5i -Y0i "-D0 -Fg30" >> $ps
 filter -D0 -Fb20/10

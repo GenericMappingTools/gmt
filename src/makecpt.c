@@ -67,7 +67,7 @@ struct MAKECPT_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct T {	/* -T<z0/z1/dz> */
+	struct T {	/* -T<z_min/z_max/z_inc> */
 		bool active;
 		double low, high, inc;
 		char *file;
@@ -107,7 +107,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
-	GMT_message (GMT, "	[-T<z0>/<z1>[/<dz>[+]] | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
+	GMT_message (GMT, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -126,13 +126,13 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
 	GMT_message (GMT, "\t   -Qi: z-values are log10(z). Assign colors and write z [Default].\n");
 	GMT_message (GMT, "\t   -Qo: z-values are z; take log10(z), assign colors and write z.\n");
-	GMT_message (GMT, "\t        If -T<z0/z1/dz> is given, then dz must be 1, 2, or 3\n");
+	GMT_message (GMT, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
 	GMT_message (GMT, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
-	GMT_message (GMT, "\t-T Give start, stop, and increment for colorscale in z-units,\n");
+	GMT_message (GMT, "\t-T Give <z_min>, <z_max>, and <z_inc> for colorscale in z-units,\n");
 	GMT_message (GMT, "\t   or filename with custom z-values.  If no -T option is given,\n");
 	GMT_message (GMT, "\t   then the range in the master cptfile will be used.  If no increment\n");
 	GMT_message (GMT, "\t   is given we match the number of entries in the master CPT file.\n");
-	GMT_message (GMT, "\t   Append + to increment to indicate number of z-values to produce instead.\n");
+	GMT_message (GMT, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
@@ -286,6 +286,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
 	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
@@ -320,7 +321,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, dz must be 1, 2, or 3\n");
+			GMT_report (GMT, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_inc must be 1, 2, or 3\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->T.low <= 0.0) {

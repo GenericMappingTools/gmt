@@ -167,6 +167,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdpaste main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grids\n");
 	GMT_set_pad (GMT, 0); /* No padding */
 
 	/* Try to find a common side to join on  */

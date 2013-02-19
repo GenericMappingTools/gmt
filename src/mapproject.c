@@ -480,6 +480,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	}
 	if (Ctrl->Q.mode) Return (EXIT_SUCCESS);
 	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) GMT_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {

@@ -834,6 +834,7 @@ int GMT_project (void *V_API, int mode, void *args)
 		P.output_choice[1] = 5;
 		P.output_choice[2] = 2;
 
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Generate table data\n");
 		d_along = Ctrl->L.min;
 		while ((Ctrl->L.max - d_along) > (GMT_CONV_LIMIT*Ctrl->G.inc)) {
 			p_data[P.n_used].a[2] = d_along;
@@ -903,6 +904,7 @@ int GMT_project (void *V_API, int mode, void *args)
 	}
 	else {	/* Must read input file */
 
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
 		if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != GMT_OK) {
 			Return (error);

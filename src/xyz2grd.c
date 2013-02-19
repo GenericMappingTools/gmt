@@ -406,6 +406,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		Return (GMT_OK);	/* We are done here */
 	}
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+
 	/* Here we will need a grid */
 	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);

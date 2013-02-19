@@ -329,6 +329,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the psimage main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input EPS or Sun rasterfile\n");
 	PS_interpolate = (Ctrl->W.interpolate) ? -1 : +1;
 	GMT_memset (&header, 1, struct imageinfo);
 

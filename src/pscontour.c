@@ -654,6 +654,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pscontour main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		Return (error);
 	}

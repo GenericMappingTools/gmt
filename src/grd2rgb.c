@@ -401,6 +401,8 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 
 	/* No command line files or std** to add via GMT_Init_IO */
 	
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid|raster\n");
+
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
 		bool new_grid = false;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */

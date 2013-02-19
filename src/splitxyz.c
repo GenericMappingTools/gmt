@@ -344,6 +344,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
 
 	for (k = n_outputs = 0; k < SPLITXYZ_N_OUTPUT_CHOICES && Ctrl->Q.col[k]; k++) {

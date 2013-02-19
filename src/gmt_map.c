@@ -3256,7 +3256,7 @@ void gmt_get_origin (struct GMT_CTRL *C, double lon1, double lat1, double lon_p,
 		if (c < 90.0) az += 180.0;
 		*lat2 = d_asind (sind (lat1) * cosd (d) + cosd (lat1) * sind (d) * cosd (az));
 		*lon2 = lon1 + d_atan2d (sind (d) * sind (az), cosd (lat1) * cosd (d) - sind (lat1) * sind (d) * cosd (az));
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning: Correct projection origin = %g/%g\n", *lon2, *lat2);
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Warning: Correct projection origin = %g/%g\n", *lon2, *lat2);
 	}
 	else {
 		*lon2 = lon1;
@@ -5370,7 +5370,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 	} while (fabs (d - x) > VINCENTY_EPS && n_iter <= 50);
 	if (n_iter > VINCENTY_MAX_ITER) {
 		C->current.proj.n_geodesic_approx++;	/* Count inaccurate results */
-		GMT_report (C, GMT_MSG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 		s = M_PI;
 	}
 	else {
@@ -5380,7 +5380,7 @@ double gmt_geodesic_dist_meter (struct GMT_CTRL *C, double lonS, double latS, do
 		d = (x * 0.375 * x - 1.0) * x;
 		s = ((((sy * sy * 4.0 - 3.0) * (1.0 - e - e) * cz * d / 6.0 - e * cy) * d / 4.0 + cz) * sy * d + y) * c * r;
 		if (s > M_PI) {
-			GMT_report (C, GMT_MSG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Near- or actual antipodal points encountered. Precision may be reduced slightly.\n");
 			s = M_PI;
 		}
 	}
@@ -6345,7 +6345,7 @@ int GMT_project_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double
 	GMT_grd_setpad (C, header, C->current.io.pad);			/* Assign default pad */
 	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
 
-	GMT_report (C, GMT_MSG_VERBOSE, "Grid projection from size %dx%d to %dx%d\n", nx, ny, header->nx, header->ny);
+	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Grid projection from size %dx%d to %dx%d\n", nx, ny, header->nx, header->ny);
 	return (GMT_NOERROR);
 }
 
@@ -7915,75 +7915,75 @@ void gmt_set_distaz (struct GMT_CTRL *C, unsigned int mode, unsigned int type)
 		case GMT_CARTESIAN_DIST:	/* Cartesian 2-D x,y data */
 			C->current.map.dist[type].func = &GMT_cartesian_dist;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST2:	/* Cartesian 2-D x,y data, use r^2 instead of hypot */
 			C->current.map.dist[type].func = &GMT_cartesian_dist2;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ:	/* Cartesian distance after projecting 2-D lon,lat data */
 			C->current.map.dist[type].func = &GMT_cartesian_dist_proj;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian_proj;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_CARTESIAN_DIST_PROJ2:	/* Cartesian distance after projecting 2-D lon,lat data, use r^2 instead of hypot  */
 			C->current.map.dist[type].func = &GMT_cartesian_dist_proj2;
 			C->current.map.azimuth_func = &gmt_az_backaz_cartesian_proj;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Cartesian after first projecting via -J\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_FLATEARTH:	/* 2-D lon, lat data, but scale to Cartesian flat earth in meter */
 			C->current.map.dist[type].func = &gmt_flatearth_dist_meter;
 			C->current.map.azimuth_func  = &gmt_az_backaz_flatearth;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Flat Earth in meters\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in meter */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m.\n",
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and %s radius = %.4f m.\n",
 				type_name[type], aux[choice], rad[C->current.setting.proj_mean_radius], C->current.proj.mean_radius);
 			break;
 		case GMT_DIST_M+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in meter */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_meter;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using %s geodesics in meters\n", type_name[type], GEOD_TEXT);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using %s geodesics in meters\n", type_name[type], GEOD_TEXT);
 			break;
 		case GMT_DIST_DEG+GMT_FLATEARTH:	/* 2-D lon, lat data, use Flat Earth distances in degrees */
 			C->current.map.dist[type].func = gmt_flatearth_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_flatearth;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be Flat Earth in degrees\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be Flat Earth in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_GREATCIRCLE:	/* 2-D lon, lat data, use spherical distances in degrees */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in degrees.\n",
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return lengths in degrees.\n",
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_DEG+GMT_GEODESIC:	/* 2-D lon, lat data, use geodesic distances in degrees */
 			C->current.map.dist[type].func = &gmt_geodesic_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using geodesics in degrees\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using geodesics in degrees\n", type_name[type]);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
 			C->current.map.dist[type].func = &GMT_great_circle_dist_cos;
 			C->current.map.azimuth_func = &gmt_az_backaz_sphere;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",
 				type_name[type], aux[choice]);
 			break;
 		case GMT_DIST_COS+GMT_GEODESIC:	/* 2-D lon, lat data, and Green's function needs cosine of geodesic distance */
 			C->current.map.dist[type].func = &GMT_geodesic_dist_cos;
 			C->current.map.azimuth_func = &gmt_az_backaz_geodesic;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be using cosine of geodesic angle\n", type_name[type]);
 			break;
 		case GMT_DIST_M+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in meter */
 			C->current.map.dist[type].func = &gmt_loxodrome_dist_meter;
 			C->current.map.azimuth_func  = &gmt_az_backaz_loxodrome;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be along loxodromes in meters\n", type_name[type]);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be along loxodromes in meters\n", type_name[type]);
 			break;
 		case GMT_DIST_DEG+GMT_LOXODROME:	/* 2-D lon, lat data, but measure distance along rhumblines in degrees */
 			C->current.map.dist[type].func = &gmt_loxodrome_dist_degree;
 			C->current.map.azimuth_func = &gmt_az_backaz_loxodrome;
-			GMT_report (C, GMT_MSG_VERBOSE, "%s distance calculation will be along loxodromes with %s auxiliary latitudes and return lengths in degrees.\n",
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "%s distance calculation will be along loxodromes with %s auxiliary latitudes and return lengths in degrees.\n",
 				type_name[type], aux[choice]);
 			break;
 		default:	/* Cannot happen unless we make a bug */

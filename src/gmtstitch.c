@@ -291,6 +291,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	/* Now we are ready to take on some input values */
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+
 	if (Ctrl->D.active) {	/* We want to output to go to individual files for each segment */
 		io_mode = GMT_WRITE_SEGMENT;
 		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtstitch_segment_%ld.txt");

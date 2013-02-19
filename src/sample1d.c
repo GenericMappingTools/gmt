@@ -277,6 +277,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT->current.setting.interpolant = Ctrl->F.mode;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->T.col] = true;				/* ... But disallow NaN in "time" column */

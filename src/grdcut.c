@@ -205,6 +205,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
 		bool go;

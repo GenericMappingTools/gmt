@@ -6,7 +6,7 @@ filter1d \- Do time domain filtering of 1-D data tables
 BD(filter1d) [ IT(table) ] OPT(F)IT(type<width>)[IT(mode)] [ OPT(D)IT(increment) ]  
 [ OPT(E) ] [ OPT(I)IT(ignore_val) ] [ OPT(L)IT(lack_width) ] 
 [ OPT(N)IT(t_col) ] [ OPT(Q)IT(q_factor) ] [ OPT(S)IT(symmetry_factor) ] 
-[ OPT(T)IT(start/stop/int) ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]
+[ OPT(T)IT(t_min/t_max/t_inc)[BD(+)] ] [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ]
 .SH DESCRIPTION
 BD(filter1d) is a general time domain filter for multiple column time series data.
 The user specifies which column is the time (i.e., the independent variable).
@@ -86,8 +86,9 @@ Checks symmetry of data about window center.  Enter a factor
 between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > IT(factor),
 then no output will be given at this point [Default does not check Symmetry].
 .TP
-OPT(T)IT(start/stop/int)
-Make evenly spaced time-steps from IT(start) to IT(stop) by IT(int) [Default uses input times].
+OPT(T)IT(t_min/t_max/t_inc)[BD(+)]
+Make evenly spaced time-steps from IT(t_min) to IT(t_max) by IT(t_inc) [Default uses input times].
+Append BD(+) to IT(t_inc) if you are specifying the number of equidistant points instead.
 #include "explain_-V.txt"
 #include "explain_-bi.txt"
 #include "explain_-bo.txt"

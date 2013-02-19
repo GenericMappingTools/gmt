@@ -348,6 +348,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
 	GMT_memset (s, 3, double);
 
 	if (Ctrl->N.active && Ctrl->N.sigma  != 0.0) sigma_set  = true;

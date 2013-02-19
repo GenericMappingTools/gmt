@@ -429,6 +429,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
 
 	/* Do we plot actual symbols, or lines */

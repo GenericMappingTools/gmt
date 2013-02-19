@@ -79,7 +79,7 @@ struct FILTER1D_CTRL {
 		bool active;
 		double value;
 	} S;
-	struct T {	/* -T[<tmin/tmax/t_inc>] */
+	struct T {	/* -T<tmin/tmax/tinc>[+] */
 		bool active;
 		double min, max, inc;
 	} T;
@@ -173,7 +173,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
-	GMT_message (GMT, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<start>/<stop>/<int>]\n");
+	GMT_message (GMT, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
@@ -216,7 +216,8 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S Check symmetry of data about window center.  Enter a factor\n");
 	GMT_message (GMT, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
 	GMT_message (GMT, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
-	GMT_message (GMT, "\t-T Make evenly spaced timesteps from <start> to <stop> by <int> [Default uses input times].\n");
+	GMT_message (GMT, "\t-T Make evenly spaced output timesteps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
+	GMT_message (GMT, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
 	GMT_explain_options (GMT, "VC0D0fghio.");
 	
 	return (EXIT_FAILURE);
@@ -318,12 +319,15 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 			case 'T':	/* Set output knots */
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->T.inc) != 3) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Suntax error -T option: Syntax is -T<start>/<stop>/<inc>\n");
+					GMT_report (GMT, GMT_MSG_NORMAL, "Suntax error -T option: Syntax is -T<tmin>/<tmax>/<tinc>[+]\n");
 					++n_errors;
 				}
 				else {
 					GMT_scanf_arg (GMT, txt_a, GMT_IS_UNKNOWN, &Ctrl->T.min);
 					GMT_scanf_arg (GMT, txt_b, GMT_IS_UNKNOWN, &Ctrl->T.max);
+					if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
+						Ctrl->T.inc = (Ctrl->T.max - Ctrl->T.min) / (Ctrl->T.inc - 1.0);
+					}
 				}
 				break;
 
@@ -836,6 +840,8 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	GMT_memset (&F, 1, struct FILTER1D_INFO);	/* Init control structure to NULL */
 	F.n_work_alloc = GMT_CHUNK;
 	F.equidist = true;
+
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	/* Read the input data into memory */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */

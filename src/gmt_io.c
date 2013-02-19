@@ -5214,7 +5214,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 				GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", out_file);
 				GMT_exit (EXIT_FAILURE);
 			}
-			GMT_report (C, GMT_MSG_VERBOSE, "Writing data segment to file %s\n", out_file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Writing data segment to file %s\n", out_file);
 			if (ascii && C->current.setting.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
@@ -5266,7 +5266,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 					return (EXIT_FAILURE);
 				}
 				close_file = true;	/* We only close files we have opened here */
-				GMT_report (C, GMT_MSG_VERBOSE, "Write Data Table to file %s\n", &file[append]);
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Data Table to file %s\n", &file[append]);
 			}
 			break;
 		case GMT_IS_STREAM:	/* Open file pointer given, just copy */
@@ -5276,7 +5276,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 				strcpy (file, "<stdout>");
 			else
 				strcpy (file, "<output stream>");
-			GMT_report (C, GMT_MSG_VERBOSE, "Write Data Table to %s\n", file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Data Table to %s\n", file);
 			break;
 		case GMT_IS_FDESC:		/* Open file descriptor given, just convert to file pointer */
 			fd = dest;
@@ -5289,7 +5289,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 				strcpy (file, "<stdout>");
 			else
 				strcpy (file, "<output file descriptor>");
-			GMT_report (C, GMT_MSG_VERBOSE, "Write Data Table to %s\n", file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Data Table to %s\n", file);
 			break;
 		default:
 			GMT_report (C, GMT_MSG_NORMAL, "Unrecognized source type %d in GMT_write_table\n", dest_type);
@@ -5311,7 +5311,7 @@ int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 				out_file = D->table[tbl]->file[GMT_OUT];
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
-			GMT_report (C, GMT_MSG_VERBOSE, "Write Data Table to %s\n", out_file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Data Table to %s\n", out_file);
 			if ((error = GMT_write_table (C, out_file, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
 		}
 		else {	/* Write to stream we set up earlier */
@@ -5396,7 +5396,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 				GMT_report (C, GMT_MSG_NORMAL, "Cannot open file %s\n", out_file);
 				GMT_exit (EXIT_FAILURE);
 			}
-			GMT_report (C, GMT_MSG_VERBOSE, "Writing Text Table segment to file %s\n", out_file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Writing Text Table segment to file %s\n", out_file);
 			if (C->current.setting.io_header[GMT_OUT]) for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
@@ -5438,7 +5438,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 					return (EXIT_FAILURE);
 				}
 				close_file = true;	/* We only close files we have opened here */
-				GMT_report (C, GMT_MSG_VERBOSE, "Write Text Table to file %s\n", &file[append]);
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Text Table to file %s\n", &file[append]);
 			}
 			break;
 		case GMT_IS_STREAM:	/* Open file pointer given, just copy */
@@ -5448,7 +5448,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 				strcpy (file, "<stdout>");
 			else
 				strcpy (file, "<output stream>");
-			GMT_report (C, GMT_MSG_VERBOSE, "Write Text Table to %s\n", file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Text Table to %s\n", file);
 			break;
 		case GMT_IS_FDESC:		/* Open file descriptor given, just convert to file pointer */
 			fd = dest;
@@ -5461,7 +5461,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 				strcpy (file, "<stdout>");
 			else
 				strcpy (file, "<output file descriptor>");
-			GMT_report (C, GMT_MSG_VERBOSE, "Write Text Table to %s\n", file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Text Table to %s\n", file);
 			break;
 		default:
 			GMT_report (C, GMT_MSG_NORMAL, "Unrecognized source type %d in GMT_write_textset\n", dest_type);
@@ -5479,7 +5479,7 @@ int GMT_write_textset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, s
 				out_file = D->table[tbl]->file[GMT_OUT];
 			else
 				sprintf (tmpfile, file, D->table[tbl]->id);
-			GMT_report (C, GMT_MSG_VERBOSE, "Write Text Table to file %s\n", out_file);
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Write Text Table to file %s\n", out_file);
 			if ((error = gmt_write_texttable (C, out_file, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
 		}
 		else {	/* Write to stream we set up earlier */

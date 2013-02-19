@@ -672,6 +672,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the spectrum1d main code ----------------------------*/
 
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (&C, 1, struct SPECTRUM1D_INFO);
 	
 	C.dt = Ctrl->D.inc;
