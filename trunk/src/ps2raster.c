@@ -476,7 +476,7 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
 				Ctrl->T.active = true;
-				grayscale = ((j = (int)strlen(opt->arg)) > 3 && opt->arg[j-1] == '-');
+				grayscale = ((j = (int)strlen(opt->arg)) > 1 && opt->arg[j-1] == '-');
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'e':	/* EPS */
