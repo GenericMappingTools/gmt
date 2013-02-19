@@ -95,24 +95,20 @@ sessions concurrently as each would operate via its own control structure).  Dur
 session, one or more plots may be created.  Here are the functions involved in initialization:
 .br
 .sp
-BD(struct PS_CTRL *PSL_beginsession) (ARG(FILE,*err), ARG(long,unit), ARG(long,verbose), ARG(long,comments), ARG(long,compression),
-ARG(long,imgtype), ARG(const char,*encoding))
+BD(struct PS_CTRL *New_PSL_Ctrl) (ARG(char,*session))
 .RS 5
-This is the first function that must be called as it initializes a new PSLIB session.  Specifically, it will
-allocate a new PSLIB control structure and initialize the session parameters to those given by the arguments.
-Here, IT(err) is a stream pointer indicating where error messages should go (if NULL we will use IT(stderr)),
-IT(unit) indicates the units of the coordinates used in this session and must be one of PSL_CM (0), PSL_INCH (1), PSL_METER (2), or PSL_PT (3).
-This setting tells the PSLIB session what units are used for coordinates, distances and dimensions.
-The IT(verbose) setting indicates the IT(PostScript) verbosity level (PSL_MSG_SILENCE = silence (0), PSL_MSG_FATAL = fatal errors (1),
-PSL_MSG_NORMAL = warnings and progress (2), PSL_MSG_VERBOSE = extensive progress reports (3), or PSL_MSG_DEBUG = debugging (4)).
-Set IT(comments) to indicate if you want IT(PostScript) comments to be written (PSL_YES = 1) or not (PSL_NO = 0).
-The IT(compression) parameter controls image compression (all are lossless).  Choose from PSL_NONE = none (0),
-PSL_RLE = Run-length encoding (1), or PSL_LZW = Lempel-Ziv-Welch compression (2).
-Use IT(imgtype) to indicate whether images should be written in ASCII (PSL_ASCII = 0) or BINARY (PSL_BINARY = 2) format.
-Note: if you use PSL_BINARY you may not be able to manually edit the IT(PostScript) file or use it with GMT's ps2raster.
-Finally, use IT(encoding) to select the character encoding used.  Choose from Standard [Default if NULL is given],
-Standard+, ISOLatin1, ISOLatin1+, ISO-8859-X (with X = 1-10, 13-15).  See GMT Appendix F for the enhanced Standard+
-and ISOLatin1+ encodings.
+This is the first function that must be called as it creates a new PSLIB session.  Specifically, it will
+allocate a new PSLIB control structure and initialize the session default parameters.  The pointer that is
+returned must be passed to all subsequent PSLIB functions.
+.RE
+.br
+.sp
+BD(long *PSL_beginsession) (ARG(struct PS_CTRL,*PSL), ARG(long,search), ARG(char,*sharedir), ARG(char,*userdir))
+.RS 5
+This is the second function that must be called as it initializes the new PSLIB session.
+Here, IT(search) is an integer that is passed as 0 in GMT but should be 1 for other users.  If so we will search
+for the environmental parameters PSL_SHAREDIR and PSL_USERDIR should the corresponding arguments IT(sharedir)
+and IT(userdir) be NULL.
 .RE
 .br
 .sp
@@ -138,7 +134,7 @@ Terminate current layer with a DSC comment.
 BD(long PSL_fopen) (ARG(char,*file), ARG(char,*mode))
 .RS 5
 This function simply opens a file, just like fopen.  The reason it is replicated here is that under Windows,
-file pointers must be assigned wihtin the same DLL as they are being used.  Yes, this is retarded but if we
+file pointers must be assigned within the same DLL as they are being used.  Yes, this is retarded but if we
 do not do so then PSL will not work well under Windows.  Under non-Windows this functions is just a macro
 that becomes fopen.
 .RE

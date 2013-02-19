@@ -41,7 +41,7 @@ that can be used to create plots.  The resulting @%6%PostScript@%% code is ASCII
 	PSL->internal.verbose = PSL_YES;
 	PSL->internal.comments = PSL_YES;
 	PSL->init.encoding = strdup ("Standard+");
-	PSL_beginsession (PSL);
+	PSL_beginsession (PSL, 1, NULL, NULL);
 	PSL_beginplot (PSL, NULL, PSL_PORTRAIT, PSL_INIT, PSL_RGB, "rr", scales, Letter, NULL, NULL);
 
 	/* Plot rectangle below the symbols */

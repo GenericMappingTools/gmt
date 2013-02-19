@@ -304,7 +304,7 @@ EXTERN_MSC int PSL_beginaxes (struct PSL_CTRL *P, double llx, double lly, double
 EXTERN_MSC int PSL_beginclipping (struct PSL_CTRL *P, double *x, double *y, int n, double rgb[], int flag);
 EXTERN_MSC int PSL_beginlayer (struct PSL_CTRL *PSL, int layer);
 EXTERN_MSC int PSL_beginplot (struct PSL_CTRL *P, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]);
-EXTERN_MSC int PSL_beginsession (struct PSL_CTRL *PSL);
+EXTERN_MSC int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir, char *userdir);
 EXTERN_MSC int PSL_endaxes (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endclipping (struct PSL_CTRL *P, int mode);
 EXTERN_MSC int PSL_endlayer (struct PSL_CTRL *PSL);
