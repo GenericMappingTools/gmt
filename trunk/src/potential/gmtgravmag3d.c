@@ -154,9 +154,10 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
-	GMT_message (GMT, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>] [-M]\n");
+	GMT_message (GMT, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>]\n");
 	GMT_message (GMT, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_message (GMT, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>] [-V]\n");
+	GMT_message (GMT, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>]\n\t[%s] [%s] [%s]\n", 
+		GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -168,7 +169,6 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-G name of the output grdfile.\n");
 	GMT_message (GMT, "\t-I sets the grid spacing for the grid.  Append m for minutes, c for seconds\n");
 	GMT_message (GMT, "\t-L sets level of observation [Default = 0]\n");
-	GMT_message (GMT, "\t-M Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
 	GMT_message (GMT, "\t-E give layer thickness in m [Default = 0 m]\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S search radius in km\n");
@@ -178,7 +178,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z z level of reference plane [Default = 0]\n");
-	GMT_explain_options (GMT, "C0:.");
+	GMT_explain_options (GMT, "C0fF:.");
 
 	return (EXIT_FAILURE);
 }
@@ -246,6 +246,7 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 				break;
 #ifdef GMT_COMPAT
 			case 'M':
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
 #endif
@@ -440,7 +441,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->G.active) {
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT_GRIDLINE_REG, GMTAPI_NOTSET, Gout))) Return (error);
+		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Gout))) Return (error);
 		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Gout))) Return (error);
 	
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Gout->header->nx, Gout->header->ny);
