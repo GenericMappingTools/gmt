@@ -441,6 +441,6 @@ mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -gfaa,/data/GRIDS/grav.1
 .IR mgd77list (1),
 .IR mgd77track (1)
 .IR x2sys_init (1)
-#include "refs.i"
+.SH REFERENCES
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP.

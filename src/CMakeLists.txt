@@ -222,7 +222,7 @@ set (GMT_MAN_DEPS common_options.txt explain_gmt_modules.txt
 	explain_gshhs.txt explain_help.txt explain_intables.txt
 	explain_labelinfo.txt explain_nodereg.txt explain_nodereg_full.txt
 	explain_pen.txt explain_perspective.txt explain_perspective_full.txt
-	explain_precision.txt explain_symbols.txt refs.i)
+	explain_precision.txt explain_symbols.txt)
 
 # dependencies on generated files
 set (GMT_GEN_MAN_HDRS Colors.i Ellipsoids.i Fonts.i

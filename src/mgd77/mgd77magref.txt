@@ -161,7 +161,7 @@ echo -28 38 0 2001-05-01T12:00:00 | mgd77magref -Ftdi/13456
 .IR mgd77list (1)
 .IR mgd77manage (1)
 .IR mgd77track (1)
-#include "refs.i"
+.SH REFERENCES
 Comprehensive Modeling of the Geomagnetic Field, see
 \fIhttp://denali.gsfc.nasa.gov/cm/\fP.
 .sp

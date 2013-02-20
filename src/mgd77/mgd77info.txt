@@ -92,6 +92,6 @@ mgd77info 08 -Ia -Me
 .IR mgd77path (1),
 .IR mgd77track (1)
 .IR x2sys_init (1)
-#include "refs.i"
+.SH REFERENCES
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP.
