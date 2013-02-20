@@ -796,15 +796,15 @@ entries for highest and lowest value.
 \item [Text table]:  \texttt{mode} is currently not used.
 \item [GMT grid]:  Here, \texttt{mode} determines how we read the grid:
 \index{GMT\_GRID\_ALL}
-\index{GMT\_GRID\_HEADER}
-\index{GMT\_GRID\_DATA}
+\index{GMT\_GRID\_HEADER\_ONLY}
+\index{GMT\_GRID\_DATA\_ONLY}
 \index{GMT\_GRID\_IS\_COMPLEX\_REAL}
 \index{GMT\_GRID\_IS\_COMPLEX\_IMAG}
 To read the entire grid and its header, pass GMT\_GRID\_ALL.  However, if you
 need to extract a sub-region you must first read the heade by passing
-GMT\_GRID\_HEADER, then examine the header structure range attributes and
+GMT\_GRID\_HEADER\_ONLY, then examine the header structure range attributes and
 to specify a subset via the array \texttt{wesn}, and finally call
-\texttt{GMT\_Read\_Data} a second time, now with \texttt{mode} = GMT\_GRID\_DATA and passing your \texttt{wesn} array
+\texttt{GMT\_Read\_Data} a second time, now with \texttt{mode} = GMT\_GRID\_DATA\_ONLY and passing your \texttt{wesn} array
 and the grid structure returned from the first call as \texttt{ptr}.
 In the event your data array should be allocated to hold both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_IS\_COMPLEX\_REAL or GMT\_GRID\_IS\_COMPLEX\_IMAG to \texttt{mode}
@@ -1420,14 +1420,14 @@ via the \texttt{D->table[i]->segment[j]->file[GMT\_OUT]} variables prior to call
 \item [GMT\_WRITE\_OGR]: Writes the dataset in OGR/GMT format in conjunction with the \Opt{a} setting [4].
 \end{description}
 \item [Text table]: The \texttt{mode} is used the same way as for data tables.
-\item [GMT grid]: Here, \texttt{mode} may be GMT\_GRID\_HEADER to only update a file's header
+\item [GMT grid]: Here, \texttt{mode} may be GMT\_GRID\_HEADER\_ONLY to only update a file's header
 structure, but normally it is simply GMT\_GRID\_ALL (0) so the entire
 grid and its header will be exported (a subset is not allowed during export).
 However, in the event your data array holds both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_IS\_COMPLEX\_REAL (4) or GMT\_GRID\_IS\_COMPLEX\_IMAG (16) to \texttt{mode}
 so as to export the corresponding grid values correctly.  Finally, for native binary grids you may skip writing
 the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored for other grid formats.
-\index{GMT\_GRID\_HEADER}
+\index{GMT\_GRID\_HEADER\_ONLY}
 \index{GMT\_GRID\_ALL}
 \index{GMT\_GRID\_IS\_COMPLEX\_REAL}
 \index{GMT\_GRID\_IS\_COMPLEX\_IMAG}
