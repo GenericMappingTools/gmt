@@ -74,7 +74,7 @@
  */
 
 #define GMT_WITH_NO_PS
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 void gmt_check_R_J (struct GMT_CTRL *C, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */

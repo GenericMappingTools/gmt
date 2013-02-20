@@ -53,7 +53,7 @@
  */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 #include <stdarg.h>
 #include "gmt_internals.h"
 #include "common_runpath.h"

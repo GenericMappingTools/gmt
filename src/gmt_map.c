@@ -101,7 +101,7 @@
  */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 /* Note by P. Wessel, 18-Oct-2012:

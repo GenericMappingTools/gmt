@@ -29,7 +29,7 @@
 #define THIS_MODULE k_mod_grdvector /* I am grdvector */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDVECTOR_CTRL {
 	struct In {

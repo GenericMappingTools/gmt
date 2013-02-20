@@ -53,7 +53,7 @@
  */
 
 #define GMT_WITH_NO_PS
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 int gmt_f_test_new (struct GMT_CTRL *C, double chisq1, uint64_t nu1, double chisq2, uint64_t nu2, double *prob, int iside)

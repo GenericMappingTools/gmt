@@ -348,7 +348,7 @@ void GMTMEX_free (char *input, char *output, char *options, char *cmd) {
  * In addition, the only common option that might take a file is -R which may take a grid as input.
  * We check for that in addition to the module-specific info passed via the key variable.
  *
- * The actual reading/writing will occur in gmtapi_util.c where we will add a case MEX: for each type.
+ * The actual reading/writing will occur in gmt_api.c where we will add a case MEX: for each type.
  * and here we will use mx* for allocation for stuff that is sent to Matlab, and GMT_memory for things
  * that are read and reformatted from Matlab.  This includes packing up GMT grids into Matlab grid structs
  * and vice versa.

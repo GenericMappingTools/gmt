@@ -23,7 +23,7 @@
  
 #define THIS_MODULE k_mod_mgd77info /* I am mgd77info */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 #include "mgd77_codes.h"
 

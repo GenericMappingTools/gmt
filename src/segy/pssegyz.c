@@ -36,7 +36,7 @@
 #define THIS_MODULE k_mod_pssegyz /* I am pssegyz */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "segy_io.h"
 
 #define B_ID	0	/* Indices into Q values */

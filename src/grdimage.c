@@ -28,7 +28,7 @@
 #define THIS_MODULE k_mod_grdimage /* I am grdimage */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for grdimage */
 

@@ -31,7 +31,7 @@
  
 #define THIS_MODULE k_mod_grdgradient /* I am grdgradient */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDGRADIENT_CTRL {
 	struct In {

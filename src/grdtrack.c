@@ -27,7 +27,7 @@
 
 #define THIS_MODULE k_mod_grdtrack /* I am grdtrack */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 

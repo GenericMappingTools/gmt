@@ -28,7 +28,7 @@
  
 #define THIS_MODULE k_mod_gmt2kml /* I am gmt2kml */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 int gmt_parse_R_option (struct GMT_CTRL *C, char *item);
 void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, double value, double *rgb);

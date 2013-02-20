@@ -16,7 +16,7 @@
 
 #define THIS_MODULE k_mod_mgd77magref /* I am mgd77magref */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */

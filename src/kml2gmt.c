@@ -26,7 +26,7 @@
  
 #define THIS_MODULE k_mod_kml2gmt /* I am kml2gmt */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define POINT			0
 #define LINE			1

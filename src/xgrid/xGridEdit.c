@@ -4,7 +4,7 @@
 	Program to display and edit the numerical
 	values in a GMT binary grid file.	*/
 
-#include "gmt.h"
+#include "gmt_dev.h"
 void GMT_grdio_init (void);       /* Defined in gmt_customio.c */
 
 #include <stdio.h>

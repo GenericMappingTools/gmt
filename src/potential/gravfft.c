@@ -33,7 +33,7 @@
 
 #define THIS_MODULE k_mod_gravfft /* I am gravfft */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 enum Gravfft_fields {
 	GRAVFFT_FAA	= 0,

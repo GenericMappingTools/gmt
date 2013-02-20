@@ -23,7 +23,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE k_mod_pscoupe /* I am pscoupe */
 
 #include "pslib.h"	/* to have pslib environment */
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #include "meca.h"
 #include "utilmeca.h"

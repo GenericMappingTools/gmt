@@ -28,7 +28,7 @@
 
 #define THIS_MODULE k_mod_grdvolume /* I am grdvolume */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDVOLUME_CTRL {
 	struct In {

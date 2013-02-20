@@ -29,7 +29,7 @@
 #define THIS_MODULE k_mod_pstext /* I am pstext */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, unsigned int size);
 bool GMT_is_a_blank_line (char *line);

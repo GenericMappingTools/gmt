@@ -30,7 +30,7 @@
  
 #define THIS_MODULE k_mod_sample1d /* I am sample1d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define INT_1D_CART	0	/* Regular 1-D interpolation */
 #define INT_2D_CART	1	/* Cartesian 2-D path interpolation */

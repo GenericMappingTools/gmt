@@ -24,7 +24,7 @@
 #define THIS_MODULE k_mod_mgd77track /* I am mgd77track */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 
 #define MGD77TRACK_ANSIZE 0.125

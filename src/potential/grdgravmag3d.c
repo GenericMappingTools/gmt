@@ -30,7 +30,7 @@
 
 #define THIS_MODULE k_mod_grdgravmag3d /* I am grdgravmag3d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "okbfuns.h"
 
 struct GRDOKB_CTRL {

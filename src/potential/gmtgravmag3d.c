@@ -28,7 +28,7 @@
 
 #define THIS_MODULE k_mod_gmtgravmag3d /* I am gmtgravmag3d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "okbfuns.h"
 
 struct XYZOKB_CTRL {

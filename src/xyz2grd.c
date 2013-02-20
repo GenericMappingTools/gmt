@@ -27,7 +27,7 @@
  
 #define THIS_MODULE k_mod_xyz2grd /* I am xyz2grd */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #ifdef GMT_COMPAT
 void GMT_str_tolower (char *string);

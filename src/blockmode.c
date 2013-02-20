@@ -31,7 +31,7 @@
 
 #define THIS_MODULE k_mod_blockmode /* I am blockmode */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "block_subs.h"
 
 int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)

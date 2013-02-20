@@ -31,7 +31,7 @@
 #define GMT_WITH_NO_PS
 #define THIS_MODULE k_mod_grdfilter /* I am grdfilter */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDFILTER_CTRL {
 	struct In {

@@ -64,7 +64,7 @@
  */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 EXTERN_MSC int gmt_alloc_grid (struct GMT_CTRL *C, struct GMT_GRID *Grid);
@@ -2073,12 +2073,12 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, unsigned int family, int object
 int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int mode, struct GMT_OPTION *head)
 {	/* Handle registration of data files given with option arguments and/or stdin as input sources.
 	 * These are the possible actions taken:
-	 * 1. If (mode | GMT_REG_FILES_IF_NONE) is true and NO resources have previously been registered, then we scan the option list for files (option == '<' (input)).
+	 * 1. If (mode | GMT_ADD_FILES_IF_NONE) is true and NO resources have previously been registered, then we scan the option list for files (option == '<' (input)).
 	 *    For each file found we register the item as a resource.
-	 * 2. If (mode | GMT_REG_FILES_ALWAYS) is true then we always scan the option list for files (option == '<' (input)).
+	 * 2. If (mode | GMT_ADD_FILES_ALWAYS) is true then we always scan the option list for files (option == '<' (input)).
 	 *    For each file found we register the item as a resource.
-	 * 3. If (mode & GMT_REG_STD_IF_NONE) is true we will register stdin as an input source only if there are NO input items registered.
-	 * 4. If (mode & GMT_REG_STD_ALWAYS) is true we will register stdin as an input source, regardless of other items already registered.
+	 * 3. If (mode & GMT_ADD_STDIO_IF_NONE) is true we will register stdin as an input source only if there are NO input items registered.
+	 * 4. If (mode & GMT_ADD_STDIO_ALWAYS) is true we will register stdin as an input source, regardless of other items already registered.
 	 */
 	
 	int object_ID, first_ID;
@@ -2090,7 +2090,7 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 
 	n_reg = GMTAPI_n_items (API, family, GMT_IN, &first_ID);	/* Count unread datasets in this family that have already been registered */
 	
-	if ((mode & GMT_REG_FILES_ALWAYS) || ((mode & GMT_REG_FILES_IF_NONE) && n_reg == 0)) {	/* Wish to register all input file args as sources */
+	if ((mode & GMT_ADD_FILES_ALWAYS) || ((mode & GMT_ADD_FILES_IF_NONE) && n_reg == 0)) {	/* Wish to register all input file args as sources */
 		current = head;
 		while (current) {		/* Loop over the list and look for input files */
 			if (current->option == GMTAPI_OPT_INFILE) {	/* File given, register it */
@@ -2113,7 +2113,7 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	
 	/* Note that n_reg can have changed if we added file args above */
 	
-	if ((mode & GMT_REG_STD_ALWAYS) || ((mode & GMT_REG_STD_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
+	if ((mode & GMT_ADD_STDIO_ALWAYS) || ((mode & GMT_ADD_STDIO_IF_NONE) && n_reg == 0)) {	/* Wish to register stdin pointer as a source */
 		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_IN, NULL, API->GMT->session.std[GMT_IN])) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdin */
 		n_reg++;		/* Add the single item */
 		if (first_ID == GMTAPI_NOTSET) first_ID = object_ID;	/* Found our first ID */
@@ -2125,13 +2125,13 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int mode, struct GMT_OPTION *head)
 {	/* Handle registration of output file given with option arguments and/or stdout as output destinations.
 	 * Only a single output may be considered.  These are the possible actions taken:
-	 * 1. If (mode | GMT_REG_FILES_IF_NONE) is true and NO destinations have previously been registered, 
+	 * 1. If (mode | GMT_ADD_FILES_IF_NONE) is true and NO destinations have previously been registered, 
 	 *    then we scan the option list for files (option == '>' (output)).
 	 *    Only one file can be registered as a destination; finding more than one results in an error.
-	 * 2. If (mode | GMT_REG_FILES_ALWAYS) is true then we always scan the option list for files (option == '>' (output)).
+	 * 2. If (mode | GMT_ADD_FILES_ALWAYS) is true then we always scan the option list for files (option == '>' (output)).
 	 *    Only one file can be registered as a destination; finding more than one results in an error.
-	 * 3. If (mode & GMT_REG_STD_IF_NONE) is true we will register stdout as the only destination if there is NO output item registered.
-	 * 4. If (mode & GMT_REG_STD_ALWAYS) is true we will register stdout as an destination, 
+	 * 3. If (mode & GMT_ADD_STDIO_IF_NONE) is true we will register stdout as the only destination if there is NO output item registered.
+	 * 4. If (mode & GMT_ADD_STDIO_ALWAYS) is true we will register stdout as an destination, 
 	 *    and give error if other output items have already been registered.
 	 */
 	
@@ -2150,7 +2150,7 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	
 	/* Here nothing has been registered (n_reg = 0)  */
 	
-	if ((mode & GMT_REG_FILES_ALWAYS) || (mode & GMT_REG_FILES_IF_NONE)) {	/* Wish to register a single output file arg as destination */
+	if ((mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_FILES_IF_NONE)) {	/* Wish to register a single output file arg as destination */
 		current = head;
 		while (current) {		/* Loop over the list and look for input files */
 			if (current->option == GMTAPI_OPT_OUTFILE) n_reg++;	/* File given, count it */
@@ -2172,9 +2172,9 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	}
 	/* Note that n_reg can have changed if we added file arg */
 	
-	if ((mode & GMT_REG_STD_ALWAYS) && n_reg == 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output destination allowed at once */
+	if ((mode & GMT_ADD_STDIO_ALWAYS) && n_reg == 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output destination allowed at once */
 	
-	if (n_reg == 0 && ((mode & GMT_REG_STD_ALWAYS) || (mode & GMT_REG_STD_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
+	if (n_reg == 0 && ((mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE))) {	/* Wish to register stdout pointer as a destination */
 		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_STREAM, geometry, GMT_OUT, NULL, API->GMT->session.std[GMT_OUT])) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);	/* Failure to register stdout?*/
 		GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Added stdout to registered destinations\n");
 		n_reg = 1;	/* Only have one item */

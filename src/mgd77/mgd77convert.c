@@ -23,7 +23,7 @@
  
 #define THIS_MODULE k_mod_mgd77convert /* I am mgd77convert */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 
 void MGD77_select_high_resolution (struct GMT_CTRL *C);

@@ -40,7 +40,7 @@
 #define THIS_MODULE k_mod_grdview /* I am grdview */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* grdview needs to work on "tiles" which is defined as the "square" regions made
  * up by 4 nodes.  Since painting takes place within the tiles, any pixel-registered

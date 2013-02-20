@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_splitxyz /* I am splitxyz */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5

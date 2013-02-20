@@ -22,7 +22,7 @@
  * Date:	1-JUN-2006
  */
  
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct SPH2GRD_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */

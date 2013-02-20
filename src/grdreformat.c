@@ -25,7 +25,7 @@
 
 #define THIS_MODULE k_mod_grdreformat /* I am grdreformat */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDREFORMAT_CTRL {
 	struct IO {

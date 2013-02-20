@@ -25,7 +25,7 @@
  */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */

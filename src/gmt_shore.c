@@ -16,7 +16,7 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "gshhg_version.h"
 /*

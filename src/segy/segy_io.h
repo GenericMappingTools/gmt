@@ -10,7 +10,7 @@
 #ifndef SEGY_IO_H
 #define SEGY_IO_H
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "common_byteswap.h"
 
 #include "segy.h"

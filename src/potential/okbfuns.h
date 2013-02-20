@@ -19,7 +19,7 @@
 #ifndef OKBFUNS_H
 #define OKBFUNS_H
 
-#include "gmt.h"		/* Requires GMT to compile and link */
+#include "gmt_dev.h"		/* Requires GMT to compile and link */
 
 struct BODY_VERTS {
 	double  x, y, z;

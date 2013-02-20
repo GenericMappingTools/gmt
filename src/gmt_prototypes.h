@@ -399,11 +399,11 @@ EXTERN_MSC int GMT_solve_svd (struct GMT_CTRL *C, double *u, unsigned int m, uns
 EXTERN_MSC void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, bool degrees);
 EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, bool degrees);
 
-/* From gmtapi_parse.c */
+/* From gmt_parse.c */
 /* This macro is called via each modules Return macro so API and options are set */
 #define GMT_Free_Options(mode) {if (mode >= 0 && GMT_Destroy_Options (API, &options) != GMT_OK) exit (EXIT_FAILURE);}
 
-/* From gmtapi_util.c */
+/* From gmt_api.c */
 EXTERN_MSC struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr);
 
 #endif /* _GMT_PROTOTYPES_H */

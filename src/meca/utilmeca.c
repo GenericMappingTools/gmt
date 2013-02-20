@@ -5,7 +5,7 @@
  */
 
 #include "pslib.h"	/* to have pslib environment */
-#include "gmt.h"	/* to have gmt environment */
+#include "gmt_dev.h"	/* to have gmt environment */
 #include "meca.h"
 #include "utilmeca.h"
 #include "nrutil.h"

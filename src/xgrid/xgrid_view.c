@@ -9,7 +9,7 @@
 	quits.
 					*/
 
-#include <gmt.h>
+#include <gmt_dev.h>
 #include <strings.h>
 
 #include <X11/Intrinsic.h>

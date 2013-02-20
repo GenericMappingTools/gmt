@@ -38,7 +38,7 @@
 
 #define THIS_MODULE k_mod_greenspline /* I am greenspline */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 void gmt_Cmul (double A[], double B[], double C[]);
 void gmt_Cdiv (double A[], double B[], double C[]);

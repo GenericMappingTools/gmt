@@ -30,7 +30,7 @@
 
 #define THIS_MODULE k_mod_gmtaverage /* I am gmtaverage */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */

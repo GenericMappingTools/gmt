@@ -27,7 +27,7 @@
 #define THIS_MODULE k_mod_psxyz /* I am psxyz */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for psxyz */
 

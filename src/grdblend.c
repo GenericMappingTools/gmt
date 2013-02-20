@@ -40,7 +40,7 @@
 
 #define THIS_MODULE k_mod_grdblend /* I am grdblend */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define BLEND_UPPER	0
 #define BLEND_LOWER	1

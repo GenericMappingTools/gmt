@@ -31,7 +31,7 @@
 
 #define THIS_MODULE k_mod_grdsample /* I am grdsample */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDSAMPLE_CTRL {
 	struct In {

@@ -29,7 +29,7 @@
 
 #define THIS_MODULE k_mod_colmath /* I am colmath */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #ifdef GMT_COMPAT
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);

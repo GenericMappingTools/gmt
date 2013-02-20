@@ -81,7 +81,7 @@
  */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 double GMT_great_circle_dist_degree (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);

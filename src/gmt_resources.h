@@ -1,7 +1,8 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2013
+ *	P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -22,7 +23,7 @@
  *
  *
  * Author:	Paul Wessel
- * Date:	1-JAN-2010
+ * Date:	20-FEB-2013
  * Version:	5 API
  */
 
@@ -81,10 +82,10 @@ enum GMT_enum_dimensions {
 	GMT_Z};		/* z is in 2nd column */
 
 enum GMT_enum_freg {
-	GMT_REG_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
-	GMT_REG_FILES_ALWAYS = 2,		/* Tell GMT_Init_IO to always register all input files in the option list */
-	GMT_REG_STD_IF_NONE = 4,		/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
-	GMT_REG_STD_ALWAYS = 8,			/* Tell GMT_Init_IO to always register std(in|out) */
+	GMT_ADD_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
+	GMT_ADD_FILES_ALWAYS = 2,		/* Tell GMT_Init_IO to always register all input files in the option list */
+	GMT_ADD_STDIO_IF_NONE = 4,		/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
+	GMT_ADD_STDIO_ALWAYS = 8,			/* Tell GMT_Init_IO to always register std(in|out) */
 	GMT_REG_DEFAULT = 5};			/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 
 enum GMT_enum_read {
@@ -557,6 +558,19 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
+};
+
+/*============================================================ */
+/*=============== GMT_OPTION Public Declaration ============== */
+/*============================================================ */
+
+/* These struct are used to pass program options in/out of GMT modules */
+
+struct GMT_OPTION {	/* Structure for a single GMT command option */
+	char option;			/* 1-char command line -<option> (e.g. D in -D) identifying the option (* if file) */
+	char *arg;			/* If not NULL, contains the argument for this option */
+	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
+	struct GMT_OPTION *previous;	/* Pointer to previous option in a linked list */
 };
 
 #endif /* _GMT_RESOURCES_H */

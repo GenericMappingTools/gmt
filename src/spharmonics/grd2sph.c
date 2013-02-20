@@ -23,7 +23,7 @@
  * Version:	4.x
  */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRD2SPH_CTRL {
 	struct D {	/* -D<degree> */

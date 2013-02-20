@@ -20,7 +20,7 @@
  * 9(Q03005), doi:10.1029/2007GC001850.
  */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct DIMFILTER_INFO {
 	int nx;		/* The max number of filter weights in x-direction */

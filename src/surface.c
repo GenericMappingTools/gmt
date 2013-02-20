@@ -41,7 +41,7 @@
 
 #define THIS_MODULE k_mod_surface /* I am surface */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* MEX: <DI DDi GGO LGi */
 

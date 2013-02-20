@@ -34,7 +34,7 @@
  
 #define THIS_MODULE k_mod_triangulate /* I am triangulate */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */

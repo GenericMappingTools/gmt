@@ -28,7 +28,7 @@
 #define THIS_MODULE k_mod_psscale /* I am psscale */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);

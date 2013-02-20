@@ -34,7 +34,7 @@
  
 #define THIS_MODULE k_mod_mgd77list /* I am mgd77list */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 
 #define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"

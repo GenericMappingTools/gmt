@@ -255,7 +255,7 @@ EXTERN_MSC void gmt_Cdiv (double A[], double B[], double C[]);
 EXTERN_MSC void gmt_Ccot (double Z[], double cotZ[]);
 EXTERN_MSC double Cabs (double A[]);
 
-/* From gmtapi_util.c */
+/* From gmt_api.c */
 /* Sub function needed by GMT_end to free memory used in modules and at end of session */
 
 EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *C, int level);

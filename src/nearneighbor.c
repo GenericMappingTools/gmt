@@ -33,7 +33,7 @@
  
 #define THIS_MODULE k_mod_nearneighbor /* I am nearneighbor */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define NN_DEF_SECTORS	4
 #define NN_MIN_SECTORS	2

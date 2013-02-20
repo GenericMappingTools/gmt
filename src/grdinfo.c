@@ -27,7 +27,7 @@
 
 #define THIS_MODULE k_mod_grdinfo /* I am grdinfo */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for grdinfo */
 

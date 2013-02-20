@@ -30,7 +30,7 @@
 
 #define THIS_MODULE k_mod_makecpt /* I am makecpt */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 

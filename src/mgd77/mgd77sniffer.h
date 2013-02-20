@@ -16,7 +16,7 @@
  * 
  * ------------------------------------------------------------------*/
  
- #include "gmt.h"
+ #include "gmt_dev.h"
  #include "mgd77.h"
  #include "mgd77_e77.h"
  #include "mgd77_rls_coeffs.h"

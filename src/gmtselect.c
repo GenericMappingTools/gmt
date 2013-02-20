@@ -43,7 +43,7 @@
  
 #define THIS_MODULE k_mod_gmtselect /* I am gmtselect */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define GMTSELECT_N_TESTS	6				/* Number of specific tests available */
 #define GMTSELECT_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */

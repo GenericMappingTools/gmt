@@ -64,7 +64,7 @@
 ------------------------------------------------------------------*/
 
 #include "mgd77/mgd77.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #ifdef GMT_COMPAT
 /* Here are legacy functions for old GMT MGG supplement needed in x2sys */

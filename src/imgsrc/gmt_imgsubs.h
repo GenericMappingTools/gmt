@@ -22,7 +22,7 @@
  *
  */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* The following values are used to initialize the default values
 	controlling the range covered by the img file and the size 

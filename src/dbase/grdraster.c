@@ -32,7 +32,7 @@
 
 #define THIS_MODULE k_mod_grdraster /* I am grdraster */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "common_byteswap.h"
 
 void GMT_str_toupper (char *string);

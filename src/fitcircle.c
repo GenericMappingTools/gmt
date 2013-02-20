@@ -74,7 +74,7 @@
 
 #define THIS_MODULE k_mod_fitcircle /* I am fitcircle */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */

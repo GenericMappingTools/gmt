@@ -30,7 +30,7 @@
 
 #define THIS_MODULE k_mod_gmtconvert /* I am gmtconvert */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 #ifdef GMT_COMPAT
