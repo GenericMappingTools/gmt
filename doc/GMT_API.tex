@@ -489,7 +489,7 @@ GMT\_IS\_FILE		&	0	&       Pointer to name of a file \\ \hline
 GMT\_IS\_STREAM		&	1	&       Pointer to open file (or process)  \\ \hline
 GMT\_IS\_FDESC		&	2	&       Pointer to integer file descriptor \\ \hline
 GMT\_IS\_DUPLICATE	&	3	&       Pointer to memory to \emph{duplicate} data from \\ \hline
-GMT\_IS\_REF		&	4	&       Pointer to memory to \emph{reference} data from (realloc OK) \\ \hline
+GMT\_IS\_REFERENCE	&	4	&       Pointer to memory to \emph{reference} data from (realloc OK) \\ \hline
 GMT\_IS\_READONLY	&	5	&       Pointer to memory to \emph{read} data from \\ \hline
 \end{tabular}
 \caption{Integer constants used when specifying input or output methods.}
@@ -1470,7 +1470,7 @@ Then, \texttt{rec} is expected to hold at least as many items as the current set
 Alternatively (b), \texttt{rec} points to a text string.
 The \texttt{mode} parameter must be set to reflect what is passed.  Using \texttt{GMT\_Put\_Record}
 requires you to first initialize the destination with \texttt{GMT\_Init\_IO}.
-Note that for families GMT\_IS\_DATASET and GMT\_IS\_TEXTSET the methods GMT\_IS\_DUPLICATE and GMT\_IS\_REF are not supported since
+Note that for families GMT\_IS\_DATASET and GMT\_IS\_TEXTSET the methods GMT\_IS\_DUPLICATE and GMT\_IS\_REFERENCE are not supported since
 you can simply populate the GMT\_DATASET structure directly.
 As mentioned, \texttt{mode} affects what is actually written:
 \begin{description}
