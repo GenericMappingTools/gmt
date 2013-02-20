@@ -45,7 +45,7 @@
  * API pointer and if that is NULL then errors will be issued.
  */
  
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define ptr_return(API,err,ptr) { GMT_Report_Error(API,err); return (ptr);}
 #define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}

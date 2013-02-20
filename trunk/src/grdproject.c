@@ -28,7 +28,7 @@
 
 #define THIS_MODULE k_mod_grdproject /* I am grdproject */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDPROJECT_CTRL {
 	struct In {	/* Input grid */

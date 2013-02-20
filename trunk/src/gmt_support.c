@@ -78,7 +78,7 @@
  */
 
 #define GMT_WITH_NO_PS
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE, int id);

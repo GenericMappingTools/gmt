@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_gmtspatial /* I am gmtspatial */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *Sin, struct GMT_DATASEGMENT *Sout);
 

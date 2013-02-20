@@ -34,7 +34,7 @@
 
 #define THIS_MODULE k_mod_trend2d /* I am trend2d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define TREND2D_N_OUTPUT_CHOICES 6
 

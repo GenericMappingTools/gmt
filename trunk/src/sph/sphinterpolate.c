@@ -35,7 +35,7 @@
  
 #define THIS_MODULE k_mod_sphinterpolate /* I am sphinterpolate */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "sph.h"
 
 struct SPHINTERPOLATE_CTRL {

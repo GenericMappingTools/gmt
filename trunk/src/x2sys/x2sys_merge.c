@@ -27,7 +27,7 @@
 
 #define THIS_MODULE k_mod_x2sys_merge /* I am x2sys_merge */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct X2SYS_MERGE_CTRL {
 	struct A {	/* -A */

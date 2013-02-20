@@ -37,7 +37,7 @@
  
 #define THIS_MODULE k_mod_sphdistance /* I am sphdistance */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "sph.h"
 
 struct SPHDISTANCE_CTRL {

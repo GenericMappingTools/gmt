@@ -33,7 +33,7 @@
 
 #define THIS_MODULE k_mod_redpol /* I am redpol */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct REDPOL_CTRL {
 	struct In {

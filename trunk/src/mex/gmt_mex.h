@@ -21,7 +21,7 @@
 #ifndef GMT_MEX_H
 #define GMT_MEX_H
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include <mex.h>
 
 #ifdef GMT_MATLAB

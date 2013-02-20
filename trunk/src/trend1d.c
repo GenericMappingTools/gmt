@@ -73,7 +73,7 @@
 
 #define THIS_MODULE k_mod_trend1d /* I am trend1d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define TREND1D_N_OUTPUT_CHOICES 5
 

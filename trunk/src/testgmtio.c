@@ -24,7 +24,7 @@
  *
  */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 int main (int argc, char *argv[]) {
 	int n_fields = 0, mode = 0,  error = 0;

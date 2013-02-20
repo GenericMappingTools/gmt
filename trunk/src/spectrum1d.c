@@ -38,7 +38,7 @@
 
 #define THIS_MODULE k_mod_spectrum1d /* I am spectrum1d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 

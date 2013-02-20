@@ -39,7 +39,7 @@
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 #define GMT_WITH_NO_PS
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 int gmt_cdf_grd_info (struct GMT_CTRL *C, int ncid, struct GMT_GRID_HEADER *header, char job)

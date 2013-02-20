@@ -26,7 +26,7 @@
  
 #define THIS_MODULE k_mod_grdhisteq /* I am grdhisteq */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDHISTEQ_CTRL {
 	struct In {

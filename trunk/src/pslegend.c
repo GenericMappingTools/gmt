@@ -28,7 +28,7 @@
 #define THIS_MODULE k_mod_pslegend /* I am pslegend */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define FRAME_CLEARANCE	4.0	/* In points */
 #define FRAME_GAP	2.0	/* In points */

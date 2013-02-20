@@ -31,7 +31,7 @@
 
 #define THIS_MODULE k_mod_blockmedian /* I am blockmedian */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "block_subs.h"
 
 int GMT_blockmedian_usage (struct GMTAPI_CTRL *C, int level)

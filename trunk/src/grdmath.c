@@ -28,7 +28,7 @@
 
 #define THIS_MODULE k_mod_grdmath /* I am grdmath */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
 int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);

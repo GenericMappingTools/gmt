@@ -31,7 +31,7 @@
  *
  */
  
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #ifndef WIN32
 #include <termios.h>

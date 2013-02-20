@@ -44,7 +44,7 @@
 
 #define THIS_MODULE k_mod_gshhg /* I am gshhg */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gshhg.h"
 
 struct GSHHG_CTRL {

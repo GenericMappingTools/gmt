@@ -28,7 +28,7 @@
  
 #define THIS_MODULE k_mod_grdmask /* I am grdmask */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 

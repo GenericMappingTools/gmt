@@ -35,7 +35,7 @@
 
 #define THIS_MODULE k_mod_grd2cpt /* I am grd2cpt */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define GRD2CPT_N_LEVELS	11	/* The default number of levels if nothing is specified */
 

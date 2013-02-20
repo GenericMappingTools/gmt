@@ -9,7 +9,7 @@
 	parameters and error handling.
 					*/
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include <stdio.h>
 #include <errno.h>
 #include <X11/Intrinsic.h>

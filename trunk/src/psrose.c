@@ -33,7 +33,7 @@
 #define THIS_MODULE k_mod_psrose /* I am psrose */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */

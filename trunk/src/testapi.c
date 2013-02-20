@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_testapi /* I am testapi */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for testapi */
 
@@ -251,7 +251,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
 	
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_REG_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default input destination, unless already set */
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default input destination, unless already set */
 		Return (API->error);
 	}
 
@@ -420,7 +420,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 			
 	/* Now put the data to the registered destination */
 	
-	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_REG_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_OUT, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Put_Data (API, out_ID, 0, In) != GMT_OK) {

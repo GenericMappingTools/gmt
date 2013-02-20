@@ -28,7 +28,7 @@
 
 #define THIS_MODULE k_mod_project /* I am project */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define PROJECT_N_FARGS	7
 

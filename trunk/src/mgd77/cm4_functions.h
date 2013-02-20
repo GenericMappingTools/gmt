@@ -17,7 +17,7 @@
 #ifndef _CM4_FUNCTIONS_H
 #define _CM4_FUNCTIONS_H
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct MGD77_CM4 {
 	struct CM4_L {	/*  */

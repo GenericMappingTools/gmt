@@ -29,7 +29,7 @@
 
 #define THIS_MODULE k_mod_gmtstitch /* I am gmtstitch */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for gmtstitch */
 

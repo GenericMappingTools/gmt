@@ -20,7 +20,7 @@
 
 #define THIS_MODULE k_mod_mgd77manage /* I am mgd77manage */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 #include "mgd77_e77.h"	/* E77 Header Errata Codes */
 

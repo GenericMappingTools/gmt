@@ -54,7 +54,7 @@
 #define THIS_MODULE k_mod_pscoast /* I am pscoast */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define LAKE	0
 #define RIVER	1

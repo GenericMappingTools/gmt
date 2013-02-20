@@ -91,7 +91,7 @@
  */
 
 #define GMT_WITH_NO_PS
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "common_byteswap.h"
 

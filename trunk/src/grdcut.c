@@ -28,7 +28,7 @@
  
 #define THIS_MODULE k_mod_grdcut /* I am grdcut */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for grdcontour */
 

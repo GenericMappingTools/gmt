@@ -39,7 +39,7 @@
 #define THIS_MODULE k_mod_psmask /* I am psmask */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct PSMASK_CTRL {
 	struct C {	/* -C */

@@ -32,7 +32,7 @@
  
 #define THIS_MODULE k_mod_sphtriangulate /* I am sphtriangulate */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "sph.h"
 
 struct SPHTRIANGULATE_CTRL {

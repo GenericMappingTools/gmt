@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_gmtvector /* I am gmtvector */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 enum gmtvector_method {	/* The available methods */
 	DO_NOTHING=0,

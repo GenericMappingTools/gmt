@@ -31,7 +31,7 @@
 
 #define THIS_MODULE k_mod_blockmean /* I am blockmean */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "block_subs.h"
 
 /* MEX: <DI >DO */

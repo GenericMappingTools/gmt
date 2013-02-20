@@ -27,7 +27,7 @@
 #define GMT_WITH_NO_PS
 #define THIS_MODULE k_mod_gmtset /* I am gmtset */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for gmtset */
 

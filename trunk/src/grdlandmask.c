@@ -28,7 +28,7 @@
  
 #define THIS_MODULE k_mod_grdlandmask /* I am grdlandmask */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define GRDLANDMASK_N_CLASSES	(GSHHS_MAX_LEVEL + 1)	/* Number of bands separated by the levels */
 

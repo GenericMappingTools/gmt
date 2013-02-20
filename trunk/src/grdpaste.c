@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_grdpaste /* I am grdpaste */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDPASTE_CTRL {
 	struct In {

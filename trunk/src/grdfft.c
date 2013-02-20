@@ -29,7 +29,7 @@
 
 #define THIS_MODULE k_mod_grdfft /* I am grdfft */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #ifdef DEBUG
 /* For debuging -E; running this in debug and setting it to true will also output the number of estimates per radial k */

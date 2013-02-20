@@ -34,7 +34,7 @@
 #define THIS_MODULE k_mod_pswiggle /* I am pswiggle */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #ifdef GMT_COMPAT
 int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);

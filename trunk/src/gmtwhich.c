@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_gmtwhich /* I am gmtwhich */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GMTWHICH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */

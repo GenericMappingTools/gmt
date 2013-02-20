@@ -19,7 +19,7 @@
 #ifndef _MGD77_H
 #define _MGD77_H
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 #define MGD77_VERSION		"1.4"		/* Current version of MGD77 supplement */
 #define MGD77_CDF_VERSION	"2006.04.15"	/* Current version of MGD77+ files created */

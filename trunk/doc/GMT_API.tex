@@ -39,55 +39,64 @@
 	\caption{GMT 4 programs contain all the high-level functionality.}
 \end{figure}
 Prior to version 5, the bulk of \GMT\ functionality was coded directly
-in the standard \GMT\ C program modules (e.g., \filename{surface.c}, \filename{psxy.c}, \filename{grdimage.c}).
-The \GMT\ library only offered access to lower-level functions from which those
+in the standard \GMT\ C program modules (e.g., \filename{surface.c}, \filename{psxy.c}, \filename{grdimage.c}, etc.).
+The \GMT\ library only offered access to low-level functions from which those
 high-level \GMT\ programs were built.  The standard \GMT\ programs have been very successful,
 with tens of thousands of users world-wide.  However, the design of the main programs
 prevented developers from leveraging \GMT\ functionality from within other
 programming environments since access to \GMT\ tools could only be achieved
-via system calls.  Consequently, all data i/o had to be done via temporary files.
+via system calls\footnote{or via a very confusing and ever-changing myriad of
+low-level library functions for bold programmers.}.
+Consequently, all data i/o had to be done via temporary files.
 The design also prevented the \GMT\ developers themselves from taking advantage of these
 modules directly.  For instance, the tool \GMTprog{pslegend} needed to make extensive use of system calls
 to \GMTprog{psxy} and \GMTprog{pstext} in order to plot the lines, symbols and text
-that make up a map legend.
+that make up a map legend, making it a very awkward program to maintain.
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=10cm,bb=0 0 485 255]{GMT5_mode.png}
 	\caption{GMT 4 programs contain all the high-level functionality.}
 \end{figure}
-Starting with \GMT\ version 5, all standard \GMT\ programs are split into short driver
+Starting with \GMT\ version 5, all standard \GMT\ programs have been split into a short driver
 program (the ``new'' \GMT\  programs) and a function ``module''.  The drivers simply call the corresponding \GMT\ modules;
-it is these modules that do most of the work.  These new functions have been placed
+it is these modules that do all the work.  These new functions have been placed
 in a new \GMT\ high-level API library and can be called from a variety of environments
-(C/C++, Fortran, Python, Matlab, Visual Basic, etc.)\footnote{Currently, only C/C++ and Matlab are being tested.}.
+(C/C++, Fortran, Python, Matlab, Visual Basic, Julia, R, etc.)\footnote{Currently, only C/C++ and Matlab are being tested.}.
 For example, the main program
 \filename{blockmean.c} has been reconfigured as a high-level function \GMTfunc{GMT\_blockmean()},
-which does the actual spatial averaging and passes the result back to the calling program.
+which does the actual spatial averaging and can pass the result back to the calling program (or write it to file).
 The previous behavior of \filename{blockmean.c} is replicated by a short driver program
 that simply collects user arguments and then calls \GMTfunc{GMT\_blockmean()}.  Indeed, the driver
-programs for all the standard \GMT\ programs are so short and simple that the makefile generates them
+programs for all the standard \GMT\ programs are identical so that the makefile generates them
 on-the-fly when it compiles and links them with the \GMT\ library into executables.
-Thus, \filename{blockmean.c} and others do no longer exist.
+Thus, \filename{blockmean.c} and others do in fact no longer exist.
+
+\section{The i/o abstraction layer}
 
 In order for this interface to be as flexible as possible we have generalized the notion of input
-and output. Now, data that already reside in an application's memory may serve as
+and output. Data that already reside in an application's memory may serve as
 input to a \GMT\ function.  Other sources of input may be file pointers
 and file descriptors (as well as the already-supported mechanism for passing file names).
 For standard data table i/o, the \GMT\ API takes care of the task of assembling any combination
-of files, pointers, and memory locations into a single virtual data set from which the \GMT\
+of files, pointers, and memory locations into \emph{a single virtual data set} from which the \GMT\
 function may read (a) all records at once into memory, or (b) read one record at a time.
 Likewise, \GMT\ functions may write their output to a virtual destination, which
 might be a memory location in the user's application, a file pointer or descriptor, or
 an output file.  The \GMT\ functions are unaware of these details and simply
 read from a ``source'' and write to a ``destination''.
 
+\section{Our audience}
+
 Here, we document the new functions in the \GMT\ API library for application developers
 who wish to call these functions from their own custom programs.  At this point,
 only the new high-level \GMT\ API is fully documented and intended for public use.
 The structure and documentation of the under-lying lower-level \GMT\ library is not finalized.
 Developers using these functions may risk disruption to their programs due to changes we may
-make in the library in support of the \GMT\ API.
+make in the library in support of the \GMT\ API.  However, developers who wish to make supplemental
+packages to be distributed as part of \GMT\ will (other than talk to us) probably want to access
+the entire low-level \GMT\ library as well.  It is unlikely that library will every be fully
+documented.
 
 \section{Definitions}
 
@@ -111,7 +120,8 @@ the correct type that the \GMT\ function expect.
 \end{enumerate}
 In version 5, the standard \GMT\ programs are themselves specific but overly simple examples
 of \GMT\ applications that only call the single \GMT\ function they are associated with.
-However, some exceptions such as \GMTprog{pslegend} and \GMTprog{gmtconvert} call several modules.
+However, some programs such as \GMTprog{pslegend}, \GMTprog{gmtconvert}, \GMTprog{grdblend},
+\GMTprog{grdfilter} and others call several modules.
 
 \section{Recognized resources}
 \index{Recognized resources}
@@ -123,12 +133,53 @@ In addition, we present two data types to facilitate the passing of simple user 
 of any data type, e.g., double, char) and 2-D or 3-D user matrices (of any data type and column/row
 organization\footnote{At the moment, GMT does not have native support for 3-D grids.}). We
 refer to these data types as \GMT\ \emph{resources}.
-There are many attributes for each of these five resources and therefore we use a top-level structure for each
+There are many attributes for each of these resources and therefore we use a top-level structure for each type
 to keep them all in one container.  These containers are given or returned by the \GMT\ API
-functions using pointers (\texttt{void *}).  Below we discuss these containers in some detail; we
+functions using opaque pointers (\texttt{void *}).  Below we discuss these containers in some detail; we
 will later present how they are used when importing or exporting them to or from files,
 memory locations, or streams.  The first five are the standard \GMT\ objects, while the latter two are the
 special user data containers to facilitate converting user data into \GMT\ resources.
+
+\subsection{Data tables}
+\index{Data tables}
+\index{Resources!Data tables}
+
+Much data processed in \GMT\ come in the form of ASCII, netCDF, or native binary data tables.  These may
+have any number of header records (ASCII files only) and perhaps segment headers.  \GMT\ programs will
+read one or more such tables when importing data.  However, to avoid memory duplication or limitations
+some programs may prefer to read
+records one at the time.  The \GMT\ API has functions that let you read record-by-record
+by presenting a virtual data set that combines all the data tables specified as input.
+This simplifies record processing considerably.  A \texttt{struct GMT\_DATASET} may contain
+any number of tables, each with any number of segments, each segment with any number of records,
+and each record with any number of columns.   Thus, the
+arguments to \GMT\ API functions that handle such data sets expect this type of variable.  All segments
+are expected to have the same number of columns.
+
+\subsection{Text tables}
+\index{Text tables}
+\index{Resources!Text tables}
+
+Some data needed by \GMT\ are simply free-form ASCII text tables.  These are handled
+similarly to data tables.  E.g., they may have any number of header records and even segment headers,
+and \GMT\ programs can read one or more tables or get text records one at the time.
+A \texttt{struct GMT\_TEXTSET} may contain
+any number of tables, each with any number of segments, and each segment with any number of records.   Thus, the
+arguments to \GMT\ API functions that handle such data sets expect this type of variable.  The user's
+program may then parse and process such text records as required.  This resources is particularly useful
+when your data consist of a mix or data coordinates and ordinary text since regular data tables will be
+parsed for floating-point columns only.
+
+\subsection{GMT grids}
+\index{GMT grids}
+\index{Resources!GMT grids}
+
+\GMT\ grids are used to represent equidistant and organized 2-D surfaces.  These can be
+plotted as contour maps, color images, or as perspective surfaces.  Because the native
+\GMT\ grid is simply a 1-D float array with all the metadata kept in a separate header, we
+pass this information via a \texttt{struct GMT\_GRID}, which is a container that holds both items.
+Thus, the arguments to \GMT\ API functions that handle such \GMT\ grids expect this type
+of variable.
 
 \subsection{CPT palette tables}
 \index{CPT palette tables}
@@ -143,44 +194,6 @@ arguments to \GMT\ API functions that handle palettes expect this type of variab
 that users will wish to manipulate a CPT table directly, but rather use this mechanism to hold them
 in memory and pass as arguments to \GMT\ modules.
 
-\subsection{Data tables}
-\index{Data tables}
-\index{Resources!Data tables}
-
-Much data processed in \GMT\ come in the form of ASCII, netCDF, or native binary data tables.  These may
-have any number of header records (ASCII only) and perhaps segment headers.  \GMT\ programs will
-read one or more such tables when importing data.  However, to avoid memory duplication or limitations
-some programs may prefer to read
-records one at the time.  The \GMT\ API has functions that let you read record-by-record
-by presenting a virtual data set that combines all the data tables specified as input.
-This simplifies record processing considerably.  A \texttt{struct GMT\_DATASET} may contain
-any number of tables, each with any number of segments, and each segment with any number of records.   Thus, the
-arguments to \GMT\ API functions that handle such data sets expect this type of variable.  All segments
-are expected to have the same number of columns.
-
-\subsection{Text tables}
-\index{Text tables}
-\index{Resources!Text tables}
-
-Some data needed by \GMT\ are simply free-form ASCII text tables.  These are handled
-similarly to data tables.  E.g., they may have any number of header records and even segment headers,
-and \GMT\ programs can read one or more tables or get text records one at the time.
-A \texttt{struct GMT\_TEXTSET} may contain
-any number of tables, each with any number of segments, and each segment with any number of records.   Thus, the
-arguments to \GMT\ API functions that handle such data sets expect this type of variable.  The user's
-program may then parse and process such text records as required.
-
-\subsection{GMT grids}
-\index{GMT grids}
-\index{Resources!GMT grids}
-
-\GMT\ grids are used to represent equidistant and organized 2-D surfaces.  These can be
-plotted as contour maps, color images, or as perspective surfaces.  Because the native
-\GMT\ grid is simply a 1-D float array with all the metadata kept in a separate header, we
-pass this information via a \texttt{struct GMT\_GRID}, which is a container that holds both items.
-Thus, the arguments to \GMT\ API functions that handle such \GMT\ grids expect this type
-of variable.
-
 \subsection{GMT images}
 \index{GMT images}
 \index{Resources!GMT images}
@@ -191,17 +204,18 @@ of a header, we use the same header structure for grids as for images; however, 
 metadata attributes are also needed.  Finally, the image itself may be of any data type and have more than one band (channel).
 Both image and header information are passed via a \texttt{struct GMT\_IMAGE}, which is a container that holds both items.
 Thus, the arguments to \GMT\ API functions that handle \GMT\ images expect this type
-of variable.  Unlike the other objects, images can only be read and not written.
+of variable.  Unlike the other objects, images can only be read and not written\footnote{This may change in later releases.}.
 
-\subsection{User data columns}
+\subsection{User data columns (GMT vectors)}
 \index{User data columns}
+\index{GMT vectors}
 \index{Resources!User data columns}
 
 Programs that wish to call \GMT\ modules may hold data in their own particular data
 structures.  For instance, the user's program may have three column arrays of type float
 and wishes to use these as the input source to the \texttt{GMT\_surface} module, which normally
-expects double precision triplets via a \texttt{struct GMT\_DATASET} via file or reference.
-Simply create a \texttt{struct GMT\_VECTOR} (see section~\ref{sec:create}) and assign the union
+expects double precision triplets via a \texttt{struct GMT\_DATASET} read from a file or given by memory reference.
+Simply create a new \texttt{struct GMT\_VECTOR} (see section~\ref{sec:create}) and assign the union
 array pointers (see Table~\ref{tbl:univector}) to your data columns and provide
 the required information on length, data types, and optionally range (see Table~\ref{tbl:vector}).
 By letting the \GMT\ module know you are passing a data set \emph{via} a \texttt{struct GMT\_VECTOR} it
@@ -252,8 +266,9 @@ line are not meant to be accessed by developers.}
 \end{table}
 \noindent
 
-\subsection{User data matrices}
+\subsection{User data matrices (GMT matrices)}
 \index{User data matrices}
+\index{GMT matrices}
 \index{Resources!User data matrices}
 
 \begin{table}[h]
@@ -283,7 +298,7 @@ line are not meant to be accessed by developers.}
 \noindent
 Likewise, programs may have an integer 2-D matrix in memory 
 and wish to use that as the input grid to the \texttt{GMT\_grdfilter} module, which normally
-expects a \texttt{struct GMT\_GRID} with floating point data via file or reference.  As for user vectors, we create a
+expects a \texttt{struct GMT\_GRID} with floating point data via a file or provided by memory reference.  As for user vectors, we create a
 \texttt{struct GMT\_MATRIX} (see section~\ref{sec:create}), assign the appropriate union pointer to your data
 matrix and provide information on dimensions and data type (see Table~\ref{tbl:matrix}).
 Let the \GMT\ module know you are passing a grid via a
@@ -371,7 +386,9 @@ The steps a--d collapse into a single step if data are simply read from files.
 
 Advanced programs may be calling more than one \GMT\ session and thus run several
 sessions, perhaps concurrently as different threads on multi-core machines.
-We will now discuss these steps in more detail.
+We will now discuss these steps in more detail.  Throughout, we will introduce upper-case \GMT\ C enum
+constants \emph{in lieu} of simple integer constants.  These are considered part of the API
+and are available for developers via the \filename{gmt.h} include file.
 
 \chapter{The GMT C Application Program Interface}
 \index{C interface}
@@ -423,7 +440,7 @@ the programs are either written to standard output (which you redirect to files 
 or to files specified by specific program options (e.g., \Opt{G}\emph{output.nc}).  Alternatively, the
 \GMT\ API allows you to specify input (and output) to be associated with open file handles
 or program variables.  We will examine this more closely below.  Registering a
-resource is a required step before attempting to import or export data that do not come from files
+resource is a required step before attempting to import or export data that \emph{do not} come from files
 or standard input/output.
 
 \subsection{Resource registration}
@@ -452,7 +469,7 @@ error.
 
 \subsection{Object ID encoding}
 To use registered resources as program input or output arguments you must pass them via
-a text string that represents a special file name (Chapter~\ref{ch:overview}).  The proper filename
+a text string that acts as a special file name (Chapter~\ref{ch:overview}).  The proper filename
 formatting is guaranteed by using the function
 \index{GMT\_Encode\_ID}
 
@@ -474,7 +491,7 @@ GMT\_IS\_GRID		&	2	&	A \GMT\ grid file \\ \hline
 GMT\_IS\_CPT		&	3	&	A CPT file \\ \hline
 GMT\_IS\_IMAGE		&	4	&	A \GMT\ image \\ \hline
 \end{tabular}
-\caption{Integer constants for specifying input or output data families.}
+\caption{API constants for specifying input or output data families.}
 \label{tbl:family}
 \index{Resources!Parameters!Floating point}
 \end{table}
@@ -486,13 +503,13 @@ GMT\_IS\_IMAGE		&	4	&	A \GMT\ image \\ \hline
 \begin{tabular}{|l|l|l|} \hline
 \multicolumn{1}{|c|}{\emph{method}} & \multicolumn{1}{c|}{\emph{value}} & \multicolumn{1}{c|}{\emph{how to read/write data}} \\ \hline
 GMT\_IS\_FILE		&	0	&       Pointer to name of a file \\ \hline
-GMT\_IS\_STREAM		&	1	&       Pointer to open file (or process)  \\ \hline
+GMT\_IS\_STREAM		&	1	&       Pointer to open stream (or process)  \\ \hline
 GMT\_IS\_FDESC		&	2	&       Pointer to integer file descriptor \\ \hline
-GMT\_IS\_DUPLICATE	&	3	&       Pointer to memory to \emph{duplicate} data from \\ \hline
-GMT\_IS\_REFERENCE	&	4	&       Pointer to memory to \emph{reference} data from (realloc OK) \\ \hline
-GMT\_IS\_READONLY	&	5	&       Pointer to memory to \emph{read} data from \\ \hline
+GMT\_IS\_DUPLICATE	&	3	&       Pointer to memory we may \emph{duplicate} data from \\ \hline
+GMT\_IS\_REFERENCE	&	4	&       Pointer to memory we may \emph{reference} data from (realloc OK) \\ \hline
+GMT\_IS\_READONLY	&	5	&       Pointer to memory we may \emph{read} data from (no realloc) \\ \hline
 \end{tabular}
-\caption{Integer constants used when specifying input or output methods.}
+\caption{API constants used when specifying input or output methods.}
 \label{tbl:methods}
 \index{Resources!Methods}
 \end{table}
@@ -505,7 +522,7 @@ GMT\_IS\_READONLY	&	5	&       Pointer to memory to \emph{read} data from \\ \hli
 GMT\_VIA\_VECTOR	&	100	&       User's data columns are accessed via a GMT\_VECTOR structure \\ \hline
 GMT\_VIA\_MATRIX	&	200	&       User's matrix is accessed via a GMT\_MATRIX structure \\ \hline
 \end{tabular}
-\caption{Integer constants used when user data forms are involved.  These are added
+\caption{API constants used when user data forms are involved.  These are added
 to the \emph{method} value used when registering the resource.}
 \label{tbl:via}
 \index{Resources!Conversions}
@@ -522,7 +539,7 @@ GMT\_IS\_LINE		&	2	&       Geographic or Cartesian line segments \\ \hline
 GMT\_IS\_POLYGON	&	3	&       Geographic or Cartesian closed polygons \\ \hline
 GMT\_IS\_SURFACE	&	4	&       2-D gridded surface \\ \hline
 \end{tabular}
-\caption{Integer constants defined to register different geometries.}
+\caption{API constants defined to register different geometries.}
 \label{tbl:geometry}
 \index{Resources!Geometries}
 \end{table}
@@ -550,12 +567,13 @@ the 3rd dimension can be used with GMT\_MATRIX resources.}
 \index{Initialization!Resources}
 All \GMT\ programs dealing with input or output files given on the command line, and perhaps defaulting to
 the standard input or output streams if no files are given, must call the i/o initializer function
-\texttt{GMT\_Init\_IO} once for each direction required (i.e., input and output).
+\texttt{GMT\_Init\_IO} once for each direction required (i.e., input and output separately).
 For input it determines how many input sources have already been registered.
 If none has been registered then it scans the program arguments for any filenames given on the command line and register
 these input resources.  Finally, if we still have found no input sources we assign the standard input stream
 as the single input source.  For output it is similar: If no single destination has been registered we specify the standard output stream
-as the output destination.  Only one output destination is allowed to be active when a module writes data.
+as the output destination.  Only one main output destination is allowed to be active when a module writes data (some
+modules also write additional output via program-specific options).
 The prototype for this function is
 \index{GMT\_Init\_IO}
 
@@ -570,46 +588,50 @@ where \texttt{family} specifies what kind of resource is to be registered,
 \texttt{mode} is a bit flag that determines what we do if no resources have been
 registered. The choices are
 \begin{description}
-	\item [1] (or GMT\_REG\_FILES\_IF\_NONE) means ``add command line (option) files if none have been registered already''
-	\item [2] (or GMT\_REG\_FILES\_ALWAYS) means ``always add any command line files''
-	\item [4] (or GMT\_REG\_STD\_IF\_NONE) means ``add std* if no other input/output have been specified''
-	\item [8] (or GMT\_REG\_STD\_ALWAYS) means ``always add std* even if resources have been registered''.
+	\item [1] (or GMT\_ADD\_FILES\_IF\_NONE) means ``add command line (option) files if none have been registered already''
+	\item [2] (or GMT\_ADD\_FILES\_ALWAYS) means ``always add any command line files''
+	\item [4] (or GMT\_ADD\_STDIO\_IF\_NONE) means ``add std* if no other input/output have been specified''
+	\item [8] (or GMT\_ADD\_STDIO\_ALWAYS) means ``always add std* even if resources have been registered''.
 \end{description}
+\index{GMT\_ADD\_FILES\_IF\_NONE}
+\index{GMT\_ADD\_FILES\_ALWAYS}
+\index{GMT\_ADD\_STDIO\_IF\_NONE}
+\index{GMT\_ADD\_STDIO\_ALWAYS}
+\index{GMT\_REG\_DEFAULT}
 The standard behavior is 5 (or GMT\_REG\_DEFAULT).
-Next, \texttt{n\_args} is 0 if \texttt{args} is the head of a linked list of options;
-otherwise \texttt{args} is an array of \texttt{n\_args} strings (i.e., char *argv[])
+Next, \texttt{n\_args} is 0 if \texttt{args} is the head of a linked list of options (further discussed in Section~\ref{sec:func});
+otherwise \texttt{args} is an array of \texttt{n\_args} strings (i.e., the int argc, char *argv[] model)
 
 Many programs will register an export location where results of a \GMT\ function (say,
-a filtered grid) should be returned, but later on wish to use that variable as an \emph{input}
-resource in the next module call.  This is accomplished by re-registering the same array
-location as an import source, thereby changing the \emph{direction} of the data set.
+a filtered grid) should be returned, but may then wish to use that variable as an \emph{input}
+resource in a subsequent module call.  This is accomplished by re-registering the resource
+as an \emph{input} source, thereby changing the \emph{direction} of the data set.
 The function returns TRUE (1) if there is an error; otherwise it returns FALSE (0).
 
-\subsection{Dimension parameters for user column vectors}
+\subsection{Dimension parameters for user 1-D column vectors}
 We refer to Table~\ref{tbl:vector}.  The \texttt{type} array must hold the
-data type of each data column in the user's program.  All types other than GMT\_DOUBLE will need
-to be converted internally in \GMT\ to \texttt{double}, thus possibly increasing memory requirements.
+data type of each data column in the user's program.  All types other than GMT\_DOUBLE will
+be converted internally in \GMT\ to \texttt{double}, thus possibly increasing memory requirements.
 If the type is GMT\_DOUBLE then \GMT\ will be able to use the column directly by reference.  The \texttt{n\_columns}
-and \texttt{n\_rows} parameters indicate the number of vectors and their common length.  These are known in
-the case of input but may be unknowable in the case of output; if so you may pass 0 for these values
+and \texttt{n\_rows} parameters indicate the number of vectors and their common length.  If these
+are not yet known you may pass 0 for these values
 and set \texttt{alloc\_mode} to GMT\_REFERENCE (1); this will make
 sure \GMT\ will allocate the necessary memory to the variable you specify.
 
 \subsection{Dimension parameters for user 2-D table arrays}
 
 We refer to Table~\ref{tbl:matrix}.  The \texttt{type} parameter specifies the
-data type used for the array in the user's program.  All types other than GMT\_FLOAT will need
-to be converted internally in \GMT\ to \texttt{float}, thus possibly increasing memory requirements.
+data type used for the array in the user's program.  All types other than GMT\_FLOAT will
+be converted internally in \GMT\ to \texttt{float}, thus possibly increasing memory requirements.
 If the type is GMT\_FLOAT then \GMT\ may be able to use the matrix directly by reference.  The \texttt{n\_rows}
-and \texttt{n\_columns} parameters indicate the dimensions of the matrix.  These are known in
-the case of input but may be unknowable in the case
-of output; if so you may pass 0 for these values and set \texttt{alloc\_mode} to GMT\_REFERENCE 1; this will make
+and \texttt{n\_columns} parameters indicate the dimensions of the matrix.  If these
+are not yet known you may pass 0 for these values and set \texttt{alloc\_mode} to GMT\_REFERENCE 1; this will make
 sure \GMT\ will allocate the necessary memory at the location you specify.  Fortran users
 will instead have to specify a size large enough to hold the anticipated output data.
 The \texttt{registration} and \texttt{range} gives the grid registration and domain.
 Finally, use \texttt{dim} to indicate if the memory matrix has a dimension that
 exceeds that of the leading row (or column) dimension. Note: For GMT\_IS\_TEXTSET
-the user matrix is expected to be a 2-D character array with row length by \texttt{dim]}
+the user matrix is expected to be a 2-D character array with a fixed row length of \texttt{dim}
 but we only consider the first \texttt{n\_columns} characters.  For data grids you will
 also need to specify the \texttt{registration}  (see the \GMT\ Cookbook and Reference,
 Appendix B for description of the two forms of registration) and data domain \texttt{range}.
@@ -621,8 +643,7 @@ Appendix B for description of the two forms of registration) and data domain \te
 
 If your application needs to build and populate \GMT\ resources in ways that do
 not depend on external resources (files, memory locations, etc.), then you
-can obtain a ``blank slate'' of certain \GMT\ structures.  
-This is achieved by calling
+can obtain a ``blank slate'' by calling
 
 \begin{verbatim}
 void * GMT_Create_Data (void *API, unsigned int family, uint64_t par[]);
@@ -725,7 +746,8 @@ However, one bit setting is common to all types: By default, you are only allowe
 data source once; the source is then flagged as having been read and subsequent attempts to read
 from the same source will result in a warning and no reading takes place.  In the unlikely event you need to re-read a
 source you can override this default behavior by adding GMT\_IO\_RESET to your \texttt{mode} parameter.
-Note that this override does not apply to sources that are streams or file handles.
+Note that this override does not apply to sources that are streams or file handles, as it may not be
+possible to re-read their contents.
 
 \subsection{Enable Data Import}
 \index{Import!Enable}
@@ -769,7 +791,7 @@ void * GMT_Read_Data (void *API, unsigned int family, \
     unsigned int method, unsigned int geometry, unsigned int mode, \
     double wesn[], char *input, void *ptr);
 \end{verbatim}
-where \texttt{ptr} is usually NULL except when reading grids in two steps
+where \texttt{ptr} is NULL except when reading grids in two steps
 (i.e., first get a grid structure with a header, then read the data).
 Most of these arguments have been discussed earlier.  This function can
 be called in three different situations:
@@ -824,7 +846,7 @@ void * GMT_Get_Data (void *API, int ID, unsigned int mode, void *ptr);
 \end{verbatim}
 The \texttt{ID} is the unique object ID you received when registering the resource,
 \texttt{mode} controls some aspects of the import (see \texttt{GMT\_Read\_Data} above),
-while \texttt{ptr} is usually NULL except when reading grids in two steps
+while \texttt{ptr} is NULL except when reading grids in two steps
 (i.e., first get a grid structure with a header, then read the data).
 Other arguments have been discussed earlier.  
 Space will be allocated to hold the results, if needed, and a pointer to the object is returned.

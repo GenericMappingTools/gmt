@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * Include file for programs that use the map-projections functions.  Note
- * that most programs will include this by including gmt.h
+ * that most programs will include this by including gmt_dev.h
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010

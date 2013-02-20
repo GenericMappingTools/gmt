@@ -77,7 +77,7 @@
  */
 
 #define GMT_WITH_NO_PS
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "gmt_internals.h"
 
 unsigned int gmt_bcr_reject (struct GMT_GRID_HEADER *h, double xx, double yy)

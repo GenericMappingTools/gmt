@@ -26,7 +26,7 @@
 
 #define THIS_MODULE k_mod_minmax /* I am minmax */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 int gmt_geo_C_format (struct GMT_CTRL *C);
 unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);

@@ -34,7 +34,7 @@
  
 #define THIS_MODULE k_mod_grdedit /* I am grdedit */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDEDIT_CTRL {
 	struct In {

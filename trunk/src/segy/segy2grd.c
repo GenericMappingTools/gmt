@@ -27,7 +27,7 @@
  
 #define THIS_MODULE k_mod_segy2grd /* I am segy2grd */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "segy_io.h"
 
 #define COUNT	1

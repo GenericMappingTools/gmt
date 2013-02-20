@@ -40,7 +40,7 @@
 
 #define THIS_MODULE k_mod_gmtdp /* I am gmtdp */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for gmtdp */
 

@@ -35,7 +35,7 @@
 #define GMT_WITH_NO_PS
 #define THIS_MODULE k_mod_ps2raster /* I am ps2raster */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 void GMT_str_toupper (char *string);
 

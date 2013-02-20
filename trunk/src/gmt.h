@@ -1,7 +1,8 @@
 /*--------------------------------------------------------------------
  *	$Id$
  *
- *	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+ *	Copyright (c) 1991-2013
+ *	P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -15,114 +16,99 @@
  *
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
+
 /*
- * gmt.h is the main include file for GMT.  It contains definitions
- * for several of the structures and parameters used by all programs.
- * It also includes all of the other include files that are needed.
+ * The single include file for users who wish to develop applications
+ * that require building blocks from the GMT Application Program Interface
+ * library (the GMT API), which also depends on the GMT Core library.
  *
- * Author:	Paul Wessel
- * Date:	01-AUG-2011
+ * Author: 	Paul Wessel
+ * Date:	20-FEB-2013
  * Version:	5 API
  */
 
-/* Note on data type:  GMT will generally use double precision for
- * all floating point values except for grids which are held in single
- * precision floats.  All integer values are standard int (presumably
- * 32-bit) except for quantities that may be very large, such as
- * counters of data records, which will be declared as uint64_t, and
- * variables that holds allocated number of bytes and similar, which
- * will be declared as size_t.  Occasionally, arrays of integer values
- * will be stored in smaller memory containers such as short int of
- * unsigned/signed char when the program logic places limits on their
- * possible ranges (e.g., true/false variables).
- */
-
-#pragma once
 #ifndef _GMT_H
 #define _GMT_H
 
-#ifdef __cplusplus	/* Basic C++ support */
+#ifdef __cplusplus /* Basic C++ support */
 extern "C" {
 #endif
 
-/* CMake definitions: This must be first! */
-#include "gmt_config.h"
-
-#define MEMDEBUG	/* For the time being we set this explicitly; later it will only be set via -DMEMDEBUG */
-
-/* Declaration modifiers for DLL support (MSC et al) */
-#include "declspec.h"
-
-
-/*--------------------------------------------------------------------
- *      SYSTEM HEADER FILES
- *--------------------------------------------------------------------*/
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <stdint.h>
 
-#include <float.h>
-#include <math.h>
-#include <limits.h>
+/*
+ * When an application links to a DLL in Windows, the symbols that
+ * are imported have to be identified as such.
+ */
+#ifndef EXTERN_MSC
+#	ifdef _WIN32
+#		ifdef LIBRARY_EXPORTS
+#			define EXTERN_MSC extern __declspec(dllexport)
+#		else
+#			define EXTERN_MSC extern __declspec(dllimport)
+#		endif /* !LIBRARY_EXPORTS */
+#	else /* !_WIN32 */
+#		define EXTERN_MSC extern
+#	endif /* _WIN32 */
+#endif /* EXTERN_MSC */
 
-#include <time.h>
+/* Include GMT constants, resources, and module prototypes */
 
-#include "common_math.h"        /* Shared math functions */
-#include "gmtapi.h"             /* All GMT high-level API */
-#include "gmtapi_private.h"     /* API declaration needed by libraries */
+#include "gmt_define.h"
+#include "gmt_resources.h"
+#include "gmt_module.h"
 
-struct GMT_CTRL; /* forward declaration of GMT_CTRL */
+/*=====================================================================================
+ *	GMT API FUNCTION PROTOTYPES
+ *=====================================================================================
+ */
 
-#include "gmt_notposix.h"       /* Non-POSIX extensions */
+/* 20 Primary API functions */
+EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
+EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
+EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC void * GMT_Read_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
+EXTERN_MSC void * GMT_Retrieve_Data	(void *C, int object_ID);
+EXTERN_MSC void * GMT_Get_Record	(void *C, unsigned int mode, int *retval);
+EXTERN_MSC int GMT_Destroy_Session	(void *C);
+EXTERN_MSC int GMT_Register_IO		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
+EXTERN_MSC int GMT_Init_IO		(void *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
+EXTERN_MSC int GMT_Begin_IO		(void *C, unsigned int family, unsigned int direction);
+EXTERN_MSC int GMT_Status_IO		(void *C, unsigned int mode);
+EXTERN_MSC int GMT_End_IO		(void *C, unsigned int direction, unsigned int mode);
+EXTERN_MSC int GMT_Report_Error		(void *C, int error);
+EXTERN_MSC int GMT_Put_Data		(void *C, int object_ID, unsigned int mode, void *data);
+EXTERN_MSC int GMT_Write_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
+EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
+EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
+EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
+EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, unsigned int registration, int pad, void *data);
+EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, void *data);
 
-#include "gmt_constants.h"      /* All basic constant definitions */
-#include "gmt_macros.h"         /* All basic macros definitions */
-#include "gmt_dimensions.h"     /* Constant definitions created by configure */
-#include "gmt_time.h"           /* Declarations of structures for dealing with time */
-#include "gmt_texture.h"        /* Declarations of structures for dealing with pen, fill, etc. */
-#include "gmt_defaults.h"       /* Declarations of structure for GMT default settings */
-#include "gmt_ps.h"             /* Declarations of structure for GMT PostScript settings */
-#include "gmt_hash.h"           /* Declarations of structure for GMT hashing */
-#include "gmt_crossing.h"       /* Declarations of structure for GMT map crossings */
+/* 2 convenience functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids, images */
 
-#ifdef HAVE_GDAL
-#	include "gmt_gdalread.h"      /* GDAL support */
-#endif
+EXTERN_MSC double * GMT_Get_Coord	(void *C, unsigned int family, unsigned int dim, void *container);
+EXTERN_MSC int64_t GMT_Get_Index	(struct GMT_GRID_HEADER *header, int row, int col);
 
-#include "gmt_common.h"         /* For holding the GMT common option settings */
-#include "gmt_fft.h"            /* Structures and enums used by programs needing FFTs */
-#include "gmt_nan.h"            /* Machine-dependent macros for making and testing NaNs */
-#include "gmt_error.h"          /* Only contains error codes */
-#include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
-#include "gmt_version.h"        /* Only contains the current GMT version number */
-#include "gmt_module_private.h" /* Module modes and properties */
-#include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
-#include "gmt_grd.h"            /* Define grd file header structure */
-#include "gmt_grdio.h"          /* Defines function pointers for grd i/o operations */
-#include "gmt_io.h"             /* Defines structures and macros for table i/o */
-#include "gmt_colors.h"         /* Defines color/shading global structure */
-#include "gmt_shore.h"          /* Defines structures used when reading shore database */
-#include "gmt_calclock.h"       /* Calendar/time functions */
-#include "gmt_symbol.h"         /* Custom symbol functions */
-#include "gmt_contour.h"        /* Contour label structure and functions */
-#include "gmt_map.h"            /* extern functions defined in gmt_map.c */
-#include "gmt_plot.h"           /* extern functions defined in gmt_plot.c */
-#include "gmt_support.h"        /* extern functions defined in gmt_support.c */
-#include "gmt_vector.h"         /* extern functions defined in gmt_vector.c */
-#include "gmt_types.h"          /* GMT type declarations */
+/* 12 secondary functions for argument and option parsing */
 
-#ifdef _OPENMP                  /* Using open MP parallelization */
-#include "omp.h"
-#endif
-
-#include "gmt_prototypes.h"     /* All GMT low-level API */
-#include "gmt_init.h"           /* extern functions defined in gmt_init.c */
-#include "gmt_stat.h"           /* extern functions defined in gmt_stat.c */
-#include "common_string.h"      /* All code shared between GMT and PSL */
+EXTERN_MSC struct GMT_OPTION * GMT_Create_Options	(void *C, int argc, void *in);
+EXTERN_MSC struct GMT_OPTION * GMT_Prep_Options		(void *C, int mode, void *in);
+EXTERN_MSC struct GMT_OPTION * GMT_Make_Option		(void *C, char option, char *arg);
+EXTERN_MSC struct GMT_OPTION * GMT_Find_Option		(void *C, char option, struct GMT_OPTION *head);
+EXTERN_MSC struct GMT_OPTION * GMT_Append_Option	(void *C, struct GMT_OPTION *current, struct GMT_OPTION *head);
+EXTERN_MSC char ** GMT_Create_Args			(void *C, int *argc, struct GMT_OPTION *head);
+EXTERN_MSC char * GMT_Create_Cmd			(void *C, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Destroy_Options			(void *C, struct GMT_OPTION **head);
+EXTERN_MSC int GMT_Destroy_Args				(void *C, int argc, char *argv[]);
+EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_OPTION *head);
+EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
+EXTERN_MSC int GMT_Parse_Common				(void *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  /* !_GMT_H */
+#endif /* _GMT_H */

@@ -17,7 +17,7 @@
  
 #define THIS_MODULE k_mod_mgd77path /* I am mgd77path */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 #include "mgd77.h"
 
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */

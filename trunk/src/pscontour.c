@@ -28,7 +28,7 @@
 #define THIS_MODULE k_mod_pscontour /* I am pscontour */
 
 #include "pslib.h"
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;

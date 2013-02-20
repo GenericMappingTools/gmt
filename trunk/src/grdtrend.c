@@ -83,7 +83,7 @@
 
 #define THIS_MODULE k_mod_grdtrend /* I am grdtrend */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
 	struct In {

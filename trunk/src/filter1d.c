@@ -40,7 +40,7 @@
 
 #define THIS_MODULE k_mod_filter1d /* I am filter1d */
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* Control structure for filter1d */
 
