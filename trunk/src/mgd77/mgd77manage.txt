@@ -282,7 +282,7 @@ GMT style by Paul Wessel.
 .IR mgd77sniffer (1)
 .IR mgd77track (1)
 .IR x2sys_init (1)
-#include "refs.i"
+.SH REFERENCES
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP
 .sp

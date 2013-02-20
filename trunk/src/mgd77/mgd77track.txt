@@ -107,6 +107,6 @@ mgd77track 01010007 -R70W/20E/40S/20N SCALE2 -B10g5 -A10 -La1da1000kf6hf250k | l
 .IR mgd77info (1),
 .IR psbasemap (1)
 .IR mgd77list (1)
-#include "refs.i"
+.SH REFERENCES
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP

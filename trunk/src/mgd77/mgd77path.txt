@@ -49,6 +49,6 @@ mgd77path -D
 .IR mgd77list (1)
 .IR mgd77manage (1)
 .IR mgd77track (1)
-#include "refs.i"
+.SH REFERENCES
 The Marine Geophysical Data Exchange Format - MGD77, see
 \fIhttp://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt\fP.

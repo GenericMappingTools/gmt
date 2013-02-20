@@ -103,7 +103,7 @@ tools such as ncBrowse and ncView.
 .IR mgd77sample (1),
 .IR mgd77track (1)
 .IR x2sys_init (1)
-#include "refs.i"
+.SH REFERENCES
 ncBrowse, see \fIhttp://www.epic.noaa.gov/java/ncBrowse/\fP
 .br
 ncView, see \fIhttp://meteora.ucsd.edu/~pierce/ncview_home_page.html\fP

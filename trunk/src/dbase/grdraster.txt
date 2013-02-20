@@ -81,4 +81,3 @@ grdraster "2 min Geoware" -R20/25/-10/5 -bo > triplets.b
 .IR GMT (1),
 .IR grdsample (1),
 .IR grdfilter (1)
-#include "refs.i"
