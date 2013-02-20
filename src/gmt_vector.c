@@ -1114,8 +1114,8 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 	bool meridian, new_pair;
 	uint64_t last_row_in = 0, row_in, row_out, n_out;
 	unsigned int k;
-	double dist_out, d_lon, gap, L, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
-	double P[3], Rot0[3][3], Rot[3][3], total_angle_rad, angle_rad, ya, yb;
+	double dist_out, gap, d_lon = 0.0, L = 0.0, frac_to_a, frac_to_b, minlon, maxlon, a[3], b[3], c[3];
+	double P[3], Rot0[3][3], Rot[3][3], total_angle_rad = 0.0, angle_rad, ya = 0.0, yb = 0.0;
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
 	if (step_out < 0.0) {	/* Safety valve */
@@ -1220,7 +1220,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 
 	uint64_t last_row_in = 0, row_in, row_out, n_out;
 	bool new_pair;
-	double dist_out, gap, L, frac_to_a, frac_to_b;
+	double dist_out, gap, L = 0.0, frac_to_a, frac_to_b;
 	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
 
 	if (step_out < 0.0) {	/* Safety valve */

@@ -3952,11 +3952,8 @@ int GMT_contlabel_prep (struct GMT_CTRL *C, struct GMT_CONTOUR *G, double xyz[2]
 	unsigned int error = 0;
 	uint64_t k, i;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	double x, y, step = 0.0;
+	double x, y;
 	char buffer[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
-
-	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (if requested) */
-	if (G->do_interpolate) step = C->current.setting.map_line_step / C->current.proj.scale[GMT_X] / C->current.proj.M_PR_DEG;
 
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[GMT_X] = 0.01 * G->clearance[GMT_X] * G->font_label.size * C->session.u2u[GMT_PT][GMT_INCH];
@@ -6909,7 +6906,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
-				G->header->BC[YLO] = G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[G->header->BC[YLO]]);
 			}
 			else if (set[YLO]) {
@@ -7029,7 +7026,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO] && set[YHI]) {
-				G->header->BC[YLO] = G->header->BC[YLO] = GMT_BC_IS_PERIODIC;
+				G->header->BC[YLO] = G->header->BC[YHI] = GMT_BC_IS_PERIODIC;
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Set boundary condition for bottom and top edge: %s\n", kind[G->header->BC[YLO]]);
 			}
 			else if (set[YLO]) {

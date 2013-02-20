@@ -2842,12 +2842,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 	 *
 	 * Returns:	false if successfull, true if error.
 	 */
-#ifdef DEBUG
 	int object_ID;	/* ID of first object [only for debug purposes - not used in this function; ignore -Wunused-but-set-variable warning */
-	#define ASSIGN_OR_VOID object_ID =
-#else
-	#define ASSIGN_OR_VOID (void)
-#endif
 	struct GMT_OPTION *head = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
@@ -2862,9 +2857,10 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 		head = GMT_Prep_Options (API, n_args, args);
 	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
-		ASSIGN_OR_VOID GMTAPI_Init_Import (API, family, geometry, mode, head);
+		object_ID = GMTAPI_Init_Import (API, family, geometry, mode, head);
 	else
-		ASSIGN_OR_VOID GMTAPI_Init_Export (API, family, geometry, mode, head);
+		object_ID = GMTAPI_Init_Export (API, family, geometry, mode, head);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Init_IO: Returned first %d object ID = %d\n", GMT_direction[direction], object_ID);
 	return (API->error);
 }
 

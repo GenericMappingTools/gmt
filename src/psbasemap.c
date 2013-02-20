@@ -146,7 +146,6 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 	
 	struct PSBASEMAP_CTRL *Ctrl = NULL;	/* Control structure specific to program */
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
-	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -173,7 +172,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
-	PSL = GMT_plotinit (GMT, options);
+	GMT_plotinit (GMT, options);
 
 	GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 

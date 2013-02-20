@@ -392,7 +392,7 @@ double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K)
 
 double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
 {	/* Lets you specify which wavenumber you want */
-	double wave;
+	double wave = 0.0;
 
 	switch (mode) {	/* Select which wavenumber we need */
 		case GMT_FFT_K_IS_KX: wave = GMT_fft_kx (k, K); break;
