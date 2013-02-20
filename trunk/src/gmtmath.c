@@ -2880,7 +2880,7 @@ void table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 {
 	/* If no time, then A is interpreted to mean number of nodes instead */
 	uint64_t s, row;
-	double strip, scale, start, stop, from_start, from_stop, t, w_t;
+	double strip, scale, t_min, t_max, start, stop, from_start, from_stop, t, w_t;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
 	if (!S[last]->constant) {
@@ -2889,10 +2889,18 @@ void table_TAPER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	}
 	strip = S[last]->factor;
 	scale = M_PI / strip;
-	start = strip + ((info->notime) ? 0.0 : info->t_min);
 	if (!info->notime) stop = strip - info->t_max;
 	for (s = 0; s < info->T->n_segments; s++) {
-		if (info->notime) stop = strip - info->T->segment[s]->n_rows;
+		if (info->notime) {	/* If no time then A refers to number of rows and min and max are in rows */
+			t_min = 0.0;
+			t_max = info->T->segment[s]->n_rows - 1.0;
+		}
+		else {	/* Here, A is in time units and the min/max are start/stop time per segment */
+			t_min = info->T->segment[s]->coord[COL_T][0];	/* Start of time for this segment */
+			t_max = info->T->segment[s]->coord[COL_T][info->T->segment[s]->n_rows-1];	/* End of time for this segment */
+		}
+		start = strip + t_min;
+		stop  = strip - t_max;
 		for (row = 0; row < info->T->segment[s]->n_rows; row++) {
 			t = (info->notime) ? (double)row : info->T->segment[s]->coord[COL_T][row];
 			from_start = start - t;

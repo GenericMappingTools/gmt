@@ -421,7 +421,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
 	unsigned int g, k;
-	bool img_conv_needed = false;
+	bool img_conv_needed = false, some_outside = false;
 	
 	char line[GMT_BUFSIZ];
 
@@ -538,10 +538,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 					S = T->segment[seg];
 					for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
 						status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
+						if (status < 0) some_outside = true;
 						for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->coord[col][row] = value[k];
 					}
 				}
 			}
+			if (some_outside) GMT_report (GMT, GMT_MSG_VERBOSE, "Some points along your lines were outside the grid domain(s).\n");
+			
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->D.file, Dtmp) != GMT_OK) {
 				Return (API->error);
 			}
@@ -563,6 +566,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		
 		/* Sample the grids along all profiles in Dout */
 		
+		some_outside = false;
 		for (tbl = 0; tbl < Dout->n_tables; tbl++) {
 			T = Dout->table[tbl];
 			for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment to resample */
@@ -570,10 +574,14 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				for (row = 0; row < S->n_rows; row++) {	/* For each row to resample */
 					status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, S->coord[GMT_X][row], S->coord[GMT_Y][row], value);
 					for (col = 4, k = 0; k < Ctrl->G.n_grids; k++, col++) S->coord[col][row] = value[k];
-					if (status != -1) n_points++;
+					if (status < 0)
+						some_outside = true;
+					else
+						n_points++;
 				}
 			}
 		}
+		if (some_outside) GMT_report (GMT, GMT_MSG_VERBOSE, "Some points along your profiles were outside the grid domain(s).\n");
 		if (Dout->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		
 		if (Ctrl->S.active) {	/* Compute the stacked profiles */
@@ -683,9 +691,11 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			for (col = 0; col < 3; col++) GMT_memcpy (Sout->coord[col], Sin->coord[col], Sin->n_rows, double);
 			for (row = 0; row < Sin->n_rows; row++) {	/* For each row  */
 				status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, Sin->coord[GMT_X][row], Sin->coord[GMT_Y][row], value);
+				if (status < 0) some_outside = true;
 				for (col = Din->n_columns, k = 0; k < Ctrl->G.n_grids; k++, col++) Sout->coord[col][row] = value[k];
 			}
 		}
+		if (some_outside) GMT_report (GMT, GMT_MSG_VERBOSE, "Some points along your profiles were outside the grid domain(s).\n");
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
@@ -745,7 +755,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			n_read++;
 
 			status = sample_all_grids (GMT, GC, Ctrl->G.n_grids, img_conv_needed, in[GMT_X], in[GMT_Y], value);
-			if (status == -1 && !Ctrl->N.active) continue;		/* Point is outside the region of all grids */
+			if (status == -1) {	/* Point is outside the region of all grids */
+				some_outside = true;
+				if (!Ctrl->N.active) continue;
+			}
 
 			if (Ctrl->Z.active)	/* Simply print out values */
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, value);
@@ -785,6 +798,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		if (out) GMT_free (GMT, out);
 	}
+	if (some_outside) GMT_report (GMT, GMT_MSG_VERBOSE, "Some input points were outside the grid domain(s).\n");
 	/* Clean up */
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
