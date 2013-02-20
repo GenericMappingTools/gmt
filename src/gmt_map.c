@@ -100,7 +100,6 @@
  *	GMT_zz_to_z :			Generic inverse linear z projection
  */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 

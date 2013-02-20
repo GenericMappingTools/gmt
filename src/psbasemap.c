@@ -28,7 +28,6 @@
 
 #define THIS_MODULE k_mod_psbasemap /* I am psbasemap */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 /* Control structure for psbasemap */

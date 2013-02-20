@@ -39,7 +39,6 @@
  
 #define THIS_MODULE k_mod_grdview /* I am grdview */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 /* grdview needs to work on "tiles" which is defined as the "square" regions made

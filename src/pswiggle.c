@@ -33,7 +33,6 @@
  
 #define THIS_MODULE k_mod_pswiggle /* I am pswiggle */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 #ifdef GMT_COMPAT

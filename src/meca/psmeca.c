@@ -21,7 +21,6 @@ PostScript code is written to stdout.
 
 #define THIS_MODULE k_mod_psmeca /* I am psmeca */
 
-#include "pslib.h"      /* to have pslib environment */
 #include "gmt_dev.h"
 
 #include "meca.h"

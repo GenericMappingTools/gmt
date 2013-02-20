@@ -26,7 +26,6 @@
 
 #define THIS_MODULE k_mod_psxy /* I am psxy */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 /* Control structure for psxy */

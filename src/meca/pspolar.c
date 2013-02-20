@@ -21,7 +21,6 @@
 
 #define THIS_MODULE k_mod_pspolar /* I am pspolar */
 
-#include "pslib.h"	/* to have pslib environment */
 #include "gmt_dev.h"
 
 #define DEFAULT_FONTSIZE	9.0	/* In points */

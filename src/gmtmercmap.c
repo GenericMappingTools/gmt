@@ -25,7 +25,6 @@
  *
  */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 #define MAP_BAR_GAP	"-30p"	/* Offset color bar 30 points below map */

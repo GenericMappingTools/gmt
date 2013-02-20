@@ -4,7 +4,6 @@
  *    See README file for copying and redistribution conditions.
  */
 
-#include "pslib.h"	/* to have pslib environment */
 #include "gmt_dev.h"	/* to have gmt environment */
 #include "meca.h"
 #include "utilmeca.h"

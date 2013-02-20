@@ -28,7 +28,6 @@
 
 #define THIS_MODULE k_mod_psclip /* I am psclip */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 #define CLIP_STEXT	-1	/* Undo one level of textclipping and plot current straight text */
