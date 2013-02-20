@@ -80,7 +80,6 @@
  *	gmt_theta_r_map_boundary :	Plot plain basemap for polar (cylindrical) projection
  */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 

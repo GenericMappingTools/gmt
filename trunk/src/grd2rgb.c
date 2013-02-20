@@ -28,7 +28,6 @@
 
 #define THIS_MODULE k_mod_grd2rgb /* I am grd2rgb */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 struct GRD2RGB_CTRL {

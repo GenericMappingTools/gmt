@@ -25,7 +25,6 @@
 
 #define THIS_MODULE k_mod_pshistogram /* I am pshistogram */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 #ifdef GMT_COMPAT

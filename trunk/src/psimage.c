@@ -27,7 +27,6 @@
 
 #define THIS_MODULE k_mod_psimage /* I am psimage */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 struct PSIMAGE_CTRL {

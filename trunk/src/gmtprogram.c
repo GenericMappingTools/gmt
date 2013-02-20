@@ -24,7 +24,6 @@
  *
  */
 
-#include "pslib.h"
 #include "gmt_dev.h"
 
 int main (int argc, char *argv[]) {

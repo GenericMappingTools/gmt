@@ -54,6 +54,8 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
+/* Declaration for PSL */
+#include "pslib.h"
 
 /*--------------------------------------------------------------------
  *      SYSTEM HEADER FILES
