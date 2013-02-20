@@ -883,25 +883,8 @@ default, we treat the concatenation of many input files as a single virtual file
 Using \texttt{GMT\_Get\_Record} requires you to first initialize the source(s)
 with \texttt{GMT\_Init\_IO}.
 For certain records, \texttt{GMT\_Get\_Record} will return NULL and sets status codes that your
-program will need to examine to take appropriate response:
-%% Eliminate this duplication of constants; just refer to the table in the next section
-\begin{description}
-\item [GMT\_IO\_TABLE\_HEADER]: We read a table header; to examine this text string
-(if working with ASCII data), see \texttt{API->GMT->current.io.segment\_header}.
-\index{GMT\_IO\_TABLE\_HEADER}
-\item [GMT\_IO\_SEGMENT\_HEADER]: We read a segment header; to examine this text string
-(if working with ASCII data), see \texttt{API->GMT->current.io.current\_record}.
-\index{GMT\_IO\_TABLE\_HEADER}
-\item [GMT\_IO\_MISMATCH]: The number of columns read is less than what the program expected.
-\index{GMT\_IO\_MISMATCH}
-\item [GMT\_IO\_EOF]: We have reached the end of the source.
-\index{GMT\_IO\_EOF}
-\item [GMT\_IO\_NAN]: The record has NaNs in fields that we do not allow to have NaNs, and
-hence, it is a bad record (see \GMT's IO\_NAN\_RECORD defaults). 
-\index{GMT\_IO\_NAN}
-\item [GMT\_IO\_GAP]: A user-defined data gap has been encountered (see \GMT's \Opt{g} option)
-\index{GMT\_IO\_GAP}
-\end{description}
+program will need to examine to take appropriate response.  Table~\ref{tbl:iostatus}
+list the various status codes you can check for, using \texttt{GMT\_Status\_IO} (see next section).
 
 \subsection{Examining record status}
 \index{Examining record status}
@@ -909,7 +892,7 @@ hence, it is a bad record (see \GMT's IO\_NAN\_RECORD defaults).
 \index{Resources!Examining record status}
 
 Programs that read record-by-record must be aware of what the current record represents.
-Given the presense of headers, data gaps, NaN-record, etc. the developer will want to
+Given the presence of headers, data gaps, NaN-record, etc. the developer will want to
 check the status after reading the next record.  The internal i/o status mode can be
 interrogated with the function
 
@@ -940,10 +923,22 @@ code of, say, \filename{blockmean.c} or \filename{pstext.c}, to see examples of 
 \texttt{GMT\_IO\_LINE\_BREAK}	&       1 if we encountered a segment header, EOF, NaNs or gap \\ \hline
 \texttt{GMT\_IO\_NEXT\_FILE}	&       1 if we finished one file but not the last \\ \hline
 \end{tabular}
-\caption{Modes used to determine status of current data record.  The \texttt{GMT\_IO\_GAP} mode depends on the current \Opt{g} settings.}
+\caption{Modes used to determine status of current data record.  The \texttt{GMT\_IO\_GAP} mode depends
+on the current \Opt{g} settings.  The function returns false (0) unless the status is true (1).}
 \label{tbl:iostatus}
 \index{Record!Status}
 \end{table}
+\index{GMT\_IO\_DATA\_RECORD}
+\index{GMT\_IO\_TABLE\_HEADER}
+\index{GMT\_IO\_SEGMENT\_HEADER}
+\index{GMT\_IO\_ANY\_HEADER}
+\index{GMT\_IO\_MISMATCH}
+\index{GMT\_IO\_EOF}
+\index{GMT\_IO\_NAN}
+\index{GMT\_IO\_GAP}
+\index{GMT\_IO\_NEW\_SEGMENT}
+\index{GMT\_IO\_LINE\_BREAK}
+\index{GMT\_IO\_NEXT\_FILE}
 
 \subsection{Disable Data Import}
 \index{Import!Disable}
