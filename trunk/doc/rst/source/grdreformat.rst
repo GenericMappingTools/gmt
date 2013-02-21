@@ -75,11 +75,13 @@ be written and to specify scaling, translation, and NaN-value.
     when you want to write a native grid to be used by **grdraster**. It
     only applies to native grids and is ignored for netCDF output. 
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_
@@ -244,5 +246,4 @@ grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 `See Also <#toc11>`_
 --------------------
 
-`*gmt.conf*\ (5) <gmt.conf.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*grdmath*\ (1) <grdmath.html>`_
+`gmt.conf <gmt.conf.html>`_ , `gmt <gmt.html>`_ , `grdmath <grdmath.html>`_

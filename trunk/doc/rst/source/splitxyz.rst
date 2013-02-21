@@ -114,6 +114,7 @@ ASCII format; input may be ASCII or binary (see
 .. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**]. 
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
@@ -165,5 +166,4 @@ splitxyz survey.bin -Nsurvey\_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*mgd77list*\ (1) <mgd77list.html>`_ ,
-`*pswiggle*\ (1) <pswiggle.html>`_
+`gmt <gmt.html>`_ , `mgd77list <mgd77list.html>`_ , `pswiggle <pswiggle.html>`_

@@ -47,6 +47,7 @@ are considered "inside".
 
 .. include:: explain_-I.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
@@ -86,6 +87,7 @@ are considered "inside".
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| unicode:: 0x0C .. just an invisible code
@@ -133,6 +135,6 @@ grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate\_IDs.nc -V
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdlandmask*\ (1) <grdlandmask.html>`_ ,
-`*grdmath*\ (1) <grdmath.html>`_ , `*grdclip*\ (1) <grdclip.html>`_ ,
-`*psmask*\ (1) <psmask.html>`_ , `*psclip*\ (1) <psclip.html>`_
+`gmt <gmt.html>`_ , `grdlandmask <grdlandmask.html>`_ ,
+`grdmath <grdmath.html>`_ , `grdclip <grdclip.html>`_ ,
+`psmask <psmask.html>`_ , `psclip <psclip.html>`_

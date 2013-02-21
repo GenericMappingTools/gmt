@@ -39,8 +39,10 @@ None.
     Output the altitude coordinates as GMT z coordinates [Default will
     output just longitude and latitude]. 
 
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. |Add_-bo| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-bo.rst_
 
 .. include:: explain_colon.rst_
@@ -57,6 +59,6 @@ kml2gmt google.kml -V > google.txt
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*img2google*\ (1) <img2google.html>`_ ,
-`*ps2raster*\ (1) <ps2raster.html>`_ `*gmt2kml*\ (1) <gmt2kml.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`img2google <img2google.html>`_ ,
+`ps2raster <ps2raster.html>`_ `gmt2kml <gmt2kml.html>`_

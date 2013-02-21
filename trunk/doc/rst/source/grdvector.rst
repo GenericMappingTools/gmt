@@ -136,5 +136,5 @@ grdvector r.nc theta.nc **-Jx**\ 5\ **c** -A -Q0.1i+e+jc
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.html>`_ , `*psxy*\ (1) <psxy.html>`_
+`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
+`grdcontour <grdcontour.html>`_ , `psxy <psxy.html>`_

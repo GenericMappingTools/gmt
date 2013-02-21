@@ -87,6 +87,6 @@ grd2rgb radiation.ras -Lr -Gcomp\_%c.nc
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*grdedit*\ (1) <grdedit.html>`_ , `*grdimage*\ (1) <grdimage.html>`_ ,
-`*grdmath*\ (1) <grdmath.html>`_ , `*grdview*\ (1) <grdview.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`grdedit <grdedit.html>`_ , `grdimage <grdimage.html>`_ ,
+`grdmath <grdmath.html>`_ , `grdview <grdview.html>`_

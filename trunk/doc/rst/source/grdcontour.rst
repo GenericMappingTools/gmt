@@ -218,8 +218,8 @@ grdcontour topo.nc -C100 -S4 -Dcontours\_%c.txt
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*grdimage*\ (1) <grdimage.html>`_ , `*grdview*\ (1) <grdview.html>`_ ,
-`*pscontour*\ (1) <pscontour.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`psbasemap <psbasemap.html>`_ ,
+`grdimage <grdimage.html>`_ , `grdview <grdview.html>`_ ,
+`pscontour <pscontour.html>`_

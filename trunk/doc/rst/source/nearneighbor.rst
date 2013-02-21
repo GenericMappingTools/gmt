@@ -51,6 +51,7 @@ supplied].
     only the nearest value per sector enters into the averaging, not all
     values inside the circle. 
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**\ *search\_radius*\ [*unit*]
@@ -79,6 +80,7 @@ supplied].
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns]. 
 .. include:: explain_-bi.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -124,8 +126,8 @@ nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
 `See Also <#toc9>`_
 -------------------
 
-`*blockmean*\ (1) <blockmean.html>`_ ,
-`*blockmedian*\ (1) <blockmedian.html>`_ ,
-`*blockmode*\ (1) <blockmode.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*surface*\ (1) <surface.html>`_ ,
-`*triangulate*\ (1) <triangulate.html>`_
+`blockmean <blockmean.html>`_ ,
+`blockmedian <blockmedian.html>`_ ,
+`blockmode <blockmode.html>`_ , `gmt <gmt.html>`_ ,
+`surface <surface.html>`_ ,
+`triangulate <triangulate.html>`_

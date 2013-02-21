@@ -109,6 +109,7 @@ line will be used.
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z. 
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**\ *zstart/zstop/zinc* or **-S**\ *n*
@@ -156,6 +157,6 @@ grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*grdhisteq*\ (1) <grdhisteq.html>`_ , `*grdinfo*\ (1) <grdinfo.html>`_
-, `*makecpt*\ (1) <makecpt.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`grdhisteq <grdhisteq.html>`_ , `grdinfo <grdinfo.html>`_
+, `makecpt <makecpt.html>`_

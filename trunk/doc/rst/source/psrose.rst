@@ -178,6 +178,5 @@ must run **psrose** **-I** to find max length in binned data set.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*pshistogram*\ (1) <pshistogram.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ , `pshistogram <pshistogram.html>`_

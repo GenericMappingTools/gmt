@@ -42,6 +42,7 @@ None.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ **a**\ \|\ **f**\ \|\ **s**
@@ -69,8 +70,7 @@ None.
     same phase shift relative to the *dx* and *dy* increments then we
     use those phase shifts in determining the region, and you may use
     **-r** to switch from gridline-registration to pixel-registration.
-    For irregular data both phase shifts are set to 0 and the **-r** is
-    ignored.
+    For irregular data both phase shifts are set to 0 and the **-r** is ignored.
 **-S**\ [**x**\ ][**y**\ ]
     Add extra space for error bars. Useful together with **-I** option
     and when later plotting with **psxy** **-E**. **-Sx** leaves space
@@ -91,6 +91,7 @@ None.
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| unicode:: 0x0C .. just an invisible code
@@ -144,4 +145,4 @@ the current setting of **TIME\_UNIT**.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_
+`gmt <gmt.html>`_

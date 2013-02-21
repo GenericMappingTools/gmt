@@ -65,6 +65,7 @@ for future use or stored and recalled via named memory locations.
     manipulated [Default will insist that each grid domain is within
     1e-4 \* grid\_spacing of the domain of the first grid listed]. 
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. |Add_-V| unicode:: 0x0C .. just an invisible code
@@ -75,6 +76,7 @@ for future use or stored and recalled via named memory locations.
     **PDIST**, and **INSIDE**. 
 .. include:: explain_-bi.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| unicode:: 0x0C .. just an invisible code
@@ -602,6 +604,6 @@ Publishing Corp.
 `See Also <#toc16>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtmath*\ (1) <gmtmath.html>`_ ,
-`*grd2xyz*\ (1) <grd2xyz.html>`_ , `*grdedit*\ (1) <grdedit.html>`_ ,
-`*grdinfo*\ (1) <grdinfo.html>`_ , `*xyz2grd*\ (1) <xyz2grd.html>`_
+`gmt <gmt.html>`_ , `gmtmath <gmtmath.html>`_ ,
+`grd2xyz <grd2xyz.html>`_ , `grdedit <grdedit.html>`_ ,
+`grdinfo <grdinfo.html>`_ , `xyz2grd <xyz2grd.html>`_

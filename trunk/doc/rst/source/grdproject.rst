@@ -129,5 +129,4 @@ than you are interested in.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*mapproject*\ (1) <mapproject.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ , `mapproject <mapproject.html>`_

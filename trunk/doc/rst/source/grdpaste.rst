@@ -38,6 +38,7 @@ geographical grids, use **-f** to handle periodic longitudes.
 .. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_
@@ -56,6 +57,6 @@ grdpaste file\_a.nc file\_b.nc -Goutfile.nc -V -fg
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdblend*\ (1) <grdblend.html>`_ ,
-`*grdcut*\ (1) <grdcut.html>`_ , `*grdinfo*\ (1) <grdinfo.html>`_ ,
-`*grdsample*\ (1) <grdsample.html>`_
+`gmt <gmt.html>`_ , `grdblend <grdblend.html>`_ ,
+`grdcut <grdcut.html>`_ , `grdinfo <grdinfo.html>`_ ,
+`grdsample <grdsample.html>`_

@@ -81,6 +81,7 @@ terms in f(x) which significantly reduce the variance in y.
 .. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**]. 
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -153,8 +154,8 @@ trend1d data.xy -Nf20r -I -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtmath*\ (1) <gmtmath.html>`_ ,
-`*grdtrend*\ (1) <grdtrend.html>`_ , `*trend2d*\ (1) <trend2d.html>`_
+`gmt <gmt.html>`_ , `gmtmath <gmtmath.html>`_ ,
+`grdtrend <grdtrend.html>`_ , `trend2d <trend2d.html>`_
 
 `References <#toc10>`_
 ----------------------

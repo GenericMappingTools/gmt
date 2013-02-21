@@ -105,6 +105,7 @@ xyzpqrs letters in **-flags**.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ *azimuth*
@@ -160,11 +161,13 @@ xyzpqrs letters in **-flags**.
 .. |Add_-bo| replace:: [Default is given by **-F** or **-G**]. 
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-g.rst_
 
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
@@ -184,11 +187,9 @@ To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
 project -C-50/10 -E-10/30 -G10 -Q > great\_circle\_points.xyp
 
-(Note that great\_circle\_points.xyp could now be used as input for
-**grdtrack**, etc. ).
+(Note that great\_circle\_points.xyp could now be used as input for **grdtrack**, etc. ).
 
-To generate points every 10km along a small circle of colatitude 60 from
-10N,50W to 30N,10W:
+To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
 
 project -C-50/10 -E-10/30 -G10/60 -Q > small\_circle\_points.xyp
 
@@ -203,13 +204,11 @@ c2610.xygmb along a great circle through an origin at 30S, 30W, the
 great circle having an azimuth of N20W at the origin, keeping only the
 data from NE of the profile and within +/- 500 km of the origin, run:
 
-project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q >
-c2610\_projected.pgmb
+project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610\_projected.pgmb
 
 (Note in this example that **-W**-10000/0 is used to admit any value
 with a large negative *q* coordinate. This will take those points which
-are on our right as we walk along the great circle path, or to the NE in
-this example.)
+are on our right as we walk along the great circle path, or to the NE in this example.)
 
 To make a Cartesian coordinate transformation of mydata.xy so that the
 new origin is at 5,3 and the new *x* `axis (*p*) <axis.p.html>`_ makes
@@ -247,6 +246,5 @@ This gives coordinates for an oblique small circle.
 `See Also <#toc8>`_
 -------------------
 
-`*fitcircle*\ (1) <fitcircle.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*mapproject*\ (1) <mapproject.html>`_ ,
-`*grdproject*\ (1) <grdproject.html>`_
+`fitcircle <fitcircle.html>`_ , `gmt <gmt.html>`_ ,
+`mapproject <mapproject.html>`_ , `grdproject <grdproject.html>`_

@@ -124,5 +124,4 @@ grdedit junk.nc -fg
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grd2xyz*\ (1) <grd2xyz.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.html>`_
+`gmt <gmt.html>`_ , `grd2xyz <grd2xyz.html>`_ , `xyz2grd <xyz2grd.html>`_

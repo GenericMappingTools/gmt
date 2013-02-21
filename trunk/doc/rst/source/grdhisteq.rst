@@ -121,8 +121,8 @@ range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*grd2cpt*\ (1) <grd2cpt.html>`_ ,
-`*grdgradient*\ (1) <grdgradient.html>`_ ,
-`*grdimage*\ (1) <grdimage.html>`_ , `*grdmath*\ (1) <grdmath.html>`_ ,
-`*grdview*\ (1) <grdview.html>`_ , `*makecpt*\ (1) <makecpt.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`grd2cpt <grd2cpt.html>`_ ,
+`grdgradient <grdgradient.html>`_ ,
+`grdimage <grdimage.html>`_ , `grdmath <grdmath.html>`_ ,
+`grdview <grdview.html>`_ , `makecpt <makecpt.html>`_

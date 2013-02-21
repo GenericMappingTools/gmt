@@ -146,7 +146,7 @@ grd2xyz raw\_data.nc -ZTLf > hawaii\_grv.b
 `See Also <#toc10>`_
 --------------------
 
-`*gmt.conf*\ (5) <gmt.conf.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*grdedit*\ (1) <grdedit.html>`_ ,
-`*grdreformat*\ (1) <grdreformat.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.html>`_
+`gmt.conf <gmt.conf.html>`_ , `gmt <gmt.html>`_ ,
+`grdedit <grdedit.html>`_ ,
+`grdreformat <grdreformat.html>`_ ,
+`xyz2grd <xyz2grd.html>`_

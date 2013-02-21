@@ -49,8 +49,10 @@ the positive or the negative wiggle may be shaded. The resulting
 
 .. include:: explain_-J.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 **-Z**\ *scale*
@@ -59,6 +61,7 @@ the positive or the negative wiggle may be shaded. The resulting
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ *azimuth*
@@ -108,8 +111,10 @@ the positive or the negative wiggle may be shaded. The resulting
 
 .. include:: explain_-c.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
+.. |Add_-g| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -145,13 +150,13 @@ Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 
-awk ’{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }’ yourdata.xyz
+awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz
 \| more
 
 (note that output is in radians; on some machines you need "nawk" to do
 this). Then if these numbers jump around a lot, you may do this:
 
-awk ’{ print NR, $0 }’ yourdata.xyz \| filter1d -Fb5 -N4/0
+awk '{ print NR, $0 }’ yourdata.xyz \| filter1d -Fb5 -N4/0
 --FORMAT\_FLOAT\_OUT=%.12g > smoothed.xyz
 
 and plot this data set instead.
@@ -159,7 +164,7 @@ and plot this data set instead.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*filter1d*\ (1) <filter1d.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*splitxyz*\ (1) <splitxyz.html>`_
+`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
+`filter1d <filter1d.html>`_ ,
+`psbasemap <psbasemap.html>`_ ,
+`splitxyz <splitxyz.html>`_

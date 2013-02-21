@@ -77,4 +77,4 @@ testapi -Tg -Ic/m -Wf/m -V
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ ,
+`gmt <gmt.html>`_ ,

@@ -48,4 +48,4 @@ be searched recursively.)
 `See Also <#toc6>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_
+`gmt <gmt.html>`_

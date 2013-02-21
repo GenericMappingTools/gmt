@@ -159,6 +159,6 @@ the current setting of **TIME\_UNIT**.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ , `*psrose*\ (1) <psrose.html>`_ ,
-`*psxy*\ (1) <psxy.html>`_
+`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
+`psbasemap <psbasemap.html>`_ , `psrose <psrose.html>`_ ,
+`psxy <psxy.html>`_

@@ -164,7 +164,7 @@ IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*grdhisteq*\ (1) <grdhisteq.html>`_ ,
-`*grdimage*\ (1) <grdimage.html>`_ , `*grdview*\ (1) <grdview.html>`_ ,
-`*grdvector*\ (1) <grdvector.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`grdhisteq <grdhisteq.html>`_ ,
+`grdimage <grdimage.html>`_ , `grdview <grdview.html>`_ ,
+`grdvector <grdvector.html>`_

@@ -53,8 +53,10 @@ The *PostScript* code is written to standard output.
 
 .. include:: explain_-J.rst_
 
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
+.. |Add_-Rx| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
@@ -268,7 +270,7 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*grdlandmask*\ (1) <grdlandmask.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`grdlandmask <grdlandmask.html>`_ ,
+`psbasemap <psbasemap.html>`_

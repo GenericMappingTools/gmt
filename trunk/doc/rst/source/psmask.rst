@@ -53,13 +53,16 @@ second call to **psmask** using the **-C** option.
 
 .. include:: explain_-J.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. include:: explain_-B.rst_
@@ -78,6 +81,7 @@ second call to **psmask** using the **-C** option.
     **-bo**\ [*ncols*\ ][*type*\ ] is used. See **-Q** to exclude small
     polygons from consideration. 
 
+.. |Add_perspective| unicode:: 0x0C .. just an invisible code
 .. include:: explain_perspective.rst_
 
 **-G**\ *fill*
@@ -125,6 +129,7 @@ second call to **psmask** using the **-C** option.
 
 .. include:: explain_perspective.rst_
 
+.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_-t.rst_
@@ -156,6 +161,6 @@ mask.ps
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*grdmask*\ (1) <grdmask.html>`_ , `*surface*\ (1) <surface.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ , `*psclip*\ (1) <psclip.html>`_
+`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
+`grdmask <grdmask.html>`_ , `surface <surface.html>`_ ,
+`psbasemap <psbasemap.html>`_ , `psclip <psclip.html>`_

@@ -56,11 +56,13 @@ input data values.
 
 .. include:: explain_-I.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ *aspect\_ratio*
@@ -129,6 +131,7 @@ input data values.
 .. |Add_-bi| replace:: [Default is 3 input columns]. 
 .. include:: explain_-bi.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| replace:: Not used with binary data.
@@ -173,11 +176,11 @@ grid using **grdsample** **-T**.
 `See Also <#toc9>`_
 -------------------
 
-`*blockmean*\ (1) <blockmean.html>`_ ,
-`*blockmedian*\ (1) <blockmedian.html>`_ ,
-`*blockmode*\ (1) <blockmode.html>`_ , `*gmt*\ (1) <gmt.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
-`*triangulate*\ (1) <triangulate.html>`_
+`blockmean <blockmean.html>`_ ,
+`blockmedian <blockmedian.html>`_ ,
+`blockmode <blockmode.html>`_ , `gmt <gmt.html>`_ ,
+`nearneighbor <nearneighbor.html>`_ ,
+`triangulate <triangulate.html>`_
 
 `References <#toc10>`_
 ----------------------
