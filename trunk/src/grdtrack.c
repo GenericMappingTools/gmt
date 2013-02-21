@@ -780,7 +780,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write this to output */
 			}
 			else {	/* Simply copy other columns, append value, and output */
-				if (!out) out = GMT_memory (GMT, NULL, GMT->common.b.ncol[GMT_OUT], double);
+				if (!out) out = GMT_memory (GMT, NULL, n_out, double);
 				for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
 				for (g = 0; g < Ctrl->G.n_grids; g++, ks++) out[ks] = value[g];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
