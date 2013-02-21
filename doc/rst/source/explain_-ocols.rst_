@@ -1,0 +1,2 @@
+**-o**\ *cols*\ [,*...*] (\*)
+    Select output columns.

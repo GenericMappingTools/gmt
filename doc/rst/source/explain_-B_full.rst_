@@ -1,0 +1,104 @@
+**-B**\ [**p**\ \|\ **s**]\ *parameters*
+    Set map boundary annotation and tickmark intervals. The format of
+    *tickinfo* is
+    [**p**\ \|\ **s**]\ *xinfo*\ [/*yinfo*\ [/*zinfo*]][\ **:.**"Title"**:**][\ **W**\ \|\ **w**][\ **E**\ \|\ **e**][\ **S**\ \|\ **s**][\ **N**\ \|\ **n**][\ **Z**\ \|\ **z**\ [**+**\ ]][\ **+g**\ *fill*].
+    The leading **p** [Default] or **s** selects the primary or
+    secondary annotation information. Each of the *?info* segments are
+    textstrings of the form *info*\ [**:**"Axis
+    label"**:**][\ **:=**"prefix"**:**][\ **:,**"unit label"**:**]. The
+    *info* string is made up of one or more concatenated substrings of
+    the form
+    [**a**\ \|\ **f**\ \|\ **g**][\ *stride*\ [+-*phase*][*unit*\ ]].
+    The leading **a** is used to specify the annotation and major tick
+    spacing [Default], **f** for minor tick spacing, and **g** for
+    gridline spacing. *stride* is the desired stride interval. The
+    optional *phase* shifts the annotation interval by that amount
+    (positive or negative). The optional *unit* indicates the unit of
+    the *stride* and can be any of **Y** (year, plot with 4 digits),
+    **y** (year, plot with 2 digits), **O** (month, plot using
+    **FORMAT\_DATE\_MAP**), **o** (month, plot with 2 digits), **U**
+    (ISO week, plot using **FORMAT\_DATE\_MAP**), **u** (ISO week, plot
+    using 2 digits), **r** (Gregorian week, 7-day stride from start of
+    week **TIME\_WEEK\_START**), **K** (ISO weekday, plot name of day),
+    **D** (date, plot using **FORMAT\_DATE\_MAP**), **d** (day, plot day
+    of month 0-31 or year 1-366, via **FORMAT\_DATE\_MAP**), **R** (day,
+    same as **d**, aligned with **TIME\_WEEK\_START**), **H** (hour,
+    plot using **FORMAT\_CLOCK\_MAP**), **h** (hour, plot with 2
+    digits), **M** (minute, plot using **FORMAT\_CLOCK\_MAP**), **m**
+    (minute, plot with 2 digits), **S** (second, plot using
+    **FORMAT\_CLOCK\_MAP**), **s** (second, plot with 2 digits). Note
+    for geographic axes **m** and **s** instead mean arc minutes and arc
+    seconds. All entities that are language-specific are under control
+    by **TIME\_LANGUAGE**.
+    Alternatively, for linear maps, we can omit *stride*, thus setting
+    *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at
+    automatically determined intervals, **ag** plots both annotations
+    and grid lines with the same spacing, **afg** adds suitable minor
+    tick intervals, **g** plots grid lines with the same interval as if
+    **-Bf** was used.
+    For custom annotations and intervals, let *xinfo*, *yinfo*, or
+    *zinfo* be **c**\ *intfile*, where *intfile* contains any number of
+    records with *coord* *type* [*label*\ ]. Here, *type* is one or more
+    letters from **a**\ \|\ **i**, **f**, and **g**. For
+    **a**\ \|\ **i** you must supply a *label* that will be plotted at
+    the *coord* location. To specify separate x and y ticks, separate
+    the substrings that apply to the x and y axes with a slash [/] (If a
+    3-D basemap is selected with **-p** and **-Jz**, a third substring
+    pertaining to the vertical axis may be appended.) For
+    linear/log/power projections (**-Jx**\ \|\ **X**): Labels for each
+    axis can be added by surrounding them with colons (**:**). If the
+    first character in the label is a period, then the label is used as
+    plot title; if it is a comma (**,**) then the label is appended to
+    each annotation; if it is an equal sign (**=**) the the prefix is
+    prepended to each annotation (start label/prefix with - to avoid
+    space between annotation and item); else it is the axis label. If
+    the label consists of more than one word, enclose the entire label
+    in double quotes (e.g., **:**"my label"**:**). If you need to use a
+    colon (:) as part of your label you must specify it using its octal
+    code (\\072). If you want to plot just the map boundary and nothing
+    else, **-B**\ 0 suffices.
+    By default, all 4 boundaries are plotted (referred to as **W**,
+    **E**, **S**, **N**). To change the default, append the code for
+    only those axes you want (e.g., **WS** for standard lower-left x-
+    and y-axis system). Upper case (e.g., **W**) means draw
+    axis/tickmarks AND annotate it, whereas lower case (e.g., **w**)
+    will only draw axis/tickmarks. If s is appended first, separate it
+    with a comma to avoid its interpretation as the unit of arc second.
+    If a 3-D basemap is selected with **-p** and **-Jz**, append **Z**
+    or **z** to control the appearance of the vertical axis. Append
+    **+** to draw the outline of the cube defined by **-R**; this is
+    also needed to display gridlines in the x-z, y-z planes. Note that
+    for 3-D views the title, if given, will be suppressed. Finally, to
+    paint the inside of the map region, append **+g**\ *fill* [no fill].
+    For non-geographical projections: Give negative scale (in **-Jx**)
+    or axis length (in **-JX**) to change the direction of increasing
+    coordinates (i.e., to make the y-axis positive down). For log10
+    axes: Annotations can be specified in one of three ways: (1)
+    *stride* can be 1, 2, 3, or -*n*. Annotations will then occur at 1,
+    1-2-5, or 1-2-3-4-...-9, respectively; for -*n* we annotate every
+    *n*\ ’t magnitude. This option can also be used for the frame and
+    grid intervals. (2) An **l** is appended to the *tickinfo* string.
+    Then, log10 of the tick value is plotted at every integer log10
+    value. (3) A **p** is appended to the *tickinfo* string. Then,
+    annotations appear as 10 raised to log10 of the tick value. For
+    power axes: Annotations can be specified in one of two ways: (1)
+    *stride* sets the regular annotation interval. (2) A **p** is
+    appended to the *tickinfo* string. Then, the annotation interval is
+    expected to be in transformed units, but the annotation value will
+    be plotted as untransformed units. E.g., if *stride* = 1 and *power*
+    = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...
+    will appear.
+    These GMT parameters can affect the appearance of the map boundary:
+    **MAP\_ANNOT\_MIN\_ANGLE**, **MAP\_ANNOT\_MIN\_SPACING**,
+    **FONT\_ANNOT\_PRIMARY**, **FONT\_ANNOT\_SECONDARY**,
+    **MAP\_ANNOT\_OFFSET\_PRIMARY**, **MAP\_ANNOT\_OFFSET\_SECONDARY**,
+    **MAP\_ANNOT\_ORTHO**, **MAP\_FRAME\_AXES**, **MAP\_DEFAULT\_PEN**,
+    **MAP\_FRAME\_TYPE**, **FORMAT\_GEO\_MAP**, **MAP\_FRAME\_PEN**,
+    **MAP\_FRAME\_WIDTH**, **MAP\_GRID\_CROSS\_SIZE\_PRIMARY**,
+    **MAP\_GRID\_PEN\_PRIMARY**, **MAP\_GRID\_CROSS\_SIZE\_SECONDARY**,
+    **MAP\_GRID\_PEN\_SECONDARY**, **FONT\_TITLE**, **FONT\_LABEL**,
+    **MAP\_LINE\_STEP**, **MAP\_ANNOT\_OBLIQUE**,
+    **FORMAT\_CLOCK\_MAP**, **FORMAT\_DATE\_MAP**,
+    **FORMAT\_TIME\_PRIMARY\_MAP**, **FORMAT\_TIME\_SECONDARY\_MAP**,
+    **TIME\_LANGUAGE**, **TIME\_WEEK\_START**, **MAP\_TICK\_LENGTH**,
+    and **MAP\_TICK\_PEN**; see the **gmt.conf** man page for details.

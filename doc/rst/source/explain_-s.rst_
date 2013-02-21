@@ -1,0 +1,2 @@
+**-s**\ [*cols*\ ][\ **a**\ \|\ **r**] (\*)
+    Set handling of NaN records.

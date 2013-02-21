@@ -1,0 +1,9 @@
+**-h**\ [**i**\ \|\ **o**][*n*\ ]
+    Input file(s) has header record(s). If used, the default number of
+    header records is **IO\_N\_HEADER\_RECS** [1]. Use **-hi** if only
+    input data should have header records [Default will write out header
+    records if the input data have them]. Blank lines and lines starting
+    with # are always skipped. Use **-ho** to force programs to write a
+    header record with column names. If used with native binary data we
+    interpret *n* to instead mean the number of bytes to skip on input
+    or pad on output.

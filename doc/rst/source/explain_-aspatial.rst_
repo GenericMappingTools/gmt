@@ -1,0 +1,2 @@
+**-a**\ *col*\ =\ *name*\ [*...*\ ] (\*)
+    Set aspatial column associations *col*\ =\ *name*.
