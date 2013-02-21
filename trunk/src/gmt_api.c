@@ -119,6 +119,7 @@ static inline struct GMT_VECTOR  * gmt_get_vector_ptr (struct GMT_VECTOR **ptr) 
 #ifdef HAVE_GDAL
 static inline struct GMT_IMAGE   * gmt_get_image_ptr (struct GMT_IMAGE **ptr) {return (*ptr);}
 #endif
+static inline struct GMT_GRID_ROWBYROW * gmt_get_rbr_ptr (struct GMT_GRID_ROWBYROW *ptr) {return (ptr);}
 
 /* return_address is a convenience function that, given type, calls the correct converter */
 void *return_address (void *data, unsigned int type) {
@@ -408,6 +409,99 @@ size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, 
 	size = h_tmp->size;				/* This is the size needed to hold grid + padding */
 	GMT_free (C, h_tmp);
 	return (size);
+}
+
+int gmt_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID *G, char mode, unsigned int access_mode)
+{
+	/* Read or write the header structure and initialize row-by-row machinery.
+	 * We fill the GMT_GRID_ROWBYROW structure with all the required information.
+	 * mode can be w or r.  Upper case W or R refers to headerless
+	 * grdraster-type files.  The access_mode dictates if we automatically advance
+	 * row counter to next row after read/write or if we use the rec_no to seek
+	 * first.
+	 */
+
+	int r_w, err;
+	bool header = true, magic = true, alloc = false;
+	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};	/* MUST be ints */
+	char *bin_mode[3] = { "rb", "rb+", "wb"};
+	char *fmt = NULL;
+	struct GMT_GRID_ROWBYROW *R = gmt_get_rbr_ptr (G->extra);	/* Shorthand to row-by-row book-keeping structure */
+
+	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
+		if (mode == 'R') {	/* File has no header; can only work if G->header has been set already, somehow */
+			header = false;
+			if (G->header->nx == 0 || G->header->ny == 0) {
+				GMT_report (C, GMT_MSG_NORMAL, "Unable to read header-less grid file %s without a preset header structure\n", file);
+				return (GMT_GRDIO_OPEN_FAILED);
+			}
+		}
+		r_w = 0;	mode = 'r';
+	}
+	else if (mode == 'W') {	/* Write headerless grid */
+		r_w = 2;	mode = 'w';
+		header = magic = false;
+	}
+	else {	/* Regular writing of grid with header */
+		r_w = 1;
+		magic = false;
+	}
+	if (header)
+		GMT_read_grd_info (C, file, G->header);
+	else /* Fallback to existing header */
+		GMT_err_trap (GMT_grd_get_format (C, file, G->header, magic));
+	fmt = C->session.grdformat[G->header->type];
+	if (fmt[0] == 'c') {		/* Open netCDF file, old format */
+		GMT_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
+		R->edge[0] = G->header->nx;
+		R->start[0] = 0;
+		R->start[1] = 0;
+	}
+	else if (fmt[0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
+		GMT_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
+		R->edge[0] = 1;
+		R->edge[1] = G->header->nx;
+		R->start[0] = G->header->ny-1;
+		R->start[1] = 0;
+	}
+	else {		/* Regular binary file with/w.o standard GMT header, or Sun rasterfile */
+		if (r_w == 0) {	/* Open for plain reading */ 
+			if ((R->fp = GMT_fopen (C, G->header->name, bin_mode[0])) == NULL)
+				return (GMT_GRDIO_OPEN_FAILED);
+		}
+		else if ((R->fp = GMT_fopen (C, G->header->name, bin_mode[r_w])) == NULL)
+			return (GMT_GRDIO_CREATE_FAILED);
+		/* Seek past the grid header, unless there is none */
+		if (header && fseek (R->fp, (off_t)GMT_GRID_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+		alloc = (fmt[1] != 'f');	/* Only need to allocate the v_row array if grid is not float */
+	}
+
+	R->size = GMT_grd_data_size (C, G->header->type, &G->header->nan_value);
+	R->check = !GMT_is_dnan (G->header->nan_value);
+
+	if (fmt[1] == 'm')	/* Bit mask */
+		R->n_byte = lrint (ceil (G->header->nx / 32.0)) * R->size;
+	else if (fmt[0] == 'r' && fmt[1] == 'b')	/* Sun Raster uses multiple of 2 bytes */
+		R->n_byte = lrint (ceil (G->header->nx / 2.0)) * 2 * R->size;
+	else	/* All other */
+		R->n_byte = G->header->nx * R->size;
+
+	if (alloc) R->v_row = GMT_memory (C, NULL, R->n_byte, char);
+
+	R->row = 0;
+	R->auto_advance = (access_mode & GMT_GRID_ROW_BY_ROW_MANUAL) ? false : true;	/* Read sequentially or random-access rows */
+	return (GMT_NOERROR);
+}
+
+void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G)
+{
+	struct GMT_GRID_ROWBYROW *R = gmt_get_rbr_ptr (G->extra);	/* Shorthand to row-by-row book-keeping structure */
+	if (R->v_row) GMT_free (C, R->v_row);
+	if (C->session.grdformat[G->header->type][0] == 'c' || C->session.grdformat[G->header->type][0] == 'n')
+		nc_close (R->fid);
+	else
+		GMT_fclose (C, R->fp);
+	GMT_free (C, G->extra);
 }
 
 int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
@@ -1458,6 +1552,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	unsigned int row, col, i0, i1, j0, j1;
 	uint64_t ij, ij_orig;
 	size_t size;
+	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
 	double dx, dy;
 	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMT_IMAGE *I_obj = NULL, *I_orig = NULL;
@@ -1471,7 +1566,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	S_obj = API->object[item];		/* Current data object */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
 	S_obj->alloc_mode = true;
-	if ((mode & GMT_GRID_ALL2) == GMT_GRID_ALL2) mode -= GMT_GRID_ALL2;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */ 
+	if ((mode & both_set) == both_set) mode -= both_set;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */ 
 	
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a image file on disk */
@@ -1658,10 +1753,11 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	 */
 	
 	int item;
-	bool done = true;
+	bool done = true, row_by_row;
  	unsigned int row, col, i0, i1, j0, j1;
 	uint64_t ij, ij_orig;
 	size_t size;
+	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
 	double dx, dy;
 	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
@@ -1675,7 +1771,13 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	S_obj = API->object[item];		/* Current data object */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
 	S_obj->alloc_mode = true;
-	if ((mode & GMT_GRID_ALL2) == GMT_GRID_ALL2) mode -= GMT_GRID_ALL2;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */ 
+	if ((mode & both_set) == both_set) mode -= both_set;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */
+	row_by_row = ((mode & GMT_GRID_ROW_BY_ROW) || (mode & GMT_GRID_ROW_BY_ROW_MANUAL));
+	if (row_by_row && S_obj->method != GMT_IS_FILE) 
+	{
+		GMT_report (API->GMT, GMT_MSG_NORMAL, "Can only use method GMT_IS_FILE when row-by-row reading of grid is selected\n");
+		return_null (API, GMT_NOT_A_VALID_METHOD);
+	}
 	
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
@@ -1688,7 +1790,13 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			G_obj->header->complex_mode = mode;		/* Set the complex mode */
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_GRID_DATA_ONLY)) {		/* Must init header and read the header information from file */
-				if (GMT_err_pass (API->GMT, GMT_read_grd_info (API->GMT, S_obj->filename, G_obj->header), S_obj->filename)) 
+				if (row_by_row) {	/* Special row-by-row processing mode */
+					char r_mode = (mode & GMT_GRID_NO_HEADER) ? 'R' : 'r';
+					G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
+					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, r_mode, mode))	/* Open the grid for incremental row reading */
+						return_null (API, GMT_GRID_READ_ERROR);
+				}
+				else if (GMT_err_pass (API->GMT, GMT_read_grd_info (API->GMT, S_obj->filename, G_obj->header), S_obj->filename)) 
 					return_null (API, GMT_GRID_READ_ERROR);
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
 			}
@@ -1863,7 +1971,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_GRID *G_obj)
 {	/* Writes out a single grid to destination */
 	int item, error;
-	bool done = true;
+	bool done = true, row_by_row;
 	unsigned int row, col, i0, i1, j0, j1;
 	uint64_t ij, ijp, ij_orig;
 	size_t size;
@@ -1880,11 +1988,23 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 
 	S_obj = API->object[item];	/* The current object whose data we will export */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return (GMT_Report_Error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
+	row_by_row = ((mode & GMT_GRID_ROW_BY_ROW) || (mode & GMT_GRID_ROW_BY_ROW_MANUAL));
+	if (row_by_row && S_obj->method != GMT_IS_FILE) 
+	{
+		GMT_report (API->GMT, GMT_MSG_NORMAL, "Can only use method GMT_IS_FILE when row-by-row writing of grid is selected\n");
+		return (GMT_Report_Error (API, GMT_NOT_A_VALID_METHOD));
+	}
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
 			if (mode & GMT_GRID_HEADER_ONLY) {	/* Update header structure only */
 				GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Updating grid header for file %s\n", S_obj->filename);
 				if (GMT_update_grd_info (API->GMT, NULL, G_obj->header)) return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
+				if (row_by_row) {	/* Special row-by-row processing mode */
+					char w_mode = (mode & GMT_GRID_NO_HEADER) ? 'W' : 'w';
+					G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
+					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, w_mode, mode))	/* Open the grid for incremental row writing */
+						return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
+				}
 				done = false;	/* Since we are not done with writing */
 			}
 			else {
@@ -3645,6 +3765,129 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 int GMT_Put_Record_ (unsigned int *mode, void *record)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Put_Record (GMT_FORTRAN, *mode, record));
+}
+#endif
+
+int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row)
+{
+	/* Reads the entire row vector form the grdfile
+	 * If row_no is NEGATIVE it is interpreted to mean that we want to
+	 * fseek to the start of the abs(row_no) record and no reading takes place.
+	 * If G->auto_advance is false we must set R->start explicitly.
+	 */
+	unsigned int col, err;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	char *fmt = API->GMT->session.grdformat[G->header->type];
+	struct GMT_GRID_ROWBYROW *R = gmt_get_rbr_ptr (G->extra);
+	struct GMT_CTRL *C = API->GMT;
+	if (fmt[0] == 'c') {		/* Get one NetCDF row, old format */
+		if (row_no < 0) {	/* Special seek instruction, then return */
+			R->row = abs (row_no);
+			R->start[0] = R->row * R->edge[0];
+			return (GMT_NOERROR);
+		}
+		else if (!R->auto_advance) {	/* Go to specified row and read it */
+			R->row = row_no;
+			R->start[0] = R->row * R->edge[0];
+		}
+		GMT_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+		if (R->auto_advance) R->start[0] += R->edge[0];	/* Advance to next row if auto */
+	}
+	else if (fmt[0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
+		if (row_no < 0) {	/* Special seek instruction */
+			R->row = abs (row_no);
+			R->start[0] = G->header->ny - 1 - R->row;
+			return (GMT_NOERROR);
+		}
+		else if (!R->auto_advance) {
+			R->row = row_no;
+			R->start[0] = G->header->ny - 1 - R->row;
+		}
+		GMT_err_trap (nc_get_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+		if (R->auto_advance) R->start[0] --;	/* Advance to next row if auto */
+	}
+	else {			/* Get a native binary row */
+		size_t n_items;
+		if (row_no < 0) {	/* Special seek instruction */
+			R->row = abs (row_no);
+			if (fseek (R->fp, (off_t)(GMT_GRID_HEADER_SIZE + R->row * R->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			return (GMT_NOERROR);
+		}
+		R->row = row_no;
+		if (!R->auto_advance && fseek (R->fp, (off_t)(GMT_GRID_HEADER_SIZE + R->row * R->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+
+		n_items = G->header->nx;
+		if (fmt[1] == 'f') {	/* Binary float, no need to mess with decoding */
+			if (GMT_fread (row, R->size, n_items, R->fp) != n_items) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+		}
+		else {
+			if (GMT_fread (R->v_row, R->size, n_items, R->fp) != n_items) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
+			for (col = 0; col < G->header->nx; col++)
+				row[col] = GMT_decode (C, R->v_row, col, fmt[1]);	/* Convert whatever to float */
+		}
+	}
+	if (R->check) {	/* Replace NaN-marker with actual NaN */
+		for (col = 0; col < G->header->nx; col++) if (row[col] == (float)G->header->nan_value) /* cast to avoid round-off errors */
+			row[col] = C->session.f_NaN;
+	}
+	GMT_scale_and_offset_f (C, row, G->header->nx, G->header->z_scale_factor, G->header->z_add_offset);
+	if (R->auto_advance) R->row++;
+	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Row_ (int *rec_no, struct GMT_GRID *G, float *row)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Row (GMT_FORTRAN, *rec_no, G, row));
+}
+#endif
+
+int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row)
+{	/* Writes the entire row vector to the grdfile */
+
+	unsigned int col, err;	/* Required by GMT_err_trap */
+	size_t n_items = G->header->nx;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	char *fmt = API->GMT->session.grdformat[G->header->type];
+	struct GMT_GRID_ROWBYROW *R = gmt_get_rbr_ptr (G->extra);
+	struct GMT_CTRL *C = API->GMT;
+
+	GMT_scale_and_offset_f (C, row, G->header->nx, G->header->z_scale_factor, G->header->z_add_offset);
+	if (R->check) {	/* Replace NaNs with special value */
+		for (col = 0; col < G->header->nx; col++) if (GMT_is_fnan (row[col])) row[col] = (float)G->header->nan_value;
+	}
+
+	switch (fmt[0]) {
+		case 'c':
+			if (!R->auto_advance) R->start[0] = rec_no * R->edge[0];
+			GMT_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+			if (R->auto_advance) R->start[0] += R->edge[0];
+			break;
+		case 'n':
+			if (!R->auto_advance) R->start[0] = G->header->ny - 1 - rec_no;
+			GMT_err_trap (nc_put_vara_float (R->fid, G->header->z_id, R->start, R->edge, row));
+			if (R->auto_advance) R->start[0] --;
+			break;
+		default:
+			if (!R->auto_advance && fseek (R->fp, (off_t)(GMT_GRID_HEADER_SIZE + rec_no * R->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
+			if (fmt[1] == 'f') {	/* Regular floats */
+				if (GMT_fwrite (row, R->size, n_items, R->fp) < n_items) return (GMT_GRDIO_WRITE_FAILED);
+			}
+			else {
+				for (col = 0; col < G->header->nx; col++) GMT_encode (C, R->v_row, col, row[col], fmt[1]);
+				if (GMT_fwrite (R->v_row, R->size, n_items, R->fp) < n_items) return (GMT_GRDIO_WRITE_FAILED);
+			}
+			break;
+	}
+	if (R->auto_advance) R->row++;
+
+	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Put_Row_ (int *rec_no, struct GMT_GRID *G, float *row)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Put_Row (GMT_FORTRAN, *rec_no, G, row));
 }
 #endif
 

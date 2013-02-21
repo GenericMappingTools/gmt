@@ -41,12 +41,6 @@
  *  GMT_write_grd_info :   Write header to new file
  *  GMT_write_grd :        Write header and data set to new file
  *
- *  For programs that must access on row at the time:
- *  GMT_open_grd :         Opens the grdfile for reading or writing
- *  GMT_read_grd_row :     Reads a single row of data from grdfile
- *  GMT_write_grd_row :    Writes a single row of data from grdfile
- *  GMT_close_grd :        Close the grdfile
- *
  *  For special img and (via GDAL) reading:
  *  GMT_read_img           Read [subset from] a Sandwell/Smith *.img file
  *  GMT_read_image         GDAL: Read [subset of] an image via GDAL
@@ -90,6 +84,8 @@ int GMT_is_esri_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
 #ifdef HAVE_GDAL
 int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
 #endif
+
+EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
@@ -1015,162 +1011,6 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GMT_GRID_HEA
 	return;
 }
 
-int GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, char mode)
-{
-	/* Assumes header contents is already known.  For writing we
-	 * assume that the header has already been written.  We fill
-	 * the GRD_FILE structure with all the required information.
-	 * mode can be w or r.  Upper case W or R refers to headerless
-	 * grdraster-type files.
-	 */
-
-	int r_w, err;
-	bool header = true, magic = true;
-	int cdf_mode[3] = { NC_NOWRITE, NC_WRITE, NC_WRITE};	/* MUST be ints */
-	char *bin_mode[3] = { "rb", "rb+", "wb"};
-
-	if (mode == 'r' || mode == 'R') {	/* Open file for reading */
-		if (mode == 'R') header = false;
-		r_w = 0;
-	}
-	else if (mode == 'W') {
-		r_w = 2;
-		header = magic = false;
-	}
-	else
-		r_w = 1;
-	GMT_err_trap (GMT_grd_get_format (C, file, &G->header, magic));
-	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Open netCDF file, old format */
-		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
-		if (header) gmt_cdf_grd_info (C, G->fid, &G->header, mode);
-		G->edge[0] = G->header.nx;
-		G->start[0] = G->start[1] = G->edge[1] = 0;
-	}
-	else if (C->session.grdformat[G->header.type][0] == 'n') {	/* Open netCDF file, COARDS-compliant format */
-		GMT_err_trap (nc_open (G->header.name, cdf_mode[r_w], &G->fid));
-		if (header) gmt_nc_grd_info (C, &G->header, mode);
-		G->edge[0] = 1;
-		G->edge[1] = G->header.nx;
-		G->start[0] = G->header.ny-1;
-		G->start[1] = 0;
-	}
-	else {				/* Regular binary file with/w.o standard GMT header */
-		if (r_w == 0) {	/* Open for plain reading */ 
-			if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[0])) == NULL)
-				return (GMT_GRDIO_OPEN_FAILED);
-		}
-		else if ((G->fp = GMT_fopen (C, G->header.name, bin_mode[r_w])) == NULL)
-			return (GMT_GRDIO_CREATE_FAILED);
-		if (header && fseek (G->fp, (off_t)GMT_GRID_HEADER_SIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
-	}
-
-	G->size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
-	G->check = !GMT_is_dnan (G->header.nan_value);
-	G->scale = G->header.z_scale_factor, G->offset = G->header.z_add_offset;
-
-	if (C->session.grdformat[G->header.type][1] == 'm')	/* Bit mask */
-		G->n_byte = lrint (ceil (G->header.nx / 32.0)) * G->size;
-	else if (C->session.grdformat[G->header.type][0] == 'r' && C->session.grdformat[G->header.type][1] == 'b')	/* Sun Raster */
-		G->n_byte = lrint (ceil (G->header.nx / 2.0)) * 2 * G->size;
-	else	/* All other */
-		G->n_byte = G->header.nx * G->size;
-
-	G->v_row =  GMT_memory (C, NULL, G->n_byte, char);
-
-	G->row = 0;
-	G->auto_advance = true;	/* Default is to read sequential rows */
-	return (GMT_NOERROR);
-}
-
-void GMT_close_grd (struct GMT_CTRL *C, struct GMT_GRDFILE *G)
-{
-	GMT_free (C, G->v_row);
-	if (C->session.grdformat[G->header.type][0] == 'c' || C->session.grdformat[G->header.type][0] == 'n')
-		nc_close (G->fid);
-	else
-		GMT_fclose (C, G->fp);
-}
-
-int GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, int row_no, float *row)
-{	/* Reads the entire row vector form the grdfile
-	 * If row_no is NEGATIVE it is interpreted to mean that we want to
-	 * fseek to the start of the abs(row_no) record and no reading takes place.
-	 */
-
-	unsigned int col, err;
-
-	if (C->session.grdformat[G->header.type][0] == 'c') {		/* Get one NetCDF row, old format */
-		if (row_no < 0) {	/* Special seek instruction */
-			G->row = abs (row_no);
-			G->start[0] = G->row * G->edge[0];
-			return (GMT_NOERROR);
-		}
-		GMT_err_trap (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
-		if (G->auto_advance) G->start[0] += G->edge[0];
-	}
-	else if (C->session.grdformat[G->header.type][0] == 'n') {	/* Get one NetCDF row, COARDS-compliant format */
-		if (row_no < 0) {	/* Special seek instruction */
-			G->row = abs (row_no);
-			G->start[0] = G->header.ny - 1 - G->row;
-			return (GMT_NOERROR);
-		}
-		GMT_err_trap (nc_get_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
-		if (G->auto_advance) G->start[0] --;
-	}
-	else {			/* Get a binary row */
-		size_t n_items;
-		if (row_no < 0) {	/* Special seek instruction */
-			G->row = abs (row_no);
-			if (fseek (G->fp, (off_t)(GMT_GRID_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
-			return (GMT_NOERROR);
-		}
-		if (!G->auto_advance && fseek (G->fp, (off_t)(GMT_GRID_HEADER_SIZE + G->row * G->n_byte), SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);
-
-		n_items = G->header.nx;
-		if (GMT_fread (G->v_row, G->size, n_items, G->fp) != n_items)  return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-		for (col = 0; col < G->header.nx; col++)
-			row[col] = GMT_decode (C, G->v_row, col, C->session.grdformat[G->header.type][1]);	/* Convert whatever to float */
-	}
-	if (G->check) {	/* Replace NaN-marker with actual NaN */
-		for (col = 0; col < G->header.nx; col++) if (row[col] == (float)G->header.nan_value) /* cast to avoid round-off errors */
-			row[col] = C->session.f_NaN;
-	}
-	GMT_scale_and_offset_f (C, row, G->header.nx, G->scale, G->offset);
-	G->row++;
-	return (GMT_NOERROR);
-}
-
-int GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *row)
-{	/* Writes the entire row vector to the grdfile */
-
-	unsigned int col, err;	/* Required by GMT_err_trap */
-	size_t size, n_items = G->header.nx;
-	void *tmp = NULL;
-
-	size = GMT_grd_data_size (C, G->header.type, &G->header.nan_value);
-	tmp = GMT_memory (C, NULL, G->header.nx * size, char);
-
-	GMT_scale_and_offset_f (C, row, G->header.nx, G->scale, G->offset);
-	for (col = 0; col < G->header.nx; col++) if (GMT_is_fnan (row[col]) && G->check) row[col] = (float)G->header.nan_value;
-
-	switch (C->session.grdformat[G->header.type][0]) {
-		case 'c':
-			GMT_err_trap (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
-			if (G->auto_advance) G->start[0] += G->edge[0];
-			break;
-		case 'n':
-			GMT_err_trap (nc_put_vara_float (G->fid, G->header.z_id, G->start, G->edge, row));
-			if (G->auto_advance) G->start[0] --;
-			break;
-		default:
-			for (col = 0; col < G->header.nx; col++) GMT_encode (C, tmp, col, row[col], C->session.grdformat[G->header.type][1]);
-			if (GMT_fwrite (tmp, size, n_items, G->fp) < n_items) return (GMT_GRDIO_WRITE_FAILED);
-	}
-
-	GMT_free (C, tmp);
-	return (GMT_NOERROR);
-}
-
 void GMT_set_grdinc (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 {
 	/* Update grid increments based on w/e/s/n, nx/ny, and registration */
@@ -1798,6 +1638,7 @@ void GMT_free_grid_ptr (struct GMT_CTRL *C, struct GMT_GRID *G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return;	/* Nothing to deallocate */
 	if (G->data && free_grid) GMT_free_aligned (C, G->data);
+	if (G->extra) gmt_close_grd (C, G);	/* Close input file used for row-by-row i/o */
 	if (G->header) GMT_free (C, G->header);
 }
 

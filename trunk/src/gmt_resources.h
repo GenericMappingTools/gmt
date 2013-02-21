@@ -130,11 +130,11 @@ enum GMT_enum_out {
 /*============================================================ */
 
 enum GMT_enum_reg {	/* Public constants for grid registration */
-	GMT_GRIDLINE_REG = 0,
+	GMT_GRIDLINE_REG = 0U,
 	GMT_PIXEL_REG};
 
 enum GMT_enum_gridindex {
-        GMT_XLO = 0, /* Index for west or xmin value */
+        GMT_XLO = 0U, /* Index for west or xmin value */
         GMT_XHI,     /* Index for east or xmax value */
         GMT_YLO,     /* Index for south or ymin value */
         GMT_YHI,     /* Index for north or ymax value */
@@ -143,15 +143,16 @@ enum GMT_enum_gridindex {
 };
 
 enum GMT_enum_gridio {
-	GMT_GRID_ALL = 0,	/* Read|write both grid header and the entire grid (no subset) */
-	GMT_GRID_HEADER_ONLY = 1,		/* Just read|write the grid header */
-	GMT_GRID_DATA_ONLY = 2,		/* Read|write the grid array given w/e/s/n set in the header */
-	GMT_GRID_ALL2 = 3,		/* The 1|2 flags together, same meaning as GMT_GRID_ALL */
-	GMT_GRID_IS_REAL = 0,		/* Read|write a normal real-valued grid */
-	GMT_GRID_IS_COMPLEX_REAL = 4,	/* Read|write the real component to/from a complex grid */
-	GMT_GRID_IS_COMPLEX_IMAG = 8,	/* Read|write the imaginary component to/from a complex grid */
-	GMT_GRID_IS_COMPLEX_MASK = 12,	/* To mask out the rea|imag flags */
-	GMT_GRID_NO_HEADER = 16};	/* Write a native grid without the leading grid header */
+	GMT_GRID_IS_REAL		= 0U,	/* Read|write a normal real-valued grid */
+	GMT_GRID_ALL			= 0U,	/* Read|write both grid header and the entire grid (no subset) */
+	GMT_GRID_HEADER_ONLY		= 1U,	/* Just read|write the grid header */
+	GMT_GRID_DATA_ONLY		= 2U,	/* Read|write the grid array given w/e/s/n set in the header */
+	GMT_GRID_IS_COMPLEX_REAL	= 4U,	/* Read|write the real component to/from a complex grid */
+	GMT_GRID_IS_COMPLEX_IMAG	= 8U,	/* Read|write the imaginary component to/from a complex grid */
+	GMT_GRID_IS_COMPLEX_MASK	= 12U,	/* To mask out the rea|imag flags */
+	GMT_GRID_NO_HEADER		= 16U,	/* Write a native grid without the leading grid header */
+	GMT_GRID_ROW_BY_ROW		= 32U,	/* Read|write the grid array one row at the time sequentially */
+	GMT_GRID_ROW_BY_ROW_MANUAL	= 64U};	/* Read|write the grid array one row at the time in any order */
 
 /* These lengths (except GMT_GRID_VARNAME_LEN80) must NOT be changed as they are part of grd definition */
 enum GMT_enum_grdlen {
@@ -251,6 +252,14 @@ struct GMT_GRID_HEADER {
 		    and represents the surface value in a box with dimensions (1,1)
 		    centered on the node.
 -------------------------------------------------------------------------------------------*/
+
+struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
+	unsigned int id;		/* The internal number of the grid */
+	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
+	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
+	float *data;			/* Pointer to the float grid */
+	void *extra;			/* Row-by-row machinery information [NULL] */
+};
 
 /*============================================================ */
 /*============== GMT_DATASET Public Declaration ============== */

@@ -84,7 +84,7 @@ enum Gmt_grid_id {
 #define GMT_N_GRD_FORMATS 25 /* Number of formats above plus 1 */
 
 #define GMT_GRID_IS_GOLDEN7	GMT_GRID_IS_SD
-#define GMT_GRID_IS_GDAL		GMT_GRID_IS_GD
+#define GMT_GRID_IS_GDAL	GMT_GRID_IS_GD
 
 #include "gmt_customio.h"
 
@@ -93,13 +93,23 @@ struct GMT_GRID_INFO {	/* Holds any -R -I -F settings passed indirectly via -R<g
 	bool active;		/* true if initialized via -R */
 };
 
-struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
-	unsigned int id;			/* The internal number of the grid */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
-	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
-	float *data;			/* Pointer to the float grid */
+struct GMT_GRID_ROWBYROW {	/* Holds book-keeping information needed for row-by-row actions */
+	size_t size;		/* Bytes per item [4 for float, 1 for byte, etc] */
+	size_t n_byte;		/* Number of bytes for row */
+	unsigned int row;	/* Current row */
+	bool check;		/* true if we must replace NaNs with another representation on i/o */
+	bool auto_advance;	/* true if we want to read file sequentially */
+
+	int fid;		/* NetCDF file number [netcdf files only] */
+	size_t edge[2];		/* Dimension arrays [netcdf files only] */
+	size_t start[2];	/* Position arrays [netcdf files only] */
+
+	FILE *fp;		/* File pointer [for native files] */
+
+	void *v_row;		/* Void Row pointer for any data format */
 };
 
+#if 0
 struct GMT_GRDFILE {
 	size_t size;		/* Bytes per item */
 	size_t n_byte;		/* Number of bytes for row */
@@ -120,6 +130,7 @@ struct GMT_GRDFILE {
 
 	struct GMT_GRID_HEADER header;	/* Full GMT header for the file */
 };
+#endif
 
 #ifdef __APPLE__ /* Accelerate framework */
 #include <Accelerate/Accelerate.h>
