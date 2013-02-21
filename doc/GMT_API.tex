@@ -785,7 +785,7 @@ resource via its unique ID.  Because of the similarities of these five import fu
 
 \subsubsection{Import from a file, stream, or handle}
 \index{GMT\_Read\_Data}
-To read an entire resouce from a file, stream, or file handle, use
+To read an entire resource from a file, stream, or file handle, use
 \begin{verbatim}
 void * GMT_Read_Data (void *API, unsigned int family, \
     unsigned int method, unsigned int geometry, unsigned int mode, \
@@ -822,8 +822,10 @@ entries for highest and lowest value.
 \index{GMT\_GRID\_DATA\_ONLY}
 \index{GMT\_GRID\_IS\_COMPLEX\_REAL}
 \index{GMT\_GRID\_IS\_COMPLEX\_IMAG}
+\index{GMT\_GRID\_ROW\_BY\_ROW}
+\index{GMT\_GRID\_ROW\_BY\_ROW\_MANUAL}
 To read the entire grid and its header, pass GMT\_GRID\_ALL.  However, if you
-need to extract a sub-region you must first read the heade by passing
+need to extract a sub-region you must first read the header by passing
 GMT\_GRID\_HEADER\_ONLY, then examine the header structure range attributes and
 to specify a subset via the array \texttt{wesn}, and finally call
 \texttt{GMT\_Read\_Data} a second time, now with \texttt{mode} = GMT\_GRID\_DATA\_ONLY and passing your \texttt{wesn} array
@@ -831,6 +833,11 @@ and the grid structure returned from the first call as \texttt{ptr}.
 In the event your data array should be allocated to hold both the real and imaginary parts of a
 complex data set you must add either GMT\_GRID\_IS\_COMPLEX\_REAL or GMT\_GRID\_IS\_COMPLEX\_IMAG to \texttt{mode}
 so as to allow for the extra memory needed and to stride the input values correctly.
+If your grid is huge and you must read it row-by-row, set \texttt{mode} to
+GMT\_GRID\_HEADER\_ONLY | GMT\_GRID\_ROW\_BY\_ROW.  You can then access the grid row-by-row
+using \texttt{GMT\_Get\_Row}.  By default the rows will be automatically
+processed in order.  To completely specify which row to be read, use GMT\_GRID\_ROW\_BY\_ROW\_MANUAL
+instead.
 \end{description}
 
 \subsubsection{Import from a memory location}
@@ -961,6 +968,25 @@ on the current \Opt{g} settings.  The function returns false (0) unless the stat
 \index{GMT\_IO\_NEW\_SEGMENT}
 \index{GMT\_IO\_LINE\_BREAK}
 \index{GMT\_IO\_NEXT\_FILE}
+
+\subsection{Importing a grid row}
+\index{Importing a grid row}
+\index{Data!Import grid row}
+\index{Resources!Import grid row}
+
+If your program must read a grid file row-by-row you must first enable row-by-row
+reading with \texttt{GMT\_Read\_Data} and then use the \texttt{GMT\_Get\_Row} function in a loop;
+the prototype is
+\index{GMT\_Get\_Row}
+
+\begin{verbatim}
+int GMT_Get_Row (void *API, int row_no, struct GMT_GRID *G, float *row);
+\end{verbatim}
+where \texttt{row} is a pointer to a single-precision array to receive the current row,
+\texttt{G} is the grid in question, and \texttt{row\_no} is the number of the current
+row to be read.  Note this value is only considered if the row-by-row mode was
+initialized with GMT\_GRID\_ROW\_BY\_ROW\_MANUAL.  The user must allocate enough
+space to hold the entire row in memory. 
 
 \subsection{Disable Data Import}
 \index{Import!Disable}
@@ -1444,11 +1470,18 @@ However, in the event your data array holds both the real and imaginary parts of
 complex data set you must add either GMT\_GRID\_IS\_COMPLEX\_REAL (4) or GMT\_GRID\_IS\_COMPLEX\_IMAG (16) to \texttt{mode}
 so as to export the corresponding grid values correctly.  Finally, for native binary grids you may skip writing
 the grid header by adding GMT\_GRID\_NO\_HEADER (16); this setting is ignored for other grid formats.
+If your output grid is huge and you are building it row-by-row, set \texttt{mode} to
+GMT\_GRID\_HEADER\_ONLY | GMT\_GRID\_ROW\_BY\_ROW.  You can then write the grid row-by-row
+using \texttt{GMT\_Put\_Row}.  By default the rows will be automatically
+processed in order.  To completely specify which row to be written, use GMT\_GRID\_ROW\_BY\_ROW\_MANUAL
+instead.
 \index{GMT\_GRID\_HEADER\_ONLY}
 \index{GMT\_GRID\_ALL}
 \index{GMT\_GRID\_IS\_COMPLEX\_REAL}
 \index{GMT\_GRID\_IS\_COMPLEX\_IMAG}
 \index{GMT\_GRID\_NO\_HEADER}
+\index{GMT\_GRID\_ROW\_BY\_ROW}
+\index{GMT\_GRID\_ROW\_BY\_ROW\_MANUAL}
 \end{description}
 If successful the function returns FALSE (0); otherwise we return TRUE (1) and set \texttt{API->error} to reflect to cause.
 
@@ -1509,6 +1542,24 @@ If binary output mode instead we write a record composed of NaNs [1].
 \end{description}
 The function returns TRUE (1) if there was an error associated with the writing (which is passed back with \texttt{API->error}),
 otherwise it returns FALSE (0).
+
+\subsection{Exporting a grid row}
+\index{Exporting a grid row}
+\index{Data!Export grid row}
+\index{Resources!Export grid row}
+
+If your program must write a grid file row-by-row you must first enable row-by-row
+writing with \texttt{GMT\_Read\_Data} and then use the \texttt{GMT\_Put\_Row} function in a loop;
+the prototype is
+\index{GMT\_Put\_Row}
+
+\begin{verbatim}
+int GMT_Put_Row (void *API, int row_no, struct GMT_GRID *G, float *row);
+\end{verbatim}
+where \texttt{row} is a pointer to a single-precision array with the current row,
+\texttt{G} is the grid in question, and \texttt{row\_no} is the number of the current
+row to be written.  Note this value is only considered if the row-by-row mode was
+initialized with GMT\_GRID\_ROW\_BY\_ROW\_MANUAL.
 
 \subsection{Disable Data Export}
 \index{Export!Disable}
@@ -1582,7 +1633,7 @@ Note that this function also updates \texttt{API->error} to the given value.
 \index{FORTRAN 77 interface}
 \index{Interface!FORTRAN 77}
 
-FORTRAN 77 developers who wish to use the \GMT\ API may use the same 17 API functions as discussed in Chapter 2.
+FORTRAN 77 developers who wish to use the \GMT\ API may use the same 22 API functions as discussed in Chapter 2.
 However, as pointers to structures and such are not available, the FORTRAN bindings provided simplifies the
 interface in two ways:
 \begin{itemize}
@@ -1592,7 +1643,7 @@ the C version of the functions.
 \item The resource arguments in \texttt{GMT\_Register\_IO} are not pointers to
 items but the items themselves.
 \end{itemize}
-The list of the basic 18 FORTRAN prototype functions thus becomes
+The list of the basic 22 FORTRAN prototype functions thus becomes
 \begin{verbatim}
 function GMT_Create_Session (tag, mode)
 function GMT_Destroy_Session ()
@@ -1611,10 +1662,12 @@ function GMT_Read_Data (family, method, geometry, mode, wesn, \
 function GMT_Get_Data (ID, mode, data)
 function GMT_Retrieve_Data (ID)
 function GMT_Get_Record (rec, mode, nfields)
+function GMT_Get_Row (row_no, grid, row)
 function GMT_Write_Data (family, method, geometry, mode, wesn, \
     output, data)
 function GMT_Put_Data (ID, mode, data)
 function GMT_Put_Record (mode, rec)
+function GMT_Put_Row (row_no, grid, row)
 function GMT_End_IO (direction, mode)
 function GMT_Destroy_Data (mode, ptr)
 function GMT_Report_Error (error)

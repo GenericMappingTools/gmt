@@ -68,7 +68,6 @@ EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_
 EXTERN_MSC struct GMT_GRID_HEADER * GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void GMT_grd_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, bool update);
 EXTERN_MSC void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GMT_GRID_HEADER *h);
-EXTERN_MSC void GMT_close_grd (struct GMT_CTRL *C, struct GMT_GRDFILE *G);
 EXTERN_MSC void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, bool free_grid);
 EXTERN_MSC void GMT_set_grdinc (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void GMT_set_grddim (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h);
@@ -83,9 +82,6 @@ EXTERN_MSC int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID_HE
 EXTERN_MSC int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HEADER *header);
 EXTERN_MSC int GMT_grd_setregion (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant);
 EXTERN_MSC int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, unsigned int mode);
-EXTERN_MSC int GMT_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRDFILE *G, char mode);
-EXTERN_MSC int GMT_read_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, int row_no, float *row);
-EXTERN_MSC int GMT_write_grd_row (struct GMT_CTRL *C, struct GMT_GRDFILE *G, float *row);
 EXTERN_MSC int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *G, double *wesn, double scale, unsigned int mode, double lat, bool init);
 EXTERN_MSC int GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, unsigned int ncols);
 EXTERN_MSC bool GMT_grd_pad_status (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned int *pad);
