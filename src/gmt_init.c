@@ -1981,6 +1981,14 @@ int GMT_check_binary_io (struct GMT_CTRL *C, unsigned int n_req) {
 		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Binary input data (-bi) provides %d but must have at least %d columns\n", C->common.b.ncol[GMT_IN], n_req);
 		n_errors++;
 	}
+	if (C->common.b.ncol[GMT_IN] < C->common.i.n_cols) {
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Binary input data (-bi) provides %d but column selection (-i) asks for %d columns\n", C->common.b.ncol[GMT_IN], C->common.i.n_cols);
+		n_errors++;
+	}
+	if (C->common.b.active[GMT_OUT] && C->common.b.ncol[GMT_OUT] && (C->common.b.ncol[GMT_OUT] < C->common.o.n_cols)) {
+		GMT_report (C, GMT_MSG_NORMAL, "Syntax error: Binary output data (-bo) provides %d but column selection (-o) asks for %d columns\n", C->common.b.ncol[GMT_OUT], C->common.o.n_cols);
+		n_errors++;
+	}
 
 	GMT_report (C, GMT_MSG_VERBOSE, "Provides %d, expects %d-column binary data\n", C->common.b.ncol[GMT_IN], n_req);
 

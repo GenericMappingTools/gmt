@@ -1567,7 +1567,7 @@ bool gmt_get_binary_input (struct GMT_CTRL *C, FILE *fp, unsigned int n) {
 
 void * gmt_bin_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval)
 {	/* General binary read function which calls function pointed to by C->current.io.read_binary to handle actual reading (and possbily swabbing) */
-	unsigned int status, n_use;
+	unsigned int status, n_use, n_read;
 
 	C->current.io.status = 0;
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
@@ -1578,12 +1578,13 @@ void * gmt_bin_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *retval
 		status = gmt_process_binary_input (C, n_use);
 		if (status == 1) { *retval = 0; return (NULL); }		/* A segment header */
 	} while (status == 2);	/* Continue reading when record is to be skipped */
-	if (C->common.i.active) *n = gmt_bin_colselect (C);
+	//if (C->common.i.active) *n = gmt_bin_colselect (C);
+	n_read = (C->common.i.active) ? gmt_bin_colselect (C) : *n;	/* We may use -i and select fewer of the input columns */
 	
 	if (gmt_gap_detected (C)) { *retval = gmt_set_gap (C); return (C->current.io.curr_rec); }
 	C->current.io.pt_no++;
 
-	*retval = *n;
+	*retval = n_read;
 	return (C->current.io.curr_rec);
 }
 
