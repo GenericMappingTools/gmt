@@ -65,7 +65,7 @@ extern "C" {
  *=====================================================================================
  */
 
-/* 22 Primary API functions */
+/* 23 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
 EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
 EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
@@ -88,6 +88,7 @@ EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *
 EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, void *data);
 EXTERN_MSC int GMT_Get_Row		(void *C, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Put_Row		(void *C, int rec_no, struct GMT_GRID *G, float *row);
+EXTERN_MSC int GMT_Add_Comment		(void *C, unsigned int family, unsigned int mode, void *arg, void *container);
 
 /* 2 convenience functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids, images */
 

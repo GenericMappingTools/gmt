@@ -2831,6 +2831,10 @@ int GMT_write_cpt (struct GMT_CTRL *C, void *dest, unsigned int dest_type, unsig
 	GMT_report (C, GMT_MSG_DEBUG, "Writing CPT table to %s\n", cpt_file);
 
 	/* Start writing cpt file info to fp */
+	
+	for (i = 0; i < P->n_headers; i++) {	/* First write the headers */
+		GMT_write_tableheader (C, fp, P->header[i]);
+	}
 
 	if (!(P->model & GMT_COLORINT)) {}	/* Write nothing when color interpolation is not forced */
 	else if (P->model & GMT_HSV)

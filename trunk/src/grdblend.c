@@ -485,7 +485,6 @@ int GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, struc
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int err;
  	unsigned int n_errors = 0;
 	size_t n_alloc = 0;
 	struct GMT_OPTION *opt = NULL;
@@ -566,8 +565,8 @@ int GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, struc
 
 int GMT_grdblend (void *V_API, int mode, void *args)
 {
-	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, error;
-	int status, pcol, err;
+	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend;
+	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false;
 	
 	uint64_t ij, n_fill, n_tot;
@@ -576,7 +575,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	
 	float *z = NULL, no_data_f;
 	
-	char wmode[2] = {'w', 'W'}, type;
+	char type;
 	char *outfile = NULL, outtemp[GMT_BUFSIZ];
 	
 	struct GRDBLEND_INFO *blend = NULL;
