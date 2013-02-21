@@ -1,0 +1,210 @@
+*********
+pscontour
+*********
+
+pscontour - Contour table data by direct triangulation [method]
+
+`Synopsis <#toc1>`_
+-------------------
+
+**pscontour** [ *table* ] **-C**\ *cptfile* **-J**\ *parameters*
+**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
+**-A**\ [**-**\ ][*labelinfo*\ ] ] [
+**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ [*template*\ ] ] [
+**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
+] [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
+**-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
+[ **-S** ] [ **-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*\ ]]
+] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
+**-V**\ [*level*\ ] ] [ **-W**\ [**+**\ ]\ *pen* ] [
+**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
+] [
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
+**-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
+] [
+**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+
+`Description <#toc2>`_
+----------------------
+
+**pscontour** reads an ASCII [or binary] xyz-file and produces a raw
+contour plot by triangulation. By default, the optimal Delaunay
+triangulation is performed (using either Shewchuk’s [1996] or Watson’s
+[1982] method as selected during BD(GMT) installation; type **pscontour
+-** to see which method is selected), but the user may optionally
+provide a second file with network information, such as a triangular
+mesh used for finite element modeling. In addition to contours, the area
+between contours may be painted according to the color palette file.
+Alternatively, the x/y/z positions of the contour lines may be saved to
+one or more output files (or stdout) and no plot is produced. 
+
+.. include:: explain_commonitems.rst_
+
+`Required Arguments <#toc4>`_
+-----------------------------
+
+**-C**\ *cptfile*
+    name of the color palette file. Must have discrete colors if you
+    want to paint the surface (**-I**). Only contours that have
+    annotation flags set will be annotated. 
+
+.. include:: explain_-J.rst_
+
+.. include:: explain_-R.rst_
+
+.. include:: explain_-Rz.rst_
+
+`Optional Arguments <#toc5>`_
+-----------------------------
+
+.. include:: explain_intables.rst_
+
+**-A**\ [**-**\ ][*labelinfo*\ ]
+
+Give - to disable all annotations. The optional *labelinfo* controls the
+specifics of the label formatting and consists of a concatenated string
+made up of any of the following control arguments:
+
+.. include:: explain_labelinfo.rst_
+
+.. include:: explain_-B.rst_
+
+**-D**\ [*template*\ ]
+
+.. include:: explain_contdump.rst_
+
+**-G**
+
+.. include:: explain_contlabel.rst_
+
+**-I**
+    Color the triangles using the color palette table. 
+
+.. include:: explain_-Jz.rst_
+
+.. include:: explain_-K.rst_
+
+**-L**\ *pen*
+    Draw the underlying triangular mesh using the specified pen
+    attributes [Default is no mesh].
+**-N**
+    Do NOT clip contours or image at the boundaries [Default will clip
+    to fit inside region **-R**]. 
+
+.. include:: explain_-O.rst_
+
+.. include:: explain_-P.rst_
+
+**-Q**\ *indexfile*
+    Give name of file with network information. Each record must contain
+    triplets of node numbers for a triangle [Default computes these
+    using Delaunay triangulation (see **triangulate**)].
+**-S**
+    Skip all input *xyz* points that fall outside the region [Default
+    uses all the data in the triangulation].
+**-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*\ ]]
+    Will draw tickmarks pointing in the downward direction every *gap*
+    along the innermost closed contours. Append *gap* and tickmark
+    length (append units as **c**, **i**, or **p**) or use defaults
+    [15**p**/3**p**]. User may choose to tick only local highs or local
+    lows by specifying **-T+** or **-T-**, respectively. Append
+    **:**\ *labels* to annotate the centers of closed innermost contours
+    (i.e, the local lows and highs). If no *labels* is appended we use -
+    and + as the labels. Appending two characters, **:LH**, will plot
+    the two characters (here, L and H) as labels. For more elaborate
+    labels, separate the two label strings by a comma (e.g.,
+    **:**\ *lo*,\ *hi*). If a file is given by **-C** and **-T** is set,
+    then only contours marked with upper case C or A will have tickmarks
+    [and annotation]. 
+
+.. include:: explain_-U.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: explain_-V.rst_
+
+**-W**\ [**+**\ ]\ *pen*
+    Select contouring and set contour pen attributes. If the **+** flag
+    is prepended then the color of the contour lines are taken from the
+    cpt file (see **-C**). If the **-** flag is prepended then the color
+    from the cpt file is applied both to the contours and the contour
+    annotations. 
+
+.. include:: explain_-XY.rst_
+
+.. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-Q**). 
+.. include:: explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is 3 output columns]. 
+.. include:: explain_-bo.rst_
+
+.. include:: explain_-c.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: explain_-h.rst_
+
+.. include:: explain_-icols.rst_
+
+.. include:: explain_colon.rst_
+
+.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. include:: explain_perspective.rst_
+
+.. include:: explain_-t.rst_
+
+.. include:: explain_help.rst_
+
+`Examples <#toc6>`_
+-------------------
+
+To make a raw contour plot from the file topo.xyz and drawing the
+contours (pen = 2) given in the color palette file topo.cpt on a Lambert
+map at 0.5 inch/degree along the standard parallels 18 and 24, use
+
+pscontour topo.xyz -R320/330/20/30 **-Jl**\ 18/24/0.5\ **i** -Ctopo.cpt
+-W0.5p > topo.ps
+
+To create a color *PostScript* plot of the numerical temperature
+solution obtained on a triangular mesh whose node coordinates and
+temperatures are stored in temp.xyz and mesh arrangement is given by the
+file mesh.ijk, using the colors in temp.cpt, run
+
+pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
+
+`Bugs <#toc7>`_
+---------------
+
+Sometimes there will appear to be thin lines of the wrong color in the
+image. This is a round-off problem which may be remedied by using a
+higher value of **PS\_DPI** in the **gmt.conf** file.
+
+To save the triangulated 100-m contour lines in topo.txt and separate
+them into multisegment files (one for each contour level), try
+
+pscontour topo.txt -C100 -Dcontours\_%.0f.txt
+
+`See Also <#toc8>`_
+-------------------
+
+`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
+`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
+`*grdcontour*\ (1) <grdcontour.html>`_ ,
+`*grdimage*\ (1) <grdimage.html>`_ ,
+`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
+`*psbasemap*\ (1) <psbasemap.html>`_ , `*psscale*\ (1) <psscale.html>`_
+, `*surface*\ (1) <surface.html>`_ ,
+`*triangulate*\ (1) <triangulate.html>`_
+
+`References <#toc9>`_
+---------------------
+
+Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
+Geosci.*, **8**, 97-101.
+
+Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
+and Delaunay Triangulator, First Workshop on Applied Computational
+Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
+
+www.cs.cmu.edu/~quake/triangle.html

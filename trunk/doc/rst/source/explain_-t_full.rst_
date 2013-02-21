@@ -1,0 +1,3 @@
+**-t**\ [*transp*\ ]
+    Set PDF transparency level for an overlay, in 0-100 range. [Default
+    is 0, i.e., opaque].
