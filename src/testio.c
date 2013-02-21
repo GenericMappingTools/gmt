@@ -124,7 +124,7 @@ int main (int argc, char *argv[]) {
 	GMT_free_vector (API->GMT, &Vi, false);
 
 	/* 8. Destroy GMT session */
-	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
 
 	exit (GMT_OK);		/* Return the status from this program */
 }

@@ -54,7 +54,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	if (GMT_Destroy_Options (API, &options)) mexErrMsgTxt ("Failure to destroy GMT options\n");
 
 	/* 5. Destroy GMT session */
-	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT session\n");
+	if (GMT_Destroy_Session (API)) mexErrMsgTxt ("Failure to destroy GMT session\n");
 
 	exit (status);		/* Return the status from mex FUNC */
 }

@@ -1916,7 +1916,7 @@ int gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 		/* cannot call GMT_Free_Options() from here, so we are leaking on exit.
 		 * struct GMTAPI_CTRL *G = C->parent;
-		 * if (GMT_Destroy_Session (&G))
+		 * if (GMT_Destroy_Session (G))
 		 *   exit (EXIT_FAILURE); */
 		exit (EXIT_SUCCESS);
 	}

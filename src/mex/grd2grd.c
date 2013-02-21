@@ -73,5 +73,5 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	GMTMEX_free (input, output, options, cmd);
 	
 	/* Destroy GMT API session */
-	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");
+	if (GMT_Destroy_Session (API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");
 }

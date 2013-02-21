@@ -74,7 +74,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	GMT_free_vector (API->GMT, &Vi, false);	/* false since vectors came from Matlab */
 	
 	/* Destroy GMT API session */
-	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");
+	if (GMT_Destroy_Session (API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");
 
 	return;
 }

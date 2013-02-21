@@ -52,7 +52,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	mxFree (cmd);
 	
 	/* Destroy GMT API session */
-	if (GMT_Destroy_Session (&API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");
+	if (GMT_Destroy_Session (API)) mexErrMsgTxt ("Failure to destroy GMT Session\n");
 
 	return;
 }

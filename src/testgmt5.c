@@ -81,7 +81,7 @@ int main (int argc, char *argv[]) {
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, out_grid, Gout) != GMT_OK) exit (EXIT_FAILURE);
 
 	/* 8. Destroy GMT session */
-	if (GMT_Destroy_Session (&API)) exit (EXIT_FAILURE);
+	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
 
 	exit (GMT_OK);		/* Return the status from this program */
 }
