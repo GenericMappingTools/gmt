@@ -57,7 +57,7 @@ enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 
-/* These are the 5 families of data types */
+/* These are the 5 families of data types + 2 help containers for vector and matrix */
 enum GMT_enum_families {
 	GMT_IS_DATASET = 0,	/* Entity is data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
@@ -67,6 +67,14 @@ enum GMT_enum_families {
 	GMT_IS_VECTOR,		/* to hande interfacing with user data types: */
 	GMT_IS_MATRIX,		/* Entity is user vectors */
 	GMT_N_FAMILIES};	/* Entity is user matrix */
+
+/* These are modes for handling comments */
+enum GMT_enum_comments {
+	GMT_COMMENT_IS_TEXT	= 0,	/* Comment is a text string */
+	GMT_COMMENT_IS_OPTION	= 1,	/* Comment is a linked list of GMT_OPTION structures */
+	GMT_COMMENT_IS_COMMAND	= 2,	/* Comment goes in to header->command */
+	GMT_COMMENT_IS_REMARK	= 4,	/* Comment goes in to header->remark */
+	GMT_COMMENT_IS_RESET	= 8};	/* Wipe existing header first [append] */
 
 /* Array indices for input/output/stderr variables */
 
@@ -541,6 +549,8 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMT_FLOAT */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 	double range[2];		/* Contains tmin/tmax (or 0/0 if not equidistant) */
+	char *command; 			/* name of generating command */
+	char *remark;   		/* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;			/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
@@ -555,8 +565,8 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	/* Variables we document for the API: */
 	unsigned int n_rows;		/* Number of rows in this matrix */
-	unsigned int n_columns;	/* Number of columns in this matrix */
-	unsigned int n_layers;	/* Number of layers in a 3-D matrix [1] */
+	unsigned int n_columns;		/* Number of columns in this matrix */
+	unsigned int n_layers;		/* Number of layers in a 3-D matrix [1] */
 	unsigned int shape;		/* 0 = C (rows) and 1 = Fortran (cols) */
 	unsigned int registration;	/* 0 for gridline and 1 for pixel registration  */
 	size_t dim;			/* Allocated length of longest C or Fortran dim */
@@ -564,6 +574,8 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
 	double range[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
 	union GMT_UNIVECTOR data;	/* Union with pointer to actual matrix of the chosen type */
+	char *command; 			/* name of generating command */
+	char *remark;   		/* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */

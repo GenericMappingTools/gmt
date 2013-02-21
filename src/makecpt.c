@@ -272,7 +272,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-V", "h>", options)) Return (API->error);
 	Ctrl = New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_makecpt_parse (API, Ctrl, options))) Return (error);
 
@@ -374,6 +374,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 
+	GMT_Add_Comment (API, GMT_IS_CPT, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_RESET | GMT_COMMENT_IS_COMMAND, options, Pout);
 	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_OK) {
 		Return (API->error);
 	}

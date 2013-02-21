@@ -1381,6 +1381,52 @@ Given your linked list of program options (or text array) and possibly some regi
 can now call the required \GMT\ module using one of the two flavors discussed in section {\ref{sec:func}}.
 All modules return an error or status code that your program should consider before processing the results.
 
+\section{Adjusting headers and comments}
+\index{Adjusting headers and comments}
+\index{Headers}
+\index{Comments}
+
+All header records in incoming datasets are stored in memory.  You may wish to replace these records with
+new information, or append new information to the existing headers.  This is achieved with
+
+\index{GMT\_Add\_Comment}
+
+\begin{verbatim}
+int GMT_Add_Comment (void *API, unsigned int family, unsigned int mode \
+    void *arg, void *data)
+\end{verbatim}
+
+Again, \texttt{family} selects which kind of resource is passed via \texttt{data}. The \texttt{mode}
+determines what kind of comment is being considered, how it should be included, and in what form the comment
+passed via \texttt{arg} is.  Table~\cite{tbl:comments} lists the available options, which may be combined
+by adding (bitwise ``or'').  Note: Users can always
+determine if they wish to turn off header output via the common \GMT\ option \Opt(h).
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{constant}} & \multicolumn{1}{c|}{\emph{value}}  & \multicolumn{1}{c|}{\emph{Description}} \\ \hline
+GMT\_COMMENT\_IS\_TEXT		&      0	& Comment is a text string \\ \hline
+GMT\_COMMENT\_IS\_OPTION	&      1	& Comment is a linked list of GMT_OPTION structures \\ \hline
+GMT\_COMMENT\_IS\_COMMAND	&      2	& Comment is the command \\ \hline
+GMT\_COMMENT\_IS\_REMARK	&      4	& Comment is the remark \\ \hline
+GMT\_COMMENT\_IS\_RESET		&      8	& Comment replaces existing information \\ \hline
+\end{tabular}
+\caption{Enumeration constants as bit-flags defined for specifying comments.}
+\label{tbl:comments}
+\index{Resources!Comments!types}
+\end{table}
+\index{GMT\_COMMENT\_IS\_TEXT}
+\index{GMT\_COMMENT\_IS\_OPTION}
+\index{GMT\_COMMENT\_IS\_COMMAND}
+\index{GMT\_COMMENT\_IS\_REMARK}
+\index{GMT\_COMMENT\_IS\_RESET}
+The \emph{command }and \emph{remark} modifiers to the comment are used to distinguish regular comments from specific fields in the
+header structure of many data resources, such as \texttt{GMT\_GRID}.  For the various table resources (e.g., \texttt{GMT\_DATASET})
+these modifiers result in a specially formatted comments beginning with ``Command: '' or ``Remark: '', reflecting how this
+type of information is presented via \GMTprog{grdinfo} for \GMT\ grids.
+
 \section{Exporting Data}
 \index{Exporting Data}
 \index{Data!Export data}

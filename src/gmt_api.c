@@ -446,8 +446,12 @@ int gmt_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID *G, char mode,
 		r_w = 1;
 		magic = false;
 	}
-	if (header)
-		GMT_read_grd_info (C, file, G->header);
+	if (header) {
+		if (mode == 'r')
+			GMT_read_grd_info (C, file, G->header);
+		else 
+			GMT_write_grd_info (C, file, G->header);
+	}
 	else /* Fallback to existing header */
 		GMT_err_trap (GMT_grd_get_format (C, file, G->header, magic));
 	fmt = C->session.grdformat[G->header->type];
@@ -502,6 +506,113 @@ void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G)
 	else
 		GMT_fclose (C, R->fp);
 	GMT_free (C, G->extra);
+}
+
+void GMTAPI_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID_HEADER *H)
+{	/* Replace or Append either command or remark field with text or commmand-line options */
+	char *txt = (mode | GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
+	if (mode & GMT_COMMENT_IS_REMARK) {
+		if (mode & GMT_COMMENT_IS_RESET) GMT_memset (H->remark, GMT_GRID_REMARK_LEN160, char);	/* Eliminate previous remark */
+		strncpy (H->remark, txt, GMT_GRID_REMARK_LEN160 - strlen (H->remark));
+	}
+	else if (mode & GMT_COMMENT_IS_COMMAND) {
+		if (mode & GMT_COMMENT_IS_RESET) GMT_memset (H->command, GMT_GRID_COMMAND_LEN320, char);	/* Eliminate previous command */
+		strncpy (H->command, txt, GMT_GRID_COMMAND_LEN320 - strlen (H->command));
+	}
+	GMT_free (API->GMT, txt);
+}
+
+void GMTAPI_grid_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID *G)
+{	/* Replace or Append either command or remark field with text or commmand-line options */
+	return (GMTAPI_GI_comment (API, mode, arg, G->header));
+}
+
+void GMTAPI_image_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_IMAGE *I)
+{	/* Update either command or remark field with text or commmand-line options */
+	return (GMTAPI_GI_comment (API, mode, arg, I->header));
+}
+
+void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, char **header)
+{
+	char buffer[GMT_BUFSIZ];
+	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
+	GMT_memset (buffer, GMT_BUFSIZ, char);
+	if ((mode & GMT_COMMENT_IS_RESET) == 0 && *header) strcat (buffer, *header);
+	strcat (buffer, txt);
+	if (*header) free ((void *)*header);
+	*header = strdup (buffer);
+	if ((mode & GMT_COMMENT_IS_OPTION)) GMT_free (API->GMT, txt);
+}
+
+void GMTAPI_vector_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_VECTOR *V)
+{	/* Update either command or remark field with text or commmand-line options */
+	if (mode & GMT_COMMENT_IS_REMARK)  update_txt_item (API, mode, arg, &V->remark);
+	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, &V->command);
+}
+
+void GMTAPI_matrix_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_MATRIX *M)
+{	/* Update either command or remark field with text or commmand-line options */
+	if (mode & GMT_COMMENT_IS_REMARK)  update_txt_item (API, mode, arg, &M->remark);
+	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, &M->command);
+}
+
+char * create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg)
+{
+	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
+	static char buffer[GMT_BUFSIZ];
+	GMT_memset (buffer, GMT_BUFSIZ, char);
+	if (mode & GMT_COMMENT_IS_COMMAND) strcat (buffer, " Command: ");
+	if (mode & GMT_COMMENT_IS_REMARK)  strcat (buffer, " Remark: ");
+	strcat (buffer, txt);
+	if (mode & GMT_COMMENT_IS_OPTION) GMT_free (API->GMT, txt);
+	return (buffer);
+}
+
+void GMTAPI_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_DATASET *D)
+{	/* Append or replace data table headers with given text or commmand-line options */
+	unsigned int tbl, k;
+	struct GMT_DATATABLE *T = NULL;
+	char *txt = create_header_item (API, mode, arg);
+	
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
+		T = D->table[tbl];	/* Short-hand for this table */
+		if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
+			for (k = 0; k < T->n_headers; k++) free ((void *)T->header[k]);
+			T->n_headers = 0;
+		}
+		T->header = GMT_memory (API->GMT, T->header, T->n_headers + 1, char *);
+		T->header[T->n_headers++] = strdup (txt);
+	}
+}
+
+void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_TEXTSET *D)
+{	/* Append or replace text table headers with given text or commmand-line options */
+	unsigned int tbl, k;
+	struct GMT_TEXTTABLE *T = NULL;
+	char *txt = create_header_item (API, mode, arg);
+	
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
+		T = D->table[tbl];	/* Short-hand for this table */
+		if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
+			for (k = 0; k < T->n_headers; k++) free ((void *)T->header[k]);
+			T->n_headers = 0;
+		}
+		T->header = GMT_memory (API->GMT, T->header, T->n_headers + 1, char *);
+		T->header[T->n_headers++] = strdup (txt);
+	}
+}
+
+void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_PALETTE *P)
+{	/* Append or replace text table headers with given text or commmand-line options */
+	unsigned int k;
+	char *txt = create_header_item (API, mode, arg);
+	
+	if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
+		for (k = 0; k < P->n_headers; k++) free ((void *)P->header[k]);
+		P->n_headers = 0;
+	}
+	P->header = GMT_memory (API->GMT, P->header, P->n_headers + 1, char *);
+	P->header[P->n_headers++] = strdup (txt);
 }
 
 int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
@@ -1998,13 +2109,15 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
 			if (mode & GMT_GRID_HEADER_ONLY) {	/* Update header structure only */
 				GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Updating grid header for file %s\n", S_obj->filename);
-				if (GMT_update_grd_info (API->GMT, NULL, G_obj->header)) return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
 				if (row_by_row) {	/* Special row-by-row processing mode */
 					char w_mode = (mode & GMT_GRID_NO_HEADER) ? 'W' : 'w';
 					G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
 					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, w_mode, mode))	/* Open the grid for incremental row writing */
 						return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
 				}
+				else if (GMT_update_grd_info (API->GMT, NULL, G_obj->header))
+					return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
+				
 				done = false;	/* Since we are not done with writing */
 			}
 			else {
@@ -3773,7 +3886,9 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row)
 	/* Reads the entire row vector form the grdfile
 	 * If row_no is NEGATIVE it is interpreted to mean that we want to
 	 * fseek to the start of the abs(row_no) record and no reading takes place.
-	 * If G->auto_advance is false we must set R->start explicitly.
+	 * If R->auto_advance is false we must set R->start explicitly to row_no.
+	 * If R->auto_advance is true it reads the current row and advances R->row++
+	 * In this case row_no is not used.
 	 */
 	unsigned int col, err;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -3843,7 +3958,14 @@ int GMT_Get_Row_ (int *rec_no, struct GMT_GRID *G, float *row)
 #endif
 
 int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row)
-{	/* Writes the entire row vector to the grdfile */
+{
+	/* Writes the entire row vector to the grdfile
+	 * If row_no is NEGATIVE it is interpreted to mean that we want to
+	 * fseek to the start of the abs(row_no) record and no reading takes place.
+	 * If R->auto_advance is false we must set R->start explicitly to row_no.
+	 * If R->auto_advance is true it writes at the current row and advances R->row++
+	 * In this case row_no is not used.
+	 */
 
 	unsigned int col, err;	/* Required by GMT_err_trap */
 	size_t n_items = G->header->nx;
@@ -4163,3 +4285,41 @@ double * GMT_Get_Coord_ (unsigned int *family, unsigned int *dim, void *containe
 	return (GMT_Get_Coord (GMT_FORTRAN, *family, *dim, container));
 }
 #endif
+
+int GMT_Add_Comment (void *V_API, unsigned int family, unsigned int mode, void *arg, void *container)
+{
+	/* Add new header comment or grid command|remark to container */
+	
+	int error = GMT_OK;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
+
+	switch (family) {	/* grid, image, or matrix */
+		case GMT_IS_GRID:	/* GMT grid */
+			GMTAPI_grid_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_IMAGE:	/* GMT image */
+			GMTAPI_image_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_DATASET:	/* GMT dataset */
+			GMTAPI_dataset_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_TEXTSET:	/* GMT textset */
+			GMTAPI_textset_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_CPT:	/* GMT CPT */
+			GMTAPI_cpt_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_VECTOR:	/* GMT Vector */
+			GMTAPI_vector_comment (API, mode, arg, container);
+			break;
+		case GMT_IS_MATRIX:	/* GMT Vector */
+			GMTAPI_matrix_comment (API, mode, arg, container);
+			break;
+		default:
+			error = GMT_WRONG_KIND;
+			break;		
+	}
+	return_error (API, error);
+}

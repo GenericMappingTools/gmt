@@ -3744,6 +3744,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		dim[3] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)
 		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->coord[GMT_X][kk] = S->coord[info.r_col][kk];
+		GMT_Add_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, stack[0]->D->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {
 			Return (API->error);
 		}
@@ -3777,6 +3778,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					for (c = 0; c < n_columns; c++) N->table[0]->segment[seg]->coord[c][r] = R->table[0]->segment[seg]->coord[c][row];
 				}
 			}
+			GMT_Add_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, N);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_OK) {
 				Return (API->error);
 			}
@@ -3786,6 +3788,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		}
 		else {	/* Write the whole enchilada */
 			if (R != Template) stack[0]->alloc_mode = 2;	/* Since GMT_Write_Data will register it */
+			GMT_Add_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, R->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {
 				Return (API->error);
 			}
