@@ -91,5 +91,5 @@ grdcut bathy.nc -Gsubset\_bathy.nc -S45/30/500k -V
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdpaste*\ (1) <grdpaste.html>`_ ,
-`*grdinfo*\ (1) <grdinfo.html>`_
+`gmt <gmt.html>`_ , `grdpaste <grdpaste.html>`_ ,
+`grdinfo <grdinfo.html>`_

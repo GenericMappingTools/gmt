@@ -168,5 +168,5 @@ psimage 1\_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
 `See Also <#toc7>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*psxy*\ (1) <psxy.html>`_ `*convert*\ (1) <convert.html>`_
+`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
+`psxy <psxy.html>`_ `convert <convert.html>`_

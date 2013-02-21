@@ -225,8 +225,8 @@ grdimage -JI15c -Rd -Dr
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grd2rgb*\ (1) <grd2rgb.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.html>`_ ,
-`*grdview*\ (1) <grdview.html>`_ ,
-`*grdgradient*\ (1) <grdgradient.html>`_ ,
-`*grdhisteq*\ (1) <grdhisteq.html>`_
+`gmt <gmt.html>`_ , `grd2rgb <grd2rgb.html>`_ ,
+`grdcontour <grdcontour.html>`_ ,
+`grdview <grdview.html>`_ ,
+`grdgradient <grdgradient.html>`_ ,
+`grdhisteq <grdhisteq.html>`_

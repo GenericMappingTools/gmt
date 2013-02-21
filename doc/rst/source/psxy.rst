@@ -272,6 +272,6 @@ Appendix N for macro definitions.
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ , `*psxyz*\ (1) <psxyz.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`psbasemap <psbasemap.html>`_ , `psxyz <psxyz.html>`_

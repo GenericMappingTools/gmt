@@ -49,6 +49,7 @@ have the same registration as the input grid.
 
 .. include:: explain_-I.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-T**
@@ -58,6 +59,7 @@ have the same registration as the input grid.
 .. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-V.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_-n.rst_
@@ -98,5 +100,5 @@ grdsample surface.nc -T -Gpixel.nc
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdedit*\ (1) <grdedit.html>`_ ,
-`*grdfft*\ (1) <grdfft.html>`_ , `*grdfilter*\ (1) <grdfilter.html>`_
+`gmt <gmt.html>`_ , `grdedit <grdedit.html>`_ ,
+`grdfft <grdfft.html>`_ , `grdfilter <grdfilter.html>`_

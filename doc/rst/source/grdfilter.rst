@@ -183,7 +183,7 @@ horizontal, try
 
 grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL SUB
 6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
- grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
+grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
 
 `Limitations <#toc9>`_
 ----------------------
@@ -195,5 +195,5 @@ Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdfft*\ (1) <grdfft.html>`_
-`*img2mercgrd*\ (1) <img2mercgrd.html>`_
+`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_
+`img2mercgrd <img2mercgrd.html>`_

@@ -250,8 +250,7 @@ surface where the input data is a single surface value (pt.d) and the
 remaining constraints specify only the surface slope and direction
 (slopes.d), use
 
-greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d
--Gslopes.nc
+greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
 
 `3-d Examples <#toc8>`_
 -----------------------
@@ -260,8 +259,7 @@ To create a uniform 3-D Cartesian grid table based on the data in
 table\_5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
 a measure of uranium oxide concentrations (in percent), try
 
-greenspline table\_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5
--G3D\_UO2.txt
+greenspline table\_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D\_UO2.txt
 
 `2-d Spherical Surface Examples <#toc9>`_
 -----------------------------------------
@@ -335,20 +333,19 @@ Sandwell, D. T., 1987, Biharmonic spline interpolation of Geos-3 and
 Seasat altimeter data, *Geophys. Res. Lett.*, **14**, 139-142.
 
 Wessel, P., and D. Bercovici, 1998, Interpolation with splines in
-tension: a Green’s function approach, *Math. Geol.*, **30**, 77-93.
+tension: a Green's function approach, *Math. Geol.*, **30**, 77-93.
 
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized
-Green’s function for a spherical surface spline in tension, *Geophys. J.
+Green's function for a spherical surface spline in tension, *Geophys. J.
 Int*, **174**, 21-28.
- Wessel, P., 2009, A general-purpose Green’s function interpolator,
-*Computers & Geosciences*, **35**, 1247-1254,
-doi:10.1016/j.cageo.2008.08.012.
+Wessel, P., 2009, A general-purpose Green's function interpolator,
+*Computers & Geosciences*, **35**, 1247-1254, doi:10.1016/j.cageo.2008.08.012.
 
 `See Also <#toc13>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmtmath*\ (1) <gmtmath.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.html>`_ , `*psxy*\ (1) <psxy.html>`_
-, `*surface*\ (1) <surface.html>`_ ,
-`*triangulate*\ (1) <triangulate.html>`_ ,
-`*xyz2grd*\ (1) <xyz2grd.html>`_
+`gmt <gmt.html>`_ , `gmtmath <gmtmath.html>`_ ,
+`nearneighbor <nearneighbor.html>`_ , `psxy <psxy.html>`_
+, `surface <surface.html>`_ ,
+`triangulate <triangulate.html>`_ ,
+`xyz2grd <xyz2grd.html>`_

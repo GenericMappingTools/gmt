@@ -59,8 +59,10 @@ characters, except in paragraph mode (**-M**)).
 
 .. include:: explain_-J.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
@@ -184,6 +186,7 @@ characters, except in paragraph mode (**-M**)).
 
 .. include:: explain_-c.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -250,8 +253,8 @@ correct BoundingBox.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*ps2raster*\ (1) <ps2raster.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*pslegend*\ (1) <pslegend.html>`_ , `*psxy*\ (1) <psxy.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`ps2raster <ps2raster.html>`_ ,
+`psbasemap <psbasemap.html>`_ ,
+`pslegend <pslegend.html>`_ , `psxy <psxy.html>`_

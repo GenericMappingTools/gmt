@@ -30,4 +30,4 @@ isogmt sh script.gmt
 `See Also <#toc4>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_

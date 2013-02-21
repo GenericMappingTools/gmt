@@ -113,6 +113,7 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**\ *method*/*modifiers*
@@ -157,6 +158,7 @@ edge is zero) unless the grid is automatically recognized as periodic.)
 .. |Add_-bo| replace:: [Default is one more than input]. 
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| unicode:: 0x0C .. just an invisible code
@@ -219,5 +221,4 @@ grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.d
 `See Also <#toc11>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*surface*\ (1) <surface.html>`_ ,
-`*sample1d*\ (1) <sample1d.html>`_
+`gmt <gmt.html>`_ , `surface <surface.html>`_ , `sample1d <sample1d.html>`_

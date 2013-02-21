@@ -264,8 +264,7 @@ grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2
 
 ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
-(These commands assume that GhostScript can be found in your system’s
-path.)
+(These commands assume that GhostScript can be found in your system’s path.)
 
 `Binary Data <#toc8>`_
 ----------------------
@@ -294,4 +293,4 @@ documentation.
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gs*\ (1) <gs.html>`_
+`gmt <gmt.html>`_

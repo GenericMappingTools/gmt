@@ -177,6 +177,5 @@ topo\_imag.nc.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdedit*\ (1) <grdedit.html>`_ ,
-`*grdmath*\ (1) <grdmath.html>`_ ,
-`*grdproject*\ (1) <grdproject.html>`_
+`gmt <gmt.html>`_ , `grdedit <grdedit.html>`_ ,
+`grdmath <grdmath.html>`_ , `grdproject <grdproject.html>`_

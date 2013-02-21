@@ -56,8 +56,7 @@ None.
     **r** to resample at equidistant locations; input points are not
     necessarily included in the output, and **R** as **r**, but adjust
     given spacing to fit the track length exactly. Finally, append
-    **+l** if distances should be measured along rhumb lines
-    (loxodromes).
+    **+l** if distances should be measured along rhumb lines (loxodromes).
 **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n**
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
@@ -96,8 +95,10 @@ None.
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
+.. |Add_-g| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -152,5 +153,4 @@ sample1d track.txt -I5k -AR+l > new\_track.dt
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*filter1d*\ (1) <filter1d.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ , `filter1d <filter1d.html>`_

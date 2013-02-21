@@ -32,11 +32,11 @@ areas.
 -----------------------------
 
 **-G**\ *mask\_grd\_file*]
-    Name of resulting output mask grid file. (See GRID FILE FORMATS
-    below). 
+    Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
 .. include:: explain_-I.rst_
 
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
@@ -94,6 +94,6 @@ grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdmath*\ (1) <grdmath.html>`_ ,
-`*grdclip*\ (1) <grdclip.html>`_ , `*psmask*\ (1) <psmask.html>`_ ,
-`*psclip*\ (1) <psclip.html>`_ , `*pscoast*\ (1) <pscoast.html>`_
+`gmt <gmt.html>`_ , `grdmath <grdmath.html>`_ ,
+`grdclip <grdclip.html>`_ , `psmask <psmask.html>`_ ,
+`psclip <psclip.html>`_ , `pscoast <pscoast.html>`_

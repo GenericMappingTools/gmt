@@ -116,8 +116,10 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
 .. |Add_-bo| replace:: [Default is 2 output columns]. 
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
+.. |Add_-g| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -147,7 +149,7 @@ paste data.t data.g \| spectrum1d -S256 -D1.5 -Ndata -C
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdfft*\ (1) <grdfft.html>`_
+`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_
 
 `References <#toc9>`_
 ---------------------

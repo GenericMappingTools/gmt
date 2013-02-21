@@ -42,6 +42,7 @@ netCDF and native binary grid formats for both input and output.
 
 .. include:: explain_-I.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
@@ -98,6 +99,7 @@ netCDF and native binary grid formats for both input and output.
 **-Z**\ *scale*
     Scale output values by *scale* before writing to file. [1]. 
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_nodereg| unicode:: 0x0C .. just an invisible code
@@ -135,5 +137,5 @@ grdblend MB\_\*.nc -Gblend.nc -R<full\_region> -I<dx/dy> -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grd2xyz*\ (1) <grd2xyz.html>`_ ,
-`*grdedit*\ (1) <grdedit.html>`_ `*grdraster*\ (1) <grdraster.html>`_
+`gmt <gmt.html>`_ , `grd2xyz <grd2xyz.html>`_ ,
+`grdedit <grdedit.html>`_ `grdraster <grdraster.html>`_

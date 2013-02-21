@@ -11,7 +11,7 @@
     coordinates compatible with chosen **-J** and we inversely project
     to determine actual rectangular geographic region.
     For perspective view (**-p**), optionally append /*zmin*/*zmax*.
-     In case of perspective view (**-p**), a z-range (*zmin*, *zmax*)
+    In case of perspective view (**-p**), a z-range (*zmin*, *zmax*)
     can be appended to indicate the third dimension. This needs to be
     done only when using the **-Jz** option, not when using only the
     **-p** option. In the latter case a perspective view of the plane is

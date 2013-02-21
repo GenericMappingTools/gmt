@@ -66,16 +66,13 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **G** *gap*
     The **G** record specifies a vertical gap of the given length. In
     addition to the standard units (**i**, **c**, **p**) you may use
-    **l** for lines. A negative *gap* will move the current line upwards
-    (thus closing a gap).
+    **l** for lines. A negative *gap* will move the current line upwards (thus closing a gap).
 **H** *fontsize*\ \|\ **-** *font*\ \|\ **-** header)
     The **H** record plots a centered text string using the specified
-    font parameters. Use **-** to default to size and type of
-    **FONT\_TITLE**.
+    font parameters. Use **-** to default to size and type of **FONT\_TITLE**.
 **I** *imagefile width justification*
     Place an EPS or Sun raster image in the legend justified relative to
-    the current point. The image *width* determines the size of the
-    image on the page.
+    the current point. The image *width* determines the size of the image on the page.
 **L** *fontsize*\ \|\ **-** *font*\ \|\ **-** justification label)
     The **L** record plots a (L)eft, (C)entered, or (R)ight-justified
     text string within a column using the specified font parameters. Use
@@ -177,6 +174,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 .. include:: explain_-P.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. include:: explain_-U.rst_
@@ -293,7 +291,7 @@ such duplication.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ , `*pstext*\ (1) <pstext.html>`_ ,
-`*psxy*\ (1) <psxy.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`psbasemap <psbasemap.html>`_ , `pstext <pstext.html>`_ ,
+`psxy <psxy.html>`_

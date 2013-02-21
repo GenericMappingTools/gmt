@@ -126,8 +126,10 @@ it is plotted with **FONT\_LABEL**
     values will be annotated using the 10^p format [Default is linear
     scale]. 
 
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 **-S**
@@ -183,5 +185,4 @@ colors for the two methods given identical RGB values.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*makecpt*\ (1) <makecpt.html>`_ ,
-`*grd2cpt*\ (1) <grd2cpt.html>`_
+`gmt <gmt.html>`_ , `makecpt <makecpt.html>`_ , `grd2cpt <grd2cpt.html>`_

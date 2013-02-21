@@ -53,13 +53,16 @@ one or more output files (or stdout) and no plot is produced.
 
 .. include:: explain_-J.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ [**-**\ ][*labelinfo*\ ]
@@ -188,14 +191,14 @@ pscontour topo.txt -C100 -Dcontours\_%.0f.txt
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.html>`_ ,
-`*grdimage*\ (1) <grdimage.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ , `*psscale*\ (1) <psscale.html>`_
-, `*surface*\ (1) <surface.html>`_ ,
-`*triangulate*\ (1) <triangulate.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`grdcontour <grdcontour.html>`_ ,
+`grdimage <grdimage.html>`_ ,
+`nearneighbor <nearneighbor.html>`_ ,
+`psbasemap <psbasemap.html>`_ , `psscale <psscale.html>`_
+, `surface <surface.html>`_ ,
+`triangulate <triangulate.html>`_
 
 `References <#toc9>`_
 ---------------------

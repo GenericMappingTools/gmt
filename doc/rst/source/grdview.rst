@@ -215,11 +215,11 @@ polygons.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grd2rgb*\ (1) <grd2rgb.html>`_ ,
-`*gmtcolors*\ (5) <gmtcolors.html>`_ ,
-`*grdcontour*\ (1) <grdcontour.html>`_ ,
-`*grdimage*\ (1) <grdimage.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*pscontour*\ (1) <pscontour.html>`_ , `*pstext*\ (1) <pstext.html>`_ ,
-`*surface*\ (1) <surface.html>`_
+`gmt <gmt.html>`_ , `grd2rgb <grd2rgb.html>`_ ,
+`gmtcolors <gmtcolors.html>`_ ,
+`grdcontour <grdcontour.html>`_ ,
+`grdimage <grdimage.html>`_ ,
+`nearneighbor <nearneighbor.html>`_ ,
+`psbasemap <psbasemap.html>`_ ,
+`pscontour <pscontour.html>`_ , `pstext <pstext.html>`_ ,
+`surface <surface.html>`_

@@ -67,13 +67,16 @@ against these paths, the clipping may be deactivated by running
     
 .. include:: explain_-J.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. include:: explain_-B.rst_
@@ -109,6 +112,7 @@ against these paths, the clipping may be deactivated by running
 
 .. include:: explain_-c.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| unicode:: 0x0C .. just an invisible code
@@ -151,5 +155,5 @@ to give the desired effect.
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdmask*\ (1) <grdmask.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_ , `*psmask*\ (1) <psmask.html>`_
+`gmt <gmt.html>`_ , `grdmask <grdmask.html>`_ ,
+`psbasemap <psbasemap.html>`_ , `psmask <psmask.html>`_

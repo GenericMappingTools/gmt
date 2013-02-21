@@ -102,5 +102,4 @@ grdtrend hawaii\_topo.nc -N10r -Thawaii\_trend.nc -Whawaii\_weight.nc -V
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdfft*\ (1) <grdfft.html>`_ ,
-`*grdfilter*\ (1) <grdfilter.html>`_
+`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_ , `grdfilter <grdfilter.html>`_

@@ -61,6 +61,6 @@ grdclip data.nc -Gnew\_data.nc -Sa70/NaN -Sb0/0 -V
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdlandmask*\ (1) <grdlandmask.html>`_ ,
-`*grdmask*\ (1) <grdmask.html>`_ , `*grdmath*\ (1) <grdmath.html>`_ ,
-`*grd2xyz*\ (1) <grd2xyz.html>`_ , `*xyz2grd*\ (1) <xyz2grd.html>`_
+`gmt <gmt.html>`_ , `grdlandmask <grdlandmask.html>`_ ,
+`grdmask <grdmask.html>`_ , `grdmath <grdmath.html>`_ ,
+`grd2xyz <grd2xyz.html>`_ , `xyz2grd <xyz2grd.html>`_
