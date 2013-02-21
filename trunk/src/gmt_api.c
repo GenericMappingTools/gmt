@@ -109,7 +109,6 @@ enum GMT_enum_iomode {
  * This needs to be done on a per data-type basis, e.g., to cast that void * to a struct GMT_GRID **
  * so we may return the value at that address: */
 
-static inline struct GMTAPI_CTRL * gmt_get_api_pptr (struct GMTAPI_CTRL **ptr) {return (*ptr);}
 static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 static inline struct GMT_PALETTE * gmt_get_cpt_ptr (struct GMT_PALETTE **ptr) {return (*ptr);}
 static inline struct GMT_DATASET * gmt_get_dataset_ptr (struct GMT_DATASET **ptr) {return (*ptr);}
@@ -2500,7 +2499,7 @@ int GMT_Destroy_Session (void *V_API)
 	 * Returns false if all is well and true if there were errors. */
 	
 	unsigned int i;
-	struct GMTAPI_CTRL *API = gmt_get_api_pptr (V_API);
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	
@@ -2510,8 +2509,8 @@ int GMT_Destroy_Session (void *V_API)
 	GMT_free (API->GMT, API->object);
 	GMT_end (API->GMT);	/* Terminate GMT machinery */
 	if (API->session_tag) free (API->session_tag);
- 	free (API);		/* Not GMT_free since this item was allocated before GMT was initialized */
-	API = NULL;		/* Return this pointer to its NULL state */
+	GMT_memset (API, 1U, struct GMTAPI_CTRL);	/* Wipe it clean first */
+ 	free (API);	/* Not GMT_free since this item was allocated before GMT was initialized */
 	
 	return (GMT_OK);
 }
@@ -2519,7 +2518,7 @@ int GMT_Destroy_Session (void *V_API)
 #ifdef FORTRAN_API
 int GMT_Destroy_Session_ ()
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure*/
-	return (GMT_Destroy_Session (&GMT_FORTRAN));
+	return (GMT_Destroy_Session (GMT_FORTRAN));
 }
 #endif
 

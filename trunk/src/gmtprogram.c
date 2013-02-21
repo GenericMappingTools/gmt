@@ -40,7 +40,7 @@ int main (int argc, char *argv[]) {
 	status = this_module.p_func (api_ctrl, argc-1, (argv+1));
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (&api_ctrl) != GMT_OK)
+	if (GMT_Destroy_Session (api_ctrl) != GMT_OK)
 		return EXIT_FAILURE;
 
 	return status; /* Return the status from FUNC */

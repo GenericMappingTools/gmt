@@ -114,6 +114,6 @@ int main (int argc, String argv[])
     XtDispatchEvent(&event);
   }
   XtDestroyApplicationContext(self);
-  GMT_Destroy_Session (&API);
+  GMT_Destroy_Session (API);
   exit(0);
 }

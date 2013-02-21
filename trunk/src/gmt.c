@@ -57,7 +57,7 @@ int main (int argc, char *argv[]) {
 		if ((api_ctrl = GMT_Create_Session (argv[0], 0U)) == NULL)
 			return EXIT_FAILURE;
 		fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
-		if (GMT_Destroy_Session (&api_ctrl))
+		if (GMT_Destroy_Session (api_ctrl))
 			return EXIT_FAILURE;
 		return EXIT_SUCCESS;
 	}
@@ -68,7 +68,7 @@ int main (int argc, char *argv[]) {
 		if ((api_ctrl = GMT_Create_Session (argv[0], 0U)) == NULL)
 			return EXIT_FAILURE;
 		fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
-		if (GMT_Destroy_Session (&api_ctrl))
+		if (GMT_Destroy_Session (api_ctrl))
 			return EXIT_FAILURE;
 		return EXIT_SUCCESS;
 	}
@@ -93,7 +93,7 @@ int main (int argc, char *argv[]) {
 	status = g_module[module_id].p_func (api_ctrl, argc-2, argv+2);
 
 	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (&api_ctrl))
+	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;
 
 	return status; /* Return the status from FUNC */

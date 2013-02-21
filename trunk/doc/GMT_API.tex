@@ -1556,8 +1556,7 @@ int GMT_Destroy_Session (void *API);
 \index{GMT\_Destroy\_Session}
 which simply takes the pointer to the \GMT\ API control structure as its only arguments.  It 
 terminates the \GMT\ machinery and deallocates all memory used by the \GMT\ API book-keeping.
-If you requested PSL during creation then the PSL resources are freed as well.  It
-also unregisters any remaining resources previously registered with the session.
+It also unregisters any remaining resources previously registered with the session.
 The \GMT\ API will only close files that it was responsible for opening in the first place.
 Finally, the API structure itself is freed so your main program does not need to do so.
 The function returns TRUE (1) if there is an error when trying to free the memory
